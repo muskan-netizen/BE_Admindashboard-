@@ -25,7 +25,7 @@ class PickupDeliveryController extends FrontController{
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
-        $code = array('cod', 'razorpay','stripe','paystack', 'payfast','authorize_net'); 
+        $code = array('cod', 'dpo', 'razorpay','stripe','paystack', 'payfast','authorize_net','payphone'); 
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials' ,'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
@@ -49,16 +49,43 @@ class PickupDeliveryController extends FrontController{
 
     public function getOrderTrackingDetails(Request $request, $domain = ''){
 
-        $order = OrderVendor::where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first();
-       // pr($order->toArray());
-        $response = Http::get($request->new_dispatch_traking_url);
-        if($response->status() == 200 && isset($order) && !empty($order)){
-           $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order->order_id ,'vendor_id' =>$order->vendor_id ])->latest()->first();
-           $order->dispatcher_status_type=  $type ?  $type->type :1;
-           $response = $response->json();
-           $response['order_details'] = $order->toArray();
-           return $this->successResponse($response);
+       $order = OrderVendor::where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
+   
+       $response = Http::get($request->new_dispatch_traking_url);
+
+        if(count($order) > 0) {
+            if($response->status() == 200){
+                if(($response['agent_location'] != '') && ($order['dispatcher_status'] === __('Hold on! We are looking for drivers nearby!'))){
+                    //$order['dispatcher_status'] = __('Hold on! We are looking for drivers nearby!');
+                    $order['dispatcher_status'] = __('Your driver has been assigned!');
+                 }
+                // dd($order->dispatcher_status);
+                $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order['order_id'] ,'vendor_id' =>$order['vendor_id'] ])->latest()->first();
+                $order['dispatcher_status_type']=  $type ?  $type->type :1;
+                $response = $response->json();
+                $response['order_details'] = $order;
+                return $this->successResponse($response);
+            } else {
+
+                $response = [];
+                $response['order_details'] = [];
+                $response['status'] = $response->status();
+                return $this->successResponse($response);
+
+            }
+        } else {
+            if($response->status() == 200){
+                $response = $response->json();
+                $response['order_details'] = [];
+                return $this->successResponse($response);
+            } else {
+                $response = [];
+                $response['order_details'] = [];
+                $response['status'] = $response->status();
+                return $this->successResponse($response);
+            }
         }
+        
     }
 
     public function postVendorListByCategoryId(Request $request, $domain = '',$category_id = 0){
@@ -67,6 +94,7 @@ class PickupDeliveryController extends FrontController{
         $pickup_latitude = '';
         $pickup_longitude = '';
         $locations = $request->has('locations') ? json_decode($request->get('locations')) : [];
+        
         if(count($locations) > 0){
             $pickup_latitude = $locations[0] ? $locations[0]->latitude : '';
             $pickup_longitude = $locations[0] ? $locations[0]->longitude : '';
@@ -104,6 +132,19 @@ class PickupDeliveryController extends FrontController{
     public function postCabProductById(Request $request, $domain = '',$product_id = 0){
         $user = Auth::user();
         $language_id = Session::get('customerLanguage');
+        
+        if(!empty($user)){
+            $client_timezone = DB::table('clients')->first('timezone');
+            $user->timezone = $client_timezone->timezone ?? $user->timezone;
+        }
+        
+        $schedule_datetime_del = '';
+        if(isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
+            $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+        }else{
+            $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
+        }
+
         $product = Product::with(['category.categoryDetail','media.image', 'translation' => function($q) use($language_id){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
                         },'variant' => function($q) use($language_id){
@@ -112,7 +153,7 @@ class PickupDeliveryController extends FrontController{
                         }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags')->where('products.id', $product_id)->where('products.is_live', 1)->first();
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
-        $tags_price = $this->getDeliveryFeeDispatcher($request, $product);
+        $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
         $product->original_tags_price = $tags_price;
         $product->tags_price = decimal_format($tags_price);
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
@@ -182,7 +223,21 @@ class PickupDeliveryController extends FrontController{
             if($vid == 0){
                 return response()->json(['error' => 'No record found.'], 404);
             }
-            $userid = Auth::user()->id;
+
+            $user = Auth::user();
+            $userid = $user->id;
+            if(!empty($user)){
+                $client_timezone = DB::table('clients')->first('timezone');
+                $user->timezone = $client_timezone->timezone ?? $user->timezone;
+            }
+            
+            $schedule_datetime_del = '';
+            if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+            }else{
+                $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
+            }
+            
             $paginate = $request->has('limit') ? $request->limit : 12;
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $language_id = Session::get('customerLanguage');
@@ -217,7 +272,7 @@ class PickupDeliveryController extends FrontController{
 
              if(!empty($products)){
                 foreach ($products as $key => $product) {
-                    $tags_price = $this->getDeliveryFeeDispatcher($request, $product);
+                    $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
                     $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'93/93'.$product->media->first()->image->path['image_path'] : '';
                     $product->image_url = $image_url;
                     $product->name = $product->translation->first() ? $product->translation->first()->title :'';
@@ -265,6 +320,21 @@ class PickupDeliveryController extends FrontController{
             }
             $userid = Auth::user()->id;
             $langId = Auth::user()->language;
+
+            $user   = Auth::user();
+            if(!empty($user)){
+                $client_timezone = DB::table('clients')->first('timezone');
+                $user->timezone = $client_timezone->timezone ?? $user->timezone;
+            }
+            
+            $schedule_datetime_del = '';
+            if(isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+            }else{
+                $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
+            }
+    
+
             $category = Category::with(['tags','type'  => function($q){
                             $q->select('id', 'title as redirect_to');
                         },'childs.translation'  => function($q) use($langId){
@@ -277,7 +347,7 @@ class PickupDeliveryController extends FrontController{
                 return response()->json(['error' => 'No record found.'], 200);
             }
             $response['category'] = $category;
-            $response['listData'] = $this->listData($langId, $cid, $category->type->redirect_to, $userid,$request);
+            $response['listData'] = $this->listData($langId, $cid, $category->type->redirect_to, $userid,$request, $schedule_datetime_del);
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -285,10 +355,10 @@ class PickupDeliveryController extends FrontController{
 
     }
 
-    public function listData($langId, $category_id, $type = '', $userid,$request){
+    public function listData($langId, $category_id, $type = '', $userid,$request, $schedule_datetime_del=''){
         if ($type == 'Pickup/Delivery') {
             $category_details = [];
-            $deliver_charge = $this->getDeliveryFeeDispatcher($request);
+            $deliver_charge = $this->getDeliveryFeeDispatcher($request, null, $schedule_datetime_del);
             $deliver_charge = $deliver_charge??0.00;
             $category_list = Category::where('parent_id', $category_id)->get();
             foreach ($category_list as $category) {
@@ -309,18 +379,19 @@ class PickupDeliveryController extends FrontController{
 
 
      # get delivery fee from dispatcher
-     public function getDeliveryFeeDispatcher($request,$product=null){
+     public function getDeliveryFeeDispatcher($request,$product=null, $schedule_datetime_del = ''){
         try {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             if ($dispatch_domain && $dispatch_domain != false) {
                 $all_location = array();
-                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??''];
+                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del];
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/get-delivery-fee',
                     ['form_params' => ($postdata)]
                 );
                 $response = json_decode($res->getBody(), true);
+                //pr($response);
                 if($response && $response['message'] == 'success'){
                     return $response['total'];
                 }
@@ -739,11 +810,14 @@ class PickupDeliveryController extends FrontController{
                 }
                 
                 if ($customer->dial_code == "971") {
-                    $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                    // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                    $customerno = "0" . $customer->phone_number;
                 } else {                
-                    $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                    // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                    $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
-                
+                $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
+                $client = Client::orderBy('id', 'asc')->first();
                 $postdata =  [
                     'order_number' =>  $order->order_number,
                     //'order_type' =>  $order->type,
@@ -766,11 +840,18 @@ class PickupDeliveryController extends FrontController{
                     'recipient_email' => $request->email ?? $customer->email,
                     'recipient_phone' => $request->phone_number ?? $customerno,
                     'customer_phone_number' => $customerno ?? rand(111111,11111),
+                    'customer_dial_code' => $customer->dial_code ?? null,
                     'type'=>$type,
                     'friend_name'=>$friendName,
-                    'friend_phone_number'=>$friendPhoneNumber
+                    'friend_phone_number'=>$friendPhoneNumber,
+                    'vendor_id' => $vendor,
+                    'order_vendor_id' => $order_vendor->id,
+                    'dbname' => $client->database_name,
+                    'order_id' => $order->id,
+                    'customer_id' => $order->user_id,
+                    'user_icon' => $customer->image
                 ];
-                // dd($postdata);
+                
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);

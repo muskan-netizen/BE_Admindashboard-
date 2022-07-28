@@ -91,10 +91,11 @@
                                 {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
                                 <div class="row">
                                     <form id="themeIcon-form" method="post" enctype="multipart/form-data">
+                                   
                                         <div class="col-md-4 mb-3">
                                             <div class="mb-0">
                                                 <label>{{ __("Delivery Icon") }}</label>
-                                                <input type="file" accept="image/*" data-default-file="{{$client_preferences->deliveryicon ? $client_preferences->deliveryicon['proxy_url'].'600/400'.$client_preferences->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="deliveryIcon" class="dropify ss_form_submit" id="image" />
+                                                <input type="file" accept="image/*"  data-default-file="{{$client_preferences->deliveryicon ? $client_preferences->deliveryicon['proxy_url'].'600/400'.$client_preferences->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="deliveryIcon" class="dropify ss_form_submit" id="image" />
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong></strong>
                                                 </span>
@@ -195,12 +196,12 @@
                                     </div>
                                 </li>
                                 @endif
-                                <li class="d-flex align-items-center justify-content-between mt-2">
+                                {{-- <li class="d-flex align-items-center justify-content-between mt-2">
                                     <h4 class="header-title mb-2">{{ __("Show Payment Icons") }}</h4>
                                     <div class="mb-0">
                                         <input type="checkbox" id="show_payment_icons" data-plugin="switchery" name="show_payment_icons" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->show_payment_icons == 1 ? 'checked' : ''}}>
                                     </div>
-                                </li>
+                                </li> --}}
                                 @if($client_preference_detail->business_type != 'taxi')
                                 <li class="d-flex align-items-center justify-content-between mt-2">
                                     <h4 class="header-title mb-2">{{ __('Hide Nav Bar') }}</h4>

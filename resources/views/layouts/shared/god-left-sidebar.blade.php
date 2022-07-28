@@ -83,6 +83,19 @@
                         </ul>
                     </div>
                 </li>
+                <li>
+                    <a href="#chatsocket" data-toggle="collapse">
+                    &nbsp;<span class="icon-settings-1-1"></span>
+                        <span>&nbsp;&nbsp;Configuration</span>
+                    </a>
+                    <div class="collapse" id="chatsocket">
+                        <ul class="nav-second-level">
+                            <li>
+                                <a href="{{route('chatsocket')}}">&nbsp;&nbsp;&nbsp;Chat Socket</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
                 
                 <li>
                     <a href="{{route('client.index')}}">

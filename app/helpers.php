@@ -12,7 +12,7 @@ use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
-use App\Models\{VendorSlot, ClientCurrency, Order};
+use App\Models\{VendorSlot, ClientCurrency, Order,Type};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 
@@ -87,7 +87,7 @@ if (!function_exists('pr')) {
         echo '<pre>';
         print_r($var);
         echo '</pre>';
-        // exit();
+         exit();
     }
 }
 if (!function_exists('http_check')) {
@@ -197,6 +197,15 @@ if (!function_exists('convertDateTimeInTimeZone')) {
     {
         $date = Carbon::parse($date, 'UTC');
         $date->setTimezone($timezone);
+        return $date->format($format);
+    }
+}
+
+if (!function_exists('convertDateTimeInClientTimeZone')) {
+    function convertDateTimeInClientTimeZone($date,$format = 'Y-m-d H:i:s'){
+        $date = Carbon::parse($date, 'UTC');
+        $clientTimezone = ClientData::find(1);
+        $date->setTimezone($clientTimezone->timezone);
         return $date->format($format);
     }
 }
@@ -883,5 +892,58 @@ function decimal_format($number,$format="")
 if (!function_exists('taxRates')) {
     function taxRates(){
         return App\Models\TaxRate::all();
+    }
+}
+if (!function_exists('getServiceTypesCategory')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getServiceTypesCategory($vendorType) {
+        //echo $vendorType; exit();
+        try {
+            $types =   Type::query();
+            if($vendorType =="delivery" || $vendorType =="dine_in" || $vendorType =="takeaway"){
+                $types =  $types->where('service_type','products_service');
+            }elseif($vendorType =="rental" ){
+                $types =  $types->where('service_type','rental_service');
+            }elseif($vendorType =="pick_drop" ){
+                $types =  $types->where('service_type','pick_drop_service');
+            }elseif($vendorType =="on_demand" ){
+                $types =  $types->where('service_type','on_demand_service');
+            }elseif($vendorType =="laundry" ){
+                $types =  $types->where('service_type','laundry_service');
+            }
+            $types_id = $types->pluck('id')->toArray();
+            return $types_id ;
+        } catch (\Throwable $th) {
+           return [];
+        }
+       
+    }
+}
+
+if (!function_exists('getCategoryTypes')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getCategoryTypes() {
+        $client_preference = ClientPreference::select('business_type')->first();
+        switch($client_preference->business_type){
+            case "taxi":
+                $typeArray =['pick_drop'];
+            break;
+            case "food_grocery_ecommerce":
+                $typeArray =['delivery','dinein','takeaway'];
+            break;
+            case "home_service":
+                $typeArray =['on_demand'];
+            break;
+            case "laundry":
+                $typeArray =['laundry'];
+            break;
+            default:
+            $typeArray =['delivery','dinein','takeaway','rental','pick_drop','on_demand','laundry'];
+        }
+        return $typeArray;
     }
 }

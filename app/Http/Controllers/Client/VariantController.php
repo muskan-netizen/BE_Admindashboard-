@@ -28,7 +28,7 @@ class VariantController extends BaseController
             ->where('status', 1)
             ->orderBy('parent_id', 'asc')
             ->orderBy('position', 'asc')
-            ->whereIn('type_id', ['1', '3', '6'])
+            ->whereIn('type_id', ['1', '3', '6','10'])
             ->where('id', '>', 1)
             ->whereNull('vendor_id')
             ->get();
@@ -162,7 +162,12 @@ class VariantController extends BaseController
         $variant->type = $request->type;
         $variant->save();
 
-        $affected = VariantCategory::updateOrCreate(['variant_id' => $variant->id],['category_id' => $request->cate_id]);
+        $VariantCategory = VariantCategory::where('variant_id', $variant->id)->first();
+        if(!empty($VariantCategory)):
+            $affected = VariantCategory::where('variant_id', $variant->id)->update(['category_id' => $request->cate_id]);
+        else:
+            $affected = VariantCategory::insert(['variant_id' => $variant->id, 'category_id' => $request->cate_id]);
+        endif;
 
         foreach ($request->language_id as $key => $value) {
 

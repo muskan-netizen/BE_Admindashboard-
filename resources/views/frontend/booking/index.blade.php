@@ -55,6 +55,10 @@
             <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude">
             <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude"/>
             <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude"/>
+
+            <input type="hidden" name="default_cab_vendor" value="" id="default_cab_vendor">
+            <input type="hidden" name="default_cab_vendor_id" value="" id="default_cab_vendor_id">
+            
             <input type="hidden" id="address-input" value=""/>
             <input type="hidden" id="address-latitude" value=""/>
             <input type="hidden" id="address-longitude" value=""/>
@@ -314,7 +318,7 @@
                         <% } %>
                         <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
                             <div class="col-6 mb-2">Loyalty</div>
-                            <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>xx
+                            <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
                         <% } %>
                     </div>
                 </div>
@@ -362,7 +366,7 @@
                         
                     %>
                         <input type="hidden" id="stripe_token" name="stripe_token" value="">
-                        <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Pickup')}}</button>
+                        <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
                     </div>
                     <!--<div class="col-6">
                         <button class="btn btn-solid w-100" id="pickup_later" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_later">Pickup Later</button>
@@ -705,6 +709,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";
+    var create_dpo_tocken_url = "{{route('dpo.createTocken')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_windcave_hash_url = "{{route('windcave.createHash')}}";

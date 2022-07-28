@@ -1,6 +1,7 @@
 @php
     \Session::forget('success');
 @endphp
+<div class="d-none" id ="nearmap">
 <!-- Footer Start -->
 <footer class="footer">
     <div class="container-fluid">

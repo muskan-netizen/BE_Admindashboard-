@@ -9,7 +9,31 @@ $set_common_business_type = $client_preference_detail->business_type??'';
   @include('layouts.store.title-meta')
   @include('layouts.store.head-content', ["demo" => "creative"])
 </head>
+@yield('customcss')
+
+@yield('cssnew')
 @php
+$socket_url = ''; 
+$admin_chat = '';
+$driver_chat = '';
+$customer_chat = '';
+$db ='';
+$auth_id ='';
+$authData ='';
+if(Auth::check()){
+	$cl_data = \App\Models\Client::first();
+	$socket_url = @$cl_data->socket_url;
+	$admin_chat = @$cl_data->admin_chat;
+	$driver_chat = @$cl_data->driver_chat;
+	$customer_chat = @$cl_data->customer_chat;
+	$db = @$cl_data->database_name;
+	$auth_id = Auth::user()->id;
+  $authData = json_encode(@Auth::user()->toArray());
+
+}
+
+
+
 $dark_mode = '';
 if($client_preference_detail->show_dark_mode == 1){
   $dark_mode = 'dark';
@@ -32,12 +56,43 @@ if(isset($set_template))
     $body_class = "al_body_template_four";
   elseif($set_template->template_id == 5)
     $body_class = "al_body_template_five";
+  elseif($set_template->template_id == 6)
+    $body_class = "al_body_template_six";
 }
 @endphp
+
+<script>
+	var sUrl = "{!! $socket_url !!}";
+	var admin_chat = "{!! $admin_chat !!}";
+	var driver_chat = "{!! $driver_chat !!}";
+	var customer_chat = "{!! $customer_chat !!}";
+	var auth = "{!! $auth_id !!}";
+	var db = "{!! $db !!}";
+  var authData =  `<?php  echo $authData  ?>`;
+
+	var socket = null;
+	var Auth = {
+		auth_id:auth,
+		database_name:db,
+    authData:authData
+	}
+  var Chat = {
+		orderData:{
+			
+		}
+	}
+	var SocketConstants = {
+    	Socket_url : sUrl,
+		admin_chat : admin_chat,
+		driver_chat : driver_chat,
+		customer_chat : customer_chat,
+		socket:'',
+	} 
+</script>
 <body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
 <article id="page-container">
   <article id="content-wrap">
-  @if(isset($set_template)  && $set_template->template_id == 3)
+  @if(isset($set_template)  && ($set_template->template_id == 3 || $set_template->template_id == 6 || $set_template->template_id == 1 ))
     <article class="al_new_wrapper_design">
   @endif
     <header>
@@ -52,6 +107,8 @@ if(isset($set_template))
       @include('layouts.store/left-sidebar-template-four')
       @elseif(isset($set_template)  && $set_template->template_id == 5)
       @include('layouts.store/left-sidebar-template-five')
+      @elseif(isset($set_template)  && $set_template->template_id == 6)
+      @include('layouts.store/left-sidebar-template-six')
       @else
       @include('layouts.store/left-sidebar-template-one')
       @endif
@@ -59,7 +116,7 @@ if(isset($set_template))
 
     @if(isset($set_template)  && $set_template->template_id == 4)
     @include('frontend.template_four.layouts.vendor_type')
-    @endif 
+    @endif
 
     @yield('content')
     @if(isset($set_template)  && $set_template->template_id == 1)
@@ -72,9 +129,12 @@ if(isset($set_template))
     @include('layouts.store/footer-content-template-four')
     @elseif(isset($set_template)  && $set_template->template_id == 5)
     @include('layouts.store/footer-content-template-five')
+    @elseif(isset($set_template)  && $set_template->template_id == 6)
+    @include('layouts.store/footer-content-template-six')
     @else
     @include('layouts.store/footer-content-template-one')
     @endif
     @include('layouts.store/footer')
 </body>
+
 </html>

@@ -15,6 +15,7 @@
 <link defer type="text/css" href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
 <link defer type="text/css" rel="stylesheet" href="{{asset('front-assets/css/color1-style.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/common.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/spinner.css')}}">
 @if(isset($set_template)  && $set_template->template_id == 1)
 <link defer type="text/css" rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/header/header.css')}}">
@@ -44,12 +45,64 @@
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/homepage.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/footer.css')}}">
-@endif
 
+@php 
+$socket_url = ''; 
+$admin_chat = '';
+$driver_chat = '';
+$customer_chat = '';
+$db ='';
+$auth_id='';
+if(Auth::check()){
+	$cl_data = \App\Models\Client::first();
+	$socket_url = @$cl_data->socket_url;
+	$admin_chat = @$cl_data->admin_chat;
+	$driver_chat = @$cl_data->driver_chat;
+	$customer_chat = @$cl_data->customer_chat;
+	$db = @$cl_data->database_name;
+	$auth_id = Auth::user()->id;
+}
+
+@endphp
+<script>
+	var sUrl = "{!! $socket_url !!}";
+	var admin_chat = "{!! $admin_chat !!}";
+	var driver_chat = "{!! $driver_chat !!}";
+	var customer_chat = "{!! $customer_chat !!}";
+	var auth = "{!! $auth_id !!}";
+	var db = "{!! $db !!}";
+	var socket = null;
+	var Auth = {
+		auth_id:auth,
+		database_name:db
+	}
+	var SocketConstants = {
+    	Socket_url : sUrl,
+		admin_chat : admin_chat,
+		driver_chat : driver_chat,
+		customer_chat : customer_chat,
+		socket:'',
+	} 
+</script>
+
+@elseif(isset($set_template)  && $set_template->template_id == 6)
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/css/slick-theme.min.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/css/slick.min.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/header/header.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/footer/footer.css')}}">
+
+@if(Route::currentRouteName() == "userHome")
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/homepage.css')}}">
+@else
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/inner_page.css')}}">
+@endif
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/style-rtl.css')}}">
+@endif
 @yield('css-links')
 <style type="text/css">
     body{font-size:16px;position:initial}.site-header{width:100%;top:0;left:0;background:#fff;position:fixed;-webkit-transition:all .5s ease-in-out;-moz-transition:all .5s ease-in-out;-ms-transition:all .5s ease-in-out;-o-transition:all .5s ease-in-out;transition:all .5s ease-in-out;z-index:11}.top-header.site-topbar{background:var(--top-header-color);padding:5px 0;display:list-item}
-    .top-header .header-dropdown li.onhover-dropdown{padding:0 15px}.onhover-dropdown .onhover-show-div{display:none}.shimmer_effect{overflow:hidden}.menu-slider.items-center .slick-track{justify-content:space-between}.menu-slider .slick-track{max-width:100vw!important;width:100%!important;display:flex;justify-content:center;margin:auto!important}.pixelstrap li a,.product-card-box{position:relative;-webkit-transform:scale(.95);transform:scale(.95);-webkit-transition:.3s ease-in-out;transition:.3s ease-in-out}.pixelstrap a,.pixelstrap a:active,.pixelstrap a:hover,.pixelstrap li>a{padding:0 7px 10px;text-align:center;width:100px;white-space:normal}
+
+    .top-header .header-dropdown li.onhover-dropdown{padding:0 15px}.onhover-dropdown .onhover-show-div{display:none}.shimmer_effect{overflow:hidden}.menu-slider.items-center .slick-track{justify-content:space-between}body .menu-slider .slick-track{max-width:100vw!important;width:100%!important;display:flex;justify-content:center;margin:auto!important}.pixelstrap li a,.product-card-box{position:relative;-webkit-transform:scale(.95);transform:scale(.95);-webkit-transition:.3s ease-in-out;transition:.3s ease-in-out}.pixelstrap a,.pixelstrap a:active,.pixelstrap a:hover,.pixelstrap li>a{padding:0 7px 10px;text-align:center;width:100px;white-space:normal}
     :root {--theme-deafult: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;--top-header-color: <?= ($client_preference_detail) ? $client_preference_detail->site_top_header_color : '#4c4c4c' ?>;}
     a {color: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;}
 

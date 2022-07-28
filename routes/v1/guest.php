@@ -31,6 +31,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('cart/add', 'Api\v1\CartController@add');
         Route::get('cart/list', 'Api\v1\CartController@index');
+        Route::post('upload/prescriptions', 'Api\v1\CartController@uploadPrescriptions');
+        Route::post('delete/prescriptions', 'Api\v1\CartController@deleteProductPrescription');
         Route::post('mfc/stk/push', 'Api\v1\CartController@stkPushRequest');
         Route::get('vendor/slots', 'Api\v1\CartController@checkScheduleSlots');
         Route::get('vendor/dropoffslots', 'Api\v1\CartController@checkScheduleDropoffSlots'); // Added By Ovi  // To Get Drop Off Slots
@@ -97,5 +99,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('promo-code/vendor_promo_code', 'Api\v1\PromoCodeController@vendorPromoCodeList');
         Route::post('cart/product-schedule/update', 'Api\v1\CartController@updateProductSchedule');
         Route::post('cart/productfaq/update', 'Api\v1\CartController@updateCartProductFaq');
+        Route::post('dropoff-location', 'Api\v1\StaticDropoffController@getStaticLocation');
     });
 });

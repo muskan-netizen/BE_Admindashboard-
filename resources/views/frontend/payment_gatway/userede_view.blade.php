@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="_token" content="{{ csrf_token() }}">
-    <title>{{__('Payment Checkout')}}</title>
+    <title>{{__('Userede Payment Checkout')}}</title>
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/font-awesome.min.css')}}">
     <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" id="bs-default-stylesheet" />
@@ -77,7 +77,7 @@
     @endif
     <div class="row">
         <div class="offset-lg-3 col-lg-6">
-            <form id="pagarme-payment-form" action="{{route('payment.userede.createPayment')}}" method="POST">
+            <form id="pagarme-payment-form" action="{{$return_url}}" method="POST">
             @csrf
                 <div class="form-group">
                     <label>{{__('Card Holder Name')}}: </label>

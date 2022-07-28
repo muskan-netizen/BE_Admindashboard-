@@ -35,7 +35,18 @@ class PickupDeliveryController extends BaseController{
             if($vid == 0){
                 return response()->json(['error' => __('No record found.')], 404);
             }
-            $userid = Auth::user()->id;
+            //$userid = Auth::user()->id;
+
+            $user = Auth::user();
+            $userid = $user->id;
+            
+            $schedule_datetime_del = '';
+            if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+            }else{
+                $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
+            }
+
             $paginate = $request->has('limit') ? $request->limit : 12;
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $langId = Auth::user()->language;
@@ -72,7 +83,7 @@ class PickupDeliveryController extends BaseController{
 
             if(!empty($products)){
                 foreach ($products as $key => $product) {
-                    $product->tags_price = $this->getDeliveryFeeDispatcher($request,$product);
+                    $product->tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->price = $product->tags_price;
@@ -117,6 +128,15 @@ class PickupDeliveryController extends BaseController{
             }
             $userid = Auth::user()->id;
             $langId = Auth::user()->language;
+
+            $user = Auth::user();
+            $schedule_datetime_del = '';
+            if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+            }else{
+                $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
+            }
+
             $category = Category::with(['tags','type'  => function($q){
                             $q->select('id', 'title as redirect_to');
                         },
@@ -136,7 +156,7 @@ class PickupDeliveryController extends BaseController{
                 return response()->json(['error' => 'No record found.'], 200);
             }
             $response['category'] = $category;
-            $response['listData'] = $this->listData($langId, $cid, $category->type->redirect_to, $userid,$request);
+            $response['listData'] = $this->listData($langId, $cid, $category->type->redirect_to, $userid,$request, $schedule_datetime_del);
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -144,10 +164,10 @@ class PickupDeliveryController extends BaseController{
 
     }
 
-    public function listData($langId, $category_id, $type = '', $userid,$request){
+    public function listData($langId, $category_id, $type = '', $userid,$request, $schedule_datetime_del=''){
         if ($type == 'Pickup/Delivery') {
             $category_details = [];
-            $deliver_charge = $this->getDeliveryFeeDispatcher($request);
+            $deliver_charge = $this->getDeliveryFeeDispatcher($request, null, $schedule_datetime_del);
             $deliver_charge = $deliver_charge??0.00;
             $category_list = Category::where('parent_id', $category_id)->get();
             foreach ($category_list as $category) {
@@ -169,12 +189,12 @@ class PickupDeliveryController extends BaseController{
 
 
      # get delivery fee from dispatcher
-     public function getDeliveryFeeDispatcher($request,$product=null){
+     public function getDeliveryFeeDispatcher($request, $product=null, $schedule_datetime_del=''){
         try {
                 $dispatch_domain = $this->checkIfPickupDeliveryOn();
                 if ($dispatch_domain && $dispatch_domain != false) {
                             $all_location = array();
-                            $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??''];
+                            $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del];
                             $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                                                         'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                         'content-type' => 'application/json']
@@ -215,7 +235,7 @@ class PickupDeliveryController extends BaseController{
         try {
             $order_place = $this->orderPlaceForPickupDelivery($request);
             if($order_place && $order_place['status'] == 200){
-                if (($request->payment_option_id == 1) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
+                if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                     $data = [];
                     $order = $order_place['data'];
                     $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
@@ -566,7 +586,6 @@ class PickupDeliveryController extends BaseController{
                     $request->scheduled_date_time = $request->schedule_time;
                     $request->order_time = $request->schedule_time;
                 }
-
                 $dynamic = uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
@@ -585,15 +604,18 @@ class PickupDeliveryController extends BaseController{
 
                 
                 if ($customer->dial_code == "971") {
-                    $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                    // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                    $customerno = "0" . $customer->phone_number;
                 } else {                
-                    $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                    // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                    $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
-                
+                $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
                             'customer_phone_number' => $customerno??rand(111111,11111),
+                            'customer_dial_code' => $customer->dial_code ?? null,
                             'customer_email' => $customer->email ?? '',
                             'recipient_phone' => $request->phone_number ?? $customerno,
                             'recipient_email' => $request->email ?? $customer->email,
@@ -611,7 +633,13 @@ class PickupDeliveryController extends BaseController{
                             'images_array' => $request->images_array??null,
                             'type'=>$type,
                             'friend_name'=>$friendName,
-                            'friend_phone_number'=>$friendPhoneNumber
+                            'friend_phone_number'=>$friendPhoneNumber,
+                            'vendor_id' => $vendor,
+                            'order_vendor_id' => $order_vendor->id,
+                            'dbname' => $client_do->database_name,
+                            'order_id' => $order->id,
+                            'customer_id' => $order->user_id,
+                            'user_icon' => $customer->image
                         ];
 
 

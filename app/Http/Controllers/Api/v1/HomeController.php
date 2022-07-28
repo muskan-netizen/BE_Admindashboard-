@@ -39,7 +39,7 @@ class HomeController extends BaseController
             $client_language = ClientLanguage::select('language_id')->where(['is_primary' => 1, 'is_active' => 1])->first();
             
             $langId = ($request->hasHeader('language') && !empty($request->header('language'))) ? $request->header('language') : (($client_language) ? $client_language->language_id : 1);
-            $homeData['profile'] = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('country_id', 'company_name', 'code', 'sub_domain', 'logo', 'company_address', 'phone_number', 'email','custom_domain','contact_phone_number')->first();
+            $homeData['profile'] = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('id','country_id', 'company_name', 'code', 'sub_domain','sub_domain','database_name', 'logo', 'company_address', 'phone_number', 'email','custom_domain','contact_phone_number')->first();
             //dd(Client::with('getPreference')->first()->getPreference->auto_implement_5_percent_tip);
             $app_styling_detail = AppStyling::getSelectedData();
             foreach ($app_styling_detail as $app_styling) {
@@ -572,7 +572,7 @@ class HomeController extends BaseController
             $page = $request->has('page') ? $request->page : 1;
             $action = $request->has('type') && $request->type ? $request->type : null;
             $types = ['delivery', "dine_in", "takeaway"];
-            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
+            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'slots_with_service_area')->first();
             $latitude = $request->latitude;
             $longitude = $request->longitude;
 
@@ -617,7 +617,7 @@ class HomeController extends BaseController
                     $response[] = $brand;
                 }
 
-                $vendors = Vendor::select('id', 'name  as dataname', 'logo', 'slug', 'address')->where($action, 1);
+                $vendors = Vendor::select('id', 'name  as dataname', 'logo', 'slug', 'address', 'show_slot')->where($action, 1);
                 if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
 
                     if (!empty($latitude) && !empty($longitude)) {
@@ -625,6 +625,23 @@ class HomeController extends BaseController
                             $query->select('vendor_id')
                         ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
                         });
+
+                        if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
+                            $slot_vendors = clone $vendors;
+                            $data = $slot_vendors->get();
+                            foreach ($data as $key => $value) {
+                                $vendors = $vendors->when(($value->show_slot == 0), function($query) use ($latitude, $longitude) {
+                                    return $query->where(function($query1) use ($latitude, $longitude) {
+                                        $query1->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                        })
+                                        ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                        });
+                                    });
+                                });
+                            }
+                        }
                     }
                 }
 

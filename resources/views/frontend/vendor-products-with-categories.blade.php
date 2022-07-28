@@ -94,9 +94,9 @@
                                                         <i class="icon-time"></i>
                                                         @if ($vendor->is_vendor_closed == 0 && $vendor->show_slot == 0)
                                                             {{ $vendor->opening_time }} – {{ $vendor->closing_time }}
-                                                            <span class="badge badge-success">Open</span>
+                                                            <span class="badge badge-success">{{ __('Open') }}</span>
                                                         @elseif($vendor->is_vendor_closed == 0 && $vendor->show_slot == 1)
-                                                            24 x 7 <span class="badge badge-success">Open</span>
+                                                            24 x 7 <span class="badge badge-success">{{ __('Open') }}</span>
                                                         @elseif($vendor->closed_store_order_scheduled == 1 && $checkSlot != 0)
                                                             <span class="badge badge-danger">{{ __('Closed') }}</span>
                                                             {{ __('We are not accepting orders right now. You can schedule this for ') . $checkSlot }}.
@@ -146,7 +146,7 @@
                                         <nav class="scrollspy-menu">
                                             <ul>
                                                 @forelse($listData as $key => $data)
-                                                    <li><a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation_one->name??'' }}({{ $data->products_count }})</a>
+                                                    <li><a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation[0]->name??'' }}({{ $data->products_count }})</a>
                                                     </li>
                                                 @empty
                                                 @endforelse
@@ -249,11 +249,13 @@
                                                                                     if (count($data->addOn) > 0) {
                                                                                         $isAddonExist = 1;
                                                                                     }
+                                                                                   // dd($data->variant);
                                                                                 @endphp
 
                                                                                 @foreach ($data->variant as $var)
                                                                                     @if (isset($var->checkIfInCart) && count($var->checkIfInCart) > 0)
                                                                                         @php
+                                                                                            //dd($var->_markup_price);
                                                                                             $productVariantInCart = 1;
                                                                                             $productVariantIdInCart = $var->checkIfInCart['0']['variant_id'];
                                                                                             $cartProductId = $var->checkIfInCart['0']['id'];
@@ -559,13 +561,13 @@
                                         <% } %>
 
                                     <% }); %>
-                                    <% if(product.delivery_fee_charges > 0) { %>
+                                    <% if(cart_details.delivery_charges > 0) { %>
                                         <div class="row justify-content-between">
                                             <div class="col-md-6 col-sm-6 text-left">
-                                                <h6 class="m-0 font-14"><b>{{ __('Delivery fee') }}</b></h6>
+                                                <h6 class="m-0 font-14">{{ __('Delivery fee') }}</h6>
                                             </div>
                                             <div class="col-md-6 col-sm-6 text-right">
-                                                <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.delivery_fee_charges) %></div>
+                                                <div class="font-14 mr-xl-2">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.delivery_charges) %></div>
                                             </div>
                                         </div>
                                     <% } %>
@@ -576,7 +578,7 @@
                                 <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Price') }}</span>
+                                            <span class="ellips">{{ __('Total') }}</span>
                                             <span >{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.gross_amount) %></span>
                                         </h6>
                                     </div>
@@ -595,8 +597,8 @@
                                  <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Subscription Discount') }}</span>
-                                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
+                                            <span class="ellips">- {{ __('Subscription Discount') }}</span>
+                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
                                         </h6>
                                     </div>
                                 </li>
@@ -606,8 +608,8 @@
                                 <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Loyalty Amount') }} </span>
-                                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
+                                            <span class="ellips">- {{ __('Loyalty Amount') }} </span>
+                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
                                         </h6>
                                     </div>
                                 </li>
@@ -617,8 +619,8 @@
                                 <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Wallet Amount') }} </span>
-                                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
+                                            <span class="ellips">- {{ __('Wallet Amount') }} </span>
+                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
                                         </h6>
                                     </div>
                                 </li>
@@ -634,7 +636,7 @@
         <div class="row">
                                     <div class="col-12 text-center pb-3">
                                         <img class="w-50 pt-3 pb-1" src="{{ asset('front-assets/images/ic_emptycart.svg') }}" alt="">
-                                        <h5>Your cart is empty<br/>{{ __('Add an item to begin') }}</h5>
+                                        <h5>{{ __('Your cart is empty') }}<br/>{{ __('Add an item to begin') }}</h5>
                                     </div>
                                 </div>
                             </script>
@@ -686,7 +688,7 @@
                                         <div class="customizable-text">customizable</div>
                                     <% } %>
                                 <% }else{ %>
-                                    <span class="text-danger">Out of stock</span>
+                                    <span class="text-danger">{{ __('Out of stock')}}</span>
                                 <% } %>
                             </script>
     <script type="text/template" id="addon_template">
@@ -720,18 +722,18 @@
                                                         <%
                                                             var min_select = '';
                                                             if(addon.min_select > 0){
-                                                                min_select = 'Minimum ' + addon.min_select;
+                                                                min_select = "{{ __('Minimum')}} " + addon.min_select;
                                                             }
                                                             var max_select = '';
                                                             if(addon.max_select > 0){
-                                                                max_select = 'Maximum ' + addon.max_select;
+                                                                max_select = "{{ __('Maximum')}} " + addon.max_select;
                                                             }
                                                             if( (min_select != '') && (max_select != '') ){
-                                                                min_select = min_select + ' and ';
+                                                                min_select = min_select + " {{ __('and')}} ";
                                                             }
                                                         %>
                                                         <% if( (min_select != '') || (max_select != '') ) { %>
-                                                            <small><%=min_select + max_select %> Selections allowed</small>
+                                                            <small><%=min_select + max_select %> {{ __('Selections Allowed')}}</small>
                                                         <% } %>
                                                     </div>
                                                     <div class="productAddonSetOptions" data-min="<%= addon.min_select %>" data-max="<%= addon.max_select %>" data-addonset-title="<%= addon.title %>">
@@ -853,11 +855,17 @@
 
 @endsection
 @section('script')
+
     <script src="{{ asset('front-assets/js/rangeSlider.min.js') }}"></script>
     <script src="{{ asset('front-assets/js/my-sliders.js') }}"></script>
     <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
-
     <script>
+        // @if(!empty($vendor->banner))
+        //     $(document).ready(function() {
+        //         $("body").addClass("homeHeader");
+        //     });
+        // @endif
+
          //Get the modal vendorStories
         var modal = document.getElementById("vendorStories");
 
@@ -886,7 +894,7 @@
 
             var scroll = jQuery(window).scrollTop();
             var categories_list_height = $('.vendor-products-wrapper').height() +400;
-            
+
             if (scroll >= 400) {
                 jQuery(".categories-product-list").addClass("fixed-bar");
             } else {

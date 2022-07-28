@@ -109,7 +109,7 @@ class WalletController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function paymentOptions(Request $request, $domain = ''){
-        $ex_codes = ['cod'];
+        $ex_codes = ['cod','offline_manual'];
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereNotIn('code', $ex_codes)->where('status', 1)->get();
         foreach ($payment_options as $k => $payment_option) {
             if( (!empty($payment_option->credentials)) ){
@@ -120,6 +120,17 @@ class WalletController extends FrontController
                     $payment_option->title = 'Pay Now';
                 }elseif($payment_option->code == 'mvodafone'){
                     $payment_option->title = 'Vodafone M-PAiSA';
+                }elseif($payment_option->code == 'mobbex'){
+                    $payment_option->title = __('Mobbex');
+                }elseif($payment_option->code == 'offline_manual'){
+                    $json = json_decode($payment_option->credentials);
+                    $payment_option->title = $json->manule_payment_title;
+                }elseif($payment_option->code == 'mycash'){
+                    $payment_option->title = __('Digicel MyCash');
+                }elseif($payment_option->code == 'windcave'){
+                    $payment_option->title = __('Windcave (Debit/Credit card)');
+                }elseif($payment_option->code == 'stripe_ideal'){
+                    $payment_option->title = __('iDEAL');
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);

@@ -33,13 +33,13 @@
                                     <input type="search" class="form-control" id="inputPassword2" placeholder="Search...">
                                 </div>
                                 <div class="form-group mx-sm-3">
-                                    <label for="status-select" class="mr-2">Sort By</label>
+                                    <label for="status-select" class="mr-2">{{__('Sort By')}}</label>
                                     <select class="custom-select" id="status-select">
-                                        <option>Select</option>
-                                        <option>Date</option>
-                                        <option selected>Name</option>
-                                        <option>Revenue</option>
-                                        <option>Employees</option>
+                                        <option>{{ __('Select')}}</option>
+                                        <option>{{ __('Date')}}</option>
+                                        <option selected>{{ __('Name')}}</option>
+                                        <option>{{ __('Revenue')}}</option>
+                                        <option>{{ __('Employees')}}</option>
                                     </select>
                                 </div>
                             </form>
@@ -47,7 +47,7 @@
                         <div class="col-lg-4">
                             <div class="text-lg-right mt-3 mt-lg-0">
                                 <button type="button" class="btn btn-success waves-effect waves-light mr-1"><i class="mdi mdi-cog"></i></button>
-                                <button type="button" class="btn btn-danger waves-effect waves-light mr-1"><i class="mdi mdi-plus-circle mr-1"></i> Add New</button>
+                                <button type="button" class="btn btn-danger waves-effect waves-light mr-1"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add New')}}</button>
                             </div>
                         </div><!-- end col-->
                     </div> <!-- end row -->

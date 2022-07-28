@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor, VendorCategory, ClientLanguage, LoyaltyCard, Nomenclature, NomenclatureTranslation, Order};
+use App\Models\{Client, Category, Product,Type, SmsTemplate, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor, VendorCategory, ClientLanguage, LoyaltyCard, Nomenclature, NomenclatureTranslation, Order};
 
 class FrontController extends Controller
 {
@@ -97,10 +97,19 @@ class FrontController extends Controller
     }
     public function categoryNav($lang_id)
     {
-       $preferences = Session::get('preferences');
-       $primary = ClientLanguage::orderBy('is_primary','desc')->first();
-       $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-       ->select('categories.id', 'categories.icon', 'categories.icon_two' , 'categories.slug', 'categories.parent_id', 'cts.name')->orderBy('position')->distinct('categories.slug');
+        $preferences = Session::get('preferences');
+        // get selected vendor type 
+        $vendorType  = Session::get('vendorType');
+        // set category layout by on behalf of vendor type
+        $categoryTypes = getServiceTypesCategory($vendorType);
+       // pr($categoryTypes);
+        $primary     = ClientLanguage::orderBy('is_primary','desc')->first();
+       // DB::enableQueryLog();
+        $categories  = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
+                                ->select('categories.id', 'categories.icon', 'categories.icon_two' , 'categories.slug', 'categories.parent_id','cts.name','categories.type_id')
+                                ->whereIn('categories.type_id',$categoryTypes )
+                                ->orderBy('position')->distinct('categories.slug');
+        //dd(DB::getQueryLog());
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
         $celebrity_check = 0;
@@ -111,8 +120,11 @@ class FrontController extends Controller
                     $celebrity_check = 1;
                     $include_categories[] = 5; // type 5 for celebrity
                 }
-                $vendors = (Session::has('vendors')) ? Session::get('vendors') : $this->getServiceAreaVendors();
-
+                if(isset($_REQUEST['request_from']) && ($_REQUEST['request_from'] == 1) ){
+                    $vendors = $this->getServiceAreaVendors();
+                } else {
+                    $vendors = (Session::has('vendors')) ? Session::get('vendors') : $this->getServiceAreaVendors();
+                }
                 $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
                     ->where(function ($q1) use ($vendors , $include_categories) {
                         $q1->whereIn('vct.vendor_id', $vendors)
@@ -142,6 +154,7 @@ class FrontController extends Controller
                                 ->whereNull('categories.vendor_id')
                               //  ->orderBy('categories.position', 'asc')
                                 ->orderBy('categories.parent_id', 'asc')->groupBy('id')->get();
+
         if ($categories) {
             $categories = $this->buildTree($categories); 
         }
@@ -220,7 +233,7 @@ class FrontController extends Controller
         $longitude = Session::get('longitude');
         $vendorType = Session::get('vendorType');
         $preferences = Session::has('preferences') ? Session::get('preferences') : $client_preferences;
-        $serviceAreaVendors = Vendor::select('id');
+        $serviceAreaVendors = Vendor::select('id', 'show_slot');
         $vendors = [];
         if($vendorType){
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
@@ -232,6 +245,23 @@ class FrontController extends Controller
                     $query->select('vendor_id')
                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
                 });
+
+                if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
+                    $slot_vendors = clone $serviceAreaVendors;
+                    $data = $slot_vendors->get();
+                    foreach ($data as $key => $value) {
+                        $serviceAreaVendors = $serviceAreaVendors->when(($value->show_slot == 0), function($query) use ($latitude, $longitude) {
+                            return $query->where(function($query1) use ($latitude, $longitude) {
+                                $query1->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                })
+                                ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                });
+                            });
+                        });
+                    }
+                }
             }
         }
         $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
@@ -258,9 +288,10 @@ class FrontController extends Controller
 
     public function productList($vendorIds, $langId, $currency = 'USD', $where = '')
     {
+        $type = Session::get('vendorType');
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         $multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
-        $products = Product::with([
+        $products = Product::byProductCategoryServiceType($type)->with([
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
@@ -825,10 +856,8 @@ class FrontController extends Controller
 
         if($scheduleTime != ''){
             $datetime = Carbon::parse($scheduleTime)->addMinutes($minutes);
-            $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         }else{
             $datetime = Carbon::parse($order_vendor_created_at)->addMinutes($minutes);
-            $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         }
         if(Carbon::parse($datetime)->isToday()){
             if($time_format == '12'){
@@ -836,8 +865,8 @@ class FrontController extends Controller
             }else{
                 $time_format = 'HH:mm';
             }
-            $datetime = Carbon::parse($datetime)->isoFormat($time_format);
         }
+        $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         return $datetime;
     }
 
@@ -912,7 +941,21 @@ class FrontController extends Controller
                 
                 $provider = $prefer->sms_provider;
                 $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
-                $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . $order->payable_amount . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
+
+                $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
+                \Log::info('sms:--//');
+                \Log::info($smsTemplates);
+                \Log::info('sms:--//');
+                if(!empty($smsTemplates)){
+                    $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
+                    $smsTemplates = str_replace("{amount}", $currSymbol . $order->payable_amount, $smsTemplates);
+                    $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
+                    \Log::info('sms:--');
+                    \Log::info($body);
+                    \Log::info('sms:--');
+                }else{
+                    $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . $order->payable_amount . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
+                }
             //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
                 if (!empty($prefer->sms_provider)) {
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);

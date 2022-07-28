@@ -87,7 +87,7 @@ class UserSubscriptionController extends BaseController
             else{
                 return response()->json(["status"=>"Error", "message" => "Invalid Data"]);
             }
-            $code = array('stripe', 'stripe_fpx', 'dpo', 'paystack', 'payfast', 'yoco', 'paylink', 'checkout','kongapay','ccavenue', 'cashfree','easebuzz','vnpay','paytab','toyyibpay','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','viva_wallet', 'mycash','stripe_ideal');
+            $code = array('stripe', 'stripe_fpx', 'dpo', 'paystack', 'payfast', 'yoco', 'paylink', 'checkout','kongapay','ccavenue', 'cashfree','easebuzz','vnpay','paytab','toyyibpay','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','viva_wallet', 'mycash','stripe_ideal','openpay','userede');
             $ex_codes = array('cod');
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
             foreach ($payment_options as $k => $payment_option) {
@@ -108,6 +108,8 @@ class UserSubscriptionController extends BaseController
                         $payment_option->title = __('Digicel MyCash');
                     }elseif($payment_option->code == 'windcave'){
                         $payment_option->title = __('Windcave (Debit/Credit card)');
+                    }elseif($payment_option->code == 'stripe_ideal'){
+                        $payment_option->title = __('iDEAL');
                     }
                     $payment_option->title = __($payment_option->title);
                     unset($payment_option->credentials);

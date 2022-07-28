@@ -105,11 +105,11 @@
                                                 <a class="action-icon openEditModal" loyaltyID="{{$ban->id}}" href="#"><i class="mdi mdi-square-edit-outline"></i></a> 
                                             </div>
                                             <div class="inner-div">
-                                                <form method="POST" action="{{ route('loyalty.destroy', $ban->id) }}" id="deleteLoyality">
-                                                    @csrf
+                                                <form method="POST" action="{{ route('loyalty.destroy', $ban->id) }}" id="deleteLoyality{{$ban->id}}">
+                                                    @csrf 
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                       <button type="button" class="btn btn-primary-outline action-icon" id="deleteLoyalityButton"><i class="mdi mdi-delete"></i></button> 
+                                                       <button type="button" class="btn btn-primary-outline action-icon" id="deleteLoyalityButton" onclick="deleteloyality('{{$ban->id}}')"><i class="mdi mdi-delete"></i></button> 
                                                     </div>
                                                 </form>
                                             </div>
@@ -132,8 +132,8 @@
 @endsection
 @section('script')
 <script type="text/javascript">
-    $('#deleteLoyalityButton').click(function(e) {
-        e.preventDefault();
+    function deleteloyality(id)
+    {
         Swal.fire({
             title: "{{__('Are you sure?')}}",
             text:"You want to delete the {{getNomenclatureName('Loyalty Cards', false)}}.",
@@ -143,12 +143,12 @@
         }).then((result) => {
             if(result.value)
             {
-                $("#deleteLoyality").off("submit").submit();
+                $("#deleteLoyality"+id).off("submit").submit();
             }else{
                 return false;
             }
         });
-    });
+    }
 </script>
 @include('backend.loyality.pagescript')
 @endsection

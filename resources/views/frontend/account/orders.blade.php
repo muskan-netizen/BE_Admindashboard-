@@ -7,9 +7,9 @@
         <?php $ordertitle = 'Orders'; ?>
          <?php $hidereturn = 0; ?>
 @endswitch
-@php if($client_preference_detail->client_code == '67dcfd'){ $ordertitle = 'Orders'; } @endphp
-@extends('layouts.store', ['title' => __('My '.$ordertitle)])
+@extends('layouts.store', ['title' => __('My '.getNomenclatureName($ordertitle, true))])
 @section('css')
+
     <style type="text/css">
         .main-menu .brand-logo {
             display: inline-block;
@@ -34,72 +34,7 @@
     @endphp
 
     <style type="text/css">
-        .productVariants .firstChild {
-            min-width: 150px;
-            text-align: left !important;
-            border-radius: 0% !important;
-            margin-right: 10px;
-            cursor: default;
-            border: none !important;
-        }
-
-        .product-right .color-variant li,
-        .productVariants .otherChild {
-            height: 35px;
-            width: 35px;
-            border-radius: 50%;
-            margin-right: 10px;
-            cursor: pointer;
-            border: 1px solid #f7f7f7;
-            text-align: center;
-        }
-
-        .productVariants .otherSize {
-            height: auto !important;
-            width: auto !important;
-            border: none !important;
-            border-radius: 0%;
-        }
-
-        .product-right .size-box ul li.active {
-            background-color: inherit;
-        }
-
-        .login-page .theme-card .theme-form input {
-            margin-bottom: 5px;
-        }
-
-        .invalid-feedback {
-            display: block;
-        }
-        .al_body_template_one .order_popop .modal-body {
-            padding: 5px 15px 15px 15px;
-            background: #89898905;
-            box-shadow: 4px 10px 6px #838282;
-        }
-        .al_body_template_one .order_popop p {
-            font-size: 13px;
-            line-height: 19px;
-        }
-        .al_body_template_one .order_popop .modal-body textarea {
-            border: 1px solid#d9d3d3;
-        }
-        .al_body_template_one .order_popop .modal-body textarea::placeholder{
-            padding:5px 10px;
-        }
-        .al_body_template_one .order_popop .modal-body button.close {
-            position: absolute;
-            right: 5px;
-            top: 0px;
-            padding: 0px;
-            margin: 0px;
-        }
-        .al_body_template_one .order_popop .modal-body label {
-            display: inline-block;
-            font-size: 18px !important;
-            font-weight: 400;
-        }
-
+        .productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}.login-page .theme-card .theme-form input{margin-bottom:5px}.invalid-feedback{display:block}.al_body_template_one .order_popop .modal-body{padding:5px 15px 15px;background:#89898905;box-shadow:4px 10px 6px #838282}.al_body_template_one .order_popop p{font-size:13px;line-height:19px}.al_body_template_one .order_popop .modal-body textarea{border:1px solid#d9d3d3}.al_body_template_one .order_popop .modal-body textarea::placeholder{padding:5px 10px}.al_body_template_one .order_popop .modal-body button.close{position:absolute;right:5px;top:0;padding:0;margin:0}.al_body_template_one .order_popop .modal-body label{display:inline-block;font-size:18px!important;font-weight:400
     </style>
     <section class="section-b-space order-page">
         <div class="container">
@@ -141,10 +76,10 @@
                     <div class="dashboard-right">
                         <div class="dashboard">
                             <div class="page-title">
-                                <h2>{{ __($ordertitle) }}</h2>
+                                <h2>{{ __(getNomenclatureName($ordertitle, true)) }}</h2>
                             </div>
                             <div class="welcome-msg">
-                                <h5>{{ __('Here Are All Your Previous ' . $ordertitle) }}</h5>
+                                <h5>{{ __('Here Are All Your Previous ' . getNomenclatureName($ordertitle, true)) }}</h5>
                             </div>
                             <div class="col-md-12">
                                 <div class="row" id="orders_wrapper">
@@ -154,14 +89,14 @@
                                                 <a class="nav-link {{ Request::query('pageType') === null || Request::query('pageType') == 'activeOrders' ? 'active show' : '' }}"
                                                     id="active-orders-tab" data-toggle="tab" href="#active-orders" role="tab"
                                                     aria-selected="true"><i
-                                                        class="icofont icofont-ui-home"></i>{{ __('Active ' . $ordertitle) }}</a>
+                                                        class="icofont icofont-ui-home"></i>{{ __('Active ' . getNomenclatureName($ordertitle, true)) }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             <li class="nav-item">
                                                 <a class="nav-link {{ Request::query('pageType') == 'pastOrders' ? 'active show' : '' }}"
                                                     id="past_order-tab" data-toggle="tab" href="#past_order" role="tab"
                                                     aria-selected="false"><i
-                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Past ' . $ordertitle) }}</a>
+                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Past ' . getNomenclatureName($ordertitle, true)) }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             @if (isset($hidereturn) && $hidereturn != 1)
@@ -177,7 +112,7 @@
                                                 <a class="nav-link {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}"
                                                     id="return_order-tab" data-toggle="tab" href="#rejected_order" role="tab"
                                                     aria-selected="false"><i
-                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Rejected/Cancel ' . $ordertitle) }}</a>
+                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Rejected/Cancel ' . getNomenclatureName($ordertitle, true)) }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                         </ul>
@@ -188,12 +123,12 @@
                                                     @if ($activeOrders->isNotEmpty())
                                                         @foreach ($activeOrders as $key => $order)
                                                         @php
-                                                            
+
                                                             $total_other_taxes=0.00;
                                                             foreach(explode(":",$order->total_other_taxes) as $row){
                                                                 $total_other_taxes+=(float)$row;
                                                             }
-                                                           
+
                                                         @endphp
                                                             <div class="col-12">
                                                                 <div class="row no-gutters order_head">
@@ -213,7 +148,7 @@
                                                                         <div class="col-md-3">
                                                                             <h4>{{ __('Address') }}</h4>
                                                                             @if($order->luxury_option_id == 3)
-                                                                          
+
                                                                                 <span class="ellipsis" data-toggle="tooltip"
                                                                                     data-placement="top" title="" >
                                                                                     @if ( count($order->vendors) > 0)
@@ -236,7 +171,7 @@
                                                                                         NA
                                                                                     @endif
                                                                                 </span>
-                                                                            @endif  
+                                                                            @endif
                                                                         </div>
                                                                     @endif
                                                                 </div>
@@ -253,7 +188,7 @@
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3">
                                                                         @if($order->luxury_option_id == 3)
-                                                                          
+
                                                                           <span class="ellipsis" data-toggle="tooltip"
                                                                               data-placement="top" title="">
                                                                               @if ( count($order->vendors) >0)
@@ -277,7 +212,7 @@
                                                                                 @endif
                                                                             </span>
                                                                           @endif
-                                                                            
+
                                                                         </div>
                                                                     @endif
                                                                 </div>
@@ -301,7 +236,9 @@
                                                                                                 } elseif ($luxury_option->title == 'dine_in') {
                                                                                                     $luxury_option_name = 'Dine-In';
                                                                                                 } else {
-                                                                                                    $luxury_option_name = 'Delivery';
+                                                                                                  //  $luxury_option_name = 'Delivery';
+                                                                                                    $luxury_option_name = getNomenclatureName($luxury_option->title);
+                                                                                                   
                                                                                                 }
                                                                                             @endphp
                                                                                             <span
@@ -311,10 +248,10 @@
                                                                                             <span
                                                                                                 class="badge badge-success ml-2">{{__('Scheduled')}}</span>
                                                                                                 <span class="ml-2 text-right">
-                                                                                                    Slots: 
+                                                                                                    Slots:
                                                                                                     @if($clientPreference->scheduling_with_slots == 1 && $clientPreference->business_type == 'laundry')
                                                                                                         {{'Pickup: '. date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone))).' '.$order->scheduled_slot.' | ' }}
-    
+
                                                                                                         @if ($order->dropoff_scheduled_slot != "")
                                                                                                             {{'Dropoff: '.date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_dropoff, $timezone))).' '.$order->dropoff_scheduled_slot }}
                                                                                                         @else
@@ -338,6 +275,10 @@
                                                                                                     class="align-middle">This
                                                                                                     is a gift.</span>
                                                                                             </div>
+                                                                                        @endif
+                                                                                        <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="{{$vendor->id}}" data-vendor_id="{{$vendor->vendor_id}}" data-orderid="" data-order_id="{{$order->id}}">{{__('Chat')}}</a>
+                                                                                        @if(isset($vendor->driver_chat) && ($vendor->driver_chat == 1) && ($vendor->dispatch_traking_url != ''))
+                                                                                        <a class="start_chat_driver chat-icon btn btn-solid" data-driver_details_api="{{$vendor->dispatch_traking_url}}" data-vendor_order_id="{{$vendor->id}}" data-vendor_id="{{$vendor->vendor_id}}" data-orderid="" data-order_id="{{$order->id}}">{{__('Driver Chat')}}</a>
                                                                                         @endif
                                                                                     </div>
                                                                                 @endif
@@ -365,16 +306,17 @@
                                                                                                         <img src="{{ asset('assets/images/driver_icon.svg') }}"
                                                                                                             alt="">
                                                                                                     @endif
-                                                                                                    <label
-                                                                                                        class="m-0 in-progress">{{__( ucfirst( $vendor->order_status)) }}</label>
+                                                                                                    <label class="m-0 in-progress">{{__( ucfirst( $vendor->order_status)) }}</label>
                                                                                                 </li>
                                                                                             @endif
 
                                                                                             @if (!empty($vendor->dispatch_traking_url))
-                                                                                                <img src="{{ asset('assets/images/order-icon.svg') }}"
-                                                                                                    alt="">
-                                                                                                <a href="{{ route('front.booking.details', $order->order_number) }}"
+                                                                                                <li>
+                                                                                                    <img src="{{ asset('assets/images/order-icon.svg') }}"
+                                                                                                        alt="">
+                                                                                                    <a class="alOrderDetailsLink"  href="{{ route('front.booking.details', $order->order_number) }}"
                                                                                                     target="_blank">{{ __('Details') }}</a>
+                                                                                                </li>
                                                                                             @endif
                                                                                             @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
                                                                                             <?php
@@ -437,6 +379,7 @@
                                                                                                 @endif
                                                                                             @endforeach
                                                                                         </ul>
+                                                                                        
                                                                                     </div>
                                                                                     <div class="col-md-5 mt-md-0 mt-sm-2">
                                                                                         <ul class="price_box_bottom m-0 p-0">
@@ -708,7 +651,7 @@
                                                 <div class="row">
                                                     @if ($pastOrders->isNotEmpty())
                                                         @foreach ($pastOrders as $key => $order)
-                                                       
+
                                                             <div class="col-12">
                                                                 <div class="row no-gutters order_head">
                                                                     <div class="col-md-3 alOrderStatus">
@@ -727,7 +670,7 @@
                                                                         <div class="col-md-3">
                                                                             <h4>{{ __('Address') }}</h4>
                                                                             @if($order->luxury_option_id == 3)
-                                                                          
+
                                                                                 <span class="ellipsis" data-toggle="tooltip"
                                                                                     data-placement="top" title="" >
                                                                                     @if ( count($order->vendors) > 0)
@@ -766,9 +709,9 @@
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3" {{$order->luxury_option_id }}>
-                                                                            
+
                                                                             @if($order->luxury_option_id == 3)
-                                                                          
+
                                                                             <span class="ellipsis" data-toggle="tooltip"
                                                                                 data-placement="top" title="" >
                                                                                 @if ( count($order->vendors) > 0)
@@ -793,7 +736,7 @@
                                                                                 @endif
                                                                             </span>
                                                                             @endif
-                                                                            
+
                                                                         </div>
                                                                     @endif
                                                                 </div>
@@ -827,10 +770,12 @@
 
 
                                                                                             @if (!empty($vendor->dispatch_traking_url))
-                                                                                                <img src="{{ asset('assets/images/order-icon.svg') }}"
-                                                                                                    alt="">
-                                                                                                <a href="{{ route('front.booking.details', $order->order_number) }}"
+                                                                                                <li>
+                                                                                                    <img src="{{ asset('assets/images/order-icon.svg') }}"
+                                                                                                        alt="">
+                                                                                                    <a class="alOrderDetailsLink" href="{{ route('front.booking.details', $order->order_number) }}"
                                                                                                     target="_blank">{{ __('Details') }}</a>
+                                                                                                </li>
                                                                                             @endif
                                                                                             @if ($vendor->dineInTable)
                                                                                                 <li>
@@ -1228,7 +1173,7 @@
                                                                             <div class="col-md-3">
                                                                                 <h4>{{ __('Address') }}</h4>
                                                                                 @if($order->luxury_option_id == 3)
-                                                                          
+
                                                                                     <span class="ellipsis" data-toggle="tooltip"
                                                                                         data-placement="top" title="" >
                                                                                         @if ( count($order->vendors) > 0)
@@ -1252,7 +1197,7 @@
                                                                                             NA
                                                                                         @endif
                                                                                     </span>
-                                                                                @endif    
+                                                                                @endif
                                                                             </div>
                                                                         @endif
                                                                     </div>
@@ -1547,7 +1492,7 @@
                                                                         <div class="col-md-3">
                                                                             <h4>{{ __('Address') }}</h4>
                                                                             @if($order->luxury_option_id == 3)
-                                                                          
+
                                                                                 <span class="ellipsis" data-toggle="tooltip"
                                                                                     data-placement="top" title="" >
                                                                                     @if ( count($order->vendors) > 0)
@@ -1570,7 +1515,7 @@
                                                                                         NA
                                                                                     @endif
                                                                                 </span>
-                                                                                @endif    
+                                                                                @endif
                                                                         </div>
                                                                     @endif
                                                                 </div>
@@ -1624,7 +1569,9 @@
                                                                                                 } elseif ($luxury_option->title == 'dine_in') {
                                                                                                     $luxury_option_name = 'Dine-In';
                                                                                                 } else {
-                                                                                                    $luxury_option_name = 'Delivery';
+                                                                                                    
+                                                                                                    //$luxury_option_name = 'Delivery';
+                                                                                                    $luxury_option_name = getNomenclatureName($luxury_option->title);
                                                                                                 }
                                                                                             @endphp
                                                                                             <span
@@ -1641,6 +1588,7 @@
                                                                                                     is a gift.</span>
                                                                                             </div>
                                                                                         @endif
+                                                                                        <button class="chat-icon btn btn-solid" style="font-size:10px; padding: 0 5px; float: right; margin-top: 5px;" >{{__('Chat')}}</button>
                                                                                     </div>
                                                                                 @endif
                                                                                 <span class="left_arrow pulse"></span>
@@ -1725,6 +1673,7 @@
                                                                                         </ul>
                                                                                     </div>
                                                                                 </div>
+                                                                                sdf
                                                                             </div>
                                                                         @endforeach
                                                                     </div>
@@ -2072,26 +2021,26 @@
             if(Date.parse(pickup_schedule_datetime) == Date.parse(prevPickup)){
                 if(localStorage.getItem('check_pk_date_check') == null){
                     localStorage.setItem("check_pk_date_check", true);
-                    Swal.fire({ 
+                    Swal.fire({
                         icon: 'info',
                         text: 'You are trying to reschedule the order on the day of pickup, additional '+pickupCancellingCharges+' will be debited from your wallet.',
-                        confirmButtonText: 'Ok',  
+                        confirmButtonText: 'Ok',
                     });
                     return false;
-                }   
+                }
             }
 
             if(Date.parse(dropoff_schedule_datetime) == Date.parse(prevDropoff)){
                 if(localStorage.getItem('check_date_check') == null){
                     localStorage.setItem("check_date_check", true);
-                    Swal.fire({ 
+                    Swal.fire({
                         icon: 'info',
                         text: 'You are trying to reschedule the order on the day of delivery, additional '+reschedulingCharges+' will be debited from your wallet.',
-                        confirmButtonText: 'Ok',  
+                        confirmButtonText: 'Ok',
                     });
                     return false;
                 }
-                return true;      
+                return true;
             }
         }
 
@@ -2214,18 +2163,18 @@
             if(Date.parse(pickup_order_date) == Date.parse(today)){
                 if(localStorage.getItem('check_pickup_order_date') == null){
                     localStorage.setItem("check_pickup_order_date", true);
-                    Swal.fire({ 
+                    Swal.fire({
                         icon: 'info',
                         text: 'You are trying to cancel the order on the day of pickup, additional '+pickup_cancelling_charges+' will be debited from your wallet.',
-                        confirmButtonText: 'Ok',  
+                        confirmButtonText: 'Ok',
                     });
-                    
+
                     $.get('/return-order/get-vendor-order-for-cancel?id=' + id +'&order_vendor_id=' + order_vendor_id+'&pickup_cancelling_charges='+pickup_cancelling_charges+'&order_id='+order_id+'&pickup_order_date='+pickup_order_date+'&order_number='+order_number, function(markup)
                     {
                         $('#cancel_order').modal('show');
                         $('#cancel-order-form-modal').html(markup);
                     });
-                }   
+                }
             }else{
                 $.get('/return-order/get-vendor-order-for-cancel?id=' + id +'&order_vendor_id=' + order_vendor_id, function(markup)
                 {
@@ -2287,4 +2236,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
 <script src="{{asset('front-assets/js/reschedule_order.js')}}"></script>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
 @endsection

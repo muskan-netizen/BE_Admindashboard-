@@ -1,0 +1,144 @@
+
+/*============== footer css ===================*/
+.al_QRcode svg{margin-bottom: 10px;}
+.al_footer_template_six{background-color: #0C0C0C;}
+footer#footer{position: absolute;bottom: 0;width: 100%;}
+article#page-container{position: relative;min-height: 100vh;overflow: hidden;}
+.al_footer_template_six .sub-footer{background-color: transparent;}
+.al_footer_template_six .footer-end{border-top: 1px solid #B6B6B6;}
+.al_footer_template_six  .footer-theme .sub-title .contact-list li{padding: 0;}
+.al_footer_template_six  .footer-theme .sub-title li a:before{display: none;}
+body .footer-theme .sub-title h4,
+.footer-title h4{font-weight: 600;font-size: 24px;color: #fff;text-transform: capitalize;}
+.footerFsm{font-weight: 600;font-size: 14px;color: #B6B6B6;}
+.bottomFooter .footerFsm{font-weight: 400;color: #B6B6B6;}
+footer#footer .social-links li{display: inline-block;margin-right: 10px}
+footer#footer .social-links li a i{-webkit-transform: scale(.8);transform: scale(.8);font-size: 30px;-webkit-transition: 0.3s;transition: 0.3s;color: var(--top-header-color);}
+footer#footer .social-links li a:hover i{-webkit-transform: scale(1);transform: scale(1);}
+.al_footer_template_six ul li a:hover{color: var(--top-header-color)}
+.al_footer_template_six ul li{margin-bottom: 10px;}
+.al_footer_template_six ul.social-links li span{display: none;}
+
+/* ============ dark theme css ============================= */
+
+/*============== dark background-color ========== */
+.site-header.fixed-bar .nav-tabs.navigation-tab_al.nav-material{border-color: #0C0C0C;}
+.site-header.fixed-bar .nav-tabs.navigation-tab_al.nav-material .nav-link.active{color: #fff;}
+.site-header.fixed-bar .nav-tabs.navigation-tab_al.nav-material .nav-link,
+.dark .nav-tabs.navigation-tab_al.nav-material .nav-link{color: #0C0C0C;}
+body.al_body_template_six.dark,
+.dark.al_body_template_six .alSixMainMenu .slick-slide,
+.dark .alFindSec,
+.dark .form-control,
+.dark .vendor_products_tr:hover,
+.dark.al_body_template_six .vendors .product-card-box{background-color: #232323;}
+
+
+/*============== dark background-color most dark ================== */
+.dark.al_body_template_six .suppliers-img-outer,
+.dark .card-box,
+.dark .number input,
+.dark .site-header, .dark .site-header.fixed-bar,
+.dark.al_body_template_six .vendors .brand-ing,
+.dark.al_body_template_six .vendors .suppliers-img-outer,
+.dark .outer-box,
+.dark.al_body_template_six .vendors .img-outer-box{background-color: #0C0C0C;}
+
+
+
+/*============== dark text color ========== */
+.dark .new-tag,
+.dark .alFindSec span,
+.dark .radio,
+.dark .number input,
+.dark .dashboard-right p,
+.dark .alTesimonialsFrom{color: #eee;}
+
+/*============== dark border color ========== */
+.dark .outer-box,
+.dark .alChooseDate span:before,
+.dark .alLocation span:before{border-color: #eee;}
+
+/*============== dark text color white ========== */
+.dark .site-header.fixed-bar .rightHead ul li a svg path,
+.dark .site-header .rightHead ul li a svg path,
+.dark .site-header .rightHead ul li a svg,
+.dark .site-header.fixed-bar .rightHead ul li a svg{fill: #fff;}
+
+/*============== dark text theme color ========== */
+.dark .dashboard-left .block-content ul li:hover a,
+.dark .dashboard-left .block-content ul li.active a{color: var(--theme-deafult);}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media(max-width: 1199px){
+    body .footer-theme .sub-title h4, .footer-title h4{font-size: 12px;}
+}
+@media(max-width: 991px){
+.alSpaListSlider .slick-list.draggable{padding-left: 0 !important;}
+.alLgHeroHeading{font-size: 47px;line-height: 57px;}
+.heroArea .alCustomBtn{width: 100%;}
+.alBodyText,
+.alHeroText{font-family: 'MontserratRegular';}
+.alTesimonialsText,
+.alLgFontSize{font-size: 30px;line-height: normal;}
+.alTesimonialsTitle{font-size: 20px;line-height: normal;}
+.alTesimonialsUsername{font-size: 16px;line-height: normal;}
+.testimonials .slick-arrow{display: none !important;}
+.alSpaMenuCard.active ul li a{font-size: 18px;}
+
+}
+@media(max-width: 767px){
+.alMobileLocations{
+    margin-top: -80px;
+}
+.oneYearsMembership img{width: 100%}
+}

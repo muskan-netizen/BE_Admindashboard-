@@ -77,7 +77,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-3 homepageSix">
                 <div class="collection-filter col-md-3">
                     <div class="collection-filter-block mb-3 bg-transparent p-0">
                         <div class="collection-mobile-back pt-0 border-0"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
@@ -157,7 +157,7 @@
                             </span> -->
                         </h5>
                             <div class="offer-slider al">
-                                
+
                                 @foreach($newProducts as $newProds)
 
                                     @foreach($newProds as $new)
@@ -217,7 +217,7 @@
                                 </div>
                                 @endforeach
                             @endforeach
-                            
+
                         </div>
                     </div>
                     @endif
@@ -362,6 +362,11 @@
 <script src="{{asset('front-assets/js/my-sliders.js')}}"></script>
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
+    @if(!empty($vendor->banner))
+    $(document).ready(function() {
+        $("body").addClass("homeHeader");
+    });
+    @endif
     $('.js-range-slider').ionRangeSlider({
         type: 'double',
         grid: false,

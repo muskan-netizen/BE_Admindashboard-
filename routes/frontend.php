@@ -8,7 +8,8 @@
 	Route::any('payment/paytab/callback','Front\PaytabController@callback')->name('payment.paytab.callback'); 
 	Route::match(['get','post'],'payment/paytab/return','Front\PaytabController@returnBack')->name('payment.paytab.return'); 
 	Route::get('/debug-sentry', function () {
-		throw new Exception('My first Sentry error!');
+		echo \Hash::make('dispatcher@765');
+		//throw new Exception('My first Sentry error!');
 	});
 
 
@@ -171,6 +172,16 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/paytab/page','Front\PaytabController@beforePayment')->name('payment.paytab.beforePayment');
 	Route::post('payment/paytab','Front\PaytabController@createPayment')->name('payment.paytab.createPayment');
 
+	//UPay
+	Route::match(['get','post'],'payment/upay/page','Front\UPayController@beforePayment')->name('payment.upay.beforePayment');
+	Route::match(['get','post'],'payment/upay','Front\ConektaController@afterPayment')->name('payment.upay.afterPayment');
+	//Conekta
+	Route::match(['get','post'],'payment/conekta/page','Front\ConektaController@beforePayment')->name('payment.conekta.beforePayment');
+	Route::match(['get','post'],'payment/conekta','Front\ConektaController@afterPayment')->name('payment.conekta.afterPayment');
+	//Telr
+	Route::match(['get','post'],'payment/telr/page','Front\TelrController@beforePayment')->name('payment.telr.beforePayment');
+	Route::match(['get','post'],'payment/telr/{status}/{payment_from}/{come_from}/{amount}/{order_number?}','Front\TelrController@afterPayment')->name('payment.telr.afterPayment');
+
 	//Coinbase
 	Route::match(['get','post'],'payment/coinbase/page','Front\CoinbaseController@beforePayment')->name('payment.coinbase.beforePayment');
 	Route::post('payment/coinbase','Front\CoinbaseController@createPayment')->name('payment.coinbase.createPayment');
@@ -247,8 +258,9 @@ Route::group(['middleware' => ['domain']], function () {
 	//payPhone routes
 	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
 	Route::get('payment/payphone/success', 'Front\PayphoneController@successPage')->name('payphone.success');
-	Route::any('payment/payphone/api', 'Front\PayphoneController@webViewPay')->name('payphone.webview');
-
+	Route::any('payment/payphone/api/{url?}/{token?}', 'Front\PayphoneController@webViewPay')->name('payphone.webview');
+	Route::any('payment/payphone/refundWalletAmount', 'Front\PayphoneController@refundWalletAmount')->name('payphone.refund');
+	
 	//KongaPay routes 
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
 	Route::any('payment/kongapay/api', 'Front\KongapayController@webViewPay')->name('kongapay.webview');
@@ -292,10 +304,12 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/userede/page','Front\UseRedePaymentController@beforePayment')->name('payment.userede.beforePayment');
 	Route::match(['get','post'],'/payment/userede/respons', 'Front\UseRedePaymentController@responsUs')->name('payment.userede.responsUs');
 	Route::post('/payment/userede/payment_init', 'Front\UseRedePaymentController@paymentInit')->name('payment.userede.createPayment');
+	Route::post('/payment/userede/payment_init_app', 'Front\UseRedePaymentController@paymentInitApp')->name('payment.userede.createPaymentApp');
 
 	// OpenpayPaymentController payment test
 	Route::match(['get','post'],'payment/opnepay/page','Front\OpenpayPaymentController@beforePayment')->name('payment.opnepay.beforePayment');
 	Route::post('/payment/opnepay/payment_init', 'Front\OpenpayPaymentController@paymentInit')->name('payment.opnepay.createPayment');
+	Route::post('/payment/opnepay/payment_init_app', 'Front\OpenpayPaymentController@paymentInitApp')->name('payment.opnepay.createPaymentApp');
 	Route::match(['get','post'],'payment/webhook/opnepay', 'Front\OpenpayPaymentController@opnepayWebhook')->name('payment.webhook.opnepay');
 	// test VNPAY payment gateway
 	Route::get('/vnpay-gateway', 'Front\VnpayController@VnPay_gateway')->name('vnpay-gateway');
@@ -375,6 +389,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('cart/product-schedule/update', 'Front\CartController@updateProductSchedule')->name('cart.updateProductSchedule');
 	Route::get('cartProducts', 'Front\CartController@getCartData')->name('getCartProducts');
 	Route::get('cartDetails', 'Front\CartController@getCartProducts')->name('cartDetails');
+	Route::post('get/product/prescription', 'Front\CartController@getProductPrescription')->name('getProductPrescription');
 	Route::post('cartDelete', 'Front\CartController@emptyCartData')->name('emptyCartData');
 	Route::post('repeatOrder', 'Front\CartController@repeatOrder')->name('web.repeatOrder');
 	Route::post('/product/updateCartQuantity', 'Front\CartController@updateQuantity')->name('updateQuantity');
@@ -404,6 +419,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('stripe/make', 'Front\PaymentController@makePayment')->name('stripe.makePayment');
 	Route::post('inquiryMode/store', 'Front\ProductInquiryController@store')->name('inquiryMode.store');
 	Route::get('viewcart', 'Front\CartController@showCart')->name('showCart');
+	Route::get('cart', 'Front\CartController@showCartNew')->name('cartNew');
 	Route::get('checkSlotOrders', 'Front\CartController@checkSlotOrders')->name('checkSlotOrders'); //Added by Ovi
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
@@ -522,4 +538,10 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	//Passbase
 	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
 	Route::match(['get','post'],'passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
+	Route::get('user/chat/userVendor/{room_id?}', 'Front\ChatController@UservendorChat')->name("userChat.UservendorChat");
+	Route::get('user/chat/userAgent/{room_id?}', 'Front\ChatController@UserAgentChat')->name("userChat.UserAgentChat");
+
+	Route::post('user/chat/fetchOrderDetail', 'Front\ChatController@fetchOrderDetail')->name('userChat.fetchOrderDetail');
+	Route::post('user/chat/startChat', 'Front\ChatController@startChat')->name('userChat.startChat');
+
 });

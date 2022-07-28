@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\AhoyController;
-use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia};
+use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
 use DB,Log;
@@ -145,14 +145,19 @@ class VendorController extends BaseController
         $total_vendor_count = $vendors->count();
         $vendor_registration_documents = VendorRegistrationDocument::get();
 
-        $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$vendors->first()->id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
-        $vendor_for_ondemand = VendorCategory::where('vendor_id',$vendors->first()->id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
+        $vendor_for_pickup_delivery = null;
+        $vendor_for_ondemand = null;
+        if($vendors->isNotEmpty()){
+            $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$vendors->first()->id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
+            $vendor_for_ondemand = VendorCategory::where('vendor_id',$vendors->first()->id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
+        }
 
         if(count($vendors) == 1 && $user->is_superadmin == 0){
             return Redirect::route('vendor.catalogs', $vendors->first()->id);
         }else{
             $build = array();
-            $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+            
+            $categories = Category::serviceType()->with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
             ->where('id', '>', '1')
             // ->where('is_core', 1)
             ->whereNotIn('type_id', [4, 5])
@@ -244,9 +249,13 @@ class VendorController extends BaseController
         foreach ($request->only('name', 'address', 'latitude', 'longitude', 'desc','short_desc') as $key => $value) {
             $vendor->{$key} = $value;
         }
-        $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
-        $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
-        $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
+        foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+            $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+            $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
+        }
+        // $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
+        // $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
+        // $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
         if ($update == 'false') {
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
@@ -505,10 +514,13 @@ class VendorController extends BaseController
         $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
         $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+        $facilties = Facilty::with(['primary'])->get();
+        $vendor_facilty_ids = VendorFacilty::where('vendor_id',$vendor->id)->pluck('facilty_id')->toArray();
 
         return view('backend/vendor/show')->with($returnData)
                 ->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,
-                    'clientCurrency'=>$clientCurrency,'vendor_for_ondemand' => $vendor_for_ondemand
+                    'clientCurrency'=>$clientCurrency,'vendor_for_ondemand' => $vendor_for_ondemand,
+                    'facilties'=>$facilties,'vendor_facilty_ids'=> $vendor_facilty_ids
                 ]);
     }
 
@@ -517,7 +529,7 @@ class VendorController extends BaseController
         $csvVendors = [];
         $vendor = Vendor::findOrFail($id);
         $VendorCategory = VendorCategory::where('vendor_id', $id)->where('status', 1)->pluck('category_id')->toArray();
-        $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+        $categories = Category::serviceType()->with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
             ->where('id', '>', '1')
             ->where(function ($q) use ($id) {
                 $q->whereNull('vendor_id')
@@ -556,8 +568,10 @@ class VendorController extends BaseController
         $clientCurrency = ClientCurrency::select('currency_id')->where('is_primary', 1)->with('currency')->first();
         $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
         $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
+        $facilties = Facilty::with(['primary'])->get();
+        $vendor_facilty_ids = VendorFacilty::where('vendor_id',$vendor->id)->pluck('facilty_id')->toArray();
 
-        return view('backend.vendor.vendorCategory')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'client_preferences' => $client_preferences, 'vendor' => $vendor, 'tab' => 'category', 'html' => $tree, 'languages' => $langs, 'addon_sets' => $addons, 'VendorCategory' => $VendorCategory, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build,'csvVendors'=> $csvVendors, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'clientCurrency'=>$clientCurrency]);
+        return view('backend.vendor.vendorCategory')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'client_preferences' => $client_preferences, 'vendor' => $vendor, 'tab' => 'category', 'html' => $tree, 'languages' => $langs, 'addon_sets' => $addons, 'VendorCategory' => $VendorCategory, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build,'csvVendors'=> $csvVendors, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'clientCurrency'=>$clientCurrency,'facilties'=>$facilties,'vendor_facilty_ids'=> $vendor_facilty_ids]);
     }
 
     /**   show vendor page - catalog tab      */
@@ -636,7 +650,13 @@ class VendorController extends BaseController
         $product_categories = VendorCategory::with(['category', 'category.translation' => function($q) use($langId){
             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
             ->where('category_translations.language_id', $langId);
-        }])->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
+        }])
+        ->whereHas('category', function($q) use($langId){
+            $q->whereNull('deleted_at')->orWhere('deleted_at', '');
+        })
+        ->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
+        
+
         $p_categories = collect();
         $product_categories_hierarchy = '';
         if ($product_categories) {
@@ -644,7 +664,7 @@ class VendorController extends BaseController
                 $p_categories->push($pc->category);
             }
             $product_categories_build = $this->buildTree($p_categories->toArray());
-            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy_new($product_categories_build);
+            $product_categories_hierarchy = $this->getCategoryOptionsHeirarchy($product_categories_build, $langId);
             foreach($product_categories_hierarchy as $k => $cat){
                 $myArr = array(1,3,7,8,9);
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
@@ -678,7 +698,10 @@ class VendorController extends BaseController
         $checkShip = ($ship_creds->status) ?? 0;
         $checkAhoyShip = ($ahoys->status) ?? 0;
         $taxRates=TaxRate::all();
-        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'taxRates'=>$taxRates]);
+        $files = CsvQrcodeImport::latest()->get();
+        $facilties = Facilty::with(['primary'])->get();
+        $vendor_facilty_ids = VendorFacilty::where('vendor_id',$vendor->id)->pluck('facilty_id')->toArray();
+        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'taxRates'=>$taxRates,'files'=>$files,'facilties'=>$facilties,'vendor_facilty_ids'=> $vendor_facilty_ids]);
     }
     // vendor product datatable
     public function VendorProductFilter(Request $request,$domain='',$vendor_id)
@@ -754,8 +777,8 @@ class VendorController extends BaseController
             $datatable->addColumn('product_name', function ($product) use ($request) {
                 $edit_url = route('product.edit', $product->id);
                 $action =  '<a href="'.$edit_url .'"
-                target="_blank" title="'.(($product->global_product_id)?' Global Item':'').'">'.Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30).(($product->global_product_id)?' (Global)':'').'</a>';
-                
+                target="_blank" title="'.(($product->global_product_id)?' Global Item':'').'">'.($product->primary->title??'N/A').(($product->global_product_id)?' (Global)':'').'</a>';
+                // Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30)
                 return $action;
             })
             ->addColumn('product_category', function ($product) use ($request) {
@@ -1071,7 +1094,9 @@ class VendorController extends BaseController
         $vendor->show_slot = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
         $vendor->auto_accept_order = ($request->has('auto_accept_order') && $request->auto_accept_order == 'on') ? 1 : 0;
         $vendor->need_container_charges = ($request->has('need_container_charges') && $request->need_container_charges == 'on') ? 1 : 0;
+        $vendor->add_markup_price = ($request->has('add_markup_price') && $request->add_markup_price == 'on') ? 1 : 0;
         $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
+        // $vendor->cron_for_service_area = ($request->has('cron_for_service_area') && $request->cron_for_service_area == 'on') ? 1 : 0;
         if($request->has('slot_minutes')){
             $vendor->slot_minutes   = ($request->slot_minutes>0)?$request->slot_minutes:0;
         }
@@ -1150,11 +1175,54 @@ class VendorController extends BaseController
         }
         
         $vendor->save();
+        if ($request->has('facilty_ids')) {
+            foreach($request->facilty_ids as $facilty_id){
+                $VendorFacilty =  VendorFacilty::where(['vendor_id' =>   $vendor->id, 'facilty_id'=> $facilty_id])->first();
+                if(!$VendorFacilty){
+                    $vendor_facilty = new VendorFacilty();
+                    $vendor_facilty->vendor_id  = $vendor->id;
+                    $vendor_facilty->facilty_id  = $facilty_id;
+                    $vendor_facilty->save();
+                }
+            }
+        }
         $return_json   = $request->has('return_json') && $request->return_json ? $request->return_json : 0;
         if($return_json ==  1 ){
             return $this->successResponse($vendor,__("Vendor update successfully!"));
         }
         return redirect()->back()->with('success', $msg . ' updated successfully!');
+    }
+
+    /**
+     * Update vendor cron job status.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\ServiceArea  $serviceArea
+     * @return \Illuminate\Http\Response
+     */
+    public function updateCronStatusForServiceArea(Request $request, $domain = '', $id){
+        try{
+            $rules = array(
+                'status' => 'required'
+            );
+            $messages = array(
+                'status.required' => 'Status is required'
+            );
+            $validation  = Validator::make($request->all(), $rules, $messages);
+
+            if ($validation->fails()) {
+                foreach ($validation->errors()->toArray() as $error_key => $error_value) {
+                    return $this->errorResponse(__($error_value[0]), 422);
+                }
+            }
+            $vendor = Vendor::where('id', $id)->firstOrFail();
+            $vendor->cron_for_service_area = $request->status;
+            $vendor->save();
+            return $this->successResponse('', __('Vendor updated successfully!'));
+        }
+        catch(\Exception $ex){
+            return $this->errorResponse($ex->getMessage(), 422);
+        }
     }
 
     public function updateAhoyLocation(Request $request, $domain = '',  $id)
@@ -1616,7 +1684,12 @@ class VendorController extends BaseController
         $product_categories = VendorCategory::with(['category', 'category.translation' => function($q) use($langId){
             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
             ->where('category_translations.language_id', $langId);
-        }])->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
+        }])
+        ->whereHas('category', function($q) use($langId){
+            $q->whereNull('deleted_at')->orWhere('deleted_at', '');
+        })
+        ->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
+        
         $p_categories = collect();
         $product_categories_hierarchy = '';
         if ($product_categories) {
@@ -1624,9 +1697,9 @@ class VendorController extends BaseController
                 $p_categories->push($pc->category);
             }
             $product_categories_build = $this->buildTree($p_categories->toArray());
-            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy_new($product_categories_build);
+            $product_categories_hierarchy = $this->getCategoryOptionsHeirarchy($product_categories_build, $langId);
             foreach($product_categories_hierarchy as $k => $cat){
-                $myArr = array(1,3,7,8,9);
+                $myArr = array(1,3,7,8,9,10);
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
                     unset($product_categories_hierarchy[$k]);
                 }

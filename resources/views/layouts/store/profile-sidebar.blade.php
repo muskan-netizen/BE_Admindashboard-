@@ -1,3 +1,7 @@
+@php
+$urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
+$clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
+@endphp
 @switch($client_preference_detail->business_type)
     @case('taxi')
         <?php $ordertitle = 'Rides'; ?>
@@ -6,7 +10,6 @@
     @default
     <?php $ordertitle = 'Orders';  ?>
 @endswitch
-@php if($client_preference_detail->client_code == '67dcfd'){ $ordertitle = 'Orders'; } @endphp
 <div class="dashboard-left">
     <div class="collection-mobile-back">
         <span class="filter-back d-lg-none d-inline-block">
@@ -16,6 +19,29 @@
     <div class="block-content">
         <ul>
             <li class="{{ (request()->is('user/profile')) ? 'active' : '' }}"><a href="{{route('user.profile')}}">{{ __('Account Info') }}</a></li>
+            @if($clientData->socket_url)
+                <li>
+                    <a href="#chat" data-toggle="collapse"> 
+                    <span class="mdi-message"></span>
+                        <span> {{ __('Chat') }} </span>
+                    </a>
+                    <div class="collapse" id="chat">
+                        <ul class="nav-second-level">
+                            <li>
+                                <a href="{{route('userChat.UservendorChat')}}">{{ __('Vendor Chat') }}</a>
+                            </li>
+
+                            <li>
+                                <a href="{{route('userChat.UserAgentChat')}}">{{ __('Agent Chat') }}</a>
+                            </li>
+                        
+                            {{-- <li>
+                                <a href="{{route('report.productperformance')}}">{{ __("Product Performance Report") }}</a>
+                            </li> --}}
+                        </ul>
+                    </div>
+                </li>
+            @endif
             <li class="{{ (request()->is('user/addressBook')) ? 'active' : '' }}"><a href="{{route('user.addressBook')}}">
                 @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
                 {{ __('My Cars') }}
@@ -23,7 +49,7 @@
                 {{ __('Address Book') }}
                 @endif
             </a></li>
-            <li class="{{ (request()->is('user/orders*')) ? 'active' : '' }}"><a href="{{route('user.orders')}}">{{ __('My '.$ordertitle) }}</a></li>
+            <li class="{{ (request()->is('user/orders*')) ? 'active' : '' }}"><a href="{{route('user.orders')}}">{{ __('My '.getNomenclatureName($ordertitle, true) )}}</a></li>
             <li class="{{ (request()->is('user/wishlists')) ? 'active' : '' }}"><a href="{{route('user.wishlists')}}">{{ __(getNomenclatureName('Wishlist', true) )}}</a></li>
             <li class="{{ (request()->is('user/loyalty')) ? 'active' : '' }}"><a href="{{route('user.loyalty')}}">{{ __('My Loyalty') }}</a></li>
             <li class="{{ (request()->is('user/wallet')) ? 'active' : '' }}"><a href="{{route('user.wallet')}}">{{ __('My Wallet') }}</a></li>

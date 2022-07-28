@@ -262,6 +262,7 @@ class UserhomeController extends FrontController
     }
     public function index(Request $request, $domain='')
     {
+
         try {
             $home = array();
             $vendor_ids = array();
@@ -280,15 +281,21 @@ class UserhomeController extends FrontController
             $clientPreferences = ClientPreference::first();
             $count = 0;
             if ($clientPreferences) {
-                if ($clientPreferences->dinein_check == 1) {
-                    $count++;
+                foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                    $clientVendorTypes = $vendor_typ_key.'_check';
+                    if($clientPreferences->$clientVendorTypes == 1){
+                        $count++;
+                    }
                 }
-                if ($clientPreferences->takeaway_check == 1) {
-                    $count++;
-                }
-                if ($clientPreferences->delivery_check == 1) {
-                    $count++;
-                }
+                // if ($clientPreferences->dinein_check == 1) {
+                //     $count++;
+                // }
+                // if ($clientPreferences->takeaway_check == 1) {
+                //     $count++;
+                // }
+                // if ($clientPreferences->delivery_check == 1) {
+                //     $count++;
+                // }
             }
             // if ($preferences) {
             //     if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
@@ -351,7 +358,10 @@ class UserhomeController extends FrontController
                 $view_page = "home-template-four";
             }elseif(isset($set_template)  && $set_template->template_id == 5){
                 $view_page = "home-template-five";
+            }elseif(isset($set_template)  && $set_template->template_id == 6){
+                $view_page = "home-template-six";
             }
+            //pr($set_template->toArray());exit();
             return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
 
         } catch (Exception $e) {
@@ -718,7 +728,7 @@ class UserhomeController extends FrontController
 
     public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type)
     {
-        $products = Product::with([
+        $products = Product::byProductCategoryServiceType($type)->with([
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
@@ -938,7 +948,7 @@ class UserhomeController extends FrontController
     #post Home Page Data Single
     public function postHomePageDataSingle(Request $request)
     {
-
+        Session::put('selectedDate', '07/25/2022');
         $slug = $request->slug??null;
         $vendor_ids = [];
         $new_products = [];
@@ -958,11 +968,14 @@ class UserhomeController extends FrontController
 
         }
         $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-        $p_dim = '260/100';
+        $p_dim = '300/300';
         if (isset($set_template)  && $set_template->template_id == 3){
-            $p_dim = '300/350';
+            $p_dim = '300/300';
         }elseif(isset($set_template)  && $set_template->template_id == 2){
-            $p_dim = '260/180';
+            $p_dim = '300/300';
+        }
+        elseif(isset($set_template)  && $set_template->template_id == 6){
+            $p_dim = '300/300';
         }
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
@@ -1006,7 +1019,10 @@ class UserhomeController extends FrontController
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
         if(isset($slug)){
-            $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'show_slot')->where($request->type, 1);
+            $categoryTypes = getServiceTypesCategory($request->type);
+            $vendors = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                $q->whereIn('type_id',$categoryTypes);
+            })->with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'show_slot')->where($request->type, 1);
             if ($preferences) {
                 if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                     $selectedAddress = $preferences->Default_location_name;
@@ -1029,6 +1045,23 @@ class UserhomeController extends FrontController
                             $query->select('vendor_id')
                         ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
                         });
+
+                        if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
+                            $slot_vendors = clone $vendors;
+                            $data = $slot_vendors->get();
+                            foreach ($data as $key => $value) {
+                                $vendors = $vendors->when(($value->show_slot == 0), function($query) use ($latitude, $longitude) {
+                                    return $query->where(function($query1) use ($latitude, $longitude) {
+                                        $query1->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                        })
+                                        ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                        });
+                                    });
+                                });
+                            }
+                        }
                     }
                 }
             }
@@ -1134,7 +1167,7 @@ class UserhomeController extends FrontController
                         }
                     }
                 }
-            } 
+            }
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $trendingVendors = $trendingVendors->sortBy('lineOfSightDistance')->values()->all();
             }
@@ -1143,7 +1176,7 @@ class UserhomeController extends FrontController
         }
 
 
-        if (isset($slug) && $slug == 'best_sellers') { 
+        if (isset($slug) && $slug == 'best_sellers') {
             $mostSellingVendors = Vendor::with('slot.day', 'slotDate')->select('vendors.*', DB::raw('count(vendor_id) as max_sales'))->join('order_vendors', 'vendors.id', '=', 'order_vendors.vendor_id')->whereIn('vendors.id', $vendor_ids)->where('vendors.status', 1)->groupBy('order_vendors.vendor_id')->orderBy(DB::raw('count(vendor_id)'), 'desc')->get();
             if ((!empty($mostSellingVendors) && count($mostSellingVendors) > 0)) {
                 foreach ($mostSellingVendors as $key => $value) {

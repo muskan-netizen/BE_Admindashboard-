@@ -145,6 +145,7 @@ class AuthController extends BaseController
             Cart::where('unique_identifier', $loginReq->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
         }
         $checkSystemUser = $this->checkCookies($user->id);
+        $data['id'] = $user->id;
         $data['name'] = $user->name;
         $data['email'] = $user->email;
         $data['auth_token'] =  $token;
@@ -556,7 +557,8 @@ class AuthController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');
+                $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
                 $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
             }
             if (!empty($prefer->mail_driver) && !empty($prefer->mail_host) && !empty($prefer->mail_port) && !empty($prefer->mail_port) && !empty($prefer->mail_password) && !empty($prefer->mail_encryption)) {
@@ -990,6 +992,7 @@ class AuthController extends BaseController
                 Cart::where('unique_identifier', $req->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
             }
             $checkSystemUser = $this->checkCookies($user->id);
+            $data['id'] = $user->id;
             $data['name'] = $user->name;
             $data['email'] = $user->email;
             $data['auth_token'] =  $token;
@@ -1213,6 +1216,7 @@ class AuthController extends BaseController
                     Cart::where('unique_identifier', $request->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
                 }
                 $checkSystemUser = $this->checkCookies($user->id);
+                $data['id'] = $user->id;
                 $data['name'] = $user->name;
                 $data['email'] = $user->email;
                 $data['auth_token'] =  $token;
@@ -1608,5 +1612,33 @@ class AuthController extends BaseController
             $data['message'] =  $e->getMessage();
             return $data;
         }
+    }
+    public function deleteUser(Request $request){
+        try {
+            DB::beginTransaction(); //Initiate transaction
+                $user = Auth::user();
+                if(!$user){
+                    return response()->json(['massage' => __('User not found!')], 200);
+                }
+                User::where('id', $user->id)->update([
+                    'email' => $user->email.'_'.$user->id."_D",  
+                    'phone_number' => $user->phone_number.'_'.$user->id."_D",  
+                    'auth_token' =>'',  
+                    'system_id' =>'',  
+                    'remember_token' => '',  
+                    'facebook_auth_id' => '',  
+                    'twitter_auth_id' => '',  
+                    'google_auth_id' => '',  
+                    'apple_auth_id' => '' 
+                    ]);
+                $user->delete();
+                DB::commit(); //Commit transaction after all the operations
+                return response()->json(['massage' => __('User Deleted Successfully')], 200);
+                //code...
+            } catch (Exception $e) {
+                DB::rollBack();
+                return response()->json(['massage' => __('Something went wrong!')], 400);
+               
+            }
     }
 }

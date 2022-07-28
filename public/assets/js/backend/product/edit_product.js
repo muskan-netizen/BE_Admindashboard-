@@ -1,0 +1,57 @@
+$(document).ready(function(){
+    $("#range-datepicker").flatpickr({
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: false
+    });
+    $('#is_fix_check_in_time').change(function() {
+        var val = $(this).prop('checked');
+        if (val == true) {
+           // $('.check_in_time').show();
+            $('.check_in_time').removeClass('d-none');
+        } else {
+            $('.check_in_time').addClass('d-none');
+            //$('.check_in_time').hide();
+        }
+    });
+    $(document).on('click', '.addExistRow', function() {
+        
+        var psku = $('#sku').val();
+        var pid = $(this).attr('data-product_id');
+        var vid = $(this).attr('data-varient_id');
+        var variant_ids = [];
+        var variant_name = $("input[name='variant_titles[]']").val();;
+        var exist = [];
+        var $thisRow = $(this);
+        $(".product_varient_ids").each(function() {
+            var $this = $(this);
+            variant_ids.push($this.attr('data-varient_id'));
+        });
+        $("#exist_variant_div .exist_sets").each(function() {
+            exist.push($(this).val());
+        });
+
+        axios.post(`/client/rental-variant_row`, {
+            sku:  psku,   
+            existing:exist,
+            variant_ids:variant_ids,
+            variant_name:variant_name,
+            pid:pid,
+            vid:vid,
+        })
+        .then(async response => {
+            $($thisRow).hide();
+             console.log(response);
+        })
+        .catch(e => {
+            Swal.fire(
+                'Something went wrong, try again later!',                                    
+                'error'
+            )
+        })    
+    });
+    
+})
+
+

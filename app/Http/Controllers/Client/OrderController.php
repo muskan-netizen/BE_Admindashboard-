@@ -156,14 +156,16 @@ class OrderController extends BaseController
 
     public function postOrderFilter(Request $request, $domain = '')
     {
-      $user = Auth::user();
-      $client_timezone = DB::table('clients')->first('timezone'); 
-      $user->timezone = $client_timezone->timezone ?? $user->timezone;
+        $response = [];
+        $user = Auth::user();
+        $preferences = ClientPreference::first();
+        $client_timezone = DB::table('clients')->first('timezone'); 
+        $user->timezone = $client_timezone->timezone ?? $user->timezone;
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
         $orders = Order::with(['vendors.products'=>function($q){
             $q->withoutAppends();
-        }, 'vendors.status', 'orderStatusVendor', 'address', 'user'])->orderBy('id', 'DESC');
+        }, 'vendors.status', 'orderStatusVendor', 'address', 'user']);
         if ($user->is_superadmin == 0) {
             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -206,6 +208,42 @@ class OrderController extends BaseController
         $pending_orders = clone $order_count;
         $active_orders = clone $order_count;
         $orders_history = clone $order_count;
+
+        /* luxury option orders (only active orders) */
+        $luxury_order_status_options = [6, 3];
+        $filter_orders = clone $orders;
+        $filter_orders = $filter_orders->with(['vendors' => function ($query) use ($luxury_order_status_options, $user) {
+            $query->whereNotIn('order_status_option_id', $luxury_order_status_options);
+            if ($user->is_superadmin == 0) {
+                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                    $query1->where('user_id', $user->id);
+                });
+            }
+        }])
+        ->whereHas('vendors', function ($query) use ($luxury_order_status_options, $request) {
+            $query->whereNotIn('order_status_option_id', $luxury_order_status_options)
+            ->where(function ($q1) {
+                // 1 for cod ,38 for offline manual by harbans
+                $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+                $q1->orWhere(function ($q2) {
+                    $q2->whereIn('payment_option_id', [1,38]);
+                });
+            });
+            if (!empty($request->get('vendor_id'))) {
+                $query->where('vendor_id', $request->get('vendor_id'));
+            }
+        });
+
+        foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+            $clientVendorTypes = $vendor_typ_key.'_check';
+            $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+            
+            if($preferences->$clientVendorTypes == 1){
+                $vendorTypeOrders = $VendorTypesName.'_orders';
+                $$vendorTypeOrders = clone $filter_orders;
+            }
+        }        
+        /* luxury option orders */
 
         if ($filter_order_status) {
             switch ($filter_order_status) {
@@ -262,6 +300,36 @@ class OrderController extends BaseController
                         }
                     });
                     break;
+                
+                /* luxury option orders */
+                case 'delivery_orders':
+                    $orders = $filter_orders->where('luxury_option_id', 1);
+                    break;
+                
+                case 'dine_in_orders':
+                    $orders = $filter_orders->where('luxury_option_id', 2);
+                    break;
+                
+                case 'takeaway_orders':
+                    $orders = $filter_orders->where('luxury_option_id', 3);
+                    break;
+
+                case 'rental_orders':
+                    $orders = $filter_orders->where('luxury_option_id', 4);
+                    break;
+
+                case 'pick_drop_orders':
+                    $orders = $filter_orders->where('luxury_option_id', 5);
+                    break;
+                
+                case 'on_demand_orders':
+                    $orders = $filter_orders->where('luxury_option_id', 6);
+                    break;
+                
+                case 'laundry_orders':
+                    $orders = $filter_orders->where('luxury_option_id', 7);
+                    break;
+                /* luxury option orders */
             }
         }
         $orders = $orders->whereHas('vendors')->where(function ($q1) {
@@ -270,9 +338,32 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1,38]);
             });
-        })->select('*', 'id as total_discount_calculate')->paginate(30);
+        });
         
-
+        //sort by distance
+        if($request->has('sort_order') && ($request->sort_order == 'distance')){
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $latitude = ($preferences->Default_latitude) ? floatval($preferences->Default_latitude) : null;
+                $longitude = ($preferences->Default_longitude) ? floatval($preferences->Default_longitude) : null;
+                $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                //3961 for miles and 6371 for kilometers
+                $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                if(!empty($latitude) && !empty($longitude)){
+                    $orders = $orders->select('*', 'id as total_discount_calculate', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                            cos( radians( user_latitude ) ) * cos( radians( user_longitude ) - radians(' . $longitude . ') ) +
+                            sin( radians(' . $latitude . ') ) *
+                            sin( radians( user_latitude ) ) ) )  AS sortByUserDistance'));
+                    $orders = $orders->orderBy(DB::raw('ISNULL(sortByUserDistance), sortByUserDistance'), 'ASC');
+                }
+            }
+        }
+        else{
+            $orders = $orders->select('*', 'id as total_discount_calculate')->orderBy('id', 'DESC');
+        }
+        
+        $orders = $orders->paginate(30);
+        
+        // Pending orders count
         $pending_orders = $pending_orders->with('vendors', function ($query) use($user) {
             $query->where('order_status_option_id', 1);
             if ($user->is_superadmin == 0) {
@@ -284,6 +375,7 @@ class OrderController extends BaseController
             $query->where('order_status_option_id', 1);
         })->count();
 
+        // Active orders count
         $order_status_optionsa = [2, 4, 5];
         $active_orders = $active_orders->with('vendors', function ($query) use ($order_status_optionsa, $user) {
             $query->whereIn('order_status_option_id', $order_status_optionsa);
@@ -296,6 +388,7 @@ class OrderController extends BaseController
             $query->whereIn('order_status_option_id', $order_status_optionsa);
         })->count();
 
+        // Past orders count
         $order_status_optionsd = [6, 3];
         $orders_history = $orders_history->with('vendors', function ($query) use ($order_status_optionsd, $user) {
             $query->whereIn('order_status_option_id', $order_status_optionsd);
@@ -309,10 +402,53 @@ class OrderController extends BaseController
         })->count();
 
 
+        // Delivery orders count
+        if(isset($delivery_orders)){
+            $delivery_orders = $delivery_orders->where('luxury_option_id', 1)->count();
+            $response['delivery_orders'] = $delivery_orders;
+        }
+
+        // Dine in orders count
+        if(isset($dine_in_orders)){
+            $dine_in_orders = $dine_in_orders->where('luxury_option_id', 2)->count();
+            $response['dine_in_orders'] = $dine_in_orders;
+        }
+
+        // Takeaway orders count
+        if(isset($takeaway_orders)){
+            $takeaway_orders = $takeaway_orders->where('luxury_option_id', 3)->count();
+            $response['takeaway_orders'] = $takeaway_orders;
+        }
+
+        // Rental orders count
+        if(isset($rental_orders)){
+            $rental_orders = $rental_orders->where('luxury_option_id', 4)->count();
+            $response['rental_orders'] = $rental_orders;
+        }
+
+        // Pick drop orders count
+        if(isset($pick_drop_orders)){
+            $pick_drop_orders = $pick_drop_orders->where('luxury_option_id', 5)->count();
+            $response['pick_drop_orders'] = $pick_drop_orders;
+        }
+
+        // On demand orders count
+        if(isset($on_demand_orders)){
+            $on_demand_orders = $on_demand_orders->where('luxury_option_id', 6)->count();
+            $response['on_demand_orders'] = $on_demand_orders;
+        }
+
+        // Laundry orders count
+        if(isset($laundry_orders)){
+            $laundry_orders = $laundry_orders->where('luxury_option_id', 7)->count();
+            $response['laundry_orders'] = $laundry_orders;
+        }
+
+
         foreach ($orders as $key => $order) {
             // $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, h:i A');
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
-            $order->scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
+            $scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
 
             $total_other_taxes=0.00;
             foreach(explode(":",$order->total_other_taxes) as $row){
@@ -321,6 +457,8 @@ class OrderController extends BaseController
             $order->total_other_taxes_amount = $total_other_taxes;
 
             foreach ($order->vendors as $vendor) {
+                $vendor->isAlert = false;
+                $vendor->alertMessage = "";
                 if(isset($vendor) && !empty($vendor->vendor_id))
                 $vendor->vendor_detail_url = route('order.show.detail', [$order->id, @$vendor->vendor_id]);
                 else
@@ -333,6 +471,11 @@ class OrderController extends BaseController
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
                     $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image)? $product->media->first()->image->path : getDefaultImagePath();
+                    if(!is_null($product->product) && ($product->quantity > $product->product->variant[0]->quantity))
+                    {
+                        $vendor->isAlert = true;
+                        $vendor->alertMessage = __("You are low on stock");
+                    }
                 }
 
                 if ($vendor->delivery_fee > 0) {
@@ -342,7 +485,7 @@ class OrderController extends BaseController
                     // $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : convertDateTimeInTimeZone($vendor->created_at, $user->timezone, 'h:i A');
                     $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : dateTimeInUserTimeZone($vendor->created_at, $user->timezone);
                     //$order->converted_scheduled_date_time = $order->scheduled_date_time;
-                    $order->converted_scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
+                    $order->converted_scheduled_date_time = $scheduled_date_time;
                 }
 
                 $vendor->product_total_count = $product_total_count;
@@ -356,17 +499,26 @@ class OrderController extends BaseController
                 } elseif ($luxury_option->title == 'dine_in') {
                     $luxury_option_name = 'Dine-In';
                 } else {
-                    $luxury_option_name = 'Delivery';
+                    $luxury_option_name = getNomenclatureName($luxury_option->title, $langId, false);
+                    //$luxury_option_name = 'Delivery';
                 }
             }
             $order->luxury_option_name = __($luxury_option_name);
             if ($order->vendors->count() == 0) {
                 $orders->forget($key);
             }
+            $order->scheduled_date_time = $scheduled_date_time;
+            
         }
         $admincurrency = ClientCurrency::getAdminCurrencySymbol();
 
-        return $this->successResponse(['orders' => $orders, 'pending_orders' => $pending_orders, 'active_orders' => $active_orders, 'orders_history' => $orders_history,'admin_currency' => $admincurrency], '', 201);
+        $response['orders'] = $orders;
+        $response['pending_orders'] = $pending_orders;
+        $response['active_orders'] = $active_orders;
+        $response['orders_history'] = $orders_history;
+        $response['admin_currency'] = $admincurrency;
+
+        return $this->successResponse($response, '', 201);
     }
 
     public function uploadReport(Request $request)
@@ -457,10 +609,10 @@ class OrderController extends BaseController
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
                 foreach ($product->addon as $ck => $addons) {
-                    $opt_price_in_currency = $addons->option->price;
-                    $opt_price_in_doller_compare = $addons->option->price;
+                    $opt_price_in_currency = $addons->option->price??0;
+                    $opt_price_in_doller_compare = $addons->option->price??0;
                     if ($clientCurrency) {
-                        $opt_price_in_currency = $addons->option->price / $divider;
+                        $opt_price_in_currency = $addons->option->price??0 / $divider;
                         $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                     }
                     $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $product->quantity);
@@ -489,7 +641,7 @@ class OrderController extends BaseController
             } elseif ($luxury_option->title == 'dine_in') {
                 $luxury_option_name = 'Dine-In';
             } else {
-                $luxury_option_name = 'Delivery';
+                $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
             }
         }
         $order->luxury_option_name = $luxury_option_name;
@@ -1006,7 +1158,7 @@ class OrderController extends BaseController
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
-            if ($order->payment_method == 1) {
+            if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
@@ -1070,15 +1222,18 @@ class OrderController extends BaseController
             );
 
             if ($customer->dial_code == "971") {
-                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                $customerno = "0" . $customer->phone_number;
             } else {                
-                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                'customer_dial_code' => $customer->dial_code ?? null,
                 'customer_email' => $customer->email ?? null,
                 'recipient_phone' => $customerno ?? rand(111111, 11111),
                 'recipient_email' => $customer->email ?? null,
@@ -1092,7 +1247,13 @@ class OrderController extends BaseController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'is_restricted' => $orderVendorDetails->is_restricted
+                'is_restricted' => $orderVendorDetails->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $orderVendorDetails->id,
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
             if($orderVendorDetails->is_restricted == 1)
             {
@@ -1144,7 +1305,7 @@ class OrderController extends BaseController
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
-            if ($order->payment_method == 1) {
+            if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
@@ -1189,15 +1350,18 @@ class OrderController extends BaseController
             );
 
             if ($customer->dial_code == "971") {
-                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                $customerno = "0" . $customer->phone_number;
             } else {                
-                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                'customer_dial_code' => $customer->dial_code ?? null,
                 'customer_email' => $customer->email ?? null,
                 'recipient_phone' => $customerno ?? rand(111111, 11111),
                 'recipient_email' => $customer->email ?? null,
@@ -1209,7 +1373,13 @@ class OrderController extends BaseController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'is_restricted' => $order_vendor->is_restricted
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1258,7 +1428,7 @@ class OrderController extends BaseController
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
-            if ($order->payment_method == 1) {
+            if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
@@ -1345,15 +1515,18 @@ class OrderController extends BaseController
 
 
             if ($customer->dial_code == "971") {
-                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                $customerno = "0" . $customer->phone_number;
             } else {                
-                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                'customer_dial_code' => $customer->dial_code ?? null,
                 'customer_email' => $customer->email ?? null,
                 'recipient_phone' => $customerno ?? rand(111111, 11111),
                 'recipient_email' => $customer->email ?? null,
@@ -1367,7 +1540,13 @@ class OrderController extends BaseController
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'request_type'=>$rtype??'P',
-                'is_restricted' => $order_vendor->is_restricted??'0'
+                'is_restricted' => $order_vendor->is_restricted??'0',
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
 
             // if($order_vendor->is_restricted == 1)
@@ -1663,10 +1842,8 @@ class OrderController extends BaseController
 
         if($scheduleTime != ''){
             $datetime = Carbon::parse($scheduleTime)->addMinutes($minutes);
-            $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         }else{
             $datetime = Carbon::parse($order_vendor_created_at)->addMinutes($minutes);
-            $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         }
         if(Carbon::parse($datetime)->isToday()){
             if($time_format == '12'){
@@ -1674,8 +1851,8 @@ class OrderController extends BaseController
             }else{
                 $time_format = 'HH:mm';
             }
-            $datetime = Carbon::parse($datetime)->isoFormat($time_format);
         }
+        $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         return $datetime;
     }
 
@@ -1753,7 +1930,8 @@ class OrderController extends BaseController
             } elseif ($luxury_option->title == 'dine_in') {
                 $luxury_option_name = 'Dine-In';
             } else {
-                $luxury_option_name = 'Delivery';
+                //$luxury_option_name = 'Delivery';
+                $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
             }
         }
         $order->luxury_option_name = $luxury_option_name;

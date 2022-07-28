@@ -147,7 +147,7 @@ class CategoryController extends FrontController{
             if(!Auth::user()){
                 return redirect()->route('customer.login');
             }else{
-                $user_addresses = UserAddress::get();
+                $user_addresses = UserAddress::whereNotNull('latitude')->whereNotNull('longitude')->get();
                 $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
                 $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
                 $riders = Rider::where('user_id',Auth::user()->id)->orderBy('id','DESC')->get();

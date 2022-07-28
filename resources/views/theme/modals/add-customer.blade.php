@@ -85,15 +85,7 @@
                                <a href="#"  class="btn btn-success btn-rounded waves-effect waves-light" >Add More Address</a>
                            </div>
                        </div>
-           
-                       
-           
-           
-           
                    </div>
-
-
-                   
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-info waves-effect waves-light">Submit</button>

@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\PromoCodeController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
-use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption}; 
+use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption}; 
 use GuzzleHttp\Client as GCLIENT;
 use Log;
 //use App\Http\Traits\MpesaStkpush;
@@ -579,8 +579,14 @@ class CartController extends BaseController
             $address = UserAddress::where('user_id', $cart->user_id)->where('is_primary', 1)->first();
             $address_id = ($address) ? $address->id : 0;
         }
-        $latitude = ($address) ? $address->latitude : '';
-        $longitude = ($address) ? $address->longitude : '';
+        if($type != 'delivery'){
+            $loggedin_user = Auth::user();
+            $latitude = $loggedin_user->latitude ?? '';
+            $longitude = $loggedin_user->longitude ?? '';
+        }else{
+            $latitude = ($address) ? $address->latitude : '';
+            $longitude = ($address) ? $address->longitude : '';
+        }
         $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = 0.00;
         $total_tax = $total_paying = $total_disc_amount = 0.00;
         $item_count = 0;
@@ -623,12 +629,28 @@ class CartController extends BaseController
                         $vendor_details['vendor_tables'] = $vendor_tables;
                     //    return $vendor_details['vendor_tables']; 
                     }
-                } else {
+                } 
+                else {
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
                         if ($address_id > 0) {
                             $serviceArea = $vendorData->vendor->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
                                 $query->select('vendor_id')
                                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                            })->where('id', $vendorData->vendor_id)->get();
+                        }
+                    }
+                }
+
+                if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                    if (!empty($latitude) && !empty($longitude)) {
+                        if(($preferences->slots_with_service_area == 1) && ($vendorData->vendor->show_slot == 0)){
+                            $serviceArea = $vendorData->vendor->where(function($query) use ($latitude, $longitude) {
+                                $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                })
+                                ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                });
                             })->where('id', $vendorData->vendor_id)->get();
                         }
                     }
@@ -681,7 +703,17 @@ class CartController extends BaseController
 
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
                     if(isset($prod->product) && !empty($prod->product)){
-
+                        if($prod->product->pharmacy_check == 1){
+                            $productPrescription = CartProductPrescription::where('cart_id', $cartID)->where('product_id', $prod->product->id)->get()->toArray();
+                            $uploadedPrescriptions = [];
+                            if(!empty($productPrescription)){
+                                foreach($productPrescription as $prescriptions){
+                                    $prescriptions['prescription']['prescription_id'] = $prescriptions['id'];
+                                    $uploadedPrescriptions[] = $prescriptions['prescription'];
+                                }
+                            }
+                            $prod->product->uploaded_prescriptions = $uploadedPrescriptions;
+                        }
                         if($prod->product->sell_when_out_of_stock == 0 && $prod->product->has_inventory == 1){
                             $quantity_check = productvariantQuantity($prod->variant_id);
                             if($quantity_check < $prod->quantity ){
@@ -827,6 +859,7 @@ class CartController extends BaseController
 
 
                             $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address);
+                            $deliveryDuration = 0;
                             if(isset($deliveries[0]))
                             {
                                 
@@ -836,17 +869,21 @@ class CartController extends BaseController
                                      });
                                      foreach($new as $rate){
                                          $deliveryCharges = $rate['rate'];
+                                         $deliveryDuration = $rate['duration'];
                                      }
                                      if($deliveryCharges)
                                      {
                                          $deliveryCharges = $rate['rate'];
+                                         $deliveryDuration = $rate['duration'];
                                      }else{
                                          $deliveryCharges = $deliveries[0]['rate'];
+                                         $deliveryDuration = $deliveries[0]['duration'];
                                          $code = $deliveries[0]['code'];
                                      }
  
                                  }else{
                                      $deliveryCharges = $deliveries[0]['rate'];
+                                     $deliveryDuration = $deliveries[0]['duration'];
                                      $code = $deliveries[0]['code'];
                                  }
 
@@ -858,7 +895,7 @@ class CartController extends BaseController
  
                         if(isset($deliveryCharges) && !empty($deliveryCharges)){
                                 $dtype = explode('_',$code);
-                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
+                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges, 'delivery_duration' => $deliveryDuration,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
                         }
                         
                      
@@ -1214,6 +1251,9 @@ class CartController extends BaseController
         } else {
             $cart->total_payable_amount = ($total_paying  + $total_tax) - ($total_disc_amount + $loyalty_amount_saved); 
         }
+        if($cart->total_fixed_fee_amount){
+            $cart->total_payable_amount = $cart->total_payable_amount +$cart->total_fixed_fee_amount;
+        }
         $wallet_amount_used = 0;
         if (isset($user)) {
             if ($user->balanceFloat > 0) {
@@ -1235,14 +1275,14 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
-        $cal_tip_value_total = ($cart->total_payable_amount - $cart->total_tax) + $cart->total_fixed_fee_amount;  
+        $cal_tip_value_total = ($cart->total_payable_amount - $cart->total_tax);  
         $cart->tip = array(
             ['label' => '5%', 'value' => decimal_format(0.05 * $cal_tip_value_total)],
             ['label' => '10%', 'value' => decimal_format(0.1 * $cal_tip_value_total)],
             ['label' => '15%', 'value' => decimal_format(0.15 * $cal_tip_value_total)]
         );
 
-        $cart->total_payable_amount= number_format((float)$cart->total_payable_amount +=$cart->total_fixed_fee_amount, 2, '.', '');
+        $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
         $cart->vendor_details = $vendor_details;
         $cart->cart_dinein_table_id = $cart_dinein_table_id;
         $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
@@ -1255,6 +1295,30 @@ class CartController extends BaseController
             $cart->off_scheduling_at_cart =  $preferences->off_scheduling_at_cart;
         }
         return $cart;
+    }
+
+    public function uploadPrescriptions(Request $request){
+        $user = Auth::user();
+        $user_id = $user->id;
+        if ($user) {
+            $cart = Cart::select('id')->where('status', '0')->where('user_id', $user_id)->first();
+            foreach ($request->prescriptions as $prescription) {
+                $cart_product_prescription = new CartProductPrescription();
+                $cart_product_prescription->cart_id = $cart->id;
+                $cart_product_prescription->vendor_id = $request->vendor_id;
+                $cart_product_prescription->product_id = $request->product_id;
+                $cart_product_prescription->prescription = Storage::disk('s3')->put('prescription', $prescription, 'public');
+                $cart_product_prescription->save();
+            }
+        }
+        return response()->json(['status' => 'success', 'message' => "Prescription upload successfully"]);
+    }
+
+    public function deleteProductPrescription(Request $request){
+        if(!empty($request->prescription_id)){
+            CartProductPrescription::where('id', $request->prescription_id)->delete();
+            return response()->json(['status' => 'success', 'message' => "Prescription remove successfully"]);
+        }
     }
 
     public function checkScheduleSlots(Request $request)
@@ -1330,7 +1394,8 @@ class CartController extends BaseController
                     );
                     $response = json_decode($res->getBody(), true);
                     if ($response && $response['message'] == 'success') {
-                        return $response['total'];
+                        $response_array[] = array('delivery_fee' => $response['total'], 'total_duration' => $response['total_duration']);
+                        return $response_array;
                     }
                 }
             }
@@ -1536,6 +1601,7 @@ class CartController extends BaseController
     {
         $option = array();
         $delivery_count = 0;
+        $delivery_duration = 0;
         try {
             if($vendorData->vendor_id)
             {
@@ -1544,15 +1610,17 @@ class CartController extends BaseController
         if($preferences->static_delivey_fee != 1)
         {
             //Dispatcher Delivery changes code
-            $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
-            if (!empty($deliver_charge)){
-                $deliver_charge = number_format($deliver_charge, 2, '.', '');
+            $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
+            if (!empty($deliver_response_array[0])){
+                $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format($deliver_response_array[0]['delivery_fee'], 2, '.', ''):'0.00';
+                $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
                 $option[] = array(
                     'type'=>'D',
                     'courier_name'=>__('Dispatcher'),
                     'rate' => $deliver_charge,
                     'courier_company_id' => 0,
                     'etd' => 0,
+                    'duration' => $delivery_duration,
                     'etd_hours' => 0,
                     'estimated_delivery_days' => 0,
                     'code' => 'D_0'
