@@ -68,6 +68,7 @@
     box-shadow: 0 0 5px rgb(0 0 0 / 50%);
 }
 
+
 @media (max-width: 767px){
     .al_mobile_menu{
     display: block;
@@ -94,4 +95,5 @@
         margin-right: 10px;
     }
     .al_body_template_two ul.onhover-show-div li a:hover{color: var(--theme-deafult);}
+    .date-radio-list:after{height: 0;}
     }
