@@ -24,7 +24,7 @@ $(document).ready(async function () {
         $('.scrollspy-menu a').on('click',function(){
             $("html, body").animate({ scrollTop:  $('#'+$(this).data('slug')).offset().top - (header_height+30) });
         })
-    },3000)
+    },1000)
 
 });
 

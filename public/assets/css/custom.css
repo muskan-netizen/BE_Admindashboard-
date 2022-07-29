@@ -368,6 +368,10 @@ color:#43bee1
 #import-product .modal-dialog .table-responsive {
   overflow-x: visible;
 }
+ul.nav-second-level.p-0.mx-2  span.mdi.mdi-book-outline,
+ul.nav-second-level.p-0.mx-2 span.mdi.mdi-chat-processing-outline {
+  margin-top: -4px;
+}
 
 
 
@@ -397,6 +401,5 @@ body[dir="rtl"] button.btn.btn-secondary.btn-success.waves-effect.waves-light{
 body[dir="rtl"] .dataTables_filter {
   left: 0px;
 }
-
 
 
