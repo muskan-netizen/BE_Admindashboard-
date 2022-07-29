@@ -342,10 +342,7 @@
         var className= 'left-message';
         var flex = '';
         var cdate = new Date(data.created_date);
-        if( Auth.auth_id == data.from_user_id && data.from_message == "from_user") {
-             className= 'right-message';
-            //  flex = '<div style="flex: 110%;"></div>';
-        }
+      
         html = `<div class=" ${className}">
                 ${flex}
                 <div class="mb-4">

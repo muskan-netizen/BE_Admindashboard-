@@ -33,8 +33,10 @@ trait ChatTrait{
         
         $result = array_values(array_column($request->all()['user_ids'], 'auth_user_id'));
         $removeAuth = array_values(array_diff($result, array($auid)));
+        
         $client_preferences = ClientPreference::select('fcm_server_key','favicon')->first();
         $devices            = UserDevice::whereNotNull('device_token')->whereIn('user_id',$removeAuth)->pluck('device_token') ?? [];
+        
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $SERVER_API_KEY = $client_preferences->fcm_server_key;
             $data = [
@@ -48,8 +50,10 @@ trait ChatTrait{
                 ],
                 "data" => [
                     "title" => $username,
+                    "room_id"=>$request->roomId,
+                    "room_id_text"=>$request->roomIdText,
                     "body"  => $request->text_message,
-                    'data'  => '',
+                    'data'  => 'chat_text',
                     'type'  => ""
                 ],
                 "priority" => "high"
