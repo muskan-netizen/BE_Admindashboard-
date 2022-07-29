@@ -1488,6 +1488,7 @@ $checkSlot = findSlot('', $vendor->id, '');
     <script src="{{ asset('front-assets/js/my-sliders.js') }}"></script>
     <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script>
+        var update_cart_product_schedule = "{{route('cart.updateProductSchedule')}}";
         // @if(!empty($vendor->banner))
         //     $(document).ready(function() {
         //         $("body").addClass("homeHeader");
