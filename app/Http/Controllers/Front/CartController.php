@@ -814,6 +814,7 @@ class CartController extends FrontController
             $total_container_charges = 0 ;
             $all_vendor_deliver_charges = 0 ;
             $all_vendor_markup_charges = 0;
+            $total_quantity = 0;
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
                 $user->timezone = $client_timezone->timezone ?? $user->timezone;
@@ -975,6 +976,7 @@ class CartController extends FrontController
                     $sub_total+=$quantity_price+$container_charges_in_currency;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
+                    $total_quantity += $prod->quantity; 
                    // $prod->pvariant->price = decimal_format($price_in_currency);
                     //dd($prod->pvariant->price);
                     $prod->pvariant->container_charges = decimal_format($container_charges_in_currency);
@@ -1555,6 +1557,7 @@ class CartController extends FrontController
             $cart->wallet_amount_available = decimal_format($wallet_amount_available);
             $cart->taxRates=$taxRates;
             $cart->action = $action;
+            $cart->totalQuantity = $total_quantity;
             $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
@@ -1938,8 +1941,9 @@ class CartController extends FrontController
 
         //     $expected_vendor_html = view('frontend.modals.expected_vendor_pricing')->with(['expected_vendors'=>$expected_vendors,'clientCurrency' => $clientCurrency])->render();
         // }
+        $mycartView = view('frontend.cart-page')->with(['cart_details' => json_decode($cart_details)])->render();
 
-        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail]);
+        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView]);
     }
 
 

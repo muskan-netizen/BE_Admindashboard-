@@ -2139,6 +2139,8 @@ $(document).ready(function () {
                 if (response.status == "success") {
                     $("#cart_table").html('');
                     $(".spinner-box").hide();
+                    $("#mycart").html(response.mycart);
+                    return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
                     if (response.cart_details.length != 0) {
