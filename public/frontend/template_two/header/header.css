@@ -91,6 +91,7 @@ display: block;
 }
 .al_body_template_two  #content-wrap .site-header .navbar-brand img{
     height: 40px;
+    display: block;
 }
 .al_body_template_two ul.onhover-show-div{min-width: 200px;box-shadow: none;}
 .al_body_template_two ul.onhover-show-div li{

@@ -13,7 +13,7 @@
     <link href="{{ asset('assets/libs/nestable2/nestable2.min.css') }}" rel="stylesheet" type="text/css" />
 
     <style>
-      
+
 
     </style>
 
@@ -36,15 +36,15 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-body position-relative">
-                        
+                    <div class="card-body position-relative p-0">
+
                             <div class="chat-body row overflow-hidden shadow bg-light rounded">
 
-                                @include('backend.chat.agentpart.left') 
-                                @include('backend.chat.agentpart.right') 
+                                @include('backend.chat.agentpart.left')
+                                @include('backend.chat.agentpart.right')
                             </div>
-                        
-                    
+
+
                     </div>
                 </div>
             </div>
@@ -75,8 +75,8 @@
           if(window.location.pathname.split('/')[4] !=  undefined && window.location.pathname.split('/')[4] !=null) {
             await $('#room_'+window.location.pathname.split('/')[4]).click();
           }
-          
+
     })
-   
+
   </script>
 @endsection

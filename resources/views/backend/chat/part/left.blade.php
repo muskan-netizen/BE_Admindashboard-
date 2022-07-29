@@ -43,19 +43,16 @@
 								</div>
 								<div class="col-8 position-relative pl-0">
 									<div class="alNameTime last_message">
-										@if(count($chatroom['chat_Data']) > 0)
+										{{-- @if(count($chatroom['chat_Data']) > 0) --}}
 											<h6 id="preview_message_name_{{$chatroom['_id']}}" class="mb-1 mt-0">{{ @$chatroom['chat_Data'][0]['username'] }}</h6>
 											{{-- <div class="w-100 d-flex mt-2">
 												<img style="margin-right: 10px" class="rounded-circle userImg" src="images/avatar-5.jpg">
 												<img class="rounded-circle userImg" src="images/avatar-5.jpg">
 											</div> --}}
-											@php
-											$date = date_create($chatroom['chat_Data'][0]['created_date']);
-											$new_date = date_format($date, 'l F jS Y H:i:s');
-											@endphp
+										
 											<span id="preview_message_time_{{$chatroom['_id']}}"><?php echo $vData;?></span>
 
-										@endif
+										{{-- @endif --}}
 									</div>
 									<p id="preview_message_{{$chatroom['_id']}}" class="orderChatMessage mb-0">{{@$chatroom['chat_Data'][0]['message']}} </p>
 

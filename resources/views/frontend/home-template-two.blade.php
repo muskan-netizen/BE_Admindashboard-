@@ -5,15 +5,27 @@
 @section('css')
 <style type="text/css">
 .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}
-.shimmer_effect{overflow:hidden}.grid-row.grid-4-4{display:grid;grid-template-columns:repeat(4,1fr);grid-gap:20px}.shimmer_effect .card_image{width:100%;height:100%}.shimmer_effect .card_image.loading{width:100%;height:180px}.shimmer_effect .card_title.loading{width:50%;height:1rem;margin:1rem 0;border-radius:3px;position:relative}.shimmer_effect .card_description{padding:8px;font-size:16px}.shimmer_effect .card_description.loading{height:1rem;margin:1rem 0;border-radius:3px}.shimmer_effect .loading{position:relative;background:#cccccc86}.shimmer_effect .loading:after{content:"";display:block;position:absolute;top:0;width:100%;height:100%;transform:translateX(-100px);background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:loading .8s infinite}.no-store-wrapper{display:none}@keyframes loading{100%{transform:translateX(100%)}}
+.shimmer_effect{overflow:hidden}
+.grid-row.grid-4-4{display:grid;grid-template-columns:repeat(4,1fr);grid-gap:20px}
+.shimmer_effect .card_image{width:100%;height:100%}
+.shimmer_effect .card_image.loading{width:100%;height:180px}
+.shimmer_effect .card_title.loading{width:50%;height:1rem;margin:1rem 0;border-radius:3px;position:relative}
+.shimmer_effect .card_description{padding:8px;font-size:16px}
+.shimmer_effect .card_description.loading{height:1rem;margin:1rem 0;border-radius:3px}
+.shimmer_effect .loading{position:relative;background:#cccccc86}.shimmer_effect .loading:after{content:"";display:block;position:absolute;top:0;width:100%;height:100%;transform:translateX(-100px);background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:loading .8s infinite}.no-store-wrapper{display:none}@keyframes loading{100%{transform:translateX(100%)}}
 .cardbanner {border-radius:0;height:550px;}
 .shimmer_effect .grid-row .cards {margin-bottom: 40px;}
 .shimmer_effect .grid-row .card_icon{display:none;}
 .alTemplateTwoShimnerEffect .alTemplateTwoShimnerEffectBanner{width: 100%;max-width: 100%;}
 .shimmer_effect .grid-row .card_image{border-radius:0;height:200px !important;}
 .container_al{width: 100%;}
+.alTwoHomeShimmer{position: fixed !important; background-color:#fff;width: 100%;top:0;z-index: 999 !important;}
+.top_bar{height:50px;}
+.logoArea_bar{height:54px;margin:20px 0 10px;}
 .al_body_template_two section.section-b-space_.p-0.ratio_asos .container_al.shimmer_effect{width:100%; max-width: 100%;}
+.alTabsView{border-radius:50px;}
 @media(max-width:767px){.cardbanner {border-radius:0;height:250px;}}
+@media (max-width: 991px){.al_body_template_two #alTaxiBookingWrapper .cab-booking {height: auto;}}
 </style>
 
 @endsection
@@ -21,7 +33,37 @@
 
 {{-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> --}}
 <!-- shimmer_effect start -->
-<section class="section-b-space_  p-0 ratio_asos">
+<section class="section-b-space_  p-0 ratio_asos alTwoHomeShimmer">
+    <div class="container-fulid shimmer_effect topBar">
+        <div class="row">
+            <div class="col-12 cards">
+                <div class="top_bar loading"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container shimmer_effect topBar">
+        <div class="row">
+            <div class="col-2 cards">
+                <div class="logoArea_bar loading"></div>
+            </div>
+            <div class="col-1 cards">
+                <div class="logoArea_bar"></div>
+            </div>
+            <div class="col-7 cards">
+                <div class="logoArea_bar alTabsView loading"></div>
+            </div>
+            <div class="col-2 cards">
+                <div class="logoArea_bar loading"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fulid mt-1 mb-1 shimmer_effect topBar">
+        <div class="row">
+            <div class="col-12 cards">
+                <div class="top_bar loading"></div>
+            </div>
+        </div>
+    </div>
 	<div class="container_al mb-3 shimmer_effect">
 		<div class="row">
 			<div class="col-12 cards">

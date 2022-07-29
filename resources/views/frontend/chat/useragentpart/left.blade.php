@@ -1,7 +1,8 @@
 
 {{-- <div class="container">
 	<div class="chat-body row overflow-hidden shadow bg-light rounded"> --}}
-		<div class="col-4 px-0">
+		<div class="col-lg-5 col-xl-4 px-0 alLeftMobileChat">
+
 			<div class="chat-list-container flex-column d-flex pr-4">
 				{{-- <div class="py-2">
 					<p class="h5 mb-0 py-1 chats-title">Chats</p>
@@ -47,7 +48,7 @@
 								</div>
 								<div class="col-8 position-relative pl-0">
 									<div class="alNameTime last_message">
-										@if(count($chatroom['chat_Data']) > 0)
+										{{-- @if(count($chatroom['chat_Data']) > 0) --}}
 											<h6 id="preview_message_name_{{$chatroom['_id']}}" class="mb-1 mt-0">{{ @$chatroom['chat_Data'][0]['username'] }}</h6>
 											{{-- <div class="w-100 d-flex mt-2">
 												<img style="margin-right: 10px" class="rounded-circle userImg" src="images/avatar-5.jpg">
@@ -60,7 +61,7 @@
 											<span id="preview_message_time_{{$chatroom['_id']}}"><?php echo $vData;?>
 											</span>
 
-										@endif
+										{{-- @endif --}}
 									</div>
 									<p id="preview_message_{{$chatroom['_id']}}" class="orderChatMessage mb-0">{{@$chatroom['chat_Data'][0]['message']}} </p>
 

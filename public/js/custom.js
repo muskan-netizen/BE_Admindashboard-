@@ -2127,7 +2127,7 @@ $(document).ready(function () {
         //     }
         // );
     }
-    function cartHeader(address_id) {   
+    function cartHeader(address_id) {
         $(".shopping-cart").html("");
         $(".spinner-box").show();
 

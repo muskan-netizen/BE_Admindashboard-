@@ -103,7 +103,7 @@ if (Session::has('toaster')) {
 @if((!empty(Auth::user())))
 @if((!empty($socket_url)))
     <script>
-        createSocketConnection();
+        //createSocketConnection();
     </script>
 @endif
 <script>

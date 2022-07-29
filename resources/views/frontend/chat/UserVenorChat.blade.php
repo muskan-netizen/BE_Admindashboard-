@@ -53,30 +53,15 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="page-title-box">
-                                <h4 class="page-title">{{ getNomenclatureName('Admin Chat', true) }}</h4>
-                            </div>
-                        </div>
-                    </div>
-
+                <div class="page-title-box">
+                    <h4 class="page-title">{{ getNomenclatureName('Admin Chat', true) }}</h4>
                 </div>
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body position-relative">
-                                    <div class="container">
-                                        <div class="chat-body row overflow-hidden shadow bg-light rounded">
-
-                                            @include('frontend.chat.uservendorpart.left')
-                                            @include('frontend.chat.uservendorpart.right')
-                                        </div>
-                                    </div>
-
-                                </div>
+                <div class="container-fluid p-0">
+                    <div class="card">
+                        <div class="card-body position-relative p-0">
+                            <div class="chat-body row overflow-hidden shadow bg-light rounded">
+                                @include('frontend.chat.useragentpart.left')
+                                @include('frontend.chat.useragentpart.right')
                             </div>
                         </div>
                     </div>
