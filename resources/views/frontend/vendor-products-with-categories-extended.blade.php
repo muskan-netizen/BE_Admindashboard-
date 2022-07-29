@@ -568,7 +568,8 @@ $checkSlot = findSlot('', $vendor->id, '');
         <!-- chooseYourOffer start -->
 
         <!-- Why people visit here start -->
-        <section class="whyPeopleVisit py-5">
+        <p>{{!! $vendor->dynamic_html !!}}</p>
+        {{-- <section class="whyPeopleVisit py-5">
         	<div class="container">
         		<div class="row">
         			<div class="col-md-12">
@@ -595,7 +596,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         			</div>
         		</div>
         	</div>
-        </section>
+        </section> --}}
         <!-- Why people visit here end -->
 
         <!-- More spas nearby start -->

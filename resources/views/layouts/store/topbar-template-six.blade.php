@@ -170,21 +170,30 @@ $applocale = session()->get('applocale');
                   <div class="alFindSec d-none d-lg-block">
                      <ul class="p-0 m-0 d-flex align-items-center justify-content-between">
                         @if(isset($preference))
-                        @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
-                        <li class="border-right mr-3 pr-3">
-                           <div class="alLocation homepage-address" href="#edit-address" data-toggle="modal" >
-                              <!-- data-toggle="modal" data-target="#googleMapModal" -->
-                              <span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span>
-                           </div>
-                        </li>
-                        @endif
+                           @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
+                           <li class="border-right mr-3 pr-3">
+                              <div class="alLocation homepage-address" href="#edit-address" data-toggle="modal" >
+                                 <!-- data-toggle="modal" data-target="#googleMapModal" -->
+                                 <span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span>
+                              </div>
+                           </li>
+                           @endif
                         @endif
                         <li class="pr-3">
+                           <div class="d-inline-flex al_searchType align-items-center justify-content-start px-2 position-relative">
+                              <button class="btn px-0"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                 @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp
+                              <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off">
+                              <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
+                           </div>
+                        </li>
+                        
+                        {{-- <li class="pr-3">
                            <div class="alChooseDate">
                               <input type="input" class="form-control" value="{{session('selectedDate') ?? ''}}"
                                id="inputDate" placeholder="{{session('selectedDate') ? session('selectedDate') : __('Choose Date') }} ">
                            </div>
-                        </li>
+                        </li> --}}
                         <li class="pr-0">
                            <div class="alFindGo">
                               <button class="btn">Go</button>

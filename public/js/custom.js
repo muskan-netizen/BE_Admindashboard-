@@ -1,6 +1,6 @@
 $(document).ready(async function () {
     //alert();
-    await setTimeout(function(){
+    //await setTimeout(function(){
         var footer_height = $('.footer-light').height();
         var header_height = $('.site-header').height();
         var window_height = $(window).height();
@@ -24,7 +24,7 @@ $(document).ready(async function () {
         $('.scrollspy-menu a').on('click',function(){
             $("html, body").animate({ scrollTop:  $('#'+$(this).data('slug')).offset().top - (header_height+30) });
         })
-    },1000)
+   // },1000)
 
 });
 

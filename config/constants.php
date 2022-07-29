@@ -20,7 +20,7 @@ return [
     'takeaway'     => 'Takeaway',           // Customer can order and take there meal along with them.
     'rental'       => 'Rentals',            // Products which are available for rents will be mentioned in this flow.
     'pick_drop'    => 'Pick & Drop',        // Rides or pickup delivery products will be shown in this flow.
-    'on_demand'    => 'On Demand Services', // Services that are available any time you want to use it. 
+    'on_demand'    => 'Services', // Services that are available any time you want to use it. 
     'laundry'      => 'Laundry',            // Laundry related products are mentioned in this flow.
   ],
   // VendorTypes database
@@ -45,7 +45,7 @@ return [
     'products_service'   => "Products Service", // 
     'rental_service'     => "Rental Service",
     'pick_drop_service'  => "Pick and Drop Service",
-    'on_demand_service'  => "On Demand Service",
+    'on_demand_service'  => "Services",
     'laundry_service'    => "Laundry Service",
   ],
 ];

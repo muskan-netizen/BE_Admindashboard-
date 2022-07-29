@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout,ProductTag,Facilty};
+use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout,ProductTag,Facilty,WebStylingOption};
 use Log;
 class VendorController extends FrontController
 {
@@ -84,8 +84,14 @@ class VendorController extends FrontController
         $tag_id = $request->has('tag') && $request->tag ? $request->tag : null;
         $preferences = Session::get('preferences');
         //die($slug);
+        // this array for on demand service 
+        $cartData   = [];
+        $period     = [];
+        $time_slots = [];
+
         $vendor = Vendor::with('slot.day', 'slotDate', 'productsLive.reviews')
-            ->select('id','email', 'name', 'slug', 'desc','short_desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot','closed_store_order_scheduled','instagram_url','country','state')->where('slug', $slug)->where('status', 1)->firstOrFail();
+            ->select('id','email', 'name', 'slug', 'desc','short_desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot','closed_store_order_scheduled','instagram_url','country','state',
+            'dynamic_html')->where('slug', $slug)->where('status', 1)->firstOrFail();
         $vendor->is_vendor_closed = 0;
         if($vendor->show_slot == 0){
             if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
@@ -141,8 +147,9 @@ class VendorController extends FrontController
                     })->groupBy('product_variant_sets.variant_type_id')->get();
         $navCategories = $this->categoryNav($langId);
         $vendorIds[] = $vendor->id;
+        
         $np = $this->productList($vendorIds, $langId, $curId, 'is_new');
-
+      
         foreach($np as $new){
             $new->translation_title = (!empty($new->translation->first())) ? $new->translation->first()->title : $new->sku;
             $new->variant_multiplier = (!empty($new->variant->first())) ? $new->variant->first()->multiplier : 1;
@@ -172,7 +179,7 @@ class VendorController extends FrontController
         })->with('tags')->join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get(); 
         // dd(DB::getQueryLog());
         // dd($range_products->toArray());
-
+      
         if($vendor->vendor_templete_id == 2){
             $page = 'categories';
         }elseif($vendor->vendor_templete_id == 5){
@@ -180,27 +187,76 @@ class VendorController extends FrontController
             $products = Product::byProductCategoryServiceType($type)->select('averageRating')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
             $vendor->vendorRating = $this->vendorRating($products);
         }elseif($vendor->vendor_templete_id == 6){
-            $page = 'products-with-categories-extended';
-            $products = Product::select('averageRating')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
-            $vendor->vendorRating = $this->vendorRating($products);
-            $vendor->facilty  = [];
-            if( (isset($preferences->is_vendor_tags)) && ($preferences->is_vendor_tags == 1) ){
-                $vendor->facilty  = Facilty::with(['translations'=> function ($q) use ($langId) {
-                    $q->where('language_id',$langId);
-                }])->get();
+            $set_template = WebStylingOption::where('web_styling_id',1)->where('is_selected',1)->first();
+            if($set_template->template_id == 6)
+            {
+                $page = 'products-with-categories-extended';
+                $products = Product::select('averageRating')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
+                $vendor->vendorRating = $this->vendorRating($products);
+                $vendor->facilty  = [];
+                if( (isset($preferences->is_vendor_tags)) && ($preferences->is_vendor_tags == 1) ){
+                    $vendor->facilty  = Facilty::with(['translations'=> function ($q) use ($langId) {
+                        $q->where('language_id',$langId);
+                    }])->get();
+                }
+                 // if vendor type selecter on demand service by harbans i don't want to do this garvage 
+                    if($type == 'on_demand'){
+                        $cartDataGet    = $this->getCartOnDemand($request);
+                        $cartData       = $cartDataGet['cartData'];
+                        $period         = $cartDataGet['period'];
+                        $time_slots     = $cartDataGet['time_slots'];
+
+                        if($request->step == 2 && empty($request->addons) && empty($request->dataset)){
+                            $addos = 0;
+                            foreach($cartDataGet['cartData'] as $cp){
+                                if(count($cp->product->addOn) > 0)
+                                $addos = 1;
+                            }
+                          
+                           if($addos == 1){
+                            $name = \Request::route()->getName();
+                            $new_url = $request->path()."?step=1&addons=1";
+                            return redirect($new_url);
+                           }else{
+                           
+                            $name = \Request::route()->getName();
+                            $new_url = $request->path()."?step=2&dataset=1";
+                            return redirect($new_url);
+                           }
+                        }
+                        if($request->step == 2 && empty($request->addons))
+                        {
+                            $skip_addons = 0;
+                            if ($request->session()->has('skip_addons')) {
+                                $skip_addons =1;
+                            }
+                            if($skip_addons != 1){
+                                $request->session()->put('skip_addons', '1');
+                                $new_url = $request->path()."?step=2";
+                                return redirect($new_url);
+                            }
+                           
+                        }
+                        //pr('asdf');
+                        $page = 'products-with-categories-ondemand';   
+                    }
+            }else{
+                $page = 'products-with-categories';
+                $products = Product::byProductCategoryServiceType($type)->select('averageRating')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
+                $vendor->vendorRating = $this->vendorRating($products);
             }
-            
         }
         else{
             $page = 'products';
         }
-
+    
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             $vendors = $this->getServiceAreaVendors();
             if(isset($vendor) && isset($vendor->id)){
                 if(!in_array($vendor->id, $vendors)){
                     $listData =collect();
-                    return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
+                   //pr($vendor->toArray());
+                    return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'cartData'=>$cartData,'period' => $period,'time_slots'=>$time_slots]);
                 }
             }
 
@@ -231,12 +287,12 @@ class VendorController extends FrontController
                 $is_vendor_closed = 0;
             }
         }
-       // pr($vendor->toArray());
+       
         $product_tag_ids = Product::byProductCategoryServiceType($type)->where('vendor_id', $vendor->id)->where('is_live', 1)->pluck('id')->toArray();
         $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
         $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();
          // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';vendor-products-with-categories-extended
-        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed]);
+        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed,'cartData'=>$cartData,'period' => $period ,'time_slots'=>$time_slots]);
     }
 
     /**

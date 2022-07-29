@@ -338,3 +338,23 @@ table.ui-datepicker-calendar td a{font-size: 12px;height: 30px;width: 30px;line-
 table.ui-datepicker-calendar a{color: #777;font-weight: 400;}
 table.ui-datepicker-calendar td.ui-datepicker-today a{color: #fff;background-color: var(--theme-deafult);}
 table.ui-datepicker-calendar td:hover a{background-color: #eee;}
+
+.list-box {
+    box-shadow: 0 16px 32px 0 rgb(0,0,0 ,.5)!important;
+    border-radius: 0 0 10px 10px!important;
+    padding: 10px 10px;
+    background: #fff;
+    position: absolute;
+    top: 100%;
+    z-index: 9999999999;
+    left: 0%;
+    width: 100%;
+    display: block;
+    height: auto;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin:0 auto;
+}
+/* royo_whatsapp_img */
+body .royo_whatsapp_img {bottom: 11%;}.royo_whatsapp_img img {width: 50px;}.royo_whatsapp_img {position: fixed;z-index: 99999;bottom:7%;left: 1%;}
