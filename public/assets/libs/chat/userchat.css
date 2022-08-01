@@ -235,8 +235,13 @@ a.user_data_left:nth-child(3) {
     margin-right: 5px !important;
 }
 
+@media(max-width: 1199px){
+.ctext-wrap{max-width: 90%;}
+}
+@media(max-width: 991px){
 
 
+}
 
 
 

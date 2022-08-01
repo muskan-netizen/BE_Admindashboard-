@@ -210,7 +210,9 @@ $(document).ready( async function () {
     
     //$(".navigation-tab-item").click(function() {
     $(document).on('click','.navigation-tab-item > a',function() {
-       
+        if($.hasAjaxRunning()){
+            return false;
+        }
         //$(".navigation-tab-item").removeClass("active");
         $('.vendor_mods').find('.nav-link').removeClass('active');
         $(this).addClass("active");
@@ -940,7 +942,6 @@ $(document).ready( async function () {
                 //             loadMainMenuSlider();
                 //         }
                 //    }
-                console.log('asd');
                 resizeMenuSlider();
                 $("#main-menu").css("display" , "flex");
 

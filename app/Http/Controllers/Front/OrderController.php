@@ -775,6 +775,8 @@ class OrderController extends FrontController
             $order->fixed_fee_amount = $fixed_fee_amount;
             $order->specific_instructions = $cart->specific_instructions ?? null;
             $order->is_gift = $request->is_gift ?? 0;
+            $order->user_latitude = $latitude ? $latitude : null;
+            $order->user_longitude = $longitude ? $longitude : null;
             
             /* Save initial details of order */
             $order->save();
@@ -1260,7 +1262,7 @@ class OrderController extends FrontController
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
            
-            $ex_gateways = [4,5,7,8,9,10,12,13,15,17,18,19,20,21,23,24,25,26,28,29,30,31,32,34,35,36,37,39,40,41,42,43,44,45]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash,Stipre_oxxo,stripe_ideal 
+            $ex_gateways = [4,5,7,8,9,10,12,13,15,17,18,19,20,21,23,24,25,26,28,29,30,31,32,34,35,36,37,39,40,41,42,43,44,45,47]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash,Stipre_oxxo,stripe_ideal 
            
             if (!in_array($request->payment_option_id, $ex_gateways)) {
 
@@ -1303,7 +1305,7 @@ class OrderController extends FrontController
                     'type' => 'cart'
                 ]);
             }
-            $order = $order->with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
+            $order = $order->with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id', 'vendors.vendor', 'products'])->where('order_number', $order->order_number)->first();
             if (!in_array($request->payment_option_id, $ex_gateways)) {
                 if (!empty($order->vendors)) {
                     foreach ($order->vendors as $vendor_value) {

@@ -1,7 +1,8 @@
 
 {{-- <div class="container">
 	<div class="chat-body row overflow-hidden shadow bg-light rounded"> --}}
-		<div class="col-4 px-0">
+		<div class="col-lg-5 col-xl-4 px-0 alLeftMobileChat">
+
 			<div class="chat-list-container flex-column d-flex pr-4">
 				{{-- <div class="py-2">
 					<p class="h5 mb-0 py-1 chats-title">Chats</p>

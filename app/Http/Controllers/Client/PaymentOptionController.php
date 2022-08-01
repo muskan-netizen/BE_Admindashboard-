@@ -31,7 +31,7 @@ class PaymentOptionController extends BaseController
     public function index()
     {
         
-        $payment_codes = array('cod', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr');
+        $payment_codes = array('cod', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
 
         $payout_codes = array('cash', 'stripe', 'pagarme');
@@ -620,7 +620,18 @@ class PaymentOptionController extends BaseController
                                 'merchant_id' => $request->telr_merchant_id,
                                 'api_key' => $request->telr_api_key
                             ));
-                            break;     
+                            break;
+
+                        case 'khalti':
+                            $validatedData = $request->validate([
+                                'khalti_public_key' => 'required',
+                                'khalti_secret_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'api_key' => $request->khalti_public_key,
+                                'api_secret_key' => $request->khalti_secret_key
+                            ));
+                        
 
                     }
                 }
