@@ -2,7 +2,8 @@
 
 Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], function () {
     Route::get('country-list', 'Api\v1\AuthController@countries');
-    Route::group(['middleware' => ['dbCheck', 'AppAuth', 'apilogger']], function() {
+   // Route::group(['middleware' => ['dbCheck', 'AppAuth', 'apilogger']], function() {
+    Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() { //, 'apilog
         Route::get('logout', 'Api\v1\AuthController@logout');
         Route::post('sendToken', 'Api\v1\AuthController@sendToken');
         Route::post('verifyAccount', 'Api\v1\AuthController@verifyToken');
@@ -14,7 +15,7 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
 
 
     });
-    Route::group(['middleware' => ['dbCheck', 'apilogger']], function() {
+    Route::group(['middleware' => ['dbCheck']], function() {
         Route::post('login', 'Api\v1\AuthController@login');
         Route::post('loginViaUsername', 'Api\v1\AuthController@loginViaUsername');
         Route::post('verify/phoneLoginOtp', 'Api\v1\AuthController@verifyPhoneLoginOtp');
@@ -30,12 +31,12 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
 
 Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () {
    
-    Route::group(['middleware' => ['dbCheck', 'apilogger']], function() {
+    Route::group(['middleware' => ['dbCheck']], function() {
       
         Route::post('social/info', 'Api\v1\SocialController@getKeys');
         Route::post('social/login/{driver}', 'Api\v1\SocialController@login');
     });
-    Route::group(['middleware' => ['dbCheck', 'AppAuth', 'apilogger']], function() {   
+    Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() {       
         
          /**Chat resourses */
         //Route::resource('chat', 'Client\ChatController');
@@ -54,6 +55,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         
 
 
+          
         Route::get('profile', 'Api\v1\ProfileController@profile');
         Route::get('getProfile', 'Api\v1\ProfileController@getProfile');
         Route::get('account', 'Api\v1\ProfileController@account');

@@ -25,7 +25,10 @@
 .al_body_template_two section.section-b-space_.p-0.ratio_asos .container_al.shimmer_effect{width:100%; max-width: 100%;}
 .alTabsView{border-radius:50px;}
 @media(max-width:767px){.cardbanner {border-radius:0;height:250px;}}
-@media (max-width: 991px){.al_body_template_two #alTaxiBookingWrapper .cab-booking {height: auto;}}
+@media (max-width: 991px){
+.al_body_template_two #alTaxiBookingWrapper .cab-booking {
+height: auto;
+}}
 </style>
 
 @endsection

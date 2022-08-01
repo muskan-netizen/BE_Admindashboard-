@@ -210,39 +210,47 @@ class OrderController extends BaseController
         $orders_history = clone $order_count;
 
         /* luxury option orders (only active orders) */
-        $luxury_order_status_options = [6, 3];
-        $filter_orders = clone $orders;
-        $filter_orders = $filter_orders->with(['vendors' => function ($query) use ($luxury_order_status_options, $user) {
-            $query->whereNotIn('order_status_option_id', $luxury_order_status_options);
-            if ($user->is_superadmin == 0) {
-                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
-                    $query1->where('user_id', $user->id);
-                });
-            }
-        }])
-        ->whereHas('vendors', function ($query) use ($luxury_order_status_options, $request) {
-            $query->whereNotIn('order_status_option_id', $luxury_order_status_options)
-            ->where(function ($q1) {
-                // 1 for cod ,38 for offline manual by harbans
-                $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
-                $q1->orWhere(function ($q2) {
-                    $q2->whereIn('payment_option_id', [1,38]);
-                });
-            });
-            if (!empty($request->get('vendor_id'))) {
-                $query->where('vendor_id', $request->get('vendor_id'));
-            }
-        });
+        // $luxury_order_status_options = [6, 3];
+        // $filter_orders = clone $orders;
+        // $filter_orders = $filter_orders->with(['vendors' => function ($query) use ($luxury_order_status_options, $user) {
+        //     $query->whereNotIn('order_status_option_id', $luxury_order_status_options);
+        //     if ($user->is_superadmin == 0) {
+        //         $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+        //             $query1->where('user_id', $user->id);
+        //         });
+        //     }
+        // }])
+        // ->whereHas('vendors', function ($query) use ($luxury_order_status_options, $request) {
+        //     $query->whereNotIn('order_status_option_id', $luxury_order_status_options)
+        //     ->where(function ($q1) {
+        //         // 1 for cod ,38 for offline manual by harbans
+        //         $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+        //         $q1->orWhere(function ($q2) {
+        //             $q2->whereIn('payment_option_id', [1,38]);
+        //         });
+        //     });
+        //     if (!empty($request->get('vendor_id'))) {
+        //         $query->where('vendor_id', $request->get('vendor_id'));
+        //     }
+        // });
 
-        foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
-            $clientVendorTypes = $vendor_typ_key.'_check';
-            $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+        $lux_id = 0;
+        if(isset($request->order_type)){
+            $lux_id = LuxuryOption::where('title', $request->order_type)->value('id');
+        }
+        // if($lux_id > 0){
+        //     $filter_orders = $filter_orders->where('luxury_option_id', $lux_id);
+        // }
+
+        // foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+        //     $clientVendorTypes = $vendor_typ_key.'_check';
+        //     $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
             
-            if($preferences->$clientVendorTypes == 1){
-                $vendorTypeOrders = $VendorTypesName.'_orders';
-                $$vendorTypeOrders = clone $filter_orders;
-            }
-        }        
+        //     if($preferences->$clientVendorTypes == 1){
+        //         $vendorTypeOrders = $VendorTypesName.'_orders';
+        //         $$vendorTypeOrders = clone $filter_orders;
+        //     }
+        // }
         /* luxury option orders */
 
         if ($filter_order_status) {
@@ -301,35 +309,35 @@ class OrderController extends BaseController
                     });
                     break;
                 
-                /* luxury option orders */
-                case 'delivery_orders':
-                    $orders = $filter_orders->where('luxury_option_id', 1);
-                    break;
+                // /* luxury option orders */
+                // case 'delivery_orders':
+                //     $orders = $filter_orders->where('luxury_option_id', 1);
+                //     break;
                 
-                case 'dine_in_orders':
-                    $orders = $filter_orders->where('luxury_option_id', 2);
-                    break;
+                // case 'dine_in_orders':
+                //     $orders = $filter_orders->where('luxury_option_id', 2);
+                //     break;
                 
-                case 'takeaway_orders':
-                    $orders = $filter_orders->where('luxury_option_id', 3);
-                    break;
+                // case 'takeaway_orders':
+                //     $orders = $filter_orders->where('luxury_option_id', 3);
+                //     break;
 
-                case 'rental_orders':
-                    $orders = $filter_orders->where('luxury_option_id', 4);
-                    break;
+                // case 'rental_orders':
+                //     $orders = $filter_orders->where('luxury_option_id', 4);
+                //     break;
 
-                case 'pick_drop_orders':
-                    $orders = $filter_orders->where('luxury_option_id', 5);
-                    break;
+                // case 'pick_drop_orders':
+                //     $orders = $filter_orders->where('luxury_option_id', 5);
+                //     break;
                 
-                case 'on_demand_orders':
-                    $orders = $filter_orders->where('luxury_option_id', 6);
-                    break;
+                // case 'on_demand_orders':
+                //     $orders = $filter_orders->where('luxury_option_id', 6);
+                //     break;
                 
-                case 'laundry_orders':
-                    $orders = $filter_orders->where('luxury_option_id', 7);
-                    break;
-                /* luxury option orders */
+                // case 'laundry_orders':
+                //     $orders = $filter_orders->where('luxury_option_id', 7);
+                //     break;
+                // /* luxury option orders */
             }
         }
         $orders = $orders->whereHas('vendors')->where(function ($q1) {
@@ -361,6 +369,20 @@ class OrderController extends BaseController
             $orders = $orders->select('*', 'id as total_discount_calculate')->orderBy('id', 'DESC');
         }
         
+        // set order vendor type variables to get count
+        foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+            $clientVendorTypes = $vendor_typ_key.'_check';
+            $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+            
+            if($preferences->$clientVendorTypes == 1){
+                $vendorTypeOrders = $VendorTypesName.'_orders';
+                $$vendorTypeOrders = clone $orders;
+            }
+        }
+
+        if($lux_id > 0){
+            $orders = $orders->where('luxury_option_id', $lux_id);
+        }
         $orders = $orders->paginate(30);
         
         // Pending orders count
@@ -502,6 +524,7 @@ class OrderController extends BaseController
                     $luxury_option_name = getNomenclatureName($luxury_option->title, $langId, false);
                     //$luxury_option_name = 'Delivery';
                 }
+                $luxury_option_name = ucwords(str_replace('_', ' ', $luxury_option_name));
             }
             $order->luxury_option_name = __($luxury_option_name);
             if ($order->vendors->count() == 0) {
