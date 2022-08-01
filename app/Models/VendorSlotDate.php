@@ -18,6 +18,6 @@ class VendorSlotDate extends Model
     }
 
     public function syncGeos(){
-        return $this->belongsToMany('App\Models\VendorSlotDateServiceArea', 'vendor_slot_date_service_areas', 'vendor_slot_date_id', 'service_area_id');
+        return $this->belongsToMany('App\Models\VendorSlotDateServiceArea', 'vendor_slot_date_service_areas', 'vendor_slot_date_id', 'service_area_id')->withTimestamps();
     }
 }

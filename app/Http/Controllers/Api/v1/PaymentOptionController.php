@@ -57,6 +57,8 @@ class PaymentOptionController extends BaseController{
                 $option->title = __('Windcave (Debit/Credit card)');
             }elseif($option->code == 'stripe_ideal'){
                 $option->title = __('iDEAL');
+            }elseif($option->code == 'authorize_net'){
+                $option->title = __('Credit/Debit Card');
             }
             $option->title = __($option->title);
         }
