@@ -21,11 +21,10 @@ class PickupDeliveryController extends BaseController{
 
     use ApiResponser;
     private $riderObj;
-    public function __construct(Rider $rider)
+    public function __construct()
     {
         $this->riderObj = new Rider();
     }
-
 
 
     # get all vehicles category by vendor
