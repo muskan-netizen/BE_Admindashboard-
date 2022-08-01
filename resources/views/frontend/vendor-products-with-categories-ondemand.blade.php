@@ -1001,7 +1001,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         <!-- chooseYourOffer start -->
 
         <!-- Why people visit here start -->
-        <p>{!! $vendor->dynamic_html !!}</p>
+        {{-- <p>{!! $vendor->dynamic_html !!}</p> --}}
         {{-- <section class="whyPeopleVisit py-5">
         	<div class="container">
         		<div class="row">

@@ -228,13 +228,13 @@
                             </div>
                         @endif
                     @endif
-                    <div class="col-md-12">
+                    {{-- <div class="col-md-12">
                         <div class="form-group" id="social_link">
                             {!! Form::label('title', 'Dynamic Html',['class' => 'control-label']) !!}
                             <textarea class="form-control" id="edit_description" rows="9" name="dynamic_html" cols="100">{{$vendor->dynamic_html}}
                             </textarea>
                         </div>
-                    </div>
+                    </div> --}}
 
                 @if(Auth::user()->is_superadmin == 1)
                     <div class="row">
@@ -731,7 +731,7 @@
         </div>
     </div>
 </div>
-<script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
+{{-- <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script> --}}
 <script type="text/javascript">
 
 $('.addUsersBtn').click(function() {
@@ -1003,8 +1003,8 @@ $( document ).ready(function() {
         }
     })
 </script>
-<script>
+{{-- <script>
     var dynamic_html = "";
     CKEDITOR.replace('edit_description');
     CKEDITOR.config.height = 250;
-</script>
+</script> --}}

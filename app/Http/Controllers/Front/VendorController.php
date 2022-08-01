@@ -85,9 +85,10 @@ class VendorController extends FrontController
         $preferences = Session::get('preferences');
         //die($slug);
         // this array for on demand service 
-        $cartData   = [];
-        $period     = [];
-        $time_slots = [];
+        $cartData    = [];
+        $period      = [];
+        $time_slots  = [];
+        $Map_vendors = [];
 
         $vendor = Vendor::with('slot.day', 'slotDate', 'productsLive.reviews')
             ->select('id','email', 'name', 'slug', 'desc','short_desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot','closed_store_order_scheduled','instagram_url','country','state',
@@ -200,46 +201,64 @@ class VendorController extends FrontController
                     }])->get();
                 }
                  // if vendor type selecter on demand service by harbans i don't want to do this garvage 
-                    if($type == 'on_demand'){
-                        $cartDataGet    = $this->getCartOnDemand($request);
-                        $cartData       = $cartDataGet['cartData'];
-                        $period         = $cartDataGet['period'];
-                        $time_slots     = $cartDataGet['time_slots'];
+                if($type == 'on_demand'){
+                    $cartDataGet    = $this->getCartOnDemand($request);
+                    $cartData       = $cartDataGet['cartData'];
+                    $period         = $cartDataGet['period'];
+                    $time_slots     = $cartDataGet['time_slots'];
 
-                        if($request->step == 2 && empty($request->addons) && empty($request->dataset)){
-                            $addos = 0;
-                            foreach($cartDataGet['cartData'] as $cp){
-                                if(count($cp->product->addOn) > 0)
-                                $addos = 1;
-                            }
-                          
-                           if($addos == 1){
-                            $name = \Request::route()->getName();
-                            $new_url = $request->path()."?step=1&addons=1";
-                            return redirect($new_url);
-                           }else{
-                           
-                            $name = \Request::route()->getName();
-                            $new_url = $request->path()."?step=2&dataset=1";
-                            return redirect($new_url);
-                           }
+                    if($request->step == 2 && empty($request->addons) && empty($request->dataset)){
+                        $addos = 0;
+                        foreach($cartDataGet['cartData'] as $cp){
+                            if(count($cp->product->addOn) > 0)
+                            $addos = 1;
                         }
-                        if($request->step == 2 && empty($request->addons))
-                        {
-                            $skip_addons = 0;
-                            if ($request->session()->has('skip_addons')) {
-                                $skip_addons =1;
-                            }
-                            if($skip_addons != 1){
-                                $request->session()->put('skip_addons', '1');
-                                $new_url = $request->path()."?step=2";
-                                return redirect($new_url);
-                            }
-                           
+                        
+                        if($addos == 1){
+                        $name = \Request::route()->getName();
+                        $new_url = $request->path()."?step=1&addons=1";
+                        return redirect($new_url);
+                        }else{
+                        
+                        $name = \Request::route()->getName();
+                        $new_url = $request->path()."?step=2&dataset=1";
+                        return redirect($new_url);
                         }
-                        //pr('asdf');
-                        $page = 'products-with-categories-ondemand';   
                     }
+                    if($request->step == 2 && empty($request->addons))
+                    {
+                        $skip_addons = 0;
+                        if ($request->session()->has('skip_addons')) {
+                            $skip_addons =1;
+                        }
+                        if($skip_addons != 1){
+                            $request->session()->put('skip_addons', '1');
+                            $new_url = $request->path()."?step=2";
+                            return redirect($new_url);
+                        }
+                        
+                    }
+                    //pr('asdf');
+                    $page = 'products-with-categories-ondemand';   
+                }
+                // get vendors for show on map 
+                $Map_vendors = Vendor::select('id', 'name', 'banner', 'address', 'order_pre_time','is_show_vendor_details' ,'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where(['status'=> 1,$type => 1])->where('id','!=',$vendor->id);
+
+                if (( $vendor->latitude) && ($vendor->longitude)) {
+                    $latitude = $vendor->latitude;
+                    $longitude = $vendor->longitude;
+                    $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                    //3961 for miles and 6371 for kilometers
+                    $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                    $Map_vendors = $Map_vendors->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                            cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                            sin( radians(' . $latitude . ') ) *
+                            sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
+                }
+        
+                $Map_vendors = $Map_vendors->take('10')->get();;
+              
+
             }else{
                 $page = 'products-with-categories';
                 $products = Product::byProductCategoryServiceType($type)->select('averageRating')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
@@ -249,6 +268,7 @@ class VendorController extends FrontController
         else{
             $page = 'products';
         }
+        //pr( $Map_vendors->toArray());
     
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             $vendors = $this->getServiceAreaVendors();
@@ -256,7 +276,7 @@ class VendorController extends FrontController
                 if(!in_array($vendor->id, $vendors)){
                     $listData =collect();
                    //pr($vendor->toArray());
-                    return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'cartData'=>$cartData,'period' => $period,'time_slots'=>$time_slots]);
+                    return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'cartData'=>$cartData,'period' => $period,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors]);
                 }
             }
 
@@ -292,7 +312,7 @@ class VendorController extends FrontController
         $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
         $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();
          // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';vendor-products-with-categories-extended
-        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed,'cartData'=>$cartData,'period' => $period ,'time_slots'=>$time_slots]);
+        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed,'cartData'=>$cartData,'period' => $period ,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors]);
     }
 
     /**
