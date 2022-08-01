@@ -1,14 +1,5 @@
 @if($cart_details->totalQuantity<=0)
-<div class="col-md-12"  id="address_template">
-    <div class="delivery_box p-0 mb-3">
-        <label class="radio m-0">{{$data->address->address.' '.$address->city.' '.$address->state.' '.$address->pincode}}
-            <input type="radio" checked="checked" name="address_id" value="{{$address->id}}">
-            <span class="checkround"></span>
-        </label>
-    </div>
-</div>
-
-<div class="container"  id="empty_cart_template">
+    <div class="container"  id="empty_cart_template">
         <div class="row mt-2 mb-4 mb-lg-5">
             <div class="col-12 text-center">
                 <div class="cart_img_outer" style="height:200px;">
@@ -23,26 +14,27 @@
 
     @else
 
-<div class="container">
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
-            </div>
-            <div class="cart_response mt-3 mb-3 d-none">
-                <div class="alert p-0" role="alert"></div>
-            </div>
-            @if (\Session::has('error'))
-                <div class="alert alert-danger">
-                    <span>{!! \Session::get('error') !!}</span>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
                 </div>
-            @endif
+                <div class="cart_response mt-3 mb-3 d-none">
+                    <div class="alert p-0" role="alert"></div>
+                </div>
+                @if (\Session::has('error'))
+                    <div class="alert alert-danger">
+                        <span>{!! \Session::get('error') !!}</span>
+                    </div>
+                @endif
+            </div>
         </div>
-    </div>
-</div>
+    
+<div class="row">
 
     <div class="col-lg-8" id="cart_template">
-        <div class="shoping_cart p-3">
+        <div class="shoping_cart px-3 py-2">
             <div class="row mb-2 border-bottom">
                         <div class="col-6">
                             <div class="single_cart_heading">
@@ -194,7 +186,7 @@
                                 </div>
                                 @if($cart_details->pharmacy_check == 1)
                                     @if($vendor_product->product->pharmacy_check == 1)
-                                        <button type="button" class="btn btn-solid prescription_btn mt-2" data-cart="{{$vendor_product->cart_id }}" data-product="{{$vendor_product->product->id }}" data-vendor_id="{{$vendor_product->vendor_id }}">{{ __('Add Prescription')}}</button>
+                                        <button type="button" class="float-left btn btn-solid prescription_btn mt-2" data-cart="{{$vendor_product->cart_id }}" data-product="{{$vendor_product->product->id }}" data-vendor_id="{{$vendor_product->vendor_id }}">{{ __('Add Prescription')}}</button>
                                         @if($vendor_product->cart_product_prescription > 0)
                                             <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{$vendor_product->cart_product_prescription }} {{ __('Prescription Added')}}</strong></h4>
                                         @endif
@@ -296,10 +288,12 @@
             @endforeach
 
         {{-- End Product Detail Loop --}}
-
-               
+                {{-- @php
+                //dd($product->is_promo_code_available);
+                @endphp
+                --}}
         <div class="row my-2">
-            @if(@$guest_user)
+            @if(!$cart_details->guest_user)
                 <div class="col-lg-6 ">
                 @if($product->is_promo_code_available > 0)
                         <div class="coupon_box w-100 d-flex align-content-center">
@@ -315,9 +309,9 @@
                         @if($product->coupon)
                             <label class="p-1 m-0"><a href="javascript:void(0)" class="remove_promo_code_btn ml-1" data-coupon_id="{{$product->coupon ? $product->coupon->promo->id : '' }}" data-cart_id="{{$cart_details->id}}">Remove</a></label>
                         @endif
-                        @endif
-                    </div>
-                    @endif
+                @endif
+            </div>
+        @endif
                     <div class="col-lg-6">
                         @if($product->delOptions)
                             <div class="row mb-1 d-flex align-items-center   @if($product->promo_free_deliver == 1  ) {{$product->promo_free_deliver }} org_price @endif ">
@@ -334,7 +328,7 @@
                             <div class="row mb-1 d-flex align-items-center">
                                 <div class="col-5 text-lg-right">
                                     <label class="m-0 radio">
-                                        {{__('fixedFee')}} :</label>
+                                        {{__('Fixed Fee')}} :</label>
                                     </div>
                                 <div class="col-7">
                                 {{$product->vendor->fixed_fee_amount}} 
@@ -403,6 +397,383 @@
      {{__('Continue Shopping')}}</a>
                 </div>
             </div>
+        </div>
+
+       
+            <div class="col-lg-12 left_box new_cart mt-4 p-3" id="left_address">
+                {!!$cart_details->left_section!!}
+            </div>
+       
+
+
+            @if($cart_details->guest_user)
+                    <div class="col-lg-12 left_box new_cart mt-4 p-3">
+
+                    </div>
+            @endif
+    </div>
+    {{-- End Left Section --}}
+
+    {{-- Start Right Section --}}
+    <div class="col-lg-4">
+        <div class="row m-0">
+         <div class="cart-summary p-2 pb-4">
+            <div class="col-12 mb-2">
+                <h5 class="order_text">Order Summary</h5>
+            </div>
+        <input type="hidden" name="without_category_kyc" value="{{$cart_details->without_category_kyc}}">
+        @if($client_preference_detail->category_kyc_documents ==1)
+            @if( ($cart_details->category_kyc_count > 0 ) )
+            <div class=" col-3 {{$cart_details->category_kyc_count}}" id="category_kyc_dev_{{$cart_details->category_rendem_id}}">
+                <input type="hidden" name="category_kyc_ids" value="{{$cart_details->category_rendem_id}}">
+                <div class="text-center my-3 btn-category_kyc-div">
+                    <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_{{$cart_details->category_rendem_id}}" data-category_id="{{$cart_details->category_ids }}" >{{__('Order Documents')}}</button>
+                </div>
+            </div>
+            @endif
+        @endif
+        <div class="col-12">
+            @if(isset($cart) && !empty($cart) && $client_preference_detail->business_type == 'laundry')
+            <div class="row">
+                <div class="col-4"><span>{{__('Comment for Pickup Driver ')}}</span></div>
+                <div class="col-8"><input class="form-control" type="text" placeholder="{{__('Eg. Please reach before time if possible')}}" id="comment_for_pickup_driver" value ="{{$cart->comment_for_pickup_driver??''}}" name="comment_for_pickup_driver"></div>
+            </div>
+            <hr class="my-2">
+            <div class="row">
+                <div class="col-4">{{__('Comment for Dropoff Driver ')}}</div>
+                <div class="col-8"><input class="form-control" type="text" placeholder="{{__('Eg. Do call me before drop off')}}" id="comment_for_dropoff_driver" value ="{{$cart->comment_for_dropoff_driver??''}}"  name="comment_for_dropoff_driver"></div>
+            </div>
+            <hr class="my-2">
+            <div class="row">
+                <div class="col-4">{{__('Comment for Vendor ')}}</div>
+                <div class="col-8"><input class="form-control" type="text"  placeholder="{{__('Eg. Please do the whites separately')}}" id="comment_for_vendor" value ="{{$cart->comment_for_vendor??''}}"  name="comment_for_vendor"></div>
+            </div>
+
+            <hr class="my-2">
+                @if($client_preference_detail->scheduling_with_slots == 1 && $client_preference_detail->off_scheduling_at_cart == 0 )
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="">{{__('Schedule Pickup ')}}</label> <span class="loaderforjs"><img class="img-fluid" style="display:none;" id="loaderforjs" src="{{asset('front-assets/images/loading.gif')}}" alt=""></span>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="hidden" class="custom-control-input check" id="vendor_id" name="vendor_id" value="{{$cart_details->vendor_id}}" >
+                                    @if($client_preference_detail->same_day_delivery_for_schedule == 0)
+                                        <input type="date" id="pickup_schedule_datetime" class="form-control pickup_schedule_datetime" placeholder="Inline calendar" min="{{$cart_details->delay_date}}" >
+                                    @else
+                                        <input type="date" id="pickup_schedule_datetime" class="form-control pickup_schedule_datetime" placeholder="Inline calendar" value="{{  (($cart_details->scheduled_date_time != '')?$cart_details->scheduled_date_time : $cart_details->delay_date ) }}"  min="{{$cart_details->delay_date}}" >
+                                    @endif
+                                    <input type="hidden" id="checkPickUpSlot" value="1">
+                                </div>
+                                <div class="col-md-6 schedule_pickup_slot">
+                                    <select name="schedule_pickup_slot" id="schedule_pickup_slot" class="form-control"  @if($client_preference_detail->isolate_single_vendor_order == 0) onchange="checkSlotOrders();" @endif>
+                                        <option value="" selected>{{__("Select Slot")}} </option>
+                                        @if($client_preference_detail->same_day_delivery_for_schedule == 1)
+                                            @foreach($cart_details->slotsForPickup as  $slot)
+                                                <option value="{{$slot->value}}" {{$slot->value == $cart_details->scheduled->slot ? 'selected' : '' }} >{{$slot->name}}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>                    
+                        <div class="col-md-12 mt-2">
+                            <label for="">{{__('Schedule Dropoff ')}} </label> <span class="loaderfordrop"><img class="img-fluid" style="display:none;" id="loaderfordrop" src="{{asset('front-assets/images/loading.gif')}}" alt=""></span>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="date" id="dropoff_schedule_datetime" class="form-control dropoff_schedule_datetime" placeholder="Inline calendar" value="{{ (($cart_details->dropoff_scheduled_date_time != '')?$cart_details->dropoff_scheduled_date_time : $cart_details->my_dropoff_delay_date )}}"  min="{{$cart_details->my_dropoff_delay_date}}" >
+                                    <input type="hidden" id="checkDropoffSlot" value="1">
+                                </div>
+                                <div class="col-md-6 schedule_dropoff_slot">
+                                    <select name="schedule_dropoff_slot" id="schedule_dropoff_slot" class="form-control">
+                                        <option value="" selected>{{__("Select Slot")}} </option>
+                                        @if($client_preference_detail->same_day_delivery_for_schedule == 1)
+                                            @foreach($cart_details->slotsForDropoff as $slot)
+                                                <option value="{{$slot->value}}" {{$slot->value == $cart_details->scheduled->slot ? 'selected' : '' }} >{{$slot->name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            @else
+            <div class="row">
+
+                <div class="col-12 alFourSpecificInstructions">
+                   <span class="pb-1"> {{__('Specific instructions')}}</span>
+                    <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions">
+                </div>
+            </div>
+
+
+
+            @endif  {{--//isset($cart) && !empty($cart) && $client_preference_detail->business_type == 'laundry' --}}
+
+
+        </div>
+        <div class="col-lg-12 mt-3 cart-price">
+
+            @if($cart_details->sub_total > 0 ) 
+                <div class="row">
+                    <div class="col-6">{{__('Sub Total')}}</div>
+                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total)}}</b></div>
+                </div>
+                <hr class="my-2">
+            @endif
+        @if($cart_details->total_service_fee > 0 && $price_bifurcation!=1) 
+                <div class="row">
+                    <div class="col-6">{{__('Service Fee')}}</div>
+                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{ decimal_format($cart_details->total_service_fee) }}</b></div>
+                </div>
+                <hr class="my-2">
+            @endif
+
+            @if($total_fixed_fee_amount > 0 && $price_bifurcation!=1) 
+                <div class="row">
+                    <div class="col-6">{{__('Fixed Fee')}}</div>
+                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}{{ decimal_format($total_fixed_fee_amount)}}</b></div>
+                    <input type="hidden" name="total_fixed_fee_amount" data-curr="{{Session::get('currencySymbol')}}" value="{{$total_fixed_fee_amount}}">
+                </div>
+                @endif
+                {{--
+                @if(cart_details.total_container_charges > 0 && price_bifurcation!=1) 
+                <hr class="my-2">
+                <div class="row">
+                    <div class="col-6">{{__('Total Container Charges')}}</div>
+                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}{{ decimal_format(cart_details.total_container_charges) %></b></div>
+                </div>
+                <hr class="my-2">
+            @endif
+            --}}
+            @php
+            if($product_container_charges_tax_amount>0){
+                $other_taxes = $other_taxes+$product_container_charges_tax_amount;
+                $other_taxes_string=$other_taxes_string.',tax_product_container_charges:'.$product_container_charges_tax_amount;
+
+            }else if($tax_container_charges_percentage>0){
+
+                $other_taxes=$other_taxes+($cart_details->$total_container_charges*$tax_container_charges_percentage/100);
+                $other_taxes_string=$other_taxes_string.',tax_vendor_container_charges:'+($cart_details.$total_container_charges*$tax_container_charges_percentage/100);
+            }
+            @endphp
+            <input type="hidden" id="other_taxes_string" value="{{$other_taxes_string}}">
+            
+
+            @if($price_bifurcation!=1)
+            <!-- <hr class="my-2"> -->
+            <div class="row">
+                <div class="col-6">{{__('Total')}}</div>
+                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount)}}</b></span>
+                <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
+            </div>
+            <hr class="my-2">
+            @endif
+            
+            @if(($cart_details->total_taxable_amount+$other_taxes)>0)
+                <div class="row">
+                    <div class="col-6">{{__('Tax')}}</div>
+                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="total_taxable_amount">{{ decimal_format($cart_details->total_taxable_amount+$other_taxes)}}</span></b></div>
+                </div>
+            <hr class="my-2">
+            @endif
+            @if($cart_details->total_subscription_discount >0) 
+                
+                <div class="row">
+                    <div class="col-6">{{__('Subscription Discount')}}</div>
+                    <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="total_subscription_discount">{{ decimal_format($cart_details->total_subscription_discount)}}<span></b></div>
+                </div>
+                <hr class="my-2">
+            @endif
+            @if($cart_details->loyalty_amount > 0 && $price_bifurcation!=1) 
+                
+                <div class="row">
+                    <div class="col-6">{{__('Loyalty Amount')}}</div>
+                    <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="loyalty_amount">{{ decimal_format($cart_details->loyalty_amount) }}</span></b></div>
+                </div>
+                <hr class="my-2">
+            @endif
+            @if($cart_details->wallet_amount_used > 0) 
+                <div class="row">
+                    <div class="col-6">{{__('Wallet Amount')}}</div>
+                    <div class="col-6 text-right" id="wallet_amount_used"> - {{Session::get('currencySymbol')}}{{ decimal_format($cart_details->wallet_amount_used+$other_taxes)}}</div>
+                    <div class="col-6 text-right" id="wallet_amount_used_fixed" style="display:none">{{$cart_details->wallet_amount_used+$other_taxes}}</div>
+                    <div class="col-6 text-right" id="wallet_amount_available" style="display:none">{{$cart_details->wallet_amount_available}}</div>
+                </div>
+                <hr class="my-2">
+            @else
+                <div class="col-6 text-right" id="wallet_amount_used" style="display:none">0</div>
+            @endif
+
+            @if($client_preference_detail->tip_before_order == 1) 
+            <div class="row">
+                <div class="col-12">
+                    <div class="mb-2">@if(getNomenclatureName('Want To Tip', true)!='Want To Tip') {{ getNomenclatureName('Want To Tip', true) }} @else {{__('Do you want to give a tip?')}} @endif</div>
+                    <div class="tip_radio_controls">
+                        @if($cart_details->total_payable_amount > 0) 
+                            <input type="radio" class="tip_radio" id="control_01" name="select" value="{{$cart_details->tip_5_percent}}" @if($client_preference_detail->auto_implement_5_percent_tip == 1)  checked @endif>
+                            <label class="tip_label" for="control_01">
+                                <h5 class="m-0" id="tip_5">{{Session::get('currencySymbol')}}{{ decimal_format($cart_details->tip_5_percent)}}</h5>
+                                <p class="m-0">5%</p>
+                            </label>
+
+                            <input type="radio" class="tip_radio" id="control_02" name="select" value="{{$cart_details->tip_10_percent}}" >
+                            <label class="tip_label" for="control_02">
+                                <h5 class="m-0" id="tip_10">{{Session::get('currencySymbol')}}{{ decimal_format($cart_details->tip_10_percent)}}</h5>
+                                <p class="m-0">10%</p>
+                            </label>
+
+                            <input type="radio" class="tip_radio" id="control_03" name="select" value="{{$cart_details->tip_15_percent}}" >
+                            <label class="tip_label" for="control_03">
+                                <h5 class="m-0" id="tip_15">{{Session::get('currencySymbol')}}{{ decimal_format($cart_details->tip_15_percent) }}</h5>
+                                <p class="m-0">15%</p>
+                            </label>
+
+                            <input type="radio" class="tip_radio" id="custom_control" name="select" value="custom" >
+                            <label class="tip_label" for="custom_control">
+                                <h5 class="m-0">{{__('Custom')}}<br>{{__('Amount')}}</h5>
+                            </label>
+                        @endif
+                    </div>
+                    <div class="custom_tip my-1 @if($cart_details->total_payable_amount > 0)  d-none @endif">
+                        <input class="input-number form-control" name="custom_tip_amount" id="custom_tip_amount" placeholder="{{ __('Enter Custom Amount') }}" type="number" value="" step="0.1">
+                    </div>
+                </div>
+            </div>
+            <hr class="my-2">
+
+            @endif
+            @if($client_preference_detail->gifting == 1) 
+                <div class="row">
+                    <div class="col-12">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" style="margin-left: 10px;"  id="is_gift" name="is_gift" value="1">
+
+                                <label class="custom-control-label" for="is_gift"><img class="pr-1 align-middle blur-up lazyload" data-src="{{ asset('assets/images/gifts_icon.png') }}" alt=""> <span class="align-middle pt-1"> {{__('Does this include a gift?')}}</span></label>
+                            </div>
+                    </div>
+                </div>
+                <hr class="my-2">
+            @endif
+            <div class="row">
+                <div class="col-6">
+                    <p class="total_amt m-0">{{__('Amount Payable')}} <small>({{__('incl. tax')}})</small> </p>
+                </div>
+
+
+                <div class="col-6 text-right">
+                    @if($client_preference_detail->auto_implement_5_percent_tip == 1) 
+                        @if(decimal_format($cart_details->wallet_amount_used) > 0) 
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent))}}</p>
+                        @else
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format($other_taxes))}}</p>
+                        @endif
+                        <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="{{ decimal_format($cart_details->tip_5_percent) }}">
+                                <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format(other_taxes)}}" @if($cart_details->stripe_fpx_client_secret != '')  data-client_secret="{{$cart_details->stripe_fpx_client_secret}}" @endif >
+                                
+                        @else
+                            @if(decimal_format($cart_details->wallet_amount_used) > 0) 
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes))}}</p>
+                            @else
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes))}}</p>
+                            @endif
+                            <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
+                                    <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)}}" @if(@$cart_details->stripe_fpx_client_secret != '')  data-client_secret="{{$cart_details->stripe_fpx_client_secret}}" @endif>
+                           @endif
+                        <div>
+                        <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)}}">
+                    </div>
+
+
+                </div>
+            </div>
+            <hr class="my-2">
+
+                    </div>
+
+                    {{-- Schedual code Start at down --}}
+            @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && $cart_details->vendorCnt==1) 
+                @if($client_preference_detail->business_type != 'laundry')
+            <div class="row arabic-lng position-relative my-3" id="dateredio">
+                <div class=" col-md-12 mb-2 mb-md-0 text-right">
+                    <div class="login-form col schedule_btn">
+                        <ul class="list-inline ml-auto d-flex align-items-center justify-content-end">
+                            <li class="d-inline-block mr-1">
+                                <input type="hidden" class="custom-control-input check" id="vendor_id" name="vendor_id" value="{{$cart_details->vendor_id}}" >
+                                <input type="hidden" class="custom-control-input check" id="tasknow" name="task_type" value="{{(($cart_details->schedule_type == 'schedule') ? 'schedule' : 'now')}}" >
+                            </li>
+                            @if($cart_details->delay_date == 0) 
+                            {{-- <li class="d-inline-block mr-1">
+                                <input type="radio" class="custom-control-input check" id="tasknow" name="tasktype" value="now" <%= ((cart_details->schedule_type == 'now' || cart_details->schedule_type == '' || cart_details->schedule_type == null) ? 'checked' : '') %> >
+                                <label class="btn btn-solid" for="tasknow">{{__('Now')}}</label>
+                            </li> --}}
+                            @endif
+                            <li class="d-inline-block ">
+                                <input type="radio" class="custom-control-input check taskschedulebtn" id="taskschedule" name="tasktype" value="" {{(($cart_details->schedule_type == 'schedule' || $cart_details->delay_date != 0) ? 'checked' : '')}}  style="{{(($cart_details->schedule_type != 'schedule') ? '' : 'display:none!important') }}">
+                                <label class="btn btn-solid mb-0 taskschedulebtn" for="taskschedule" style="{{(($cart_details->schedule_type != 'schedule') ? '' : 'display:none!important')}}">{{__('Schedule')}}</label>
+                            </li>
+                            @if($cart_details->closed_store_order_scheduled != 1 && $cart_details->deliver_status == 0) 
+                            <li class="close-window">
+                                <i class="fa fa-times cross" aria-hidden="true"></i>
+                            </li>
+                            @else
+                                <li class="close-window">
+                                    <i class="fa fa-times cross" style="display:none!important"  aria-hidden="true"></i>
+                                </li>
+                               @endif                        </ul>
+                        <div class=" col-sm-10 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right mr-1" id="schedule_div" style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
+                    @if($cart_details->slotsCnt == 0) 
+                    @if($cart_details->delay_date != 0) 
+                        <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
+                        min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
+                       @else 
+                            <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
+                            min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
+
+                            @endif
+
+                    @else 
+
+
+                            <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="{{(($cart_details->scheduled_date_time != '')?$cart_details->scheduled_date_time : $cart_details->delay_date ) }}"  min="{{$cart_details->delay_date}}" >
+                            <input type="hidden" id="checkSlot" value="1">
+                            <select name="slots" id="slot" onchange="checkSlotOrders();" class="form-control">
+                                <option value="">{{__("Select Slot")}} </option>
+                                @foreach($cart_details->slots as $slot)
+                                <option value="{{$slot->value }}" {{$slot->value == $cart_details->scheduled->slot ? 'selected' : ''}} >{{$slot->name}}</option>
+                                @endforeach
+                            </select>
+                    @endif
+
+                </div>
+                    </div>
+                </div>
+
+            </div>
+            @endif
+            @endif
+                    
+                    <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
+                        @if(isset($ageVerify->status) && $ageVerify->status == 1)
+                            {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
+                        @endif
+                        <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
+                    </div>
+
+        </div>
+
+    </div>
+   
+    </div>
+</div>
+    {{---- End Right Section ------}}
+
+  
+
+
+    </div>
+            {{-- Schedual code end at down --}}
         </div>
 
 @endforeach

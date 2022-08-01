@@ -127,6 +127,7 @@ class PromoCodeController extends Controller{
                 }
 
                 $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
+               
                 $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details) {
                     $query->where(function ($query2) use ($vendor_promo_code_details) {
                         $query2->where('restriction_type', 1);
@@ -152,8 +153,11 @@ class PromoCodeController extends Controller{
                     $result2->where(['promo_visibility' => 'public']);
                 }
                 $result2 = $result2->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->get();
+
                 $promo_codes = $promo_codes->merge($result2);
             }
+            
+
             foreach ($promo_codes as $key => $promo_code) {
                 $minimum_spend = 0;
                 if (isset( $promo_code->minimum_spend)) {
@@ -168,6 +172,7 @@ class PromoCodeController extends Controller{
                     $promo_codes->forget($key);
                 }
             }
+            //dd($promo_codes);
             return $this->successResponse($promo_codes, '', 200);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

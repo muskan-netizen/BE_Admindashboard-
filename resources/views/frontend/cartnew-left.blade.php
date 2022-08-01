@@ -52,16 +52,51 @@
         </div>
     @endif
 @else
-    <div class="row mb-sm-2" id="address_template_main_div">
+    <div class="row mb-sm-2 m-0 p-0" id="address_template_main_div">
+        <div class="row w-100">
+            
         @forelse($addresses as $k => $address)
-        @if($k ==2)
-        <div class="d-flex justify-content-end">
-            <a class="text-center d-block"  id="view_all_address"  href="javascript:void(0)">{{ __('View all address') }}</a>
-        </div>
-        {{-- <div class="row cart_all_address mt-2">
-            <a href="#" class="text-center d-block">{{__('View All Address')}}</a>
-    </div> --}}
 
+        <div class="col-md-6 mb-2">
+        <div class="delivery_box cart_delivery p-2 mb-sm-3 mb-1 position-relative">
+            @if(!empty(Auth::user()) && $address->is_primary)
+               <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+        </a>
+               @endif
+           <label class="radio m-0">{{ ($address->house_number ?? false) ? $address->house_number."," : '' }} {{$address->address}}, {{$address->state}} {{$address->pincode}}
+               @if($address->is_primary)
+               <input type="radio" name="address_id" value="{{$address->id}}" checked="checked">
+               @else
+               <input type="radio" name="address_id" value="{{$address->id}}" {{$k == 0? 'checked="checked"' : '' }}>
+               @endif
+               <span class="checkround"></span>
+           </label>
+       </div>
+        </div>
+
+        @if((($k+1)%2)==0)
+        </div>
+        @endif
+
+        @if($k ==1)
+        </div>
+        <div class="view_all_address d-none" id="view_all_address_div">
+        @endif
+
+
+        @if((($k+1)%2)==0)
+            <div class="row w-100">
+        @endif  
+
+
+
+
+
+
+
+
+        {{-- @if($k ==2)
+       
 
         <div class="view_all_address d-none" id="view_all_address_div" >
         @endif
@@ -85,8 +120,9 @@
 
         @if(($k >6  ) && ($k ==count($addresses) -1 ))
             </div>
+        </div> --}}
             
-        @endif
+        {{-- @endif --}}
         @empty
         <div class="col-12 address-no-found">
             <p>{{($client_preference_detail->address_is_car == 1) ? __('Car not available.') : __('Address not available.')}}</p>
@@ -98,14 +134,20 @@
             </a>
         </div> -->
     </div>
+</div>
 
+    <div class="row w-100 mt-2">
+        <div class="cart_address w-100 text-center">
+            <a class="d-block w-100"  id="view_all_address"  href="javascript:void(0)">{{ __('View all address') }}</a>
+        </div>
+    </div>
        
-    <div class="row">
-        <div class="col-md-12" id="add_new_address_form" style="display:none;">
+    <div class="row mt-2 pt-3 cart_edit-addre" id="add_new_address_form" style="display:none;">
+        <div class="col-md-12" >
             <div class="theme-card w-100">
                 <div class="form-row no-gutters">
                     <div class="col-12">
-                        <label for="type">{{__('Address Type')}}</label>
+                        <label for="type"><b>{{__('Address Type')}}</b></label>
                     </div>
                     <div class="col-3">
                         <div class="delivery_box pt-0 pl-0  pb-sm-3 pb-1">

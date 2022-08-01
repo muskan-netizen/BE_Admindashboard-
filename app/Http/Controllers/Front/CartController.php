@@ -693,14 +693,16 @@ class CartController extends FrontController
         $crossSell_products = collect();
         $couponGetAmount=0;
         /*Getting User Address */
+        $guest_user = true;
         if($user){
-            $user_allAddresses = UserAddress::where('user_id', $user->id)->where('status',1)->get();
+            $user_allAddresses = UserAddress::where('user_id', $user->id)->where('status',1)->orderBy('is_primary','Desc')->get();
             if($address_id > 0){
                 $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->first();
             }else{
                 $address = UserAddress::where('user_id', $user->id)->where('is_primary', 1)->where('status',1)->first();
                 $address_id = ($address) ? $address->id : 0;
             }
+            $guest_user = false;
         }
 
         /* Getting User Lat Long */
@@ -1333,7 +1335,7 @@ class CartController extends FrontController
 
                 $vendorData->is_promo_code_available = $is_promo_code_available;
             }
-            
+            //dd($is_promo_code_available)
             $is_percent = 0;
             $amount_value = 0;
             if ($cart->coupon) {
@@ -1358,8 +1360,9 @@ class CartController extends FrontController
             }
             if ($total_subscription_discount > 0) {
                 $total_discount_amount = $total_discount_amount + $total_subscription_discount;
-                $cart->total_subscription_discount = decimal_format($total_subscription_discount);
             }
+            $cart->total_subscription_discount = decimal_format($total_subscription_discount??0);
+
             $fixedFeeAmount=0.00;
             if(isset($vendorData->vendor->fixed_fee_amount)){
                 $fixedFeeAmount=$vendorData->vendor->fixed_fee_amount;
@@ -1384,9 +1387,10 @@ class CartController extends FrontController
                         $wallet_amount_used = $total_payable_amount;
                     }
                     $total_payable_amount = $total_payable_amount - $wallet_amount_used;
-                    $cart->wallet_amount_used = decimal_format($wallet_amount_used);
                 }
             }
+            $cart->wallet_amount_used = decimal_format($wallet_amount_used);
+
           
             $scheduled = (object)array(
                 'scheduled_date_time'=>(($cart->scheduled_slot)?date('Y-m-d',strtotime($cart->scheduled_date_time)):$cart->scheduled_date_time),'slot'=>$cart->scheduled_slot,
@@ -1558,6 +1562,8 @@ class CartController extends FrontController
             $cart->taxRates=$taxRates;
             $cart->action = $action;
             $cart->totalQuantity = $total_quantity;
+            $cart->user_allAddresses = $user_allAddresses??[];
+            $cart->guest_user = $guest_user??0;
             $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
@@ -1943,7 +1949,7 @@ class CartController extends FrontController
         // }
         $mycartView = view('frontend.cart-page')->with(['cart_details' => json_decode($cart_details)])->render();
 
-        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView]);
+        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'']);
     }
 
 
