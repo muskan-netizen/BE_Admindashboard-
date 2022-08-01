@@ -333,7 +333,11 @@ class PickupDeliveryController extends BaseController{
                 $order->friend_name = $request->friendName;
                 $order->friend_phone_number = $request->friendPhoneNumber;
 
-                $order->scheduled_date_time = $request->schedule_time??NULL;
+                $schedule_datetime_del = NULL;
+                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
+                    $schedule_datetime_del = Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                }
+                $order->scheduled_date_time = $schedule_datetime_del??NULL;
                 $order->save();
 
                 // save pickup delivery task 
@@ -571,19 +575,23 @@ class PickupDeliveryController extends BaseController{
                 //     $request->task_type = 'now';
                 //     $request->schedule_time = null;
                 // }
+                $schedule_datetime_del = NULL;
+                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
+                    $schedule_datetime_del = Carbon::parse($request->schedule_time, $customer->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                }
 
                 if(isset($request->task_type) && !empty($request->task_type))
                 {
                     $request->task_type = $request->task_type;
-                    $request->schedule_time = null;
+                    $schedule_datetime_del = null;
 
                     // $tasktype = ($request->task_type=='later')?'schedule':$request->task_type;
                     // $request->task_type = $tasktype;                    
-                    $request->order_time = $request->schedule_time;
+                    $request->order_time = $schedule_datetime_del;
                 }else{
                     $request->task_type = 'schedule';
-                    $request->scheduled_date_time = $request->schedule_time;
-                    $request->order_time = $request->schedule_time;
+                    $request->scheduled_date_time = $schedule_datetime_del;
+                    $request->order_time = $schedule_datetime_del;
                 }
 
                 $dynamic = uniqid($order->id.$vendor);
@@ -622,7 +630,7 @@ class PickupDeliveryController extends BaseController{
                             'task_description' => $request->task_description??null,
                             'allocation_type' => 'a',
                             'task_type' => $request->task_type,
-                            'schedule_time' => $request->schedule_time ?? null,
+                            'schedule_time' => $schedule_datetime_del ?? null,
                             'cash_to_be_collected' => $payable_amount??0.00,
                             'barcode' => '',
                             'call_back_url' => $call_back_url??null,
