@@ -431,12 +431,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         @endforelse
                     </select>
                 </div>
-                <div class="col">
+                {{-- <div class="col">
                     <select class="form-control" id="sort_order">
                         <option value="">{{ __('Change Sort') }}</option>
                         <option value="distance">{{ __('Distance') }}</option>
                     </select>
-                </div>
+                </div> --}}
                 <div class="col">
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
@@ -644,7 +644,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     function init(filter_order_status, url, search_keyword = "", isOnload = false) {
     var date_filter = $('#range-datepicker').val();
     var vendor_id = $('#vendor_select_box option:selected').val();
-    var sort_order = $('#sort_order option:selected').val();
+    // var sort_order = $('#sort_order option:selected').val();
     var order_type = $('.tabs_radio:checked').val();
         ajaxCall = $.ajax({
             url: url,
@@ -662,7 +662,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 order_type : order_type,
                 vendor_id: vendor_id,
                 date_filter: date_filter,
-                sort_order: sort_order
+                // sort_order: sort_order
             },
             success: function(response) {
                 // reload after 10 sec
