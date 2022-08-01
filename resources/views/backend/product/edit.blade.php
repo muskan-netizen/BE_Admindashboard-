@@ -877,7 +877,7 @@
                     <div class="col-lg-12">
                              <div class="card-box pb-2">
                                 <div class="d-flex align-items-center justify-content-between">
-                                   <h4 class="header-title text-uppercase m-0">{{ __("Product Order Form") }}</h4>
+                                   <h4 class="header-title text-uppercase m-0">{{ $nomenclatureProductOrderForm }}</h4>
                                    <a class="btn btn-info d-block" id="add_product_faq_modal_btn">
                                       <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
                                    </a>
