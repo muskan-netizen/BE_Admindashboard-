@@ -36,7 +36,10 @@ socket.on('disconnect',function() {
 
 
 socket.on('room-created',async function(data) {
-    await newChatGroup(data)
+    //if(data.roomData[0].order_user_id == auth) {
+        await newChatGroup(data)
+    //}
+    
     //console.log('Du doooo',data);
 });
 //})()

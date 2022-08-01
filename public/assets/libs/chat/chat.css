@@ -74,7 +74,7 @@ line-height: inherit;
     align-items: center;
 }
 .orderNumber {background-color: #6eccf14d;color: #43BEE1;text-align: center;border-radius: 3px;font-size: 14px;font-weight: 600;}
-.messages-box .list-group{overflow: hidden;background: #5ddaff24;border-bottom: 1px solid#0000002b;}
+.messages-box .list-group{overflow: hidden;background: #f5f5f5;border-bottom: 1px solid#eee;}
 .conversation-head {border-bottom: 1px solid #E7F6FC;}
 .alOrderDetailsBox .alOrderDetails span, .alOrderDetailsBox .alOrderDetails, .conversationText p.chatUserName {color: #43BEE1;font-weight: 600;}
 .alUserName {font-weight: 600;font-size: 16px;text-transform: capitalize;}
@@ -82,7 +82,8 @@ line-height: inherit;
 .alOrderDetailsBox p {color: #777;font-size: 13px;}.alOrderDetailsBox p span {color: #000;font-weight: 600;}
 .conversation-list .ctext-wrap p.chat-time{font-size: 12px;}
 .chat-input-section .col-auto a:nth-child(1) {display: none;}
-.chat-list-item:hover {background: #a4cbe74a;}
+.chat-list-item:hover {background: #eee;}
+.messages-box .list-group.active{background-color: #fff;}
 .conversationText {
     width: 100% !important;
     position: relative !important;

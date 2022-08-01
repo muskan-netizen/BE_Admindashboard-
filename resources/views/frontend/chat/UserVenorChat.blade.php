@@ -53,8 +53,15 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="page-title-box">
-                    <h4 class="page-title">{{ getNomenclatureName('Admin Chat', true) }}</h4>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box">
+                                <h4 class="page-title">{{ getNomenclatureName('Vendor Chat', true) }}</h4>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="container-fluid p-0">
                     <div class="card">
@@ -79,6 +86,9 @@
             });
         });
     </script> -->
+@php
+$authData = json_encode(@$data->toArray());
+@endphp
 @endsection
 @section('script')
 
@@ -86,7 +96,11 @@
 <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/chatNotifications.js')}}"></script>
+<script>
+    var client_data = `<?php echo $authData; ?>`;
+    fetchChatGroups(client_data);
 
+</script>
 
 <script>
     $(document).ready(async function(){

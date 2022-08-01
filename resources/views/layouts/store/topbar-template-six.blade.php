@@ -151,15 +151,24 @@ $applocale = session()->get('applocale');
                         </li>
                         @endif
                         @endif
-                        <!-- <li class="pr-3">
+                        <li class="pr-3">
+                           <div class="d-inline-flex al_searchType align-items-center justify-content-start px-2 position-relative">
+                              <button class="btn px-0"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                 @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp
+                              <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off">
+                              <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
+                           </div>
+                        </li>
+
+                        {{-- <li class="pr-3">
                            <div class="alChooseDate">
                               <input type="input" class="form-control" value="{{session('selectedDate') ?? ''}}"
                                id="inputDate" placeholder="{{session('selectedDate') ? session('selectedDate') : __('Choose Date') }} ">
                            </div>
-                        </li> -->
+                        </li> --}}
                         <li class="pr-0">
                            <div class="alFindGo">
-                              <button class="btn">Go</button>
+                              <button class="btn">{{__('Go')}}</button>
                            </div>
                         </li>
                      </ul>

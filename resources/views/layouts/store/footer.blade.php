@@ -163,6 +163,22 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
                     window.open(payload.notification.click_action, "_blank");
                     push_notification.close();
                 };
+            }  else {
+                   // alert();
+                    var notificationTitle = payload.notification.title;
+                    var notificationOptions = {
+                        body: payload.notification.body,
+                        icon: payload.notification.icon
+                    };
+                    var push_notification = new Notification(
+                        notificationTitle,
+                        notificationOptions
+                    );
+                    push_notification.onclick = function(event) {
+                        event.preventDefault();
+                        // window.open(payload.notification.click_action, "_blank");
+                        // push_notification.close();
+                    };
             }
         }
     });

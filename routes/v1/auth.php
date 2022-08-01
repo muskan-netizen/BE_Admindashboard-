@@ -50,7 +50,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('chat/userVendorChatRoom', 'Api\v1\ChatController@userVendorChatRoom');
         Route::post('chat/vendorUserChatRoom', 'Api\v1\ChatController@vendorUserChatRoom');
         Route::post('chat/userAgentChatRoom', 'Api\v1\ChatController@userAgentChatRoom');
-
+        Route::post('chat/sendNotificationToUser', 'Api\v1\ChatController@sendNotificationToUser');
+        
 
 
         Route::get('profile', 'Api\v1\ProfileController@profile');

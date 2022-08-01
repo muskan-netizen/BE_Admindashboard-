@@ -214,6 +214,7 @@ if (Session::has('toaster')) {
 @if(@Session::has('preferences') && !empty(@Session::get('preferences')['fcm_api_key']))
 <script>
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
+    console.log(firebaseCredentials);
     var firebaseConfig = {
         apiKey: firebaseCredentials.fcm_api_key,
         authDomain: firebaseCredentials.fcm_auth_domain,
@@ -232,7 +233,7 @@ if (Session::has('toaster')) {
         messaging.requestPermission().then(function() {
             return messaging.getToken()
         }).then(function(token) {
-
+            
             $.ajax({
                 url: "{{ route('client.save_fcm') }}",
                 type: "POST",
@@ -255,6 +256,8 @@ if (Session::has('toaster')) {
 
     initFirebaseMessagingRegistration();
     messaging.onMessage(function(payload) {
+        console.log("payload");
+        console.log(payload);
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");
         }
@@ -280,6 +283,22 @@ if (Session::has('toaster')) {
                         event.preventDefault();
                         window.open(payload.notification.click_action, "_blank");
                         push_notification.close();
+                    };
+                } else {
+                   // alert();
+                    var notificationTitle = payload.notification.title;
+                    var notificationOptions = {
+                        body: payload.notification.body,
+                        icon: payload.notification.icon
+                    };
+                    var push_notification = new Notification(
+                        notificationTitle,
+                        notificationOptions
+                    );
+                    push_notification.onclick = function(event) {
+                        event.preventDefault();
+                        // window.open(payload.notification.click_action, "_blank");
+                        // push_notification.close();
                     };
                 }
             }
