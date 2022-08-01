@@ -34,7 +34,7 @@ class VendorSlot extends Model
     }
 
     public function syncGeos(){
-        return $this->belongsToMany('App\Models\VendorSlotServiceArea', 'vendor_slot_service_areas', 'vendor_slot_id', 'service_area_id');
+        return $this->belongsToMany('App\Models\VendorSlotServiceArea', 'vendor_slot_service_areas', 'vendor_slot_id', 'service_area_id')->withTimestamps();
     }
 
 }

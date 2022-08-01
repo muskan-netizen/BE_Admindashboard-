@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Banner, Vendor, Category, ClientLanguage,Client};
+use App\Models\{Banner, Vendor, Category, ClientLanguage,Client, ServiceArea};
 
 class BannerController extends BaseController
 {
@@ -31,7 +31,8 @@ class BannerController extends BaseController
     public function index()
     {
         $banners = Banner::orderBy('sorting', 'asc')->get();
-        return view('backend/banner/index')->with(['banners' => $banners]);
+        $areas = ServiceArea::orderBy('created_at', 'DESC')->get();
+        return view('backend/banner/index')->with(['banners' => $banners, 'areas' => $areas]);
     }
 
     /**
@@ -67,8 +68,9 @@ class BannerController extends BaseController
             }
         }
         $vendors = Vendor::select('id', 'name')->where('status', $this->fstatus)->get();
+        $areas = ServiceArea::orderBy('created_at', 'DESC')->get();
         $banner = new Banner();
-        $returnHTML = view('backend.banner.form')->with(['banner' => $banner,  'vendors' => $vendors, 'categories' => $categories_hierarchy])->render();
+        $returnHTML = view('backend.banner.form')->with(['banner' => $banner,  'vendors' => $vendors, 'categories' => $categories_hierarchy, 'areas' => $areas])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 
@@ -107,7 +109,8 @@ class BannerController extends BaseController
             }
         }
         $vendors = Vendor::select('id', 'name')->where('status', $this->fstatus)->get();
-        $returnHTML = view('backend.banner.form')->with(['banner' => $banner,  'vendors' => $vendors, 'categories' => $categories_hierarchy])->render();
+        $areas = ServiceArea::orderBy('created_at', 'DESC')->get();
+        $returnHTML = view('backend.banner.form')->with(['banner' => $banner,  'vendors' => $vendors, 'categories' => $categories_hierarchy, 'areas' => $areas])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 
@@ -189,12 +192,6 @@ class BannerController extends BaseController
      */
     public function save(Request $request, Banner $banner, $update = 'false')
     {
-
-       
-        
-
-
-
         $banner->validity_on = ($request->has('validity_on') && $request->validity_on == 'on') ? 1 : 0; 
         $banner->name = $request->name;
         $banner->start_date_time = $request->start_date_time;
@@ -205,8 +202,7 @@ class BannerController extends BaseController
             $banner->sorting = 1;
             if($bannerSort){
                 $banner->sorting = $bannerSort->sorting + 1;
-            }
-            
+            }   
         }
         if($request->has('assignTo') && !empty($request->assignTo)){
             $banner->link = $request->assignTo;
@@ -219,18 +215,16 @@ class BannerController extends BaseController
             $banner->image = Storage::disk('s3')->put('/banner', $file,'public');
         }
 
-
         if ($request->hasFile('image_mobile')) {    /* upload logo file */
             $file = $request->file('image_mobile');
             $banner->image_mobile = Storage::disk('s3')->put('/banner', $file,'public');
-        }
-
-        
+        }        
         
         $saveRes = $banner->save();
         
-
-
+        if($request->has('banner_service_area')){
+            $banner->syncGeos()->sync($request->banner_service_area);
+        }
 
         return $banner->id;
     }
