@@ -143,7 +143,7 @@ $applocale = session()->get('applocale');
                      <ul class="p-0 m-0 d-flex align-items-center justify-content-between">
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
-                        <li class="border-right mr-3 pr-3">
+                        <li class="alLocationArea mr-2">
                            <div class="alLocation homepage-address" href="#edit-address" data-toggle="modal" >
                               <!-- data-toggle="modal" data-target="#googleMapModal" -->
                               <span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span>
@@ -151,12 +151,12 @@ $applocale = session()->get('applocale');
                         </li>
                         @endif
                         @endif
-                        <li class="pr-3">
+                        <!-- <li class="pr-3">
                            <div class="alChooseDate">
                               <input type="input" class="form-control" value="{{session('selectedDate') ?? ''}}"
                                id="inputDate" placeholder="{{session('selectedDate') ? session('selectedDate') : __('Choose Date') }} ">
                            </div>
-                        </li>
+                        </li> -->
                         <li class="pr-0">
                            <div class="alFindGo">
                               <button class="btn">Go</button>

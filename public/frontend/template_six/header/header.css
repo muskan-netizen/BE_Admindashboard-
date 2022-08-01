@@ -244,7 +244,7 @@ overflow: hidden;
 padding-left: 10px;
 padding-right: 10px;
 }
-.alFindSec li.border-right.mr-3.pr-3{
+.alFindSec li.alLocationArea{
     width: 100%;
     max-width: 250px;
 }
