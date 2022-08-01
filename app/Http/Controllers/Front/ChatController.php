@@ -112,7 +112,7 @@ class ChatController extends FrontController
     {
         $data = $request->all();
         $vendor_id = $data['vendor_id'];
-        $vendor_order_id = $data['vendor_order_id'];
+        $vendor_order_id = $data['order_vendor_id'];
         $order_id = $data['order_id'];
         $server_name = $_SERVER['SERVER_NAME'];
         $order = $this->OrderVendorDetail($request);
