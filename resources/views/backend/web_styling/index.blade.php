@@ -92,7 +92,26 @@
                                 <div class="row">
                                     <form id="themeIcon-form" method="post" enctype="multipart/form-data">
                                    
-                                        <div class="col-md-4 mb-3">
+                                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                                            @php
+                                                $VendorTypesName   = $vendor_typ_key.'icon';
+                                                $clientVendorTypes = $vendor_typ_key.'_check';
+                                            @endphp
+                                            @if($client_preference_detail->$clientVendorTypes == 1)
+                                                <div class="col-md-4 mb-3">
+                                                    <div class="mb-0">
+                                                        <label>{{getDynamicTypeName($vendor_typ_value)}}{{ __(" Icon") }}</label>
+                                                        <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$VendorTypesName ? $client_preferences->$VendorTypesName['proxy_url'].'600/400'.$client_preferences->$VendorTypesName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{ $VendorTypesName }}" class="dropify ss_form_submit" id="image" />
+                                                        <span class="invalid-feedback" role="alert">
+                                                            <strong></strong>
+                                                        </span>
+                                                        <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                                    </div>
+                                                </div>
+                                                @endif    
+                                        @endforeach
+                                       
+                                        {{-- <div class="col-md-4 mb-3">
                                             <div class="mb-0">
                                                 <label>{{ __("Delivery Icon") }}</label>
                                                 <input type="file" accept="image/*"  data-default-file="{{$client_preferences->deliveryicon ? $client_preferences->deliveryicon['proxy_url'].'600/400'.$client_preferences->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="deliveryIcon" class="dropify ss_form_submit" id="image" />
@@ -123,7 +142,7 @@
                                                 </span>
                                                 <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
                                             </div>
-                                        </div>
+                                        </div> --}}
 
                                     </form>
                                 </div>

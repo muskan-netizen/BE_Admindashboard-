@@ -174,7 +174,7 @@
                             @if(in_array($vendor_typ_key, $typeArray)) 
                                 <div class="col-md-12">
                                     <div class="form-group d-flex justify-content-between">
-                                        <label for="{{$VendorTypesName}}" class="mr-3 mb-0">{{getDynamicTypeName($vendor_typ_value)}}</label>
+                                        <label for="{{$VendorTypesName}}" class="mr-3 mb-0 ">{{getDynamicTypeName($vendor_typ_value)}}</label>
                                         <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" @if((isset($preference) && $preference->$VendorTypesName == '1')) checked='checked' @endif>
                                     </div>
                                 </div>
@@ -541,14 +541,14 @@
                         <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
-                                    <label for="custom_domain">{{ __("On Demand Services") }}</label>
+                                    <label for="custom_domain">{{ __("Services") }}</label>
                                 </div>
                             </div>
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="on_demand_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="on_demand_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('On Demand Services'))}}">
+                                    <input type="text" name="on_demand_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Services'))}}">
                                     @if($k == 0)
                                         @if($errors->has('on_demand_names.0'))
                                             <span class="text-danger" role="alert">

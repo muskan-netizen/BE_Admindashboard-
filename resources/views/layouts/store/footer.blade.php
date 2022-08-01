@@ -163,6 +163,22 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
                     window.open(payload.notification.click_action, "_blank");
                     push_notification.close();
                 };
+            }  else {
+                   // alert();
+                    var notificationTitle = payload.notification.title;
+                    var notificationOptions = {
+                        body: payload.notification.body,
+                        icon: payload.notification.icon
+                    };
+                    var push_notification = new Notification(
+                        notificationTitle,
+                        notificationOptions
+                    );
+                    push_notification.onclick = function(event) {
+                        event.preventDefault();
+                        // window.open(payload.notification.click_action, "_blank");
+                        // push_notification.close();
+                    };
             }
         }
     });
@@ -170,20 +186,10 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @endif
 @if((!empty($socket_url)))
 <!-- /** socket_accept */ -->
-    <script src="{{$socket_url}}/socket.io/socket.io.js"></script>
-    @if((!empty(Auth::user())))
-    <script>
-        createSocketConnection();
-        async function createSocketConnection(){
-            if(SocketConstants.Socket_url != '' && SocketConstants.Socket_url != null && SocketConstants.Socket_url != undefined) {
-                socket = new io(SocketConstants.Socket_url);
-                await socket.connect();
-                console.log(socket);
-                console.log(SocketConstants.Socket_url);
-            }
-        }
-    </script>
-    @endif
+<script src="{{$socket_url}}/socket.io/socket.io.js"></script>
+@endif
+@if((!empty(Auth::user())))
+
 @endif
 <!-- /**socket_accept end */ -->
 
@@ -221,6 +227,7 @@ if($showSubscriptionPlanPopUp == 1){
     var autocomplete_url = "{{ route('autocomplete') }}";
     let stripe_publishable_key = '{{ $stripe_publishable_key }}';
     let stripe_fpx_publishable_key = '{{ $stripe_fpx_publishable_key }}';
+    let stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     let checkout_public_key = '{{ $checkout_public_key }}';
     let yoco_public_key = '{{ $yoco_public_key }}';
     var login_url = "{{ route('customer.login') }}";
@@ -311,6 +318,9 @@ if($showSubscriptionPlanPopUp == 1){
     var logged_in_user_dial_code = "{{Auth::user()->dial_code??'91'}}";
 // Payment Gateway Key Detail
     var razorpay_api_key = "{{getRazorPayApiKey()??''}}";
+
+// Khalti Payment Gateway Key Detail
+    var khalti_api_key = "{{getKhaltiPayApiKey()??''}}";
 
 // Client Perference  Detail
     var client_preference_web_color = "{{getClientPreferenceDetail()->web_color}}";

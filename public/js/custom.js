@@ -1,6 +1,6 @@
 $(document).ready(async function () {
     //alert();
-    await setTimeout(function(){
+    //await setTimeout(function(){
         var footer_height = $('.footer-light').height();
         var header_height = $('.site-header').height();
         var window_height = $(window).height();
@@ -24,7 +24,7 @@ $(document).ready(async function () {
         $('.scrollspy-menu a').on('click',function(){
             $("html, body").animate({ scrollTop:  $('#'+$(this).data('slug')).offset().top - (header_height+30) });
         })
-    },3000)
+   // },1000)
 
 });
 
@@ -466,14 +466,14 @@ $(document).ready(function () {
         fpxBank.mount('#fpx-bank-element');
     }
 
-    if ($("#stripe-card-element").length > 0) {
+    if (($("#stripe-card-element").length > 0) && (stripe_publishable_key != '')) {
         stripeInitialize();
     }
-    if ($("#fpx-bank-element").length > 0) {
+    if (($("#fpx-bank-element").length > 0) && (stripe_fpx_publishable_key != '')) {
         stripeFPXInitialize();
     }
-
-    if ($("#ideal-bank-element").length > 0) {
+ 
+    if (($("#ideal-bank-element").length > 0) && (stripe_ideal_publishable_key != '')) {
         stripeIdealInitialize();
     }
 
@@ -2127,7 +2127,7 @@ $(document).ready(function () {
         //     }
         // );
     }
-    function cartHeader(address_id) {   
+    function cartHeader(address_id) {
         $(".shopping-cart").html("");
         $(".spinner-box").show();
 
@@ -2216,7 +2216,6 @@ $(document).ready(function () {
                             }
 
                         } else {
-                            console.log('header_cart_main_ul_ondemand no productss');
                             if ($('#cart_main_page').length != 0) {
                                 $('#cart_main_page').html('');
                                 let empty_cart_template = _.template($('#empty_cart_template').html());
@@ -2228,7 +2227,6 @@ $(document).ready(function () {
                                 $("#header_cart_main_ul_ondemand").append(empty_cart_template());
                             }
                             if ($("#header_cart_template_ondemand").length != 0) {
-                                console.log('header_cart_main_ul_ondemand exists');
                                 $('#header_cart_main_ul_ondemand').html('');
                                 let empty_cart_template = _.template($('#empty_cart_template').html());
                                 $("#header_cart_main_ul_ondemand").append(empty_cart_template());
@@ -4286,6 +4284,10 @@ $(document).ready(function () {
                 paymentViaTelr('', payment_option_id, '');
             break;
 
+            case 47:
+                paymentViaKhalti('', ''); 
+            break;
+        
         }
 
     }
@@ -4692,7 +4694,6 @@ $(document).ready(function () {
             break;
             case '42':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
                 if (order != '') {
                     //payWithDpo
                     payWithDpo(order);
@@ -4703,7 +4704,6 @@ $(document).ready(function () {
             break;
             case '43':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
                 if (order != '') {
                     paymentViaUPay(address_id, order);
                 }
@@ -4713,7 +4713,6 @@ $(document).ready(function () {
             break;
             case '44':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
                 if (order != '') {
                     paymentViaConekta(address_id, order);
                 }
@@ -4723,7 +4722,6 @@ $(document).ready(function () {
             break;
             case '45':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
                 if (order != '') {
                     paymentViaTelr(address_id, order);
                 }
@@ -4731,8 +4729,16 @@ $(document).ready(function () {
                     return false;
                 }
             break;
-
-
+           
+            case '47':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaKhalti(address_id, order, payment_from='cart');
+                }
+                else{
+                    return false;
+                }
+            break;
         }
 
     }
@@ -4947,6 +4953,9 @@ $(document).ready(function () {
                 paymentViaTelr('', payment_option_id, '');
                 break;
 
+            case 47:
+                paymentViaKhalti('', ''); 
+                break;
         }
     }
 

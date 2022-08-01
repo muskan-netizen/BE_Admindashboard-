@@ -126,6 +126,9 @@
         background-color: darkgrey;
         outline: 1px solid slategrey;
     } */
+
+    .alHeightAutoScrooll{height: 300px;overflow: auto;}
+    .alSmHeight{height: 150px;overflow: auto;}
 </style>
 @endsection
 @section('content')
@@ -283,7 +286,7 @@
                             @csrf
                             <input type="hidden" name="orderData" id="orderBrandData" value="" />
                         </form>
-                        <div class="table-responsive outer-boxal">
+                        <div class="table-responsive {{ (($client_preference_detail->is_vendor_tags == '1') && (count($brands) > 2) ) ?  ( (count($brands) > 3) ? 'alSmHeight' : 'alHeightAutoScrooll' ) : ( (count($brands) > 3) ?  'alHeightAutoScrooll' :'') }}  ">
                             <table class="table table-centered table-nowrap table-striped" id="brand-datatable">
                                 <thead>
                                     <tr>
@@ -353,7 +356,7 @@
                             @csrf
                             <input type="hidden" name="orderData" id="orderTagData" value="" />
                         </form>
-                        <div class="table-responsive outer-boxal">
+                        <div class="table-responsive {{ (($client_preference_detail->is_vendor_tags == '1') && (count($tags) > 2) ) ?  ( (count($tags) > 3) ? 'alSmHeight' : 'alHeightAutoScrooll' ) : ( (count($tags) > 3) ?  'alHeightAutoScrooll' :'') }} ">
                             <table class="table table-centered table-nowrap table-striped" id="tag-datatable">  
                                 <thead>
                                     <tr>
@@ -398,120 +401,121 @@
                     </div> -->
                 </div>
             </div>
+            @if($client_preference_detail->is_vendor_tags == '1')
+            {{--  facilty section --}}
+            
+            <div class="card-box pb-2 ">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="header-title m-0">{{ __("Vendor Tags") }}</h4>
+                <a class="btn btn-info d-block" id="add_facilties_modal_btn">
+                    <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+                </a>
+                </div>
+                <div class="table-responsive {{ (count($facilties) > 3) ? 'alSmHeight' : 'alHeightAutoScrooll' }} ">
+                <table class="table table-centered  nowrap table-striped  w-100" id="Facilties_datatable">
+                    <thead>
+                        <tr>
+                            <th>{{ __("Icon") }}</th>
+                            <th>{{ __("Name") }}</th>
+                            <th>{{ __("Action") }}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="post_list">
+                        @forelse($facilties as $facilty)
+                        <tr>
+                            <td>
+                                <img class="rounded-circle" src="{{$facilty->image['proxy_url'].'30/30'.$facilty->image['image_path']}}">
+                            </td>
+                            <td  width="60%"> <a class="edit_facilty_btn" data-facilty_id="{{$facilty->id}}" href="javascript:void(0)">
+                                {{$facilty->primary ? $facilty->primary->name : 'NA' }}
+                            </a></td>
+                            <td>
+                            <div>
+                                <div class="inner-div" style="float: left;">
+                                    <a class="action-icon edit_facilty_btn" data-facilty_id="{{$facilty->id}}" href="javascript:void(0)">
+                                        <i class="mdi mdi-square-edit-outline"></i>
+                                    </a>
+                                </div>
+                                <div class="inner-div">
+                                    <button type="button" class="btn btn-primary-outline action-icon delete_facilty_btn" data-facilty_id="{{$facilty->id}}">
+                                        <i class="mdi mdi-delete"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr align="center">
+                            <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+                </div>
+            </div>
+          
+            <!--End Add facilty Modal -->
+            <div id="add_facilty_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  standard-modalLabel aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header border-bottom al">
+                        <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Vendor Tags") }}</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        <div class="modal-body">
+                        <form id="faciltyForm" method="POST" action="javascript:void(0)" enctype="multipart/form-data">
+                            @csrf
+                            <div id="save_social_media">
+                                <input type="hidden" name="facilty_id" value="">
+                                <div class="row">
+                                    
+                                    <div class="col-md-6">
+                                            <label>{{ __('Upload Logo') }} </label>
+                                            <input type="file" accept="image/*" data-plugins="dropify" name="facilty_image" class="dropify" data-default-file="" />
+                                            <label class="logo-size text-right w-100">{{ __('Logo Size') }} 170x96</label>
+                                    </div>
+                                    <div class="col-md-12 selector-option-al ">
+                                        <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
+                                            <tr class="trForClone">
+        
+                                                @foreach($client_languages as $langs)
+                                                    <th>{{$langs->langName}}</th>
+                                                @endforeach
+                                                <th></th>
+                                            </tr>
+                                            <tbody id="table_body">
+                                                    <tr>
+                                                @foreach($client_languages as $lankey => $User_langs)
+                                                    <td>
+                                                        <input class="form-control" name="language_id[{{$lankey}}]" type="hidden" value="{{$User_langs->langId}}">
+                                                        <input class="form-control" name="name[{{$lankey}}]" type="text" id="facilty_name_{{$User_langs->langId}}">
+                                                    </td>
+                                                @endforeach
+                                                <td class="lasttd"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                
+                                </div>
+                            </div>
+                        </form>
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-primary submitSaveFacilty">{{ __("Save") }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            {{--  facilty section Ends--}}
+            @endif
             
         </div>
         @endif
 
     </div>
-    @if($client_preference_detail->is_vendor_tags == '1')
-    {{--  facilty section --}}
-    <div class="col-md-3 mb-3">
-        <div class="card-box pb-2 h-100">
-            <div class="d-flex align-items-center justify-content-between">
-            <h4 class="header-title m-0">{{ __("Vendor Tags") }}</h4>
-            <a class="btn btn-info d-block" id="add_facilties_modal_btn">
-                <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
-            </a>
-            </div>
-            <div class="table-responsive mt-3 mb-1">
-            <table class="table table-centered  nowrap table-striped  w-100" id="Facilties_datatable">
-                <thead>
-                    <tr>
-                        <th>{{ __("Icon") }}</th>
-                        <th>{{ __("Name") }}</th>
-                        <th>{{ __("Action") }}</th>
-                    </tr>
-                </thead>
-                <tbody id="post_list">
-                    @forelse($facilties as $facilty)
-                    <tr>
-                        <td>
-                            <img class="rounded-circle" src="{{$facilty->image['proxy_url'].'30/30'.$facilty->image['image_path']}}">
-                        </td>
-                        <td  width="60%"> <a class="edit_facilty_btn" data-facilty_id="{{$facilty->id}}" href="javascript:void(0)">
-                            {{$facilty->primary ? $facilty->primary->name : 'NA' }}
-                        </a></td>
-                        <td>
-                        <div>
-                            <div class="inner-div" style="float: left;">
-                                <a class="action-icon edit_facilty_btn" data-facilty_id="{{$facilty->id}}" href="javascript:void(0)">
-                                    <i class="mdi mdi-square-edit-outline"></i>
-                                </a>
-                            </div>
-                            <div class="inner-div">
-                                <button type="button" class="btn btn-primary-outline action-icon delete_facilty_btn" data-facilty_id="{{$facilty->id}}">
-                                    <i class="mdi mdi-delete"></i>
-                                </button>
-                            </div>
-                        </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr align="center">
-                        <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-            </div>
-        </div>
-    </div>
-    <!--End Add facilty Modal -->
-<div id="add_facilty_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  standard-modalLabel aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-md">
-        <div class="modal-content">
-            <div class="modal-header border-bottom al">
-               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Vendor Tags") }}</h4>
-               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            </div>
-            <div class="modal-body">
-               <form id="faciltyForm" method="POST" action="javascript:void(0)" enctype="multipart/form-data">
-                  @csrf
-                  <div id="save_social_media">
-                     <input type="hidden" name="facilty_id" value="">
-                     <div class="row">
-                        
-                        <div class="col-md-6">
-                                <label>{{ __('Upload Logo') }} </label>
-                                <input type="file" accept="image/*" data-plugins="dropify" name="facilty_image" class="dropify" data-default-file="" />
-                                <label class="logo-size text-right w-100">{{ __('Logo Size') }} 170x96</label>
-                        </div>
-                        <div class="col-md-12 selector-option-al ">
-                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
-                                <tr class="trForClone">
-
-                                    @foreach($client_languages as $langs)
-                                        <th>{{$langs->langName}}</th>
-                                    @endforeach
-                                    <th></th>
-                                </tr>
-                                <tbody id="table_body">
-                                        <tr>
-                                    @foreach($client_languages as $lankey => $User_langs)
-                                        <td>
-                                            <input class="form-control" name="language_id[{{$lankey}}]" type="hidden" value="{{$User_langs->langId}}">
-                                            <input class="form-control" name="name[{{$lankey}}]" type="text" id="facilty_name_{{$User_langs->langId}}">
-                                        </td>
-                                    @endforeach
-                                    <td class="lasttd"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    
-                     </div>
-                  </div>
-               </form>
-            </div>
-            <div class="modal-footer">
-               <button type="button" class="btn btn-primary submitSaveFacilty">{{ __("Save") }}</button>
-            </div>
-         </div>
-      </div>
-   </div>
-</div>
-    {{--  facilty section Ends--}}
-    @endif
+  
 </div>
 @include('backend.common.category-modals')
 @include('backend.catalog.modals')

@@ -11,35 +11,7 @@ $applocale = session()->get('applocale');
 }
 @endphp
 
-@if($mod_count > 1)
-   <div class="vendor_mods_section">
-      <div class="al_count_tabs_new_design "  >
-         <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons vendor_mods" id="top-tab" role="tablist">
-            @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-               @php
-               $clientVendorTypes = $vendor_typ_key.'_check';
-               $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-               $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
-               $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key)
-               @endphp
 
-               @if($client_preference_detail->$clientVendorTypes == 1)
-               <li class="navigation-tab-item" role="presentation">
-                  <a class="nav-link al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
-                     id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
-                     aria-controls="profile" aria-selected="false">
-                     <span class="al_tabsIcons">
-                        {{-- <img src="{{$client_preference_detail->$iconFiledName ? $client_preference_detail->$iconFiledName['proxy_url'].'36/26'.$client_preference_detail-> $iconFiledName['image_path'] : asset('images/al_custom3.png')}}" alt="{{$iconFiledName}}"></span> --}}
-                        <span class="al_textTabsText">{{$NomenclatureName}} </span>
-                  </a>
-               </li>
-            @endif
-            @endforeach
-            <div class="navigation-tab-overlay_alnew_design"></div>
-         </ul>
-      </div>
-   </div>
-@endif
 <!-- alSpaMenuCard start -->
 <section class="alSpaMenuCard">
    <div class="container-fluid d-flex align-items-center justify-content-center h-100">
@@ -158,7 +130,7 @@ $applocale = session()->get('applocale');
          <div class="col-12  px-md-5 px-3">
             <div class="row d-flex align-items-center justify-content-between">
                <!-- leftHead start -->
-               <div class="leftHead d-flex align-items-center col-sm-6">
+               <div class="leftHead d-flex align-items-center">
                   <!-- logo start -->
                   <div class="logo">
                      <a class="navbar-brand position-relative" style="height:60px;" href="{{ route('userHome') }}">
@@ -170,21 +142,30 @@ $applocale = session()->get('applocale');
                   <div class="alFindSec d-none d-lg-block">
                      <ul class="p-0 m-0 d-flex align-items-center justify-content-between">
                         @if(isset($preference))
-                        @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
-                        <li class="border-right mr-3 pr-3">
-                           <div class="alLocation homepage-address" href="#edit-address" data-toggle="modal" >
-                              <!-- data-toggle="modal" data-target="#googleMapModal" -->
-                              <span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span>
-                           </div>
-                        </li>
-                        @endif
+                           @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
+                           <li class="border-right mr-3 pr-3">
+                              <div class="alLocation homepage-address" href="#edit-address" data-toggle="modal" >
+                                 <!-- data-toggle="modal" data-target="#googleMapModal" -->
+                                 <span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span>
+                              </div>
+                           </li>
+                           @endif
                         @endif
                         <li class="pr-3">
+                           <div class="d-inline-flex al_searchType align-items-center justify-content-start px-2 position-relative">
+                              <button class="btn px-0"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                 @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp
+                              <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off">
+                              <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
+                           </div>
+                        </li>
+                        
+                        {{-- <li class="pr-3">
                            <div class="alChooseDate">
                               <input type="input" class="form-control" value="{{session('selectedDate') ?? ''}}"
                                id="inputDate" placeholder="{{session('selectedDate') ? session('selectedDate') : __('Choose Date') }} ">
                            </div>
-                        </li>
+                        </li> --}}
                         <li class="pr-0">
                            <div class="alFindGo">
                               <button class="btn">Go</button>
@@ -195,8 +176,38 @@ $applocale = session()->get('applocale');
                   <!-- alFindSec end -->
                </div>
                <!-- leftHead end -->
+               @if($mod_count > 1)
+                  <div class="vendor_mods_section">
+                     <div class="al_count_tabs_new_design "  >
+                        <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons vendor_mods" id="top-tab" role="tablist">
+                           @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                              @php
+                              $clientVendorTypes = $vendor_typ_key.'_check';
+                              $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                              $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+                              $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key)
+                              @endphp
+
+                              @if($client_preference_detail->$clientVendorTypes == 1)
+                              <li class="navigation-tab-item" role="presentation">
+                                 <a class="nav-link al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
+                                    id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
+                                    aria-controls="profile" aria-selected="false">
+                                    <span class="al_tabsIcons">
+                                       {{-- <img src="{{$client_preference_detail->$iconFiledName ? $client_preference_detail->$iconFiledName['proxy_url'].'36/26'.$client_preference_detail-> $iconFiledName['image_path'] : asset('images/al_custom3.png')}}" alt="{{$iconFiledName}}"></span> --}}
+                                       <span class="al_textTabsText">{{$NomenclatureName}} </span>
+                                 </a>
+                              </li>
+                           @endif
+                           @endforeach
+                           <div class="navigation-tab-overlay_alnew_design"></div>
+                        </ul>
+                     </div>
+                  </div>
+               @endif
+
                <!-- rightHead start -->
-               <div class="rightHead d-flex align-items-end col-sm-6">
+               <div class="rightHead d-flex align-items-end">
                   <ul class="p-0 m-0 d-flex align-items-center ml-auto">
                      <!-- alUserIcon start -->
                      <li class="alUserIcon onhover-dropdown">
