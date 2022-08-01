@@ -44,4 +44,12 @@ class Banner extends Model
     public function vendor(){
       return $this->hasOne('App\Models\Vendor', 'id', 'redirect_vendor_id');
     }
+
+    public function geos(){
+      return $this->hasMany('App\Models\BannerServiceArea', 'banner_id', 'id');
+    }
+
+    public function syncGeos(){
+      return $this->belongsToMany('App\Models\BannerServiceArea', 'banner_service_areas', 'banner_id', 'service_area_id')->withTimestamps();
+    }
 }
