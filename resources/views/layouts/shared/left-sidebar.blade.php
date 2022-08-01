@@ -250,7 +250,7 @@
                                             </li>
                                             @if(Auth::user()->is_superadmin == 1)
                                                 <li>
-                                                    <a href="{{route('chat.userAgentChatRoom')}}">{{ __('User/Agent') }}</a>
+                                                    <a href="{{route('chat.userAgentChatRoom')}}">{{ __('User/Driver') }}</a>
                                                 </li>
                                                 @endif
                                             {{-- <li>

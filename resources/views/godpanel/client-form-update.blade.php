@@ -236,7 +236,7 @@
                                     </select>
                                 </div>    
                             </div>
-                            <div class=" row">
+                            <div style="display: none" class=" row">
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         {!! Form::label('Admin chat', __('Admin chat '),['class' => 'control-label']) !!}
@@ -255,7 +255,8 @@
                                    
                                 </div>
                             </div>
-                            <div class=" row">
+                            <div style="display: none" class=" row">
+
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         {!! Form::label('Customer chat', __('Customer chat '),['class' => 'control-label']) !!}
