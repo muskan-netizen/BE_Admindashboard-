@@ -449,3 +449,12 @@ ul.price_box_bottom li span{font-weight: 600;}
 .BGcenter a.alBtnGuestLink{color: var(--top-header-color);font-size: 20px;font-weight: 600;text-align: center;margin: 20px auto;display: block;text-decoration: underline;}
 span.registerLink{text-align: center;width: 100%;margin-top: 10px;display: block;font-size: 12px;}
 /*================== login page css end here ====================== */
+
+.SpasRelatedItemsImageBox{position: relative;padding-bottom: 100%;}
+.SpasRelatedItemsImageBox img{position: absolute;min-height: 100%;max-width: 100%;object-fit: cover;}
+
+
+
+
+
+

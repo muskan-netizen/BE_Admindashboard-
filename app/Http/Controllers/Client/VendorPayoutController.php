@@ -236,7 +236,7 @@ class VendorPayoutController extends BaseController{
         $vendor_payouts = $vendor_payouts->where('status', $status)->get();
         foreach ($vendor_payouts as $payout) {
             $payout->date = dateTimeInUserTimeZone($payout->created_at, $user->timezone);
-            $payout->vendorName = $payout->vendor->name;
+            $payout->vendorName = @$payout->vendor->name;
             $payout->requestedBy = ucfirst(isset($payout->user) ? $payout->user->name : "");
             $payout->amount = decimal_format($payout->amount);
             $payout->type = $payout->payoutOption->title;

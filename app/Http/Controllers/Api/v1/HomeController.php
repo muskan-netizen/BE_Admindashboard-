@@ -163,7 +163,7 @@ class HomeController extends BaseController
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
             $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
 
-            $payment_codes = ['stripe', 'stripe_fpx', 'stripe_oxxo','stripe_ideal','razorpay', 'checkout', 'paytab','flutterwave'];
+            $payment_codes = ['stripe', 'stripe_fpx', 'stripe_oxxo','stripe_ideal','razorpay', 'checkout', 'paytab','flutterwave', 'khalti'];
             $payment_creds = PaymentOption::select('code', 'credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
             if ($payment_creds) {
                 foreach ($payment_creds as $creds) {
@@ -193,6 +193,9 @@ class HomeController extends BaseController
                     }
                     if ($creds->code == 'flutterwave') {
                         $homeData['profile']->preferences->flutterwave_public_key = (isset($creds_arr->client_id) && (!empty($creds_arr->client_id))) ? $creds_arr->client_id : '';
+                    }
+                    if ($creds->code == 'khalti') {
+                        $homeData['profile']->preferences->khalti_api_key = (isset($creds_arr->api_key) && (!empty($creds_arr->api_key))) ? $creds_arr->api_key : '';
                     }
 
                     $homeData['profile']->preferences->show_subscription_plan_popup = 0;

@@ -1,5 +1,15 @@
 //(async function(){
-    
+   
+createSocketConnection();
+async function createSocketConnection(){
+    if(SocketConstants.Socket_url != '' && SocketConstants.Socket_url != null && SocketConstants.Socket_url != undefined) {
+        socket = new io(SocketConstants.Socket_url);
+        await socket.connect(); 
+        console.log(socket);
+        console.log(SocketConstants.Socket_url);
+    }
+}
+  
 
 // var socket = new io('https://chat.royoorders.com');
 
@@ -12,8 +22,12 @@ socket.on('connect',async function() {
 });
 // // Add a connect listener
 socket.on('new-message',function(data) {
+    console.log('Received a mesddsage from the server!',data);
     newMessage(data)
-    //console.log('Received a message from the server!',data);
+});
+socket.on('new-message2',function(data) {
+    console.log('Received a message from the server!',data);
+
 });
 // // Add a disconnect listener
 socket.on('disconnect',function() {
@@ -22,7 +36,11 @@ socket.on('disconnect',function() {
 
 
 socket.on('room-created',async function(data) {
-    await newChatGroup(data)
+    //console.log('Du doooo',data);
+    //if(data.roomData[0].order_user_id == auth) {
+        await newChatGroup(data)
+    //}
+    
     //console.log('Du doooo',data);
 });
 //})()

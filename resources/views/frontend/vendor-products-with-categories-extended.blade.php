@@ -568,7 +568,8 @@ $checkSlot = findSlot('', $vendor->id, '');
         <!-- chooseYourOffer start -->
 
         <!-- Why people visit here start -->
-        <section class="whyPeopleVisit py-5">
+        {{-- <p>{{!! $vendor->dynamic_html !!}}</p> --}}
+        {{-- <section class="whyPeopleVisit py-5">
         	<div class="container">
         		<div class="row">
         			<div class="col-md-12">
@@ -595,7 +596,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         			</div>
         		</div>
         	</div>
-        </section>
+        </section> --}}
         <!-- Why people visit here end -->
 
         <!-- More spas nearby start -->
@@ -604,7 +605,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         		<div class="row">
         			<div class="col-md-12">
         				<div class="alSpaListHead text-center text-lg-left col-12 mb-5">
-	                        <p class="alLgFontSize">More spas nearby</p>
+	                        <p class="alLgFontSize">{{ __('More ') . getNomenclatureName('vendors', false). __(' nearby')}} </p>
 	                        <p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt dolore magna aliqua.</p>
 	                    </div>
         			</div>
@@ -629,68 +630,21 @@ $checkSlot = findSlot('', $vendor->id, '');
                 <div class="row">
                     <!-- alSpaListSlider start -->
                     <div class="Spasslider w-100" id="Spasslider">
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
+                        @foreach($Map_vendors as $key => $value)
+                            <div>
+                                <div class="SpasRelatedItems mx-2">
+                                    <div class="SpasRelatedItemsImageBox">
+                                        <img class="rounded" src="{{ $value->banner['image_fit'] . '400/400' . $value->banner['image_path'] }}">
+                                    </div>                                    
+                                    <div class="SpasRelatedDetails p-2">
+                                        <p class="text-left m-0">{{ $value->name }}</p>
+                                        <a href="javascript:void(0)">10 Excellent (2 reviews)</a>
+                                        <p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">{{ $value->state ?? 'NA' }}</span><span>{{ number_format($value->vendorToUserDistance ,2) }} {{ (!empty($client_preference_detail->distance_unit_for_time)) ? ($client_preference_detail->distance_unit_for_time ==  'kilometer' ? 'KM' : 'miles') : 'KM' }} {{ __('away') }}</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                       
 
                     </div><!-- alSpaListSlider start -->
                 </div>
@@ -1066,18 +1020,21 @@ $checkSlot = findSlot('', $vendor->id, '');
         var img = document.getElementById("vendorStoriesImg");
         var modalImg = document.getElementById("img01");
         var captionText = document.getElementById("caption");
+        if(img){
             img.onclick = function(){
-            modal.style.display = "block";
-            modalImg.src = this.src;
-            captionText.innerHTML = this.alt;
+                modal.style.display = "block";
+                modalImg.src = this.src;
+                captionText.innerHTML = this.alt;
+            }
         }
+       
 
         // Get the <span> element that closes the modal
         var span = document.getElementsByClassName("close")[0];
 
          //When the user clicks on <span> (x), close the modal
         span.onclick = function() {
-        modal.style.display = "none";
+            modal.style.display = "none";
         }
     </script>
     <script>
@@ -1163,8 +1120,8 @@ $checkSlot = findSlot('', $vendor->id, '');
         var addonids = [];
         var addonoptids = [];
         var ajaxCall = 'ToCancelPrevReq';
-
-
+        let map;
+       
         $(document).on('click', '.show_subet_addeon', function(e) {
             e.preventDefault();
             var show_class = $(this).data("div_id_show");
@@ -1299,24 +1256,66 @@ $checkSlot = findSlot('', $vendor->id, '');
             });
             // }
         }
-
-        function displayVendorLocation() {
+        vendorAllOnMap();
+     
+        function vendorAllOnMap() {
             var latitude = "{{ $vendor->latitude }}";
             var longitude = "{{ $vendor->longitude }}";
             var latlng = new google.maps.LatLng(latitude, longitude);
 
-            const map = new google.maps.Map(document.getElementById('vendor-map'), {
+            map = new google.maps.Map(document.getElementById('vendor-map'), {
                 center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
                 zoom: 13
             });
+            
+            var url = window.location.origin;
+            var vendorData = {!!json_encode($Map_vendors)!!};
+              //vendor  markers
+            for (let i = 0; i < vendorData.length; i++) {
+                vendor = vendorData[i];
+               
+                if(vendor.address != null && vendor.latitude != "0.00000000" && vendor.longitude != "0.00000000" ){
+                    var contentString = '';
+          
+                        contentString =
+                            '<div id="content">' +
+                            '<div id="siteNotice">' +
+                            "</div>" +
+                            '<h5 id="firstHeading" class="firstHeading">'+vendor.name+'</h5>' +
+                            '<div id="bodyContent">' +
+                            "<p><b>Address :- </b> " +vendor.address+ " " +
+                            ".</p>" +
+                            '<p><b>Contact: +'+ vendor?.dial_code +vendor?.phone_no+' </p>' +
+                            "</div>" +
+                            "</div>";
+                        
 
-            const marker = new google.maps.Marker({
-                map: map,
-                position: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-            });
+                    const infowindow = new google.maps.InfoWindow({
+                            content: contentString,
+                            minWidth: 250,
+                            minheight: 250,
+                        });
+                   // images = 'https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/Clientlogo/612e24163debe.png@webp';
+                    
+                    var image = {
+                        //url: images, // url
+                        scaledSize: new google.maps.Size(50, 50), // scaled size
+                        origin: new google.maps.Point(0,0), // origin
+                        anchor: new google.maps.Point(22,22) // anchor
+                    };
+                    const marker = new google.maps.Marker({
+                            map: map,
+                            position: { lat: parseFloat(vendor.latitude), lng: parseFloat(vendor.longitude) },
+                           //icon: image,
+                        });
+                        marker.addListener("click", () => {
+                            infowindow.open(map, marker);
+                        });
+                   
+                }
+
+            }
         }
-
-        google.maps.event.addDomListener(window, 'load', displayVendorLocation );
     </script>
 
 @endsection

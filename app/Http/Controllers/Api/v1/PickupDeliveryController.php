@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Validator;
@@ -21,11 +21,10 @@ class PickupDeliveryController extends BaseController{
 
     use ApiResponser;
     private $riderObj;
-    public function __construct(Rider $rider)
+    public function __construct()
     {
-        $this->riderObj = $rider;
+        $this->riderObj = new Rider();
     }
-
 
 
     # get all vehicles category by vendor
@@ -243,7 +242,7 @@ class PickupDeliveryController extends BaseController{
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
 
                         //Send message if ride is booked for friend
-                        if($request->type == 1 && isset($request->friendPhoneNumber))
+                        if($request->bookingType == 1 && isset($request->friendPhoneNumber))
                         {
                             $msg = "Hi ".$request->friendName??'User'.", ".$user->name." has booked a ride for you.";
                             $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
@@ -280,6 +279,8 @@ class PickupDeliveryController extends BaseController{
         $taxable_amount = 0;
         $payable_amount = 0;
         $user = Auth::user();
+        $action = 'pick_drop';
+        $luxury_option = LuxuryOption::where('title', $action)->first();
         $request->address_id = $request->address_id ??null;
         $request->payment_option_id = $request->payment_option_id ??1;
         if ($user) {
@@ -330,11 +331,16 @@ class PickupDeliveryController extends BaseController{
                 $order->address_id = $request->address_id;
                 $order->payment_option_id = $payment_option;
                 /*book for a friend*/
-                $order->type = $request->type;
+                $order->type = $request->bookingType ?? 0;
                 $order->friend_name = $request->friendName;
                 $order->friend_phone_number = $request->friendPhoneNumber;
+                $order->luxury_option_id = $luxury_option->id;
 
-                $order->scheduled_date_time = $request->schedule_time??NULL;
+                $schedule_datetime_del = NULL;
+                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
+                    $schedule_datetime_del = Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                }
+                $order->scheduled_date_time = $schedule_datetime_del??NULL;
                 $order->save();
 
                 // save pickup delivery task 
@@ -572,19 +578,23 @@ class PickupDeliveryController extends BaseController{
                 //     $request->task_type = 'now';
                 //     $request->schedule_time = null;
                 // }
+                $schedule_datetime_del = NULL;
+                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
+                    $schedule_datetime_del = Carbon::parse($request->schedule_time, $customer->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                }
 
                 if(isset($request->task_type) && !empty($request->task_type))
                 {
                     $request->task_type = $request->task_type;
-                    $request->schedule_time = null;
+                    $schedule_datetime_del = null;
 
                     // $tasktype = ($request->task_type=='later')?'schedule':$request->task_type;
                     // $request->task_type = $tasktype;                    
-                    $request->order_time = $request->schedule_time;
+                    $request->order_time = $schedule_datetime_del;
                 }else{
                     $request->task_type = 'schedule';
-                    $request->scheduled_date_time = $request->schedule_time;
-                    $request->order_time = $request->schedule_time;
+                    $request->scheduled_date_time = $schedule_datetime_del;
+                    $request->order_time = $schedule_datetime_del;
                 }
                 $dynamic = uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
@@ -595,7 +605,7 @@ class PickupDeliveryController extends BaseController{
                 $team_tag = $unique."_".$vendor;
                 $product = Product::find($request->product_id);
                 $order_agent_tag = $product->tags??'';
-                $type=$request->type??0;
+                $type = $request->bookingType ?? 0;
                 $friendName=$request->friendName?? null;
                 $friendPhoneNumber=$request->friendPhoneNumber?? null;
                 if(empty($friendPhoneNumber)){
@@ -622,7 +632,7 @@ class PickupDeliveryController extends BaseController{
                             'task_description' => $request->task_description??null,
                             'allocation_type' => 'a',
                             'task_type' => $request->task_type,
-                            'schedule_time' => $request->schedule_time ?? null,
+                            'schedule_time' => $schedule_datetime_del ?? null,
                             'cash_to_be_collected' => $payable_amount??0.00,
                             'barcode' => '',
                             'call_back_url' => $call_back_url??null,

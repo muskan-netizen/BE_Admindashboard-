@@ -460,6 +460,7 @@ class AuthController extends BaseController
             $checkSystemUser = $this->checkCookies($user->id);
             $response['status'] = 'Success';
             $response['name'] = $user->name;
+            $response['id'] = $user->id;
             $response['auth_token'] =  $token;
             $response['email'] = $user->email;
             $response['dial_code'] = $user->dial_code;
