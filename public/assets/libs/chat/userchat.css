@@ -1,16 +1,51 @@
+/* width */
+::-webkit-scrollbar {
+width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+background: var(--theme-deafult);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+.chat-body::before{
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 100%;
+    background-image: url(../chat/images/bg-chat.jpg);
+    background-size: 30%;
+    background-repeat: repeat;
+    opacity: .3;
+}
 .error {
     color: red;
 }
 .chat-list-item {
 cursor: pointer;
-padding: 14px 8px;
+padding: 10px 0;
+margin: 0;
 }
 .mdi-circle:before {
 content: "󰝥";
 }
 .chat-box-wrapper {
-    max-height: 538px;
-    overflow-y: scroll;
+    max-height: 480px;
+    overflow-y: auto;
+    position: relative;
+}
+.bg-white.rounded-lg{background-color: transparent !important;}
+.px-4.pt-3.chat-box {
+    padding: 0 !important;
 }
 .chat-input-section {
     background-color: #fff;
@@ -31,22 +66,29 @@ line-height: inherit;
 /* .left-message{
     float: left;
 } */
-
-.search-icon {position: absolute;z-index: 4;font-size: 20px;line-height: 38px;left: 10px;top: 10px;}
-.chat-list-item span {position: absolute;right: 0;top: 0px;font-size: 11px;word-wrap: break-word;color: #5e5c5c;}
-.chat-list-item h6{display: inline-block;font-size: 16px;font-weight: 600 !important;color: #343a40;margin-bottom: 0px !important;}
-.outer_search input{padding-left: 30px;}.orderChatMessage {white-space: nowrap;text-overflow: ellipsis;overflow: hidden;color: #777;font-size: 14px;
+.search-icon svg{vertical-align: top;}
+.search-icon {position: absolute;z-index: 4;font-size: 20px;line-height: 38px;left: 20px;top: 23px;}
+.chat-list-item span {font-size: 10px;word-wrap: break-word;color: #5e5c5c;font-style: italic;font-weight: 600;}
+.chat-list-item h6{display: inline-block;font-size: 12px;font-weight: 600 !important;color: #343a40;margin-bottom: 0px !important;}
+.outer_search input{padding-left: 30px;border-radius: 6px;}.orderChatMessage {white-space: nowrap;text-overflow: ellipsis;overflow: hidden;color: #777;font-size: 14px;
+}
+.conversation-name {
+    font-size: 14px;
 }
 .alPhoneNumberDetails ul li span {
-    font-size: 13px;
+    font-size: 12px;line-height: normal;
 }
-.orderNumber {background-color: #6eccf14d;color: #43BEE1;text-align: center;border-radius: 3px;}
-.messages-box .list-group:nth-child(even) {background: #5ddaff24;border-bottom: 1px solid#0000002b;}
-.messages-box .list-group:nth-child(odd) {background: #fff;border-bottom: 1px solid#0000002b;}
+.alNameTime.last_message {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.orderNumber {background-color: #6eccf14d;color: #43BEE1;text-align: center;border-radius: 3px;font-size: 10px;font-weight: 600;}
+.messages-box .list-group{overflow: hidden;background: #c3c3c324;border-bottom: 1px solid#c3c3c324;margin: 0 5px;}
 .conversation-head {border-bottom: 1px solid #E7F6FC;}
 .alOrderDetailsBox .alOrderDetails span, .alOrderDetailsBox .alOrderDetails, .conversationText p.chatUserName {color: #43BEE1;font-weight: 600;}
 .alUserName {font-weight: 600;font-size: 16px;text-transform: capitalize;}
-.alPhoneNumber {font-size: 12px;color: #43BEE1;font-weight: 600;}
+.alPhoneNumber {font-size: 12px;color: #43BEE1;font-weight: 600;line-height: normal;}
 .alOrderDetailsBox p {color: #777;font-size: 13px;}.alOrderDetailsBox p span {color: #000;font-weight: 600;}
 .conversation-list .ctext-wrap p.chat-time{font-size: 12px;}
 .chat-input-section .col-auto a:nth-child(1) {display: none;}
@@ -78,12 +120,17 @@ line-height: inherit;
 .conversation-list .ctext-wrap p {
     margin: 0;
     padding-top: 3px;
+    font-size: 12px;
 }
+.conversation-name.text-left.text-primary.mr-4 {
+    margin-right: 20px !important;
+}
+.chat-box .mb-4{margin-bottom: 0px !important;}
 .ctext-wrap {
     background-color: #E7F6FC;
     border-radius: 15px 15px 15px 0;
     width: auto;
-    max-width: 60%;
+    max-width: 70%;
     float: left;
     position: relative;
 }
@@ -91,7 +138,7 @@ line-height: inherit;
 .right-message .conversation-list .ctext-wrap {
     text-align: right;
     float: right;
-    background: #5ddaff24;
+    background: #fff;
 }
 .left-message .conversation-list .ctext-wrap {
     text-align: left;
@@ -108,60 +155,85 @@ line-height: inherit;
     width: 0;
     position: absolute;
     pointer-events: none;
-    border-top-color: #eee;
+    border-bottom-color: #eee;
     border-width: 6px;
     margin-right: 0;
-    border-left-color: #eee;
-    bottom: -11px;
-    left: 0; 
+    border-right-color: #eee;
+    top: -11px;
+    left: 0;
 }
 .chat-list-container {
-    height: 100vh;
-    background: #969ea312;
+    height: 100%;
+    background: #ffffff96;
     padding-right: 0px !important;
-    padding: 0px 10px !important;
+    min-height: 500px;
+    border-right: 2px solid #e7e7e7;
 }
-.right-message .conversation-list .ctext-wrap::before{
+.conversation-head.row.py-3.px-3.mx-0.mb-2 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    background-color: #fff;
+}
+.shadow {
+    box-shadow: 0 0 35px rgba(154,161,171,.15)!important;
+    border: 2px solid #e7e7e7;
+}
+.right-message .conversation-list .ctext-wrap::before {
     border: solid transparent;
     content: " ";
     height: 0;
     width: 0;
     position: absolute;
     pointer-events: none;
-    border-top-color: #E7F6FC;
+    border-bottom-color: #fff;
     border-width: 6px;
     margin-left: 0;
-    border-left-color: #E7F6FC;
-    bottom: -11px;
-    left: 0; 
+    border-right-color: #fff;
+    top: -11px;
+    right: 0;
 }
 .alPhoneNumberDetails li img {
-    width: 50px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
 }
 .alPhoneNumberDetails ul li {
     list-style: none;
+}
+
+.user_data_left span {
+    position: inherit;
 }
 .user_data_left img {
     width: 30px;
     height: 30px;
 }
-.user_data_left span {
-    position: inherit;
-}
-.user_show a {
-    display: inline-block;
-    width: 20px;
-    float: left;
-}
-
 .hidden {
     display: none;
 }
-
-
-
-
+a.user_data_left {
+    position: relative;
+    display: inline-block;
+}
+.user_show {
+    position: relative;
+    height: 60px;
+}
+.user_show a.user_data_left {
+    position: absolute;
+}
+.user_show a.user_data_left {
+    position: absolute;
+    left: 0;
+}
+a.user_data_left:nth-child(2) {
+    left: 20px;
+}
+a.user_data_left:nth-child(3) {
+    left: 40px;
+}
+.alPhoneNumberDetails li.mr-xl-2 {
+    margin-right: 5px !important;
+}
 
 
 

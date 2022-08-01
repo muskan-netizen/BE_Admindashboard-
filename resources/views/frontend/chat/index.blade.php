@@ -65,11 +65,11 @@
                         <div class="container">
                             <div class="chat-body row overflow-hidden shadow bg-light rounded">
 
-                                @include('backend.chat.part.left') 
-                                @include('backend.chat.part.right') 
+                                @include('backend.chat.part.left')
+                                @include('backend.chat.part.right')
                             </div>
                         </div>
-                    
+
                     </div>
                 </div>
             </div>
@@ -84,6 +84,9 @@
             });
         });
     </script>
+    @php
+    $authData = json_encode(@$data->toArray());
+    @endphp
 @endsection
 @section('script')
 
@@ -91,6 +94,11 @@
 <script src="{{asset('assets/js/chat/chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/chatNotifications.js')}}"></script>
+<script>
+    var client_data = `<?php echo $authData; ?>`;
+    fetchChatGroups(client_data);
+
+</script>
 
 
 <script>
@@ -98,6 +106,6 @@
 
           // Create SocketIO instance, connect
     })
-   
+
   </script>
 @endsection

@@ -1,6 +1,7 @@
 
 
     //await getALLchat();
+    
     $(document).on('click','.start_chat',async function(){
         var vendor_order_id = $(this).attr('data-vendor_order_id');
         var vendor_id = $(this).attr('data-vendor_id');
@@ -15,17 +16,19 @@
     });
 
     var input = document.getElementById("message_box");
-
+    if(input){
+        input.addEventListener("keypress", function(event) {
+            // If the user presses the "Enter" key on the keyboard
+            if (event.key === "Enter") {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                // Trigger the button element with a click
+                document.getElementById("send_message").click();
+            }
+        });
+    }
     // Execute a function when the user presses a key on the keyboard
-    input.addEventListener("keypress", function(event) {
-        // If the user presses the "Enter" key on the keyboard
-        if (event.key === "Enter") {
-            // Cancel the default action, if needed
-            event.preventDefault();
-            // Trigger the button element with a click
-            document.getElementById("send_message").click();
-        }
-    });
+  
     $(document).on('click','.fetchChat',async function(){
         var roomId = $(this).attr('data-id');
         var roomIdText = $(this).attr('data-roomid');
@@ -160,6 +163,7 @@
 
     async function getALLchat(roomId,roomIdText){
         var html='';
+        toggleClass(roomId);
         axios.get(`${SocketConstants.Socket_url}/api/chat/${roomId}`)
         .then(async response => {
             console.log(response);
@@ -233,7 +237,7 @@
         })
     }
 
-    async function getAllUser(roomId,roomIdText){
+    async function getAllUser(roomId,roomIdText,notify=0,message=''){
         var html='';
         var html2='';
         axios.get(`${SocketConstants.Socket_url}/api/chat/getRoomUser/${roomId}`)
@@ -241,23 +245,27 @@
             console.log(response);
             if(response.status == 200) {
                 if(response.data.userData.length > 0) {
-                   await response.data.userData.forEach(function (data) {
-                     html+= `<div class="alPhoneNumberDetails">
-                            <ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">
-                                <li class="mr-xl-2"><img class="rounded-circle userImg" src="${data.display_image}"></li>
-                                <li><span class="alUserName">${data.username}  (${data.user_type}) </span><p class="m-0 alPhoneNumber">${data.phone_num}</p></li>
-                            </ul>
-                        </div>`;
-
-                    });
                     html2+= `<p class="orderNumber m-0 mb-2">#${roomIdText}</p>`;
                     await response.data.userData.forEach(function (data) {
+                        html+= `<div class="alPhoneNumberDetails">
+                                <ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">
+                                    <li class="mr-xl-2"><img class="rounded-circle userImg" src="${data.display_image}"></li>
+                                    <li><span class="alUserName">${data.username}  (${data.user_type}) </span><p class="m-0 alPhoneNumber">${data.phone_num}</p></li>
+                                </ul>
+                            </div>`;
+                            html2+=   `<a class="user_data_left" href="javascript:void(0)">
+                                <img class="rounded-circle userImg" src="${data.display_image}">
+                            </a>`;
+
+                        });
+                        if(notify) {
+                            sendNotification(response.data.userData,message,roomId,roomIdText)
+                        }
+                    // await response.data.userData.forEach(function (data) {
                         
-                        html2+=   `<a class="user_data_left" href="javascript:void(0)">
-                                    <img class="rounded-circle userImg" src="${data.display_image}">
-                                </a>`;
+                     
    
-                       });
+                    //    });
                  $(`#right_room_${roomId}`).html(html);
                  $(`#room_${roomId}`).find('.user_show').html(html2)
                 } else {
@@ -320,7 +328,8 @@
             </div>`;
         
             await $('.room_'+data.room).append(html);
-            await $('#preview_message_'+data.room).html(data.message);
+            await $('#preview_message_'+data.room).addClass('newMessage');
+            await $('#preview_message_'+data.room).html(`${data.message}`);
             await $('#preview_message_name_'+data.room).html(data.username);
             await $('#preview_message_time_'+data.room).html(convertDateTime(cdate));
             await $('#chatRooms_'+data.room).attr('data-timestamp',convertDateTimeStamp(updateDate));
@@ -427,7 +436,8 @@
              console.log(response.data.status);
              if(response.data.status) {
                 //if($('#chatHistory >  div').length == 0){
-                    await getAllUser(room_id,roomIdText);
+                var notify = 1;
+                await getAllUser(room_id,roomIdText,notify,message);
 
                // }
                 socket.emit('save-message', response.data)
@@ -521,8 +531,12 @@
         if(roomData ==  undefined || roomData ==  'undefined'){
             return;
         }
+        if(roomData[0].order_user_id != auth && roomData[0].type != 'vendor_to_user') {
+            return;
+        }
         var html='';
         console.log('dd',message.message.roomData);
+        var updateDate =  new Date(roomData.updated_date);
         html = `<div id="chatRooms_${roomData._id}" data-text="${roomData.room_id}" data-sort="" data-timestamp="" class="list-group rounded-0 chatRoomsDivs">
                     <div id="room_${roomData._id}"  data-OrderID="${roomData.order_id}" data-OrdervendorID="${roomData.order_vendor_id}" data-id="${roomData._id}" data-roomID="${roomData.room_id}" data-roomName="${roomData.room_name}" class="chat-list-item d-flex align-items-start rounded fetchChat">
             
@@ -533,8 +547,12 @@
                     </div>
                     <div class="col-md-9 position-relative">
                         <div class="alNameTime last_message">
-                            <p id="preview_message_${roomData._id}" class="orderChatMessage mb-0"></p>
+                            <h6 id="preview_message_name_${roomData._id}" class="mb-1 mt-0">Sales Demo</h6>
+                            <span id="preview_message_time_${roomData._id}">
+                            ${convertDateTime(updateDate)}
+                            </span>
                         </div>
+                        <p id="preview_message_${roomData._id}" class="orderChatMessage mb-0">${last_message} </p>
                     </div>
                 </div>
             </div>	`;
@@ -545,4 +563,110 @@
         }
 
         
+    }
+
+    async function renderUser(data){
+        var html2='';
+        html2+= `<p class="orderNumber m-0 mb-2">#${data.room_id}</p>`;
+        if(data.user_Data.length > 0) {
+            
+             await data.user_Data.forEach(function (data) {
+                html2+=   `<a class="user_data_left" href="javascript:void(0)">
+                <img class="rounded-circle userImg" src="${data.display_image}">
+                </a>`;
+            });
+            return html2; 
+        }
+        //console.log(html2);
+        return html2; 
+        
+    }
+
+    async function fetchChatGroups(client_data){
+         //console.log(client_data);
+         var client_data = JSON.parse(client_data);
+         if(client_data == undefined && client_data == 'undefined'){
+            return;
+         }
+        // console.log(client_data.vendor_id);
+        // console.log("client_data");
+
+        var html='';
+         axios.post(`${SocketConstants.Socket_url}/api/room/fetchRoomByVendor`, {
+            sub_domain: window.location.host,
+            type:'vendor_to_user',
+            db_name:Auth.database_name,
+            vendor_id:client_data.vendor_id,
+            client_id: client_data.id,
+        })
+        .then(async response => {
+            console.log(response);
+            if(response.status == 200) {
+                if(response.data.roomData.length > 0) {
+                    await response.data.roomData.reverse().forEach(async function (data,i) {
+                    console.log(data.updated_date);
+                    var renderUserd = await renderUser(data);
+                    var last_message =  data.chat_Data[0]!=undefined?data.chat_Data[0].message:'';
+                    var last_message_name = data.chat_Data[0]!=undefined?data.chat_Data[0].username : '';
+                    var updateDate =  new Date(data.updated_date);
+                    html = `<div id="chatRooms_${data._id}" data-text="${data.room_id}" data-sort="${i}" data-timestamp="" class="list-group rounded-0 chatRoomsDivs">
+                        <div id="room_${data._id}" data-orderid="${data.order_id}" data-ordervendorid="${data.order_vendor_id}" data-id="${data._id}" data-roomid="${data.room_id}" data-roomname="${data.room_id}" class="chat-list-item row fetchChat">
+                            <div class="align-self-center col-4">
+                                <div class="user_show">
+                                ${renderUserd}
+                                </div>
+                            </div>
+                            <div class="col-8 position-relative pl-0">
+                                <div class="alNameTime last_message">
+                                    <h6 id="preview_message_name_${data._id}" class="mb-1 mt-0">${last_message_name}</h6>
+                                    <span id="preview_message_time_${data._id}">
+                                    ${convertDateTime(updateDate)}
+                                    </span>
+                                </div>
+                                <p id="preview_message_${data._id}" class="orderChatMessage mb-0">${last_message} </p>
+                            </div>
+                        </div>
+                        </div>`;
+                        //if(document.getElementById(`chatRooms_${roomData._id}`) === null) {
+                            //alert();
+                          //console.log(html);
+                          await  $('.sortDiv').prepend(html);
+                          
+                        //}
+                    });
+                 
+                    
+                } else {
+                    $('.sortDiv').html('')
+                }
+
+             } else {
+                $('.sortDiv').html('')
+             }
+        })
+        .catch(e => {
+            $('.sortDiv').html('')
+        })
+        
+
+    }
+    function sendNotification(user_ids,message,roomId,roomIdText){
+        axios.post(`/common/chat/sendNotificationToUser`, {
+            user_ids: user_ids,
+            text_message:message,
+            roomId:roomId,
+            roomIdText:roomIdText
+        })
+        .then(async response => {
+        })
+        .catch(e => {
+            
+        })
+    }
+
+
+    function toggleClass(id){
+        $('.chatRoomsDivs').removeClass('active');
+        $('#chatRooms_'+id).addClass('active');
+        $('#preview_message_'+id).removeClass('newMessage');
     }

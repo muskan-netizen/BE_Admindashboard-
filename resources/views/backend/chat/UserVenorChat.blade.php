@@ -31,15 +31,15 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-body position-relative">
+                    <div class="card-body position-relative p-0">
                         <div class="container">
                             <div class="chat-body row overflow-hidden shadow bg-light rounded">
 
-                                @include('backend.chat.uservendorpart.left') 
-                                @include('backend.chat.uservendorpart.right') 
+                                @include('backend.chat.uservendorpart.left')
+                                @include('backend.chat.uservendorpart.right')
                             </div>
                         </div>
-                    
+
                     </div>
                 </div>
             </div>
@@ -54,9 +54,17 @@
             });
         });
     </script>
+      @php
+      $authData = json_encode(@$data->toArray());
+      pr($authData);
+  @endphp
 @endsection
 @section('script-bottom')
+<script>
+    var client_data = `<?php echo $authData; ?>`;
+    fetchChatGroups(client_data);
 
+</script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>
@@ -68,6 +76,6 @@
 
           // Create SocketIO instance, connect
     })
-   
+
   </script>
 @endsection

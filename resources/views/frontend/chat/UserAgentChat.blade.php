@@ -67,15 +67,15 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-body position-relative">
+                                <div class="card-body position-relative p-0">
                                     <div class="container">
                                         <div class="chat-body row overflow-hidden shadow bg-light rounded">
 
-                                            @include('frontend.chat.useragentpart.left') 
-                                            @include('frontend.chat.useragentpart.right') 
+                                            @include('frontend.chat.useragentpart.left')
+                                            @include('frontend.chat.useragentpart.right')
                                         </div>
                                     </div>
-                                
+
                                 </div>
                             </div>
                         </div>
@@ -84,7 +84,7 @@
             </div>
         </div>
     </div>
-</section>   
+</section>
     <!-- <script type="text/javascript">
         $(document).ready(function() {
             $.ajaxSetup({
@@ -94,6 +94,9 @@
             });
         });
     </script> -->
+@php
+$authData = json_encode(@$data->toArray());
+@endphp
 @endsection
 @section('script')
 
@@ -101,6 +104,11 @@
 <script src="{{asset('assets/js/chat/user_agent_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/chatNotifications.js')}}"></script>
+<script>
+    var client_data = `<?php echo $authData; ?>`;
+    fetchChatGroups(client_data);
+
+</script>
 
 
 <script>
@@ -108,6 +116,6 @@
 
           // Create SocketIO instance, connect
     })
-   
+
   </script>
 @endsection

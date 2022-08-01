@@ -133,37 +133,9 @@ class ChatController extends BaseController
         $data = $request->all();
 
         $vendor_id = $data['vendor_id'];
-        $vendor_order_id = $data['vendor_order_id'];
+        $vendor_order_id = $data['order_vendor_id'];
         $order_id = $data['order_id'];
-       
-        $langId = 1;
-        $server_name = $_SERVER['SERVER_NAME'];
-        
-        $order = Order::with(array(
-            'vendors' => function ($query) use ($vendor_id) {
-                $query->where('vendor_id', $vendor_id);
-            },
-            'vendors.products.prescription' => function ($query) use ($vendor_id, $order_id) {
-                $query->where('vendor_id', $vendor_id)->where('order_id', $order_id);
-            },
-            'vendors.products' => function ($query) use ($vendor_id) {
-                $query->where('vendor_id', $vendor_id);
-            },
-            'vendors.products.addon',
-            'vendors.products.addon.set',
-            'vendors.products.addon.option',
-            'vendors.products.addon.option.translation' => function ($q) use ($langId) {
-                $q->select('addon_option_translations.id', 'addon_option_translations.addon_opt_id', 'addon_option_translations.title', 'addon_option_translations.language_id');
-                $q->where('addon_option_translations.language_id', $langId);
-                $q->groupBy('addon_option_translations.addon_opt_id', 'addon_option_translations.language_id');
-            },
-            'vendors.dineInTable.translations' => function ($qry) use ($langId) {
-                $qry->where('language_id', $langId);
-            },
-            'vendors.dineInTable.category',
-            'vendors.cancel_request',
-            'reports'
-        ))->findOrFail($order_id);
+        $order = $this->OrderVendorDetail($request);
         if($order){
             $socket_url = $this->client_data->socket_url;
             $room_id = $order->order_number;
@@ -224,9 +196,17 @@ class ChatController extends BaseController
         } else {
             $chatroom = [];
         }
-
-    
         return response()->json([ 'chatrooms'=>$chatroom , 'status' => true, 'message' => __('list fetched!!!')]);
+
+    }
+
+    public function sendNotificationToUser(Request $request){
+        try {
+            $notiFY = $this->sendNotification($request);
+            return response()->json([ 'notiFY'=>$notiFY , 'status' => true, 'message' => __('sent!!!')]);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'notiFY' => [] , 'message' => __('No Data found !!!')]);
+        }
 
     }
 

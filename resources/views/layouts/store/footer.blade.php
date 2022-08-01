@@ -163,6 +163,22 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
                     window.open(payload.notification.click_action, "_blank");
                     push_notification.close();
                 };
+            }  else {
+                   // alert();
+                    var notificationTitle = payload.notification.title;
+                    var notificationOptions = {
+                        body: payload.notification.body,
+                        icon: payload.notification.icon
+                    };
+                    var push_notification = new Notification(
+                        notificationTitle,
+                        notificationOptions
+                    );
+                    push_notification.onclick = function(event) {
+                        event.preventDefault();
+                        // window.open(payload.notification.click_action, "_blank");
+                        // push_notification.close();
+                    };
             }
         }
     });
@@ -170,20 +186,10 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @endif
 @if((!empty($socket_url)))
 <!-- /** socket_accept */ -->
-    <script src="{{$socket_url}}/socket.io/socket.io.js"></script>
-    @if((!empty(Auth::user())))
-    <script>
-        createSocketConnection();
-        async function createSocketConnection(){
-            if(SocketConstants.Socket_url != '' && SocketConstants.Socket_url != null && SocketConstants.Socket_url != undefined) {
-                socket = new io(SocketConstants.Socket_url);
-                await socket.connect();
-                console.log(socket);
-                console.log(SocketConstants.Socket_url);
-            }
-        }
-    </script>
-    @endif
+<script src="{{$socket_url}}/socket.io/socket.io.js"></script>
+@endif
+@if((!empty(Auth::user())))
+
 @endif
 <!-- /**socket_accept end */ -->
 
