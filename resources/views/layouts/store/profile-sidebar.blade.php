@@ -32,7 +32,7 @@ $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
                             </li>
 
                             <li>
-                                <a href="{{route('userChat.UserAgentChat')}}">{{ __('Agent Chat') }}</a>
+                                <a href="{{route('userChat.UserAgentChat')}}">{{ __('Driver Chat') }}</a>
                             </li>
                         
                             {{-- <li>

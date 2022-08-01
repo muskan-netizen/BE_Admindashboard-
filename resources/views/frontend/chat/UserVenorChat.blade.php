@@ -88,12 +88,31 @@
     </script> -->
 @php
 $authData = json_encode(@$data->toArray());
+$user_type = 'user';
+$to_message = 'to_vendor';
+$from_message = 'from_user';
+$chat_type = 'vendor_to_user';
+$startChatype = 'vendor_to_user';
+$apiPre = 'client';
+$rePre = 'user/chat/userVendor';
+$fetchDe = 'fetchRoomByUserId';
 @endphp
 @endsection
 @section('script')
-
+<script>
+    var to_message = `<?php echo $to_message; ?>`;
+    var user_type = `<?php echo $user_type; ?>`;
+    var from_message = `<?php echo $from_message; ?>`;
+    var chat_type = `<?php echo $chat_type; ?>`;
+    var startChatype = `<?php echo $startChatype; ?>`;
+    var apiPre = `<?php echo $apiPre; ?>`;
+    var rePre = `<?php echo $rePre; ?>`;
+    var fetchDe = `<?php echo $fetchDe; ?>`;
+</script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
+{{-- <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script> --}}
+<script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
+
 <script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/chatNotifications.js')}}"></script>
 <script>

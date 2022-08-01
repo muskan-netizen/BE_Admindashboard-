@@ -1724,6 +1724,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('paytabs',$client_payment_options))
 <script src="https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"></script>
 @endif
+@if(in_array('khalti',$client_payment_options))
+    <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
+@endif
 <script src="{{ asset('assets/libs/dropzone/dropzone.min.js') }}"></script>
 <script src="{{ asset('assets/libs/dropify/dropify.min.js') }}"></script>
 <script type="text/javascript" src="{{asset('assets/js/intlTelInput.js')}}"></script>
@@ -1793,6 +1796,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
+    var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
+    var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
 
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
