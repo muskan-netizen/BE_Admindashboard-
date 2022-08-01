@@ -242,14 +242,15 @@ class VendorController extends FrontController
                     $page = 'products-with-categories-ondemand';   
                 }
                 // get vendors for show on map 
-                $Map_vendors = Vendor::select('id', 'name', 'banner', 'address', 'order_pre_time','is_show_vendor_details' ,'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where(['status'=> 1,$type => 1])->where('id','!=',$vendor->id);
+                $Map_vendors = Vendor::select('id', 'name', 'banner', 'address', 'order_pre_time','is_show_vendor_details' ,'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where(['status'=> 1,$type => 1])->where('id','!=',$vendor->id); //->where('id','!=',$vendor->id)
 
                 if (( $vendor->latitude) && ($vendor->longitude)) {
                     $latitude = $vendor->latitude;
                     $longitude = $vendor->longitude;
                     $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                     //3961 for miles and 6371 for kilometers
-                    $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                    //$calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                    $calc_value = 20; // 20 km
                     $Map_vendors = $Map_vendors->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
                             cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
                             sin( radians(' . $latitude . ') ) *
