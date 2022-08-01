@@ -27,7 +27,7 @@ $preference = $client_preference_detail;
             </div>
         </div>
     </div>
-    <div class="container shimmer_effect topBar">
+    <div class="container-fulid shimmer_effect topBar">
         <div class="row">
             <div class="col-12 cards">
                 <div class="logoArea_bar loading"></div>

@@ -86,6 +86,14 @@
 .al_mobile_menu{
 display: block;
 }
+.al_body_template_two .main-menu .d-md-flex.mr-auto{
+    max-width: 100%;
+    overflow: auto;
+}
+.al_body_template_two .site-topbar .location-bar span{
+    color: #fff !important;
+}
+.al_body_template_two .top-header.site-topbar{margin-bottom: 10px;}
 .al_menu-drawer.open .onhover-dropdown.mobile-account{
     display: block;
 }
