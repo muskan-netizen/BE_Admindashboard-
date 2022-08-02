@@ -1642,6 +1642,7 @@ class CartController extends BaseController
                 'courier_company_id' => 0,
                 'etd' => 0,
                 'etd_hours' => 0,
+                'duration' => 0,
                 'estimated_delivery_days' => 0,
                 'code' => 'L_0'
             );
@@ -1674,6 +1675,7 @@ class CartController extends BaseController
                         'courier_company_id' => 0,
                         'etd' => 0,
                         'etd_hours' => 0,
+                        'duration' => 0,
                         'estimated_delivery_days' => 0,
                         'code' => 'DU_0'
                     );
@@ -1696,6 +1698,7 @@ class CartController extends BaseController
                             'courier_company_id' => 0,
                             'etd' => 0,
                             'etd_hours' => 0,
+                            'duration' => 0,
                             'estimated_delivery_days' => 0,
                             'code' => 'M_0'
                         );
@@ -1721,6 +1724,7 @@ class CartController extends BaseController
                     'courier_company_id' => 0,
                     'etd' => 0,
                     'etd_hours' => 0,
+                    'duration' => 0,
                     'estimated_delivery_days' => 0,
                     'code' => 'D_0'
                 );
