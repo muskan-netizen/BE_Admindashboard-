@@ -77,6 +77,10 @@
     }
 </style>
 @endsection
+@php 
+$lastmileShow = array('7','10');
+
+@endphp
 @section('content')
 <div class="container-fluid">
 
@@ -286,24 +290,53 @@
                         </div>
                     </div>
                     @if($product->category->categoryDetail->type_id == 10)
-                        <div class="row mb-2">
-                            <div class="col-4 mb-2">
-                                {!! Form::label('title', __('Minimum Duration'), ['class' => 'control-label']) !!}
-                                {!!Form::input('number','minimum_duration', $product->minimum_duration, ['min' => '0','class'=>'form-control', 'id' => 'minimum_duration', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        <div class="row col-md-12 mb-2">
+                            <div class="col-4 mb-2 row">
+                                <div class="col-12">
+                                    {!! Form::label('title', __('Minimum Duration'), ['class' => 'control-label']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
+
+                                    {!!Form::input('number','minimum_duration', $product->minimum_duration, ['min' => '0','class'=>'form-control', 'id' => 'minimum_duration', 'placeholder' => '0', 'onkeyup' => 'return isNumberKey(event)']) !!}
+                                </div>
+                                <div class="col-6 pr-3">
+                                    {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
+                                    {!!Form::input('number','minimum_duration_min', $product->minimum_duration_min, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'minimum_duration_min', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
+                                </div>
                             </div>
-                            <div class="col-4 mb-2">
-                                {!! Form::label('title', __('Additional Increments Duration'), ['class' => 'control-label']) !!}
-                                {!! Form::input('number','additional_increments', $product->additional_increments, ['min' => '0','class'=>'form-control', 'id' => 'additional_increments', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            <div class="col-4 mb-2 row">
+                                <div class="col-12">
+                                    {!! Form::label('title', __('Additional Increment Duration'), ['class' => 'control-label']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
+                                    {!! Form::input('number','additional_increments', $product->additional_increments, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'additional_increments', 'placeholder' => '0', 'onkeyup' => 'return isNumberKey(event)']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
+                                    {!! Form::input('number','additional_increments_min', $product->additional_increments_min, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'additional_increments_min', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
+                                </div>
+                            
                             </div>
-                            <div class="col-4 mb-2">
-                                {!! Form::label('title', __('Buffer time Duration'), ['class' => 'control-label']) !!}
-                               
-                                {!! Form::input('number','buffer_time_duration', $product->buffer_time_duration, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            <div class="col-4 mb-2 row">
+                                <div class="col-12">
+                                    {!! Form::label('title', __('Buffer time Duration'), ['class' => 'control-label']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
+                                    {!! Form::input('number','buffer_time_duration', $product->buffer_time_duration, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
+                                    {!! Form::input('number','buffer_time_duration_min', $product->buffer_time_duration_min, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration_min', 'placeholder' => '0', 'onkeypress' => 'return isNumberKeyMax(event)']) !!}
+                                </div>
+
                             </div>
                         </div>
-                        <div class="row mb-2">
+                        {{-- <div class="row mb-2">
                            
-                        </div>
+                        </div> --}}
 
                         <div class="row mb-2">
                             <div class="col-sm-3">
@@ -321,7 +354,7 @@
                 </div>
                 @endif
                 @if($product->category->categoryDetail->type_id == 10)
-                @include('backend.product.variant')
+                    @include('backend.product.variant')
                 @else
                     @if($productVariants->count() > 0)
                     <div class="card-box" >
@@ -471,7 +504,8 @@
                             @endif
                         @endif
                         {{-- $configData->need_delivery_service == 1 &&  --}}
-                        @if($product->category->categoryDetail->type_id != 7 && (!in_array($client_preference_detail->business_type,['taxi','laundry'])))
+                        {{-- @if($product->category->categoryDetail->type_id != 7 && (!in_array($client_preference_detail->business_type,['taxi','laundry']))) --}}
+                        @if((!in_array($product->category->categoryDetail->type_id,$lastmileShow)) && (!in_array($client_preference_detail->business_type,['taxi','laundry'])))
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Requires Last Mile Delivery'),['class' => 'control-label']) !!}
                             <input type="checkbox" id="last_mile" data-plugin="switchery" name="last_mile" class="chk_box" data-color="#43bee1" @if($product->Requires_last_mile == 1) checked @endif>
@@ -631,11 +665,11 @@
                         </select>
                     </div> --}}
 
-                    <div class="row">
+                    {{-- <div class="row">
                         <div class="col-md-12">
                         <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Taxes") }}</h5>
                         </div>
-                    </div>
+                    </div> --}}
                    
                     {{-- <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Container Charges'),['class' => 'control-label']) !!}
