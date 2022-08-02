@@ -21,15 +21,15 @@ $applocale = session()->get('applocale');
 @endif
 @if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify'))
 <footer id="footer" class="footer-light al_footer_template_six">
-   <section class="section-b-space pt-5 pb-3">
+   <section class="section-b-space py-md-5 pt-3 pb-0">
       <div class="container">
-         <div class="row footer-theme partition-f py-lg-3 py-2">
+         <div class="row footer-theme partition-f">
             @if($client_preference_detail->show_contact_us == 1)
             <div class="col-12 d-block d-md-none">
-               <div class="footer-contant">
-                  <div class="store-btn mb-3 d-flex align-items-center justify-content-start">
+               <div class="footer-contant alQRcodeBox">
+                  <div class="store-btn col-12 d-flex align-items-center justify-content-between">
                      @if($client_preference_detail->show_qr_on_footer)
-                     <ul class="row">
+                     <ul class="row w-100">
                         <li class="col-6 text-center">
                            <div class="al_QRcode col-12">
                               {!! QrCode::size(60)->generate($client_preference_detail->ios_link??'#') !!} <br>

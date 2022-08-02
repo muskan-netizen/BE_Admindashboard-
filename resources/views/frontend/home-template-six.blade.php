@@ -47,7 +47,7 @@
          </div>
       </div>
       <div class="row">
-         <div class="col-12" style="padding:0 60px;">
+         <div class="col-12 px-md-5 px-2">
             <div class="grid-row grid-4-4">
                <div class="cards">
                   <div class="card_image loading"></div>
@@ -97,7 +97,7 @@
          </div>
       </div>
       <div class="row">
-         <div class="col-12" style="padding:0 60px;">
+         <div class="col-12 px-md-5 px-2">
             <div class="grid-row grid-4-4">
                <div class="cards">
                   <div class="card_image loading"></div>
@@ -147,7 +147,7 @@
          </div>
       </div>
       <div class="row">
-         <div class="col-12" style="padding:0 60px;">
+         <div class="col-12 px-md-5 px-2">
             <div class="grid-row grid-4-4">
                <div class="cards">
                   <div class="card_image loading"></div>

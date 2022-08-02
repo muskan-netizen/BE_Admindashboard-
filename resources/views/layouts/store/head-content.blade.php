@@ -46,8 +46,8 @@
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/footer.css')}}">
 
-@php 
-$socket_url = ''; 
+@php
+$socket_url = '';
 $admin_chat = '';
 $driver_chat = '';
 $customer_chat = '';
@@ -82,15 +82,13 @@ if(Auth::check()){
 		driver_chat : driver_chat,
 		customer_chat : customer_chat,
 		socket:'',
-	} 
+	}
 </script>
 
 @elseif(isset($set_template)  && $set_template->template_id == 6)
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/css/slick-theme.min.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/css/slick.min.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/header/header.css')}}">
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/footer/footer.css')}}">
-
 @if(Route::currentRouteName() == "userHome")
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/homepage.css')}}">
 @else
@@ -98,6 +96,7 @@ if(Auth::check()){
 @endif
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/style-rtl.css')}}">
 @endif
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/footer/footer.css')}}">
 @yield('css-links')
 <style type="text/css">
     body{font-size:16px;position:initial}.site-header{width:100%;top:0;left:0;background:#fff;position:fixed;-webkit-transition:all .5s ease-in-out;-moz-transition:all .5s ease-in-out;-ms-transition:all .5s ease-in-out;-o-transition:all .5s ease-in-out;transition:all .5s ease-in-out;z-index:11}.top-header.site-topbar{background:var(--top-header-color);padding:5px 0;display:list-item}

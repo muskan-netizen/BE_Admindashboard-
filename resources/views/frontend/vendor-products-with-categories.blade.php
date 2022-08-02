@@ -10,7 +10,7 @@
 @endsection
 @section('content')
     <!-- section start -->
-    <section class="section-b-space ratio_asos">
+    <section class="section-b-space ratio_asos alProductCategories">
         <div class="collection-wrapper">
             <div class="container">
                 <div class="row">
@@ -142,7 +142,7 @@
                             <div class="col-md-8"></div>
                             <div class="col-12">
                                 <div class="row vendor-products-wrapper">
-                                    <div class="col-sm-4 col-lg-3 border-right al_white_bg_round p-0">
+                                    <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
                                         <nav class="scrollspy-menu">
                                             <ul>
                                                 @forelse($listData as $key => $data)
@@ -860,11 +860,11 @@
     <script src="{{ asset('front-assets/js/my-sliders.js') }}"></script>
     <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script>
-        // @if(!empty($vendor->banner))
-        //     $(document).ready(function() {
-        //         $("body").addClass("homeHeader");
-        //     });
-        // @endif
+        @if(!empty($vendor->banner))
+            $(document).ready(function() {
+                $("body").addClass("homeHeader");
+            });
+        @endif
 
          //Get the modal vendorStories
         var modal = document.getElementById("vendorStories");

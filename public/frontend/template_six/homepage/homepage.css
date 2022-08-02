@@ -191,15 +191,15 @@ body.al_body_template_six.light{visibility: visible;}
 .alFindSecMobile span:before{border: solid black;border-width: 0 2px 2px 0;display: inline-block;padding: 3px;transform: rotate(45deg);-webkit-transform: rotate(45deg);position: absolute;content: "";right: 10px;top: 2px;}
 
 /* ====================== home product css ========================= */
-.product-description_list.border-bottom{text-align: left;}
-.product-description_list.border-bottom p{margin-bottom: 0;}
-.product-description_list.border-bottom p.al_product_category{margin-bottom: 10px; font-size: 12px;color: var(--theme-deafult);}
+.product-description_list.border-bottom{text-align: left;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
+.product-description_list.border-bottom p{margin-bottom: 0;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
+.product-description_list.border-bottom p.al_product_category{margin-bottom: 10px; font-size: 12px;color: var(--theme-deafult);text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 
 /* ============= main menu css ===================== */
 .al_body_template_six .alSixMainMenu .pixelstrap a,
 .al_body_template_six .alSixMainMenu .pixelstrap a:active,
 .al_body_template_six .alSixMainMenu .pixelstrap a:hover,
-.al_body_template_six .alSixMainMenu .pixelstrap li>a{width: 100%;-webkit-transform: scale(1);transform: scale(1);padding: 0;}
+.al_body_template_six .alSixMainMenu .pixelstrap li>a{width: 100%;-webkit-transform: scale(1);transform: scale(1);padding: 0;font-size: 12px;}
 .al_body_template_six .alSixMainMenu .pixelstrap .al_main_category_list li a{text-align: left;}
 .al_body_template_six .nav-cate-img img{height: 150px;width: 150px;object-fit: fill;margin-bottom: 10px;border-radius: 10px 10px 0 0;}
 .al_body_template_six .alSixMainMenu{margin-top: -120px;display: flex;justify-content: center;}
@@ -225,7 +225,6 @@ body.al_body_template_six.light{visibility: visible;}
 .al_body_template_six .vendors .al_clock{min-height: 40px;}
 .al_body_template_six .vendors span.rating-number{position: absolute;top: 5px;right: 10px;}
 .al_body_template_six .vendors .al_custom_brand .slick-slide{margin:  0 10px;}
-
 
 
 a.brand-box.d-block.black-box{text-align: center;}
