@@ -292,16 +292,17 @@
                                 {!!Form::input('number','minimum_duration', $product->minimum_duration, ['min' => '0','class'=>'form-control', 'id' => 'minimum_duration', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                             </div>
                             <div class="col-4 mb-2">
-                                {!! Form::label('title', __('Additional Increments'), ['class' => 'control-label']) !!}
+                                {!! Form::label('title', __('Additional Increments Duration'), ['class' => 'control-label']) !!}
                                 {!! Form::input('number','additional_increments', $product->additional_increments, ['min' => '0','class'=>'form-control', 'id' => 'additional_increments', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                             </div>
-                        </div>
-                        <div class="row mb-2">
                             <div class="col-4 mb-2">
                                 {!! Form::label('title', __('Buffer time Duration'), ['class' => 'control-label']) !!}
                                
                                 {!! Form::input('number','buffer_time_duration', $product->buffer_time_duration, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                             </div>
+                        </div>
+                        <div class="row mb-2">
+                           
                         </div>
 
                         <div class="row mb-2">
