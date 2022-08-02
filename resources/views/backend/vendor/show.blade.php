@@ -244,7 +244,7 @@
                                             <h4 class="mb-2 "><span> {{ __('Vendor Section') }} </span></h4>
                                         </div>
                                         <div class="col-sm-6 text-center text-sm-right">
-                                            <button class="btn btn-info openVendorSectionModal" data-toggle="modal" data-target="#add_section"> {{ __('Add Vendor Section') }}</button>
+                                            <button class="btn btn-info openVendorSectionModal" > {{ __('Add Vendor Section') }}</button>
                                         </div>
                                     </div>
                                   
@@ -254,28 +254,34 @@
                                                 <table class="table table-centered table-nowrap table-striped" id="products-datatable">
                                                     <thead>
                                                         <tr>
+                                                            <th>{{ __('#') }}</th>
                                                             <th>{{ __('Name') }}</th>
+                                                            <th>{{ __('sub Section') }}</th>
                                                             <th style="width: 85px;">{{ __('Action') }}</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @foreach($areas as $geo)
+                                                        @foreach($vendorSection as $key=>$section)
                                                         <tr>
                                                             <td class="table-user">
-                                                                <a href="javascript:void(0);" class="text-body">{{$geo->name}}</a>
+                                                                <a href="javascript:void(0);" class="text-body">{{$key+1}}</a>
+                                                            </td>
+                                                            <td class="table-user">
+                                                                <a href="javascript:void(0);" class="text-body">{{ ($section->primary ??false) ? $section->primary->heading : '' }}</a>
+                                                            </td>
+                                                            <td class="table-user">
+                                                                <a href="javascript:void(0);" class="text-body">{{$section->section_translation_count}}</a>
                                                             </td>
 
                                                             <td>
-                                                                @if(($client_preference_detail->slots_with_service_area == 1) && ($vendor->show_slot == 0))
-                                                                    <input type="checkbox" data-plugin="switchery" name="is_active_for_vendor_slot" class="form-control is_active_for_vendor_slot" data-color="#43bee1" data-aid="{{$geo->id}}" @if($geo->is_active_for_vendor_slot == 1) checked @endif {{ ($vendor->cron_for_service_area == 1) ? 'disabled' : '' }}>
-                                                                @endif
+                                                                
 
-                                                                <button type="button" class="btn btn-primary-outline action-icon editAreaBtn" area_id="{{$geo->id}}"><i class="mdi mdi-square-edit-outline"></i></button>
+                                                                <button type="button" class="btn btn-primary-outline action-icon editSectionBtn" data-id="{{$section->id}}" data-language_id="{{ ($section->primary ??false) ? $section->primary->language_id : '' }}"><i class="mdi mdi-square-edit-outline"></i></button>
 
-                                                                <form action="{{route('vendor.serviceArea.delete', $vendor->id)}}" method="POST" class="action-icon">
+                                                                <form action="{{route('vsection.delete', $section->id)}}" method="POST" class="action-icon">
                                                                     @csrf
-                                                                    <input type="hidden" value="{{$geo->id}}" name="area_id">
-                                                                    <button type="submit" onclick="return confirm('Are you sure? You want to delete the service area.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>
+                                                                    <input type="hidden" value="{{$section->id}}" name="area_id">
+                                                                    <button type="submit" onclick="return confirm('Are you sure? You want to delete the section.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>
 
                                                                 </form>
                                                             </td>

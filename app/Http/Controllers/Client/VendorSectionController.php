@@ -3,75 +3,72 @@
 namespace App\Http\Controllers\Client;
 
 use DB;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use Illuminate\Support\Str;
-use App\Models\{ClientPreference, VendorSection, Vendor, VendorSectionTranslation};
+use App\Models\{ClientPreference, VendorSection, VendorSectionHeadingTranslation, Vendor, VendorSectionTranslation};
 
 class VendorSectionController extends BaseController {
-
+    use ApiResponser;
     public function store(Request $request){
-
-        try {
+       
+         try {
 
             $this->validate($request, [
-              'name.0' => 'required|string|max:60',
-              'file_type' => 'required',
-            ],['name.0' => 'The default language name field is required.']);
-            if($request->file_type=="Selecter"){
-                $this->validate($request, [
-                    'option_name.0.0' => 'required|string|max:60',
-                  ],['option_name.0.0' => 'The default Option name field is required.']);
-            }
+              'heading' => 'required|string|max:60',
+            ],['heading' => 'The heading field is required.']);
+            
             DB::beginTransaction();
-            $vendor_registration_document = new VendorSection();
-            $vendor_registration_document->slug = Str::slug($request->name[0], '-');
-            $vendor_registration_document->vendor_id = $request->vendor_id;
-            $vendor_registration_document->save();
-            $language_id = $request->language_id;
-            foreach ($request->name as $k => $name) {
-                if($name){
-                    $VendorRegistrationDocumentTranslation = new VendorRegistrationDocumentTranslation();
-                    $VendorRegistrationDocumentTranslation->name = $name;
-                    $VendorRegistrationDocumentTranslation->slug = Str::slug($name, '-');
-                    $VendorRegistrationDocumentTranslation->language_id = $language_id[$k];
-                    $VendorRegistrationDocumentTranslation->vendor_registration_document_id = $vendor_registration_document->id;
-                    $VendorRegistrationDocumentTranslation->save();
-                }
+            $vendor_section = new VendorSection();
+            $vendor_section->slug = Str::slug($request->heading[0], '-');
+            $vendor_section->vendor_id = $request->vendor_id;
+            $vendor_section->save();
+
+            $vendor_section_heading_translation             = new VendorSectionHeadingTranslation();
+            $vendor_section_heading_translation->heading    = $request->heading;
+            $vendor_section_heading_translation->language_id      = $request->language_id;
+            $vendor_section_heading_translation->vendor_section_id = $vendor_section->id;
+            $vendor_section_heading_translation->save();
+
+            
+           
+            foreach($request->title as $key=>$value){
+                $vendor_section_translation                    = new VendorSectionTranslation();
+                $vendor_section_translation->title             = $value;
+                $vendor_section_translation->description       = $request->description[$key] ?? '';
+                $vendor_section_translation->language_id       = $request->language_id;
+                $vendor_section_translation->vendor_section_id = $vendor_section->id;
+                $vendor_section_translation->save();
             }
-            if($request->has('option_name')){
-                foreach($request->option_name as $key =>$value){
-
-                    if(isset($value[0]) && !empty($value[0])){
-                        $option  = new VendorRegistrationSelectOption();
-                        $option->vendor_registration_documents_id = $vendor_registration_document->id;
-                        $option->save();
-
-                        foreach($request->language_id as $lang_key =>$lang_value){
-                            if(isset($value[$lang_key]) && !empty($value[$lang_key])){
-                                $optionTrabslation  = new VendorRegistrationSelectOptionTranslations();
-                                $optionTrabslation->vendor_registration_select_option_id =$option->id ;
-                                $optionTrabslation->language_id = $lang_value;
-                                $optionTrabslation->name =$value[$lang_key] ;
-                                $optionTrabslation->save();
-                            }
-                        }
-                    }
-
-
-                }
-            }
-
+            $Vendor_section = VendorSection::with('headingTranslation','SectionTranslation')->where('id',$vendor_section->id)->first();
+            //pr( $Vendor_section);
+            
             DB::commit();
-            return $this->successResponse($vendor_registration_document, 'Vendor Registration Document Added Successfully.');
+            return $this->successResponse($Vendor_section, 'Vendor Section Added Successfully.');
         } catch (Exception $e) {
             DB::rollback();
             return $this->errorResponse([], $e->getMessage());
         }
     }
+    public function show(Request $request, $domain = '', $id){
+        $language_id = $request->language_id;
+        $VendorSection =  VendorSection::with(array('headingTranslation' => function($query) use($language_id) {
+            $query->where('language_id', $language_id);
+        },'SectionTranslation' => function($query) use($language_id) {
+            $query->where('language_id', $language_id);
+        }
+        ))->where('id', $id)->first();
+        //pr($page->toArray());
+        return $this->successResponse($VendorSection);
+    }
 
-    public function index(Request $request)
+    public function destroy(Request $request, $domain = "" ,$section_id)
     {
+        VendorSection::where('id',$section_id)->delete();
+        VendorSectionHeadingTranslation::where('vendor_section_id',$section_id)->delete();
+        VendorSectionTranslation::where('vendor_section_id',$section_id)->delete();
+        return redirect()->back()->with('success', __('Section Deleted successfully!'));
     }
 }
