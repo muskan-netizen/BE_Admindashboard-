@@ -27,7 +27,7 @@ class RentalProductController extends BaseController
         $ids  = $request->variant_ids ?? [];
         $proSku = $sku . '-' . implode('*', $ids);
         $product_id = $request->pid;
-        $html = '';
+        $proVariantCount = ProductVariant::where('product_id', $product_id)->count();
         $proVariant = ProductVariant::where('sku', $proSku)->first();
         if (!$proVariant) {
             $proVariant = new ProductVariant();
@@ -48,27 +48,28 @@ class RentalProductController extends BaseController
     //             <th>Quantity</th>
     //             <th> </th>
     //             </thead>';
+        $returnHTML = view('backend.product.part.addRows')->with(['varnt' => $proVariant,'show'=>true,'product_id'=>$product_id])->render();
+        return response()->json(array('success' => true, 'htmlData' => $returnHTML));
+        // $html .= '<tr id="tr_'. $proVariant->id .'">';
+        // $html .= '<td><div class="image-upload">
+        //             <label class="file-input" for="file-input_' . $proVariant->id . '"><img src="' . asset("assets/images/default_image.png") . '" width="30" height="30" class="uploadImages" for="' . $proVariant->id . '"/> </label>
+        //         </div>
+        //         <div class="imageCountDiv' . $proVariant->id . '"></div>
+        //         </td>';
+        // $html .= '<td> <input type="hidden" name="variant_ids[]" value="' . $proVariant->id . '">';
 
-        $html .= '<tr>';
-        $html .= '<td><div class="image-upload">
-                    <label class="file-input" for="file-input_' . $proVariant->id . '"><img src="' . asset("assets/images/default_image.png") . '" width="30" height="30" class="uploadImages" for="' . $proVariant->id . '"/> </label>
-                </div>
-                <div class="imageCountDiv' . $proVariant->id . '"></div>
-                </td>';
-        $html .= '<td> <input type="hidden" name="variant_ids[]" value="' . $proVariant->id . '">';
+        // $html .= '<input type="text" name="variant_titles[]" value="' . $proVariant->title . '"></td>';
+        // $html .= '<td> <input type="text" style="width: 70px;" name="variant_price[]" value="0" onkeypress="return isNumberKey(event)"> </td>';
+        // $html .= '<td> <input type="text" style="width: 100px;" name="variant_minimum_duration[]" value="0" onkeypress="return isNumberKey(event)"> </td>';
+        // $html .= '<td> <input type="text" style="width: 70px;" name="variant_incremental_price[]" value="0" onkeypress="return isNumberKey(event)"> </td>';
+        // $html .= '<td>
+        //             <a href="javascript:void(0);" class="action-icon deleteCurRow"> <i class="mdi mdi-delete"></i></a></td>
+        //             <a href="javascript:void(0);" data-varient_id="'.$proVariant->id.'" class="action-icon viewC"><i class="mdi mdi-eye"></i></a>
+        //             <a href="javascript:void(0);" data-varient_id="'.$proVariant->id.'"  data-product_id="'.$product_id.'" class="action-icon product_varient_ids addExistRow"><i class="mdi mdi-plus"></i>
+        //         </a></td>';
 
-        $html .= '<input type="text" name="variant_titles[]" value="' . $proVariant->title . '"></td>';
-        $html .= '<td> <input type="text" style="width: 70px;" name="variant_price[]" value="0" onkeypress="return isNumberKey(event)"> </td>';
-        $html .= '<td> <input type="text" style="width: 100px;" name="variant_minimum_duration[]" value="0" onkeypress="return isNumberKey(event)"> </td>';
-        $html .= '<td> <input type="text" style="width: 70px;" name="variant_incremental_price[]" value="0" onkeypress="return isNumberKey(event)"> </td>';
-        $html .= '<td>
-                    <a href="javascript:void(0);" class="action-icon deleteCurRow"> <i class="mdi mdi-delete"></i></a></td>
-                    <a href="javascript:void(0);" data-varient_id="'.$proVariant->id.'" class="action-icon viewC"><i class="mdi mdi-eye"></i></a>
-                    <a href="javascript:void(0);" data-varient_id="'.$proVariant->id.'"  data-product_id="'.$product_id.'" class="action-icon product_varient_ids addExistRow"><i class="mdi mdi-plus"></i>
-                </a></td>';
-
-        $html .= '</tr>';
-        return $html;
+        // $html .= '</tr>';
+        //return $html;
      }
     private function generateBarcodeNumber()
     {

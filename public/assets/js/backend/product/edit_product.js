@@ -32,7 +32,7 @@ $(document).ready(function(){
             exist.push($(this).val());
         });
 
-        axios.post(`/client/rental-variant_row`, {
+        axios.post(`/client/rentalVariantRow`, {
             sku:  psku,   
             existing:exist,
             variant_ids:variant_ids,
@@ -41,8 +41,12 @@ $(document).ready(function(){
             vid:vid,
         })
         .then(async response => {
-            $($thisRow).hide();
+            $($thisRow).remove();
              console.log(response);
+             if(response.data.htmlData != undefined) {
+               $('.product_variant_table').append(response.data.htmlData);
+             }
+             
         })
         .catch(e => {
             Swal.fire(
@@ -55,3 +59,10 @@ $(document).ready(function(){
 })
 
 
+function isNumberKeyMax(evt) {
+
+    if(((evt.target.value > 59)  || (evt.target.value < 0))){
+        $(evt.target).val(0);
+    }
+    return true;
+}
