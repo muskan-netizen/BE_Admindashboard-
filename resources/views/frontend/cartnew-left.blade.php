@@ -238,7 +238,7 @@
                         <input type="text" class="form-control" id="pincode" placeholder="{{ getNomenclatureName('Zip Code', true) }}" value="">
                         <span class="text-danger" id="pincode_error"></span>
                     </div>
-                    <div class="col-md-12 mb-3">
+                    <div class="col-md-12">
                         <label for="extra_instruction">{{__('Extra Instructions')}}</label>
                         <input type="text" class="form-control" id="extra_instruction" placeholder="{{__('Extra instruction for driver to follow..')}}" value="">
                         <span class="text-danger" id="extra_instruction_error"></span>

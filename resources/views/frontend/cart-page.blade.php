@@ -164,11 +164,9 @@
                                 @endforeach
                             </div>
                             <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2">
-                                <span class="alFourTempTitle">{{ __('Price')}}</span>
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->price * $vendor_product->pvariant->multiplier) }}</div>
                             </div>
                             <div class="col-6 col-md-2 text-left order-md-4">
-                                <span class="alFourTempTitle">{{ __('Total')}}</span>
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
                             </div>
                             <div class="col-10 col-md-4 text-md-center order-md-3">
