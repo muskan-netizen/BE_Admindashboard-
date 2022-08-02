@@ -431,41 +431,4 @@ body[dir="rtl"].al_body_template_two .offset-top_al.al_offset-top-home{
     margin-top:208px !important;
     }
 
-/*-------cart page design css  start here---------*/
-.single_cart_heading h3 {font-weight: 600;color: #000;}
-.cart-summary h5.order_text{font-size: 22px;font-weight: 600;color:#000;}
-.item-show-cart h4 {font-size: 20px !important;font-weight: 600;color: #000;}
-.shoping_cart {background: #fff;box-shadow: 10px 16px 14px 10px #eee9;border: 1px solid#eeeeee8c;}
-.cart-design .card-box {padding: 0px;}
-.cart-summary{background-color: #f5f5f6;border: 1px solid#efefef;box-shadow: 1px 1px 20px #16151500;border-radius: 4px;}
-.cart-summary .alFourSpecificInstructions span {font-size: 18px;color: #000;display: block;}
-.cart-summary .alFourSpecificInstructions input::placeholder {color: #000;font-size: 14px;}
-.cart-summary .cart-price .text-right b {color: #000;font-size: 14px;}
-.cart-summary .cart-price .mb-2{font-size: 18px;color: #000;}
-.cart-page-layout .shoping_cart .product-img img {border-radius: 10px;}
-.shoping_cart .order-md-4 .items-price {color: #000;font-size: 14px;font-weight: 500;}
-.shoping_cart .cart_product_name{font-size: 16px;}
-.shoping_cart .vendor_products_tr h4 strong{font-size: 15px;}
-.shoping_cart .cart-heading h5{font-size: 18px;font-weight: 400;}
-.new_cart {background: #fff;box-shadow: 10px 16px 14px 10px #eee9;border: 1px solid#eeeeee8c;}
-.cart_edit-addre{border-top: 1px solid#eee;}
-.new_cart .page-title {font-size:20px;font-weight: 600;color:#000;}.delivery_box label { color: #666363; font-size: 16px; line-height: 20px;display: block;width:100%;}
-.alFourTemplateCartButtons a.shoping{color:#FA1C0A;} 
-.cart_delivery{border-radius: 5px;background-color: #fff;box-shadow: 1px 4px 4px #eee;height:100%;
-display: flex;align-items: center;justify-content: center;border: 1px solid#eee;}
-.alFourTemplateCartButtons a.shoping i {font-size: 18px;vertical-align: bottom;padding-right: 5px;}
-.cart_all_address a {text-align: center;width: 100%;font-size: 14px;}
-.cart_delivery a {position: absolute;right: 4px;top: 8px;}
-.new_cart .add-address i {background: #fff;border: 1px solid#eee; padding: 16px;border-radius: 100%;height: 40px;width: 40px;display: flex;align-items: center;
-justify-content: center;font-size: 20px;box-shadow: 5px 6px 4px #eee;color: #ff3f3f;}
-.cart-checkout_btn button{width:100%;}.cart-checkout_btn #order_placed_btn {
-padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
-.cart_delivery a i {font-weight: 600;font-size: 16px;}
-.schedule_btn ul li label.taskschedulebtn {padding: 6px 10px !important;font-size: 10px !important;}
-.cart-page-layout .alFourTemplateCartPage .add_head h6{color:#000;font-size: 14px;} 
-.cart-page-layout .alFourTemplateCartPage .items-details p{font-size: 14px;}
-.cart-page-layout .alFourTemplateCartPage .extra-items-price {color: #000;font-size: 14px;}
-.product_title_add span {text-transform: uppercase;font-size: 14px;}
-
-
 

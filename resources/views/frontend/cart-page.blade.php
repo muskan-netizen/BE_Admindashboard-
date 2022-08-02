@@ -87,8 +87,10 @@
     @endphp
     @foreach($cart_details->products as $product)
 
-
-        <div id="thead_{{$product->vendor->id}}">
+            {{-- @php
+            dd($product->is_vendor_closed.' -- '.$product->closed_store_order_scheduled);
+            @endphp --}}
+        <div id="thead_{{$product->vendor->id}}" class="mt-2 px-0">
             <div class="row">
                 
                 <div class="col-12">
@@ -97,7 +99,7 @@
                 @if($product->is_vendor_closed == 1 && $product->closed_store_order_scheduled == 0)
                     {{-- $closed_store = 1 --}}
                     <div class="col-12">
-                        <div class="text-danger">{{$cart_details->totalQuantity}}
+                        <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i>{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}
                         </div>
                     </div>
@@ -282,7 +284,7 @@
                     @endif
 
                 </div>
-                <input type="hidden" name="cart_product_ids[]" value="{{$vendor_product->id }}">
+                <input type="hidden" name="cart_product_ids[]" value="{{$vendor_product->product_id }}">
 
                 <hr class="my-1">
             @endforeach
@@ -390,7 +392,8 @@
             </div>
         </div>
             <hr class="my-1">
-        {{-- @endif --}}
+            @endforeach
+
             <div class="row mb-md-1 alFourTemplateCartButtons mt-3">
                 <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                     <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
@@ -776,5 +779,4 @@
             {{-- Schedual code end at down --}}
         </div>
 
-@endforeach
 @endif

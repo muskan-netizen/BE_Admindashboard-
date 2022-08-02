@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Traits;
 
-use App\Http\Controllers\Api\v1\PromoCodeController;
+use App\Http\Controllers\Front\PromoCodeController;
 use App\Models\CaregoryKycDoc;
 use App\Models\Cart;
 use App\Models\CartDeliveryFee;
@@ -37,7 +37,7 @@ trait cartManager{
     $this->customerCurrency = ClientCurrency::where('currency_id', $this->currencyId)->first();
     if($this->user)
     {
-        $this->user_allAddresses = UserAddress::where('user_id', $this->user->id)->where('status',1)->get();
+        $this->user_allAddresses = UserAddress::where('user_id', $this->user->id)->where('status',1)->orderBy('is_primary','Desc')->get();
     }
     $this->preferences = ClientPreference::with(['client_detail:id,code,country_id'])->first();
   }
@@ -307,6 +307,7 @@ trait cartManager{
             $d = 0;
             $total_container_charges = 0 ;
             $all_vendor_deliver_charges = 0 ;
+            $total_quantity = 0;
 
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
@@ -426,7 +427,18 @@ trait cartManager{
                     $price_in_currency = $prod->pvariant->price??0;
                     $price_in_doller_compare = $prod->pvariant->price??0; 
                     $container_charges_in_currency = $prod->pvariant->container_charges??0;
-                    $coupon_apply_price+=$price_in_currency;
+
+                    //Check product promo code is valid for this product
+                    $checkProductPromoCodeController = new PromoCodeController();
+                    $productPromoRequest = new Request();
+                    $productPromoRequest->setMethod('POST');
+                    $productPromoRequest->request->add(['cart_id' => $cart_id, 'product_id' => $prod->product_id]);
+                    $productPromoCodeResponse = $checkProductPromoCodeController->postProductPromoCodeCheck($productPromoRequest)->getData();
+                    if($productPromoCodeResponse->status == 'Success'){
+                        $coupon_apply_price+=$price_in_currency * $prod->quantity; 
+                    }
+
+                    //  $coupon_apply_price+=$price_in_currency;
                     $container_charges_in_doller_compare = $prod->pvariant->container_charges??0;
                     if($customerCurrency && $prod->pvariant){
                         $price_in_currency = $prod->pvariant->price / $divider;
@@ -439,6 +451,7 @@ trait cartManager{
                     $sub_total+=$quantity_price+$container_charges_in_currency;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
+                    $total_quantity += $prod->quantity; 
                     $prod->pvariant->price = decimal_format($price_in_currency);
                     $prod->pvariant->container_charges = decimal_format($container_charges_in_currency);
                     $prod->image_url = $this->loadDefaultImage();
@@ -800,8 +813,9 @@ trait cartManager{
             }
             if ($total_subscription_discount > 0) {
                 $total_discount_amount = $total_discount_amount + $total_subscription_discount;
-                $cart->total_subscription_discount = decimal_format($total_subscription_discount);
             }
+            $cart->total_subscription_discount = decimal_format($total_subscription_discount??0);
+
             $total_payable_amount = $total_payable_amount - $total_discount_amount;
             if ($loyalty_amount_saved > 0) {
                 if ($loyalty_amount_saved > $total_payable_amount) {
@@ -822,9 +836,12 @@ trait cartManager{
                         $wallet_amount_used = $total_payable_amount;
                     }
                     $total_payable_amount = $total_payable_amount - $wallet_amount_used;
-                    $cart->wallet_amount_used = decimal_format($wallet_amount_used);
                 }
+                
             }
+            $cart->wallet_amount_used = decimal_format($wallet_amount_used);
+
+
 
             $scheduled = (object)array(
                 'scheduled_date_time'=>(($cart->scheduled_slot)?date('Y-m-d',strtotime($cart->scheduled_date_time)):$cart->scheduled_date_time),'slot'=>$cart->scheduled_slot,
@@ -993,6 +1010,9 @@ trait cartManager{
             $cart->wallet_amount_available = decimal_format($wallet_amount_available);
             $cart->taxRates=$taxRates;
             $cart->action = $action;
+            $cart->totalQuantity = $total_quantity;
+            $cart->user_allAddresses = $user_allAddresses??[];
+            $cart->guest_user = $guest_user??0;
             $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $this->user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
