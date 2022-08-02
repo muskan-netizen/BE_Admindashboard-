@@ -2139,7 +2139,8 @@ $(document).ready(function () {
                 if (response.status == "success") {
                     $("#cart_table").html('');
                     $(".spinner-box").hide();
-                    
+                    $("#mycart").html(response.mycart);
+                   
                     //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
@@ -2165,7 +2166,7 @@ $(document).ready(function () {
                                 // $('#placeorder_form .left_box').html('');
                                 // $('#placeorder_form .left_box').html(cart_details.left_section);
 
-                                $("#mycart").html(response.mycart);
+                                
                                 
                                 $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);
@@ -2829,8 +2830,11 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.status == 'success') {
                     $(".shake-effect").effect("shake", { times: 3 }, 1200);
+                    if(response.cart_quantity>0){
+                        $('#cart_qty_span').val(response.cart_quantity);
+                    }
                     returnResponse = true;
-                    cartHeader();
+                    //cartHeader();
                 } else {
                     Swal.fire({
                         // title: "Warning!",

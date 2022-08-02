@@ -203,7 +203,8 @@ $client_preferences = \App\Models\ClientPreference::first();
         <p>{{__('No Other Coupons Available.')}}</p>
     </div>
 </script>
-<div id="cart_main_page" class="cart-design">
+
+<div class="cart-design">
     <div id="mycart"></div>
     <div class="container">
         @if($cartData)

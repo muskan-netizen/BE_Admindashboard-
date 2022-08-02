@@ -218,6 +218,7 @@ if(session()->has('applocale')){
                         <a href="{{route('showCart')}}" style="position: relative">
                             <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                             <span class="cart_qty_cls" style="display:none"></span>
+                            1223
                         </a>
                         <ul class="show-div shopping-cart"></ul>
                     </div>

@@ -429,7 +429,7 @@ class CartController extends FrontController
                 $cartProduct->quantity = $cartProduct->quantity + $request->quantity;
                 $cartProduct->save();
             }
-
+            $quantityCart = CartProduct::where('cart_id',$cart_detail->id)->sum('quantity');
             // if ($checkIfExist) {
             //     $checkIfExist->quantity = (int)$checkIfExist->quantity + $request->quantity;
             //     $cart_detail->cartProducts()->save($checkIfExist);
@@ -454,7 +454,7 @@ class CartController extends FrontController
             // if($request->has('from_estimation')){
             //     return 'Request From Estimation';
             // }
-            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id]);
+            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0]);
         } catch (Exception $e) {
             \Log::info($e->getMessage());
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);

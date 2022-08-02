@@ -1,5 +1,5 @@
 @if($cart_details->totalQuantity<=0)
-    <div class="container"  id="empty_cart_template">
+    <div class="container" >
         <div class="row mt-2 mb-4 mb-lg-5">
             <div class="col-12 text-center">
                 <div class="cart_img_outer" style="height:200px;">
@@ -97,7 +97,7 @@
                     <div class="countdownholder alert-danger" id="min_order_validation_error_{{$product->vendor->id}}" style="display:none;">Your cart will be expired in </div>
                 </div>
                 @if($product->is_vendor_closed == 1 && $product->closed_store_order_scheduled == 0)
-                    {{-- $closed_store = 1 --}}
+                    {{ $closed_store = 1; }}
                     <div class="col-12">
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i>{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}
@@ -164,11 +164,9 @@
                                 @endforeach
                             </div>
                             <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2">
-                                <span class="alFourTempTitle">{{ __('Price')}}</span>
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->price * $vendor_product->pvariant->multiplier) }}</div>
                             </div>
                             <div class="col-6 col-md-2 text-left order-md-4">
-                                <span class="alFourTempTitle">{{ __('Total')}}</span>
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
                             </div>
                             <div class="col-10 col-md-4 text-md-center order-md-3">
