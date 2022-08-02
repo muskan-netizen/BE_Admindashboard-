@@ -43,7 +43,7 @@
                     <th>{{ __("Name") }}</th>
                     {{-- <th>{{ __("Variants") }}</th> --}}
                     <th>{{ __("Price") }}</th>
-                    <th>{{ __('Minimum Duration') }}</th>
+                    {{-- <th>{{ __('Minimum Duration') }}</th> --}}
                     <th>{{ __('Incremental Price') }}</th>
                     <th>{{ __("Action") }}</th>
                 </thead>
@@ -89,9 +89,9 @@
                         <td>
                             <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
                         </td>
-                        <td>
+                        {{-- <td>
                             <input type="text" style="width: 100px;" name="variant_minimum_duration[]" value="{{decimal_format($varnt->minimum_duration)}}" onkeypress="return isNumberKey(event)">
-                        </td>
+                        </td> --}}
                         <td>
                             <input type="text" style="width: 70px;" name="variant_incremental_price[]" value="{{decimal_format($varnt->incremental_price)}}" onkeypress="return isNumberKey(event)">
                         </td>
