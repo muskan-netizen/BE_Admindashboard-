@@ -2228,6 +2228,8 @@ $(document).ready(function () {
                             }
                             if ($("#header_cart_template_ondemand").length != 0) {
                                 $('#header_cart_main_ul_ondemand').html('');
+                                $("#header_cart_main_ul_ondemand").removeClass("d-none");
+                                $("#header_cart_main_ul_ondemand").show();
                                 let empty_cart_template = _.template($('#empty_cart_template').html());
                                 $("#header_cart_main_ul_ondemand").append(empty_cart_template());
                             }
@@ -2248,6 +2250,15 @@ $(document).ready(function () {
                             let empty_cart_template = _.template($('#empty_cart_template').html());
                             $("#header_cart_main_ul_ondemand").append(empty_cart_template());
                         }
+                        if ($("#header_cart_main_ul_ondemand").length != 0) {
+                           
+                            $('#header_cart_main_ul_ondemand').html('');
+                            $("#header_cart_main_ul_ondemand").removeClass("d-none");
+                            $("#header_cart_main_ul_ondemand").show();
+                            let empty_cart_template = _.template($('#empty_cart_template').html());
+                            $("#header_cart_main_ul_ondemand").append(empty_cart_template());
+                        }
+                        
                     }
                 }
             },
