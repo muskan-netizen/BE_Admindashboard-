@@ -44,7 +44,7 @@ class OrderController extends Controller{
             $total_delivery_fees+= $vendor_order->delivery_fee;
             $total_earnings_by_vendors+= $vendor_order->payable_amount;
             if($vendor_order->orderDetail){
-                if($vendor_order->orderDetail->paymentOption->id == 1){
+                if(@$vendor_order->orderDetail->paymentOption->id == 1){
                     $total_cash_to_collected += $vendor_order->payable_amount;
                 }
             }

@@ -79,7 +79,7 @@
     $tax_markup_charges_percentage=0;
     $tax_service_charges_percentage=0;
     $tax_delivery_charges_percentage=0;
-    
+    $incTax = 0;
     $product_container_charges_tax_amount=0;
     
     $other_taxes=0;
@@ -237,6 +237,7 @@
                                         @if($vendor_product->product->container_charges_tax_id!=null)
                                             @if($vendor_product->product->container_charges_tax_id==$index)
                                                {{ $product_container_charges_tax_amount+=$vendor_product->pvariant->container_charges*$tax->tax_rate/100;}}
+                                               {{$incTax = 1;}}
                                             @endif
                                         @endif                        
                                     @endforeach
@@ -552,11 +553,12 @@
             if($product_container_charges_tax_amount>0){
                 $other_taxes = $other_taxes+$product_container_charges_tax_amount;
                 $other_taxes_string=$other_taxes_string.',tax_product_container_charges:'.$product_container_charges_tax_amount;
-
+                $incTax = 1;
             }else if($tax_container_charges_percentage>0){
 
                 $other_taxes=$other_taxes+($cart_details->$total_container_charges*$tax_container_charges_percentage/100);
                 $other_taxes_string=$other_taxes_string.',tax_vendor_container_charges:'+($cart_details.$total_container_charges*$tax_container_charges_percentage/100);
+                $incTax = 1;
             }
             @endphp
             <input type="hidden" id="other_taxes_string" value="{{$other_taxes_string}}">
@@ -659,7 +661,7 @@
             @endif
             <div class="row">
                 <div class="col-6">
-                    <p class="total_amt m-0">{{__('Amount Payable')}} <small>({{__('incl. tax')}})</small> </p>
+                    <p class="total_amt m-0">{{__('Amount Payable')}} @if($incTax)<small>({{__('incl. tax')}})</small>@endif </p>
                 </div>
 
 
@@ -671,7 +673,7 @@
                             <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format($other_taxes))}}</p>
                         @endif
                         <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="{{ decimal_format($cart_details->tip_5_percent) }}">
-                                <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format(other_taxes)}}" @if($cart_details->stripe_fpx_client_secret != '')  data-client_secret="{{$cart_details->stripe_fpx_client_secret}}" @endif >
+                                <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format($other_taxes)}}" >
                                 
                         @else
                             @if(decimal_format($cart_details->wallet_amount_used) > 0) 
@@ -680,7 +682,7 @@
                                 <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes))}}</p>
                             @endif
                             <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                                    <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)}}" @if(@$cart_details->stripe_fpx_client_secret != '')  data-client_secret="{{$cart_details->stripe_fpx_client_secret}}" @endif>
+                                    <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)}}" >
                            @endif
                         <div>
                         <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)}}">

@@ -2146,12 +2146,12 @@ $(document).ready(function () {
                     var client_preference_detail = response.client_preference_detail;
                     if (response.cart_details.length != 0) {
                         if (response.cart_details.products.length != 0) {
+                            //$('#cartTotalspan').html(response.cart_details.totalQuantity);
+                            var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
 
-                            // var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
-
-                            // let header_cart_template = _.template($('#header_cart_template').html());
-                            // $("#header_cart_main_ul").append(header_cart_template(headerCartData));
-                            if ($('#cart_main_page').length != 0) {
+                             let header_cart_template = _.template($('#header_cart_template').html());
+                             $("#header_cart_main_ul").append(header_cart_template(headerCartData));
+                            if (response.cart_details.totalQuantity>0) {
 
                                 // simplified mock of the helpers
 
@@ -2168,6 +2168,7 @@ $(document).ready(function () {
 
                                 
                                 
+
                                 $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);
 
@@ -2181,6 +2182,7 @@ $(document).ready(function () {
                                     $("#order_placed_btn").attr("disabled", true);
                                     $("#order_placed_btn").addClass("d-none");
                                 } else {
+
                                     $("#order_placed_btn").removeAttr("disabled");
                                     $("#order_placed_btn").removeClass("d-none");
                                 }
@@ -2204,9 +2206,11 @@ $(document).ready(function () {
                                 $('#placeorder_form_ondemand .left_box').html(cart_details.left_section);
                                 initialize();
                                 if (cart_details.deliver_status == 0) {
+
                                     $("#order_placed_btn").attr("disabled", true);
                                     $("#order_placed_btn").addClass("d-none");
                                 } else {
+
                                     $("#order_placed_btn").removeAttr("disabled");
                                     $("#order_placed_btn").removeClass("d-none");
                                 }
@@ -2830,9 +2834,6 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.status == 'success') {
                     $(".shake-effect").effect("shake", { times: 3 }, 1200);
-                    if(response.cart_quantity>0){
-                        $('#cart_qty_span').val(response.cart_quantity);
-                    }
                     returnResponse = true;
                     //cartHeader();
                 } else {
