@@ -430,6 +430,14 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('facilty/update', 'Client\FaciltyController@update')->name('facilty.update');
         Route::get('facilty/edit', 'Client\FaciltyController@show')->name('facilty.edit');
         Route::post('facilty/delete', 'Client\FaciltyController@destroy')->name('facilty.delete');
+        
+
+        // Service Area for Banners Routes
+        Route::post('banner/serviceArea', 'Client\ServiceAreaForBannerController@store')->name('banner.serviceArea');
+        Route::post('banner/editArea/{id}', 'Client\ServiceAreaForBannerController@edit')->name('banner.serviceArea.edit');
+        Route::post('banner/updateArea/{id}', 'Client\ServiceAreaForBannerController@update');
+        Route::post('banner/deleteArea/{id}', 'Client\ServiceAreaForBannerController@destroy')->name('banner.serviceArea.delete');
+        Route::post('banner/draw-circle-with-radius', 'Client\ServiceAreaForBannerController@drawCircleWithRadius')->name('banner.draw.circle.with.radius');
     });
 });
 

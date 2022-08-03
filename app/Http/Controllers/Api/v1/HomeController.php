@@ -231,7 +231,7 @@ class HomeController extends BaseController
             $langId = $user->language;
             $currency_id = $user->currency;
             $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
-            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
+            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'is_service_area_for_banners')->first();
             $latitude = $request->latitude;
             $longitude = $request->longitude;
             $paginate = $request->has('limit') ? $request->limit : 12;
@@ -425,10 +425,63 @@ class HomeController extends BaseController
 
             $isVendorArea = 0;
 
+            // Start Mobile Banners
+            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
+            ->where('status', 1)->where('validity_on', 1)
+            ->with(['category:id,type_id', 'category.type', 'vendor'])
+            ->where(function ($q) {
+                $q->whereNull('start_date_time')->orWhere(function ($q2) {
+                    $q2->whereDate('start_date_time', '<=', Carbon::now())
+                        ->whereDate('end_date_time', '>=', Carbon::now());
+                });
+            });
+
+            if(isset($preferences->is_service_area_for_banners) && ($preferences->is_service_area_for_banners == 1) && ($preferences->is_hyperlocal == 1)){
+                if(!empty($latitude) && !empty($longitude)){
+                    $mobile_banners = $mobile_banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
+                        $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                    });
+                }
+            }
+            $mobile_banners = $mobile_banners->orderBy('sorting', 'asc')->get();
+            if ($mobile_banners) {
+                foreach ($mobile_banners as $key => $value) {
+                    $bannerLink = '';
+                    $is_show_category = null;
+                    $vendor_name = null;
+                    if (!empty($value->link) && $value->link == 'category') {
+                        $bannerLink = $value->redirect_category_id;
+                        if ($bannerLink) {
+                            $categoryData = Category::where('status', 1)->where('id', $value->redirect_category_id)->with('translation_one')->first();
+                            $value->redirect_name = (($categoryData) && ($categoryData->translation_one)) ? $categoryData->translation_one->name : '';
+                        }
+                    }
+                    if (!empty($value->link) && $value->link == 'vendor') {
+                        $bannerLink = $value->redirect_vendor_id;
+                        if ($bannerLink) {
+                            $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude')->where('status', 1)->where('id', $value->redirect_vendor_id)->first();
+                            if ($vendorData) {
+                                $vendorData->is_show_category = ($vendorData->vendor_templete_id == 2 || $vendorData->vendor_templete_id == 4) ? 1 : 0;
+                            }
+                            $is_show_category = (($vendorData) && ($vendorData->vendor_templete_id == 1)) ? 0 : 1;
+                            $value->is_show_category = $is_show_category;
+                            $value->redirect_name = $vendorData->name ?? '';
+                            $value->vendor = $vendorData;
+                        }
+                    }
+                    $value->redirect_to = ucwords($value->link);
+                    $value->redirect_id = $bannerLink;
+                    unset($value->redirect_category_id);
+                    unset($value->redirect_vendor_id);
+                }
+            }
+            // End Mobile Banners
+
             $categories = $this->categoryNav($langId,  $venderIds);
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
             $homeData['reqData'] = $request->all();
+            $homeData['mobile_banners'] = $mobile_banners;
             $homeData['on_sale_products'] = $on_sale_product_details;
             $homeData['new_products'] = $new_product_details;
             $homeData['featured_products'] = $feature_product_details;
