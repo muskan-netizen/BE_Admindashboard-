@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Models\{Client, ClientPreference, Language, ClientLanguage, Currency, ClientCurrency, Product,Country};
+use Log;
 
 class CustomDomain{
     /**
@@ -134,7 +135,7 @@ class CustomDomain{
           }
 
           $vendor_mode_count = 0;
-          $single_vendor_type = "";
+          $single_vendor_type = "delivery";
           if($clientPreference){
               // if($clientPreference->dinein_check == 1){$vendor_mode_count++;    $single_vendor_type = "dine_in";}
               // if($clientPreference->takeaway_check == 1){$vendor_mode_count++;  $single_vendor_type = "takeaway";}
@@ -150,7 +151,8 @@ class CustomDomain{
                     }
               }
           }
-       
+          Log::info("vendor_mode_count: {$vendor_mode_count}!");
+          Log::info("single_vendor_type: {$single_vendor_type}!");
           if(empty(Session::get('vendorType'))){
               Session::put('vendorType', $single_vendor_type);
           }
@@ -158,7 +160,7 @@ class CustomDomain{
               Session::forget('vendorType');
               Session::put('vendorType', $single_vendor_type);
           }
-
+          Log::info("single_vendor_type:".Session::get('vendorType'));
           Session::put('default_country_code', $countryCode);
           Session::put('default_country_phonecode', $phoneCode);
 
