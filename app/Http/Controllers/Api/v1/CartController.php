@@ -1077,45 +1077,6 @@ class CartController extends BaseController
                 $vendorData->delaySlot = $slotsDate;
                 $totalDeliveryCharges+=$deliveryCharges;
 
-        
-        // //All other tax calculations 
-        // if(!empty($taxRates)){
-        //     $delivery_charges_tax_rate = 0;
-        //     if($vendorData->vendor->delivery_charges_tax_id!=null){
-        //             $delivery_charges_tax_rate=$taxRates[$vendorData->vendor->delivery_charges_tax_id]['tax_rate'];
-        //     }
-
-        //     $fixed_fee_tax_rate = 0;
-        //     if($vendorData->vendor->fixed_fee_tax_id!=null){
-        //             $fixed_fee_tax_rate=$taxRates[$vendorData->vendor->fixed_fee_tax_id]['tax_rate'];
-        //     }
-
-
-        //     $service_charges_tax_rate = 0;
-        //     if($vendorData->vendor->service_charges_tax_id!=null){
-        //             $service_charges_tax_rate=$taxRates[$vendorData->vendor->service_charges_tax_id]['tax_rate'];
-        //     }
-
-        //     $markup_price_tax_rate = 0;
-        //     if($vendorData->vendor->markup_price_tax_id!=null){
-        //             $markup_price_tax_rate=$taxRates[$vendorData->vendor->markup_price_tax_id]['tax_rate'];
-        //     }
-
-
-        //     if($vendorData->vendor->delivery_charges_tax)
-        //     $total_tax +=  $deliveryCharges * $delivery_charges_tax_rate/100;
-            
-        //     if($vendorData->vendor->service_charges_tax)
-        //     $total_tax +=  $vendor_service_fee_percentage_amount * $service_charges_tax_rate/100;
-
-        //     if($vendorData->vendor->fixed_fee_tax)
-        //     $total_tax +=  $total_fixed_fee_amount * $fixed_fee_tax_rate/100;
-
-        //     if($vendorData->vendor->add_markup_price)
-        //     $total_tax +=  $total_markup_charges * $markup_price_tax_rate/100;
-
-        //     } //End Tax Code
-
 
             //All other tax calculations 
          if(!empty($taxRates)){
@@ -1155,9 +1116,9 @@ class CartController extends BaseController
             } //End Tax Code
 
 
-            }
+            }//End cart Vendor loop
             ++$vondorCnt;
-        }//End cart Vendor loop
+        }
 
         // calculate subscription discount
         $subscription_discount =0;
