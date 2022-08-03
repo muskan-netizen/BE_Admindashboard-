@@ -422,7 +422,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                                         data-add_to_cart_url="{{ route('addToCart') }}"
                                                                                         data-vendor_id="{{ $vendor_id }}"
                                                                                         data-product_id="{{ $product_id }}"
-                                                                                        data-addon="{{ $isAddonExist }}"
+                                                                                        data-aaddon="{{ $isAddonExist }}"
                                                                                         data-minimum_order_count="{{ $minimum_order_count }}"
                                                                                         data-batch_count="{{ $batch_count }}"
                                                                                         href="javascript:void(0)">{{ __('Add') }}
@@ -441,7 +441,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                                             data-vendor_id="{{ $vendor_id }}"
                                                                                             data-product_id="{{ $product_id }}"
                                                                                             data-cart="{{ $cart_id }}"
-                                                                                            data-addon="{{ $isAddonExist }}"
+                                                                                            data-aaddon="{{ $isAddonExist }}"
                                                                                             data-minimum_order_count="{{ $minimum_order_count }}"
                                                                                             data-batch_count="{{ $batch_count }}">
                                                                                             <i class="fa fa-minus"
@@ -462,7 +462,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                                             data-vendor_id="{{ $vendor_id }}"
                                                                                             data-product_id="{{ $product_id }}"
                                                                                             data-cart="{{ $cart_id }}"
-                                                                                            data-addon="{{ $isAddonExist }}"
+                                                                                            data-aaddon="{{ $isAddonExist }}"
                                                                                             data-batch_count="{{ $batch_count }}">
                                                                                             <i class="fa fa-plus"
                                                                                                 aria-hidden="true"></i>
@@ -477,7 +477,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                                             data-add_to_cart_url="{{ route('addToCart') }}"
                                                                                             data-vendor_id="{{ $data->vendor_id }}"
                                                                                             data-product_id="{{ $data->id }}"
-                                                                                            data-addon="{{ $isAddonExist }}"
+                                                                                            data-aaddon="{{ $isAddonExist }}"
                                                                                             data-batch_count="{{ $batch_count }}"
                                                                                             data-minimum_order_count="{{ $minimum_order_count }}"
                                                                                             href="javascript:void(0)">{{ __('Add') }}
@@ -523,11 +523,11 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                                         <span class="text-danger">{{ __('Out of stock') }}</span>
                                                                                     @endif
                                                                                 @endif
-                                                                                @if ($is_customizable)
+                                                                                {{-- @if ($is_customizable)
                                                                                     <div class="customizable-text">
                                                                                         {{ __('customizable') }}
                                                                                     </div>
-                                                                                @endif
+                                                                                @endif --}}
                                                                             @endif
                                                                         </div>
 
@@ -764,7 +764,8 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                 <div class="circle-core"></div>
                                             </div>
                                         </div>
-
+                                        <ul class="show-div shopping-cart d-none" id="header_cart_main_ul_ondemand">
+                                        </ul>
                                         <script type="text/template" id="header_cart_template_ondemand">
                                                 <% _.each(cart_details.products, function(product, key){%>
                                                     <li class="alVendorName">
@@ -887,9 +888,8 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                     </div>
                                                 </li>
 
-                                         </script>
-                                         <ul class="show-div shopping-cart d-none" id="header_cart_main_ul_ondemand">
-                                         </ul>
+                                        </script>
+
 
 
                                     </div>
@@ -1040,7 +1040,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         		<div class="row">
         			<div class="col-md-12">
         				<div class="alSpaListHead text-center text-lg-left col-12 mb-5">
-	                        <p class="alLgFontSize">More spas nearby</p>
+	                        <p class="alLgFontSize">{{ __('More ') . getNomenclatureName('vendors', false). __(' nearby')}}</p>
 	                        <p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt dolore magna aliqua.</p>
 	                    </div>
         			</div>
@@ -1065,69 +1065,20 @@ $checkSlot = findSlot('', $vendor->id, '');
                 <div class="row">
                     <!-- alSpaListSlider start -->
                     <div class="Spasslider w-100" id="Spasslider">
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-
+                        @foreach($Map_vendors as $key => $value)
+                            <div>
+                                <div class="SpasRelatedItems mx-2">
+                                    <div class="SpasRelatedItemsImageBox">
+                                        <img class="rounded" src="{{ $value->banner['image_fit'] . '400/400' . $value->banner['image_path'] }}">
+                                    </div>
+                                    <div class="SpasRelatedDetails p-2">
+                                        <p class="text-left m-0">{{ $value->name }}</p>
+                                        <a href="javascript:void(0)">10 Excellent (2 reviews)</a>
+                                        <p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">{{ $value->state ?? 'NA' }}</span><span>{{ number_format($value->vendorToUserDistance ,2) }} {{ (!empty($client_preference_detail->distance_unit_for_time)) ? ($client_preference_detail->distance_unit_for_time ==  'kilometer' ? 'KM' : 'miles') : 'KM' }} {{ __('away') }}</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div><!-- alSpaListSlider start -->
                 </div>
             </div>
@@ -1314,9 +1265,9 @@ $checkSlot = findSlot('', $vendor->id, '');
                                             </span>spa_slider_custom
                                         </div>
                                     <% } %>
-                                    <% if(is_customizable){ %>
+                                    {{-- <% if(is_customizable){ %>
                                         <div class="customizable-text">customizable</div>
-                                    <% } %>
+                                    <% } %> --}}
                                 <% }else{ %>
                                     <span class="text-danger">Out of stock</span>
                                 <% } %>
@@ -1460,7 +1411,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                     <input type="hidden" add_to_cart_url="cart" value="{{ route('addToCart') }}">
                 </div>
                 <div class="modal-footer flex-nowrap justify-content-center align-items-center">
-                    <button type="button" class="btn btn-solid black-btn" id="repeat_item_with_new_addon_btn"
+                    <button type="button" class="btn btn-solid black-btn"
                         data-dismiss="modal">{{ __('Add new') }}</button>
                     <button type="button" class="btn btn-solid" id="repeat_item_btn">{{ __('Repeat last') }}</button>
                 </div>
@@ -1740,23 +1691,66 @@ $checkSlot = findSlot('', $vendor->id, '');
             // }
         }
 
-        function displayVendorLocation() {
-            var latitude = "{{ $vendor->latitude }}";
-            var longitude = "{{ $vendor->longitude }}";
-            var latlng = new google.maps.LatLng(latitude, longitude);
+        vendorAllOnMap();
 
-            const map = new google.maps.Map(document.getElementById('vendor-map'), {
-                center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-                zoom: 13
-            });
+     function vendorAllOnMap() {
+         var latitude = "{{ $vendor->latitude }}";
+         var longitude = "{{ $vendor->longitude }}";
+         var latlng = new google.maps.LatLng(latitude, longitude);
 
-            const marker = new google.maps.Marker({
-                map: map,
-                position: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-            });
-        }
+         map = new google.maps.Map(document.getElementById('vendor-map'), {
+             center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
+             zoom: 13
+         });
 
-        google.maps.event.addDomListener(window, 'load', displayVendorLocation );
+         var url = window.location.origin;
+         var vendorData = {!!json_encode($Map_vendors)!!};
+           //vendor  markers
+         for (let i = 0; i < vendorData.length; i++) {
+             vendor = vendorData[i];
+
+             if(vendor.address != null && vendor.latitude != "0.00000000" && vendor.longitude != "0.00000000" ){
+                 var contentString = '';
+
+                     contentString =
+                         '<div id="content">' +
+                         '<div id="siteNotice">' +
+                         "</div>" +
+                         '<h5 id="firstHeading" class="firstHeading">'+vendor.name+'</h5>' +
+                         '<div id="bodyContent">' +
+                         "<p><b>Address :- </b> " +vendor.address+ " " +
+                         ".</p>" +
+                         '<p><b>Contact: +'+ vendor?.dial_code +vendor?.phone_no+' </p>' +
+                         "</div>" +
+                         "</div>";
+
+
+                 const infowindow = new google.maps.InfoWindow({
+                         content: contentString,
+                         minWidth: 250,
+                         minheight: 250,
+                     });
+                // images = 'https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/Clientlogo/612e24163debe.png@webp';
+
+                 var image = {
+                     //url: images, // url
+                     scaledSize: new google.maps.Size(50, 50), // scaled size
+                     origin: new google.maps.Point(0,0), // origin
+                     anchor: new google.maps.Point(22,22) // anchor
+                 };
+                 const marker = new google.maps.Marker({
+                         map: map,
+                         position: { lat: parseFloat(vendor.latitude), lng: parseFloat(vendor.longitude) },
+                        //icon: image,
+                     });
+                     marker.addListener("click", () => {
+                         infowindow.open(map, marker);
+                     });
+
+             }
+
+         }
+     }
     </script>
 
 @endsection

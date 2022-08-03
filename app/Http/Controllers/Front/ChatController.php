@@ -45,23 +45,28 @@ class ChatController extends FrontController
    
 
     public function getChatRoomForUser($order_user_id,$type){
-        $clientData = $this->client_data;
-        $server_name = $_SERVER['SERVER_NAME'];
-        $response =   Http::post($clientData->socket_url.'/api/room/fetchRoomByUserId', [
-            'order_user_id' => $order_user_id, 
-            'sub_domain' =>$server_name,
-            'type'=>$type,
-            'db_name'=>$clientData->database_name,
-            'client_id'=>$clientData->id
-        ]);
-        $statusCode = $response->getStatusCode();
-        if($statusCode == 200) {
-            $roomData = $response['roomData'];
-            return ['status' => true, 'roomData' => $roomData , 'message' => __('Room list !!!')];
-        } else {
+        try {
+            $clientData = $this->client_data;
+            $server_name = $_SERVER['SERVER_NAME'];
+            $response =   Http::post($clientData->socket_url.'/api/room/fetchRoomByUserId', [
+                'order_user_id' => $order_user_id, 
+                'sub_domain' =>$server_name,
+                'type'=>$type,
+                'db_name'=>$clientData->database_name,
+                'client_id'=>$clientData->id
+            ]);
+            $statusCode = $response->getStatusCode();
+            if($statusCode == 200) {
+                $roomData = $response['roomData'];
+                return ['status' => true, 'roomData' => $roomData , 'message' => __('Room list !!!')];
+            } else {
 
+                return ['status' => false, 'message' => __('Something went wrong!!!')];
+            }
+        } catch (\Throwable $th) {
             return ['status' => false, 'message' => __('Something went wrong!!!')];
         }
+        
 
     }
 
@@ -70,17 +75,24 @@ class ChatController extends FrontController
 
     }
     public function UserAgentChat(Request $request){
-        $user = Auth::user();
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
-        //$roomData = $this->getChatRoomForUser($user->id,'agent_to_user');
-        $roomData['status'] = false;
-        if($roomData['status']){
-            $chatroom = $roomData['roomData'];
-        } else {
-            $chatroom = [];
+        try {
+            $user = Auth::user();
+            
+            //$roomData = $this->getChatRoomForUser($user->id,'agent_to_user');
+            $roomData['status'] = false;
+            if($roomData['status']){
+                $chatroom = $roomData['roomData'];
+            } else {
+                $chatroom = [];
+            }
+            return view('frontend.chat.UserAgentChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom,'navCategories' => $navCategories]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return view('frontend.chat.UserAgentChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>[],'navCategories' => $navCategories]);
         }
-        return view('frontend.chat.UserAgentChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom,'navCategories' => $navCategories]);
+        
 
     }
 
@@ -88,17 +100,22 @@ class ChatController extends FrontController
     public function UservendorChat(Request $request){
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
-        $user = Auth::user();
-        //$roomData = $this->getChatRoomForUser($user->id,'vendor_to_user');
-        $roomData['status'] = false;
-        if($roomData['status']){
-            $chatroom = $roomData['roomData'];
-        } else {
-            $chatroom = [];
+        try {
+            $user = Auth::user();
+            //$roomData = $this->getChatRoomForUser($user->id,'vendor_to_user');
+            $roomData['status'] = false;
+            if($roomData['status']){
+                $chatroom = $roomData['roomData'];
+            } else {
+                $chatroom = [];
+            }
+            return view('frontend.chat.UserVenorChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom,
+            'navCategories' => $navCategories]);
+        } catch (\Throwable $th) {
+            return view('frontend.chat.UserVenorChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>[],
+            'navCategories' => $navCategories]);
         }
-        return view('frontend.chat.UserVenorChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom,
-        'navCategories' => $navCategories
-    ]);
+        
 
     }
 
@@ -110,44 +127,49 @@ class ChatController extends FrontController
      */
     public function startChat(Request $request)
     {
-        $data = $request->all();
-        $vendor_id = $data['vendor_id'];
-        $vendor_order_id = $data['order_vendor_id'];
-        $order_id = $data['order_id'];
-        $server_name = $_SERVER['SERVER_NAME'];
-        $order = $this->OrderVendorDetail($request);
-        if($order){
-            $socket_url = $this->client_data->socket_url;
-            $room_id = $order->order_number;
-            $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
-            $order_vendor_id = $vendor_order_id;
-            $order_id = $order->id;
-            $vendor_id = $vendor_id;
-            $orderby_user_id = $order->user_id;
-            $response =   Http::post($socket_url.'/api/room/createRoom', [
-                'room_id' => $room_id, 
-                'room_name' => $room_name,
-                'order_vendor_id'=>$order_vendor_id,
-                'order_id'=>$order_id,
-                'vendor_id'=>$vendor_id,
-                'sub_domain' =>$server_name,
-                'vendor_user_id' =>$data['user_id'],
-                'order_user_id' =>$orderby_user_id,
-                'agent_id'=>$data['agent_id'],
-                'type'=>$data['type'],
-                'db_name'=>$this->client_data->database_name,
-                'client_id'=>$this->client_data->id
-            ]);
-            $statusCode = $response->getStatusCode();
-            if($statusCode == 200) {
-                $roomData = $response['roomData'];
-                return response()->json(['status' => true, 'roomData' => $roomData , 'message' => __('Room created successfully !!!')]);
-            } else {
-
-                return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
+        try {
+            $data = $request->all();
+            $vendor_id = $data['vendor_id'];
+            $vendor_order_id = $data['order_vendor_id'];
+            $order_id = $data['order_id'];
+            $server_name = $_SERVER['SERVER_NAME'];
+            $order = $this->OrderVendorDetail($request);
+            if($order){
+                $socket_url = $this->client_data->socket_url;
+                $room_id = $order->order_number;
+                $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
+                $order_vendor_id = $vendor_order_id;
+                $order_id = $order->id;
+                $vendor_id = $vendor_id;
+                $orderby_user_id = $order->user_id;
+                $response =   Http::post($socket_url.'/api/room/createRoom', [
+                    'room_id' => $room_id, 
+                    'room_name' => $room_name,
+                    'order_vendor_id'=>$order_vendor_id,
+                    'order_id'=>$order_id,
+                    'vendor_id'=>$vendor_id,
+                    'sub_domain' =>$server_name,
+                    'vendor_user_id' =>$data['user_id'],
+                    'order_user_id' =>$orderby_user_id,
+                    'agent_id'=>$data['agent_id'],
+                    'type'=>$data['type'],
+                    'db_name'=>$this->client_data->database_name,
+                    'client_id'=>$this->client_data->id
+                ]);
+                $statusCode = $response->getStatusCode();
+                if($statusCode == 200) {
+                    $roomData = $response['roomData'];
+                    return response()->json(['status' => true, 'roomData' => $roomData , 'message' => __('Room created successfully !!!')]);
+                } else {
+    
+                    return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
+                }
+            
             }
-        
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
         }
+       
 
         
     }

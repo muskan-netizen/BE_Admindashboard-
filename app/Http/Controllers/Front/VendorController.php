@@ -242,14 +242,15 @@ class VendorController extends FrontController
                     $page = 'products-with-categories-ondemand';   
                 }
                 // get vendors for show on map 
-                $Map_vendors = Vendor::select('id', 'name', 'banner', 'address', 'order_pre_time','is_show_vendor_details' ,'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where(['status'=> 1,$type => 1])->where('id','!=',$vendor->id);
+                $Map_vendors = Vendor::select('id', 'name', 'banner', 'address', 'order_pre_time','is_show_vendor_details' ,'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where(['status'=> 1,$type => 1])->where('id','!=',$vendor->id); //->where('id','!=',$vendor->id)
 
                 if (( $vendor->latitude) && ($vendor->longitude)) {
                     $latitude = $vendor->latitude;
                     $longitude = $vendor->longitude;
                     $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                     //3961 for miles and 6371 for kilometers
-                    $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                    //$calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                    $calc_value = 20; // 20 km
                     $Map_vendors = $Map_vendors->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
                             cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
                             sin( radians(' . $latitude . ') ) *
@@ -592,7 +593,7 @@ class VendorController extends FrontController
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
                         'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price','barcode');
                             $q->groupBy('product_id');
                         },
                     ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
@@ -630,7 +631,7 @@ class VendorController extends FrontController
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                 },
                 'variant' => function($q) use($langId, $variant_id){
-                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price');
+                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price');
                     $q->where('id', $variant_id);
                     // $q->groupBy('product_id');
                 },'variant.media.pimage.image','variant.checkIfInCart',
@@ -720,7 +721,7 @@ class VendorController extends FrontController
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
                         'variant' => function($q) use($langId, $variantIds,$order_type){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price', 'markup_price','barcode');
                             // if(!empty($variantIds)){
                             //     $q->whereIn('id', $variantIds);
                             // }
@@ -859,7 +860,7 @@ class VendorController extends FrontController
 
                 },
                 'variant' => function($q) use($langId){
-                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price');
+                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price');
                     // $q->groupBy('product_id');
                 },'variant.checkIfInCart',
                 'addOn' => function ($q1) use ($langId) {
@@ -1056,7 +1057,7 @@ class VendorController extends FrontController
                     $q->groupBy('product_id');
                 },
                 'variant' => function($q) use($langId){
-                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price');
+                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price');
                     // $q->groupBy('product_id');
                 },
                 'addOn' => function ($q1) use ($langId) {

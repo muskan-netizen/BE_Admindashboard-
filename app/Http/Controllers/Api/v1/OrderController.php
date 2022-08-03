@@ -180,6 +180,7 @@ class OrderController extends BaseController
                     $order->user_id = $user->id;
                     $order->order_number = generateOrderNo();
                     $order->address_id = $request->address_id;
+                    $order->total_other_taxes = $cart->total_other_taxes;
                     $order->payment_option_id = $request->payment_option_id;
                     $order->specific_instructions = $request->specific_instructions;
                     $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
@@ -221,6 +222,7 @@ class OrderController extends BaseController
                         $product_taxable_amount = 0;
                         $vendor_products_total_amount = 0;
                         $vendor_payable_amount = 0;
+                        $vendor_markup_amount = 0;
                         $vendor_discount_amount = 0;
                         $is_restricted = 0;
                         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
@@ -270,6 +272,7 @@ class OrderController extends BaseController
                             $total_container_charges = $total_container_charges + $quantity_container_charges;
                             
                             $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $price_container_charges;
+                            $vendor_markup_amount = $vendor_markup_amount + $variant->markup_price;
                             $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                             $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
                             $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges + $fixed_fee_amount;
@@ -343,6 +346,7 @@ class OrderController extends BaseController
                             $order_product->order_vendor_id = $order_vendor->id;
                             $order_product->order_id = $order->id;
                             $order_product->price = $variant->price;
+                            $order_product->markup_price = $variant->markup_price;
                             $order_product->container_charges = $variant->container_charges;
                             $order_product->taxable_amount = $product_taxable_amount;
                             $order_product->quantity = $vendor_cart_product->quantity;
@@ -456,6 +460,7 @@ class OrderController extends BaseController
                         $order_vendor->delivery_fee = $delivery_fee;
                         $order_vendor->subtotal_amount = $actual_amount;
                         $order_vendor->payable_amount = $vendor_payable_amount+$total_fixed_fee_amount;
+                        $order_vendor->total_markup_price = $vendor_markup_amount;
                         $order_vendor->taxable_amount = $vendor_taxable_amount;
                         $order_vendor->discount_amount = $vendor_discount_amount;
                         $order_vendor->payment_option_id = $request->payment_option_id;
@@ -464,7 +469,8 @@ class OrderController extends BaseController
                         $vendor_info = Vendor::where('id', $vendor_id)->first();
                         if ($vendor_info) {
                             if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
-                                $order_vendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($vendor_payable_amount / 100), 2);
+                                $actual_amountComm = $vendor_payable_amount - $vendor_markup_amount;
+                                $order_vendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($actual_amountComm / 100), 2);
                             }
                             if (($vendor_info->commission_fixed_per_order) != null && $vendor_payable_amount > 0) {
                                 $order_vendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
@@ -1745,6 +1751,7 @@ class OrderController extends BaseController
                     ['label' => '10%', 'value' => decimal_format(0.1 * ($order->payable_amount - $order->total_discount_calculate))],
                     ['label' => '15%', 'value' => decimal_format(0.15 * ($order->payable_amount - $order->total_discount_calculate))]
                 );
+                $total_markup_Price = 0;
                 foreach ($order->vendors as $vendor) {
                     $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order_id)->where('vendor_id', $vendor->vendor->id)->orderBy('id', 'DESC')->first();
                     if ($vendor_order_status) {
@@ -1799,6 +1806,13 @@ class OrderController extends BaseController
                             }
                         }
                         $product->product_addons = $product_addons;
+                        if(auth()->user()->is_admin){
+                            $product->price = $product->price - $product->markup_price;
+                        }else{
+                            $product->price = $product->price;
+                        }
+                        
+                        $total_markup_Price += $product->markup_price;
                     }
                     if ($vendor->delivery_fee > 0) {
                         $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
@@ -1902,8 +1916,26 @@ class OrderController extends BaseController
             // })->get();
 
            // $order['user_document_value'] =  $user_docs;
-            $order['user_document_list'] =  $user_registration_documents;
+            if(auth()->user()->is_admin){
+                $order['total_amount'] = $order->total_amount  - $total_markup_Price;
+                $order['payable_amount'] = $order->payable_amount  - $total_markup_Price;
+            }else{
+                $order['total_amount'] = $order->total_amount;
+                $order['payable_amount'] = $order->payable_amount;
+            }
+           /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
+           $total_other_taxes = 0;
+           if($order->total_other_taxes!=''){
+               foreach(explode(",",$order->total_other_taxes) as $row){
+               $row1 = explode(":",$row);
+                   $total_other_taxes+=(float)$row1[1];
+               }
+           }
 
+            // $order['user_document_value'] =  $user_docs;
+            $order->taxable_amount =  $total_other_taxes??0;
+            $order->total_other_taxes =  $total_other_taxes??0;
+            $order['user_document_list'] =  $user_registration_documents;
             $order['category_KYC_document'] = $category_KYC_document??null;
 
             return $this->successResponse($order, null, 201);
@@ -2109,6 +2141,7 @@ class OrderController extends BaseController
                                 $taxable_amount += $product_taxable_amount;
                                 $vendor_taxable_amount += $taxable_amount;
                                 $total_amount += $vendor_cart_product->quantity * $variant->price;
+                                //need to sub markup price
                                 $order_product = new OrderProduct;
                                 $order_product->order_vendor_id = $order_vendor->id;
                                 $order_product->order_id = $order->id;

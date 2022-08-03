@@ -87,7 +87,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                 <div class="progress-order font-12  d-flex align-items-center justify-content-between pr-2">
                                                     <% if(order.luxury_option_name != '') { %>
 
-                                                        <span class="badge badge-info ml-2 my-1"><%= order.luxury_option_name %></span>
+                                                        <span class="badge badge-info ml-2 my-1 badge_<%= order.luxury_option_id %>"><%= order.luxury_option_name %></span>
                                                     <% } %>
                                                     <% if(vendor.order_status == 'Accepted' && vendor.accepted_by != null) { %>
                                                        <span class="ml-2 text-info"><%= vendor.order_status %> by <%= vendor.accepted_by.name %></span>
@@ -230,6 +230,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Amount') }}</label>
                                                         {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(vendor.payable_amount)+parseFloat(order.fixed_fee_amount)) %></span> --}}
+                                                        <%
+                                                        if(vendor.delivery_fee == '' || vendor.delivery_fee == null){
+                                                            vendor.delivery_fee = 0;
+                                                        }
+                                                        %>
                                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(vendor.subtotal_amount) - parseFloat(vendor.discount_amount) ) + parseFloat(vendor.total_container_charges) + parseFloat(vendor.taxable_amount) + parseFloat(vendor.service_fee_percentage_amount) + parseFloat(order.fixed_fee_amount) + parseFloat(vendor.delivery_fee )) %></span>
                                                     </li>
                                                 </ul>
@@ -426,12 +431,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         @endforelse
                     </select>
                 </div>
-                <div class="col">
+                {{-- <div class="col">
                     <select class="form-control" id="sort_order">
                         <option value="">{{ __('Change Sort') }}</option>
                         <option value="distance">{{ __('Distance') }}</option>
                     </select>
-                </div>
+                </div> --}}
                 <div class="col">
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
@@ -456,78 +461,109 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 <div class="loader" id="order_list_order">
     <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
 </div>
-        <div class="col-12">
-            <div class="row">
-                <div class="col-sm-12 col-lg-12 tab-product pt-0">
-                    <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="pending_order-tab" data-toggle="tab" href="#pending_orders" role="tab" aria-selected="false" data-rel="pending_orders">
-                                <i class="icofont icofont-man-in-glasses"></i>{{ __('Pending Orders') }} <sup class="total-items" id="pending-orders">({{$pending_order_count}})</sup>
-                            </a>
-                            <div class="material-border"></div>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
-                                <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
-                            </a>
-                            <div class="material-border"></div>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="orders_history_tab" data-toggle="tab" href="#orders_history" role="tab" aria-selected="false" data-rel="orders_history">
-                                <i class="icofont icofont-man-in-glasses"></i>{{ __('Orders History') }} <sup class="total-items" id="history-orders">({{$past_order_count}})</sup>
-                            </a>
-                            <div class="material-border"></div>
-                        </li>
-                        
-                        {{-- <li class="nav-item">
-                            <a class="nav-link active" id="all_luxury_tab" data-toggle="tab" href="#all_luxury_tab" role="tab" aria-controls="profile" aria-selected="false">{{__('All')}}</a>
-                        </li> --}}
-                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-                            @php
-                                $clientVendorTypes = $vendor_typ_key.'_check';
-                                $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-                                $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
-                                $vendorTypeOrders = $VendorTypesName.'_orders';
-                            @endphp
+<div class="col-12">
+    <div class="row">
+        <div class="tab-product pl-2 pr-2 flex-grow-1">
+            <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="pending_order-tab" data-toggle="tab" href="#pending_orders" role="tab" aria-selected="false" data-rel="pending_orders">
+                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Pending Orders') }} <sup class="total-items" id="pending-orders">({{$pending_order_count}})</sup>
+                    </a>
+                    <div class="material-border"></div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
+                        <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
+                    </a>
+                    <div class="material-border"></div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="orders_history_tab" data-toggle="tab" href="#orders_history" role="tab" aria-selected="false" data-rel="orders_history">
+                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Orders History') }} <sup class="total-items" id="history-orders">({{$past_order_count}})</sup>
+                    </a>
+                    <div class="material-border"></div>
+                </li>
+            </ul>
+        </div>
+        <div class="pl-2 pr-2">
+            <div class="tabs_radio_controls">
+                @php
+                    $index = 1;
+                @endphp
+                <input type="radio" class="tabs_radio" id="all_tab" name="select" value="" checked>
+                <label class="tabs_label" for="all_tab">
+                    <h5 class="m-0">All</h5>
+                </label>
+                @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                    @php
+                        $clientVendorTypes = $vendor_typ_key.'_check';
+                        $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                        $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+                        $vendorTypeOrders = $VendorTypesName.'_orders';
+                    @endphp
+                    
+                    @if($client_preference_detail->$clientVendorTypes == 1)
+                        <input type="radio" class="tabs_radio" id="{{$VendorTypesName}}_tab" name="select" value="{{$VendorTypesName}}">
+                        <label class="tabs_label" for="{{$VendorTypesName}}_tab">
+                            <h5 class="m-0">{{$NomenclatureName}}</h5>
+                            {{-- <p class="m-0">5%</p> --}}
+                            <span class="ml-1" id="{{$VendorTypesName}}-orders">({{ $$vendorTypeOrders ?? 0 }})</span>
+                        </label>
+                    @endif
+                    @php
+                        $index++;
+                    @endphp
+                @endforeach
+            </div>
+        </div>
+                {{-- <li class="nav-item">
+                    <a class="nav-link active" id="all_luxury_tab" data-toggle="tab" href="#all_luxury_tab" role="tab" aria-controls="profile" aria-selected="false">{{__('All')}}</a>
+                </li> --}}
+                {{-- @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                    @php
+                        $clientVendorTypes = $vendor_typ_key.'_check';
+                        $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                        $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+                        $vendorTypeOrders = $VendorTypesName.'_orders';
+                    @endphp
+                    
+                    @if($client_preference_detail->$clientVendorTypes == 1)
+                    <li class="nav-item">
+                        <a class="nav-link" id="{{$VendorTypesName}}_tab" data-toggle="tab" href="#{{$VendorTypesName}}_orders" role="tab" aria-selected="false" data-rel="{{$VendorTypesName}}_orders">{{$NomenclatureName}} 
                             
-                            @if($client_preference_detail->$clientVendorTypes == 1)
-                            <li class="nav-item">
-                                <a class="nav-link" id="{{$VendorTypesName}}_tab" data-toggle="tab" href="#{{$VendorTypesName}}_orders" role="tab" aria-selected="false" data-rel="{{$VendorTypesName}}_orders">{{$NomenclatureName}} 
-                                    <sup class="total-items" id="{{$VendorTypesName}}-orders">({{ $$vendorTypeOrders ?? 0 }})</sup>
-                                </a> 
-                            </li>
-                            @endif
-                        @endforeach
-                        <div class="navigation-tab-overlay_alnew_design"></div>
-                    </ul>
-                    <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
-                        <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
-                        <div class="tab-pane fade position-relative h-100" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
-                        <div class="tab-pane fade past-order position-relative h-100" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
-                            <div class="error-msg mt-3">
-                                <img class="mb-2" src="{{asset('images/no-order.svg')}}">
-                                <p>{{ __("You don't have orders right now.") }}</p>
-                            </div>
-                        </div>
-                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-                            @php
-                                $clientVendorTypes = $vendor_typ_key.'_check';
-                                $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-                                $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
-                            @endphp
-                            
-                            @if($client_preference_detail->$clientVendorTypes == 1)
-                                <div class="tab-pane fade past-order position-relative h-100" id="{{$VendorTypesName}}_orders" role="tabpanel" aria-labelledby="{{$VendorTypesName}}_tab">
-                                    <div class="error-msg mt-3">
-                                        <img class="mb-2" src="{{asset('images/no-order.svg')}}">
-                                        <p>{{ __("You don't have orders right now.") }}</p>
-                                    </div>
-                                </div>
-                            @endif
-                        @endforeach
+                        </a> 
+                    </li>
+                    @endif
+                @endforeach
+                <div class="navigation-tab-overlay_alnew_design"></div>
+            </ul> --}}
+            
+    </div>
+    <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
+        <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
+        <div class="tab-pane fade position-relative h-100" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
+        <div class="tab-pane fade past-order position-relative h-100" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
+            <div class="error-msg mt-3">
+                <img class="mb-2" src="{{asset('images/no-order.svg')}}">
+                <p>{{ __("You don't have orders right now.") }}</p>
+            </div>
+        </div>
+        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+            @php
+                $clientVendorTypes = $vendor_typ_key.'_check';
+                $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+            @endphp
+            
+            @if($client_preference_detail->$clientVendorTypes == 1)
+                <div class="tab-pane fade past-order position-relative h-100" id="{{$VendorTypesName}}_orders" role="tabpanel" aria-labelledby="{{$VendorTypesName}}_tab">
+                    <div class="error-msg mt-3">
+                        <img class="mb-2" src="{{asset('images/no-order.svg')}}">
+                        <p>{{ __("You don't have orders right now.") }}</p>
                     </div>
                 </div>
-            </div>
+            @endif
+        @endforeach
     </div>
 </div>
 
@@ -587,7 +623,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         init(typ, "{{ route('orders.filter') }}", '', false);
     });
-    $("#sort_order").change(function() {
+    $("#sort_order, .tabs_radio").change(function() {
         var typ=  $("a.nav-link.active").data('rel');
         init(typ, "{{ route('orders.filter') }}", '', false);
     });
@@ -602,14 +638,14 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         var type =  $("a.nav-link.active").data('rel');
         var search = $("#search_via_keyword").val();
         
-        (type, "{{ route('orders.filter') }}", search, false);
-
+        init(type, "{{ route('orders.filter') }}", search, false);
     }
 
     function init(filter_order_status, url, search_keyword = "", isOnload = false) {
     var date_filter = $('#range-datepicker').val();
     var vendor_id = $('#vendor_select_box option:selected').val();
-    var sort_order = $('#sort_order option:selected').val();
+    // var sort_order = $('#sort_order option:selected').val();
+    var order_type = $('.tabs_radio:checked').val();
         ajaxCall = $.ajax({
             url: url,
             type: "POST",
@@ -623,9 +659,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             data: {
                 filter_order_status: filter_order_status,
                 search_keyword: search_keyword,
+                order_type : order_type,
                 vendor_id: vendor_id,
                 date_filter: date_filter,
-                sort_order: sort_order
+                // sort_order: sort_order
             },
             success: function(response) {
                 // reload after 10 sec
@@ -690,7 +727,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         }, 1500);
 
         setInterval(function() {
-            autoloaddashboad();
+            // autoloaddashboad();
         }, 17000);
 
         $(document).on("click", ".load-more-btn", function() {

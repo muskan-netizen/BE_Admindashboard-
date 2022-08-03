@@ -670,7 +670,7 @@ class ClientPreferenceController extends BaseController{
     {
         $method_id_arr = $data['method_id'];
         $method_name_arr = $data['method_name'];
-        $active_arr = $data['active'];
+        $active_arr = $data['active'];                  
         if(!empty($method_id_arr)){
             foreach ($method_id_arr as $key => $id) {
                 $saved_creds = VerificationOption::select('credentials')->where('id', $id)->first();

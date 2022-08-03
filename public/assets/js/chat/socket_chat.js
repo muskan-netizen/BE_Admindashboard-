@@ -36,6 +36,7 @@ socket.on('disconnect',function() {
 
 
 socket.on('room-created',async function(data) {
+    //console.log('Du doooo',data);
     //if(data.roomData[0].order_user_id == auth) {
         await newChatGroup(data)
     //}

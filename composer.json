@@ -15,7 +15,6 @@
         "akibtanjim/currency-converter": "^1.0",
         "algolia/algoliasearch-client-php": "^3.0",
         "artisangang/jwt": "^0.2.0",
-        "awt/apilogger": "@dev",
         "bavix/laravel-wallet": "^6.1",
         "braintree/braintree_php": "^6.8",
         "checkout/checkout-sdk-php": "^1.0",

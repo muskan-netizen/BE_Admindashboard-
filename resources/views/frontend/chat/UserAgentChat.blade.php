@@ -54,7 +54,7 @@
             </div>
             <div class="col-lg-9">
                 <div class="page-title-box">
-                    <h4 class="page-title">{{ getNomenclatureName('User/Agent Chat', true) }}</h4>
+                    <h4 class="page-title">{{ getNomenclatureName('User/Driver Chat', true) }}</h4>
                 </div>
                 <div class="container-fluid p-0">
                     <div class="card">
@@ -81,14 +81,32 @@
     </script> -->
 @php
 $authData = json_encode(@$data->toArray());
+$user_type = 'user';
+$to_message = 'to_agent';
+$from_message = 'from_user';
+$chat_type = 'agent_to_user';
+$startChatype = 'agent_to_user';
+$apiPre = 'client';
+$rePre = 'client/chat/user';
+$fetchDe = 'fetchRoomByUserId';
 @endphp
 @endsection
 @section('script')
-
+<script>
+    var to_message = `<?php echo $to_message; ?>`;
+    var user_type = `<?php echo $user_type; ?>`;
+    var from_message = `<?php echo $from_message; ?>`;
+    var chat_type = `<?php echo $chat_type; ?>`;
+    var startChatype = `<?php echo $startChatype; ?>`;
+    var apiPre = `<?php echo $apiPre; ?>`;
+    var rePre = `<?php echo $rePre; ?>`;
+    var fetchDe = `<?php echo $fetchDe; ?>`;
+</script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="{{asset('assets/js/chat/user_agent_chat.js')}}"></script>
+{{-- <script src="{{asset('assets/js/chat/user_agent_chat.js')}}"></script> --}}
+<script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
+
 <script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>
-<script src="{{asset('assets/js/chat/chatNotifications.js')}}"></script>
 <script>
     var client_data = `<?php echo $authData; ?>`;
     fetchChatGroups(client_data);

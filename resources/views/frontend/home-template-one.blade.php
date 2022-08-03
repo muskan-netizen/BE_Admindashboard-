@@ -7,7 +7,12 @@
 @endsection
 @section('css')
 <style>
-
+   .cardbanner {height:300px;}
+   .shimmer_effect .grid-row .cards {margin-bottom: 20px;}
+   .shimmer_effect .grid-row .card_icon{display:none;}
+   .shimmer_effect .grid-row .card_image{border-radius:12px;height:200px !important;}
+   .alOneTemplate{position: fixed !important;width: 100%; background: #fff;z-index: 999 !important;top: 0;}
+   @media(max-width:767px){.cardbanner {height:120px;}}
 </style>
 @endsection
 <!-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> -->
