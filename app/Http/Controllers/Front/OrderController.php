@@ -2382,27 +2382,32 @@ class OrderController extends FrontController
 
                 $data = json_decode($this->driverDocuments());
                 $driver_registration_documents = $data->documents;
-
                 $rules_array = [
                     'name' => 'required',
-                    'phone_number' => 'required',
+                    'phonenumber' => 'required',
                     'type' => 'required',
                     'team' => 'required'
                 ];
                 foreach ($driver_registration_documents as $driver_registration_document) {
                     if($driver_registration_document->is_required == 1){
                         $name = str_replace(" ", "_", $driver_registration_document->name);
+                        $name = preg_replace('/[^A-Za-z0-9\-]/', '', $name);
                         $rules_array[$name] = 'required';
                     }
                 }
-                $validator = Validator::make($request->all(), $rules_array, [
+                $requestAllData = [];
+                foreach($request->all() as $key => $requestData){
+                    $newKey =  preg_replace('/[^A-Za-z0-9\-]/', '', $key);
+                    $requestAllData[$newKey] =  $requestData;
+                }
+                $validator = Validator::make($requestAllData, $rules_array, [
                     "name.required" => __('The name field is required.'),
-                    "phone_number.required" => __('The phone number field is required.'),
+                    "phonenumber.required" => __('The phone number field is requiredfff.'),
                     "type.required" => __('The type field is required.'),
                     "vehicle_type_id.required" => __('The transport type is required.'),
                     "make_model.required" => __('The transport details field is required.'),
                     "uid.required" => __('The UID field is required.'),
-                    "plate_number.required" => __('The licence plate field is required.'),
+                    "platenumber.required" => __('The licence plate field is required.'),
                     "color.required" => __('The color field is required.'),
                     "team.required" => __('The team field is required.')
                 ]);

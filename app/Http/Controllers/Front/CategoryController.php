@@ -44,7 +44,7 @@ class CategoryController extends FrontController{
             ->where('category_translations.language_id', $langId);
         },
         'allParentsAccount'])
-        ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id')
+        ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id', 'sub_cat_banners')
         ->where('slug', $slug)->firstOrFail();
         $category->translation_name = ($category->translation->first()) ? $category->translation->first()->name : $category->slug;
         foreach($category->childs as $key => $child){
