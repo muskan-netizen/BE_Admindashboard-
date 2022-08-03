@@ -895,7 +895,7 @@
             var scroll = jQuery(window).scrollTop();
             var categories_list_height = $('.vendor-products-wrapper').height() +400;
 
-            if (scroll >= 400) {
+            if (scroll >= 600) {
                 jQuery(".categories-product-list").addClass("fixed-bar");
             } else {
                 jQuery(".categories-product-list").removeClass("fixed-bar");

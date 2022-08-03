@@ -305,8 +305,7 @@ border-right: 1px solid var(--theme-deafult) !important;}
 .step.active p{color: var(--theme-deafult);}
 .step.active .step-icon{background: var(--theme-deafult);}
 .indicator-line{width: 100%;height: 2px;background: #c2c2c2;flex: 1;}
-#main-nav{position: absolute;width: 516px;max-width: 100%;z-index: 1;top: 24px;padding: 15px 20px;margin-left: 0;overflow: auto;}
-ul#main-nav-list{display: flex;align-items: center;overflow: auto;width: max-content;}
+
 .card-box{background-color: #fff;padding: 1.5rem;box-shadow: 0 0.75rem 6rem rgb(56 65 74 / 3%);margin-bottom: 24px;border-radius: 0.25rem;}
 .class_img{height: 100px;width: 100%;border-radius: 4px;overflow: hidden;max-width: 100%;object-fit: cover;}
 .class_img img{object-fit: cover;height: 100%;width: 100%;}
