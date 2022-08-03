@@ -362,6 +362,18 @@ $(document).ready(function () {
         }
         return true;
     }
+
+    function isNumberKeyMax(evt) {
+        // var charCode = (evt.which) ? evt.which : evt.keyCode;
+        // if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+        //     return false;
+        // }
+        console.log(evt.value);
+        // if($('#txtNumber').val()<-10 || $('#txtNumber').val()>10 ){
+        //     $('#errorMsg').show();
+        // }
+        //return true;
+    }
     $('.addWishList').click(function () {
         var sku = $(this).attr('proSku');
         var remveFrmWishlist = $(this).attr('remWishlist');
