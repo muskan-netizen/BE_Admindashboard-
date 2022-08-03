@@ -424,7 +424,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::delete('static-dropoff/destroy/{id}', 'Client\StaticDropoffController@delete')->name('static-dropoff.destroy');
 
         // rental product 
-        Route::post('rental-variant_row', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
+        Route::post('rentalVariantRow', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
     
         Route::post('facilty/store', 'Client\FaciltyController@store')->name('facilty.store');
         Route::post('facilty/update', 'Client\FaciltyController@update')->name('facilty.update');
