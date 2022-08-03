@@ -1,4 +1,6 @@
 
+.al_footer_template_six::before{background-image:url(../spaimages/Vector_bg.png);background-repeat:no-repeat;background-position:right center;position: absolute;content: "";width: 100%;height: 100%;}
+
 /*============== footer css ===================*/
 .al_QRcode svg{margin-bottom: 10px;}
 .al_footer_template_six{background-color: #0C0C0C;}
