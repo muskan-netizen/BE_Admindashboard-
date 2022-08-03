@@ -434,6 +434,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vsection/store', 'Client\VendorSectionController@store')->name('vsection.store');
         Route::post('vsection/deleteSection/{sid}', 'Client\VendorSectionController@destroy')->name('vsection.delete');
         Route::get('vsection/show/{sid}', 'Client\VendorSectionController@show')->name('vsection.edit');
+        Route::post('vsection/update', 'Client\VendorSectionController@update')->name('vsection.update');
         
     });
 });

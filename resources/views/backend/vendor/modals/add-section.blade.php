@@ -19,7 +19,7 @@
             <form id="save_vendor_section_form" class="al_overall_form" method="post" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="vendor_id" value="{{ $vendor->id }}">
-                <input type="hidden" name="section_id" value="{{ $vendor->id }}">
+                <input type="hidden" name="section_id" value="">
                 <div class="modal-body" >
                     <div class="row">
                         
@@ -85,84 +85,10 @@
         </div>
     </div>
 </div>
-{{-- <div id="edit_section" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered modal-md">
-        <div class="modal-content">
-            <div class="modal-header border-bottom">
-               
-                <h4 class="modal-title">{{ __("Add Section") }} </h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            </div>
-            <form id="save_vendor_section_form" class="al_overall_form" method="post" enctype="multipart/form-data">
-                @csrf
-                <input type="hidden" name="vendor_id" value="{{ $vendor->id }}">
-                <input type="hidden" name="section_id" value="">
-                <div class="modal-body" >
-                    <div class="row">
-                            <div class="col-md-7">
-                                <div class="form-group"  id="headingInput">
-                                    {!! Form::label('title', __('Section Heading'),['class' => 'control-label']) !!}
-                                    <input type="text" name="heading" id="heading" placeholder="" class="form-control" >
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong></strong>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                {!! Form::label('title', __('Select Language'),['class' => 'control-label']) !!}
-                                <select class="form-control" name="language_id" id="client_language">
-                                
-                                    @foreach($languages as $langs)
-                                    <option value="{{ $langs->langId }}">{{ $langs->langName }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        
-                        {{-- <div class="col-md-12 selector-option-al ">
-                            <h4>{{ __('Section Heading') }}</h4>
-                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
-                                <tr class="trForClone">
 
-                                    @foreach($languages as $langs)
-                                        <th>{{$langs->langName}}</th>
-                                    @endforeach
-                                    <th></th>
-                                </tr>
-                                <tbody id="table_body">
-                                        <tr>
-                                        @foreach($languages as $key => $vendor_langs)
-                                            <td>
-                                                <input class="form-control" name="language_id[{{$key}}]" type="hidden" value="{{$vendor_langs->langId}}">
-                                                <input class="form-control" name="heading[{{$key}}]" type="text" id="heading_{{$vendor_langs->langId}}">
-                                            </td>
-                                        @endforeach
-                                    <td class="lasttd"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div> --}}
-                        <h4 class="pl-2">{{ __("Sub Section") }} </h4>
-                        <div id='vendor_section_options' class="col-md-12">
-
-                        </div>
-                        
-                       
-
-                    
-                          
-                         
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light " submitEditForm id="add_vendor_section_form">{{ __('Submit') }}</button>
-                </div>
-            </form>
-           
-        </div>
-    </div>
-</div> --}}
 <script type="text/template" id="vendor_section_template">
     <div class ="option_section mb-3 " id ="option_section_<%= id %>" data-section_number="<%= id %>">
+        <input type="hidden" name="section_old_ids[]"  value ="<%= data?data.id:'' %>">
         <div class="form-group ">
             <div class="px-2">
                 <label for="option_title_<%= id %>">{{__('Title')}}</label>

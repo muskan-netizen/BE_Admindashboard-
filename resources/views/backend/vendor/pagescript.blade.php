@@ -8,7 +8,7 @@
             //console.log(section_id);
             var price_section_temp    = $('#vendor_section_template').html();
             var modified_temp         = _.template(price_section_temp);
-            var languages    =   {!!json_encode(@$languages)!!};
+          
             // console.log(languages);
             // $.each(languages, function( index, value ) {
             //     var result_html           = modified_temp({id:section_id,data:data,language:value});
@@ -45,7 +45,14 @@
     function submitVendorSectionForm() {
         var form = document.getElementById('save_vendor_section_form');
         var formData = new FormData(form);
+        let section_id = $("#save_vendor_section_form input[name='section_id']").val();
+        console.log(section_id);
         var data_uri = "{{route('vsection.store')}}";
+        if(section_id != undefined && section_id!= ''){
+             data_uri = "{{route('vsection.update')}}";
+        }
+        console.log(data_uri);
+      // return false;
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -100,7 +107,8 @@
     }
     $(document).on("change","#client_language",function() {
         let language_id = $(this).val();
-      console.log(language_id);
+        let section_id = $("#save_vendor_section_form input[name='section_id']").val();
+      console.log(section_id);
     });
     $(document).on('click','.editSectionBtn',function(){
         var section_id = $(this).data('id');
@@ -111,6 +119,9 @@
     });
     $('.openVendorSectionModal').click(function() {
         $('#add_section').modal();
+        $("#save_vendor_section_form input[name='section_id']").val('');
+        document.getElementById("save_vendor_section_form").reset();
+        $("#vendor_section_options").html('');
         addvendorSectionTemplate(0);
 
     });
@@ -121,8 +132,10 @@
         $.get(url, {language_id:language_id},function(response) {
               if(response.status == 'Success'){
                     if(response.data){
-                        $('#vendor_section_options').html();
                         console.log(response.data);
+                        $("#vendor_section_options").html('');
+                        $("#save_vendor_section_form input[name='section_id']").val(response.data.id);
+                        $("#save_vendor_section_form input[name='heading']").val((response.data.heading_translation[0]!= undefined)? response.data.heading_translation[0].heading : '');
                         var section_translation = response.data.section_translation;
                         var vendor_section_temp    = $('#vendor_section_template').html();
                         var modified_temp         = _.template(vendor_section_temp);
@@ -133,7 +146,6 @@
                             $('#vendor_section_options').append(modified_temp({ id:section_id,data:value}));
                             $('.add_more_button').hide();
                             $('#add_button_'+section_id).show();
-
                         });
                         addvendorSectionTemplate(section_id);
                         $('#add_section').modal();

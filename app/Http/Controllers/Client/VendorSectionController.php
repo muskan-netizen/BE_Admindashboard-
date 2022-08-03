@@ -35,12 +35,19 @@ class VendorSectionController extends BaseController {
             
            
             foreach($request->title as $key=>$value){
-                $vendor_section_translation                    = new VendorSectionTranslation();
-                $vendor_section_translation->title             = $value;
-                $vendor_section_translation->description       = $request->description[$key] ?? '';
-                $vendor_section_translation->language_id       = $request->language_id;
-                $vendor_section_translation->vendor_section_id = $vendor_section->id;
-                $vendor_section_translation->save();
+                $sectionData = [
+                    'vendor_section_id' => $vendor_section->id,
+                    'title'             => $value,
+                    'description'       => $request->description[$key] ?? '',
+                    'language_id'       => $request->language_id,
+                ];
+                $vendor_section_translation = VendorSectionTranslation::updateOrCreate( $sectionData );
+                // $vendor_section_translation                    = new VendorSectionTranslation();
+                // $vendor_section_translation->title             = $value;
+                // $vendor_section_translation->description       = $request->description[$key] ?? '';
+                // $vendor_section_translation->language_id       = $request->language_id;
+                // $vendor_section_translation->vendor_section_id = $vendor_section->id;
+                // $vendor_section_translation->save();
             }
             $Vendor_section = VendorSection::with('headingTranslation','SectionTranslation')->where('id',$vendor_section->id)->first();
             //pr( $Vendor_section);
@@ -52,6 +59,51 @@ class VendorSectionController extends BaseController {
             return $this->errorResponse([], $e->getMessage());
         }
     }
+    public function update(Request $request){
+       
+        try {
+
+           $this->validate($request, [
+             'heading' => 'required|string|max:60',
+             'section_id' => 'required|exists:vendor_sections,id'
+           ],['heading' => 'The heading field is required.']);
+           
+           DB::beginTransaction();
+
+           $vendor_section =VendorSection::where(['vendor_id'=>$request->vendor_id,'id'=>$request->section_id])->first();
+           if(!$vendor_section){
+            return $this->errorResponse([], __('Section Not Found!'));
+           }
+
+           $vendor_section_heading_translation             = VendorSectionHeadingTranslation::where(["language_id"=>$request->language_id ,"vendor_section_id"=>$vendor_section->id ])->first() ??   new VendorSectionHeadingTranslation();
+           $vendor_section_heading_translation->heading    = $request->heading;
+           $vendor_section_heading_translation->save();
+         
+           $section_old_ids = $request->section_old_ids;
+           if($request->section_old_ids)
+           VendorSectionTranslation::whereNotIn('id',$section_old_ids)->where(['vendor_section_id' => $vendor_section->id])->delete();
+           
+          
+           foreach($request->title as $key=>$value){
+               $sectionData = [
+                   'vendor_section_id' => $vendor_section->id,
+                   'title'             => $value,
+                   'description'       => $request->description[$key] ?? '',
+                   'language_id'       => $request->language_id,
+               ];
+               $vendor_section_translation = VendorSectionTranslation::updateOrCreate( $sectionData );
+            
+           }
+           $Vendor_section = VendorSection::with('headingTranslation','SectionTranslation')->where('id',$vendor_section->id)->first();
+           //pr( $Vendor_section);
+           
+           DB::commit();
+           return $this->successResponse($Vendor_section, 'Vendor Section Added Successfully.');
+       } catch (Exception $e) {
+           DB::rollback();
+           return $this->errorResponse([], $e->getMessage());
+       }
+   }
     public function show(Request $request, $domain = '', $id){
         $language_id = $request->language_id;
         $VendorSection =  VendorSection::with(array('headingTranslation' => function($query) use($language_id) {
