@@ -242,8 +242,8 @@
                         <label for="extra_instruction">{{__('Extra Instructions')}}</label>
                         <input type="text" class="form-control" id="extra_instruction" placeholder="{{__('Extra instruction for driver to follow..')}}" value="">
                         <span class="text-danger" id="extra_instruction_error"></span>
-                    </div>
-                    <div class="col-md-12 mt-3">
+                    </div>  
+                    <div class="col-md-12 mt-3 add_address_btn">
                         <button type="button" class="btn btn-solid" id="save_address">{{__('Save')}} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</button>
                         <button type="button" class="btn btn-solid black-btn" id="cancel_save_address_btn">{{__('Cancel')}}</button>
                     </div>

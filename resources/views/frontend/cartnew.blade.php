@@ -148,10 +148,26 @@ padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .al_body_template_four .cart-summary .cart-checkout_btn .btn-solid{border-radius: 4px;}
 .al_body_template_three .cart-summary .cart-checkout_btn .btn-solid{border-radius: 4px;}
 .al_body_template_four .shoping_cart .prescription_btn{padding: 5px 10px;font-size: 10px;}
+ 
+/* 2 template cart checkbox css */
+.tip_radio:checked+.tip_label {background: var(--theme-deafult);box-shadow: 0 0 5px var(--theme-deafult);}
+.tip_radio:checked+.tip_label h5, .tip_radio:checked+.tip_label p {color: #fff;} 
+
+.al_body_template_four .text-danger { font-size: 16px;}
+.al_body_template_four .clproduct_cart_order_form.btn.btn-solid {padding: 8px 0px;font-size: 12px;}
+.al_body_template_two .shoping_cart .alFourTemplateCartPage #product_faq_dev_42 .btn-product-order-form-div button {
+    font-size: 12px;padding: 6.7px 10px;}
+.add_address_btn .btn-solid{font-size: 12px;padding: 6.7px 10px;}
+
+
+
+
+
 
 
 .login-form #schedule_div input{display:block;}
 
+/*------cart page css end here------ */
 
 
 

@@ -152,8 +152,8 @@
                         @endif
                     </div>
                     <div class="col-9 col-md-10">
-                        <div class="row align-items-md-center">
-                            <div class="col-md-3 order-md-1">
+                        <div class="row align-items-md-center"> 
+                            <div class="col-md-3 order-md-1"> 
                                 <h4 class="cart_product_name">{{$vendor_product->product->category_name->name }}</h4>
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{$vendor_product->product->translation_one ? $vendor_product->product->translation_one->title :  $vendor_product->product->sku }}</strong></h4>
                                 <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "{{$vendor_product->product->translation_one ? $vendor_product->product->translation_one->title :  $vendor_product->product->sku }}" />
