@@ -171,18 +171,6 @@ class OrderController extends BaseController
                 $query->where('user_id', $user->id);
             });
         }
-        if (!empty($request->search_keyword)) {
-            $orders = $orders->whereHas('address', function ($query) use($request){
-                $query->where('house_number', 'like', '%' . $request->search_keyword . '%')
-                ->orWhere('address', 'like', '%' . $request->search_keyword . '%')
-                ->orWhere('street', 'like', '%' . $request->search_keyword . '%')
-                ->orWhere('city', 'like', '%' . $request->search_keyword . '%')
-                ->orWhere('state', 'like', '%' . $request->search_keyword . '%')
-                ->orWhere('pincode', 'like', '%' . $request->search_keyword . '%')
-                ->orWhere('country', 'like', '%' . $request->search_keyword . '%');
-            })->orWhere('order_number', 'like', '%' . $request->search_keyword . '%');
-        }
-
 
         $order_count = Order::with('vendors')->where(function ($q1) {
             // 1 for cod ,38 for offline manual by harbans
@@ -212,6 +200,27 @@ class OrderController extends BaseController
             $order_count->whereHas('vendors', function ($query)  use ($request) {
                 $query->where('vendor_id', $request->get('vendor_id'));
             });
+        }
+        //Search by keyword
+        if (!empty($request->search_keyword)) {
+            $order_count->whereHas('address', function ($query) use($request){
+                $query->where('house_number', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('address', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('street', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('city', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('state', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('pincode', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('country', 'like', '%' . $request->search_keyword . '%');
+            })->orWhere('order_number', 'like', '%' . $request->search_keyword . '%');
+            $orders->whereHas('address', function ($query) use($request){
+                $query->where('house_number', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('address', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('street', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('city', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('state', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('pincode', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('country', 'like', '%' . $request->search_keyword . '%');
+            })->orWhere('order_number', 'like', '%' . $request->search_keyword . '%');
         }
         $pending_orders = clone $order_count;
         $active_orders = clone $order_count;
