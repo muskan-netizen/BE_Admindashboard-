@@ -733,6 +733,10 @@ class PickupDeliveryController extends BaseController{
                 'longitude' => $request->longitude
             ];
 
+            if(!empty($request->tag)){
+                $postdata['tag'] = $request->tag;
+            }
+
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
                       
             $header = ['headers' => ['personaltoken' => !empty($dispatch_domain->delivery_service_key)? $dispatch_domain->delivery_service_key : $dispatch_domain->pickup_delivery_service_key,
