@@ -15,7 +15,7 @@ class Client extends Authenticatable implements Auditable
     use Notifiable;
     protected $guard = 'client';
     protected $fillable = [
-        'name', 'email', 'password', 'encpass', 'phone_number', 'database_path', 'database_name', 'database_username', 'database_password', 'logo', 'company_name', 'company_address', 'custom_domain','status', 'code', 'country_id', 'timezone', 'is_deleted', 'is_blocked','sub_domain','socket_url','admin_chat','driver_chat','customer_chat'
+        'name', 'email', 'password', 'encpass', 'phone_number', 'database_path', 'database_name', 'database_username', 'database_password', 'logo', 'company_name', 'company_address', 'custom_domain','status', 'code', 'country_id', 'timezone', 'is_deleted', 'is_blocked','sub_domain','socket_url','admin_chat','driver_chat','customer_chat','dark_logo'
     ];
 
     /**
@@ -96,6 +96,23 @@ class Client extends Authenticatable implements Auditable
     }
 
     public function getLogoAttribute($value)
+    {
+      $values = array();
+      $img = 'default/default_image.png';
+      if(!empty($value)){
+        $img = $value;
+      }
+      $ex = checkImageExtension($img);
+      $values['proxy_url'] = \Config::get('app.IMG_URL1');
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      $values['image_fit'] = \Config::get('app.FIT_URl');
+      $values['original'] = \Storage::disk('s3')->url($img);
+      $values['logo_db_value'] = $value;
+
+      return $values;
+    }
+    
+    public function getDarkLogoAttribute($value)
     {
       $values = array();
       $img = 'default/default_image.png';
