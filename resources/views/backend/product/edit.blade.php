@@ -353,7 +353,10 @@ $lastmileShow = array('7','10');
 
                 </div>
                 @endif
+                
                 @if($product->category->categoryDetail->type_id == 10)
+                    @include('backend.product.popup.scheduleTableRows')
+                    @include('backend.product.popup.addBlockTimeTablePopup')
                     @include('backend.product.variant')
                 @else
                     @if($productVariants->count() > 0)
@@ -1119,6 +1122,43 @@ $lastmileShow = array('7','10');
             if (confirm("Are you sure? You want to delete this variant.")) {
                 removeVariant(product_id, product_variant_id, is_product_delete);
             }
+        }
+    });
+    $(document).on('click', '.deleteExistRowRental', function() {
+        var that = $(this);
+        var product_id = "{{$product->id}}";
+        var product_variant_id = $(this).data('varient_id');
+        var rowCount = $('#product_tbody_' + product_id + ' tr').length;
+        if (rowCount == 1) {
+            var is_product_delete = 1;
+            Swal.fire({
+                title: 'Warning!',
+                text: 'Are you sure you?',
+                input: 'text',
+                inputPlaceholder: 'Delete',
+              }).then(({value}) => {
+                if (value === "Delete") {
+                    removeVariant(product_id, product_variant_id, is_product_delete);
+                    $(".addExistRow").css('display','none');
+                    $('.addExistRow').last().show();
+                    Swal.fire('Deleted!', 'Row has been deleted!', 'success')
+                } 
+              });
+        } else {
+            var is_product_delete = 0;
+            Swal.fire({
+                title: 'Warning!',
+                text: 'Are you sure you?',
+                input: 'text',
+                inputPlaceholder: 'Delete',
+              }).then(({value}) => {
+                if (value === "Delete") {
+                    removeVariant(product_id, product_variant_id, is_product_delete);
+                    $(".addExistRow").css('display','none');
+                    $('.addExistRow').last().show();
+                    Swal.fire('Deleted!', 'Row has been deleted!', 'success')
+                }   
+              });
         }
     });
 
