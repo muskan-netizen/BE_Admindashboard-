@@ -41,7 +41,7 @@ $preference = $client_preference_detail;
          </div>
       </div>
    </div>
-   @switch($client_preference_detail->business_type)
+   @switch($preference->business_type)
    @case('taxi')
    <div class="container_al mb-3 shimmer_effect">
       <div class="row">
