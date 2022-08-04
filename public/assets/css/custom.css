@@ -379,6 +379,14 @@ span.mdibookoutline svg {
   height: 18px;
   left: 0;
   width: 20px;
+  color: #6e768e;
+  fill: #6e768e;
+}
+.alCustomToggleColor label.mr-2.mb-0 {
+  font-weight: 600;
+}
+.alCustomToggleColor small.d-block.pr-5 {
+  color: #a1a1a1;
 }
 .menu-title+.nav-second-level>li>a:hover span svg{fill: #43bee1;}
 

@@ -358,7 +358,7 @@
    					<%}%>
    			</div>
    			@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-   			<% if(vendor.vendorRating > 0){%> <span class="rating-number"><%=vendor.vendorRating %> </span>
+   			<% if(vendor.vendorRating > 0){%> <span class="rating-number"><i class="fa fa-star"></i> <%=vendor.vendorRating %> </span>
    			<%}%> @endif @endif
    		</a>
    	</div>
@@ -395,7 +395,7 @@
    					<div class="product-description">
    						<div class="d-flex align-items-center justify-content-between">
    							<h6 class="card_title ellips"><%=product.title %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-   							<% if(product.averageRating > 0){%> <span class="rating-number"><%=product.averageRating %></span>
+   							<% if(product.averageRating > 0){%> <span class="rating-number"><i class="fa fa-star"></i> <%=product.averageRating %></span>
    								<%}%> @endif @endif
                               </div>
    						<div class="product-description_list border-bottom">
@@ -440,7 +440,7 @@
    			</div>
    			@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
    					<% if(vendor.vendorRating > 0){%>
-   					<span class="rating-number"><%=vendor.vendorRating %> </span>
+   					<span class="rating-number"><i class="fa fa-star"></i> <%=vendor.vendorRating %> </span>
    					<%}%> @endif @endif
    		</a>
    	</div>

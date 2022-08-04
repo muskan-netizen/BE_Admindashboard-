@@ -110,7 +110,7 @@ width: 100%;
 .item-show-cart h4 {font-size: 20px !important;font-weight: 600;color: #000;}
 .shoping_cart {background: #fff;box-shadow: 10px 16px 14px 10px #eee9;border: 1px solid#eeeeee8c;}
 .cart-design .card-box {padding: 0px;}
-.cart-summary{background-color: #f5f5f6;border: 1px solid#efefef;box-shadow: 6px 13px 30px #1615152b;border-radius: 4px;}
+.cart-summary{background-color: #f5f5f6;border: 1px solid#efefef;box-shadow: 6px 13px 30px #1615152b;border-radius: 4px;width: 100%;}
 .cart-summary .alFourSpecificInstructions span {font-size: 18px;color: #000;display: block;}
 .cart-summary .alFourSpecificInstructions input::placeholder {color: #000;font-size: 14px;}
 .cart-summary .cart-price .text-right b {color: #000;font-size: 14px;}
@@ -123,7 +123,7 @@ width: 100%;
 .new_cart {background: #fff;box-shadow: 10px 16px 14px 10px #eee9;border: 1px solid#eeeeee8c;}
 .cart_edit-addre{border-top: 1px solid#eee;}
 .new_cart .page-title {font-size:20px;font-weight: 600;color:#000;}.delivery_box label { color: #666363; font-size: 16px; line-height: 20px;display: block;width:100%;}
-.alFourTemplateCartButtons a.shoping{color:#FA1C0A;} 
+.alFourTemplateCartButtons a.shoping{color:#FA1C0A;}
 .cart_delivery{border-radius: 5px;background-color: #fff;box-shadow: 1px 4px 4px #eee;height:100%;
 display: flex;align-items: center;justify-content: center;border: 1px solid#eee;}
 .alFourTemplateCartButtons a.shoping i {font-size: 18px;vertical-align: bottom;padding-right: 5px;}
@@ -135,7 +135,7 @@ justify-content: center;font-size: 20px;box-shadow: 5px 6px 4px #eee;color: #ff3
 padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .cart_delivery a i {font-weight: 600;font-size: 16px;}
 .schedule_btn ul li label.taskschedulebtn {padding: 6px 10px !important;font-size: 10px !important;}
-.cart-page-layout .alFourTemplateCartPage .add_head h6{color:#000;font-size: 14px;} 
+.cart-page-layout .alFourTemplateCartPage .add_head h6{color:#000;font-size: 14px;}
 .cart-page-layout .alFourTemplateCartPage .items-details p{font-size: 14px;}
 .cart-page-layout .alFourTemplateCartPage .extra-items-price {color: #000;font-size: 14px;}
 .product_title_add span {text-transform: uppercase;font-size: 14px;}
@@ -148,10 +148,10 @@ padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .al_body_template_four .cart-summary .cart-checkout_btn .btn-solid{border-radius: 4px;}
 .al_body_template_three .cart-summary .cart-checkout_btn .btn-solid{border-radius: 4px;}
 .al_body_template_four .shoping_cart .prescription_btn{padding: 5px 10px;font-size: 10px;}
- 
+
 /* 2 template cart checkbox css */
 .tip_radio:checked+.tip_label {background: var(--theme-deafult);box-shadow: 0 0 5px var(--theme-deafult);}
-.tip_radio:checked+.tip_label h5, .tip_radio:checked+.tip_label p {color: #fff;} 
+.tip_radio:checked+.tip_label h5, .tip_radio:checked+.tip_label p {color: #fff;}
 
 .al_body_template_four .text-danger { font-size: 16px;}
 .al_body_template_four .clproduct_cart_order_form.btn.btn-solid {padding: 8px 0px;font-size: 12px;}
@@ -175,7 +175,7 @@ padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 @media (max-width:576px){
     .al_body_template_two .show-prescription-doc {
    width:100%;
-}  
+}
 }
 </style>
 
@@ -240,8 +240,8 @@ $client_preferences = \App\Models\ClientPreference::first();
             @csrf
             <div class="card-box bg-transparent">
                 <!-- <div class="row d-flex justify-space-around"> -->
-                   
-                    
+
+
                     <div class="spinner-box">
                         <div class="circle-border">
                             <div class="circle-core"></div>
@@ -249,7 +249,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                     </div>
 
                     <div class="row cart-page-layout" id="cart_table"></div>
-                    
+
                 <!-- </div> -->
                 <!-- <div class="row mb-md-3 alFourTemplateCartButtons mt-4">
                     <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
@@ -261,7 +261,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 
 
 
-                    
+
                 </div> -->
             </div>
 
@@ -506,7 +506,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                                       <!-- A Stripe Element will be inserted here. -->
                                     </div>
                                 </div>
-                               
+
                                 <span class="error text-danger"id="error-message"></span>
                             </div>
                         <% } %>
@@ -803,11 +803,11 @@ $client_preferences = \App\Models\ClientPreference::first();
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
-                            
+
                         </div>
-                       
+
                     </div>
-                        <div class="show-prescription-doc">     
+                        <div class="show-prescription-doc">
                              </div>
                 </div>
                 <div class="modal-footer">
@@ -815,7 +815,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                 </div>
             </form>
         </div>
-        
+
     </div>
 </div>
 <div class="modal fade pick-address" id="pick_address" tabindex="-1" aria-labelledby="pick-addressLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -1038,11 +1038,11 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
                 'error':   "{{ __('Ooops, something wrong happended.')}}"
             }
         });
-        
+
         $('.dropify-clear').click(function(e){
             e.preventDefault();
             $(".uploaded-prescription").empty();
-            
+
         });
     });
 
@@ -1789,12 +1789,12 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     }
 
     $(document).delegate('#view_all_address', 'click', function() {
-       
+
         $("#view_all_address").addClass("d-none");
         $("#view_all_address_div").removeClass("d-none");
-      
+
     });
-    
+
     $(document).on('change', '[id^=input_file_logo_]', function(event){
         var rel = $(this).data('rel');
         // $('#plus_icon_'+rel).hide();

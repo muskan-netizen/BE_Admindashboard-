@@ -144,7 +144,9 @@ $applocale = session()->get('applocale');
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
                         <li class="alLocationArea mr-2">
+
                            <div class="alLocation homepage-address" href="#edit-address" data-toggle="modal" >
+                              <i class="ti-location-pin"></i>
                               <!-- data-toggle="modal" data-target="#googleMapModal" -->
                               <span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span>
                            </div>

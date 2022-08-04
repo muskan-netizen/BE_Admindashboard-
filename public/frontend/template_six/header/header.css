@@ -61,7 +61,7 @@ span#cart_qty_span.bg-cart-header{position: absolute;background-color: var(--top
 .googleMapModal .mapInPopup{overflow: hidden;border-radius: 10px 10px 0 0;}
 .onhover-dropdown:hover .onhover-show-div{display: block;border-radius: 10px !important;overflow: hidden;}
 .alUserIcon .onhover-show-div li{display: block;border-bottom: 1px solid #eee;padding-top: 5px;padding-bottom: 5px;}
-.alSpaMenuCard{height: 0;z-index: 9999;width: 0;position: fixed;background-color: #0C0C0C;-webkit-transition: .3s;transition: .3s;overflow: hidden;left: 0;right: 0;margin: auto;
+.alSpaMenuCard{height: 0;z-index: 99999;width: 0;position: fixed;background-color: #0C0C0C;-webkit-transition: .3s;transition: .3s;overflow: hidden;left: 0;right: 0;margin: auto;
 top: 50%;-webkit-transform: translate(0, -50%);transform: translate(0, -50%);}
 button.alMenuClose{position: absolute;right: 0;top: 0;background-color: transparent;height: 50px;width: 50px;border-radius: 50px;font-size: 50px;line-height: 53px;color: #fff;padding: 0;border: 0;}
 .close.text-danger{color:#84571E !important; }
@@ -70,7 +70,7 @@ button.alMenuClose{position: absolute;right: 0;top: 0;background-color: transpar
 .alMobileLocations{margin-top: -120px;position: relative;}
 .alSpaMenuCard .onhover-dropdown .onhover-show-div{background-color: #000;padding: 15px;box-shadow: 0 1px 2px 0 var(--top-header-color);}
 .alSpaMenuCard .onhover-dropdown:before{right: -30px;top: -10px;font-size: 30px;}
-.alSpaMenuCard span.cart_qty_cls{top: -20px;}
+.alSpaMenuCard span.cart_qty_cls{top: -15px;}
 .alSpaMenuCard.active ul li a{font-size: 14px;text-transform: capitalize;font-weight: 400;}
 .alSpaMenuCard ul li{margin-bottom: 15px;}
 .alSpaMenuCard ul li a{color: #fff;-webkit-transition: 0.5s;transition: 0.5s;font-size: 24px;}
@@ -78,7 +78,7 @@ button.alMenuClose{position: absolute;right: 0;top: 0;background-color: transpar
 .alSpaMenuCard ul li.change-language a:hover{padding-left: 0;}
 .alSpaMenuCard ul li.change-currency a:hover{padding-left: 0;}
 .delivery_address  button.close{z-index: 9;position: relative;}
-.alFindSec{background-color: #fff;border-radius: 30px;padding: 5px 5px 5px 30px;box-shadow: 0 1px 7px rgba(62,62,76,.2);max-width: max-content;width: 100%;}
+.alFindSec{background-color: #fff;border-radius: 30px;padding: 5px 5px 5px 10px;box-shadow: 0 1px 7px rgba(62,62,76,.2);max-width: max-content;width: 100%;}
 .alFindSec span{font-size: 14px;font-weight: 400;color: #0C0C0C;opacity: .5;padding-right: 0;position: relative;cursor: pointer;font-family: 'MontserratRegular';}
 .alNumber input.inputNumbers{font-family: 'MontserratRegular';}
 div#formatsSection{position: relative;}
@@ -95,7 +95,8 @@ div#formatsSection{position: relative;}
 #address-map-container #address-map{  width: 100%;    height: 100%;}
 #address-map-container{width: 100%;height: 300px;}
 .address-input-field{border: 1px solid #777;border-radius: 10px;overflow: hidden;padding-left: 10px;padding-right: 10px;}
-.alFindSec li.alLocationArea{width: 100%;max-width: 250px;}
+.alFindSec li.alLocationArea{width: 100%;max-width: 250px;padding-right: 10px;border-right: 1px solid #c3c2c2;}
+body.al_body_template_six.aloverFlow{overflow: hidden;}
 .alLocation.homepage-address{text-overflow: ellipsis;white-space: nowrap;overflow: hidden;width: calc(100% - 5px);position: relative;padding-right: 20px;}
 
 /*===================== add to cart css ===================*/
@@ -119,7 +120,7 @@ a.view-cart{font-size: 14px;}
 .ellips{text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 .supplier-rating{width: 100%;padding: 0 15px;}
 div#dark-light-btn-toggle{display: none;}
-.al_body_template_six span.rating-number{position: absolute;top: 5px;right: 10px;}
+.al_body_template_six span.rating-number{position: absolute;top: 5px;right: 10px;padding: 3px 10px;background-color: var(--theme-deafult);color: var(--top-header-color); border-radius: 30px;}
 .al_body_template_six .suppliers-box{position: relative;}
 
 /* =========================== day night css============================== */

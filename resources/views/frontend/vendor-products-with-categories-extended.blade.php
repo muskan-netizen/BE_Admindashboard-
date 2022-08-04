@@ -925,7 +925,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                             <span class="minus qty-action" >
                                                 <i class="fa fa-minus" aria-hidden="true"></i>
                                             </span>
-                                            <input style="text-align:center; width:60px; height:24px; padding-bottom: 3px; border:none" placeholder="1" type="text" value="1" class="addon-input-number" step="1" readonly>
+                                            <input style="text-align:center; width:60px; height:24px; padding-bottom: 3px; border-width:0px 1px; border-style:solid; border-color:var(--theme-deafult);" placeholder="1" type="text" value="1" class="addon-input-number" step="1" readonly>
                                             <span class="plus qty-action" >
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
                                             </span>
