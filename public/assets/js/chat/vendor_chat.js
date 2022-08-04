@@ -25,7 +25,7 @@
             user_id:  Auth.auth_id,   
             type:'vendor_to_user',
             agent_id:'',
-            vendor_order_id:vendor_order_id,
+            order_vendor_id:vendor_order_id,
             vendor_id:vendor_id,
             order_id:order_id      
         })

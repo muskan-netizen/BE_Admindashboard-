@@ -542,3 +542,7 @@ table.dataTable {
   top: 8px;
   left: 10px;
 }
+
+.dashboard_order_title h4 {
+  line-height: inherit !important;
+}
