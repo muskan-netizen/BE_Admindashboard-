@@ -197,7 +197,16 @@
          </div>
       </div>
 	</div>
-
+   @foreach ($enable_layout as $enabled)
+      <div class="container_al mb-3 shimmer_effect_{{ $enabled  }}">
+         <div class="row">
+            <div class="col-12 cards">
+               <div class="headerLoding loading"></div>
+               <div class="cardbanner loading"></div>
+            </div>
+         </div>
+      </div>
+   @endforeach
 
 	</div>
 </section>

@@ -327,11 +327,16 @@ $(document).ready( async function () {
                     remove_spinner('#our_vendor_main_div');
                     var path = window.location.pathname;
                     if (path == '/') {
-
+                        var last_ind_v = 'banners';
                         const layouts = response.data.data;
+                        if(typeof layouts !== undefined) {
+                            var ast = layouts.length-1;
+                            var last_ind_v =  layouts[ast];
+                        }
+                        console.log('check ceck rojer bc bund fad kam',last_ind_v);
                         layouts.forEach(function(obj, index) {
                             setTimeout(function(){
-                                myFunctionGetDataHomePage(obj, index);
+                                myFunctionGetDataHomePage(obj, index,last_ind_v);
                             }, 500 * (index + 1));
                         });
 
@@ -370,7 +375,7 @@ $(document).ready( async function () {
                         // if (response.data.feature_products.length > 0) {
                         //     $('.render_full_featured_products').removeClass('d-none');
                         // } else {
-                        //     $('.render_full_featured_products').addClass('d-none');
+                        //     $('.render_full_featumyFunctionGetDataHomePagered_products').addClass('d-none');
                         // }
                         // if (vendors.length > 0) {
                         //     $('#our_vendor_main_div').removeClass('d-none');
@@ -407,9 +412,11 @@ $(document).ready( async function () {
     }
 
 
-    function myFunctionGetDataHomePage(item, index) {
+    function myFunctionGetDataHomePage(item, index,last_ind_v='') {
         $(".shimmer_effect_"+item).show();
-
+        if(last_ind_v == item) {
+          //  $(".shimmer_effect_"+item).hide();
+        }
         switch (item) {
             case 'banners':
                 getHomePageDataSingleBySingle(item, index);
