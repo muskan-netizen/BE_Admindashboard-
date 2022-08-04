@@ -433,6 +433,13 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('facilty/update', 'Client\FaciltyController@update')->name('facilty.update');
         Route::get('facilty/edit', 'Client\FaciltyController@show')->name('facilty.edit');
         Route::post('facilty/delete', 'Client\FaciltyController@destroy')->name('facilty.delete');
+
+        // vendor section route
+        Route::post('vsection/store', 'Client\VendorSectionController@store')->name('vsection.store');
+        Route::post('vsection/deleteSection/{sid}', 'Client\VendorSectionController@destroy')->name('vsection.delete');
+        Route::get('vsection/show/{sid}', 'Client\VendorSectionController@show')->name('vsection.edit');
+        Route::post('vsection/update', 'Client\VendorSectionController@update')->name('vsection.update');
+        
     });
 });
 
