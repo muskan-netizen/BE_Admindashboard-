@@ -441,7 +441,7 @@ if($showSubscriptionPlanPopUp == 1){
             text:"{{__('We are not accepting orders right now.')}}",
             icon: 'warning',
             showCancelButton: false,
-            confirmButtonText: 'Ok',
+            confirmButtonText: 'OK',
         }).then((result) => {
             return false;
         });
