@@ -601,7 +601,7 @@ class VendorController extends FrontController
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
                         'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price','barcode');
                             $q->groupBy('product_id');
                         },
                     ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
@@ -639,7 +639,7 @@ class VendorController extends FrontController
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                 },
                 'variant' => function($q) use($langId, $variant_id){
-                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price');
+                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price');
                     $q->where('id', $variant_id);
                     // $q->groupBy('product_id');
                 },'variant.media.pimage.image','variant.checkIfInCart',
@@ -729,7 +729,7 @@ class VendorController extends FrontController
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
                         'variant' => function($q) use($langId, $variantIds,$order_type){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price', 'markup_price','barcode');
                             // if(!empty($variantIds)){
                             //     $q->whereIn('id', $variantIds);
                             // }
@@ -868,7 +868,7 @@ class VendorController extends FrontController
 
                 },
                 'variant' => function($q) use($langId){
-                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price');
+                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price');
                     // $q->groupBy('product_id');
                 },'variant.checkIfInCart',
                 'addOn' => function ($q1) use ($langId) {
@@ -1065,7 +1065,7 @@ class VendorController extends FrontController
                     $q->groupBy('product_id');
                 },
                 'variant' => function($q) use($langId){
-                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price');
+                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price');
                     // $q->groupBy('product_id');
                 },
                 'addOn' => function ($q1) use ($langId) {

@@ -136,5 +136,18 @@ class ProductVariant extends Model
            
     }
 
-    
+    public function getMarkupPriceAttribute($value)
+    {
+        $checkMarkup = 0;
+        $vendor = Product::where('id', $this->product_id)->value('vendor_id');
+        $checkMarkup = Vendor::where('id',$vendor)->value('add_markup_price');
+        //if vendor price add with markup price
+           if($checkMarkup){
+                return $value;
+            }
+        
+            return 0;  
+           
+    }
+
 }

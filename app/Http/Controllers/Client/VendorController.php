@@ -1102,34 +1102,51 @@ class VendorController extends BaseController
     {
         $vendor = Vendor::where('id', $id)->first();
         $msg = 'Order configuration';
-        $vendor->show_slot = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
-        $vendor->auto_accept_order = ($request->has('auto_accept_order') && $request->auto_accept_order == 'on') ? 1 : 0;
-        $vendor->need_container_charges = ($request->has('need_container_charges') && $request->need_container_charges == 'on') ? 1 : 0;
-        $vendor->add_markup_price = ($request->has('add_markup_price') && $request->add_markup_price == 'on') ? 1 : 0;
-        $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
-        // $vendor->cron_for_service_area = ($request->has('cron_for_service_area') && $request->cron_for_service_area == 'on') ? 1 : 0;
-        if($request->has('slot_minutes')){
-            $vendor->slot_minutes   = ($request->slot_minutes>0)?$request->slot_minutes:0;
-        }
-        $vendor->closed_store_order_scheduled = (($request->has('show_slot')) ? 0 : ($request->closed_store_order_scheduled == 'on')) ? 1 : 0;
-        $vendor->fixed_fee = ($request->has('fixed_fee') && $request->fixed_fee == 'on') ? 1 : 0;
-        $vendor->price_bifurcation = ($request->has('price_bifurcation') && $request->price_bifurcation == 'on') ? 1 : 0;
-        // $vendor->fixed_fee_amount = $request->has('fixed_fee_amount') ? $request->fixed_fee_amount : 0.00;
 
-        $vendor->fixed_fee_amount = $request->has('fixed_fee') ? $request->fixed_fee_amount : 0.00;
+        if (!$request->has('commission_percent')) {
+
+            $vendor->show_slot = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
+            $vendor->auto_accept_order = ($request->has('auto_accept_order') && $request->auto_accept_order == 'on') ? 1 : 0;
+            $vendor->need_container_charges = ($request->has('need_container_charges') && $request->need_container_charges == 'on') ? 1 : 0;
+            $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
+            // $vendor->cron_for_service_area = ($request->has('cron_for_service_area') && $request->cron_for_service_area == 'on') ? 1 : 0;
+            if($request->has('slot_minutes')){
+                $vendor->slot_minutes   = ($request->slot_minutes>0)?$request->slot_minutes:0;
+            }
+            $vendor->closed_store_order_scheduled = (($request->has('show_slot')) ? 0 : ($request->closed_store_order_scheduled == 'on')) ? 1 : 0;
+            $vendor->fixed_fee = ($request->has('fixed_fee') && $request->fixed_fee == 'on') ? 1 : 0;
+            $vendor->price_bifurcation = ($request->has('price_bifurcation') && $request->price_bifurcation == 'on') ? 1 : 0;
+            // $vendor->fixed_fee_amount = $request->has('fixed_fee_amount') ? $request->fixed_fee_amount : 0.00;
+
+            $vendor->fixed_fee_amount = $request->has('fixed_fee') ? $request->fixed_fee_amount : 0.00;
         
-        $vendor->service_charges_tax = ($request->has('service_charges_tax') && $request->service_charges_tax == 'on') ? 1 : 0;
-        $vendor->service_charges_tax_id=$request->service_charges_tax_id != 0 && $vendor->service_charges_tax !=0 ? $request->service_charges_tax_id:0;
+        }else{
+
+            //Commission & Taxes (Visible For Admin)
+            $vendor->commission_percent         = $request->commission_percent;
+            $vendor->commission_fixed_per_order = $request->commission_fixed_per_order;
+            $vendor->commission_monthly         = $request->commission_monthly;
+            $vendor->service_fee_percent        = $request->service_fee_percent;
+            //$vendor->add_category = ($request->has('add_category') && $request->add_category == 'on') ? 1 : 0;
+            $vendor->show_slot  = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
+            $msg = 'commission configuration';
+
+            $vendor->service_charges_tax = ($request->has('service_charges_tax') && $request->service_charges_tax == 'on') ? 1 : 0;
+            $vendor->service_charges_tax_id=$request->service_charges_tax_id != 0 && $vendor->service_charges_tax !=0 ? $request->service_charges_tax_id:0;
+            $vendor->add_markup_price = ($request->has('add_markup_price') && $request->add_markup_price == 'on') ? 1 : 0;
+            $vendor->markup_price_tax_id=$request->markup_price_tax_id != 0 && $vendor->add_markup_price !=0 ? $request->markup_price_tax_id:0;
+
+            $vendor->delivery_charges_tax = ($request->has('delivery_charges_tax') && $request->delivery_charges_tax == 'on') ? 1 : 0;
+            $vendor->delivery_charges_tax_id=$request->delivery_charges_tax_id != 0 && $vendor->delivery_charges_tax !=0 ? $request->delivery_charges_tax_id:0;
+
+            $vendor->container_charges_tax = $request->container_charges_tax == 'on' ? 1 : 0;
+            $vendor->container_charges_tax_id=$request->container_charges_tax_id != 0 && $vendor->container_charges_tax !=0 ? $request->container_charges_tax_id:0;
+                    
+            $vendor->fixed_fee_tax = $request->fixed_fee_tax == 'on' ? 1 : 0;
+            $vendor->fixed_fee_tax_id=$request->fixed_fee_tax_id != 0 && $vendor->fixed_fee_tax !=0 ? $request->fixed_fee_tax_id:0;
+
+            }
        
-        
-        $vendor->delivery_charges_tax = ($request->has('delivery_charges_tax') && $request->delivery_charges_tax == 'on') ? 1 : 0;
-        $vendor->delivery_charges_tax_id=$request->delivery_charges_tax_id != 0 && $vendor->delivery_charges_tax !=0 ? $request->delivery_charges_tax_id:0;
-       
-        $vendor->container_charges_tax = $request->container_charges_tax == 'on' ? 1 : 0;
-        $vendor->container_charges_tax_id=$request->container_charges_tax_id != 0 && $vendor->container_charges_tax !=0 ? $request->container_charges_tax_id:0;
-                
-        $vendor->fixed_fee_tax = $request->fixed_fee_tax == 'on' ? 1 : 0;
-        $vendor->fixed_fee_tax_id=$request->fixed_fee_tax_id != 0 && $vendor->fixed_fee_tax !=0 ? $request->fixed_fee_tax_id:0;
                 
 
         // Set order limit - By Ovi
@@ -1159,15 +1176,8 @@ class VendorController extends BaseController
         }
 
         $vendor->is_show_vendor_details = ($request->has('is_show_vendor_details') && $request->is_show_vendor_details == 'on') ? 1 : 0;
-        if ($request->has('commission_percent')) {
-            $vendor->commission_percent         = $request->commission_percent;
-            $vendor->commission_fixed_per_order = $request->commission_fixed_per_order;
-            $vendor->commission_monthly         = $request->commission_monthly;
-            $vendor->service_fee_percent        = $request->service_fee_percent;
-            //$vendor->add_category = ($request->has('add_category') && $request->add_category == 'on') ? 1 : 0;
-            $vendor->show_slot         = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
-            $msg = 'commission configuration';
-        }
+       
+        
         if($request->has('rescheduling_charges')){
             $vendor->rescheduling_charges   = $request->rescheduling_charges;
         }
@@ -1184,8 +1194,11 @@ class VendorController extends BaseController
         if ($request->has('easebuzz_sub_merchent_id')) {
             $vendor->easebuzz_sub_merchent_id = $request->has('easebuzz_sub_merchent_id') ? $request->easebuzz_sub_merchent_id : NULL;
         }
+
+
        // $vendor->dynamic_html =  $request->has('dynamic_html') ? $request->dynamic_html : NULL;
         $vendor->save();
+
         if ($request->has('facilty_ids')) {
             foreach($request->facilty_ids as $facilty_id){
                 $VendorFacilty =  VendorFacilty::where(['vendor_id' =>   $vendor->id, 'facilty_id'=> $facilty_id])->first();
