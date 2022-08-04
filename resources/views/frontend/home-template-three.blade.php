@@ -6,6 +6,7 @@
 <style>
 .logoArea_bar{height:300px;margin: 0 0 30px;}
 .alMainMenuView{height:100px;width: 100px;border-radius: 50%;}
+@media(max-width: 767px){.logoArea_bar{height:150px;margin: 0 0 20px;}}
 </style>
 @endsection
 @section('content')
