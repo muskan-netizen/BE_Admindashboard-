@@ -171,10 +171,6 @@ class OrderController extends BaseController
                 $query->where('user_id', $user->id);
             });
         }
-        if (!empty($request->search_keyword)) {
-            $orders = $orders->where('order_number', 'like', '%' . $request->search_keyword . '%');
-        }
-
 
         $order_count = Order::with('vendors')->where(function ($q1) {
             // 1 for cod ,38 for offline manual by harbans
@@ -204,6 +200,27 @@ class OrderController extends BaseController
             $order_count->whereHas('vendors', function ($query)  use ($request) {
                 $query->where('vendor_id', $request->get('vendor_id'));
             });
+        }
+        //Search by keyword
+        if (!empty($request->search_keyword)) {
+            $order_count->whereHas('address', function ($query) use($request){
+                $query->where('house_number', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('address', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('street', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('city', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('state', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('pincode', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('country', 'like', '%' . $request->search_keyword . '%');
+            })->orWhere('order_number', 'like', '%' . $request->search_keyword . '%');
+            $orders->whereHas('address', function ($query) use($request){
+                $query->where('house_number', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('address', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('street', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('city', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('state', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('pincode', 'like', '%' . $request->search_keyword . '%')
+                ->orWhere('country', 'like', '%' . $request->search_keyword . '%');
+            })->orWhere('order_number', 'like', '%' . $request->search_keyword . '%');
         }
         $pending_orders = clone $order_count;
         $active_orders = clone $order_count;
@@ -1655,25 +1672,87 @@ class OrderController extends BaseController
     public function returnOrders(Request $request, $domain = '', $status)
     {
         try {
-
+            $user = Auth::user();
             $orders_list = OrderReturnRequest::where('status', $status)->with('product')->orderBy('updated_at', 'DESC');
-            if (Auth::user()->is_superadmin == 0) {
+            if ($user->is_superadmin == 0) {
                 $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
                 });
             }
             $orders[$status] = $orders_list->paginate(20);
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+            // all vendors
+            $vendors = Vendor::where('status', '!=', '2')->orderBy('id', 'desc');
+            if ($user->is_superadmin == 0) {
+                $vendors = $vendors->whereHas('permissionToUser', function ($query) use($user) {
+                    $query->where('user_id', $user->id);
+                });
+            }
+            $vendors = $vendors->get();
             return view(
                 'backend.order.return',
                 [
                     'orders' => $orders,
                     'status' => $status,
-                    'clientCurrency' => $clientCurrency
+                    'clientCurrency' => $clientCurrency,
+                    'vendors' => $vendors
                 ]
             );
         } catch (\Throwable $th) {
             return redirect()->back();
+        }
+    }
+    public function returnOrderFilter(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $orders_list = OrderReturnRequest::with('product')->orderBy('updated_at', 'DESC');
+            if ($user->is_superadmin == 0) {
+                $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
+                    $query->where('user_id', Auth::user()->id);
+                });
+            }
+            if (!empty($request->search_keyword)) {
+                $orders_list->whereHas('order', function ($query)  use ($request) {
+                    $query->whereHas('address', function ($q) use($request){
+                        $q->where('house_number', 'like', '%' . $request->search_keyword . '%')
+                        ->orWhere('address', 'like', '%' . $request->search_keyword . '%')
+                        ->orWhere('street', 'like', '%' . $request->search_keyword . '%')
+                        ->orWhere('city', 'like', '%' . $request->search_keyword . '%')
+                        ->orWhere('state', 'like', '%' . $request->search_keyword . '%')
+                        ->orWhere('pincode', 'like', '%' . $request->search_keyword . '%')
+                        ->orWhere('country', 'like', '%' . $request->search_keyword . '%');
+                    })->orWhere('order_number', 'like', '%' . $request->search_keyword . '%');
+                });
+            }
+            //get by vendor
+            if (!empty($request->get('vendor_id'))) {
+                $orders_list->whereHas('product', function ($query)  use ($request) {
+                    $query->where('vendor_id', $request->get('vendor_id'));
+                });
+            }
+            //filer bitween date
+            if (!empty($request->get('date_filter'))) {
+                $date_date_filter = explode(' to ', $request->get('date_filter'));
+                $to_date = (!empty($date_date_filter[1])) ? $date_date_filter[1] : $date_date_filter[0];
+                $from_date = $date_date_filter[0];
+
+                $orders_list->whereBetween('created_at',[$from_date . " 00:00:00", $to_date . " 23:59:59"]);
+            }
+            $pending_orders = clone $orders_list;
+            $accepted_orders = clone $orders_list;
+            $rejected_orders = clone $orders_list;
+
+            $pending_orders = $pending_orders->where('status','Pending')->paginate(20);
+            $accepted_orders = $accepted_orders->where('status','Accepted')->paginate(20);
+            $rejected_orders = $rejected_orders->where('status','Rejected')->paginate(20);
+            $pending_html = view('backend.order.return-data')->with(['orders'=>$pending_orders,'status'=>'Pending'])->render();
+            $accepted_html = view('backend.order.return-data')->with(['orders'=>$accepted_orders,'status'=>'Accepted'])->render();
+            $rejected_html = view('backend.order.return-data')->with(['orders'=>$rejected_orders,'status'=>'Rejected'])->render();
+            return $this->successResponse(['pending_html' => $pending_html, 'accepted_html' => $accepted_html, 'rejected_html' => $rejected_html], '', 201);
+
+        } catch (\Throwable $th) {
+            return $this->errorResponse($e->getMessage(), 400);
         }
     }
 

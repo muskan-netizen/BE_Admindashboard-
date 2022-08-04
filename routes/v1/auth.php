@@ -58,6 +58,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
           
         Route::get('profile', 'Api\v1\ProfileController@profile');
         Route::get('getProfile', 'Api\v1\ProfileController@getProfile');
+        Route::post('get/agents', 'Api\v1\PickupDeliveryController@getAgents');
         Route::get('account', 'Api\v1\ProfileController@account');
         Route::get('orders', 'Api\v1\OrderController@getOrdersList');
         Route::post('orders/tip-after-order', 'Api\v1\OrderController@tipAfterOrder'); 
@@ -158,9 +159,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('promo-code/verify', 'Api\v1\PickupDeliveryController@postVerifyPromoCode');
             Route::post('promo-code/remove', 'Api\v1\PickupDeliveryController@postRemovePromoCode');
             Route::post('order-tracking-details', 'Api\v1\PickupDeliveryController@getOrderTrackingDetails');
-            Route::match(['get','post'],'add-rider','Api\v1\PickupDeliveryController@getAllRiders');
-           
-            
+            Route::match(['get','post'],'add-rider','Api\v1\PickupDeliveryController@getAllRiders');            
         });
 
         // user subscription 

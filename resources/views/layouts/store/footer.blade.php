@@ -221,7 +221,7 @@ if($showSubscriptionPlanPopUp == 1){
     var selected_address = 0;
     var vendor_type = "delivery";
     var currentRouteName = "{{Route::currentRouteName()}}";
-    @if(Session::has('vendorType'))
+    @if(Session::has('vendorType') && (Session::get('vendorType') != '') )
         vendor_type = "{{Session::get('vendorType')}}";
     @endif
     var autocomplete_url = "{{ route('autocomplete') }}";

@@ -568,6 +568,28 @@ $checkSlot = findSlot('', $vendor->id, '');
 
         <!-- Why people visit here start -->
         {{-- <p>{{!! $vendor->dynamic_html !!}}</p> --}}
+        @foreach ($vendor->vendor_section as $key=>$vendorSection)
+        <section class="whyPeopleVisit py-5" id="vendor_section_{{ $vendorSection->id }}">
+        	<div class="container">
+        		<div class="row">
+        			<div class="col-md-12">
+        				<div class="alSpaListHead text-center text-lg-left col-12 mb-5">
+	                        <p class="alLgFontSize">{{ $vendorSection->headingTranslation->first() ?  $vendorSection->headingTranslation->first()->heading : 'NA' }}</p>
+	                    </div>
+        			</div>
+                    @foreach ($vendorSection->SectionTranslation as $subkey=>$SectionTranslation)
+                    <div class="col-md-6">
+        				<div class="whyPeopleVisitDetails mb-4">
+	        				<p>{{ $SectionTranslation->first() ?  $SectionTranslation->first()->title : 'NA'  }}</p>
+	        				<p class="alBodyText">{{ $SectionTranslation->first() ?  $SectionTranslation->first()->description : 'NA'  }}</p>
+        				</div>
+        			</div>
+                    @endforeach
+        			
+        		</div>
+        	</div>
+        </section>
+        @endforeach
         {{-- <section class="whyPeopleVisit py-5">
         	<div class="container">
         		<div class="row">
