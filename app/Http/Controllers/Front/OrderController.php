@@ -705,7 +705,7 @@ class OrderController extends FrontController
 
             $fixed_fee_amount=$request->total_fixed_fee_amount??0.00;
             DB::beginTransaction();
-            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area')->first();
+            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area','stop_order_acceptance_for_users')->first();
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (!empty($request->user_id))) {
@@ -722,6 +722,10 @@ class OrderController extends FrontController
                 if ($saved_transaction) {
                     return $this->errorResponse('Transaction has already been done', 400);
                 }
+            }
+
+            if(isset($preferences->stop_order_acceptance_for_users) && ($preferences->stop_order_acceptance_for_users == 1)){
+                return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
             }
 
             $loyalty_amount_saved = 0;

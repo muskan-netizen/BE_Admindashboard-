@@ -6,7 +6,6 @@
 <link href="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.css')}}" rel="stylesheet" type="text/css" />
 
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 
 <style type="text/css">
 .swal2-title {

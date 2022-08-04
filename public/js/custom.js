@@ -1720,6 +1720,7 @@ $(document).ready(function () {
                 var response = $.parseJSON(error.responseText);
                 // success_error_alert('error', response.message, ".payment_response");
                 if ($('.cart_response').length > 0) {
+                    $('#proceed_to_pay_modal').modal('hide');
                     $(".cart_response").removeClass('d-none');
                     success_error_alert('error', response.message, ".cart_response");
                     $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");

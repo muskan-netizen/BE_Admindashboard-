@@ -51,6 +51,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 
 </script>
 @yield('pre-custom-script')
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 {{-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> --}}
 <script type="text/javascript" src="{{asset('front-assets/js/axios.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
@@ -69,7 +70,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 <script defer type="text/javascript" src="{{asset('js/spinner.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/custom.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/location.js')}}"></script>
-
+<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 
 {{--
 <!-- All js merged -->
@@ -203,11 +204,11 @@ window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-5LPF1QP3Y3');
-$(document).ready(function() {
-    @if(!isset($_COOKIE['show-subscription-plan']) && ($showSubscriptionPlanPopUp == 1) && (Route::current()->getName() != 'userHome'))
+@if(!isset($_COOKIE['show-subscription-plan']) && ($showSubscriptionPlanPopUp == 1) && (Route::current()->getName() != 'userHome'))
+    $(document).ready(function() {
         $("#show-subscription-plan-mdl").modal("show");
-    @endif
-});
+    });
+@endif
 </script>
 <!-- End googletagmanager -->
 @php
@@ -325,6 +326,7 @@ if($showSubscriptionPlanPopUp == 1){
 // Client Perference  Detail
     var client_preference_web_color = "{{getClientPreferenceDetail()->web_color}}";
     var client_preference_web_rgb_color = "{{getClientPreferenceDetail()->wb_color_rgb}}";
+    var stop_accepting_orders = "{{getClientPreferenceDetail()->stop_order_acceptance_for_users ?? 0}}";
 
 // Client Detail
     var client_company_name = "{{getClientDetail()->company_name}}";
@@ -433,6 +435,18 @@ if($showSubscriptionPlanPopUp == 1){
        }
     }
     @endif
+
+    if((stop_accepting_orders == 1) && ((window.location.pathname == '/') || (window.location.pathname == '/viewcart'))){
+        swal.fire({
+            title: "{{__('Sorry')}}",
+            text:"{{__('We are not accepting orders right now.')}}",
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            return false;
+        });
+    }
 </script>
 
 @yield('script')
