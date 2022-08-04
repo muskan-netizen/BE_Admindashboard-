@@ -69,11 +69,17 @@
             processData: false,
             success: function(response) {
                 // location.reload();
+                console.log(response);
                 if (response.status == 'success') {
-                    $(".modal .close").click();
+                    $('.section_msg').text('Updated successfully');
+                    
+                    //setTimeout(function() {
+                        $(".modal .close").click();
+                         location.reload();
+                    //}, 2000);
                     //location.reload();
                 } else {
-
+                    $("#add_vendor_section_form").attr("disabled", false);
                     $(".show_all_error.invalid-feedback").show();
                     $(".show_all_error.invalid-feedback").text(response.message);
                 }
@@ -86,10 +92,11 @@
             complete: function() {
                 $(".loader_box").hide();
                 setTimeout(function() {
-                   // location.reload();
+                   location.reload();
                 }, 2000);
                
             },error: function(response) {
+                $("#add_vendor_section_form").attr("disabled", false);
                 if (response.status === 422) {
                     let errors = response.responseJSON.errors;
                     Object.keys(errors).forEach(function(key) {
@@ -109,18 +116,24 @@
         let language_id = $(this).val();
         let section_id = $("#save_vendor_section_form input[name='section_id']").val();
       console.log(section_id);
+      if(section_id != undefined && section_id != ''){
+        getVendorSection(section_id, language_id);
+      }
     });
     $(document).on('click','.editSectionBtn',function(){
         var section_id = $(this).data('id');
         var language_id = $(this).data('language_id');
-        console.log(language_id);
-        console.log(section_id);
-        getVendorSection(section_id, language_id)
+        if(section_id != undefined && section_id != ''){
+            getVendorSection(section_id, language_id);
+        }
+        
     });
     $('.openVendorSectionModal').click(function() {
         $('#add_section').modal();
         $("#save_vendor_section_form input[name='section_id']").val('');
         document.getElementById("save_vendor_section_form").reset();
+        
+        $('#add_section #header_title').html(`{{ __("Add Section") }}`);
         $("#vendor_section_options").html('');
         addvendorSectionTemplate(0);
 
@@ -149,6 +162,7 @@
                         });
                         addvendorSectionTemplate(section_id);
                         $('#add_section').modal();
+                        $('#add_section #header_title').html(`{{ __("Edit Section") }}`);
                     }
               }
             });

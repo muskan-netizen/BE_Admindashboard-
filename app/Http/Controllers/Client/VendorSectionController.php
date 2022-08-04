@@ -75,30 +75,44 @@ class VendorSectionController extends BaseController {
             return $this->errorResponse([], __('Section Not Found!'));
            }
 
-           $vendor_section_heading_translation             = VendorSectionHeadingTranslation::where(["language_id"=>$request->language_id ,"vendor_section_id"=>$vendor_section->id ])->first() ??   new VendorSectionHeadingTranslation();
-           $vendor_section_heading_translation->heading    = $request->heading;
+           $vendor_section_heading_translation             = VendorSectionHeadingTranslation::where([
+                                                                                    "language_id"=>$request->language_id,         "vendor_section_id"=>$vendor_section->id ])
+                                                                                    ->first();
+                                                                          
+           if( !$vendor_section_heading_translation )
+           $vendor_section_heading_translation             =  new VendorSectionHeadingTranslation();
+
+           $vendor_section_heading_translation->heading               = $request->heading;
+           $vendor_section_heading_translation->vendor_section_id     = $vendor_section->id;
+           $vendor_section_heading_translation->language_id           = $request->language_id;
            $vendor_section_heading_translation->save();
-         
+          
+           //DELETE section which not coming 
            $section_old_ids = $request->section_old_ids;
+        
+            $section_old_ids = array_values(array_diff($section_old_ids, array('')));
            if($request->section_old_ids)
-           VendorSectionTranslation::whereNotIn('id',$section_old_ids)->where(['vendor_section_id' => $vendor_section->id])->delete();
+           VendorSectionTranslation::whereNotIn('id',$section_old_ids)
+                                    ->where(['vendor_section_id' => $vendor_section->id,
+                                            'language_id'=>$request->language_id
+                                    ])->delete();
            
           
            foreach($request->title as $key=>$value){
-               $sectionData = [
-                   'vendor_section_id' => $vendor_section->id,
-                   'title'             => $value,
-                   'description'       => $request->description[$key] ?? '',
-                   'language_id'       => $request->language_id,
-               ];
-               $vendor_section_translation = VendorSectionTranslation::updateOrCreate( $sectionData );
-            
+                if($value){
+                    $sectionData = [
+                        'vendor_section_id' => $vendor_section->id,
+                        'title'             => $value,
+                        'description'       => $request->description[$key] ?? '',
+                        'language_id'       => $request->language_id,
+                    ];  
+                
+                    $vendor_section_translation = VendorSectionTranslation::updateOrCreate( $sectionData );
+                }
            }
-           $Vendor_section = VendorSection::with('headingTranslation','SectionTranslation')->where('id',$vendor_section->id)->first();
-           //pr( $Vendor_section);
-           
            DB::commit();
-           return $this->successResponse($Vendor_section, 'Vendor Section Added Successfully.');
+          
+           return $this->successResponse($vendor_section, __('Vendor Section Update Successfully.'));
        } catch (Exception $e) {
            DB::rollback();
            return $this->errorResponse([], $e->getMessage());

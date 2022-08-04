@@ -488,8 +488,16 @@ class VendorController extends BaseController
             $build = $this->buildTree($categories->toArray());
             $categoryToggle = $this->printTreeToggle($build, $active);
         }
-        $vendorSection = VendorSection::with('primary')->withCount('SectionTranslation')->where('vendor_id', $vendor->id)->get();
-       //pr($vendorSection->toArray());
+        $vendorSection = VendorSection::with(['primary','SectionTranslation'=>function($q){
+            $q->join('client_languages as cl', 'cl.language_id', 'vendor_section_translations.language_id')->where('cl.is_primary', 1)->count();
+        }])->where('vendor_id', $vendor->id)->get();
+        $vendorSection = $vendorSection->map(function($da) {
+            $count = count($da->SectionTranslation);
+            $da->section_count = $count;
+            unset($da->SectionTranslation);
+            return $da;
+        });
+       
         $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
         $returnData = array();
         $returnData['client_preferences'] = $client_preferences;

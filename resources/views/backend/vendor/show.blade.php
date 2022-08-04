@@ -256,7 +256,7 @@
                                                         <tr>
                                                             <th>{{ __('#') }}</th>
                                                             <th>{{ __('Name') }}</th>
-                                                            <th>{{ __('sub Section') }}</th>
+                                                            <th>{{ __('Sub Section') }}</th>
                                                             <th style="width: 85px;">{{ __('Action') }}</th>
                                                         </tr>
                                                     </thead>
@@ -270,7 +270,7 @@
                                                                 <a href="javascript:void(0);" class="text-body">{{ ($section->primary ??false) ? $section->primary->heading : '' }}</a>
                                                             </td>
                                                             <td class="table-user">
-                                                                <a href="javascript:void(0);" class="text-body">{{$section->section_translation_count}}</a>
+                                                                <a href="javascript:void(0);" class="text-body">{{$section->section_count}}</a>
                                                             </td>
 
                                                             <td>

@@ -13,7 +13,7 @@
         <div class="modal-content">
             <div class="modal-header border-bottom">
                
-                <h4 class="modal-title">{{ __("Add Section") }} </h4>
+                <h4 class="modal-title" id="header_title">{{ __("Add Section") }} </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="save_vendor_section_form" class="al_overall_form" method="post" enctype="multipart/form-data">
