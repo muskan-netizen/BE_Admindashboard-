@@ -2286,14 +2286,14 @@ $(document).ready(function(){
                             section_id                = parseInt(section_id);
                             row                       = parseInt(section_id)
                             section_id                = section_id +1;
-                            $('#table_body').append(modified_temp({ id:section_id,data:value}));
+                            $('#vendor-selector-datatable #table_body').append(modified_temp({ id:section_id,data:value}));
                             var options_trans = value.translations;
                             $(options_trans).each(function(trans_index, trans_value) {
                                 var input_id = '#option_name_'+row+'_'+trans_value.language_id;
                                 $(input_id).val(trans_value.name);
                             });
                             $('.add_more_button').hide();
-                            $('#add_button_'+section_id).show();
+                            $('#vendor-selector-datatable #add_button_'+section_id).show();
                         });
                     }else{
                         $('.option_section').remove();
