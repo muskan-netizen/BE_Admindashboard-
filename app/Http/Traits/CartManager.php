@@ -240,7 +240,7 @@ trait cartManager{
 
             if($vendorData->vendor->add_markup_price)
             $taxCharges['total_markup_fee_tax'] =  $total_markup_charges * $markup_price_tax_rate/100;
-            \Log::info($taxCharges);
+            //\Log::info($taxCharges);
             return (object)$taxCharges;    
             
         }
@@ -324,7 +324,12 @@ trait cartManager{
        //Get All Taxes    
        $taxRates = $this->getTaxes();
       
-        
+       $taxCharges = array();
+       $taxCharges['deliver_fee_charges'] = 0;
+       $taxCharges['total_service_fee'] = 0;
+       $taxCharges['total_fixed_fee_tax'] = 0;
+       $taxCharges['total_markup_fee_tax'] = 0;
+       
         /* Getting All User Subscription plans */
         $subscription_features = array();
         $user_subscription = null;
@@ -448,11 +453,7 @@ trait cartManager{
                 $total_fixed_fee_tax = 0;
                 $total_service_fee = 0;
                 $total_markup_fee_tax = 0;
-                $taxCharges = array();
-                $taxCharges['deliver_fee_charges'] = 0;
-                $taxCharges['total_service_fee'] = 0;
-                $taxCharges['total_fixed_fee_tax'] = 0;
-                $taxCharges['total_markup_fee_tax'] = 0;
+                
                 /* Getting in Vendor product loop and setting product values*/
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
 
@@ -807,7 +808,8 @@ trait cartManager{
                 $vendorData->payable_amount = decimal_format($payable_amount);
                 $vendorData->discount_amount = decimal_format($discount_amount);
                 $vendorData->discount_percent = decimal_format($discount_percent);
-                $vendorData->taxable_amount = decimal_format($taxable_amount);  Log::info($taxable_amount);
+                $vendorData->taxable_amount = decimal_format($taxable_amount);  
+                //Log::info($taxable_amount);
                 $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount);
                 $vendorData->product_sub_total_amount = decimal_format($subtotal_amount);
                 $vendorData->isDeliverable = 1;

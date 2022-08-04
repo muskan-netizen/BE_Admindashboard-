@@ -534,7 +534,7 @@
 
             @if($total_fixed_fee_amount > 0 && $price_bifurcation!=1) 
                 <div class="row">
-                    <div class="col-6">{{__('Fixed Fee')}}</div>
+                    <div class="col-6">{{__($fixedFee)}}</div>
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}{{ decimal_format($total_fixed_fee_amount)}}</b></div>
                     <input type="hidden" name="total_fixed_fee_amount" data-curr="{{Session::get('currencySymbol')}}" value="{{$total_fixed_fee_amount}}">
                 </div>

@@ -207,11 +207,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                                 <% } %>
                                                             </li>
                                                             <% } %>
-                                                        <% if(order.fixed_fee_amount > 0 || order.fixed_fee_amount < 0) { %>
+                                                        <% if(vendor.fixed_fee > 0 || vendor.fixed_fee < 0) { %>
                                                             <li class="d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{ __($fixedFee) }}</label>
-                                                                <% if(order.fixed_fee_amount !== null) { %>
-                                                                <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.fixed_fee_amount) %></span>
+                                                                <% if(vendor.fixed_fee !== null) { %>
+                                                                <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.fixed_fee) %></span>
                                                                 <% }else { %>
                                                                     <span>{{$clientCurrency->currency->symbol}} 0.00</span>
                                                                 <% } %>
