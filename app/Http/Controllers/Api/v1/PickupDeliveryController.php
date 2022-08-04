@@ -711,7 +711,58 @@ class PickupDeliveryController extends BaseController{
 
     }
 
+      /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAgents(Request $request){
 
+        try{
+            $validator = Validator::make(request()->all(), [
+                'latitude' => 'required',
+                'longitude' => 'required',
+            ]);
+
+            if($validator->fails()){
+                return $this->errorResponse($validator->messages(), 422);
+            }
+
+            $postdata = [
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude
+            ];
+
+            if(!empty($request->tag)){
+                $postdata['tag'] = $request->tag;
+            }
+
+            $dispatch_domain = $this->checkIfPickupDeliveryOn();
+                      
+            $header = ['headers' => ['personaltoken' => !empty($dispatch_domain->delivery_service_key)? $dispatch_domain->delivery_service_key : $dispatch_domain->pickup_delivery_service_key,
+                'shortcode' => !empty($dispatch_domain->delivery_service_key_code)? $dispatch_domain->delivery_service_key_code : $dispatch_domain->pickup_delivery_service_key_code,
+                'content-type' => 'application/json']
+            ];
+
+            $client = new GClient($header);
+            $url    = !empty($dispatch_domain->delivery_service_key_url)? $dispatch_domain->delivery_service_key_url.'/api/get/agents' : $dispatch_domain->pickup_delivery_service_key_url.'/api/get/agents';
+            $res = $client->post(
+                $url,
+                ['form_params' => (
+                        $postdata
+                    )]
+            );
+            $response = json_decode($res->getBody(), true);
+            return $response;
+
+        }catch(\Exception $e){
+            $data = [];
+            $data['status'] = 400;
+            $data['message'] =  $e->getMessage();
+            return $data;
+        }
+
+    }
 
 
       /**

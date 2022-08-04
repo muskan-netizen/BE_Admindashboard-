@@ -8,12 +8,13 @@
         //$label = 'Delivery';
     }
 @endphp
-<div class="row  mb-sm-3 mb-1">
+<div class="row  mb-sm-2 mb-1">
     @if($action != 'dine_in' && $action != 'takeaway')
     <div class="col-lg-12 d-flex justify-content-between align-items-center" id="add_new_address_btn">
         <h4 class="page-title m-0">{{ __($label)  }} {{ ($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</h4>
         <a class="add-address ml-auto" href="#add_new_address_form">
-            <i class="fa fa-plus mr-1" aria-hidden="true"></i>{{__('Add New') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address')}}
+            <i class="fa fa-plus mr-1" aria-hidden="true"></i>
+            <!-- {{__('Add New') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address')}} -->
         </a>
     </div>
     @endif
@@ -51,16 +52,61 @@
         </div>
     @endif
 @else
-    <div class="row mb-sm-4" id="address_template_main_div">
+    <div class="row mb-sm-2 m-0 p-0" id="address_template_main_div">
+        <div class="row w-100">
+            
         @forelse($addresses as $k => $address)
-        @if($k ==6)
-        <div class="d-flex justify-content-end">
-            <a class="view_all_address"  id="view_all_address"  href="javascript:void(0)">{{ __('View all address') }}</a>
+
+        <div class="col-md-6 mb-2">
+        <div class="delivery_box cart_delivery p-2 mb-sm-3 mb-1 position-relative">
+            @if(!empty(Auth::user()) && $address->is_primary)
+               <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+        </a>
+               @endif
+           <label class="radio m-0">{{ ($address->house_number ?? false) ? $address->house_number."," : '' }} {{$address->address}}, {{$address->state}} {{$address->pincode}}
+               @if($address->is_primary)
+               <input type="radio" name="address_id" value="{{$address->id}}" checked="checked">
+               @else
+               <input type="radio" name="address_id" value="{{$address->id}}" {{$k == 0? 'checked="checked"' : '' }}>
+               @endif
+               <span class="checkround"></span>
+           </label>
+       </div>
         </div>
+
+        @if((($k+1)%2)==0)
+        </div>
+        @endif
+
+        @if($k ==1)
+        </div>
+        <div class="view_all_address d-none" id="view_all_address_div">
+        @endif
+
+
+        @if((($k+1)%2)==0)
+            <div class="row w-100">
+        @endif  
+
+
+
+
+
+
+
+
+        {{-- @if($k ==2)
+       
+
         <div class="view_all_address d-none" id="view_all_address_div" >
         @endif
-            <div class="col-md-12">
-                <div class="delivery_box p-0 mb-sm-3 mb-1">
+            <div class="col-md-6 mb-2">
+                <div class="delivery_box cart_delivery p-2 mb-sm-3 mb-1 position-relative">
+                     @if(!empty(Auth::user()))
+                        <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+ </a>
+ <!-- <span>{{ __('Edit') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</span> -->
+                        @endif
                     <label class="radio m-0">{{ ($address->house_number ?? false) ? $address->house_number."," : '' }} {{$address->address}}, {{$address->state}} {{$address->pincode}}
                         @if($address->is_primary)
                         <input type="radio" name="address_id" value="{{$address->id}}" checked="checked">
@@ -71,10 +117,12 @@
                     </label>
                 </div>
             </div>
+
         @if(($k >6  ) && ($k ==count($addresses) -1 ))
             </div>
+        </div> --}}
             
-        @endif
+        {{-- @endif --}}
         @empty
         <div class="col-12 address-no-found">
             <p>{{($client_preference_detail->address_is_car == 1) ? __('Car not available.') : __('Address not available.')}}</p>
@@ -86,12 +134,20 @@
             </a>
         </div> -->
     </div>
-    <div class="row">
-        <div class="col-md-12" id="add_new_address_form" style="display:none;">
+</div>
+
+    <div class="row w-100 mt-2">
+        <div class="cart_address w-100 text-center">
+            <a class="d-block w-100"  id="view_all_address"  href="javascript:void(0)">{{ __('View all address') }}</a>
+        </div>
+    </div>
+       
+    <div class="row mt-2 pt-3 cart_edit-addre" id="add_new_address_form" style="display:none;">
+        <div class="col-md-12" >
             <div class="theme-card w-100">
                 <div class="form-row no-gutters">
                     <div class="col-12">
-                        <label for="type">{{__('Address Type')}}</label>
+                        <label for="type"><b>{{__('Address Type')}}</b></label>
                     </div>
                     <div class="col-3">
                         <div class="delivery_box pt-0 pl-0  pb-sm-3 pb-1">
@@ -182,12 +238,12 @@
                         <input type="text" class="form-control" id="pincode" placeholder="{{ getNomenclatureName('Zip Code', true) }}" value="">
                         <span class="text-danger" id="pincode_error"></span>
                     </div>
-                    <div class="col-md-12 mb-3">
+                    <div class="col-md-12">
                         <label for="extra_instruction">{{__('Extra Instructions')}}</label>
                         <input type="text" class="form-control" id="extra_instruction" placeholder="{{__('Extra instruction for driver to follow..')}}" value="">
                         <span class="text-danger" id="extra_instruction_error"></span>
-                    </div>
-                    <div class="col-md-12 mt-3">
+                    </div>  
+                    <div class="col-md-12 mt-3 add_address_btn">
                         <button type="button" class="btn btn-solid" id="save_address">{{__('Save')}} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</button>
                         <button type="button" class="btn btn-solid black-btn" id="cancel_save_address_btn">{{__('Cancel')}}</button>
                     </div>

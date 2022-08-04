@@ -10,6 +10,6 @@ class BannerServiceArea extends Model
     use HasFactory;
 
     public function serviceArea(){
-      return $this->hasOne('App\Models\ServiceArea', 'id', 'service_area_id')->select('id', 'vendor_id', 'geo_array', 'name');
+      return $this->hasOne('App\Models\ServiceAreaForBanner', 'id', 'service_area_id')->where('type', 1)->select('id', 'geo_array', 'name');
     }
 }

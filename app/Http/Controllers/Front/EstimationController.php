@@ -43,12 +43,18 @@ class EstimationController extends FrontController
         $curId  = Session::get('customerCurrency');
         $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
         $navCategories = $this->categoryNav($langId);
-
+        $user = Auth::user();
         $estimateProductsWithAddons = EstimateProduct::with(['estimate_product_addons.estimate_addon_set.option','category.primary' , 'estimate_product_translation' => function($q) use($langId) {
             $q->where('language_id', '=', $langId);
         }])->groupBy('category_id')->orderBy('id', 'ASC')->get();  
+       
+        if ($user) {
+            $estimatedProductCart = EstimatedProductCart::where('user_id', $user->id)->first();
+        }else{
+            $user_token = session()->get('_token');
+            $estimatedProductCart = EstimatedProductCart::where('unique_identifier', $user_token)->first();
+        }
 
-        $estimatedProductCart = EstimatedProductCart::where('user_id', Auth::user()->id)->first();
         if($estimatedProductCart){
             $estimatedProducts = EstimatedProduct::where('estimated_cart_id', $estimatedProductCart->id)->get();
         }else{
@@ -86,22 +92,27 @@ class EstimationController extends FrontController
     {
         try {
             DB::beginTransaction();
-
+            $user = Auth::user();
 
             // $quantity = $request->get('quantity');
             $quantity = 1;
 
             // Query To Check if the Cart is Already Exists
-            $estimatedProductCart = EstimatedProductCart::where('user_id', Auth::user()->id)->first();
-
+            if($user){
+                $estimatedProductCart = EstimatedProductCart::where('user_id', $user->id)->first();
+            }else{
+                $user_token = session()->get('_token');
+                $estimatedProductCart = EstimatedProductCart::where('unique_identifier', $user_token)->first();
+            }
             // If Cart Not Exists Then Generate New Cart Else Just Increment the item_count Column by 1.
             if(!$estimatedProductCart){
                 $estimatedProductCart = new EstimatedProductCart();
-                $estimatedProductCart->unique_identifier = Str::random(18);
-                $estimatedProductCart->user_id           = Auth::user()->id;
+                $estimatedProductCart->unique_identifier = $user_token??null;
+                $estimatedProductCart->user_id           = (($user)?$user->id:null);
                 $estimatedProductCart->item_count        = ($quantity != '') ? $quantity : 1;
                 $estimatedProductCart->currency_id       = Session::get('customerCurrency');
                 $estimatedProductCart->save();
+                
             }else{
                 $estimatedProductCart->item_count = $estimatedProductCart->item_count+$quantity;
                 $estimatedProductCart->save();
@@ -126,7 +137,7 @@ class EstimationController extends FrontController
 
              // Make Array from (estimate_option_id) string
             // $estimate_option_ids = explode(',',$request->get('estimate_option_id'));
-            
+            \Log::info($request->estimate_option_id);
             //Delete previous added addons
             EstimatedProductAddons::where('estimated_product_id', $estimatedProduct->id)->delete();
             // Loop through the (estimate_option_ids)
@@ -150,6 +161,7 @@ class EstimationController extends FrontController
            
           } catch (Exception $e) {
             DB::rollback();
+            \Log::info($e->getMessage());
             return $e->getMessage();
           }
     }
@@ -159,10 +171,15 @@ class EstimationController extends FrontController
     {
         // Get language ID from Request Header - By Ovi
         $langId  = Session::get('customerLanguage')??'1';
-        $user_id = Auth::user()->id;
+        $user = Auth::user();
         $currency = Session::get('customerCurrency');
         // Get Cart from Estimated Product Cart based on user_id - By Ovi
-        $userCart = EstimatedProductCart::where('user_id', $user_id)->first();
+        if($user){
+            $userCart = EstimatedProductCart::where('user_id', $user->id)->first();
+        }else{
+            $user_token = session()->get('_token');
+            $userCart = EstimatedProductCart::where('unique_identifier', $user_token)->first();
+        }
         if(!$userCart){
             $message = "Your Cart is Empty";
             return redirect()->back()->withErrors(['message', $message]);

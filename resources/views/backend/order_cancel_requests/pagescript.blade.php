@@ -13,6 +13,23 @@
             let status= $(this).data('status');
             initDataTable(rel, status);
         });
+        $("#vendor_select_box").change(function() {
+            intialize();
+        });
+        $("#range-datepicker").flatpickr({
+            mode: "range",
+            onClose: function(selectedDates, dateStr, instance) {
+               intialize();
+            }
+        });
+        $("#clear_filter_btn_icon").click(function() {
+            $('#range-datepicker').val('');
+            $('#vendor_select_box').val('');
+            init("pending_orders", "{{ route('cancel-order.requests.filter') }}", '', false);
+        });
+        $(document).on("input", "#search_via_keyword", function(e) {
+            intialize();
+        })
         
         function initDataTable(table, status) {
             var dynamic_columns = [
@@ -58,9 +75,9 @@
                   data: function (d) {
                     d.status = status;
                     d.search = $('.dataTables_filter input[type="search"]').val();
-                    // d.date_filter = $('#range-datepicker').val();
-                    // d.payment_option = $('#payment_option_select_box option:selected').val();
-                    // d.tax_type_filter = $('#tax_type_select_box option:selected').val();
+                    d.date_filter = $('#range-datepicker').val();
+                    d.vendor_id = $('#vendor_select_box option:selected').val();
+                    d.search_keyword = $('#search_via_keyword').val();
                   }
                 },
                 columns: dynamic_columns

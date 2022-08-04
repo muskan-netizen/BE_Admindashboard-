@@ -222,7 +222,7 @@ if (Session::has('toaster')) {
 @if(@Session::has('preferences') && !empty(@Session::get('preferences')['fcm_api_key']))
 <script>
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
-    console.log(firebaseCredentials);
+    //console.log(firebaseCredentials);
     var firebaseConfig = {
         apiKey: firebaseCredentials.fcm_api_key,
         authDomain: firebaseCredentials.fcm_auth_domain,
