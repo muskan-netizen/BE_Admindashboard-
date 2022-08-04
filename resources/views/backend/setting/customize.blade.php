@@ -1584,7 +1584,7 @@
                                 <div id="option_div">
 
                                         <div class="selector-option-al ">
-                                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
+                                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="vendor-selector-datatable">
                                                 <tr class="trForClone">
 
                                                     @foreach($client_languages as $langs)
@@ -1961,9 +1961,9 @@ $(document).ready(function(){
         var price_section_temp    = $('#vendorSelectorTemp').html();
         var modified_temp         = _.template(price_section_temp);
         var result_html           = modified_temp({id:section_id,data:data});
-        $("#table_body").append(result_html);
+        $("#vendor-selector-datatable #table_body").append(result_html);
         $('.add_more_button').hide();
-        $('#add_button_'+section_id).show();
+        $('#vendor-selector-datatable #add_button_'+section_id).show();
     }
      $(document).on('click','.add_more_button',function(){
         var main_id = $(this).data('id');
