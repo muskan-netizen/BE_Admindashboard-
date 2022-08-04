@@ -282,6 +282,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('orders/filter', 'Client\OrderController@postOrderFilter')->name('orders.filter');
         Route::get('orders/product_faq/{product_id}', 'Client\OrderController@viewProductForm')->name('orders.product_faq');
         Route::get('order/return/{status}', 'Client\OrderController@returnOrders')->name('backend.order.returns');
+        Route::post('order/return-filter', 'Client\OrderController@returnOrderFilter')->name('backend.order.returns.filter');
         Route::get('rescheduled-orders', 'Client\OrderController@rescheduledOrders')->name('rescheduled.orders'); //Added By Ovi
         Route::get('order/return-modal/get-return-product-modal', 'Client\OrderController@getReturnProductModal')->name('get-return-product-modal');
         Route::post('order/update-product-return-client', 'Client\OrderController@updateProductReturn')->name('update.order.return.client');
