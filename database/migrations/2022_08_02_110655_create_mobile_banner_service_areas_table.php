@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBannerServiceAreasTable extends Migration
+class CreateMobileBannerServiceAreasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateBannerServiceAreasTable extends Migration
      */
     public function up()
     {
-        Schema::create('banner_service_areas', function (Blueprint $table) {
+        Schema::create('mobile_banner_service_areas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('banner_id')->nullable();
             $table->unsignedBigInteger('service_area_id')->nullable()->comment('id from service area for banners');
@@ -30,6 +30,6 @@ class CreateBannerServiceAreasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('banner_service_areas');
+        Schema::dropIfExists('mobile_banner_service_areas');
     }
 }

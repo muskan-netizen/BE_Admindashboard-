@@ -165,6 +165,9 @@ class OrderController extends BaseController
                         return response()->json(['error' => 'Invalid address id.'], 404);
                     }
                 }
+                if(isset($client_preference->stop_order_acceptance_for_users) && ($client_preference->stop_order_acceptance_for_users == 1)){
+                    return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
+                }
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->first();
                 if ($cart) {
