@@ -56,6 +56,49 @@ $(function(){
         console.log(product_id);
         console.log(varient_id);
         console.log(product_title);
-        $('#addBlockTime').modal('show'); 
+        Swal.fire({
+            title: 'Add Manual Time',
+            html: `<div class="addManualTime">
+                        <div class="addManualTimeGroup" style="text-align:left;">
+                            <label class="text-left">Start/End Date Time</label>    
+                            <input id="blocktime" class="form-control" autofocus>
+                        </div>
+                        <div class="addManualTimeGroup mt-2" style="text-align:left;">
+                            <label class="text-left">Memo</label>
+                            <textarea style="height:100px" type="text" id="memo" class="swal2-input m-0" placeholder="Memo"></textarea>
+                        </div>
+                    </div>`,
+            confirmButtonText: 'Sign in',
+            focusConfirm: false,
+            preConfirm: () => {
+              const memo = Swal.getPopup().querySelector('#memo').value
+              const blocktime = Swal.getPopup().querySelector('#blocktime').value
+              if (!memo || !blocktime) {
+                Swal.showValidationMessage(`All feilds are required!!`)
+              }
+              return { blocktime: blocktime, memo: memo }
+            },onOpen: function() {
+                // $('#datetimepicker').datetimepicker({
+                //     //format: 'DD/MM/YYYY hh:mm A',
+                //     defaultDate: new Date()
+                // });
+                $(function() {
+                    $('#blocktime').daterangepicker({
+                      timePicker: true,
+                      startDate: moment().startOf('hour'),
+                      endDate: moment().startOf('hour').add(24, 'hour'),
+                      minDate:new Date(),
+                      locale: {
+                        format: 'M/DD hh:mm A'
+                      }
+                    });
+                  });
+            }
+          }).then((result) => {
+            Swal.fire(`
+            blocktime: ${result.value.blocktime}
+              memo: ${result.value.memo}
+            `.trim())
+          })
     } 
 })

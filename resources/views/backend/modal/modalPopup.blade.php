@@ -1,7 +1,7 @@
 
 {{-- <button type="button" class="btn btn-primary m-2" data-toggle="modal" data-target="#commonModal">Click Here</button> --}}
 <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
-<div class="modal fade commonModal" id="@yield('popup-id')" tabindex="-1" role="dialog" aria-labelledby="@yield('popup-id')Label" aria-hidden="true">
+<div class="modal fade commonModal" id="@yield('popup-id')"  role="dialog" aria-labelledby="@yield('popup-id')Label" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
