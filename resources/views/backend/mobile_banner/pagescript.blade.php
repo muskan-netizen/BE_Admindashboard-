@@ -93,6 +93,7 @@
                 runPicker();
                 $('.dropify').dropify();
                 $('.selectize-select').selectize();
+                $('.select2-multiple').select2();
                 elem1 = document.getElementsByClassName('validity_add');
                 if(elem1.length > 0){
                     var switchery = new Switchery(elem1[0]);

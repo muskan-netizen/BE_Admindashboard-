@@ -324,12 +324,12 @@ trait cartManager{
        //Get All Taxes    
        $taxRates = $this->getTaxes();
       
-       $taxCharges = array();
-       $taxCharges['deliver_fee_charges'] = 0;
-       $taxCharges['total_service_fee'] = 0;
-       $taxCharges['total_fixed_fee_tax'] = 0;
-       $taxCharges['total_markup_fee_tax'] = 0;
-       
+        $taxCharges = array();
+        $taxCharges['deliver_fee_charges'] = 0;
+        $taxCharges['total_service_fee'] = 0;
+        $taxCharges['total_fixed_fee_tax'] = 0;
+        $taxCharges['total_markup_fee_tax'] = 0;
+        
         /* Getting All User Subscription plans */
         $subscription_features = array();
         $user_subscription = null;
@@ -453,7 +453,6 @@ trait cartManager{
                 $total_fixed_fee_tax = 0;
                 $total_service_fee = 0;
                 $total_markup_fee_tax = 0;
-                
                 /* Getting in Vendor product loop and setting product values*/
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
 

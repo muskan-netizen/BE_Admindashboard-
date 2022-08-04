@@ -6,7 +6,6 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
 
 @section('css-links')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('css') 
 <style type="text/css">
@@ -190,7 +189,6 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
 @section('script')
 {{-- <script src="https://www.gstatic.com/firebasejs/5.5.9/firebase.js"></script> --}}
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
-<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
     // jQuery(window.document).ready(function () {
     //     jQuery("body").addClass("login_body");
