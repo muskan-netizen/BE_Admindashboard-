@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout,ProductTag,Facilty,WebStylingOption};
+use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout,ProductTag,Facilty,WebStylingOption,VendorSection};
 use Log;
 class VendorController extends FrontController
 {
@@ -194,6 +194,14 @@ class VendorController extends FrontController
                 $page = 'products-with-categories-extended';
                 $products = Product::select('averageRating')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
                 $vendor->vendorRating = $this->vendorRating($products);
+                $Vendor_section = VendorSection::with(['headingTranslation'=> function($q) use($langId){
+                                                        $q->where('language_id', $langId);
+                                                    },'SectionTranslation'=> function($q) use($langId){
+                                                        $q->where('language_id', $langId);
+                                                    }])->where('vendor_id',$vendor->id)->get();
+                // pr($vendor->id);
+                //pr($Vendor_section);
+                $vendor->vendor_section = $Vendor_section;
                 $vendor->facilty  = [];
                 if( (isset($preferences->is_vendor_tags)) && ($preferences->is_vendor_tags == 1) ){
                     $vendor->facilty  = Facilty::with(['translations'=> function ($q) use ($langId) {

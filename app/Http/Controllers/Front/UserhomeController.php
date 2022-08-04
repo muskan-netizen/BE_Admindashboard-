@@ -307,20 +307,37 @@ class UserhomeController extends FrontController
             //         Session::put('selectedAddress', $selectedAddress);
             //     }
             // }
-            $banners = Banner::where('status', 1)->where('validity_on', 1)
-                ->where(function ($q) {
-                    $q->whereNull('start_date_time')->orWhere(function ($q2) {
-                        $q2->whereDate('start_date_time', '<=', Carbon::now())
-                            ->whereDate('end_date_time', '>=', Carbon::now());
+            $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
+            ->where(function ($q) {
+                $q->whereNull('start_date_time')->orWhere(function ($q2) {
+                    $q2->whereDate('start_date_time', '<=', Carbon::now())
+                        ->whereDate('end_date_time', '>=', Carbon::now());
+                });
+            });
+            if(isset($clientPreferences->is_service_area_for_banners) && ($clientPreferences->is_service_area_for_banners == 1) && ($clientPreferences->is_hyperlocal == 1)){
+                if(!empty($latitude) && !empty($longitude)){
+                    $banners = $banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
+                        $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
                     });
-                })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get();
-            $mobile_banners = MobileBanner::where('status', 1)->where('validity_on', 1)
-                ->where(function ($q) {
-                    $q->whereNull('start_date_time')->orWhere(function ($q2) {
-                        $q2->whereDate('start_date_time', '<=', Carbon::now())
-                            ->whereDate('end_date_time', '>=', Carbon::now());
+                }
+            }
+            $banners = $banners->orderBy('sorting', 'asc')->get();
+
+            $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
+            ->where(function ($q) {
+                $q->whereNull('start_date_time')->orWhere(function ($q2) {
+                    $q2->whereDate('start_date_time', '<=', Carbon::now())
+                        ->whereDate('end_date_time', '>=', Carbon::now());
+                });
+            });
+            if(isset($clientPreferences->is_service_area_for_banners) && ($clientPreferences->is_service_area_for_banners == 1) && ($clientPreferences->is_hyperlocal == 1)){
+                if(!empty($latitude) && !empty($longitude)){
+                    $mobile_banners = $mobile_banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
+                        $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
                     });
-                })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get();
+                }
+            }
+            $mobile_banners = $mobile_banners->orderBy('sorting', 'asc')->get();
 
 
             $home_page_labels = CabBookingLayout::where('is_active', 1)->where('for_no_product_found_html',0)->orderBy('order_by');
@@ -1296,8 +1313,41 @@ class UserhomeController extends FrontController
             $feature_product_detail = [];
         }
 
+        // Start Web Banners
+        $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
+        ->where(function ($q) {
+            $q->whereNull('start_date_time')->orWhere(function ($q2) {
+                $q2->whereDate('start_date_time', '<=', Carbon::now())
+                    ->whereDate('end_date_time', '>=', Carbon::now());
+            });
+        });
+        if(isset($preferences->is_service_area_for_banners) && ($preferences->is_service_area_for_banners == 1) && ($preferences->is_hyperlocal == 1)){
+            if(!empty($latitude) && !empty($longitude)){
+                $banners = $banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
+                    $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                });
+            }
+        }
+        $banners = $banners->orderBy('sorting', 'asc')->get();
+        // End Web Banners
 
-
+        // Start Mobile Banners
+        $mobile_banners = MobileBanner::with(['category','vendor'])->where('status', 1)->where('validity_on', 1)
+        ->where(function ($q) {
+            $q->whereNull('start_date_time')->orWhere(function ($q2) {
+                $q2->whereDate('start_date_time', '<=', Carbon::now())
+                    ->whereDate('end_date_time', '>=', Carbon::now());
+            });
+        });
+        if(isset($preferences->is_service_area_for_banners) && ($preferences->is_service_area_for_banners == 1) && ($preferences->is_hyperlocal == 1)){
+            if(!empty($latitude) && !empty($longitude)){
+                $mobile_banners = $mobile_banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
+                    $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                });
+            }
+        }
+        $mobile_banners = $mobile_banners->orderBy('sorting', 'asc')->get();
+        // End Mobile Banners
 
 
         $activeOrders = [];
@@ -1359,8 +1409,10 @@ class UserhomeController extends FrontController
 
         $data = [
             'brands' => $brands,
+            'banners' => $banners,
             'vendors' => $vendors,
             'new_products' => $new_products,
+            'mobile_banners' => $mobile_banners,
             'feature_products' => $feature_products,
             'on_sale_products' => $on_sale_products,
             'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,

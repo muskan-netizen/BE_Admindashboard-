@@ -1,4 +1,5 @@
 @section('popup-id','scheduleTablePopup')
+
 @section('popup-header')
 Booking Schedule For:<p class="sku-name pl-1"></p>
 @endsection
@@ -45,5 +46,6 @@ Booking Schedule For:<p class="sku-name pl-1"></p>
 @endsection
 
 @section('popup-js')
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" ></script> --}}
 <script src="{{ asset('assets/js/backend/product/productSchedule.js')}}"></script>
 @endsection

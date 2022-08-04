@@ -411,43 +411,47 @@ $(document).ready( async function () {
         $(".shimmer_effect_"+item).show();
 
         switch (item) {
+            case 'banners':
+                getHomePageDataSingleBySingle(item, index);
+                break;
+
             case 'trending_vendors':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                 break;
             case 'vendors':
-                    getHomePageDataSingleBySingle(item);
+                    getHomePageDataSingleBySingle(item, index);
                 break;
             case 'featured_products':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
 
               break;
             case 'new_products':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
               break;
             case 'on_sale':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
               break;
             case 'best_sellers':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                break;
             case 'brands':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                break;
             case 'recent_orders':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                break;
             case 'pickup_delivery':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                break;
             case 'dynamic_page':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                break;
           }
 
         $(".shimmer_effect_"+item).hide();
     }
 
-    function getHomePageDataSingleBySingle(item) {
+    function getHomePageDataSingleBySingle(item, index) {
 
         let latitude = "";
         let longitude = "";
@@ -489,9 +493,22 @@ $(document).ready( async function () {
                     var path = window.location.pathname;
                     if (path == '/') {
 
+                        if(index ==  0){
+                            $(".al_desktop_banner").html('');
+                            let desktop_banners_template = _.template($('#desktop_banners_template').html());
+                            $(".al_desktop_banner").append(desktop_banners_template({ banners: response.data.banners }));
+
+                            $(".al_mobile_banner").html('');
+                            let mobile_banners_template = _.template($('#mobile_banners_template').html());
+                            $(".al_mobile_banner").append(mobile_banners_template({ banners: response.data.mobile_banners }));
+
+                            $('.carousel').carousel();
+                        }
+
                         let products_template = _.template($('#products_template').html());
 
                         switch (item) {
+
                             case 'trending_vendors':
                                 if(response.data.trending_vendors.length > 0){
                                     $('.render_full_trending_vendors').removeClass('d-none');

@@ -82,8 +82,8 @@
     $incTax = 0;
     $product_container_charges_tax_amount=0;
 
-    $other_taxes=0;
-    $other_taxes_string="";
+    $other_taxes=$cart_details->other_taxes;
+    $other_taxes_string=$cart_details->other_taxes_string;
     @endphp
     @foreach($cart_details->products as $product)
 
@@ -97,7 +97,7 @@
                     <div class="countdownholder alert-danger" id="min_order_validation_error_{{$product->vendor->id}}" style="display:none;">Your cart will be expired in </div>
                 </div>
                 @if($product->is_vendor_closed == 1 && $product->closed_store_order_scheduled == 0)
-                    {{ $closed_store = 1; }}
+                    {{-- {{ $closed_store = 1; }} --}}
                     <div class="col-12">
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i>{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}
@@ -164,7 +164,7 @@
                                 @endforeach
                             </div>
                             <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2">
-                                <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->price * $vendor_product->pvariant->multiplier) }}</div>
+                                <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }}</div>
                             </div>
                             <div class="col-6 col-md-2 text-left order-md-4">
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
@@ -661,7 +661,7 @@
             @endif
             <div class="row">
                 <div class="col-6">
-                    <p class="total_amt m-0">{{__('Amount Payable')}} @if($incTax)<small>({{__('incl. tax')}})</small>@endif </p>
+                    <p class="total_amt m-0">{{__('Amount Payable')}} @if($other_taxes)<small>({{__('incl. tax')}})</small>@endif </p>
                 </div>
 
 

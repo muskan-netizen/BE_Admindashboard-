@@ -1,6 +1,5 @@
 @extends('layouts.store', ['title' => ($client_preference_detail->address_is_car == 1 ? __('Car') : __('Address Book') )  ])
 @section('css')
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .main-menu .brand-logo {
         display: inline-block;
@@ -354,7 +353,6 @@
 </div>
 @endsection
 @section('script')
-<script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript">
     var user_store_address_url = "{{ route('address.store') }}";
     var user_address_url = "{{ route('user.address', ':id') }}";

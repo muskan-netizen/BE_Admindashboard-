@@ -2,9 +2,14 @@
     <div class="logo-box m-hide d-lg-block">
         @php
             $urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
-            $clientData = \App\Models\Client::select('id', 'logo','socket_url')->where('id', '>', 0)->first();
+            $clientData = \App\Models\Client::select('id', 'logo','dark_logo','socket_url')->where('id', '>', 0)->first();
+            $client_preference = \App\Models\ClientPreference::where(['id' => 1])->first();
             if($clientData){
-                $urlImg = $clientData ? $clientData->logo['original'] : ' ';
+                if($client_preference->theme_admin == 'dark'){
+                    $urlImg = $clientData ? $clientData->dark_logo['original'] : ' ';
+                }else{
+                    $urlImg = $clientData ? $clientData->logo['original'] : ' ';
+                }
             }
             $marketing_permissions = array("banner", "promocode", "loyalty_cards");
             $subscription_permissions = array("subscription_plans_customers", "subscription_plans_vendors");
@@ -64,9 +69,6 @@
             }
             ?>
             <ul id="side-menu">
-                @php
-                    $client_preference = \App\Models\ClientPreference::where(['id' => 1])->first();
-                @endphp
                  @if(count(array_intersect($order_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
                 <li>
                     <a class="menu-title pl-1" href="#">
