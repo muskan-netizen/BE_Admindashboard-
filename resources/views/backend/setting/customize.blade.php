@@ -1347,7 +1347,8 @@
                     </div>
                     <div class="col-xl-12 my-2 p-0" id="addCur-160">
                         <label class="primaryCurText">{{ __('Free Cancellation Upto') }}</label>
-                        <select class="form-control al_box_height" id="order_cancellation_time" name="order_cancellation_time">
+                        <input class="form-control" type="number" min="0" id="order_cancellation_time" name="order_cancellation_time" value="{{ !empty($preference->order_cancellation_time)? $preference->order_cancellation_time : 0}}" step="0">
+                        <!-- <select class="form-control al_box_height" id="order_cancellation_time" name="order_cancellation_time">
                             <option value="0"  {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 0)? 'selected' : '' }}>{{__('No Cancellation')}}</option>
                             <option value="10" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 10)? 'selected' : '' }}>{{__('10 Minutes')}}</option>
                             <option value="20" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 20)? 'selected' : '' }}>{{__('20 Minutes')}}</option>
@@ -1360,7 +1361,7 @@
                             <option value="90" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 90)? 'selected' : '' }}>{{__('90 Minutes')}}</option>
                             <option value="100" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 100)? 'selected' : '' }}>{{__('100 Minutes')}}</option>
                             <option value="120" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 120)? 'selected' : '' }}>{{__('120 Minutes')}}</option>
-                        </select>
+                        </select> -->
                     </div>
                     <div class="col-xl-12 my-2 p-0" id="late-cancellation" style="{{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time > 0)? 'display:block;' : 'display:none;'}}">
                         <label class="primaryCurText">{{ __('Late Cancellation Fee').'(%)' }}</label>

@@ -41,7 +41,7 @@ $(document).ready(function(){
             vid:vid,
         })
         .then(async response => {
-            $($thisRow).remove();
+            $($thisRow).hide();
              console.log(response);
              if(response.data.htmlData != undefined) {
                $('.product_variant_table').append(response.data.htmlData);
@@ -55,8 +55,12 @@ $(document).ready(function(){
             )
         })    
     });
+
+
     
 })
+
+
 
 
 function isNumberKeyMax(evt) {

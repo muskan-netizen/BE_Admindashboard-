@@ -47,10 +47,10 @@
     </td> --}}
     <td>
         
-        <a href="javascript:void(0);" data-varient_id="{{$varnt->id}}" class="action-icon deleteExistRow">
+        <a href="javascript:void(0);" data-varient_id="{{$varnt->id}}" class="action-icon deleteExistRowRental">
             <i class="mdi mdi-delete"></i>
         </a>
-        <a href="javascript:void(0);" data-varient_id="{{$varnt->id}}" class="action-icon viewC">
+        <a href="javascript:void(0);" data-varient_id="{{$varnt->id}}" data-product_id="{{$product->id}}" data-variant_title="{{$varnt->title}}" class="action-icon getScheduledTable">
             <i class="mdi mdi-eye"></i>
         </a>
         @if(@$show)
@@ -58,11 +58,12 @@
                 <i class="mdi mdi-plus"></i>
             </a>
         @else
-            @if (@$key == $variant_count)
-                <a href="javascript:void(0);" data-varient_id="{{$varnt->id}}"  data-product_id="{{$product->id}}" class="action-icon product_varient_ids addExistRow">
-                    <i class="mdi mdi-plus"></i>
-                </a>
-            @endif
+            {{-- @if (@$key == $variant_count)
+               
+            @endif --}}
+            <a href="javascript:void(0);" style="display: <?php echo (@$key == $variant_count) ? 'inline-block' : 'none'; ?>" data-varient_id="{{$varnt->id}}"  data-product_id="{{$product->id}}" class="action-icon product_varient_ids addExistRow">
+                <i class="mdi mdi-plus"></i>
+            </a>
         @endif
 
       

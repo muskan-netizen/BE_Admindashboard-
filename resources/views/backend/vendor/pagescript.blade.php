@@ -1,6 +1,172 @@
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script>
+        var section_id = 0;
+        function addvendorSectionTemplate(section_id){
+            section_id                = parseInt(section_id);
+            section_id                = section_id +1;
+            var data                  = '';
+            //console.log(section_id);
+            var price_section_temp    = $('#vendor_section_template').html();
+            var modified_temp         = _.template(price_section_temp);
+          
+            // console.log(languages);
+            // $.each(languages, function( index, value ) {
+            //     var result_html           = modified_temp({id:section_id,data:data,language:value});
+            //     $("#vendor_section_options").append(result_html);
+            // });
+            
+            var result_html           = modified_temp({id:section_id,data:data});
+            $("#vendor_section_options").append(result_html);
+            $('.add_more_button').hide();
+            $('#add_button_'+section_id).show();
+        }
+        $(document).on('click','.add_more_button',function(){
+            var main_id = $(this).data('id');
+            addvendorSectionTemplate(main_id);
+            console.log($('.add_more_button').length);
+        });
+        $(document).on('click','.remove_more_button',function(){
+            var main_id =$(this).data('id');
+            removeFaqSectionTemplate(main_id);
+            $('.add_more_button').each(function(key,value){
+                if(key == ($('.add_more_button').length-1)){
+                    $('#add_button_'+$(this).data('id')).show();
+                }
+            });
+        });
+        function removeFaqSectionTemplate(div_id){
+            $('#option_section_'+div_id).remove();
+        }
+        $(document).on('click', '#add_vendor_section_form', function() {
+            submitVendorSectionForm();
+        });
 
+    
+    function submitVendorSectionForm() {
+        var form = document.getElementById('save_vendor_section_form');
+        var formData = new FormData(form);
+        let section_id = $("#save_vendor_section_form input[name='section_id']").val();
+        console.log(section_id);
+        var data_uri = "{{route('vsection.store')}}";
+        if(section_id != undefined && section_id!= ''){
+             data_uri = "{{route('vsection.update')}}";
+        }
+        console.log(data_uri);
+      // return false;
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: data_uri,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                // location.reload();
+                console.log(response);
+                if (response.status == 'success') {
+                    $('.section_msg').text('Updated successfully');
+                    
+                    //setTimeout(function() {
+                        $(".modal .close").click();
+                         location.reload();
+                    //}, 2000);
+                    //location.reload();
+                } else {
+                    $("#add_vendor_section_form").attr("disabled", false);
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text(response.message);
+                }
+                return response;
+            },
+            beforeSend: function() {
+
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $(".loader_box").hide();
+                setTimeout(function() {
+                   location.reload();
+                }, 2000);
+               
+            },error: function(response) {
+                $("#add_vendor_section_form").attr("disabled", false);
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    Object.keys(errors).forEach(function(key) {
+                        $("#" + key + "Input input").addClass("is-invalid");
+                        $("#" + key + "Input span.invalid-feedback").children("strong").text(errors[key][0]);
+                        $("#" + key + "Input span.invalid-feedback").show();
+                    });
+                } else {
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text('Something went wrong, Please try Again.');
+                }
+                return response;
+            }
+        });
+    }
+    $(document).on("change","#client_language",function() {
+        let language_id = $(this).val();
+        let section_id = $("#save_vendor_section_form input[name='section_id']").val();
+      console.log(section_id);
+      if(section_id != undefined && section_id != ''){
+        getVendorSection(section_id, language_id);
+      }
+    });
+    $(document).on('click','.editSectionBtn',function(){
+        var section_id = $(this).data('id');
+        var language_id = $(this).data('language_id');
+        if(section_id != undefined && section_id != ''){
+            getVendorSection(section_id, language_id);
+        }
+        
+    });
+    $('.openVendorSectionModal').click(function() {
+        $('#add_section').modal();
+        $("#save_vendor_section_form input[name='section_id']").val('');
+        document.getElementById("save_vendor_section_form").reset();
+        
+        $('#add_section #header_title').html(`{{ __("Add Section") }}`);
+        $("#vendor_section_options").html('');
+        addvendorSectionTemplate(0);
+
+    });
+        
+    function getVendorSection(section_id, language_id){
+        var get_section_url = "{{ route('vsection.edit', ':id') }}";
+        var url = get_section_url.replace(":id", section_id);
+        $.get(url, {language_id:language_id},function(response) {
+              if(response.status == 'Success'){
+                    if(response.data){
+                        console.log(response.data);
+                        $("#vendor_section_options").html('');
+                        $("#save_vendor_section_form input[name='section_id']").val(response.data.id);
+                        $("#save_vendor_section_form input[name='heading']").val((response.data.heading_translation[0]!= undefined)? response.data.heading_translation[0].heading : '');
+                        var section_translation = response.data.section_translation;
+                        var vendor_section_temp    = $('#vendor_section_template').html();
+                        var modified_temp         = _.template(vendor_section_temp);
+                        var section_id = 0
+                        $(section_translation).each(function(index, value) {
+                            section_id                = parseInt(section_id);
+                            section_id                = section_id +1;
+                            $('#vendor_section_options').append(modified_temp({ id:section_id,data:value}));
+                            $('.add_more_button').hide();
+                            $('#add_button_'+section_id).show();
+                        });
+                        addvendorSectionTemplate(section_id);
+                        $('#add_section').modal();
+                        $('#add_section #header_title').html(`{{ __("Edit Section") }}`);
+                    }
+              }
+            });
+    }
     $(document).on('click', ' .iti__country', function() {
         var code = $(this).attr('data-country-code');
         $('#editCardBox #vendorCountryCode').val(code);
@@ -8,7 +174,8 @@
         $('#editCardBox #vendorDialCode').val(dial_code);
     });
 
-    var section_id = 0
+    
+    
     $('.openAddModal').click(function() {
         $('#add-form').modal({
             //backdrop: 'static',
@@ -328,7 +495,7 @@
             }
         });
     }
-
+    
 
     function submitImportForm() {
         var form = document.getElementById('save_imported_vendors');

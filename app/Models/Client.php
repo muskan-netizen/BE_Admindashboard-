@@ -15,7 +15,7 @@ class Client extends Authenticatable implements Auditable
     use Notifiable;
     protected $guard = 'client';
     protected $fillable = [
-        'name', 'email', 'password', 'encpass', 'phone_number', 'database_path', 'database_name', 'database_username', 'database_password', 'logo', 'company_name', 'company_address', 'custom_domain','status', 'code', 'country_id', 'timezone', 'is_deleted', 'is_blocked','sub_domain','socket_url','admin_chat','driver_chat','customer_chat'
+        'name', 'email', 'password', 'encpass', 'phone_number', 'database_path', 'database_name', 'database_username', 'database_password', 'logo', 'company_name', 'company_address', 'custom_domain','status', 'code', 'country_id', 'timezone', 'is_deleted', 'is_blocked','sub_domain','socket_url','admin_chat','driver_chat','customer_chat','dark_logo'
     ];
 
     /**
@@ -45,7 +45,7 @@ class Client extends Authenticatable implements Auditable
     */
     public function preferences()
     {
-      return $this->hasOne('App\Models\ClientPreference', 'client_code', 'code')->select('business_type','theme_admin', 'client_code', 'distance_unit', 'currency_id', 'dinein_check', 'takeaway_check', 'delivery_check', 'date_format', 'time_format', 'fb_login', 'twitter_login', 'google_login', 'apple_login', 'map_provider', 'app_template_id', 'is_hyperlocal', 'verify_email', 'verify_phone', 'primary_color', 'secondary_color', 'map_key', 'pharmacy_check','celebrity_check','enquire_mode','subscription_mode','site_top_header_color', 'tip_before_order', 'tip_after_order', 'off_scheduling_at_cart','delay_order','product_order_form', 'gifting', 'pickup_delivery_service_area', 'customer_support', 'customer_support_key', 'customer_support_application_id','android_app_link','ios_link','minimum_order_batch','static_delivey_fee', 'max_safety_mod','digit_after_decimal','auto_implement_5_percent_tip','book_for_friend',"sos","sos_police_contact",'sos_ambulance_contact','get_estimations','is_static_dropoff');
+      return $this->hasOne('App\Models\ClientPreference', 'client_code', 'code')->select('business_type','theme_admin', 'client_code', 'distance_unit', 'currency_id', 'dinein_check', 'takeaway_check', 'delivery_check', 'date_format', 'time_format', 'fb_login', 'twitter_login', 'google_login', 'apple_login', 'map_provider', 'app_template_id', 'is_hyperlocal', 'verify_email', 'verify_phone', 'primary_color', 'secondary_color', 'map_key', 'pharmacy_check','celebrity_check','enquire_mode','subscription_mode','site_top_header_color', 'tip_before_order', 'tip_after_order', 'off_scheduling_at_cart','delay_order','product_order_form', 'gifting', 'pickup_delivery_service_area', 'customer_support', 'customer_support_key', 'customer_support_application_id','android_app_link','ios_link','minimum_order_batch','static_delivey_fee', 'max_safety_mod','digit_after_decimal','auto_implement_5_percent_tip','book_for_friend',"sos","sos_police_contact",'sos_ambulance_contact','get_estimations','is_static_dropoff','rental_check','pick_drop_check','on_demand_check','laundry_check');
     }
 
     public function getEncpassAttribute($value)
@@ -96,6 +96,23 @@ class Client extends Authenticatable implements Auditable
     }
 
     public function getLogoAttribute($value)
+    {
+      $values = array();
+      $img = 'default/default_image.png';
+      if(!empty($value)){
+        $img = $value;
+      }
+      $ex = checkImageExtension($img);
+      $values['proxy_url'] = \Config::get('app.IMG_URL1');
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      $values['image_fit'] = \Config::get('app.FIT_URl');
+      $values['original'] = \Storage::disk('s3')->url($img);
+      $values['logo_db_value'] = $value;
+
+      return $values;
+    }
+    
+    public function getDarkLogoAttribute($value)
     {
       $values = array();
       $img = 'default/default_image.png';
