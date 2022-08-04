@@ -425,6 +425,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         // rental product 
         Route::post('rentalVariantRow', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
+
+        Route::get('getScheduleTableData', 'Client\RentalProductController@getScheduleTableData')->name('rental-product.getScheduleTableData');   # update all product actions
     
         Route::post('facilty/store', 'Client\FaciltyController@store')->name('facilty.store');
         Route::post('facilty/update', 'Client\FaciltyController@update')->name('facilty.update');
