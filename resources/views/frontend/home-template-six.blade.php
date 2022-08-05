@@ -214,7 +214,27 @@
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
 <section class="p-0 small-slider al_desktop_banner">
-   <div class="slide-1 home-slider mb-sm-2 ">
+   <div class="carousel-inner">
+      @foreach($banners as $key => $banner)
+         @php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+         <div class="carousel-item @if($key == 0) active @endif">
+          <a class="banner-img-outer" href="{{$url??'#'}}">
+                  <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}" />
+            <img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+         </a>
+         </div>
+      @endforeach
+
+   </div>
+   <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+   </a>
+   <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+   </a>
+   {{-- <div class="slide-1 home-slider mb-sm-2 ">
       @foreach($banners as $banner)
       @php
       $url = '';
@@ -242,7 +262,7 @@
          @endif
       </div>
       @endforeach
-   </div>
+   </div> --}}
 </section>
 @endif
 @if(count($banners))
