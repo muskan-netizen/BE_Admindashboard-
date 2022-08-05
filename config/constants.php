@@ -31,7 +31,7 @@ return [
   'VendorTypesIcon' => [
     'delivery'     => 'deliveryicon',           // Delivery of the order will be sent to the ccustomer.
     'dinein'       => 'dineinicon',             // Customer can order and dine in the restaurant.
-    'takeaway'     => 'takeaway',               // Customer can order and take there meal along with them.
+    'takeaway'     => 'takewayicon',               // Customer can order and take there meal along with them.
     'pick_drop'    => 'pick_dropicon',          // Rides or pickup delivery products will be shown in this flow.
     'rental'       => 'rentalicon',             // Products which are available for rents will be mentioned in this flow.
     'on_demand'    => 'on_demandicon',         // Services that are available any time you want to use it. 

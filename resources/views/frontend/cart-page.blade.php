@@ -425,7 +425,7 @@
             </div>
         <input type="hidden" name="without_category_kyc" value="{{$cart_details->without_category_kyc}}">
         @if($client_preference_detail->category_kyc_documents ==1)
-            @if( ($cart_details->category_kyc_count > 0 ) )
+            @if( (@$cart_details->category_kyc_count > 0 ) )
             <div class=" col-3 {{$cart_details->category_kyc_count}}" id="category_kyc_dev_{{$cart_details->category_rendem_id}}">
                 <input type="hidden" name="category_kyc_ids" value="{{$cart_details->category_rendem_id}}">
                 <div class="text-center my-3 btn-category_kyc-div">
@@ -534,7 +534,7 @@
 
             @if($total_fixed_fee_amount > 0 && $price_bifurcation!=1)
                 <div class="row">
-                    <div class="col-6">{{__('Fixed Fee')}}</div>
+                    <div class="col-6">{{__($fixedFee)}}</div>
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}{{ decimal_format($total_fixed_fee_amount)}}</b></div>
                     <input type="hidden" name="total_fixed_fee_amount" data-curr="{{Session::get('currencySymbol')}}" value="{{$total_fixed_fee_amount}}">
                 </div>

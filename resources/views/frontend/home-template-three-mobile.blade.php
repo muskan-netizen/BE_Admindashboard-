@@ -43,7 +43,7 @@ if(session()->has('applocale')){
 
     <!-- shimmer_effect start -->
     <article class="section-b-space_al_shimer position-absolute  p-0 ratio_asos">
-        <div class="container-fulid mb-5 shimmer_effect">
+        <div class="container-fulid mb-5 shimmer_effect main_shimer">
             <div class="row ">
                 <div class="col-12 cards d-flex justify-content-between">
                         <h2 class="h2-heading loading mb-3"></h2>
