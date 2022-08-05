@@ -560,54 +560,37 @@ class AuthController extends BaseController
                 // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
                 $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
             }
-            if (!empty($prefer->mail_driver) && !empty($prefer->mail_host) && !empty($prefer->mail_port) && !empty($prefer->mail_port) && !empty($prefer->mail_password) && !empty($prefer->mail_encryption)) {
-                $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
-                $confirured = $this->setMailDetail($prefer->mail_driver, $prefer->mail_host, $prefer->mail_port, $prefer->mail_username, $prefer->mail_password, $prefer->mail_encryption);
-                $client_name = $client->name;
-                $mail_from = $prefer->mail_from;
-                $sendto = $signReq->email;
-                try {
-                    $email_template_content = '';
-                    $email_template = EmailTemplate::where('id', 2)->first();
-                    if ($email_template) {
-                        $email_template_content = $email_template->content;
-                        $email_template_content = str_ireplace("{code}", $emailCode, $email_template_content);
-                        $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
-                    }
-                    $data = [
-                        'code' => $emailCode,
-                        'link' => "link",
-                        'email' => $sendto,
-                        'mail_from' => $mail_from,
-                        'client_name' => $client_name,
-                        'logo' => $client->logo['original'],
-                        'subject' => $email_template->subject,
-                        'customer_name' => ucwords($user->name),
-                        'email_template_content' => $email_template_content,
-                    ];
-                    dispatch(new \App\Jobs\SendVerifyEmailJob($data))->onQueue('verify_email');
-                    $notified = 1;
-                } catch (\Exception $e) {
-                    $user->save();
-                }
-                // try{
-                //     Mail::send('email.verify',[
-                //             'customer_name' => ucwords($signReq->name),
-                //             'code_text' => 'Enter below code to verify yoour account',
-                //             'code' => 'qweqwewqe',
-                //             'logo' => $client->logo['original'],
-                //             'link'=>"link"
-                //     ],
-                //     function ($message) use($sendto, $client_name, $mail_from) {
-                //         $message->from($mail_from, $client_name);
-                //         $message->to($sendto)->subject('OTP to verify account');
-                //     });
-                //     $response['send_email'] = 1;
-                // }
-                // catch(\Exception $e){
-                //     return response()->json(['data' => $response]);
-                // }
-            }
+            // if (!empty($prefer->mail_driver) && !empty($prefer->mail_host) && !empty($prefer->mail_port) && !empty($prefer->mail_port) && !empty($prefer->mail_password) && !empty($prefer->mail_encryption)) {
+            //     $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+            //     $confirured = $this->setMailDetail($prefer->mail_driver, $prefer->mail_host, $prefer->mail_port, $prefer->mail_username, $prefer->mail_password, $prefer->mail_encryption);
+            //     $client_name = $client->name;
+            //     $mail_from = $prefer->mail_from;
+            //     $sendto = $signReq->email;
+            //     try {
+            //         $email_template_content = '';
+            //         $email_template = EmailTemplate::where('id', 2)->first();
+            //         if ($email_template) {
+            //             $email_template_content = $email_template->content;
+            //             $email_template_content = str_ireplace("{code}", $emailCode, $email_template_content);
+            //             $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
+            //         }
+            //         $data = [
+            //             'code' => $emailCode,
+            //             'link' => "link",
+            //             'email' => $sendto,
+            //             'mail_from' => $mail_from,
+            //             'client_name' => $client_name,
+            //             'logo' => $client->logo['original'],
+            //             'subject' => $email_template->subject,
+            //             'customer_name' => ucwords($user->name),
+            //             'email_template_content' => $email_template_content,
+            //         ];
+            //         dispatch(new \App\Jobs\SendVerifyEmailJob($data))->onQueue('verify_email');
+            //         $notified = 1;
+            //     } catch (\Exception $e) {
+            //         $user->save();
+            //     }
+            // }
             return response()->json(['data' => $response]);
         } else {
             $errors['errors']['user'] = 'Something went wrong. Please try again.';
