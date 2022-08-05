@@ -4,46 +4,18 @@
 @endsection
 @section('css')
 <style>
-.logoArea_bar{height:50px;margin: 10px 0;}
+.logoArea_bar{height:300px;margin: 0 0 30px;}
 .alMainMenuView{height:100px;width: 100px;border-radius: 50%;}
+@media(max-width: 767px){.logoArea_bar{height:150px;margin: 0 0 20px;}}
 </style>
 @endsection
 @section('content')
 <!-- Shimmer Efferct Start -->
 <section class="section-b-space_  p-0 ratio_asos banner_shimmer">
-	<div class="container shimmer_effect topBar">
+	<div class="container-fulid shimmer_effect topBar">
         <div class="row">
-            <div class="col-6 cards">
-                <div class="logoArea_bar loading"></div>
-            </div>
-            <div class="col-6 cards">
-                <div class="logoArea_bar loading"></div>
-            </div>
             <div class="col-12 cards">
                 <div class="logoArea_bar loading"></div>
-            </div>
-            <div class="col-12 cards text-center">
-				<div class="row text-center">
-					<div class="col-1">
-						<div class="logoArea_bar alMainMenuView loading"></div>
-					</div>
-					<div class="col-1">
-						<div class="logoArea_bar alMainMenuView loading"></div>
-					</div>
-					<div class="col-1">
-						<div class="logoArea_bar alMainMenuView loading"></div>
-					</div>
-					<div class="col-1">
-						<div class="logoArea_bar alMainMenuView loading"></div>
-					</div>
-					<div class="col-1">
-						<div class="logoArea_bar alMainMenuView loading"></div>
-					</div>
-					<div class="col-1">
-						<div class="logoArea_bar alMainMenuView loading"></div>
-					</div>
-				</div>
-
             </div>
         </div>
     </div>

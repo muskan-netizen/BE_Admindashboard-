@@ -24,7 +24,7 @@ $(document).ready(async function () {
         $('.scrollspy-menu a').on('click',function(){
             $("html, body").animate({ scrollTop:  $('#'+$(this).data('slug')).offset().top - (header_height+30) });
         })
-   // },1000)
+    //},3000)
 
 });
 
@@ -483,7 +483,7 @@ $(document).ready(function () {
     if (($("#fpx-bank-element").length > 0) && (stripe_fpx_publishable_key != '')) {
         stripeFPXInitialize();
     }
- 
+
     if (($("#ideal-bank-element").length > 0) && (stripe_ideal_publishable_key != '')) {
         stripeIdealInitialize();
     }
@@ -2153,7 +2153,7 @@ $(document).ready(function () {
                     $("#cart_table").html('');
                     $(".spinner-box").hide();
                     $("#mycart").html(response.mycart);
-                   
+
                     //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
@@ -2179,8 +2179,8 @@ $(document).ready(function () {
                                 // $('#placeorder_form .left_box').html('');
                                 // $('#placeorder_form .left_box').html(cart_details.left_section);
 
-                                
-                                
+
+
 
                                 $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);
@@ -2265,14 +2265,14 @@ $(document).ready(function () {
                             $("#header_cart_main_ul_ondemand").append(empty_cart_template());
                         }
                         if ($("#header_cart_main_ul_ondemand").length != 0) {
-                           
+
                             $('#header_cart_main_ul_ondemand').html('');
                             $("#header_cart_main_ul_ondemand").removeClass("d-none");
                             $("#header_cart_main_ul_ondemand").show();
                             let empty_cart_template = _.template($('#empty_cart_template').html());
                             $("#header_cart_main_ul_ondemand").append(empty_cart_template());
                         }
-                        
+
                     }
                 }
             },
@@ -4310,9 +4310,9 @@ $(document).ready(function () {
             break;
 
             case 47:
-                paymentViaKhalti('', ''); 
+                paymentViaKhalti('', '');
             break;
-        
+
         }
 
     }
@@ -4754,7 +4754,7 @@ $(document).ready(function () {
                     return false;
                 }
             break;
-           
+
             case '47':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
@@ -4979,7 +4979,7 @@ $(document).ready(function () {
                 break;
 
             case 47:
-                paymentViaKhalti('', ''); 
+                paymentViaKhalti('', '');
                 break;
         }
     }

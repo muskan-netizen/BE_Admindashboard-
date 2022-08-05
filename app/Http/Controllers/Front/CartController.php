@@ -1516,6 +1516,7 @@ class CartController extends FrontController
                 $is_alrady_submit = CaregoryKycDoc::whereIn('category_kyc_document_id', $category_kyc_document_ids)->where('cart_id',$cart_id)->count();
             //     echo  $is_alrady_submit." <br>";
             //    pr($category_kyc_document_ids);
+                $cart->category_kyc_count =0;
                 if( $category_kyc_count  > 0 && ($is_alrady_submit  !=  $category_kyc_count )){
                     $cart->category_kyc_count = $category_kyc_count;
                     $cart->category_rendem_id = rand(9,10);

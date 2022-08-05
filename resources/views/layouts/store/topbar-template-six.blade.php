@@ -127,13 +127,13 @@ $applocale = session()->get('applocale');
 
    <nav class="navbar navbar-expand-lg fixed-top px-0">
       <div class="container-fluid ">
-         <div class="col-12  px-md-5 px-3">
+         <div class="col-12 px-3">
             <div class="row d-flex align-items-center justify-content-between">
                <!-- leftHead start -->
                <div class="leftHead d-flex align-items-center">
                   <!-- logo start -->
                   <div class="logo">
-                     <a class="navbar-brand position-relative" style="height:60px;" href="{{ route('userHome') }}">
+                     <a class="navbar-brand position-relative" style="height:50px;" href="{{ route('userHome') }}">
                      <img class="alspalogo lightLogo" alt="" src="{{$urlImg}}"></a>
                      </a>
                   </div>
@@ -142,14 +142,16 @@ $applocale = session()->get('applocale');
                   <div class="alFindSec d-none d-lg-block">
                      <ul class="p-0 m-0 d-flex align-items-center justify-content-between">
                         @if(isset($preference))
-                           @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
-                           <li class="border-right mr-3 pr-3">
-                              <div class="alLocation homepage-address" href="#edit-address" data-toggle="modal" >
-                                 <!-- data-toggle="modal" data-target="#googleMapModal" -->
-                                 <span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span>
-                              </div>
-                           </li>
-                           @endif
+                        @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
+                        <li class="alLocationArea mr-2">
+
+                           <div class="alLocation homepage-address" href="#edit-address" data-toggle="modal" >
+                              <i class="ti-location-pin"></i>
+                              <!-- data-toggle="modal" data-target="#googleMapModal" -->
+                              <span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span>
+                           </div>
+                        </li>
+                        @endif
                         @endif
                         <li class="pr-3">
                            <div class="d-inline-flex al_searchType align-items-center justify-content-start px-2 position-relative">
@@ -159,7 +161,7 @@ $applocale = session()->get('applocale');
                               <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
                            </div>
                         </li>
-                        
+
                         {{-- <li class="pr-3">
                            <div class="alChooseDate">
                               <input type="input" class="form-control" value="{{session('selectedDate') ?? ''}}"
@@ -168,7 +170,7 @@ $applocale = session()->get('applocale');
                         </li> --}}
                         <li class="pr-0">
                            <div class="alFindGo">
-                              <button class="btn">Go</button>
+                              <button class="btn">{{__('Go')}}</button>
                            </div>
                         </li>
                      </ul>
@@ -176,36 +178,6 @@ $applocale = session()->get('applocale');
                   <!-- alFindSec end -->
                </div>
                <!-- leftHead end -->
-               @if($mod_count > 1)
-                  <div class="vendor_mods_section">
-                     <div class="al_count_tabs_new_design "  >
-                        <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons vendor_mods" id="top-tab" role="tablist">
-                           @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-                              @php
-                              $clientVendorTypes = $vendor_typ_key.'_check';
-                              $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-                              $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
-                              $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key)
-                              @endphp
-
-                              @if($client_preference_detail->$clientVendorTypes == 1)
-                              <li class="navigation-tab-item" role="presentation">
-                                 <a class="nav-link al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
-                                    id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
-                                    aria-controls="profile" aria-selected="false">
-                                    <span class="al_tabsIcons">
-                                       {{-- <img src="{{$client_preference_detail->$iconFiledName ? $client_preference_detail->$iconFiledName['proxy_url'].'36/26'.$client_preference_detail-> $iconFiledName['image_path'] : asset('images/al_custom3.png')}}" alt="{{$iconFiledName}}"></span> --}}
-                                       <span class="al_textTabsText">{{$NomenclatureName}} </span>
-                                 </a>
-                              </li>
-                           @endif
-                           @endforeach
-                           <div class="navigation-tab-overlay_alnew_design"></div>
-                        </ul>
-                     </div>
-                  </div>
-               @endif
-
                <!-- rightHead start -->
                <div class="rightHead d-flex align-items-end">
                   <ul class="p-0 m-0 d-flex align-items-center ml-auto">
@@ -243,7 +215,7 @@ $applocale = session()->get('applocale');
                      <!-- alShoppingBag start -->
                      @if($client_preference_detail)
                      @if($client_preference_detail->cart_enable==1)
-                     <li class="alShoppingBag mx-4 dropdown">
+                     <li class="alShoppingBag mx-md-4 mx-2 dropdown">
                         <a href="#" class="alShopIcon" href="{{route('showCart')}}">
                            <span class="navbar-tool-label" id="cart_qty_span"> </span>
                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -310,6 +282,35 @@ $applocale = session()->get('applocale');
                   </ul>
                </div>
                <!-- rightHead end -->
+               @if($mod_count > 1)
+               <div class="vendor_mods_section">
+                  <div class="al_count_tabs_new_design "  >
+                     <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons vendor_mods" id="top-tab" role="tablist">
+                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                           @php
+                           $clientVendorTypes = $vendor_typ_key.'_check';
+                           $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                           $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+                           $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key)
+                           @endphp
+
+                           @if($client_preference_detail->$clientVendorTypes == 1)
+                           <li class="navigation-tab-item" role="presentation">
+                              <a class="nav-link al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
+                                 id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
+                                 aria-controls="profile" aria-selected="false">
+                                 <span class="al_tabsIcons">
+                                    {{-- <img src="{{$client_preference_detail->$iconFiledName ? $client_preference_detail->$iconFiledName['proxy_url'].'36/26'.$client_preference_detail-> $iconFiledName['image_path'] : asset('images/al_custom3.png')}}" alt="{{$iconFiledName}}"></span> --}}
+                                    <span class="al_textTabsText">{{$NomenclatureName}} </span>
+                              </a>
+                           </li>
+                        @endif
+                        @endforeach
+                        <div class="navigation-tab-overlay_alnew_design"></div>
+                     </ul>
+                  </div>
+               </div>
+               @endif
             </div>
 
          </div>
