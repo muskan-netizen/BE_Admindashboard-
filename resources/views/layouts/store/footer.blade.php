@@ -195,7 +195,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
-@if (isset($set_template)  && $set_template->template_id == 6)
+@if (isset($set_template)  && $set_template->template_id == 6))
 <script async src="{{asset('frontend/template_six/homepage/spa_slider_custom.js')}}"></script>
 @endif
 <script type="text/javascript">
@@ -437,11 +437,16 @@ if($showSubscriptionPlanPopUp == 1){
 
     if((stop_accepting_orders == 1) && ((window.location.pathname == '/') || (window.location.pathname == '/viewcart'))){
         swal.fire({
-            title: "{{__('Sorry')}}",
-            text:"{{__('We are not accepting orders right now.')}}",
-            icon: 'warning',
+            // title: "{{__('Sorry')}}",
+            text:"{{__('There is an extremely high demand right now. Please return later!')}}",
+            imageUrl: "{{ URL::asset('/images/order_waiting.gif') }}",
+            imageWidth: '40%',
+            imageHeight: '10%',
+            imageAlt: "Image",
+            // icon: 'warning',
             showCancelButton: false,
             confirmButtonText: 'OK',
+            // timer: 5000
         }).then((result) => {
             return false;
         });
