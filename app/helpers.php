@@ -949,16 +949,20 @@ if (!function_exists('getCategoryTypes')) {
                 $typeArray =['delivery','dinein','takeaway'];
             break;
             case "home_service":
-                $typeArray =['on_demand'];
+                $typeArray =['on_demand','appointment'];
             break;
             case "laundry":
                 $typeArray =['laundry'];
             break;
+            case "rental":
+                $typeArray =['rental'];
+            break;
+        
             case "super_app":
-                $typeArray =['delivery','dinein','takeaway','rental','pick_drop','on_demand','laundry'];
+                $typeArray =['delivery','dinein','takeaway','rental','pick_drop','on_demand','laundry','appointment'];
             break;
             default:
-            $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand'];
+            $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];
         }
         return $typeArray;
     }

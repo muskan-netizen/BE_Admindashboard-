@@ -69,7 +69,6 @@
             processData: false,
             success: function(response) {
                 // location.reload();
-                console.log(response);
                 if (response.status == 'success') {
                     $('.section_msg').text('Updated successfully');
                     
@@ -145,7 +144,7 @@
         $.get(url, {language_id:language_id},function(response) {
               if(response.status == 'Success'){
                     if(response.data){
-                        console.log(response.data);
+                     
                         $("#vendor_section_options").html('');
                         $("#save_vendor_section_form input[name='section_id']").val(response.data.id);
                         $("#save_vendor_section_form input[name='heading']").val((response.data.heading_translation[0]!= undefined)? response.data.heading_translation[0].heading : '');
