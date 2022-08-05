@@ -437,11 +437,16 @@ if($showSubscriptionPlanPopUp == 1){
 
     if((stop_accepting_orders == 1) && ((window.location.pathname == '/') || (window.location.pathname == '/viewcart'))){
         swal.fire({
-            title: "{{__('Sorry')}}",
-            text:"{{__('We are not accepting orders right now.')}}",
-            icon: 'warning',
+            // title: "{{__('Sorry')}}",
+            text:"{{__('There is an extremely high demand right now. Please return later!')}}",
+            imageUrl: "{{ URL::asset('/images/order_waiting.gif') }}",
+            imageWidth: '40%',
+            imageHeight: '10%',
+            imageAlt: "Image",
+            // icon: 'warning',
             showCancelButton: false,
             confirmButtonText: 'OK',
+            // timer: 5000
         }).then((result) => {
             return false;
         });
