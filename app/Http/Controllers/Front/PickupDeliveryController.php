@@ -580,8 +580,13 @@ class PickupDeliveryController extends FrontController{
                 $order->order_number = generateOrderNo();
                 $order->address_id = $request->address_id;
                 $order->payment_option_id = $payment_option;
+                
+                $schedule_datetime_del = NULL;
+                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
+                    $schedule_datetime_del = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
+                }
 
-                $order->scheduled_date_time = $request->schedule_time;
+                $order->scheduled_date_time = $schedule_datetime_del;
                 /*book for a friend*/
                 $order->type = $request->type;
                 $order->friend_name = $request->friendName;
@@ -816,6 +821,11 @@ class PickupDeliveryController extends FrontController{
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
+
+                $schedule_datetime_del = NULL;
+                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
+                    $schedule_datetime_del = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
+                }
                 
                 $postdata =  [
                     'order_number' =>  $order->order_number,
@@ -831,7 +841,7 @@ class PickupDeliveryController extends FrontController{
                     'call_back_url' => $call_back_url??null,
                     'customer_email' => $customer->email ?? '',
                     'cash_to_be_collected' => $payable_amount??0.00,
-                    'schedule_time' => $request->schedule_time ?? null,
+                    'schedule_time' => $schedule_datetime_del ?? null,
                     'task_description' => null,
                     'order_number' =>  $order->order_number,
                     'order_time_zone' => $request->order_time_zone ??null,
