@@ -107,9 +107,9 @@
 
         <div class="row mb-2" >
             <div class="col-md-4">
-                <div class="form-group mb-3" id="pincode">
+                <div class="form-group mb-3" >
                     {!! Form::label('title', __('Pincode'),['class' => 'control-label']) !!}
-                    <input type="text" name="pincode" placeholder="Pincode" class="form-control" value="{{@$vendor->pincode}}">
+                    <input type="text" name="pincode" id="pincode" placeholder="Pincode" class="form-control" value="{{@$vendor->pincode}}">
                     @if($errors->has('Pincode'))
                     <span class="text-danger" role="alert">
                         <strong>{{ $errors->first('Pincode') }}</strong>
@@ -120,7 +120,7 @@
             <div class="col-md-4">
                 <div class="form-group mb-3">
                     {!! Form::label('title', __('City'),['class' => 'control-label']) !!}
-                    <input type="text" name="city" placeholder="City" class="form-control" value="{{$vendor->city}}">
+                    <input type="text" name="city" id="city" placeholder="City" class="form-control" value="{{$vendor->city}}">
                     @if($errors->has('city'))
                     <span class="text-danger" role="alert">
                         <strong>{{ $errors->first('city') }}</strong>
@@ -131,7 +131,7 @@
             <div class="col-md-4">
                 <div class="form-group mb-3">
                     {!! Form::label('title', __('State'),['class' => 'control-label']) !!}
-                    <input type="text" name="state" placeholder="State" class="form-control" value="{{$vendor->state}}">
+                    <input type="text" name="state" id="state" placeholder="State" class="form-control" value="{{$vendor->state}}">
                     @if($errors->has('state'))
                     <span class="text-danger" role="alert">
                         <strong>{{ $errors->first('state') }}</strong>
@@ -142,7 +142,7 @@
             <div class="col-md-4">
                 <div class="form-group mb-3">
                     {!! Form::label('title', __('Country'),['class' => 'control-label']) !!}
-                    <input type="text" name="country" placeholder="Country" class="form-control" value="{{$vendor->country}}">
+                    <input type="text" name="country" id="country" placeholder="Country" class="form-control" value="{{$vendor->country}}">
                     @if($errors->has('country'))
                     <span class="text-danger" role="alert">
                         <strong>{{ $errors->first('country') }}</strong>

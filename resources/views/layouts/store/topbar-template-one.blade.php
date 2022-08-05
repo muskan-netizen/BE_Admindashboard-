@@ -20,21 +20,21 @@ $preference = $client_preference_detail;
 </style>
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos alOneTemplate">
-    <div class="container-fulid shimmer_effect topBar">
+    <div class="container-fulid shimmer_effect main_shimer topBar">
         <div class="row">
             <div class="col-12 cards">
                 <div class="top_bar loading"></div>
             </div>
         </div>
     </div>
-    <div class="container shimmer_effect topBar">
+    <div class="container-fulid shimmer_effect main_shimer topBar">
         <div class="row">
             <div class="col-12 cards">
                 <div class="logoArea_bar loading"></div>
             </div>
         </div>
     </div>
-   <div class="container mb-3 mt-3 shimmer_effect">
+   <div class="container mb-3 mt-3 shimmer_effect main_shimer ">
       <div class="row">
          <div class="col-12 cards">
             <div class="cardbanner loading"></div>
@@ -43,7 +43,7 @@ $preference = $client_preference_detail;
    </div>
    @switch($preference->business_type)
    @case('taxi')
-   <div class="container_al mb-3 shimmer_effect">
+   <div class="container_al mb-3 shimmer_effect main_shimer">
       <div class="row">
          <div class="col-12 cards">
             <div class="cardbanner loading"></div>
@@ -52,7 +52,7 @@ $preference = $client_preference_detail;
    </div>
    @break
    @default
-   <div class="container mb-5 shimmer_effect">
+   <div class="container mb-5 shimmer_effect main_shimer">
       <div class="row">
          <div class="col-12 cards">
             <h2 class="h2-heading loading mb-3"></h2>

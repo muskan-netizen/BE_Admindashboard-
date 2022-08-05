@@ -24,10 +24,9 @@ $(document).ready(async function () {
         $('.scrollspy-menu a').on('click',function(){
             $("html, body").animate({ scrollTop:  $('#'+$(this).data('slug')).offset().top - (header_height+30) });
         })
-   // },1000)
+    //},3000)
 
 });
-
 
 
 $(".mobile-account .fa").click(function(){
@@ -484,7 +483,7 @@ $(document).ready(function () {
     if (($("#fpx-bank-element").length > 0) && (stripe_fpx_publishable_key != '')) {
         stripeFPXInitialize();
     }
- 
+
     if (($("#ideal-bank-element").length > 0) && (stripe_ideal_publishable_key != '')) {
         stripeIdealInitialize();
     }
@@ -1720,6 +1719,7 @@ $(document).ready(function () {
                 var response = $.parseJSON(error.responseText);
                 // success_error_alert('error', response.message, ".payment_response");
                 if ($('.cart_response').length > 0) {
+                    $('#proceed_to_pay_modal').modal('hide');
                     $(".cart_response").removeClass('d-none');
                     success_error_alert('error', response.message, ".cart_response");
                     $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
@@ -2152,37 +2152,36 @@ $(document).ready(function () {
                 if (response.status == "success") {
                     $("#cart_table").html('');
                     $(".spinner-box").hide();
+                    $("#mycart").html(response.mycart);
+
+                    //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
                     if (response.cart_details.length != 0) {
                         if (response.cart_details.products.length != 0) {
-
-                            // var Helper = { formatPrice: function(x){
-                            //     if(x){
-                            //         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            //     }
-                            //     return x;
-                            //     }
-                            //  };
-
+                            //$('#cartTotalspan').html(response.cart_details.totalQuantity);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
 
-                            let header_cart_template = _.template($('#header_cart_template').html());
-                            $("#header_cart_main_ul").append(header_cart_template(headerCartData));
-                            if ($('#cart_main_page').length != 0) {
+                             let header_cart_template = _.template($('#header_cart_template').html());
+                             $("#header_cart_main_ul").append(header_cart_template(headerCartData));
+                            if (response.cart_details.totalQuantity>0) {
 
                                 // simplified mock of the helpers
 
-                                var extendedData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, client_preference_detail: client_preference_detail });
+                                // var extendedData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, client_preference_detail: client_preference_detail });
 
-                                let cart_template = _.template($('#cart_template').html());
-                                $("#cart_table").append(cart_template(extendedData));
-                                $(".other_cart_products").html('');
-                                let other_cart_products_template = _.template($('#other_cart_products_template').html());
-                                $(".other_cart_products").append(other_cart_products_template(extendedData));
-                                initializeSlider();
-                                $('#placeorder_form .left_box').html('');
-                                $('#placeorder_form .left_box').html(cart_details.left_section);
+                                // let cart_template = _.template($('#cart_template').html());
+                                // $("#cart_table").append(cart_template(extendedData));
+                                // $(".other_cart_products").html('');
+                                // let other_cart_products_template = _.template($('#other_cart_products_template').html());
+                                // $(".other_cart_products").append(other_cart_products_template(extendedData));
+                                // initializeSlider();
+                                // $('#placeorder_form .left_box').html('');
+                                // $('#placeorder_form .left_box').html(cart_details.left_section);
+
+
+
+
                                 $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);
 
@@ -2196,6 +2195,7 @@ $(document).ready(function () {
                                     $("#order_placed_btn").attr("disabled", true);
                                     $("#order_placed_btn").addClass("d-none");
                                 } else {
+
                                     $("#order_placed_btn").removeAttr("disabled");
                                     $("#order_placed_btn").removeClass("d-none");
                                 }
@@ -2219,9 +2219,11 @@ $(document).ready(function () {
                                 $('#placeorder_form_ondemand .left_box').html(cart_details.left_section);
                                 initialize();
                                 if (cart_details.deliver_status == 0) {
+
                                     $("#order_placed_btn").attr("disabled", true);
                                     $("#order_placed_btn").addClass("d-none");
                                 } else {
+
                                     $("#order_placed_btn").removeAttr("disabled");
                                     $("#order_placed_btn").removeClass("d-none");
                                 }
@@ -2263,14 +2265,14 @@ $(document).ready(function () {
                             $("#header_cart_main_ul_ondemand").append(empty_cart_template());
                         }
                         if ($("#header_cart_main_ul_ondemand").length != 0) {
-                           
+
                             $('#header_cart_main_ul_ondemand').html('');
                             $("#header_cart_main_ul_ondemand").removeClass("d-none");
                             $("#header_cart_main_ul_ondemand").show();
                             let empty_cart_template = _.template($('#empty_cart_template').html());
                             $("#header_cart_main_ul_ondemand").append(empty_cart_template());
                         }
-                        
+
                     }
                 }
             },
@@ -2846,7 +2848,7 @@ $(document).ready(function () {
                 if (response.status == 'success') {
                     $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     returnResponse = true;
-                    cartHeader();
+                    //cartHeader();
                 } else {
                     Swal.fire({
                         // title: "Warning!",
@@ -4308,9 +4310,9 @@ $(document).ready(function () {
             break;
 
             case 47:
-                paymentViaKhalti('', ''); 
+                paymentViaKhalti('', '');
             break;
-        
+
         }
 
     }
@@ -4752,7 +4754,7 @@ $(document).ready(function () {
                     return false;
                 }
             break;
-           
+
             case '47':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
@@ -4977,7 +4979,7 @@ $(document).ready(function () {
                 break;
 
             case 47:
-                paymentViaKhalti('', ''); 
+                paymentViaKhalti('', '');
                 break;
         }
     }

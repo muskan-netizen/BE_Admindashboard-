@@ -224,133 +224,137 @@ body.al_body_template_one a.navbar-brand img{
 body.al_body_template_two{
     background-color: #fff;
 }
-
-
+@media (max-width:1400px){
+.main-menu.al_template_one_menu .container{
+max-width: 100%;
+padding: 0 15px !important;
+}
+.radius-bar.d-xl-inline.al_custom_search input{
+    max-width: 130px;
+    min-width: 130px;
+}
+}
+@media (max-width:991px){
+.al_count_tabs.my-1{
+max-width: 400px;
+border-radius: 50px;
+overflow-y: hidden;
+}
+.al_body_template_one  .top-header .header-dropdown li.onhover-dropdown{
+padding: 0 12px;
+}
+.shimmer_effect .loading.cardbanner{
+    height: 160px;
+}
+}
  @media (max-width:767px){
-     .radius-bar{
-         width: 100%;
-         position: fixed;
-         z-index: 11111;
-         bottom: 74px;
-         left: 0;
-         right: 0;
-         margin: auto;
-         display: none;
-         border-radius: 0!important;
-    }
-    .pixelstrap a .sub-arrow{display: none;}
-    .nav-tabs .nav-link{
-        font-weight: 500;
-        padding: 5px 10px;
-        font-size: 14px;
-    }
-     .top-header .mobile-menu.main-menu .header-dropdown li.al_iconsMb ul.onhover-show-div{
-        position: absolute;
-         right: auto;
-         display: none;
-    }
-     .top-header .mobile-menu.main-menu .header-dropdown li.al_iconsMb ul.onhover-show-div.open{
-         right: auto;
-         bottom: 80px;
-         box-shadow: 0 0 5px rgb(0 0 0 / 30%);
-         border-radius: 6px;
-         padding-bottom: 10px;
-    }
-     .top-header .mobile-menu.main-menu .header-dropdown li.al_iconsMb ul.onhover-show-div li a{
-         color: #777;
-         font-family: 'Roboto';
-         padding: 0px 10px !important;
-    }
-     .top-header .mobile-menu.main-menu .header-dropdown li.al_iconsMb ul.onhover-show-div li{
-        display: block;
-        padding: 10px 0 0;
-         line-height: 1;
-    }
-     .payment-card-bottom.text-center.d-flex{
-         margin-bottom: 20px;
-    }
-     article#content-wrap {
-         padding-bottom: 0 !important;
-    }
-     ul.social-links.d-flex{
-         margin-bottom: 10px;
-    }
-     .show-div.setting li{
-         display: block;
-    }
-     li.onhover-div.al_mobile-search div#search-overlay{
-         display: none !important;
-    }
-     section.home-slider-wrapper.py-sm-3{
-        padding: 24px 0!important;
-    }
-    .navbar-brand{
-        padding:0;
-        height:40px!important
-    }
-    .top-header.site-topbar.al_template_one{
-        height:auto;
-        background-color:transparent
-    }
-    .mobile-menu.main-menu{
-        bottom:0;
-        padding:10px;
-        width:100%;
-        background-color:transparent;
-        box-shadow:none
-    }
-    .top-header .header-dropdown .mobile-account,.top-header .header-dropdown .mobile-wishlist{
-        bottom:10px;
-        top:auto
-    }
-    .site-topbar .map-icon .yl-text{
-        display:none
-    }
-    .map-icon.mr-1 svg path{
-        fill:var(--theme-deafult)
-    }
-    .site-topbar .location-bar h2{
-        color:#777;
-        width:calc(100% - 25%);
-        float:left;
-        padding-right:5px
-    }
-    .site-topbar .location-bar h2 span{
-        width:100%;
-        overflow:hidden;
-        float:left;
-        text-overflow:ellipsis
-    }
-    /* .menu-slider .slick-next,.menu-slider .slick-prev{
-        background-image:url(https://img.icons8.com/ios/50/000000/expand-arrow--v2.png);
-        background-repeat:no-repeat;
-        background-size:20px;
-        background-color:#fff;
-        top:50%;
-        -webkit-transform:translate(0,-50%) rotate(-90deg);
-        transform:translate(0,-50%) rotate(-90deg);
-        height:20px;
-        width:20px;
-        z-index:999
-    } */
-    .menu-slider .slick-next{
-        right:-23px
-    }
-    /* .menu-slider .slick-prev{
-        -webkit-transform:translate(0,-50%) rotate(90deg);
-        transform:translate(0,-50%) rotate(90deg)
-    } */
-    .nav.nav-tabs.navigation-tab.nav-material.tab-icons.vendor_mods{
-        width: 100%;
-        display: flex;
-        align-items: center;
-    }
-    .al_count_tabs.my-1{
-        width:100%;
-        text-align:center
-    }
-    .nav.nav-tabs.navigation-tab.nav-material.tab-icons.vendor_mods li.navigation-tab-item{
-        width:32.33%;
-        padding:0
-    }
+.al_body_template_one .al_custom_brand a.brand-box.d-block.black-box{
+height: 100% !important;
+padding: 0;
+}
+.al_body_template_one .al_custom_brand .brand-ing{
+    height: 100px;
+    width: 100px;
+}
+.radius-bar{
+width: 100%;
+position: fixed;
+z-index: 11111;
+bottom: 74px;
+left: 0;
+right: 0;
+margin: auto;
+display: none;
+border-radius: 0!important;
+}
+.pixelstrap a .sub-arrow{display: none;}
+.nav-tabs .nav-link{
+font-weight: 500;
+padding: 5px 10px;
+font-size: 14px;
+}
+.top-header .mobile-menu.main-menu .header-dropdown li.al_iconsMb ul.onhover-show-div{
+position: absolute;
+right: auto;
+display: none;
+}
+.top-header .mobile-menu.main-menu .header-dropdown li.al_iconsMb ul.onhover-show-div.open{
+right: auto;
+bottom: 80px;
+box-shadow: 0 0 5px rgb(0 0 0 / 30%);
+border-radius: 6px;
+padding-bottom: 10px;
+}
+.top-header .mobile-menu.main-menu .header-dropdown li.al_iconsMb ul.onhover-show-div li a{
+color: #777;
+font-family: 'Roboto';
+padding: 0px 10px !important;
+}
+.top-header .mobile-menu.main-menu .header-dropdown li.al_iconsMb ul.onhover-show-div li{
+display: block;
+padding: 10px 0 0;
+line-height: 1;
+}
+.payment-card-bottom.text-center.d-flex{
+margin-bottom: 20px;
+}
+article#content-wrap {
+padding-bottom: 0 !important;
+}
+ul.social-links.d-flex{
+margin-bottom: 10px;
+}
+.show-div.setting li{
+display: block;
+}
+li.onhover-div.al_mobile-search div#search-overlay{
+display: none !important;
+}
+section.home-slider-wrapper.py-sm-3{
+padding: 24px 0!important;
+}
+.navbar-brand{
+padding:0;
+height:40px!important
+}
+.top-header.site-topbar.al_template_one{
+height:auto;
+background-color:transparent
+}
+.mobile-menu.main-menu{
+bottom:0;
+padding:10px;
+width:100%;
+background-color:transparent;
+box-shadow:none
+}
+.top-header .header-dropdown .mobile-account,.top-header .header-dropdown .mobile-wishlist{
+bottom:10px;
+top:auto
+}
+.site-topbar .map-icon .yl-text{
+display:none
+}
+.map-icon.mr-1 svg path{
+fill:var(--theme-deafult)
+}
+.site-topbar .location-bar h2{
+color:#777;
+width:calc(100% - 25%);
+float:left;
+padding-right:5px
+}
+.site-topbar .location-bar h2 span{
+width:100%;
+overflow:hidden;
+float:left;
+text-overflow:ellipsis
+}
+.menu-slider .slick-next{
+right:-23px
+}
+.al_body_template_one .site-topbar .location-bar h2:after{
+    right: 20px!important;
+}
+
 }

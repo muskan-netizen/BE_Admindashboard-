@@ -219,7 +219,7 @@ class ChatController extends BaseController
      */
     public function startChat(Request $request)
     {
-        try {
+        //try {
             $data = $request->all();
             $vendor_id = $data['vendor_id'];
             $vendor_order_id = $data['order_vendor_id'];
@@ -258,9 +258,9 @@ class ChatController extends BaseController
                 }
     
             }
-        } catch (\Throwable $th) {
-            return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
-        }
+        // } catch (\Throwable $th) {
+        //     return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
+        // }
         
 
     }

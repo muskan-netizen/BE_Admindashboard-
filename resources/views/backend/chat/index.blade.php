@@ -122,8 +122,12 @@
 
 <script>
     $(document).ready(async function(){
-
+//alert(window.location.pathname.split('/')[4])
           // Create SocketIO instance, connect
+          if(window.location.pathname.split('/')[4] !=  undefined && window.location.pathname.split('/')[4] !=null) {
+            await $('#room_'+window.location.pathname.split('/')[4]).click();
+          }
+
     })
 
   </script>

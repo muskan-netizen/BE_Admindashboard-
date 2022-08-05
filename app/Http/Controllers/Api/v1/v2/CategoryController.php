@@ -168,7 +168,7 @@ class CategoryController extends BaseController
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                 },
                 'variant' => function ($q) use ($langId) {
-                    $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                    $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
                     // $q->groupBy('product_id');
                 }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                 'tags.tag.translations' => function ($q) use ($langId) {
@@ -285,7 +285,7 @@ class CategoryController extends BaseController
                     $q->select('id','product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id')->where('language_id', $langId)->groupBy('language_id','product_id');
                 },
                 'variant' => function ($q) use ($langId) {
-                    $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
+                    $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'markup_price','barcode');
                     // $q->groupBy('product_id');
                 }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                 'tags.tag.translations' => function ($q) use ($langId) {
@@ -424,7 +424,7 @@ class CategoryController extends BaseController
                     $q->groupBy('language_id','product_id');
                 },
                 'variant' => function ($q) use ($langId, $variantIds,$order_type) {
-                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode','price');
+                    $q->select('id','sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
                     if (!empty($variantIds)) {
                         $q->whereIn('id', $variantIds);
                     }

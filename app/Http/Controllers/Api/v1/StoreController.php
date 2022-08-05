@@ -61,7 +61,7 @@ class StoreController extends BaseController{
 						->with(['media.image', 'translation' => function($q) use($langId){
                         	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     	},'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
                             $q->groupBy('product_id');
                     	},
                     ])->where('category_id', $is_selected_category_id);
@@ -439,6 +439,7 @@ class StoreController extends BaseController{
 				$order->paymentOption->title = __($order->paymentOption->title);
 				
 				$order->payment_option_title = __($order->paymentOption->title);
+				$total_markup_Price = 0;
 				foreach ($order->vendors as $vendor) {
 					$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->where('vendor_id', $vendor_id)->orderBy('id', 'DESC')->first();
 					if($vendor_order_status){
@@ -458,6 +459,11 @@ class StoreController extends BaseController{
 							'upcoming_status' => $upcoming_status,
 						];
 					}
+					if(auth()->user()->is_admin){
+						$vendor->subtotal_amount = $vendor->subtotal_amount  - $vendor->total_markup_price;
+					}else{
+						$vendor->subtotal_amount = $vendor->subtotal_amount  - $vendor->total_markup_price;
+					}
 				}
 				foreach ($order->products as $product) {
     				$order_item_count += $product->quantity;
@@ -471,6 +477,8 @@ class StoreController extends BaseController{
 							'title' => $product->product_name,
 							'category_name' => (!empty($product->product->categoryName->name))?$product->product->categoryName->name:'',
 	    				);
+
+						$total_markup_Price += $product->markup_price;
     				}
 				}
 				if(!empty($order->scheduled_date_time)){
@@ -491,11 +499,20 @@ class StoreController extends BaseController{
 				$order->product_details = $product_details;
 				$order->item_count = $order_item_count;
 
-				
+				if(auth()->user()->is_admin){
+					$order->total_amount = $order->total_amount  - $total_markup_Price;
+					$order->payable_amount  = $order->payable_amount  - $total_markup_Price;
+				}else{
+					$order->total_amount = $order->total_amount;
+					$order->payable_amount  = $order->payable_amount;
+				}
 				unset($order->user);
 				unset($order->products);
 				unset($order->paymentOption);
 				unset($order->payment_option_id);
+
+				
+
 			}
             return $this->successResponse($order_list, '', 200);
     	} catch (Exception $e) {
@@ -1407,7 +1424,7 @@ class StoreController extends BaseController{
 						->with(['media.image', 'categoryName', 'translation' => function($q) use($langId){
                         	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     	},'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
                             $q->groupBy('product_id');
                     	},
                     ])->orderBy('id', 'DESC');
@@ -1502,7 +1519,7 @@ class StoreController extends BaseController{
 						->with(['media.image', 'categoryName', 'translation' => function($q) use($langId){
                         	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     	},'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price', 'markup_price','barcode');
                             $q->groupBy('product_id');
                     	},
                     ])->orderBy('id', 'DESC');

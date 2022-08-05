@@ -356,7 +356,7 @@ $lastmileShow = array('7','10');
                 
                 @if($product->category->categoryDetail->type_id == 10)
                     @include('backend.product.popup.scheduleTableRows')
-                    @include('backend.product.popup.addBlockTimeTablePopup')
+                    {{-- @include('backend.product.popup.addBlockTimeTablePopup') --}}
                     @include('backend.product.variant')
                 @else
                     @if($productVariants->count() > 0)

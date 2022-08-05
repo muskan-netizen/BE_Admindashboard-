@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class EstimatedProductCart extends Model
 {
     use HasFactory;
+    
+    protected $table = 'estimated_product_cart_new';
 
     public function estimated_products(){
         return $this->hasMany('App\Models\EstimatedProduct', 'estimated_cart_id' );
