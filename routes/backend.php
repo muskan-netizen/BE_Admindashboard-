@@ -446,6 +446,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vsection/deleteSection/{sid}', 'Client\VendorSectionController@destroy')->name('vsection.delete');
         Route::get('vsection/show/{sid}', 'Client\VendorSectionController@show')->name('vsection.edit');
         Route::post('vsection/update', 'Client\VendorSectionController@update')->name('vsection.update');
+
+
+        // booking route
+        Route::post('booking/addBlockSlot', 'Client\Booking\ProductBookingController@addBlockSlot')->name('product-booking.addBlockSlot');   # update all product actions
         
     });
 });

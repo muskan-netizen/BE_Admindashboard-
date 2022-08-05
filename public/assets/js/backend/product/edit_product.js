@@ -17,7 +17,7 @@ $(document).ready(function(){
     });
     $(document).on('click', '.addExistRow', function() {
         
-        var psku = $('#sku').val();
+        var product_sku = $('#sku').val();
         var pid = $(this).attr('data-product_id');
         var vid = $(this).attr('data-varient_id');
         var variant_ids = [];
@@ -33,7 +33,7 @@ $(document).ready(function(){
         });
 
         axios.post(`/client/rentalVariantRow`, {
-            sku:  psku,   
+            sku:product_sku,   
             existing:exist,
             variant_ids:variant_ids,
             variant_name:variant_name,

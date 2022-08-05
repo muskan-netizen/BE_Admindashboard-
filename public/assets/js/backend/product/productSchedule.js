@@ -68,7 +68,7 @@ $(function(){
                             <textarea style="height:100px" type="text" id="memo" class="swal2-input m-0" placeholder="Memo"></textarea>
                         </div>
                     </div>`,
-            confirmButtonText: 'Sign in',
+            confirmButtonText: 'Submit',
             focusConfirm: false,
             preConfirm: () => {
               const memo = Swal.getPopup().querySelector('#memo').value
@@ -78,10 +78,6 @@ $(function(){
               }
               return { blocktime: blocktime, memo: memo }
             },onOpen: function() {
-                // $('#datetimepicker').datetimepicker({
-                //     //format: 'DD/MM/YYYY hh:mm A',
-                //     defaultDate: new Date()
-                // });
                 $(function() {
                     $('#blocktime').daterangepicker({
                       timePicker: true,
@@ -94,11 +90,35 @@ $(function(){
                     });
                   });
             }
-          }).then((result) => {
-            Swal.fire(`
-            blocktime: ${result.value.blocktime}
-              memo: ${result.value.memo}
-            `.trim())
+          }).then(async (result) => {
+            var formData = {
+              blocktime:result.value.blocktime,
+              memo:result.value.memo,
+              varient_id:varient_id,
+              product_id:product_id,
+              booking_slot:$('#blocktime').val()
+            }
+            await add_blocked_time(formData)
+            // Swal.fire(`
+            // blocktime: ${result.value.blocktime}
+            //   memo: ${result.value.memo}
+            // `.trim())
           })
     } 
+
+    async function add_blocked_time(formData){
+        console.log(formData);
+        axios.post(`/client/booking/addBlockSlot`, formData)
+        .then(async response => {
+         
+            
+        })
+        .catch(e => {
+            Swal.fire(
+                'Something went wrong, try again later!',                                    
+                'error'
+            )
+        })    
+    } 
+    
 })
