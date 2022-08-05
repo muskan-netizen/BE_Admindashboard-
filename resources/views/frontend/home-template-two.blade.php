@@ -37,14 +37,14 @@ height: auto;
 {{-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> --}}
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos alTwoHomeShimmer">
-    <div class="container-fulid shimmer_effect topBar">
+    <div class="container-fulid shimmer_effect  main_shimer topBar">
         <div class="row">
             <div class="col-12 cards">
                 <div class="top_bar loading"></div>
             </div>
         </div>
     </div>
-    <div class="container shimmer_effect topBar">
+    <div class="container shimmer_effect main_shimer topBar">
         <div class="row">
             <div class="col-2 cards">
                 <div class="logoArea_bar loading"></div>
@@ -60,21 +60,21 @@ height: auto;
             </div>
         </div>
     </div>
-    <div class="container-fulid mt-1 mb-1 shimmer_effect topBar">
+    <div class="container-fulid mt-1 mb-1 shimmer_effect main_shimer topBar">
         <div class="row">
             <div class="col-12 cards">
                 <div class="top_bar loading"></div>
             </div>
         </div>
     </div>
-	<div class="container_al mb-3 shimmer_effect">
+	<div class="container_al mb-3 shimmer_effect main_shimer">
 		<div class="row">
 			<div class="col-12 cards">
 				<div class="cardbanner loading"></div>
 			</div>
 		</div>
 	</div>
-	<div class="container mb-5 shimmer_effect">
+	<div class="container mb-5 shimmer_effect main_shimer">
         <div class="row">
             <div class="col-1 grid-row">
                 <div class="card_image loading"></div>
