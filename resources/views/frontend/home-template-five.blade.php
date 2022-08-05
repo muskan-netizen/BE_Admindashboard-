@@ -202,7 +202,7 @@
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
@@ -236,7 +236,7 @@
 <script type="text/template" id="mobile_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){

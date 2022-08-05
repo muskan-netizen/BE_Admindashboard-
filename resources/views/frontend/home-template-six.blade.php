@@ -8,8 +8,8 @@
 @endsection
 @section('content')
 <!-- shimmer_effect start -->
-<section class="section-b-space_  p-0 ratio_asos alHomeServiceShimmer">
-	<div class="container_al mb-3 shimmer_effect">
+<section class="section-b-space_  p-0 ratio_asos alHomeServiceShimmer ">
+	<div class="container_al mb-3 shimmer_effect main_shimer">
 		<div class="row">
 			<div class="col-12 cards">
 				<div class="headerLoding loading"></div>
@@ -17,7 +17,7 @@
 			</div>
 		</div>
 	</div>
-   <div class="container mb-3 shimmer_effect alcardCatagory">
+   <div class="container mb-3 shimmer_effect main_shimer alcardCatagory">
 		<div class="row">
 			<div class="col-2 cards">
 				<div class="cardCatagory loading"></div>
@@ -40,163 +40,64 @@
 
 		</div>
 	</div>
-	<div class="container mb-5 shimmer_effect">
-      <div class="row">
-         <div class="col-12">
-         <div class="card_title mb-4 maintitle loading"></div>
+
+   <div class="container mb-3 shimmer_effect  main_shimer">
+         <div class="row">
+            <div class="col-12">
+               <div class="card_title ml-4 mb-4 maintitle loading"></div>
+            </div>
          </div>
-      </div>
-      <div class="row">
-         <div class="col-12" style="padding:0 60px;">
-            <div class="grid-row grid-4-4">
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                        <div class="card_title loading"></div>
-                        <div class="card_icon loading"></div>
+         <div class="row">
+            <div class="col-12 px-md-5 px-2">
+               <div class="grid-row grid-4-4">
+                  <div class="cards">
+                     <div class="card_image loading"></div>
+                     <div class="d-flex align-items-center justify-content-between">
+                           <div class="card_title loading"></div>
+                           <div class="card_icon loading"></div>
+                     </div>
+                     <div class="card_content loading mt-0 w-75"></div>
+                     <div class="card_content loading mt-0 w-50"></div>
+                     <div class="card_line loading"></div>
+                     <div class="card_price loading"></div>
                   </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                        <div class="card_title loading"></div>
-                        <div class="card_icon loading"></div>
+                  <div class="cards">
+                     <div class="card_image loading"></div>
+                     <div class="d-flex align-items-center justify-content-between">
+                           <div class="card_title loading"></div>
+                           <div class="card_icon loading"></div>
+                     </div>
+                     <div class="card_content loading mt-0 w-75"></div>
+                     <div class="card_content loading mt-0 w-50"></div>
+                     <div class="card_line loading"></div>
+                     <div class="card_price loading"></div>
                   </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                        <div class="card_title loading"></div>
-                        <div class="card_icon loading"></div>
+                  <div class="cards">
+                     <div class="card_image loading"></div>
+                     <div class="d-flex align-items-center justify-content-between">
+                           <div class="card_title loading"></div>
+                           <div class="card_icon loading"></div>
+                     </div>
+                     <div class="card_content loading mt-0 w-75"></div>
+                     <div class="card_content loading mt-0 w-50"></div>
+                     <div class="card_line loading"></div>
+                     <div class="card_price loading"></div>
                   </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                        <div class="card_title loading"></div>
-                        <div class="card_icon loading"></div>
+                  <div class="cards">
+                     <div class="card_image loading"></div>
+                     <div class="d-flex align-items-center justify-content-between">
+                           <div class="card_title loading"></div>
+                           <div class="card_icon loading"></div>
+                     </div>
+                     <div class="card_content loading mt-0 w-75"></div>
+                     <div class="card_content loading mt-0 w-50"></div>
+                     <div class="card_line loading"></div>
+                     <div class="card_price loading"></div>
                   </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
                </div>
             </div>
          </div>
       </div>
-      <div class="row">
-         <div class="col-12" style="padding:0 60px;">
-            <div class="grid-row grid-4-4">
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                        <div class="card_title loading"></div>
-                        <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                        <div class="card_title loading"></div>
-                        <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                        <div class="card_title loading"></div>
-                        <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                        <div class="card_title loading"></div>
-                        <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-            </div>
-         </div>
-      </div>
-      <div class="row">
-         <div class="col-12" style="padding:0 60px;">
-            <div class="grid-row grid-4-4">
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                        <div class="card_title loading"></div>
-                        <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                        <div class="card_title loading"></div>
-                        <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                        <div class="card_title loading"></div>
-                        <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                        <div class="card_title loading"></div>
-                        <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-            </div>
-         </div>
-      </div>
-	</div>
 
 
 	</div>
@@ -204,71 +105,60 @@
 <!-- shimmer_effect end -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
-<section class="p-0 small-slider al_desktop_banner">
-   <div class="slide-1 home-slider mb-sm-2 ">
-      @foreach($banners as $banner)
-      @php
-      $url = '';
-      if($banner->link == 'category'){
-      if($banner->category != null){
-      $url = route('categoryDetail', $banner->category->slug);
-      }
-      }
-      else if($banner->link == 'vendor'){
-      if($banner->vendor != null){
-      $url = route('vendorDetail', $banner->vendor->slug);
-      }
-      }
-      @endphp
-      <div>
-         @if($url)
-         <a href="{{$url}}">
-            @endif
-            <div class="home text-center">
-               <link rel="preload" as="image" href="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" />
-               <img src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
-            </div>
-            @if($url)
-         </a>
-         @endif
-      </div>
-      @endforeach
-   </div>
+<section class="home-slider-wrapper">
+
+	<div class="container-fulid">
+		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
+			<div class="carousel-inner">
+				@foreach($banners as $key => $banner)
+					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+					<div class="carousel-item @if($key == 0) active @endif">
+					 <a class="banner-img-outer" href="{{$url??'#'}}">
+                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}" />
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+					</a>
+					</div>
+				@endforeach
+
+			</div>
+			<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="sr-only">Previous</span>
+			</a>
+			<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="sr-only">Next</span>
+			</a>
+		</div>
+
+		<div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;">
+			<div class="carousel-inner">
+
+				@foreach($mobile_banners as $key => $banner)
+					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+					<div class="carousel-item @if($key == 0) active @endif">
+					 <a class="banner-img-outer" href="{{$url??'#'}}">
+                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}" />
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}">
+					</a>
+					</div>
+				@endforeach
+
+			</div>
+			<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="sr-only">Previous</span>
+			</a>
+			<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="sr-only">Next</span>
+			</a>
+		</div>
+
+	</div>
 </section>
-@endif
-@if(count($banners))
-<section class="p-0 small-slider al_mobile_banner" style="display:none;">
-   <div class="slide-1 home-slider mb-sm-2">
-      @foreach($banners as $banner)
-      @php
-      $url = '';
-      if($banner->link == 'category'){
-      if($banner->category != null){
-      $url = route('categoryDetail', $banner->category->slug);
-      }
-      }
-      else if($banner->link == 'vendor'){
-      if($banner->vendor != null){
-      $url = route('vendorDetail', $banner->vendor->slug);
-      }
-      }
-      @endphp
-      <div>
-         @if($url)
-         <a href="{{$url}}">
-            @endif
-            <div class="home text-center">
-               <link rel="preload" as="image" href="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" />
-               <img src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
-            </div>
-            @if($url)
-         </a>
-         @endif
-      </div>
-      @endforeach
-   </div>
-</section>
-@endif
+
+ @endif
 <section class="alSixMainMenu p-0">
    @if(count($navCategories))
    <div class="menu-navigation_al">
@@ -338,7 +228,7 @@
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
@@ -372,7 +262,7 @@
 <script type="text/template" id="mobile_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
@@ -424,7 +314,7 @@
    					<%}%>
    			</div>
    			@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-   			<% if(vendor.vendorRating > 0){%> <span class="rating-number"><%=vendor.vendorRating %> </span>
+   			<% if(vendor.vendorRating > 0){%> <span class="rating-number"><i class="fa fa-star"></i> <%=vendor.vendorRating %> </span>
    			<%}%> @endif @endif
    		</a>
    	</div>
@@ -461,7 +351,7 @@
    					<div class="product-description">
    						<div class="d-flex align-items-center justify-content-between">
    							<h6 class="card_title ellips"><%=product.title %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-   							<% if(product.averageRating > 0){%> <span class="rating-number"><%=product.averageRating %></span>
+   							<% if(product.averageRating > 0){%> <span class="rating-number"><i class="fa fa-star"></i> <%=product.averageRating %></span>
    								<%}%> @endif @endif
                               </div>
    						<div class="product-description_list border-bottom">
@@ -506,7 +396,7 @@
    			</div>
    			@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
    					<% if(vendor.vendorRating > 0){%>
-   					<span class="rating-number"><%=vendor.vendorRating %> </span>
+   					<span class="rating-number"><i class="fa fa-star"></i> <%=vendor.vendorRating %> </span>
    					<%}%> @endif @endif
    		</a>
    	</div>
@@ -596,6 +486,65 @@
 <!-- our_vendor_main_div start -->
 <section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0 {{isset($client_preference_detail) && $client_preference_detail->business_type == 'taxi' ? 'taxi' : ''}}" id="our_vendor_main_div" >
    <div class="vendors">
+   @foreach ($enable_layout as $enabled)
+      <div class="container mb-3 shimmer_effect  shimmer_effect_{{ $enabled  }}">
+         <div class="row">
+            <div class="col-12">
+               <div class="card_title ml-4 mb-4 maintitle loading"></div>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-12 px-md-5 px-2">
+               <div class="grid-row grid-4-4">
+                  <div class="cards">
+                     <div class="card_image loading"></div>
+                     <div class="d-flex align-items-center justify-content-between">
+                           <div class="card_title loading"></div>
+                           <div class="card_icon loading"></div>
+                     </div>
+                     <div class="card_content loading mt-0 w-75"></div>
+                     <div class="card_content loading mt-0 w-50"></div>
+                     <div class="card_line loading"></div>
+                     <div class="card_price loading"></div>
+                  </div>
+                  <div class="cards">
+                     <div class="card_image loading"></div>
+                     <div class="d-flex align-items-center justify-content-between">
+                           <div class="card_title loading"></div>
+                           <div class="card_icon loading"></div>
+                     </div>
+                     <div class="card_content loading mt-0 w-75"></div>
+                     <div class="card_content loading mt-0 w-50"></div>
+                     <div class="card_line loading"></div>
+                     <div class="card_price loading"></div>
+                  </div>
+                  <div class="cards">
+                     <div class="card_image loading"></div>
+                     <div class="d-flex align-items-center justify-content-between">
+                           <div class="card_title loading"></div>
+                           <div class="card_icon loading"></div>
+                     </div>
+                     <div class="card_content loading mt-0 w-75"></div>
+                     <div class="card_content loading mt-0 w-50"></div>
+                     <div class="card_line loading"></div>
+                     <div class="card_price loading"></div>
+                  </div>
+                  <div class="cards">
+                     <div class="card_image loading"></div>
+                     <div class="d-flex align-items-center justify-content-between">
+                           <div class="card_title loading"></div>
+                           <div class="card_icon loading"></div>
+                     </div>
+                     <div class="card_content loading mt-0 w-75"></div>
+                     <div class="card_content loading mt-0 w-50"></div>
+                     <div class="card_line loading"></div>
+                     <div class="card_price loading"></div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   @endforeach
       @foreach($homePageLabels as $key => $homePageLabel) @if($homePageLabel->slug == 'pickup_delivery') @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page') @elseif($homePageLabel->slug == 'brands')
       <section class="container popular-brands left-shape_ position-relative "  >
          <div class="al_top_heading d-flex justify-content-between">

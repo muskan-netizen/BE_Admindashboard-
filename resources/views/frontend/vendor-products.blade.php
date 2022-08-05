@@ -76,6 +76,7 @@
                     </div>
                 </div>
             </div>
+            @if(count($brands) > 0 ||  count($variantSets) > 0))
             <div class="row mb-3 homepageSix">
                 <div class="collection-filter col-md-3">
                     <div class="collection-filter-block mb-3 bg-transparent p-0">
@@ -267,9 +268,9 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts px-0">
-                                        <div class="col-12 text-right">{{ __('Sort By:')}}
+                                        <div class="col-12 text-right">
                                             <select name="order_type" id='order_type' class="sortingFilter p-1">
-                                                <option value="">{{__('Please Select')}}</option>
+                                                <option value="">{{__('Sort By')}}</option>
                                                 <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
                                                 <option value="a_to_z" {{isset($input['order_type']) && $input['order_type'] == "a_to_z" ? 'selected' : ''}}>{{__('A to Z')}}</option>
                                                 <option value="z_to_a" {{isset($input['order_type']) && $input['order_type'] == "z_to_a" ? 'selected' : ''}}>{{__('Z to A')}}</option>
@@ -292,7 +293,7 @@
                                                         }
                                                         $imagePath2 = $data->media[$i]->image->path['image_fit'] . '600/600' . $data->media[$i]->image->path['image_path'];
                                                     }*/ ?>
-                                                    <div class="col-md-3 col-6 col-grid-box mt-2">
+                                                    <div class="col-md-3 col-6 col-grid-box mt-4">
                                                         <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="common-product-box scale-effect mt-0">
                                                             <div class="img-outer-box position-relative">
                                                                 <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
@@ -308,7 +309,7 @@
                                                                         @if($client_preference_detail)
                                                                             @if($client_preference_detail->rating_check == 1)
                                                                                 @if($data->averageRating > 0)
-                                                                                    <span class="rating-number">{{ number_format($data->averageRating, 1, '.', '') }}</span>
+                                                                                    <span class="rating-number"><i class="fa fa-star"></i> {{ number_format($data->averageRating, 1, '.', '') }}</span>
                                                                                 @endif
                                                                             @endif
                                                                         @endif
@@ -352,6 +353,7 @@
                     </div>
                 </div>
             </div>
+            @endif
         </div>
     </div>
 </section>

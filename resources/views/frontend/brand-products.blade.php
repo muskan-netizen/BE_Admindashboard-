@@ -252,7 +252,7 @@
                                                                 <h6 class="mt-0"><b>{{$data->vendor->name}}</b></h6>
                                                                 <h4 class="mt-1">{{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                 @if($client_preference_detail && $client_preference_detail->rating_check == 1 && $data->averageRating > 0)
-                                                                    <span class="rating-number">{{ number_format($data->averageRating, 1, '.', '') }} <i class="fa fa-star text-white p-0"></i></span>
+                                                                    <span class="rating-number"><i class="fa fa-star"></i> {{ number_format($data->averageRating, 1, '.', '') }} <i class="fa fa-star text-white p-0"></i></span>
                                                                 @endif
                                                             </div>
                                                         </div>
