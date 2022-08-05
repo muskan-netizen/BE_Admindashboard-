@@ -26,6 +26,7 @@ class DashBoardController extends BaseController{
     }
     public function postFilterData(Request $request){
         try {
+            $user = Auth::user();
             $type = $request->type;
             $date_filter = $request->date_filter;
             if($date_filter){
@@ -40,9 +41,9 @@ class DashBoardController extends BaseController{
             $total_brands = $total_brands->count();
             /// Vendors count 
             $total_vendor = Vendor::orderBy('id','desc');
-            if (Auth::user()->is_superadmin == 0) {
-                $total_vendor = $total_vendor->whereHas('permissionToUser', function ($query) {
-                    $query->where('user_id', Auth::user()->id);
+            if ($user->is_superadmin == 0) {
+                $total_vendor = $total_vendor->whereHas('permissionToUser', function ($query) use($user) {
+                    $query->where('user_id', $user->id);
                 });
             }
             if($date_filter){
@@ -58,9 +59,9 @@ class DashBoardController extends BaseController{
             $total_products = $total_products->whereHas('vendor', function ($query){
                 $query->where(['vendors.status' => 1]);
             });
-            if (Auth::user()->is_superadmin == 0) {
-                $total_products = $total_products->whereHas('vendor.permissionToUser', function ($query) {
-                    $query->where('user_id', Auth::user()->id);
+            if ($user->is_superadmin == 0) {
+                $total_products = $total_products->whereHas('vendor.permissionToUser', function ($query) use($user) {
+                    $query->where('user_id', $user->id);
                 });
             }
             if($date_filter){
@@ -73,65 +74,118 @@ class DashBoardController extends BaseController{
             }
             $total_categories = $total_categories->where('id', '>', '1')->where('deleted_at', NULL)->count();
             $total_revenue = Order::orderBy('id','desc');
-            if (Auth::user()->is_superadmin == 0) {
-                $total_revenue = $total_revenue->whereHas('vendors.vendor.permissionToUser', function ($query) {
-                    $query->where('user_id', Auth::user()->id);
+            if ($user->is_superadmin == 0) {
+                $total_revenue = $total_revenue->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
+                    $query->where('user_id', $user->id);
                 });
             }
             $total_revenue = $total_revenue->sum('payable_amount');
             $today_sales = Order::whereDay('created_at', now()->day);
-            if (Auth::user()->is_superadmin == 0) {
-                $today_sales = $today_sales->whereHas('vendors.vendor.permissionToUser', function ($query) {
-                    $query->where('user_id', Auth::user()->id);
+            if ($user->is_superadmin == 0) {
+                $today_sales = $today_sales->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
+                    $query->where('user_id', $user->id);
                 });
             }
             $today_sales = $today_sales->sum('payable_amount');
-            #all pending orders 
-            $total_pending_order = OrderVendor::where('order_status_option_id',1);
-            if (Auth::user()->is_superadmin == 0) {
-                $total_pending_order = $total_pending_order->whereHas('vendor.permissionToUser', function ($query) {
-                    $query->where('user_id', Auth::user()->id);
-                });
-            }
-            if($date_filter){
-                $total_pending_order->whereBetween('created_at', [$from_date, $end_date]);
-            }
-            $total_pending_order = $total_pending_order->count();
-            #total_rejected_order
-            $total_rejected_order = OrderVendor::where('order_status_option_id',3);
-            if (Auth::user()->is_superadmin == 0) {
-                 $total_rejected_order = $total_rejected_order->whereHas('vendor.permissionToUser', function ($query) {
-                     $query->where('user_id', Auth::user()->id);
-                 });
-            }
-            if($date_filter){
-                $total_rejected_order->whereBetween('created_at', [$from_date, $end_date]);
-            }
-            $total_rejected_order = $total_rejected_order->count();
-              #total_delivered_order
-            $total_delivered_order = OrderVendor::where('order_status_option_id',6);
-            if (Auth::user()->is_superadmin == 0) {
-                  $total_delivered_order = $total_delivered_order->whereHas('vendor.permissionToUser', function ($query) {
-                      $query->where('user_id', Auth::user()->id);
-                  });
-            }
-            if($date_filter){
-                $total_delivered_order->whereBetween('created_at', [$from_date, $end_date]);
-            }
-            $total_delivered_order = $total_delivered_order->count();
-            $dates = $sales = $labels = $series = $categories = $revenue = $address_ids = $markers =[];
-             #total_active_order
-            $total_active_order = OrderVendor::whereIn('order_status_option_id',[2,4,5]);
-            if (Auth::user()->is_superadmin == 0) {
-                $total_active_order = $total_active_order->whereHas('vendor.permissionToUser', function ($query) {
-                    $query->where('user_id', Auth::user()->id);
-                });
-            }
-            if($date_filter){
-                $total_active_order->whereBetween('created_at', [$from_date, $end_date]);
-            }
-            $total_active_order = $total_active_order->count();
 
+            #all pending orders 
+            $total_pending_order = Order::whereHas('vendors', function ($query) use($user) {
+                $query->where('order_status_option_id', 1);
+                if ($user->is_superadmin == 0) {
+                    $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                        $query1->where('user_id', $user->id);
+                    });
+                }
+            });
+            if ($user->is_superadmin == 0) {
+                $total_pending_order = $total_pending_order->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
+                    $query->where('user_id', $user->id);
+                });
+            }
+            if($date_filter){
+                $total_pending_order = $total_pending_order->whereBetween('created_at', [$from_date, $end_date]);
+            }
+            $total_pending_order = $total_pending_order->where(function ($q1) {
+                $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]); // 1 for cod ,38 for offline manual by harbans 
+                $q1->orWhere(function ($q2) {
+                    $q2->whereIn('payment_option_id',[1,38]);// 1 for cod ,38 for offline manual by harbans
+                });
+            })->count();
+            
+            #total_rejected_order
+            $total_rejected_order = Order::whereHas('vendors', function ($query) use($user) {
+                $query->where('order_status_option_id', 3);
+                if ($user->is_superadmin == 0) {
+                    $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                        $query1->where('user_id', $user->id);
+                    });
+                }
+            });
+            if ($user->is_superadmin == 0) {
+                $total_rejected_order = $total_rejected_order->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
+                    $query->where('user_id', $user->id);
+                });
+            }
+            if($date_filter){
+                $total_rejected_order = $total_rejected_order->whereBetween('created_at', [$from_date, $end_date]);
+            }
+            $total_rejected_order = $total_rejected_order->where(function ($q1) {
+                $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]); // 1 for cod ,38 for offline manual by harbans
+                $q1->orWhere(function ($q2) {
+                    $q2->whereIn('payment_option_id', [1,38]);
+                });
+            })->count();
+
+            #total_delivered_order
+            $total_delivered_order = Order::whereHas('vendors', function ($query) use($user) {
+                $query->where('order_status_option_id', 6);
+                if ($user->is_superadmin == 0) {
+                    $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                        $query1->where('user_id', $user->id);
+                    });
+                }
+            });
+            if ($user->is_superadmin == 0) {
+                $total_delivered_order = $total_delivered_order->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
+                    $query->where('user_id', $user->id);
+                });
+            }
+            if($date_filter){
+                $total_delivered_order = $total_delivered_order->whereBetween('created_at', [$from_date, $end_date]);
+            }
+            $total_delivered_order = $total_delivered_order->where(function ($q1) {
+                $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]); // 1 for cod ,38 for offline manual by harbans
+                $q1->orWhere(function ($q2) {
+                    $q2->whereIn('payment_option_id', [1,38]);
+                });
+            })->count();
+
+            #total_active_order            
+            $total_active_order = Order::whereHas('vendors', function ($query) use($user) {
+                $query->whereIn('order_status_option_id', [2,4,5]);
+                if ($user->is_superadmin == 0) {
+                    $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                        $query1->where('user_id', $user->id);
+                    });
+                }
+            });
+            if ($user->is_superadmin == 0) {
+                $total_active_order = $total_active_order->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
+                    $query->where('user_id', $user->id);
+                });
+            }
+            if($date_filter){
+                $total_active_order = $total_active_order->whereBetween('created_at', [$from_date, $end_date]);
+            }
+            $total_active_order = $total_active_order->where(function ($q1) {
+                $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]); // 1 for cod ,38 for offline manual by harbans
+                $q1->orWhere(function ($q2) {
+                    $q2->whereIn('payment_option_id', [1,38]);
+                });
+            })->count();
+
+
+            $dates = $sales = $labels = $series = $categories = $revenue = $address_ids = $markers =[];
 
             // Graph Data
 

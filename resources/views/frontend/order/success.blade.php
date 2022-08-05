@@ -124,9 +124,9 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                                     @if($order->total_discount > 0)
                                         <li>{{__('Total Discount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_discount * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
-                                   
+
                                     @if($order->taxable_amount > 0 || $order->total_other_taxes_amount> 0 )
-                                    
+
                                     <li>{{__('Total')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
                                     <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount + $order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>
                                     @else
@@ -144,13 +144,13 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                                     @if($order->tip_amount > 0)
                                         <li>{{__('Tip Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->tip_amount * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
-                                    
+
                         </ul>
                     </div>
                     <div class="final-total">
                         @php
                             //$total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount
-                            
+
                         @endphp
                         <h3>{{__('Total')}} <span>{{Session::get('currencySymbol')}}{{decimal_format(($total_amount) * @$clientCurrency->doller_compare)}}</span></h3>
                     </div>
@@ -161,10 +161,10 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                             <div class="col-sm-12">
                                 <ul class="order-detail row">
                                     <li class="col-4">{{__('Order ID')}}: <span> {{$order->order_number}}</span></li>
-                                    <li class="col-4">{{__('Order Date')}}:<span> {{ date('F d, Y', strtotime($order->created_at)) }}</span></li>
+                                    <li class="col-8">{{__('Order Date')}}:<span> {{ date('F d, Y', strtotime($order->created_at)) }}</span></li>
 
                                     @if (!empty($order->scheduled_date_time))
-                                    <li class="col-4">{{__('Scheduled Date')}}:<span> {{ date('F d, Y', strtotime($order->scheduled_date_time)) }}</span></li>
+                                    <li class="col-8">{{__('Scheduled Date')}}:<span> {{ date('F d, Y', strtotime($order->scheduled_date_time)) }}</span></li>
                                     @endif
                                 </ul>
                                 <ul class="order-detail row">
@@ -172,7 +172,7 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                                     <li class="Shipping col-8">
 
                                         @if($order->luxury_option_id == 1)
-                                            {{__('Delivery Address')}}
+                                            {{__('Delivery Address')}}:
                                         <span>
                                         {{ ($order->address->house_number ?? false) ? $order->address->house_number."," : '' }} {{ $order->address ? $order->address->address : ''}}{{$order->address ? ($order->address->pincode ? ", ".$order->address->pincode : '') : ''}}
                                         </span>
@@ -185,7 +185,7 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                                     </li>
                                 </ul>
                                 <ul class="order-detail row">
-                                    <li class="col-4 payment-mode">{{__('Payment Method')}}:<span>{{__($order->paymentOption->title)}}</span></li>
+                                    <li class="col-12 payment-mode">{{__('Payment Method')}}:<span>{{__($order->paymentOption->title)}}</span></li>
                                 </ul>
                             </div>
                         </div>

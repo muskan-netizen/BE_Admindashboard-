@@ -151,8 +151,7 @@ class CartController extends FrontController
     public function postCartRequestFromEstimation(Request $request)
     {
         $product_ids = explode(',', $request->product_id);
-        // \Log::info($request->all());
-        // dd('hi');
+        $user = Auth::user();
         $vendor_id = $request->vendor_id;
         $variant_id = array();
         $minimum_order_count = array();
@@ -196,7 +195,12 @@ class CartController extends FrontController
 
     
         // Remove Estimation Cart
-        $estimatedProductCart = EstimatedProductCart::where('user_id', Auth::user()->id)->first();
+        if($user){
+            $estimatedProductCart = EstimatedProductCart::where('user_id', $user->id)->first();
+        }else{
+            $user_token = session()->get('_token');
+            $estimatedProductCart = EstimatedProductCart::where('unique_identifier', $user_token)->first();
+        }
         $estimatedProduct = EstimatedProduct::where('estimated_cart_id', $estimatedProductCart->id )->first();
         $estimatedProductAddons = EstimatedProductAddons::where('estimated_product_id', $estimatedProduct->id )->delete();
         $estimatedProduct->delete();
@@ -428,7 +432,7 @@ class CartController extends FrontController
                 $cartProduct->quantity = $cartProduct->quantity + $request->quantity;
                 $cartProduct->save();
             }
-
+            $quantityCart = CartProduct::where('cart_id',$cart_detail->id)->sum('quantity');
             // if ($checkIfExist) {
             //     $checkIfExist->quantity = (int)$checkIfExist->quantity + $request->quantity;
             //     $cart_detail->cartProducts()->save($checkIfExist);
@@ -453,8 +457,9 @@ class CartController extends FrontController
             // if($request->has('from_estimation')){
             //     return 'Request From Estimation';
             // }
-            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id]);
+            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0]);
         } catch (Exception $e) {
+            \Log::info($e->getMessage());
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
@@ -683,6 +688,7 @@ class CartController extends FrontController
         $cart->pharmacy_check = $preferences->pharmacy_check;
         $customerCurrency = ClientCurrency::where('currency_id', $curId)->first();
         $nowdate = Carbon::now()->toDateTimeString();
+        $nowdate = convertDateTimeInClientTimeZone($nowdate);
         $latitude = '';
         $longitude = '';
         $user_allAddresses = collect();
@@ -690,14 +696,16 @@ class CartController extends FrontController
         $crossSell_products = collect();
         $couponGetAmount=0;
         /*Getting User Address */
+        $guest_user = true;
         if($user){
-            $user_allAddresses = UserAddress::where('user_id', $user->id)->where('status',1)->get();
+            $user_allAddresses = UserAddress::where('user_id', $user->id)->where('status',1)->orderBy('is_primary','Desc')->get();
             if($address_id > 0){
                 $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->first();
             }else{
                 $address = UserAddress::where('user_id', $user->id)->where('is_primary', 1)->where('status',1)->first();
                 $address_id = ($address) ? $address->id : 0;
             }
+            $guest_user = false;
         }
 
         /* Getting User Lat Long */
@@ -810,7 +818,8 @@ class CartController extends FrontController
             $d = 0;
             $total_container_charges = 0 ;
             $all_vendor_deliver_charges = 0 ;
-
+            $all_vendor_markup_charges = 0;
+            $total_quantity = 0;
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
                 $user->timezone = $client_timezone->timezone ?? $user->timezone;
@@ -913,6 +922,7 @@ class CartController extends FrontController
                     }
                 }
                 $cart_product_ids = [];
+                $totalMarkup = 0;
                 /* Getting in Vendor product loop and setting product values*/
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
 
@@ -953,6 +963,7 @@ class CartController extends FrontController
                     //need change here
                     //dd($prod->pvariant->price);
                     $price_in_currency = $prod->pvariant->price??0;
+                    $totalMarkup += $prod->pvariant->markup_price??0;
                     $price_in_doller_compare = $prod->pvariant->price??0; 
                     $container_charges_in_currency = $prod->pvariant->container_charges??0;
                     $coupon_apply_price+=$price_in_currency;
@@ -970,6 +981,7 @@ class CartController extends FrontController
                     $sub_total+=$quantity_price+$container_charges_in_currency;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
+                    $total_quantity += $prod->quantity; 
                    // $prod->pvariant->price = decimal_format($price_in_currency);
                     //dd($prod->pvariant->price);
                     $prod->pvariant->container_charges = decimal_format($container_charges_in_currency);
@@ -1244,7 +1256,8 @@ class CartController extends FrontController
                 if($vendorData->vendor->delivery_charges_tax_id)
                 $all_vendor_deliver_charges +=  $deliveryCharges;
 
-
+                if($vendorData->vendor->add_markup_price)
+                $all_vendor_markup_charges +=  $totalMarkup;
 
                 $subtotal_amount = $payable_amount;
                 // if($PromoFreeDeliver != 1){
@@ -1325,7 +1338,7 @@ class CartController extends FrontController
 
                 $vendorData->is_promo_code_available = $is_promo_code_available;
             }
-            
+            //dd($is_promo_code_available)
             $is_percent = 0;
             $amount_value = 0;
             if ($cart->coupon) {
@@ -1350,8 +1363,9 @@ class CartController extends FrontController
             }
             if ($total_subscription_discount > 0) {
                 $total_discount_amount = $total_discount_amount + $total_subscription_discount;
-                $cart->total_subscription_discount = decimal_format($total_subscription_discount);
             }
+            $cart->total_subscription_discount = decimal_format($total_subscription_discount??0);
+
             $fixedFeeAmount=0.00;
             if(isset($vendorData->vendor->fixed_fee_amount)){
                 $fixedFeeAmount=$vendorData->vendor->fixed_fee_amount;
@@ -1376,9 +1390,10 @@ class CartController extends FrontController
                         $wallet_amount_used = $total_payable_amount;
                     }
                     $total_payable_amount = $total_payable_amount - $wallet_amount_used;
-                    $cart->wallet_amount_used = decimal_format($wallet_amount_used);
                 }
             }
+            $cart->wallet_amount_used = decimal_format($wallet_amount_used);
+
           
             $scheduled = (object)array(
                 'scheduled_date_time'=>(($cart->scheduled_slot)?date('Y-m-d',strtotime($cart->scheduled_date_time)):$cart->scheduled_date_time),'slot'=>$cart->scheduled_slot,
@@ -1504,6 +1519,7 @@ class CartController extends FrontController
                 $is_alrady_submit = CaregoryKycDoc::whereIn('category_kyc_document_id', $category_kyc_document_ids)->where('cart_id',$cart_id)->count();
             //     echo  $is_alrady_submit." <br>";
             //    pr($category_kyc_document_ids);
+                $cart->category_kyc_count =0;
                 if( $category_kyc_count  > 0 && ($is_alrady_submit  !=  $category_kyc_count )){
                     $cart->category_kyc_count = $category_kyc_count;
                     $cart->category_rendem_id = rand(9,10);
@@ -1538,6 +1554,7 @@ class CartController extends FrontController
             $cart->total_payable_amount = decimal_format($total_payable_amount);
             $cart->delivery_charges = decimal_format($deliveryCharges);
             $cart->all_vendor_deliver_charges = decimal_format($all_vendor_deliver_charges);
+            $cart->all_vendor_markup_charges = decimal_format($all_vendor_markup_charges);
             $cart->total_discount_amount = decimal_format($total_discount_amount);
             $cart->total_taxable_amount = decimal_format($total_taxable_amount); 
             $total_payable_amount_calc_tip = $total_payable_amount - $total_taxable_amount;
@@ -1548,6 +1565,9 @@ class CartController extends FrontController
             $cart->wallet_amount_available = decimal_format($wallet_amount_available);
             $cart->taxRates=$taxRates;
             $cart->action = $action;
+            $cart->totalQuantity = $total_quantity;
+            $cart->user_allAddresses = $user_allAddresses??[];
+            $cart->guest_user = $guest_user??0;
             $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
@@ -1917,7 +1937,7 @@ class CartController extends FrontController
 
         
         if ($cart) {
-            $cart_details = $this->getCart($cart, $address_id,$request->code, $schedule_datetime_del);
+            $cart_details = $this->getCartsNew($cart, $address_id,$request->code, $schedule_datetime_del);
         }
 
         $client_preference_detail = ClientPreference::first();
@@ -1931,8 +1951,10 @@ class CartController extends FrontController
 
         //     $expected_vendor_html = view('frontend.modals.expected_vendor_pricing')->with(['expected_vendors'=>$expected_vendors,'clientCurrency' => $clientCurrency])->render();
         // }
-
-        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail]);
+        if($cart_details){
+            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[])])->render();
+        }
+        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'']);
     }
 
 
@@ -2011,6 +2033,7 @@ class CartController extends FrontController
                     'courier_company_id' => 0,
                     'etd' => 0,
                     'etd_hours' => 0,
+                    'duration' => 0,
                     'estimated_delivery_days' => 0,
                     'code' => 'L_0'
                 );
@@ -2053,6 +2076,7 @@ class CartController extends FrontController
                             'courier_company_id' => 0,
                             'etd' => 0,
                             'etd_hours' => 0,
+                            'duration' => 0,
                             'estimated_delivery_days' => 0,
                             'code' => 'DU_0'
                         );
@@ -2075,6 +2099,7 @@ class CartController extends FrontController
                               'courier_company_id' => 0,
                               'etd' => 0,
                               'etd_hours' => 0,
+                              'duration' => 0,
                               'estimated_delivery_days' => 0,
                               'code' => 'M_0'
                           );
@@ -2099,6 +2124,7 @@ class CartController extends FrontController
                     'courier_company_id' => 0,
                     'etd' => 0,
                     'etd_hours' => 0,
+                    'duration' => 0,
                     'estimated_delivery_days' => 0,
                     'code' => 'D_0'
                 );

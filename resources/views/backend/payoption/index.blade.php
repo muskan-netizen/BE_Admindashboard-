@@ -129,7 +129,7 @@
                                 <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
                             </div>
                         </div>
-                        @if ( (strtolower($opt->code) != 'dpo') &&  (strtolower($opt->code) != 'cod') &&  (strtolower($opt->code) != 'razorpay') &&  (strtolower($opt->code) != 'simplify') && (strtolower($opt->code)!= 'kongapay') && (strtolower($opt->code)!= 'windcave') && (strtolower($opt->code)!= 'payphone') && (strtolower($opt->code)!= 'offline_manual'))
+                        @if ( (strtolower($opt->code) != 'dpo') &&  (strtolower($opt->code) != 'cod') &&  (strtolower($opt->code) != 'razorpay') &&  (strtolower($opt->code) != 'simplify') && (strtolower($opt->code)!= 'kongapay') && (strtolower($opt->code)!= 'windcave') && (strtolower($opt->code)!= 'payphone') && (strtolower($opt->code)!= 'offline_manual') && (strtolower($opt->code) != 'khalti'))
                         <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label>
@@ -1065,6 +1065,27 @@
                                 <div class="form-group mb-2">
                                     <label for="telr_api_key" class="mr-3">{{ __("Api Key") }}</label>
                                     <input type="text" name="telr_api_key" id="telr_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'khalti') )
+                    <div class="mt-2" id="khalti_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="khalti_public_key" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="text" name="khalti_public_key" id="khalti_public_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="khalti_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="khalti_secret_key" id="khalti_secret_key" class="form-control" value="{{$api_secret_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

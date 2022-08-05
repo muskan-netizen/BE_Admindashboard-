@@ -88,7 +88,6 @@ class TypeSeeder extends Seeder
                 'title' => 'Laundry',
                 'image' => 'laundry.png',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-                
             ],
             [
                 'id' => 10,
@@ -96,6 +95,15 @@ class TypeSeeder extends Seeder
                 'sequence' => 9,
                 'title' => 'Rental Service',
                 'image' => 'rental.png',
+                'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+                
+            ],
+            [
+                'id' => 11,
+                'sequence' => 10,
+                'title' => 'Food',
+                'service_type' => 'products_service',
+                'image' => 'home_five.png',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
                 
             ]

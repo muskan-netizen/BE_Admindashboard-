@@ -20,6 +20,7 @@
         border-bottom-left-radius: 4px;
         border-bottom-right-radius: 0;
     }
+    .profile-page .dropify-wrapper { margin: 0; }
 </style>
 @endsection
 
@@ -68,12 +69,17 @@
                         @method('PUT')
                         @csrf
                         <div class="row mb-2 d-flex align-items-center">
-                            <div class="col-md-4 positoin-relative">
-                                <label>{{ __("Upload Logo") }}</label>
+                            <div class="col-md-3 positoin-relative text-left">
+                                <label>{{ __("Light Theme Logo") }}</label>
                                 <input type="file" accept="image/png, image/gif, image/jpeg, image/jpg" data-plugins="dropify" name="logo" data-default-file="{{$client->logo['image_fit'] . '300/100' . $client->logo['image_path']}}" />
-                                <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 300x100</label>
+                                <label class="logo-size d-block text-left mt-1">{{ __("Image Size") }} 300x100</label>
                             </div>
-                            <div class="offset-1 col-md-7">
+                            <div class="col-md-3 positoin-relative text-left">
+                                <label>{{ __("Dark Theme Logo") }}</label>
+                                <input type="file" accept="image/png, image/gif, image/jpeg, image/jpg" data-plugins="dropify" name="dark_logo" data-default-file="{{ !empty($client->dark_logo)? $client->dark_logo['image_fit'] . '300/100' . $client->dark_logo['image_path'] : ''}}" />
+                                <label class="logo-size d-block text-left mt-1">{{ __("Image Size") }} 300x100</label>
+                            </div>
+                            <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6 mb-2">
                                         <div class="form-group">

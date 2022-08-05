@@ -2839,4 +2839,148 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
         data._token = $('input[name=_token]').val(); 
         $.redirect(openpay_before_payment, data);
     }
+
+    ///////////////////////////Khalti payment Gateway //////////////////////////////
+    window.paymentViaKhalti = function paymentViaKhalti(address_id, order, payment_form) {
+        let total_amount = 0;
+        let tip = 0;
+        let cabElement = $("#pickup_now");
+        let tipElement = $("#cart_tip_amount");
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let cart_id = $("#cart_total_payable_amount").data("cart_id");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let walletElement = $("input[name='wallet_amount']");
+        let product_id_arr_string = 'WALLET_R9N6O5';
+        let product_name_arr_string = 'WALLET PRODUCT';
+        let ajaxData = [];
+        if (cartElement.length > 0) {
+            let product_id_arr = order.products;
+            product_id_arr_string = product_id_arr.map(elem => (elem.product_id)).toString();
+            product_name_arr_string = product_id_arr.map(elem => (elem.product_name)).toString();
+            var order_number = order.order_number;
+    
+        }
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            tip = tipElement.val();
+            total_amount = order.payable_amount;
+            ajaxData.push(
+                {name: 'tip', value: tip },
+                {name: 'address_id', value: address_id},
+                {name: 'payment_form', value: 'cart'},
+                {name: 'cart_id', value: cart_id},
+                {name: 'order_id', value: order_number},
+                {name: 'amount', value: total_amount}
+            );
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            ajaxData.push({name: 'payment_form', value: 'wallet'});
+            ajaxData.push({name: 'amount', value: total_amount});
+        } else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            ajaxData = $("#subscription_payment_form").serializeArray();
+            ajaxData.push({name: 'payment_form', value: 'subscription'});
+        } else if ((typeof tip_for_past_order !== 'undefined') && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            ajaxData.push({name: 'payment_form', value: 'tip'});
+            ajaxData.push({name: 'order_id', value: $("#order_number").val()});
+        } else if (cabElement.length > 0) {
+            total_amount = cabElement.attr('data-amount');
+            ajaxData.push({name: 'payment_form', value: 'pickup_delivery'});
+            ajaxData.push({name: 'order_id', value: order.order_number});
+        }
+    
+        var khaltipay_options = {
+            // replace the publicKey with yours
+            "publicKey": khalti_api_key,
+            "currency": "NPR",
+            "name": client_company_name,
+            "productIdentity": product_id_arr_string,
+            "productName": product_name_arr_string,
+            "productName": product_name_arr_string,
+            "productUrl": "https://sales.royoorders.com/",
+            "eventHandler": {
+                onSuccess (payload) {
+                    console.log(payload,'payload');
+                    // hit merchant api for initiating verfication
+                    ajaxData.push({name: 'amount', value: payload.amount});
+                    ajaxData.push({name: 'mobile', value: payload.mobile});
+                    ajaxData.push({name: 'product_identity', value: payload.product_identity});
+                    ajaxData.push({name: 'token', value: payload.token});
+                    ajaxData.push({name: 'payment_id', value: payload.idx});
+                    $.ajax({
+                        url: payment_khalti_url,
+                        type: 'POST',
+                        data: ajaxData,
+                        success: function(data)
+                        {
+    
+                            console.log('PAY onSuccess Success');
+                            khaltiPayView(data);
+                        },
+                        error: function(data)
+                        {
+                            console.log("PAY onSuccess Success error");
+                            //redirext to error page
+                        }
+                    });
+                },
+                onError (error) {
+                    console.log('OnError'+error);
+                    //redirect as needed
+                },
+                onClose () {
+                    console.log('widget is closing');
+                    //redirect as needed
+                }
+            }
+        };
+        var khaltipay = new KhaltiCheckout(khaltipay_options);
+        khaltipay.show({amount: (total_amount*100).toFixed(0)});
+    }
+
+    window.khaltiPayCompletePayment = function khaltiPayCompletePayment(data) {
+        // console.log('khaltiPayCompletePayment '+JSON.stringify(data));
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            async: false,
+            url: payment_khalti_complete_purchase,
+            data: data,
+            success: function(response) {
+                if (response.status == "Success") {
+                    if(response.data.payment_from == 'pickup_delivery'){
+                        window.location.replace(response.data.route);
+                    }else if(response.data.payment_from == 'wallet'){
+                        window.location.href = response.data.route;
+                    }else if(response.data.payment_from == 'cart'){
+                        window.location.href = response.data.route;
+                    }else if(response.data.payment_from == 'tip'){
+                        window.location.href = response.data.route;
+                    }else if(response.data.payment_from == 'subscription'){
+                        window.location.href = response.data.route;
+                    }
+                } else {
+
+                }
+            },
+            error: function(response) {
+                var error = response.responseJSON;
+                console.log(error, 'Error');
+            }
+        });
+    }
+
+    window.khaltiPayView = function khaltiPayView(data) {
+        console.log('Pay View '+JSON.stringify(data));
+        // khaltipay_options.eventHandler = function (response){
+            startLoader('body','We are processing your transaction...');
+            khaltiPayCompletePayment(data);
+            // alert(response.razorpay_payment_id);
+            // alert(response.razorpay_order_id);
+            // alert(response.razorpay_signature);
+        // }
+        // var khaltipay = new KhaltiCheckout(khaltipay_options);
+        // khaltipay.show({amount: 1000});
+    } // Ends
 });

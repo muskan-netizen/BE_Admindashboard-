@@ -474,6 +474,16 @@ class UserController extends BaseController
         } else {
             $data['logo'] = $client->getRawOriginal('logo');
         }
+        
+        if ($request->hasFile('dark_logo')) {
+            $file = $request->file('dark_logo');
+            $file_name = 'Clientlogo/' . uniqid() . '.' .  $file->getClientOriginalExtension();
+            $path = Storage::disk('s3')->put($file_name, file_get_contents($file), 'public');
+            $data['dark_logo'] = $file_name;
+        } else {
+            $data['dark_logo'] = $client->getRawOriginal('dark_logo');
+        }
+        // pr($data);
         $client = Client::where('code', $user->code)->first();
         $client->update($data);
         $userdata = array();

@@ -27,7 +27,7 @@ class RentalProductController extends BaseController
         $ids  = $request->variant_ids ?? [];
         $proSku = $sku . '-' . implode('*', $ids);
         $product_id = $request->pid;
-        $html = '';
+        $proVariantCount = ProductVariant::where('product_id', $product_id)->count();
         $proVariant = ProductVariant::where('sku', $proSku)->first();
         if (!$proVariant) {
             $proVariant = new ProductVariant();
@@ -37,38 +37,9 @@ class RentalProductController extends BaseController
             $proVariant->barcode = $this->generateBarcodeNumber();
             $proVariant->save();
         }
-    //     $html .= '<table class="table table-centered table-nowrap table-striped">
-    //         <thead>
-    //             <th>Image</th>
-    //             <th>Name</th>
-    //             <th>Variants</th>
-    //             <th>Price</th>
-    //             <th>Compare at price</th>
-    //             <th>Cost Price</th>
-    //             <th>Quantity</th>
-    //             <th> </th>
-    //             </thead>';
-
-        $html .= '<tr>';
-        $html .= '<td><div class="image-upload">
-                    <label class="file-input" for="file-input_' . $proVariant->id . '"><img src="' . asset("assets/images/default_image.png") . '" width="30" height="30" class="uploadImages" for="' . $proVariant->id . '"/> </label>
-                </div>
-                <div class="imageCountDiv' . $proVariant->id . '"></div>
-                </td>';
-        $html .= '<td> <input type="hidden" name="variant_ids[]" value="' . $proVariant->id . '">';
-
-        $html .= '<input type="text" name="variant_titles[]" value="' . $proVariant->title . '"></td>';
-        $html .= '<td> <input type="text" style="width: 70px;" name="variant_price[]" value="0" onkeypress="return isNumberKey(event)"> </td>';
-        $html .= '<td> <input type="text" style="width: 100px;" name="variant_minimum_duration[]" value="0" onkeypress="return isNumberKey(event)"> </td>';
-        $html .= '<td> <input type="text" style="width: 70px;" name="variant_incremental_price[]" value="0" onkeypress="return isNumberKey(event)"> </td>';
-        $html .= '<td>
-                    <a href="javascript:void(0);" class="action-icon deleteCurRow"> <i class="mdi mdi-delete"></i></a></td>
-                    <a href="javascript:void(0);" data-varient_id="'.$proVariant->id.'" class="action-icon viewC"><i class="mdi mdi-eye"></i></a>
-                    <a href="javascript:void(0);" data-varient_id="'.$proVariant->id.'"  data-product_id="'.$product_id.'" class="action-icon product_varient_ids addExistRow"><i class="mdi mdi-plus"></i>
-                </a></td>';
-
-        $html .= '</tr>';
-        return $html;
+        $returnHTML = view('backend.product.part.addRows')->with(['varnt' => $proVariant,'show'=>true,'product_id'=>$product_id])->render();
+        return response()->json(array('success' => true, 'htmlData' => $returnHTML));
+     
      }
     private function generateBarcodeNumber()
     {
@@ -78,6 +49,221 @@ class RentalProductController extends BaseController
         }
         return $random_string;
     }
+
+    public function getScheduleTableData(Request $request)
+    {
+        $data  = [[
+                   "name" => "Tiger Nixon", 
+                   "hr" => [
+                      "position" => "System Architect", 
+                      "salary" => "$320,800", 
+                      "start_date" => "2011/04/25" 
+                   ], 
+                   "contact" => [
+                         "Edinburgh", 
+                         "5421" 
+                    ] 
+                ], 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ], 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ]
+                , 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ]
+                , 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ]
+                , 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ]
+                , 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ]
+                , 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ]
+                , 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ]
+                , 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ]
+                , 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ]
+                , 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ]
+                , 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ]
+                , 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ]
+                , 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ]
+                , 
+                [
+                    "name" => "Donna Snider", 
+                    "hr" => [
+                        "position" => "Customer Support", 
+                        "salary" => "$112,000", 
+                        "start_date" => "2011/01/25" 
+                    ], 
+                    "contact" => [
+                            "New York", 
+                            "4226" 
+                    ] 
+                ]
+            
+            
+            ]; 
+        
+        return response()->json(array('success' => true, 'data' => $data));
+     
+     }
 
 
 }

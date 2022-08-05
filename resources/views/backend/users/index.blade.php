@@ -408,7 +408,7 @@
                             name: 'login_type',
                             orderable: false,
                             searchable: false
-                        },
+                        },                        
                         {
                             data: 'signup_date',
                             name: 'signup_date',

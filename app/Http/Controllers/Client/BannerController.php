@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Banner, Vendor, Category, ClientLanguage,Client};
+use App\Models\{Banner, BannerServiceArea, Vendor, Category, ClientLanguage, ClientPreference, Client, ServiceAreaForBanner};
 
 class BannerController extends BaseController
 {
@@ -30,8 +30,50 @@ class BannerController extends BaseController
      */   
     public function index()
     {
+        $client_preferences = ClientPreference::first();
         $banners = Banner::orderBy('sorting', 'asc')->get();
-        return view('backend/banner/index')->with(['banners' => $banners]);
+        $areas = ServiceAreaForBanner::where('type', 1)->orderBy('created_at', 'DESC')->get();
+
+        $co_ordinates = $all_coordinates = array();
+        foreach ($areas as $k => $v) {
+            $all_coordinates[] = [
+                'name' => $k . '-a',
+                'coordinates' => $v->geo_coordinates
+            ];
+        }
+
+        $preferences = Session::get('preferences');
+        $defaultLatitude = 30.0612323;
+        $defaultLongitude = 76.1239239;
+        if($preferences){
+            $defaultLatitude = $preferences['Default_latitude'];
+            $defaultLongitude = $preferences['Default_longitude'];
+            $defaultAddress = $preferences['Default_location_name'];
+        }
+        $center = [
+            'lat' => $defaultLatitude,
+            'lng' => $defaultLongitude
+        ];
+        if (!empty($all_coordinates)) {
+            $center['lat'] = $all_coordinates[0]['coordinates'][0]['lat'];
+            $center['lng'] = $all_coordinates[0]['coordinates'][0]['lng'];
+        }else{
+            $all_coordinates[0]['name'] = '0-a';
+            $all_coordinates[0]['coordinates'][0]['lat'] = floatval($defaultLatitude);
+            $all_coordinates[0]['coordinates'][0]['lng'] = floatval($defaultLongitude);
+        }
+
+        $area1 = ServiceAreaForBanner::where('type', 1)->orderBy('created_at', 'DESC')->first();
+        if ($area1) {
+            $co_ordinates = $area1->geo_coordinates[0];
+        } else {
+            $co_ordinates = [
+                'lat' => $defaultLatitude, //33.5362475,
+                'lng' => $defaultLongitude //-111.9267386
+            ];
+        }
+
+        return view('backend/banner/index')->with(['banners' => $banners, 'areas' => $areas, 'all_coordinates' => $all_coordinates, 'co_ordinates' => $co_ordinates, 'center' => $center, 'client_preferences' => $client_preferences]);
     }
 
     /**
@@ -41,6 +83,7 @@ class BannerController extends BaseController
      */
     public function create()
     {
+        $client_preferences = ClientPreference::first();
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $categories = Category::with(['translation' => function($q) use($langId){
             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
@@ -67,8 +110,9 @@ class BannerController extends BaseController
             }
         }
         $vendors = Vendor::select('id', 'name')->where('status', $this->fstatus)->get();
+        $areas = ServiceAreaForBanner::where('type', 1)->orderBy('created_at', 'DESC')->get();
         $banner = new Banner();
-        $returnHTML = view('backend.banner.form')->with(['banner' => $banner,  'vendors' => $vendors, 'categories' => $categories_hierarchy])->render();
+        $returnHTML = view('backend.banner.form')->with(['banner' => $banner,  'vendors' => $vendors, 'categories' => $categories_hierarchy, 'areas' => $areas, 'selected_areas' => [], 'client_preferences' => $client_preferences])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 
@@ -80,6 +124,7 @@ class BannerController extends BaseController
      */
     public function edit($domain = '', $id)
     {
+        $client_preferences = ClientPreference::first();
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $banner = Banner::where('id', $id)->first();
         $categories = Category::with(['translation' => function($q) use($langId){
@@ -107,7 +152,9 @@ class BannerController extends BaseController
             }
         }
         $vendors = Vendor::select('id', 'name')->where('status', $this->fstatus)->get();
-        $returnHTML = view('backend.banner.form')->with(['banner' => $banner,  'vendors' => $vendors, 'categories' => $categories_hierarchy])->render();
+        $areas = ServiceAreaForBanner::where('type', 1)->orderBy('created_at', 'DESC')->get();
+        $selected_areas = BannerServiceArea::where('banner_id', $id)->pluck('service_area_id')->toArray();
+        $returnHTML = view('backend.banner.form')->with(['banner' => $banner,  'vendors' => $vendors, 'categories' => $categories_hierarchy, 'areas' => $areas, 'selected_areas' => $selected_areas, 'client_preferences' => $client_preferences])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 
@@ -189,12 +236,6 @@ class BannerController extends BaseController
      */
     public function save(Request $request, Banner $banner, $update = 'false')
     {
-
-       
-        
-
-
-
         $banner->validity_on = ($request->has('validity_on') && $request->validity_on == 'on') ? 1 : 0; 
         $banner->name = $request->name;
         $banner->start_date_time = $request->start_date_time;
@@ -205,8 +246,7 @@ class BannerController extends BaseController
             $banner->sorting = 1;
             if($bannerSort){
                 $banner->sorting = $bannerSort->sorting + 1;
-            }
-            
+            }   
         }
         if($request->has('assignTo') && !empty($request->assignTo)){
             $banner->link = $request->assignTo;
@@ -219,18 +259,16 @@ class BannerController extends BaseController
             $banner->image = Storage::disk('s3')->put('/banner', $file,'public');
         }
 
-
         if ($request->hasFile('image_mobile')) {    /* upload logo file */
             $file = $request->file('image_mobile');
             $banner->image_mobile = Storage::disk('s3')->put('/banner', $file,'public');
-        }
-
-        
+        }        
         
         $saveRes = $banner->save();
         
-
-
+        if($request->has('banner_service_area')){
+            $banner->syncGeos()->sync($request->banner_service_area);
+        }
 
         return $banner->id;
     }

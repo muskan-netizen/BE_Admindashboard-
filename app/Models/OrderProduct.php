@@ -106,11 +106,20 @@ class OrderProduct extends Model{
     public function getActualPriceAttribute()
     {
         //if vendor actual price = price - markup price
-        if(auth()->user() !=null && !auth()->user()->is_admin == 1){
+        if(auth()->user() !=null && auth()->user()->is_admin == 1){
                 return $this->price - $this->markup_price??0;
         }
                 return $this->price;
     }
+
+   
+    // public function getMarkupPriceAttribute($value)
+    // {
+    //   if(auth()->user() !=null && auth()->user()->is_admin == 1){
+    //             return 0;   
+    //   }  
+    //   return $value;
+    // }
 
     public function getPriceAttribute($value)
     {

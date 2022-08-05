@@ -245,6 +245,19 @@ if (!function_exists('getRazorPayApiKey')) {
     }
 }
 
+if (!function_exists('getKhaltiPayApiKey')) {
+    function getKhaltiPayApiKey()
+    {
+        $khaltipay_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'khalti')->where('status', 1)->first(); 
+        $api_key_khaltipay = "";
+        if($khaltipay_creds)
+        {
+            $creds_arr_khaltipay = json_decode($khaltipay_creds->credentials);
+            $api_key_khaltipay = (isset($creds_arr_khaltipay->api_key)) ? $creds_arr_khaltipay->api_key : '';
+        }
+        return $api_key_khaltipay;
+    }
+}
 
 if (!function_exists('dateTimeInUserTimeZone')) {
     function dateTimeInUserTimeZone($date, $timezone, $showDate=true, $showTime=true, $showSeconds=false)
@@ -936,13 +949,20 @@ if (!function_exists('getCategoryTypes')) {
                 $typeArray =['delivery','dinein','takeaway'];
             break;
             case "home_service":
-                $typeArray =['on_demand'];
+                $typeArray =['on_demand','appointment'];
             break;
             case "laundry":
                 $typeArray =['laundry'];
             break;
+            case "rental":
+                $typeArray =['rental'];
+            break;
+        
+            case "super_app":
+                $typeArray =['delivery','dinein','takeaway','rental','pick_drop','on_demand','laundry','appointment'];
+            break;
             default:
-            $typeArray =['delivery','dinein','takeaway','rental','pick_drop','on_demand','laundry'];
+            $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];
         }
         return $typeArray;
     }

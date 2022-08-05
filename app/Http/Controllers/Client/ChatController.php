@@ -117,38 +117,48 @@ class ChatController extends BaseController
     }
 
     public function index(Request $request){
-        $user = Auth::user();
-        if ($user->is_superadmin != 1) {
-            abort(404);
-        }
+        try {
+            $user = Auth::user();
+            if ($user->is_superadmin != 1) {
+                abort(404);
+            }
 
-        //$roomData = $this->getAllChatRoom('vendor_to_user');
-        $roomData['status'] = false;
-        if($roomData['status']){
-            $chatroom = $roomData['roomData'];
-        } else {
-            $chatroom = [];
+            //$roomData = $this->getAllChatRoom('vendor_to_user');
+            $roomData['status'] = false;
+            if($roomData['status']){
+                $chatroom = $roomData['roomData'];
+            } else {
+                $chatroom = [];
+            }
+            return view('backend.chat.index',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+        } catch (\Throwable $th) {
+            return view('backend.chat.index',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>[]]);
         }
-        return view('backend.chat.index',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+        
 
     }
 
     public function userAgentChatRoom(Request $request){
-        $user = Auth::user();
-        if ($user->is_superadmin != 1) {
-            abort(404);
+        try {
+            $user = Auth::user();
+            if ($user->is_superadmin != 1) {
+                abort(404);
+            }
+    
+    
+            //$roomData = $this->getAllChatRoom('agent_to_user');
+            $roomData['status'] = false;
+            $view = "AgentUserChat";
+           if($roomData['status']){
+                $chatroom = $roomData['roomData'];
+            } else {
+                $chatroom = [];
+            }
+            return view('backend.chat.'.$view,$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+        } catch (\Throwable $th) {
+            return view('backend.chat.AgentUserChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>[]]);
         }
-
-
-        //$roomData = $this->getAllChatRoom('agent_to_user');
-        $roomData['status'] = false;
-        $view = "AgentUserChat";
-       if($roomData['status']){
-            $chatroom = $roomData['roomData'];
-        } else {
-            $chatroom = [];
-        }
-        return view('backend.chat.'.$view,$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+       
 
     }
 
@@ -165,30 +175,38 @@ class ChatController extends BaseController
             $roomData['status'] = false;
             $view = "VendorUserChat";
         }
-
-
-
-        if($roomData['status']){
-            $chatroom = $roomData['roomData'];
-        } else {
-            $chatroom = [];
+        try {
+           
+            if($roomData['status']){
+                $chatroom = $roomData['roomData'];
+            } else {
+                $chatroom = [];
+            }
+            return view('backend.chat.'.$view,$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+        } catch (\Throwable $th) {
+            return view('backend.chat.'.$view,$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>[]]);
         }
-        return view('backend.chat.'.$view,$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+       
 
     }
 
 
     public function UserVendorChat(Request $request){
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
 
-        //$roomData = $this->getChatRoomForUser($user->id,'vendor_to_user');
-        $roomData['status'] = false;
-        if($roomData['status']){
-            $chatroom = $roomData['roomData'];
-        } else {
-            $chatroom = [];
+            //$roomData = $this->getChatRoomForUser($user->id,'vendor_to_user');
+            $roomData['status'] = false;
+            if($roomData['status']){
+                $chatroom = $roomData['roomData'];
+            } else {
+                $chatroom = [];
+            }
+            return view('backend.chat.UserVenorChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+        } catch (\Throwable $th) {
+            return view('backend.chat.UserVenorChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>[]]);
         }
-        return view('backend.chat.UserVenorChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+        
 
     }
 
@@ -201,44 +219,49 @@ class ChatController extends BaseController
      */
     public function startChat(Request $request)
     {
-        $data = $request->all();
-        $vendor_id = $data['vendor_id'];
-        $vendor_order_id = $data['order_vendor_id'];
-        $order_id = $data['order_id'];
-        $server_name = $_SERVER['SERVER_NAME'];
-        $order = $this->OrderVendorDetail($request);
-        if($order){
-            $socket_url = $this->client_data->socket_url;
-            $room_id = $order->order_number;
-            $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
-            $order_vendor_id = $vendor_order_id;
-            $order_id = $order->id;
-            $vendor_id = $vendor_id;
-            $orderby_user_id = $order->user_id;
-            //$response = $client->request('Post', 'https://chat.royoorders.com/api/room', ['body' => [
-            $response =   Http::post($socket_url.'/api/room/createRoom', [
-                'room_id' => $room_id,
-                'room_name' => $room_name,
-                'order_vendor_id'=>$order_vendor_id,
-                'order_id'=>$order_id,
-                'vendor_id'=>$vendor_id,
-                'sub_domain' =>$server_name,
-                'vendor_user_id' =>$data['user_id'],
-                'order_user_id' =>$orderby_user_id,
-                'type'=>$data['type'],
-                'db_name'=>$this->client_data->database_name,
-                'client_id'=>$this->client_data->id
-            ]);
-            $statusCode = $response->getStatusCode();
-            if($statusCode == 200) {
-                $roomData = $response['roomData'];
-                return response()->json(['status' => true, 'roomData' => $roomData , 'message' => __('Room created successfully !!!')]);
-            } else {
-
-                return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
+        //try {
+            $data = $request->all();
+            $vendor_id = $data['vendor_id'];
+            $vendor_order_id = $data['order_vendor_id'];
+            $order_id = $data['order_id'];
+            $server_name = $_SERVER['SERVER_NAME'];
+            $order = $this->OrderVendorDetail($request);
+            if($order){
+                $socket_url = $this->client_data->socket_url;
+                $room_id = $order->order_number;
+                $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
+                $order_vendor_id = $vendor_order_id;
+                $order_id = $order->id;
+                $vendor_id = $vendor_id;
+                $orderby_user_id = $order->user_id;
+                //$response = $client->request('Post', 'https://chat.royoorders.com/api/room', ['body' => [
+                $response =   Http::post($socket_url.'/api/room/createRoom', [
+                    'room_id' => $room_id,
+                    'room_name' => $room_name,
+                    'order_vendor_id'=>$order_vendor_id,
+                    'order_id'=>$order_id,
+                    'vendor_id'=>$vendor_id,
+                    'sub_domain' =>$server_name,
+                    'vendor_user_id' =>$data['user_id'],
+                    'order_user_id' =>$orderby_user_id,
+                    'type'=>$data['type'],
+                    'db_name'=>$this->client_data->database_name,
+                    'client_id'=>$this->client_data->id
+                ]);
+                $statusCode = $response->getStatusCode();
+                if($statusCode == 200) {
+                    $roomData = $response['roomData'];
+                    return response()->json(['status' => true, 'roomData' => $roomData , 'message' => __('Room created successfully !!!')]);
+                } else {
+    
+                    return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
+                }
+    
             }
-
-        }
+        // } catch (\Throwable $th) {
+        //     return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
+        // }
+        
 
     }
 
@@ -255,12 +278,12 @@ class ChatController extends BaseController
     }
 
     public function sendNotificationToUser(Request $request){
-       // try {
+        try {
             $notiFY = $this->sendNotification($request);
             return response()->json([ 'notiFY'=>$notiFY , 'status' => true, 'message' => __('sent!!!')]);
-        // } catch (\Throwable $th) {
-        //     return response()->json(['status' => false, 'notiFY' => [] , 'message' => __('No Data found !!!')]);
-        // }
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'notiFY' => [] , 'message' => __('No Data found !!!')]);
+        }
 
     }
 }

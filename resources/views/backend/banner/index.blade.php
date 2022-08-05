@@ -109,25 +109,95 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
 
     <div class="row">
         <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-12">
-                            <div class="text-sm-left">
-                                @if (\Session::has('success'))
-                                <div class="alert alert-success">
-                                    <span>{!! \Session::get('success') !!}</span>
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <div class="text-sm-left">
+                        @if (\Session::has('success'))
+                        <div class="alert alert-success">
+                            <span>{!! \Session::get('success') !!}</span>
+                        </div>
+                        @endif
+                        @if (\Session::has('error_delete'))
+                        <div class="alert alert-danger">
+                            <span>{!! \Session::get('error_delete') !!}</span>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                @if(isset($client_preferences->is_service_area_for_banners) && ($client_preferences->is_service_area_for_banners == 1) && ($client_preferences->is_hyperlocal == 1))
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="p-1 m-0" style="height:300px;">
+                                    <div id="show_map-canvas"></div>
                                 </div>
-                                @endif
-                                @if (\Session::has('error_delete'))
-                                <div class="alert alert-danger">
-                                    <span>{!! \Session::get('error_delete') !!}</span>
+                                <div class="row align-items-center mb-3">
+                                    <div class="col-sm-6">
+                                        <h4 class="mb-2 "><span> {{ __('Service Area') }} </span></h4>
+                                    </div>
+                                    <div class="col-sm-6 text-center text-sm-right">
+                                        <button class="btn btn-info openServiceModal"> {{ __('Add Service Area') }}</button>
+                                    </div>
                                 </div>
-                                @endif
+                                <div class="table-responsive mb-3" style="height: 350px; overflow-y: auto;">
+                                    <table class="table table-centered table-nowrap table-striped" id="products-datatable">
+                                        <thead>
+                                            <tr>
+                                                <th>{{ __('Name') }}</th>
+                                                <th style="width: 85px;">{{ __('Action') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($areas as $geo)
+                                            <tr>
+                                                <td class="table-user">
+                                                    <a href="javascript:void(0);" class="text-body">{{$geo->name}}</a>
+                                                </td>
+                    
+                                                <td>
+                                                    <button type="button" class="btn btn-primary-outline action-icon editAreaBtn" area_id="{{$geo->id}}"><i class="mdi mdi-square-edit-outline"></i></button>
+                    
+                                                    <form action="{{ route('banner.serviceArea.delete', $geo->id) }}" method="POST" class="action-icon">
+                                                        @csrf
+                                                        <input type="hidden" value="{{$geo->id}}" name="area_id">
+                                                        <button type="submit" onclick="return confirm('Are you sure? You want to delete the service area.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            
+                                <form action="{{ route('banner.draw.circle.with.radius') }}" method="post">
+                                    @csrf()
+                                    <input type="hidden" name="type" value="1" />
+                                    <div class="row">
+                                        <div class="col-md-12 col-xl-4">
+                                        {!! Form::label('title', 'Draw area with radius('.$client_preference_detail->distance_unit_for_time.')',['class' => 'control-label']) !!}
+                                        </div>
+                                        <div class="col-md-6 col-xl-4">
+                                            <div class="form-group">
+                                                <input class="form-control"  name="radius" type="number" min="0.01" step="0.01" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-xl-4">
+                                            <button type="submit" class="btn btn-info"> {{ __('Go') }}</button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
 
+                    <div class="col-md-8">
+                @else
+                    <div class="col-md-12">
+                @endif
+                    <div class="card">
+                    <div class="card-body">
                     <div class="table-responsive">
                         <form name="saveOrder" id="saveOrder"> @csrf </form>
                         <table class="table table-centered table-nowrap table-striped" id="banner-datatable">
@@ -198,6 +268,8 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                     </div>
                     <div class="pagination pagination-rounded justify-content-end mb-0">
                         {{-- $banners->links() --}}
+                    </div>
+                    </div>
                     </div>
                 </div> <!-- end card-body-->
             </div> <!-- end card-->
@@ -274,7 +346,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
    };
 </script>
 
-
+@include('backend.banner.service_area_script')
 @include('backend.banner.pagescript')
 
 @endsection

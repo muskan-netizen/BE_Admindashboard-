@@ -1,4 +1,4 @@
-<div class="col-sm-4 col-lg-3 border-right al_white_bg_round p-0">
+<div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
     <nav class="scrollspy-menu">
         <ul>
             @forelse($listData as $key => $data)
@@ -67,7 +67,7 @@
                 <div class="viewAllProductSec" >
 
                 @forelse($data->products as $prod)
-                    
+
                     <div class="card mb-3 product_row"  data-p_sku="{{ $prod->sku }}"
                         data-slug="{{ $prod->url_slug }}">
                         <div class="card-body">
@@ -75,7 +75,7 @@
                                 <p class="m-0 productTitle"> {{ $prod->translation_title }}</p>
                                 <ul class="m-0 p-0 d-flex align-items-center">
                                     <li>From</li>
-                                    
+
                                     <li class="ml-2"><span class="productsPrice">
                                         {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,',') }}
                                         @if ($prod->variant[0]->compare_at_price > 0)

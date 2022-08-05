@@ -33,8 +33,8 @@ class VariantController extends BaseController
             ->whereNull('vendor_id')
             ->get();
         $langs = ClientLanguage::with('language')->select('language_id', 'is_primary', 'is_active')
-            ->where('is_active', 1)
-            ->orderBy('is_primary', 'desc')->get();
+                ->where('is_active', 1)
+                ->orderBy('is_primary', 'desc')->get();
 
         $categories_hierarchy = '';
         if($categories){
