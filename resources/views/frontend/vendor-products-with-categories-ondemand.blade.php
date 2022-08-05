@@ -1622,7 +1622,7 @@ $checkSlot = findSlot('', $vendor->id, '');
 
          map = new google.maps.Map(document.getElementById('vendor-map'), {
              center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-             zoom: 13
+             zoom: 12
          });
 
          var url = window.location.origin;
