@@ -22,7 +22,6 @@ class UPayController extends FrontController
 	}
 	public function beforePayment(Request $request)
     {
-        // dd($this->creds_arr->uuid_key);
     	$data = $request->all();
         $data['come_from'] = 'app';
         if($request->isMethod('post'))
@@ -61,7 +60,8 @@ class UPayController extends FrontController
             array_push($references, $ref_data);
         }
         $data['references'] = $references;
-    	$redirect_url = $this->createPaymentRequest($data);
-    	return Redirect::to($redirect_url);
+        // $data['redirect_url'] = "https://ab21-180-188-237-239.ngrok.io";
+    	$redirect_url = $this->createPaymentRequest($data); 
+        return view('frontend.payment_gatway.upay_view')->with(['data' => $redirect_url,'key'=>$this->aes_key,'endpoint'=>$this->endpoint,'uidd'=>$this->uidd]);
     }
 }

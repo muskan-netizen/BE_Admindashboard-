@@ -45,7 +45,6 @@ trait UPayPaymentManager{
   }
   public function createPaymentRequest($data)
   {
-    // dd($this->uidd);
     $formData = [
       'Amt' => $data['amount'],
       'Email' => $data['user_email'],
@@ -54,9 +53,10 @@ trait UPayPaymentManager{
       'References' => $data['references']??[]
     ];
     $info = json_encode($formData);
-    $encrypted_text = $this->test($info);
-    $redirect_url = $this->endpoint.'/WhiteLabel/'.$this->uidd.'?s='.$encrypted_text;
-    return $redirect_url;
+    return $info;
+    // $encrypted_text = $this->test($info);
+    // $redirect_url = $this->endpoint.'/WhiteLabel/'.$this->uidd.'?s='.$encrypted_text;
+    // return $redirect_url;
   }
 
   public function test($information)
