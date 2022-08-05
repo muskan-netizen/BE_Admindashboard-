@@ -61,7 +61,7 @@ span#cart_qty_span.bg-cart-header{position: absolute;background-color: var(--top
 .googleMapModal .mapInPopup{overflow: hidden;border-radius: 10px 10px 0 0;}
 .onhover-dropdown:hover .onhover-show-div{display: block;border-radius: 10px !important;overflow: hidden;}
 .alUserIcon .onhover-show-div li{display: block;border-bottom: 1px solid #eee;padding-top: 5px;padding-bottom: 5px;}
-.alSpaMenuCard{height: 0;z-index: 99999;width: 0;position: fixed;background-color: #0C0C0C;-webkit-transition: .3s;transition: .3s;overflow: hidden;left: 0;right: 0;margin: auto;
+.alSpaMenuCard{height: 0;z-index: 99999;width: 0;position: fixed;background-color: #0c0c0cde;-webkit-transition: .3s;transition: .3s;overflow: hidden;left: 0;right: 0;margin: auto;
 top: 50%;-webkit-transform: translate(0, -50%);transform: translate(0, -50%);}
 button.alMenuClose{position: absolute;right: 0;top: 0;background-color: transparent;height: 50px;width: 50px;border-radius: 50px;font-size: 50px;line-height: 53px;color: #fff;padding: 0;border: 0;}
 .close.text-danger{color:#84571E !important; }
