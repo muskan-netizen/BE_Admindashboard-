@@ -276,10 +276,11 @@ trait cartManager{
         $upSell_products = collect();
         $crossSell_products = collect();
         $couponGetAmount=0;
-
-        //Get User Address Details
-        $address = $this->getUserAddress($user->id,$address_id);
-
+        $loyalty_amount_saved = 0;
+        if($user){
+            //Get User Address Details
+            $address = $this->getUserAddress($user->id,$address_id);
+        }
         /* Getting User Lat Long */
         $latitude = ($address) ? $address->latitude : '';
         $longitude = ($address) ? $address->longitude : '';
@@ -768,9 +769,10 @@ trait cartManager{
                     }
                 }
 
-                // calculate subscription discount
-                $subscription_discount = $this->calCulateSubscriptionDiscount($user->id,$deliveryCharges,$payable_amount);
-               
+                if($user){
+                    // calculate subscription discount
+                    $subscription_discount = $this->calCulateSubscriptionDiscount($user->id,$deliveryCharges,$payable_amount);
+                }
                 // add total delivery fee 
                 if($vendorData->vendor->delivery_charges_tax_id)
                 $total_deliver_charges +=  $deliveryCharges;
@@ -1142,7 +1144,7 @@ trait cartManager{
             $cart->totalQuantity = $total_quantity;
             $cart->user_allAddresses = $user_allAddresses??[];
             $cart->guest_user = $guest_user??0;
-            $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $this->user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
+            $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $this->user_allAddresses??[], 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
             $cart->scheduled_date_time = $myDate;
