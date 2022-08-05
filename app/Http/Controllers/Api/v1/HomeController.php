@@ -39,17 +39,33 @@ class HomeController extends BaseController
             $client_language = ClientLanguage::select('language_id')->where(['is_primary' => 1, 'is_active' => 1])->first();
             
             $langId = ($request->hasHeader('language') && !empty($request->header('language'))) ? $request->header('language') : (($client_language) ? $client_language->language_id : 1);
-            $homeData['profile'] = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('id','country_id', 'company_name', 'code', 'sub_domain','sub_domain','database_name', 'logo', 'dark_logo', 'company_address', 'phone_number', 'email','custom_domain','contact_phone_number','socket_url')->first();
+            $homeData['profile'] = $preferences = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('id','country_id', 'company_name', 'code', 'sub_domain','database_name', 'logo','dark_logo', 'company_address', 'phone_number', 'email','custom_domain','contact_phone_number','socket_url')->first();
             //dd(Client::with('getPreference')->first()->getPreference->auto_implement_5_percent_tip);
             $app_styling_detail = AppStyling::getSelectedData();
             foreach ($app_styling_detail as $app_styling) {
                 $key = $app_styling['key'];
                 $homeData['profile']->preferences->$key = __($app_styling['value']);
             }
+            $vendorMode = [];
+            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                $clientVendorTypes = $vendor_typ_key.'_check';
+                $nomenclature =  $vendor_typ_key.'_nomenclature';
+                $vendorData = [];
+                    if($preferences->preferences->$clientVendorTypes == 1){
+                        $vendorData['name'] =  $this->getNomenclatureName($vendor_typ_value, $langId, false);
+                        $vendorData["icon"] = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+                        //$vendorData["name"] = $clientVendorTypes;
+                        $vendorData["type"] = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
+                        
+                        $vendorMode[] = $vendorData;
+                    }
+            }
+            //pr($vendorMode);
+            $homeData['profile']->preferences->vendorMode = $vendorMode;
             //dd($homeData['profile']);
-            $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
-            $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
-            $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
+            // $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
+            // $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
+            // $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
             $search_nomenclature = $this->getNomenclatureName('Search', $langId, false);
             $vendors_nomenclature = $this->getNomenclatureName('Vendors', $langId, false);
             $fixed_fee_nomenclature = $this->getNomenclatureName('fixed_fee', $langId, false);
@@ -59,9 +75,9 @@ class HomeController extends BaseController
             $want_to_tip=ucwords(str_replace("_"," ",$want_to_tip));
             $passbase = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
 
-            $homeData['profile']->preferences->delivery_nomenclature = $delivery_nomenclature;
-            $homeData['profile']->preferences->dinein_nomenclature = $dinein_nomenclature;
-            $homeData['profile']->preferences->takeaway_nomenclature = $takeaway_nomenclature;
+            // $homeData['profile']->preferences->delivery_nomenclature = $delivery_nomenclature;
+            // $homeData['profile']->preferences->dinein_nomenclature = $dinein_nomenclature;
+            // $homeData['profile']->preferences->takeaway_nomenclature = $takeaway_nomenclature;
             $homeData['profile']->preferences->search_nomenclature = $search_nomenclature;
             $homeData['profile']->preferences->vendors_nomenclature = $vendors_nomenclature;
             $homeData['profile']->preferences->fixed_fee_nomenclature = $fixed_fee_nomenclature;
