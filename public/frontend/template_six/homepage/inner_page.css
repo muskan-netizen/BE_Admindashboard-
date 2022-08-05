@@ -551,6 +551,8 @@ display: none;
 .search_form.d-flex.align-items-center.border{border-radius: 10px;overflow: hidden;height: 40px;}
 .search_form.d-flex.align-items-center.border button.btn{padding-right: 0;}
 .vendor-stories{background-color: #eee;border-radius: 50%;padding: 7px;}
+.al_body_template_six .dashboard-left .block-content ul li:hover{color: #000;}
+.al_body_template_six .dashboard-left .block-content ul li:hover a{color: var(--theme-deafult);}
 .al_body_template_six .dashboard-left .block-content ul li{display: inline-block;position: relative;padding-left: 30px;width: 100%;margin-bottom: 10px;}
 .al_body_template_six .dashboard-left .block-content ul li::before{position: absolute;left: 0;}
 .tab-content.nav-material .tab-pane .row .col-12{margin-bottom: 20px;padding-top: 10px;}
