@@ -76,7 +76,9 @@ class VendorSectionController extends BaseController {
            }
 
            $vendor_section_heading_translation             = VendorSectionHeadingTranslation::where([
-                                                                                    "language_id"=>$request->language_id,         "vendor_section_id"=>$vendor_section->id ])
+                                                                                    "language_id"=>$request->language_id,      
+                                                                                    "vendor_section_id"=>$vendor_section->id 
+                                                                                    ])
                                                                                     ->first();
                                                                           
            if( !$vendor_section_heading_translation )
@@ -106,8 +108,10 @@ class VendorSectionController extends BaseController {
                         'description'       => $request->description[$key] ?? '',
                         'language_id'       => $request->language_id,
                     ];  
-                
-                    $vendor_section_translation = VendorSectionTranslation::updateOrCreate( $sectionData );
+               
+                    $vendor_section_translation = VendorSectionTranslation::updateOrCreate(
+                        ['vendor_section_id' => $vendor_section->id ,'id'=> $request->section_old_ids[$key] ],
+                     $sectionData );
                 }
            }
            DB::commit();
