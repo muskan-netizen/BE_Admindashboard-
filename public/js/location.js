@@ -337,9 +337,7 @@ $(document).ready( async function () {
                         layouts.forEach(function(obj, index) {
                             setTimeout(function(){
                                 myFunctionGetDataHomePage(obj, index,last_ind_v);
-                                setTimeout(()=>{
-                                    $(".main_shimer").hide();
-                                },2500);
+
                                // $(".main_shimer").hide();
                             }, 500 * (index + 1));
                         });
@@ -420,6 +418,9 @@ $(document).ready( async function () {
         //console.log(".main_shimer_"+item);
         //$(".main_shimer_"+item).show();
         if(last_ind_v == item) {
+            setTimeout(()=>{
+                $(".main_shimer").hide();
+            },4000);
           //  $(".main_shimer_"+item).hide();
         }
         switch (item) {
@@ -500,25 +501,41 @@ $(document).ready( async function () {
             beforeSend: function(){
 
             },
-            success: function (response) {
+            success: async function (response) {
                 if (response.status == "Success") {
                     var path = window.location.pathname;
                     if (path == '/') {
 
                         if(index ==  0){
-                            $(".al_desktop_banner").html('');
-                            let desktop_banners_template = _.template($('#desktop_banners_template').html());
-                            $(".al_desktop_banner").append(desktop_banners_template({ banners: response.data.banners }));
+                            console.log('hereeee');
+                            //$(".al_desktop_banner").html('');
+                            console.log(response.data.banners);
+                            console.log("=>>>>>>>>>  response.data.banners");
+                            if(response.data.banners.length > 0) {
+                                let desktop_banners_template = await _.template($('#desktop_banners_template').html());
+                                $(".al_desktop_banner").append(desktop_banners_template({ banners: response.data.banners }));
 
-                            $(".al_mobile_banner").html('');
-                            let mobile_banners_template = _.template($('#mobile_banners_template').html());
-                            $(".al_mobile_banner").append(mobile_banners_template({ banners: response.data.mobile_banners }));
+                                //$(".al_mobile_banner").html('');
+                                let mobile_banners_template = await _.template($('#mobile_banners_template').html());
+                                $(".al_mobile_banner").append(mobile_banners_template({ banners: response.data.mobile_banners }));
 
-                            $('.carousel').carousel();
+                                 //$('.carousel').carousel();
+                                // setTimeout(()=>{
+                                //     $('.banner_main_shimer').hide();
+                                //     $('.category_main_shimer').hide();
+                                // },1000);
+                            } else {
+                                // $('.banner_main_shimer').hide();
+                                // $('.category_main_shimer').hide();
+                            }
+
+                            //alert('ddd');
+                            //$('.banner_main_shimer').hide();
                         }
 
                         let products_template = _.template($('#products_template').html());
-
+                        console.log("->>>>>>>>>>>>>>>>>>>>>");
+                        console.log(item);
                         switch (item) {
 
                             case 'trending_vendors':
@@ -917,6 +934,7 @@ $(document).ready( async function () {
 
     ////////////// *****************   home page category icon **************** //////////////////
   async function getHomePageCategoryMenu(latitude, longitude, vtype = "") {
+
     if(vtype != ''){
         vendor_type = vtype;
     }
