@@ -195,7 +195,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
-@if (isset($set_template)  && $set_template->template_id == 6)
+@if (isset($set_template)  && $set_template->template_id == 6))
 <script async src="{{asset('frontend/template_six/homepage/spa_slider_custom.js')}}"></script>
 @endif
 <script type="text/javascript">
