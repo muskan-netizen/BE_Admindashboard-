@@ -10,6 +10,7 @@ if (Session::has('toaster')) {
         </script>';
 }
 ?>
+<script src="{{asset('assets/libs/moment/moment.min.js')}}"></script>
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/libs/selectize/selectize.min.js')}}"></script>
@@ -37,6 +38,13 @@ if (Session::has('toaster')) {
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" ></script> --}}
+<script src="{{asset('assets/libs/datetimepicker/daterangepicker.min.js')}}" ></script>
+
+{{-- <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" ></script> --}}
+
+
+{{-- <script src="{{asset('assets/libs/datetimepicker/jquery.datetimepicker.min.js')}}"></script> --}}
 @if((!empty($socket_url)))
     <script src="{{$socket_url}}/socket.io/socket.io.js"></script>
 @endif
@@ -214,7 +222,7 @@ if (Session::has('toaster')) {
 @if(@Session::has('preferences') && !empty(@Session::get('preferences')['fcm_api_key']))
 <script>
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
-    console.log(firebaseCredentials);
+    //console.log(firebaseCredentials);
     var firebaseConfig = {
         apiKey: firebaseCredentials.fcm_api_key,
         authDomain: firebaseCredentials.fcm_auth_domain,

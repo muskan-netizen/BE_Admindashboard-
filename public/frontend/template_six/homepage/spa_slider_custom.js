@@ -2,9 +2,11 @@ $(document).ready(function() {
 
     $(".alHamBurgerIcon").click(function(){
         $(".alSpaMenuCard").addClass("active");
+        $("body").addClass("aloverFlow");
     });
     $(".alMenuClose").click(function(){
         $(".alSpaMenuCard").removeClass("active");
+        $("body").removeClass("aloverFlow");
     });
 
     $(".regular").slick({

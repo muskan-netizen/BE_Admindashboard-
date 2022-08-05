@@ -6,11 +6,10 @@
 @endsection
 @section('css-links')
 <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/price-range.css') }}">
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
     <!-- section start -->
-    <section class="section-b-space ratio_asos">
+    <section class="section-b-space ratio_asos alProductCategories">
         <div class="collection-wrapper">
             <div class="container">
                 <div class="row">
@@ -142,7 +141,7 @@
                             <div class="col-md-8"></div>
                             <div class="col-12">
                                 <div class="row vendor-products-wrapper">
-                                    <div class="col-sm-4 col-lg-3 border-right al_white_bg_round p-0">
+                                    <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
                                         <nav class="scrollspy-menu">
                                             <ul>
                                                 @forelse($listData as $key => $data)
@@ -575,7 +574,7 @@
                                 <% }); %>
 
                                 <h5 class="d-flex align-items-center justify-content-between pb-2">{{ __('PRICE DETAILS') }} </h5>
-                                <li class="p-0">
+                                <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
                                             <span class="ellips">{{ __('Total') }}</span>
@@ -584,7 +583,7 @@
                                     </div>
                                 </li>
 
-                                <li class="p-0">
+                                <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
                                             <span class="ellips">{{ __('Tax') }}</span>
@@ -594,33 +593,33 @@
                                 </li>
 
                                 <% if(cart_details.total_subscription_discount != undefined) { %>
-                                 <li class="p-0">
+                                 <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">- {{ __('Subscription Discount') }}</span>
-                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
+                                            <span class="ellips"> {{ __('Subscription Discount') }}</span>
+                                             <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
                                         </h6>
                                     </div>
                                 </li>
                                 <% } %>
 
                                 <% if(cart_details.loyalty_amount > 0) { %>
-                                <li class="p-0">
+                                <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">- {{ __('Loyalty Amount') }} </span>
-                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
+                                            <span class="ellips"> {{ __('Loyalty Amount') }} </span>
+                                             <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
                                         </h6>
                                     </div>
                                 </li>
                                 <% } %>
 
                                 <% if(cart_details.wallet_amount_used > 0) { %>
-                                <li class="p-0">
+                                <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">- {{ __('Wallet Amount') }} </span>
-                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
+                                            <span class="ellips"> {{ __('Wallet Amount') }} </span>
+                                             <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
                                         </h6>
                                     </div>
                                 </li>
@@ -858,13 +857,12 @@
 
     <script src="{{ asset('front-assets/js/rangeSlider.min.js') }}"></script>
     <script src="{{ asset('front-assets/js/my-sliders.js') }}"></script>
-    <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script>
-        // @if(!empty($vendor->banner))
-        //     $(document).ready(function() {
-        //         $("body").addClass("homeHeader");
-        //     });
-        // @endif
+        @if(!empty($vendor->banner))
+            $(document).ready(function() {
+                $("body").addClass("homeHeader");
+            });
+        @endif
 
          //Get the modal vendorStories
         var modal = document.getElementById("vendorStories");
@@ -895,7 +893,7 @@
             var scroll = jQuery(window).scrollTop();
             var categories_list_height = $('.vendor-products-wrapper').height() +400;
 
-            if (scroll >= 400) {
+            if (scroll >= 600) {
                 jQuery(".categories-product-list").addClass("fixed-bar");
             } else {
                 jQuery(".categories-product-list").removeClass("fixed-bar");

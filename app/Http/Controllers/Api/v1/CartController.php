@@ -507,6 +507,8 @@ class CartController extends BaseController
             return false;
         }
         $nowdate = Carbon::now()->toDateTimeString();
+        $nowdate = convertDateTimeInClientTimeZone($nowdate);
+        
         $vondorCnt = 0;
         $address = [];
         $category_array = [];
@@ -600,6 +602,7 @@ class CartController extends BaseController
         $item_count = 0;
         $total_delivery_amount = 0;
         $total_fixed_fee_amount = 0;
+        $total_markup_amount = 0;
         $order_sub_total = 0;
         $totalDeliveryCharges = 0;
         if ($cartData) {
@@ -618,6 +621,8 @@ class CartController extends BaseController
             $PromoDelete = 0;
             $couponApplied = 0;
             $total_container_charges = 0 ;
+            $total_markup_charges = 0 ;
+
             foreach ($cartData as $ven_key => $vendorData) {
                 $PromoFreeDeliver = 0;
                 $total_fixed_fee_amount =$total_fixed_fee_amount+ $vendorData->vendor->fixed_fee_amount;
@@ -670,49 +675,12 @@ class CartController extends BaseController
                 $deliveryCharges = 0;
                 $delivery_fee_charges = 0.00;
                 $couponData = $couponProducts = array();
-                // if (!empty($vendorData->coupon->promo) && ($vendorData->coupon->vendor_id == $vendorData->vendor_id)) {
-                //     $now = Carbon::now()->toDateTimeString();
-                //     $minimum_spend = 0;
-                //     if (isset($vendorData->coupon->promo->minimum_spend)) {
-                //         $minimum_spend = $vendorData->coupon->promo->minimum_spend * $clientCurrency->doller_compare;
-                //     }
-                //     if ($vendorData->coupon->promo->expiry_date < $now) {
-                //         $coupon_removed = 1;
-                //         $coupon_removed_msg = __('Coupon code is expired.');
-                //     } else {
-                //         $couponData['coupon_id'] =  $vendorData->coupon->promo->id;
-                //         $couponData['name'] =  $vendorData->coupon->promo->name;
-                //         $couponData['disc_type'] = ($vendorData->coupon->promo->promo_type_id == 1) ? 'Percent' : 'Amount';
-                //         $couponData['expiry_date'] =  $vendorData->coupon->promo->expiry_date;
-                //         $couponData['allow_free_delivery'] =  $vendorData->coupon->promo->allow_free_delivery;
-                //         $couponData['minimum_spend'] =  $vendorData->coupon->promo->minimum_spend;
-                //         $couponData['first_order_only'] = $vendorData->coupon->promo->first_order_only;
-                //         $couponData['restriction_on'] = ($vendorData->coupon->promo->restriction_on == 1) ? 'Vendor' : 'Product';
-
-                //         $is_coupon_applied = 1;
-                //         if ($vendorData->coupon->promo->promo_type_id == 1) {
-                //             $is_percent = 1;
-                //             $discount_percent = round($vendorData->coupon->promo->amount);
-
-
-                //         } else {
-                //             $discount_amount = $vendorData->coupon->promo->amount * $clientCurrency->doller_compare;
-
-
-                //         }
-                //         if ($vendorData->coupon->promo->restriction_on == 0) {
-                //             foreach ($vendorData->coupon->promo->details as $key => $value) {
-                //                 $couponProducts[] = $value->refrence_id;
-                //             }
-                //         }
-
-                //     }
-                // }
 
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;
                 $total_service_fee = 0;
-
+                $total_markup_fee_tax = 0;
+               
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
                     if(isset($prod->product) && !empty($prod->product)){
                         if($prod->product->pharmacy_check == 1){
@@ -739,6 +707,7 @@ class CartController extends BaseController
                         $variantsData = $taxData = $vendorAddons = array();
                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                         $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
+                        $total_markup_charges += $prod->pvariant->markup_price??0;
                         $price_in_doller_compare = $price_in_currency * $clientCurrency->doller_compare;
                         $container_charges_in_currency = $prod->pvariant->container_charges??0.00;
                         $container_charges_in_doller_compare = $prod->pvariant->container_charges??0.00;
@@ -789,25 +758,7 @@ class CartController extends BaseController
                             $variantsData['product_id']         = $prod->pvariant->product_id;
                             $variantsData['multiplier']         = $clientCurrency->doller_compare;
                             $variantsData['gross_qty_price']    = $price_in_doller_compare * $prod->quantity;
-                            // if (!empty($vendorData->coupon->promo) && ($vendorData->coupon->promo->restriction_on == 0) && in_array($prod->product_id, $couponProducts)) {
-                            //     $pro_disc = $discount_amount;
-                            //     if ($minimum_spend <= $quantity_price) {
-                            //         if ($is_percent == 1) {
-                            //             $pro_disc = ($quantity_price * $discount_percent) / 100;
-                            //         }
-                            //         $quantity_price = $quantity_price - $pro_disc;
-                            //         $proSumDis = $proSumDis + $pro_disc;
-                            //         if ($quantity_price < 0) {
-                            //             $quantity_price = 0;
-                            //         }
-                            //         $codeApplied = 1;
-                            //     } else {
-                            //         $variantsData['coupon_msg'] = "Spend Minimum " . $minimum_spend . " to apply this coupon";
-                            //         $variantsData['coupon_not_appiled'] = 1;
-                            //     }
-
-
-                            // }
+                       
                             $addon_price = 0;
                             if (!empty($prod->addon)) {
                                 // return $prod->addon;
@@ -1042,24 +993,6 @@ class CartController extends BaseController
                         }
                     }
                 }
-                
-                 //pr($payable_amount);
-
-
-                // if (!empty($vendorData->coupon->promo) && ($vendorData->coupon->promo->restriction_on == 1)) {
-                //     $minimum_spend = $vendorData->coupon->promo->minimum_spend * $clientCurrency->doller_compare;
-                //     if ($minimum_spend < $proSum) {
-                //         if ($is_percent == 1) {
-                //             $discount_amount = ($proSum * $discount_percent) / 100;
-                //         }
-                //         $couponApplied = 1;
-                //     } else {
-                //         $vendorData->coupon_msg = "To apply coupon minimum spend should be greater than " . $minimum_spend . '.';
-                //         $vendorData->coupon_not_appiled = 1;
-                //     }
-                // }
-
-
 
 
                 $payable_amount = $payable_amount + $deliveryCharges ;
@@ -1144,8 +1077,8 @@ class CartController extends BaseController
                 $vendorData->delaySlot = $slotsDate;
                 $totalDeliveryCharges+=$deliveryCharges;
 
-        
-        //All other tax calculations 
+
+            //All other tax calculations 
          if(!empty($taxRates)){
             $delivery_charges_tax_rate = 0;
             if($vendorData->vendor->delivery_charges_tax_id!=null){
@@ -1163,10 +1096,10 @@ class CartController extends BaseController
                     $service_charges_tax_rate=$taxRates[$vendorData->vendor->service_charges_tax_id]['tax_rate'];
             }
 
-            // $markup_price_tax_rate = 0;
-            // if($vendorData->vendor->markup_price_tax_id!=null){
-            //         $markup_price_tax_rate=$taxRates[$vendorData->vendor->markup_price_tax_id]['tax_rate'];
-            // }
+            $markup_price_tax_rate = 0;
+            if($vendorData->vendor->markup_price_tax_id!=null){
+                    $markup_price_tax_rate=$taxRates[$vendorData->vendor->markup_price_tax_id]['tax_rate'];
+            }
 
 
             if($vendorData->vendor->delivery_charges_tax)
@@ -1178,14 +1111,14 @@ class CartController extends BaseController
             if($vendorData->vendor->fixed_fee_tax)
             $total_fixed_fee_tax +=  $total_fixed_fee_amount * $fixed_fee_tax_rate/100;
 
-            // if($vendorData->vendor->add_markup_price)
-            // $total_tax +=  $total_markup_charges * $markup_price_tax_rate/100;
+            if($vendorData->vendor->add_markup_price)
+            $total_markup_fee_tax +=  $total_markup_charges * $markup_price_tax_rate/100;
             } //End Tax Code
 
 
-            }
+            }//End cart Vendor loop
             ++$vondorCnt;
-        }//End cart Vendor loop
+        }
 
         // calculate subscription discount
         $subscription_discount =0;
@@ -1278,7 +1211,7 @@ class CartController extends BaseController
             $cart->without_category_kyc = 1; 
         }
 
-        $other_taxes_string='tax_fixed_fee:'.$total_fixed_fee_tax.',tax_service_charges:'.$total_service_fee.',tax_delivery_charges:'.$deliver_fee_charges;
+        $other_taxes_string='tax_fixed_fee:'.$total_fixed_fee_tax.',tax_service_charges:'.$total_service_fee.',tax_delivery_charges:'.$deliver_fee_charges.',tax_markup_fee:'.$total_markup_fee_tax;
 
         $userCart = Cart::find($cartID);
         $userCart->total_other_taxes  = $other_taxes_string;
@@ -1287,7 +1220,8 @@ class CartController extends BaseController
 
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
-        $cart->total_tax = decimal_format($total_tax + $total_fixed_fee_tax + $total_service_fee + $deliver_fee_charges);
+        $cart->total_markup_charges = decimal_format($total_markup_charges);
+        $cart->total_tax = decimal_format($total_tax + $total_fixed_fee_tax + $total_service_fee + $deliver_fee_charges + $total_markup_fee_tax);
         $cart->tax_details = $tax_details;
         $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;

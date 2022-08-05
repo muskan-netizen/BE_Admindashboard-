@@ -426,11 +426,27 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         // rental product 
         Route::post('rentalVariantRow', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
+
+        Route::get('getScheduleTableData', 'Client\RentalProductController@getScheduleTableData')->name('rental-product.getScheduleTableData');   # update all product actions
     
         Route::post('facilty/store', 'Client\FaciltyController@store')->name('facilty.store');
         Route::post('facilty/update', 'Client\FaciltyController@update')->name('facilty.update');
         Route::get('facilty/edit', 'Client\FaciltyController@show')->name('facilty.edit');
         Route::post('facilty/delete', 'Client\FaciltyController@destroy')->name('facilty.delete');
+
+        // Service Area for Banners Routes
+        Route::post('banner/serviceArea', 'Client\ServiceAreaForBannerController@store')->name('banner.serviceArea');
+        Route::post('banner/editArea/{id}', 'Client\ServiceAreaForBannerController@edit')->name('banner.serviceArea.edit');
+        Route::post('banner/updateArea/{id}', 'Client\ServiceAreaForBannerController@update');
+        Route::post('banner/deleteArea/{id}', 'Client\ServiceAreaForBannerController@destroy')->name('banner.serviceArea.delete');
+        Route::post('banner/draw-circle-with-radius', 'Client\ServiceAreaForBannerController@drawCircleWithRadius')->name('banner.draw.circle.with.radius');
+
+        // vendor section route
+        Route::post('vsection/store', 'Client\VendorSectionController@store')->name('vsection.store');
+        Route::post('vsection/deleteSection/{sid}', 'Client\VendorSectionController@destroy')->name('vsection.delete');
+        Route::get('vsection/show/{sid}', 'Client\VendorSectionController@show')->name('vsection.edit');
+        Route::post('vsection/update', 'Client\VendorSectionController@update')->name('vsection.update');
+        
     });
 });
 

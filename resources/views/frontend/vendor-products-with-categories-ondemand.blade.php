@@ -9,7 +9,6 @@ $checkSlot = findSlot('', $vendor->id, '');
 @endsection
 @section('css-links')
 <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/price-range.css') }}">
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
     <!-- section start -->
@@ -59,7 +58,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         	<div class="container">
         		<div class="row">
 	        		<!-- breadcrumb start -->
-	        		<nav class="col-12 p-0" aria-label="breadcrumb">
+	        		<nav class="col-12" aria-label="breadcrumb">
 					  <ol class="breadcrumb p-0">
                         @if( $vendor->country)
 					        <li class="breadcrumb-item pr-3"><a href="javascript:void(0)">{{  $vendor->country ?? '' }}</a></li>
@@ -69,22 +68,22 @@ $checkSlot = findSlot('', $vendor->id, '');
                         @endif
 					  </ol>
 					</nav><!-- breadcrumb end -->
-					<div class="col-12 p-0">
+					<div class="col-12">
 						<div class="row">
-							<div class="col-md-7 p-0">
-								<div class="alSpaListHead text-center text-lg-left col-12 mb-4">
+							<div class="col-md-7">
+								<div class="alSpaListHead text-center text-lg-left mb-4">
 			                        <p class="alLgFontSize pr-5">{{ $vendor->name }}</p>
 			                        <p class="alShareLink alBodyText d-flex align-items-center"><a href="javascript:void(0)">{{ $vendor->address }}
                                         {{-- <span class="ml-3"><img src="{{asset('frontend/template_six/spaimages/share.svg')  }}"></span> --}}
                                     </a></p>
 			                    </div>
 							</div>
-							<div class="col-md-5 p-0">
-								<div class="alSpaListHead text-center text-lg-left col-12 mt-3">
+							<div class="col-md-5">
+								<div class="alSpaListHead text-center text-lg-left mt-3">
 			                        <ul class="d-flex align-items-center">
                                         @if ($vendor->vendorRating > 0)
 		                        		    <li class="d-flex align-items-center"><img class="mr-2" src="{{asset('frontend/template_six/spaimages/Star.svg')  }}">  {{ $vendor->vendorRating }} {{ __('Very Good') }}</li>
-                                        
+
 		                        		<li class="border-left ml-3 pl-3">
                                             <a href="javascript:void(0)">{{ $vendor->review_count . ' customer reviews' }}</a>
                                         </li>
@@ -127,15 +126,15 @@ $checkSlot = findSlot('', $vendor->id, '');
                                 <li class="mr-4">
                                     <img class="mr-2" src="{{ $facilty->image['proxy_url'].'30/30'.$facilty->image['image_path']}}">
                                     <span>{{ $facilty->translations->first() ? $facilty->translations->first()->name : 'NA' }}</span>
-                                    
 
-                                    
+
+
                                 </li>
                                 @if($key ==6 && $key == ($total_facilty-1) )
                                 </div>
                                 @endif
                             @endforeach
-							
+
 						</ul>
 					</div>
 				</div>
@@ -144,39 +143,39 @@ $checkSlot = findSlot('', $vendor->id, '');
         	</div>
         </section><!-- single products content end -->
 
-   
+
         <section class="home-serivces" id="alSixHomeServices">
             <div class="container">
                 <div class="row mb-lg-5 mb-md-4 mb-3">
                     <div class="col-xl-8 offset-xl-2">
                         <div class="step-indicator">
-        
+
                             <div class="step step1 @if(app('request')->input('step') >= '1' || empty(app('request')->input('step'))) active @endif">
                                 <div class="step-icon">1</div>
                                 <p>{{__('Service Details')}}</p>
                             </div>
-        
+
                             <div class="indicator-line  @if(app('request')->input('step') >= '1' && !empty(app('request')->input('step'))) active @endif"></div>
-        
+
                             <div class="step step2  @if(app('request')->input('step') >= '2' && !empty(app('request')->input('step'))) active @endif">
                                 <div class="step-icon">2</div>
                                 <p>{{__('Date & Time')}}</p>
                             </div>
-        
+
                             <div class="indicator-line  @if(app('request')->input('step') == '3' && !empty(app('request')->input('step'))) active @endif"></div>
-        
+
                             <div class="step step3   @if(app('request')->input('step') == '3' && !empty(app('request')->input('step'))) active @endif">
                                 <div class="step-icon">3</div>
                                 <p>{{__('Payment')}}</p>
                             </div>
-        
+
                         </div>
-        
+
                         <div class="row mt-4">
-        
+
                             <div class="col-md-8">
                                 @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && app('request')->input('addons') != 1)
-        
+
                                  <!-- Start Main Nav -->
                                 <nav id='main-nav'>
                                     <ul id='main-nav-list'>
@@ -190,21 +189,21 @@ $checkSlot = findSlot('', $vendor->id, '');
                                     </ul>
                                 </nav>
                                 <!-- End Main Nav -->
-        
+
                                 @endif
-        
+
                                 <div class="card-box">
-                                             
-        
+
+
                                     @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
                                             @if(!empty($category->childs) && count($category->childs) > 0)
                                             <!-- static html -->
-    
+
                                         <!-- Start Conent Wrapper -->
                                         <div id='main-wrapper'  class="@if(app('request')->input('addons') == 1) d-none @endif">
                                                     @foreach ($category->childs as $key => $childs)
                                                         @if($childs->type_id == 8)
-        
+
                                                             <h4><b>{{ $childs->translation_name }}</b></h4>
                                                             <div class='' id='section_set{{$key}}'>
                                                                 @if(!empty($childs))
@@ -212,27 +211,29 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                     <img class="img-fluid" src="{{$childs->image['proxy_url'] . '1000/200' . $childs->image['image_path']}}" alt="">
                                                                 </div>
                                                                 @endif
-        
-        
+
+
                                                                     @foreach ($childs->products as $data)
-        
+
                                                                     @php
                                                                         $data->translation_title = (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku;
                                                                         $data->translation_description = (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku;
                                                                         $data->variant_multiplier = (!empty($clientCurrency)) ? $clientCurrency->doller_compare : 1;
                                                                         $data->variant_price = (!empty($data->variant->first())) ? $data->variant->first()->price : 0;
                                                                     @endphp
-        
+
                                                                     <div class="row classes_wrapper no-gutters align-items-center" href="#">
-                                                                        <div class="col-md-9 col-sm-8 pr-md-2 alSixHomeServiceSteps">
-                                                                            <h5 class="mb-1"><b>{!! (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku !!}</b></h5>
-                                                                            <p class="mb-1">{!! (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku !!}</p>
+                                                                        <div class="col-md-9 col-sm-8 pr-md-2 ">
+                                                                            <div class="alSixHomeServiceSteps">
+                                                                                <h5 class="mb-1"><b>{!! (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku !!}</b></h5>
+                                                                                <p class="mb-1">{!! (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku !!}</p>
+                                                                            </div>
                                                                             <div class="d-flex align-items-center justify-content-between">
                                                                                 <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
                                                                                     {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
                                                                                 @endif</h5>
-        
-        
+
+
                                                                                 @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
                                                                                 @php
                                                                                     $cartcount = 1;
@@ -258,15 +259,15 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                                                                     </span>
                                                                                 </div>
-        
+
                                                                                 @endif
-        
+
                                                                             </div>
                                                                         </div>
-        
-        
-        
-        
+
+
+
+
                                                                         <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
                                                                             <?php $imagePath = $imagePath2 = '';
                                                                                 $mediaCount = count($data->media);
@@ -280,37 +281,37 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                                 <img src="{{$imagePath}}" alt="">
                                                                             </div>
                                                                         </div>
-        
-        
+
+
                                                                     </div>
                                                                     <hr>
                                                                     @endforeach
-        
+
                                                             </div>
                                                         @endif
                                                     @endforeach
-    
+
                                         </div>
                                         <!-- End Content Wrapper -->
                                             <!-- end statis html -->
                                         @endif
                                     @endif
-    
-    
+
+
                                     @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
                                         <!-- for single level category -->
                                         <div class="service-data-wrapper al @if(app('request')->input('addons') == 1) d-none @endif"  id="step-1-ondemand" >
                                                 <!--  service data -->
                                             <div class="service-data">
                                                 <h4><b>{{ $vendor->name }}</b></h4>
-                                                
+
                                                 @if (!empty($vendor->banner))
                                                     <div class="service-img mb-3">
                                                         <img class="img-fluid" src="{{$vendor->banner['proxy_url'] . '1000/200' . $vendor->banner['image_path']}}" alt="">
                                                     </div>
                                                 @endif
-                                                
-                                                
+
+
                                                 @forelse($listData as $key => $data)
                                                     <!-- scrolling_section -->
                                                     <section class="scrolling_section " id="{{ $data->category->slug }}">
@@ -541,20 +542,20 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                 @empty
                                                     <h4 class="mt-3 mb-3 text-center">No product found</h4>
                                                 @endforelse
-                                                
 
-                                                
+
+
                                             </div>
                                             <!-- end service data -->
                                             <!-- end single level category -->
                                         </div>
                                     @endif
-                                 
-        
-                                
+
+
+
                                     @if(app('request')->input('addons') == '1' && app('request')->input('dateset') != '1')
                                          <!-- Step if addons avilable  Html -->
-        
+
                                      <div id="step-4-ondemand">
                                         @foreach ($cartData as $key => $cart_data)
                                             <!-- show add ons -->
@@ -573,7 +574,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                     $type_input = 'checkbox';
                                                                     if($addon->addOnName->max_select > 0){
                                                                         $max_select = 'Maximum '.$addon->addOnName->max_select;
-        
+
                                                                         if($addon->addOnName->max_select > 1)
                                                                         $type_input = 'checkbox';
                                                                         else
@@ -585,7 +586,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                 @endphp
                                                         </h6>
                                                         <span class="productAddonSetOptions" data-min="{{$addon->addOnName->min_select}}" data-cart_id="{{$cart_data->cart_id}}" data-cart_product_id="{{$cart_data->id}}" data-max="{{$addon->addOnName->max_select}}" data-addonset-title="{{$addon->addOnName->title}}">
-        
+
                                                         <div class="booking-time radio-btns long-radio mb-0">
                                                                 @foreach($addon->setoptions as $k => $option)
                                                                     @php $checked = ''; @endphp
@@ -597,7 +598,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                             @php $checked = ''; @endphp
                                                                             @endif
                                                                        @endif
-        
+
                                                                     @endforeach
                                                                     <div>
                                                                         <div class="radios">
@@ -614,17 +615,17 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                 @endforeach
                                                 <hr>
                                                 </div>
-        
+
                                              @endif
                                              <!-- end show add ons -->
-        
+
                                         @endforeach
                                       </div>
                                       <!--Step if addons avilable  Html -->
                                     @endif
-                                     
-        
-        
+
+
+
                                     @if(app('request')->input('step') == '2')
                                       <!-- Step Two Html -->
                                         <div id="step-2-ondemand">
@@ -634,14 +635,14 @@ $checkSlot = findSlot('', $vendor->id, '');
                                            {{ Arr::last($cartData)}}
                                             @foreach ($cartData as $cd => $cart_data)
                                               @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
-        
+
                                               @php
                                                 $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
                                               @endphp
-        
-        
+
+
                                                 <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif>
-        
+
                                                     <h4 class="mb-2"><b>{{__('When would you like your service?')}}</b></h4>
                                                     <div class="date-items radio-btns hide">
                                                         @foreach ($period as $key => $date)
@@ -666,10 +667,10 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                             </div>
                                                         @endforeach
                                                     </div>
-        
+
                                                     <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
                                                         <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
-        
+
                                                         <div class="booking-time radio-btns long-radio mb-0">
                                                             @php
                                                             if(!empty($cart_data->timeSlots)){
@@ -700,23 +701,23 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                         </div>
                                                         <P id="message_of_time{{$cart_data->id}}"></P>
                                                     </div>
-        
+
                                                     <input type="hidden" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" checked>
                                                 </div>
                                                 <hr>
                                                 @endif
                                             @endforeach
-        
+
                                                 <div class="booking-time-wrapper">
                                                     <h4 class="mt-4 mb-2"><b>{{__('Do you have any specific instructions?')}}</b></h4>
                                                     <textarea class="form-control" name="specific_instructions" id="specific_instructions" cols="30" rows="7"></textarea>
                                                 </div>
-        
+
                                         </div>
                                          <!--end step 2 html -->
                                     @endif
-                                   
-        
+
+
                                     @if(app('request')->input('step') == '3')
                                     <!-- step 3 payment page -->
                                     <form method="post" action="" id="placeorder_form_ondemand">
@@ -725,31 +726,31 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                 <div class="row d-flex justify-space-around">
                                                     @if(!$guest_user)
                                                         <div class="col-lg-8 left_box">
-        
+
                                                         </div>
                                                     @endif
-        
+
                                                 </div>
-        
+
                                                 <div class="row mb-4">
                                                     <div class="col-sm-6 text-md-right">
                                                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Continue')}}</button>
                                                     </div>
                                                 </div>
                                             </div>
-        
+
                                         </form>
-        
+
                                         <div class="col-sm-6 text-md-right">
                                             <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Continue')}}</button>
                                         </div>
-        
+
                                     @endif
-        
-                                
+
+
                                 </div>
                             </div>
-                   
+
                             <div class="col-md-4">
                                 <div class="card-box">
                                     <div class="product-order">
@@ -769,7 +770,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                     <li class="alVendorName">
                                                         <h6 class="d-flex align-items-center justify-content-between"> <%= product.vendor.name %> </h6>
                                                     </li>
-        
+
                                                     <% if( (product.isDeliverable != undefined) && (product.isDeliverable == 0) ) { %>
                                                         <li class="border_0">
                                                             <th colspan="7">
@@ -787,14 +788,14 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                         <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.price) %></span>
                                                                     </h6>
                                                                 </div>
-        
+
                                                             <div class='close-circle'>
                                                                 <a  class="action-icon d-block mb-3 remove_product_via_cart" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                                 </a>
                                                             </div>
                                                         </li>
-        
+
                                                         <% if(vendor_product.addon.length != 0) { %>
                                                             <div class="row align-items-md-center">
                                                                 <div class="col-12 alVendorProductDetails">
@@ -816,16 +817,16 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                             <% }); %>
                                                         <% } %>
                                                         <hr class="my-2">
-        
-        
+
+
                                                     <% }); %>
                                                 <% }); %>
-        
-        
+
+
                                                 @foreach ($cartData as $cd => $cart_data)
                                                 @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
                                                 <h4 class="mb-2"><b>{!! (!empty($cart_data->product->translation->first())) ? $cart_data->product->translation->first()->title : $cart_data->product->sku !!}</b></h4>
-        
+
                                                 <h5 class="d-flex align-items-center justify-content-between pb-2">{{__('DATE & TIME')}} </h5>
                                                 <li class="alVendorProductDetails">
                                                     <div class='media-body'>
@@ -835,7 +836,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                         </h6>
                                                     </div>
                                                 </li>
-        
+
                                                 <li class="alVendorProductDetails">
                                                     <div class='media-body'>
                                                         <h6 class="d-flex align-items-center justify-content-between">
@@ -846,7 +847,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                 </li>
                                                 @endif
                                                 @endforeach
-        
+
                                                 <h5 class="d-flex align-items-center justify-content-between pb-2">{{__('PRICE DETAILS')}} </h5>
                                                 <li class="alVendorProductTotals">
                                                     <div class='media-body'>
@@ -856,7 +857,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                         </h6>
                                                     </div>
                                                 </li>
-        
+
                                                 <li class="alVendorProductTotals">
                                                     <div class='media-body'>
                                                         <h6 class="d-flex align-items-center justify-content-between">
@@ -865,7 +866,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                         </h6>
                                                     </div>
                                                 </li>
-        
+
                                                 <% if(cart_details.loyalty_amount > 0) { %>
                                                 <li class="alVendorProductTotals">
                                                     <div class='media-body'>
@@ -876,7 +877,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                     </div>
                                                 </li>
                                                 <% } %>
-        
+
                                                 <li class="alVendorProductTotals">
                                                     <div class='media-body'>
                                                         <h6 class="d-flex align-items-center justify-content-between">
@@ -885,11 +886,11 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                         </h6>
                                                     </div>
                                                 </li>
-        
+
                                         </script>
-                                         
-        
-        
+
+
+
                                     </div>
                                 </div>
                                 <div class="footer-card">
@@ -919,117 +920,41 @@ $checkSlot = findSlot('', $vendor->id, '');
                                     @endif
                                 </div>
                             </div>
-        
+
                         </div>
-        
-        
+
+
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- <section class="chooseYourOffer mb-5">
-        	<div class="container">
-        		<div class="row">
-        			<div class="col-md-6 offset-md-3">
-        				<div class="viewAllProductSec">
-        					<div class="card mb-3">
-        						<div class="card-body">
-        							<div class="d-flex align-items-center justify-content-between border-bottom">
-        								<p class="m-0 productTitle">One night simple hotel break</p>
-        								<ul class="m-0 p-0 d-flex align-items-center">
-        									<li>From</li>
-        									<li class="ml-2"><span class="productsPrice">AED 166.00</span><br> <sup>per person (min. 2)</sup></li>
-        								</ul>
-        							</div>
-        							<ul class="productDetails pl-0 pr-lg-5 m-0 position-relative">
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">One night bed and breakfast</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Use of the leisure facilities</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Bottle of sparkling wine</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Robe, towel and slippers provided</p>
-			                            </li>
-			                        </ul>
-			                        <ul class="p-0 m-0 productBookingBtns position-relative d-flex align-items-center justify-content-between">
-			                        	<li><a href="#"><img src="{{asset('frontend/template_six/spaimages/flash_on.svg') }}"> Instant book</a></li>
-			                        	<li class="d-flex align-items-center"><button class="alProductBtns mr-2">More details and book</button> <button class="alProductBtns outlineBtn">Buy as a gift</button></li>
-			                        </ul>
-
-        						</div>
-        					</div>
-        					<div class="card mb-3">
-        						<div class="card-body">
-        							<div class="d-flex align-items-center justify-content-between border-bottom">
-        								<p class="m-0 productTitle">One night simple hotel break</p>
-        								<ul class="m-0 p-0 d-flex align-items-center">
-        									<li>From</li>
-        									<li class="ml-2"><span class="productsPrice">AED 166.00</span><br> <sup>per person (min. 2)</sup></li>
-        								</ul>
-        							</div>
-        							<ul class="productDetails pl-0 pr-lg-5 m-0 position-relative">
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">One night bed and breakfast</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Use of the leisure facilities</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Bottle of sparkling wine</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Robe, towel and slippers provided</p>
-			                            </li>
-			                        </ul>
-			                        <ul class="p-0 m-0 productBookingBtns position-relative d-flex align-items-center justify-content-between">
-			                        	<li><a href="#"><img src="{{asset('frontend/template_six/spaimages/flash_on.svg') }}"> Instant book</a></li>
-			                        	<li class="d-flex align-items-center"><button class="alProductBtns mr-2">More details and book</button> <button class="alProductBtns outlineBtn">Buy as a gift</button></li>
-			                        </ul>
-
-        						</div>
-        					</div>
-        				</div>
-        			</div>
-        		</div>
-        	</div>
-        </section> -->
-        <!-- chooseYourOffer start -->
+        
 
         <!-- Why people visit here start -->
         {{-- <p>{!! $vendor->dynamic_html !!}</p> --}}
-        {{-- <section class="whyPeopleVisit py-5">
+        @foreach ($vendor->vendor_section as $key=>$vendorSection)
+        <section class="whyPeopleVisit py-5" id="vendor_section_{{ $vendorSection->id }}">
         	<div class="container">
         		<div class="row">
         			<div class="col-md-12">
         				<div class="alSpaListHead text-center text-lg-left col-12 mb-5">
-	                        <p class="alLgFontSize">Why people visit here</p>
+	                        <p class="alLgFontSize">{{ $vendorSection->headingTranslation->first() ?  $vendorSection->headingTranslation->first()->heading : 'NA' }}</p>
 	                    </div>
         			</div>
-
-        			<div class="col-md-6">
+                    @foreach ($vendorSection->SectionTranslation as $subkey=>$SectionTranslation)
+                    <div class="col-md-6">
         				<div class="whyPeopleVisitDetails mb-4">
-	        				<p>Hotel Spa Venue</p>
-	        				<p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Cursus sit amet dictum sit amet justo. </p>
-        				</div>
-        				<div class="whyPeopleVisitDetails mb-4">
-	        				<p>Hotel Spa Venue</p>
-	        				<p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Cursus sit amet dictum sit amet justo. </p>
+	        				<p>{{ $SectionTranslation->first() ?  $SectionTranslation->first()->title : 'NA'  }}</p>
+	        				<p class="alBodyText">{{ $SectionTranslation->first() ?  $SectionTranslation->first()->description : 'NA'  }}</p>
         				</div>
         			</div>
-        			<div class="col-md-6">
-        				<div class="whyPeopleVisitDetails mb-4">
-	        				<p>Hotel Spa Venue</p>
-	        				<p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Cursus sit amet dictum sit amet justo. </p>
-        				</div>
-        			</div>
+                    @endforeach
         		</div>
         	</div>
-        </section> --}}
+        </section>
+        @endforeach
+    
         <!-- Why people visit here end -->
 
         <!-- More spas nearby start -->
@@ -1068,7 +993,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                 <div class="SpasRelatedItems mx-2">
                                     <div class="SpasRelatedItemsImageBox">
                                         <img class="rounded" src="{{ $value->banner['image_fit'] . '400/400' . $value->banner['image_path'] }}">
-                                    </div>                                    
+                                    </div>
                                     <div class="SpasRelatedDetails p-2">
                                         <p class="text-left m-0">{{ $value->name }}</p>
                                         <a href="javascript:void(0)">10 Excellent (2 reviews)</a>
@@ -1152,7 +1077,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                     <% }); %>
 
                     <h5 class="d-flex align-items-center justify-content-between pb-2">{{ __('PRICE DETAILS') }} </h5>
-                    <li class="p-0">
+                    <li class="p-0 alSixCart">
                         <div class='media-body'>
                             <h6 class="d-flex align-items-center justify-content-between">
                                 <span class="ellips">{{ __('Price') }}</span>
@@ -1161,7 +1086,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                         </div>
                     </li>
 
-                    <li class="p-0">
+                    <li class="p-0 alSixCart">
                         <div class='media-body'>
                             <h6 class="d-flex align-items-center justify-content-between">
                                 <span class="ellips">{{ __('Tax') }}</span>
@@ -1171,33 +1096,33 @@ $checkSlot = findSlot('', $vendor->id, '');
                     </li>
 
                     <% if(cart_details.total_subscription_discount != undefined) { %>
-                        <li class="p-0">
-                        <div class='media-body'>
-                            <h6 class="d-flex align-items-center justify-content-between">
-                                <span class="ellips">- {{ __('Subscription Discount') }}</span>
-                                - <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
-                            </h6>
-                        </div>
-                    </li>
+                        <li class="p-0 alSixCart">
+                            <div class='media-body'>
+                                <h6 class="d-flex align-items-center justify-content-between">
+                                    <span class="ellips">{{ __('Subscription Discount') }}</span>
+                                    <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
+                                </h6>
+                            </div>
+                        </li>
                     <% } %>
 
                     <% if(cart_details.loyalty_amount > 0) { %>
-                    <li class="p-0">
+                    <li class="p-0 alSixCart">
                         <div class='media-body'>
                             <h6 class="d-flex align-items-center justify-content-between">
-                                <span class="ellips">- {{ __('Loyalty Amount') }} </span>
-                                - <span>{{ Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
+                                <span class="ellips">{{ __('Loyalty Amount') }} </span>
+                                <span>{{'-'.Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
                             </h6>
                         </div>
                     </li>
                     <% } %>
 
                     <% if(cart_details.wallet_amount_used > 0) { %>
-                    <li class="p-0">
+                    <li class="p-0 alSixCart">
                         <div class='media-body'>
                             <h6 class="d-flex align-items-center justify-content-between">
-                                <span class="ellips">- {{ __('Wallet Amount') }} </span>
-                                - <span>{{ Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
+                                <span class="ellips"> {{ __('Wallet Amount') }} </span>
+                                 <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
                             </h6>
                         </div>
                     </li>
@@ -1409,7 +1334,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                     <input type="hidden" add_to_cart_url="cart" value="{{ route('addToCart') }}">
                 </div>
                 <div class="modal-footer flex-nowrap justify-content-center align-items-center">
-                    <button type="button" class="btn btn-solid black-btn" 
+                    <button type="button" class="btn btn-solid black-btn"
                         data-dismiss="modal">{{ __('Add new') }}</button>
                     <button type="button" class="btn btn-solid" id="repeat_item_btn">{{ __('Repeat last') }}</button>
                 </div>
@@ -1437,7 +1362,6 @@ $checkSlot = findSlot('', $vendor->id, '');
 
     <script src="{{ asset('front-assets/js/rangeSlider.min.js') }}"></script>
     <script src="{{ asset('front-assets/js/my-sliders.js') }}"></script>
-    <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script>
         var update_cart_product_schedule = "{{route('cart.updateProductSchedule')}}";
         // @if(!empty($vendor->banner))
@@ -1561,11 +1485,11 @@ $checkSlot = findSlot('', $vendor->id, '');
             $("#" + show_class).removeClass("d-none");
         });
         $(document).on('click', '#show_facilty', function(e) {
-            e.preventDefault();  
+            e.preventDefault();
             console.log('asd');
             $(this).addClass("d-none");
             $('#show_facilty_more').removeClass("d-none");
-           
+
         });
 
         $(document).delegate('.changeVariant', 'change', function() {
@@ -1690,7 +1614,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         }
 
         vendorAllOnMap();
-     
+
      function vendorAllOnMap() {
          var latitude = "{{ $vendor->latitude }}";
          var longitude = "{{ $vendor->longitude }}";
@@ -1698,18 +1622,18 @@ $checkSlot = findSlot('', $vendor->id, '');
 
          map = new google.maps.Map(document.getElementById('vendor-map'), {
              center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-             zoom: 13
+             zoom: 12
          });
-         
+
          var url = window.location.origin;
          var vendorData = {!!json_encode($Map_vendors)!!};
            //vendor  markers
          for (let i = 0; i < vendorData.length; i++) {
              vendor = vendorData[i];
-            
+
              if(vendor.address != null && vendor.latitude != "0.00000000" && vendor.longitude != "0.00000000" ){
                  var contentString = '';
-       
+
                      contentString =
                          '<div id="content">' +
                          '<div id="siteNotice">' +
@@ -1721,7 +1645,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                          '<p><b>Contact: +'+ vendor?.dial_code +vendor?.phone_no+' </p>' +
                          "</div>" +
                          "</div>";
-                     
+
 
                  const infowindow = new google.maps.InfoWindow({
                          content: contentString,
@@ -1729,7 +1653,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                          minheight: 250,
                      });
                 // images = 'https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/Clientlogo/612e24163debe.png@webp';
-                 
+
                  var image = {
                      //url: images, // url
                      scaledSize: new google.maps.Size(50, 50), // scaled size
@@ -1744,7 +1668,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                      marker.addListener("click", () => {
                          infowindow.open(map, marker);
                      });
-                
+
              }
 
          }

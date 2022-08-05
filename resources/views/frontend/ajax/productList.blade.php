@@ -1,6 +1,6 @@
 <div class="col-12 text-right mt-2">
     <select name="order_type" id='order_type' class="sortingFilter p-1">
-     <option value="">{{__('Please Select')}}</option>
+     <option value="">{{__('Sort By')}}</option>
         <option value="featured" {{isset($data['order_type']) && $data['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
         <option value="a_to_z" {{isset($data['order_type']) && $data['order_type'] == "a_to_z" ? 'selected' : ''}}>{{__('A to Z')}}</option>
         <option value="z_to_a" {{isset($data['order_type']) && $data['order_type'] == "z_to_a" ? 'selected' : ''}}>{{__('Z to A')}}</option>

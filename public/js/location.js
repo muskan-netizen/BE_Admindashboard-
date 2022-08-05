@@ -207,7 +207,7 @@ $(document).ready( async function () {
             });
         }
     }
-    
+
     //$(".navigation-tab-item").click(function() {
     $(document).on('click','.navigation-tab-item > a',function() {
         if($.hasAjaxRunning()){
@@ -370,7 +370,7 @@ $(document).ready( async function () {
                         // if (response.data.feature_products.length > 0) {
                         //     $('.render_full_featured_products').removeClass('d-none');
                         // } else {
-                        //     $('.render_full_featured_products').addClass('d-none');
+                        //     $('.render_full_featumyFunctionGetDataHomePagered_products').addClass('d-none');
                         // }
                         // if (vendors.length > 0) {
                         //     $('#our_vendor_main_div').removeClass('d-none');
@@ -411,43 +411,47 @@ $(document).ready( async function () {
         $(".shimmer_effect_"+item).show();
 
         switch (item) {
+            case 'banners':
+                getHomePageDataSingleBySingle(item, index);
+                break;
+
             case 'trending_vendors':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                 break;
             case 'vendors':
-                    getHomePageDataSingleBySingle(item);
+                    getHomePageDataSingleBySingle(item, index);
                 break;
             case 'featured_products':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
 
               break;
             case 'new_products':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
               break;
             case 'on_sale':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
               break;
             case 'best_sellers':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                break;
             case 'brands':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                break;
             case 'recent_orders':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                break;
             case 'pickup_delivery':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                break;
             case 'dynamic_page':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                break;
           }
 
         $(".shimmer_effect_"+item).hide();
     }
 
-    function getHomePageDataSingleBySingle(item) {
+    function getHomePageDataSingleBySingle(item, index) {
 
         let latitude = "";
         let longitude = "";
@@ -484,13 +488,41 @@ $(document).ready( async function () {
             beforeSend: function(){
 
             },
-            success: function (response) {
+            success: async function (response) {
                 if (response.status == "Success") {
                     var path = window.location.pathname;
                     if (path == '/') {
 
-                        let products_template = _.template($('#products_template').html());
+                        if(index ==  0){
+                            console.log('hereeee');
+                            $(".al_desktop_banner").html('');
+                            console.log(response.data.banners);
+                            console.log("=>>>>>>>>>  response.data.banners");
+                            if(response.data.banners.length > 0) {
+                                let desktop_banners_template = await _.template($('#desktop_banners_template').html());
+                                $(".al_desktop_banner").append(desktop_banners_template({ banners: response.data.banners }));
 
+                                $(".al_mobile_banner").html('');
+                                let mobile_banners_template = await _.template($('#mobile_banners_template').html());
+                                $(".al_mobile_banner").append(mobile_banners_template({ banners: response.data.mobile_banners }));
+
+                                 //$('.carousel').carousel();
+                                // setTimeout(()=>{
+                                //     $('.banner_main_shimer').hide();
+                                //     $('.category_main_shimer').hide();
+                                // },1000);
+                            } else {
+                                // $('.banner_main_shimer').hide();
+                                // $('.category_main_shimer').hide();
+                            }
+
+                            //alert('ddd');
+                            //$('.banner_main_shimer').hide();
+                        }
+
+                        let products_template = _.template($('#products_template').html());
+                        console.log("->>>>>>>>>>>>>>>>>>>>>");
+                        console.log(item);
                         switch (item) {
                             case 'trending_vendors':
                                 if(response.data.trending_vendors.length > 0){
@@ -887,6 +919,7 @@ $(document).ready( async function () {
 
     ////////////// *****************   home page category icon **************** //////////////////
   async function getHomePageCategoryMenu(latitude, longitude, vtype = "") {
+
     if(vtype != ''){
         vendor_type = vtype;
     }
