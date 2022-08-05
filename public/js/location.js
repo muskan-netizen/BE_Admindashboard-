@@ -333,7 +333,6 @@ $(document).ready( async function () {
                             var ast = layouts.length-1;
                             var last_ind_v =  layouts[ast];
                         }
-                        console.log('check ceck rojer bc bund fad kam',last_ind_v);
                         layouts.forEach(function(obj, index) {
                             setTimeout(function(){
                                 myFunctionGetDataHomePage(obj, index,last_ind_v);
