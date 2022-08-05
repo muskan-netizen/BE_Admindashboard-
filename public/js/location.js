@@ -507,14 +507,14 @@ $(document).ready( async function () {
 
                         if(index ==  0){
                             console.log('hereeee');
-                            //$(".al_desktop_banner").html('');
+                            $(".al_desktop_banner").html('');
                             console.log(response.data.banners);
                             console.log("=>>>>>>>>>  response.data.banners");
                             if(response.data.banners.length > 0) {
                                 let desktop_banners_template = await _.template($('#desktop_banners_template').html());
                                 $(".al_desktop_banner").append(desktop_banners_template({ banners: response.data.banners }));
 
-                                //$(".al_mobile_banner").html('');
+                                $(".al_mobile_banner").html('');
                                 let mobile_banners_template = await _.template($('#mobile_banners_template').html());
                                 $(".al_mobile_banner").append(mobile_banners_template({ banners: response.data.mobile_banners }));
 
