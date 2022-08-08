@@ -1919,6 +1919,7 @@ class OrderController extends BaseController
             // })->get();
 
            // $order['user_document_value'] =  $user_docs;
+<<<<<<< HEAD
             if(auth()->user()->is_admin){
                 $order['total_amount'] = $order->total_amount  - $total_markup_Price;
                 $order['payable_amount'] = $order->payable_amount  - $total_markup_Price;
@@ -1926,6 +1927,8 @@ class OrderController extends BaseController
                 $order['total_amount'] = $order->total_amount;
                 $order['payable_amount'] = $order->payable_amount;
             }
+=======
+>>>>>>> pre_stage
            /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
            $total_other_taxes = 0;
            if($order->total_other_taxes!=''){

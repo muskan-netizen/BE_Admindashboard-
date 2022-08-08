@@ -359,13 +359,25 @@ class CustomerAuthController extends FrontController
                         'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from',
                         'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider',
                         'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
-                if(!empty($prefer->sms_provider) ){
-                    $response['send_otp'] = 1;
-                    $to = '+'.$user->dial_code.$user->phone_number;
+                
+                if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+                    if ($user->dial_code == "971") {
+                        $to = '+' . $user->dial_code . "0" . $user->phone_number;
+                    } else {
+                        $to = '+' . $user->dial_code . $user->phone_number;
+                    }
                     $provider = $prefer->sms_provider;
-                    $body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
+                    $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                    // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
 
+                    if( $prefer->verify_phone == 1 ){
+                        $response['send_otp'] = 1;
+                        $to = '+'.$user->dial_code.$user->phone_number;
+                        $provider = $prefer->sms_provider;
+                        $body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
+                        $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    }
                 }
                 if(!empty($prefer->mail_driver) && !empty($prefer->mail_host) && !empty($prefer->mail_port) && !empty($prefer->mail_port) && !empty($prefer->mail_password) && !empty($prefer->mail_encryption)){
                     $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
