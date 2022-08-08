@@ -128,6 +128,10 @@ $timezone = Auth::user()->timezone;
                <td style="text-align: left;"><b>{{__('Delivery fee')}}:</b></td>
                <td style="text-align: right;">{{$currencySymbol . decimal_format($order->total_delivery_fee)}}</td>
             </tr>
+            <tr>
+               <td style="text-align: left;"><b>{{__('Service fee')}}:</b></td>
+               <td style="text-align: right;">{{$currencySymbol . decimal_format($order->total_service_fee)}}</td>
+            </tr>
              <tr>
                 <td style="text-align: left;"><b>{{__('Total')}}:</b></td>
                 <td style="text-align: right;"><b>{{$currencySymbol . decimal_format($order->payable_amount)}}</b></td>
