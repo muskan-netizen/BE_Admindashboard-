@@ -388,7 +388,7 @@ class HomeController extends BaseController
             // }
 
             $on_sale_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, '', $type);
-            $new_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type);
+            $new_product_details    = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type);
             $feature_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_featured', $type);
             foreach ($new_product_details as  $new_product_detail) {
                 $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
@@ -729,7 +729,7 @@ class HomeController extends BaseController
 
     public function vendorProducts($venderIds, $langId, $currency = '', $where = '', $type)
     {
-        $products = Product::with([
+        $products = Product::byProductCategoryServiceType($type)->with([
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
