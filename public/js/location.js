@@ -434,10 +434,6 @@ $(document).ready( async function () {
         $(".shimmer_effect_"+item).show();
 
         switch (item) {
-            case 'banners':
-                getHomePageDataSingleBySingle(item, index);
-                break;
-
             case 'trending_vendors':
                 getHomePageDataSingleBySingle(item, index);
                 break;
@@ -529,8 +525,7 @@ $(document).ready( async function () {
                         // }
 
                         let products_template = _.template($('#products_template').html());
-                        console.log("->>>>>>>>>>>>>>>>>>>>>");
-                        console.log(item);
+                        
                         switch (item) {
                             case 'trending_vendors':
                                 if(response.data.trending_vendors.length > 0){
