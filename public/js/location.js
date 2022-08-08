@@ -26,7 +26,7 @@ $(document).ready( async function () {
         if($("#address-longitude").length > 0){
             longitude = $("#address-longitude").val();
         }
-       await getHomePageCategoryMenu(latitude, longitude);
+       //await getHomePageCategoryMenu(latitude, longitude);
         getHomePage(latitude, longitude);
         // $(document).ready(function () {
         if ($.cookie("age_restriction") != 1) {
@@ -270,7 +270,35 @@ $(document).ready( async function () {
         // }
     })
 
-    function vendorType(latitude, longitude, type = "delivery"){
+    async function vendorType(latitude, longitude, type = "delivery"){
+        await  getHomePageCategoryMenu(latitude, longitude, type);
+        await  getHomePage(latitude, longitude, type);
+        setTimeout(function(){
+            getcart();
+        }, 3000);
+        // $.ajax({
+        //     type: "get",
+        //     dataType: 'json',
+        //     url: cart_details_url,
+        //     success: function (response) {
+        //         if (response.data != "") {
+        //             let cartProducts = response.data.products;
+        //             if (cartProducts != "") {
+        //                 $("#remove_cart_modal").modal('show');
+        //                 $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
+        //                 $(".nav-tabs.vendor_mods").attr("data-mod", type);
+        //             } else {
+        //                 getHomePageCategoryMenu(latitude, longitude, type);
+        //                 getHomePage(latitude, longitude, type);
+        //             }
+        //         } else {
+        //             getHomePageCategoryMenu(latitude, longitude, type);
+        //             getHomePage(latitude, longitude, type);
+        //         }
+        //     }
+        // });
+    }
+    function getcart(){
         $.ajax({
             type: "get",
             dataType: 'json',
@@ -282,19 +310,14 @@ $(document).ready( async function () {
                         $("#remove_cart_modal").modal('show');
                         $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
                         $(".nav-tabs.vendor_mods").attr("data-mod", type);
-                    } else {
-                        getHomePageCategoryMenu(latitude, longitude, type);
-                        getHomePage(latitude, longitude, type);
-                    }
-                } else {
-                    getHomePageCategoryMenu(latitude, longitude, type);
-                    getHomePage(latitude, longitude, type);
-                }
+                    } 
+                } 
             }
         });
+
     }
 
-    function getHomePage(latitude, longitude, vtype = "") {
+    async function getHomePage(latitude, longitude, vtype = "") {
         if(vtype != ''){
             vendor_type = vtype;
         }
@@ -493,17 +516,17 @@ $(document).ready( async function () {
                     var path = window.location.pathname;
                     if (path == '/') {
 
-                        if(index ==  0){
-                            $(".al_desktop_banner").html('');
-                            let desktop_banners_template = _.template($('#desktop_banners_template').html());
-                            $(".al_desktop_banner").append(desktop_banners_template({ banners: response.data.banners }));
+                        // if(index ==  0){
+                        //     $(".al_desktop_banner").html('');
+                        //     let desktop_banners_template = _.template($('#desktop_banners_template').html());
+                        //     $(".al_desktop_banner").append(desktop_banners_template({ banners: response.data.banners }));
 
-                            $(".al_mobile_banner").html('');
-                            let mobile_banners_template = _.template($('#mobile_banners_template').html());
-                            $(".al_mobile_banner").append(mobile_banners_template({ banners: response.data.mobile_banners }));
+                        //     $(".al_mobile_banner").html('');
+                        //     let mobile_banners_template = _.template($('#mobile_banners_template').html());
+                        //     $(".al_mobile_banner").append(mobile_banners_template({ banners: response.data.mobile_banners }));
 
-                            $('.carousel').carousel();
-                        }
+                        //     $('.carousel').carousel();
+                        // }
 
                         let products_template = _.template($('#products_template').html());
 
