@@ -493,7 +493,7 @@ class HomeController extends BaseController
             }
             // End Mobile Banners
 
-            $categories = $this->categoryNav($langId,  $venderIds);
+            $categories = $this->categoryNav($langId,  $venderIds,$type);
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
             $homeData['reqData'] = $request->all();

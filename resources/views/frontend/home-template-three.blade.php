@@ -334,7 +334,7 @@
 
 
 <!-- no-store-wrapper start -->
-<section class="no-store-wrapper mb-3 mt-3" >
+<section class="no-store-wrapper mb-3 mt-3" style="display: none;" >
 	<div class="container">
         @if(count($for_no_product_found_html))
             @foreach($for_no_product_found_html as $key => $homePageLabel)
