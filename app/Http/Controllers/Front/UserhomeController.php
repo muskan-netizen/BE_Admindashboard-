@@ -269,8 +269,8 @@ class UserhomeController extends FrontController
             if ($request->has('ref')) {
                 session(['referrer' => $request->query('ref')]);
             }
-            $latitude = Session::get('latitude');
-            $longitude = Session::get('longitude');
+            $latitude = Session::get('latitude') ?? null;
+            $longitude = Session::get('longitude') ?? null;
             $curId = Session::get('customerCurrency');
             $preferences = Session::get('preferences');
             $langId = Session::get('customerLanguage');
@@ -287,6 +287,12 @@ class UserhomeController extends FrontController
                         $count++;
                     }
                 }
+
+                if(empty($latitude) && empty($longitude)){
+                    $latitude = $clientPreferences->Default_latitude;
+                    $longitude = $clientPreferences->Default_longitude;
+                }
+
                 // if ($clientPreferences->dinein_check == 1) {
                 //     $count++;
                 // }
