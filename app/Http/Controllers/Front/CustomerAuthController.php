@@ -331,6 +331,7 @@ class CustomerAuthController extends FrontController
                     }
                 }
                 Auth::login($user);
+                Session::put('default_country_code', $user->dial_code);
                 $this->checkCookies($user->id);
                 $user_cart = Cart::where('user_id', $user->id)->first();
                 if ($user_cart) {
