@@ -355,6 +355,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::post('/homePageData', 'Front\UserhomeController@postHomePageData')->name('homePageData');
 	Route::post('/postHomePageDataSingle', 'Front\UserhomeController@postHomePageDataSingle')->name('postHomePageDataSingle');
+	Route::post('/postHomePageDataBanners', 'Front\UserhomeController@postHomePageDataBanners')->name('postHomePageDataBanners');
 	Route::post('/homePageDataNew', 'Front\UserhomeController@postHomePageDataNew')->name('homePageDataNew');
 	Route::post('/homePageDataCategoryMenu', 'Front\UserhomeController@homePageDataCategoryMenu')->name('homePageDataCategoryMenu');
 	Route::post('/theme', 'Front\UserhomeController@setTheme')->name('config.update');
