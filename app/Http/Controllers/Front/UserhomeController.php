@@ -393,6 +393,125 @@ class UserhomeController extends FrontController
             die;
         }
     }
+    public function indexTest(Request $request, $domain='')
+    {
+      
+
+        try {
+            $home = array();
+            $vendor_ids = array();
+            if ($request->has('ref')) {
+                session(['referrer' => $request->query('ref')]);
+            }
+            $latitude = Session::get('latitude') ?? null;
+            $longitude = Session::get('longitude') ?? null;
+            $curId = Session::get('customerCurrency');
+            $preferences = Session::get('preferences');
+            $langId = Session::get('customerLanguage');
+            $client_config = Session::get('client_config');
+            $selectedAddress = Session::get('selectedAddress');
+            $navCategories = $this->categoryNav($langId);
+            Session::put('navCategories', $navCategories);
+            $clientPreferences = ClientPreference::first();
+            $count = 0;
+            if ($clientPreferences) {
+                foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                    $clientVendorTypes = $vendor_typ_key.'_check';
+                    if($clientPreferences->$clientVendorTypes == 1){
+                        $count++;
+                    }
+                }
+
+                if(empty($latitude) && empty($longitude)){
+                    $latitude = $clientPreferences->Default_latitude;
+                    $longitude = $clientPreferences->Default_longitude;
+                }
+
+            }
+           
+            $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
+            ->where(function ($q) {
+                $q->whereNull('start_date_time')->orWhere(function ($q2) {
+                    $q2->whereDate('start_date_time', '<=', Carbon::now())
+                        ->whereDate('end_date_time', '>=', Carbon::now());
+                });
+            });
+            if(isset($clientPreferences->is_service_area_for_banners) && ($clientPreferences->is_service_area_for_banners == 1) && ($clientPreferences->is_hyperlocal == 1)){
+                if(!empty($latitude) && !empty($longitude)){
+                    $banners = $banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
+                        $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                    });
+                }
+            }
+            $banners = $banners->orderBy('sorting', 'asc')->get();
+
+            $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
+            ->where(function ($q) {
+                $q->whereNull('start_date_time')->orWhere(function ($q2) {
+                    $q2->whereDate('start_date_time', '<=', Carbon::now())
+                        ->whereDate('end_date_time', '>=', Carbon::now());
+                });
+            });
+            if(isset($clientPreferences->is_service_area_for_banners) && ($clientPreferences->is_service_area_for_banners == 1) && ($clientPreferences->is_hyperlocal == 1)){
+                if(!empty($latitude) && !empty($longitude)){
+                    $mobile_banners = $mobile_banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
+                        $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                    });
+                }
+            }
+            $mobile_banners = $mobile_banners->orderBy('sorting', 'asc')->get();
+
+
+            $home_page_labels = CabBookingLayout::where('is_active', 1)->where('for_no_product_found_html',0)->orderBy('order_by');
+
+            if (isset($langId) && !empty($langId))
+                $home_page_labels = $home_page_labels->with(['translations' => function ($q) use ($langId) {
+                    $q->where('language_id', $langId);
+                }]);
+
+            $home_page_labels = $home_page_labels->get();
+
+            if (count($home_page_labels) == 0)
+                $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
+                
+                $request->merge(['type'=>Session::get('vendorType'),'noTinJson'=>1] );
+            $homePageData = $this->postHomePageData($request);
+            pr($homePageData);
+            $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
+            if ($only_cab_booking == 1)
+                return Redirect::route('categoryDetail', 'cabservice');
+
+            $home_page_pickup_labels = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',0)->orderBy('order_by')->get();
+
+            $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+
+            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
+            $enable_layout = CabBookingLayout::where('is_active',1)->orderBy('order_by','asc')->pluck('slug')->toArray();
+           
+            // $last_mile = $this->checkIfLastMileDeliveryOn();
+            $view_page ="home-template-one";
+            if (isset($set_template)  && $set_template->template_id == 1){
+                $view_page = 'home-template-one';
+            }elseif(isset($set_template)  && $set_template->template_id == 2){
+                $view_page = "home-template-two";
+            }elseif(isset($set_template)  && $set_template->template_id == 3){
+                $view_page = "home-template-three";
+            }elseif(isset($set_template)  && $set_template->template_id == 4){
+                $view_page = "home-template-four";
+            }elseif(isset($set_template)  && $set_template->template_id == 5){
+                $view_page = "home-template-five";
+            }elseif(isset($set_template)  && $set_template->template_id == 6){
+                $view_page = "home-template-six";
+            }
+            $view_page = 'home-template-test';
+            //pr($set_template->toArray());exit();
+            return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout]);
+
+        } catch (Exception $e) {
+            pr($e->getCode());
+            die;
+        }
+    }
     public function postHomePageData(Request $request)
     {
         $vendor_ids = [];
@@ -744,6 +863,19 @@ class UserhomeController extends FrontController
             'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
             'active_orders' => $activeOrders
         ];
+        if($request->has('noTinJson') && $request->noTinJson == 1){
+            $data = [
+                'brands' => $brands->toArray(),
+                'vendors' => $vendors->toArray(),
+                'new_products' => $new_products,
+                'homePageLabels' => $home_page_labels->toArray(),
+                'feature_products' => $feature_products,
+                'on_sale_products' => $on_sale_products,
+                'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
+                'active_orders' => $activeOrders
+            ];
+            return $data ;
+        }
 
 
 
