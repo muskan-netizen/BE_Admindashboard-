@@ -333,6 +333,13 @@ $preference = $client_preference_detail;
          </div> -->
    </div>
 </section>
+@else
+<section class="home-slider-wrapper">
+   <div class="container-fulid">
+      <div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel"></div>
+      <div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;"></div>
+   </div>
+</section>
 @endif
 
 <script type="text/template" id="desktop_banners_template">
