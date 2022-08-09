@@ -395,8 +395,6 @@ class UserhomeController extends FrontController
     }
     public function indexTest(Request $request, $domain='')
     {
-      
-
         try {
             $home = array();
             $vendor_ids = array();
@@ -485,7 +483,7 @@ class UserhomeController extends FrontController
                
             });
                
-            pr($home_page_labels);
+            //pr($homePageData['brands']);
             $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
             if ($only_cab_booking == 1)
                 return Redirect::route('categoryDetail', 'cabservice');
@@ -514,7 +512,7 @@ class UserhomeController extends FrontController
             }
             $view_page = 'home-template-test';
             //pr($set_template->toArray());exit();
-            return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout]);
+            return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData]);
 
         } catch (Exception $e) {
             pr($e->getCode());
@@ -874,10 +872,10 @@ class UserhomeController extends FrontController
         ];
         if($request->has('noTinJson') && $request->noTinJson == 1){
             $data = [
-                'brands' => $brands->toArray(),
-                'vendors' => $vendors->toArray(),
+                'brands' => $brands,
+                'vendors' => $vendors,
                 'new_products' => $new_products,
-                'homePageLabels' => $home_page_labels->toArray(),
+                'homePageLabels' => $home_page_labels,
                 'featured_products' => $feature_products,
                 'on_sale' => $on_sale_products,
                 'best_sellers' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
