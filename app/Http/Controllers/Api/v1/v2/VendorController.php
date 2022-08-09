@@ -2096,7 +2096,6 @@ class VendorController extends BaseController{
             $limit = $request->has('limit') ? $request->limit : 15;
             $page = $request->has('page') ? $request->page : 1;
             $type = $request->has('type') ? $request->type : 'delivery';
-            pr($type);
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $langId = $user->language;
