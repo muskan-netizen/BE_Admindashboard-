@@ -236,6 +236,7 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane {{($tab == 'configuration') ? 'active show' : '' }} " id="configuration">
+                       @if($vendor->vendor_templete_id ==  6)
                         <div class="card-box">
                             <div class="row">
                                 <div class="col-md-12">
@@ -300,6 +301,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                         {{-- <div class="row">
                                 <div class="col-md-12">
                                     <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" id="slot-configs" method="post">

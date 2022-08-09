@@ -117,6 +117,8 @@
                 "dom": '<"toolbar">Bfrtip',
                 "destroy": true,
                 "processing": true,
+                
+                "responsive": true,
                 "serverSide": true,
                 "iDisplayLength": 50,
                 language: {
