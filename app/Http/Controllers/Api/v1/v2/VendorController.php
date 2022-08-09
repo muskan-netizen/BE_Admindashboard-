@@ -2722,7 +2722,7 @@ class VendorController extends BaseController{
              //filter data
                 $order_type = $request->has('order_type') ? $request->order_type : '';
 
-            $products = Product::where('is_live', 1)->where('vendor_id', $vid)->with([
+            $products = Product::byProductCategoryServiceType($type)->where('is_live', 1)->where('vendor_id', $vid)->with([
                      'inwishlist' => function($qry) use($userid){
                         $qry->where('user_id', $userid);
                     },
