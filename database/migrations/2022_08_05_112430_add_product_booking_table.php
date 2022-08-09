@@ -23,7 +23,7 @@ class AddProductBookingTable extends Migration
             $table->enum('booking_type', ['blocked', 'new_booking']);
             $table->dateTime('start_date_time')->nullable();
             $table->dateTime('end_date_time')->nullable();
-            $table->dateTime('booking_start_end')->nullable();
+            $table->string('booking_start_end')->nullable();
             $table->timestamps();
         });
     }

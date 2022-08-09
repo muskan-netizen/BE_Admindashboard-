@@ -52,9 +52,9 @@ $(function(){
         
     });
 
-    function add_manual_block_time(product_id,varient_id,product_title){
+    function add_manual_block_time(product_id,variant_id,product_title){
         console.log(product_id);
-        console.log(varient_id);
+        console.log(variant_id);
         console.log(product_title);
         Swal.fire({
             title: 'Add Manual Time',
@@ -85,7 +85,7 @@ $(function(){
                       endDate: moment().startOf('hour').add(24, 'hour'),
                       minDate:new Date(),
                       locale: {
-                        format: 'M/DD hh:mm A'
+                        format: 'M/DD/YY hh:mm A'
                       }
                     });
                   });
@@ -94,7 +94,7 @@ $(function(){
             var formData = {
               blocktime:result.value.blocktime,
               memo:result.value.memo,
-              varient_id:varient_id,
+              variant_id:variant_id,
               product_id:product_id,
               booking_slot:$('#blocktime').val()
             }

@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Client\Booking;
-
 use App\Http\Controllers\Client\BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,18 +11,36 @@ use App\Models\{ProductBooking};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
+use Exception;
 class ProductBookingController extends BaseController
 {
     use ApiResponser;
     use ToasterResponser;
     
 
-
+    /**
+     * Add Block slot for rental
+     *
+     * @param Request $request
+     * @param mixed $name
+     * @return void
+     */
     public function addBlockSlot(Request $request)
     {
-      $data = $request->all();
-      pr($request->all());  
-      ProductBooking::Create(['memo'=>$data['order_id'],'varient_id'=>$data['varient_id'],'product_id'=>$data['product_id'],'start_date_time'=>$data['order_id'],'end_date_time'=>$data['order_id'],'booking_start_end'=>$data['booking_slot']]);
+     
+      try {
+        DB::beginTransaction(); //Initiate transaction
+          $block_time = explode('-', $request->blocktime);
+          $start_time = date("Y-m-d H:i:s",strtotime($block_time[0]));
+          $end_time = date("Y-m-d H:i:s",strtotime($block_time[1]));
+          $start_end_block_time = $request->blocktime;
+          $status = ProductBooking::Create(['memo'=>$request->memo,'variant_id'=>$request->variant_id,'product_id'=>$request->product_id,'start_date_time'=>$start_time,'end_date_time'=>$end_time,'booking_start_end'=>$start_end_block_time]);
+        DB::commit(); //Commit transaction after all the operations
+        return response()->json(array('success' => true, 'message'=>'Manual time added sucessfully.'));
+      } catch (Exception $e) {
+          DB::rollBack();
+          return response()->json(array('success' => false, 'message'=>'Something went wrong.'));
+      }
      
     }
     
