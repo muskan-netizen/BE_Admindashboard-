@@ -63,9 +63,9 @@ class HomeController extends BaseController
             //pr($vendorMode);
             $homeData['profile']->preferences->vendorMode = $vendorMode;
             //dd($homeData['profile']);
-            // $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
-            // $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
-            // $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
+            $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
+            $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
+            $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
             $search_nomenclature = $this->getNomenclatureName('Search', $langId, false);
             $vendors_nomenclature = $this->getNomenclatureName('Vendors', $langId, false);
             $fixed_fee_nomenclature = $this->getNomenclatureName('fixed_fee', $langId, false);
@@ -75,9 +75,9 @@ class HomeController extends BaseController
             $want_to_tip=ucwords(str_replace("_"," ",$want_to_tip));
             $passbase = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
 
-            // $homeData['profile']->preferences->delivery_nomenclature = $delivery_nomenclature;
-            // $homeData['profile']->preferences->dinein_nomenclature = $dinein_nomenclature;
-            // $homeData['profile']->preferences->takeaway_nomenclature = $takeaway_nomenclature;
+            $homeData['profile']->preferences->delivery_nomenclature = $delivery_nomenclature;
+            $homeData['profile']->preferences->dinein_nomenclature = $dinein_nomenclature;
+            $homeData['profile']->preferences->takeaway_nomenclature = $takeaway_nomenclature;
             $homeData['profile']->preferences->search_nomenclature = $search_nomenclature;
             $homeData['profile']->preferences->vendors_nomenclature = $vendors_nomenclature;
             $homeData['profile']->preferences->fixed_fee_nomenclature = $fixed_fee_nomenclature;
@@ -262,11 +262,15 @@ class HomeController extends BaseController
             if (empty($type))
             $type = 'delivery';
 
+
+            $categoryTypes = getServiceTypesCategory($type);
             // if ($request->has('type')) {
             //     if (empty($request->type)) {
             //         $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
             //     } else {
-                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+                    $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                        $q->whereIn('type_id',$categoryTypes);
+                    })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 
             //     }
             // } else {
@@ -388,7 +392,7 @@ class HomeController extends BaseController
             // }
 
             $on_sale_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, '', $type);
-            $new_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type);
+            $new_product_details    = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type);
             $feature_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_featured', $type);
             foreach ($new_product_details as  $new_product_detail) {
                 $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
@@ -493,7 +497,7 @@ class HomeController extends BaseController
             }
             // End Mobile Banners
 
-            $categories = $this->categoryNav($langId,  $venderIds);
+            $categories = $this->categoryNav($langId,  $venderIds,$type);
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
             $homeData['reqData'] = $request->all();
@@ -729,7 +733,7 @@ class HomeController extends BaseController
 
     public function vendorProducts($venderIds, $langId, $currency = '', $where = '', $type)
     {
-        $products = Product::with([
+        $products = Product::byProductCategoryServiceType($type)->with([
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },

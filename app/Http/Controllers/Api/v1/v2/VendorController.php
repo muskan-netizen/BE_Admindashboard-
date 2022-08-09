@@ -2095,6 +2095,7 @@ class VendorController extends BaseController{
             $longitude = $user->longitude;
             $limit = $request->has('limit') ? $request->limit : 15;
             $page = $request->has('page') ? $request->page : 1;
+            $type = $request->has('type') ? $request->type : 'delivery';
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $langId = $user->language;
@@ -2161,7 +2162,7 @@ class VendorController extends BaseController{
             $vendor->share_link = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/vendor/".$vendor->slug;
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     
-            $product_category_ids =  Product::where('vendor_id', $vid)->pluck('category_id');
+            $product_category_ids =  Product::byProductCategoryServiceType($type)->where('vendor_id', $vid)->pluck('category_id');
             $product_category_ids = $product_category_ids->isNotEmpty() ? $product_category_ids->toArray() : [];
             
             if($vendor->vendor_templete_id == 5){
@@ -2220,7 +2221,7 @@ class VendorController extends BaseController{
                         }
                     }
                 }
-                $products = Product::with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                $products = Product::byProductCategoryServiceType($type)->with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
                             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                             ->where('category_translations.language_id', $langId);
                         }, 'inwishlist' => function($qry) use($userid){
@@ -2330,6 +2331,7 @@ class VendorController extends BaseController{
             $user = Auth::user();
             $latitude = $user->latitude;
             $longitude = $user->longitude;
+            $type = $request->has('type') ? $request->type : 'delivery';
             $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $vendor = Vendor::select('id', 'name', 'slug', 'desc', 'logo', 'show_slot', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id','closed_store_order_scheduled')
                         ->withAvg('product', 'averageRating')->where('id', $vendor_id)->where('status', 1);
@@ -2445,9 +2447,9 @@ class VendorController extends BaseController{
                 // }])
                 ->with(['translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
-                }])->with(['data' => function ($products)use($order_type,$request,$langId,$userid, $multipli,$variantIds,$vid,$startRange, $endRange){
+                }])->with(['data' => function ($products)use($order_type,$request,$langId,$userid, $multipli,$variantIds,$vid,$startRange, $endRange,$type){
                     //product query
-                        $products->where('is_live', 1)->select('products.*',DB::raw("'$multipli' as variant_multiplier"))->withCount('OrderProduct');
+                        $products->byProductCategoryServiceType($type)->where('is_live', 1)->select('products.*',DB::raw("'$multipli' as variant_multiplier"))->withCount('OrderProduct');
                         
                         $products = $products->with([
                         'inwishlist' => function($qry) use($userid){
@@ -2554,7 +2556,7 @@ class VendorController extends BaseController{
                         }
                     }
 
-                    $products = Product::with(['media.image',
+                    $products = Product::byProductCategoryServiceType($type)->with(['media.image',
                             'category.categoryDetail', 'category.categoryDetail.translation' => function ($q) use ($langId) {
                                 $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                                 ->where('category_translations.language_id', $langId);
@@ -2716,6 +2718,7 @@ class VendorController extends BaseController{
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             $langId = $user->language;
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
+            $type = $request->has('type') ? $request->type : 'delivery';
              //filter data
                 $order_type = $request->has('order_type') ? $request->order_type : '';
 
