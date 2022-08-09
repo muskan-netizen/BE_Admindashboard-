@@ -24,6 +24,7 @@ class AddProductBookingTable extends Migration
             $table->dateTime('start_date_time')->nullable();
             $table->dateTime('end_date_time')->nullable();
             $table->string('booking_start_end')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

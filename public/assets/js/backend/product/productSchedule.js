@@ -4,14 +4,13 @@ $(function(){
         var pid = $(this).attr('data-product_id');
         var vid = $(this).attr('data-varient_id');
         var title = $(this).attr('data-variant_title');
-    
             $("#scheduleTable").dataTable().fnDestroy()
             $('#scheduleTable').DataTable({
                 processing: true,
                 scrollY: '200px',
                 scrollCollapse: true,   
                 responsive: true,
-                ajax: '/client/getScheduleTableData',
+                ajax: `/client/getScheduleTableData?variant_id=${vid}&product_id=${pid}`,
                 columns: [
                     { data: 'name' },
                     { data: 'hr.position' },
@@ -26,11 +25,14 @@ $(function(){
                 scrollY: '200px',
                 responsive: true,
                 scrollCollapse: true,
-                ajax: '/client/getScheduleTableData',
+                ajax: `/client/getScheduleTableBlockedData?variant_id=${vid}&product_id=${pid}`,
                 columns: [
-                    { data: 'name' },
-                    { data: 'hr.start_date' },
-                    { data: 'hr.position' },
+                    { data: 'start_date_time' },
+                    { data: 'end_date_time' },
+                    { data: 'memo' },
+                    {data: "id" , render : function ( data, type, row, meta ) {
+                        return `<a href=""><i class="mdi mdi-square-edit-outline"></i></a> |  <a href=""><i class="mdi mdi-delete"></i></a> `;
+                    }},
                     
                     // { data: 'hr.salary' },
                 ],
@@ -110,8 +112,18 @@ $(function(){
         console.log(formData);
         axios.post(`/client/booking/addBlockSlot`, formData)
         .then(async response => {
-         
-            
+         //console.log(response);
+            if(response.data.success){
+                Swal.fire(
+                    'Manual time added successfully!',                                    
+                    'success'
+                )
+            } else{
+                Swal.fire(
+                    'This slot is already booked, Please try other.',                                    
+                    'error'
+                )
+            }
         })
         .catch(e => {
             Swal.fire(
