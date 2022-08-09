@@ -798,9 +798,9 @@ class CartController extends BaseController
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                                     $rate = round($tax_value->tax_rate);
                                     $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                                    //    $product_tax = ($quantity_price+$total_addon_price) * $rate / 100;
-
-                                    $product_tax = ($quantity_price+$addon_price) * $rate / 100;  
+                                    $product_tax = ($quantity_price+$total_addon_price) * $rate / 100;
+                                    //\Log::info($quantity_price.' + '.$total_addon_price .' -- '.$product_tax);
+                                    //$product_tax = ($quantity_price+$addon_price) * $rate / 100;  
                                     
                                     $taxData[$tckey]['rate'] = $rate;
                                     $taxData[$tckey]['tax_amount'] = $tax_amount;
@@ -816,6 +816,7 @@ class CartController extends BaseController
                                     );
                                 }
                             }
+                            //dd($prod->product->toArray());
                             $prod->taxdata = $taxData;
                             if ($action == 'delivery') {
                                 if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
@@ -1024,7 +1025,7 @@ class CartController extends BaseController
                 $vendorData->payable_amount = $payable_amount - $discount_amount;
                 $vendorData->isDeliverable = 1;
                 $total_paying = $total_paying + $payable_amount ; 
-                $total_tax = $total_tax + $taxable_amount;
+                $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_disc_amount = $total_disc_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
                 $vendorData->vendor->is_vendor_closed = $is_vendor_closed;
@@ -1211,7 +1212,7 @@ class CartController extends BaseController
             $cart->without_category_kyc = 1; 
         }
 
-        $other_taxes_string='tax_fixed_fee:'.$total_fixed_fee_tax.',tax_service_charges:'.$total_service_fee.',tax_delivery_charges:'.$deliver_fee_charges.',tax_markup_fee:'.$total_markup_fee_tax;
+        $other_taxes_string='tax_fixed_fee:'.$total_fixed_fee_tax.',tax_service_charges:'.$total_service_fee.',tax_delivery_charges:'.$deliver_fee_charges.',tax_markup_fee:'.$total_markup_fee_tax.',product_tax_fee:'.$total_taxable_amount;
 
         $userCart = Cart::find($cartID);
         $userCart->total_other_taxes  = $other_taxes_string;
@@ -1221,7 +1222,7 @@ class CartController extends BaseController
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
         $cart->total_markup_charges = decimal_format($total_markup_charges);
-        $cart->total_tax = decimal_format($total_tax + $total_fixed_fee_tax + $total_service_fee + $deliver_fee_charges + $total_markup_fee_tax);
+        $cart->total_tax = decimal_format($total_taxable_amount + $total_fixed_fee_tax + $total_service_fee + $deliver_fee_charges + $total_markup_fee_tax);
         $cart->tax_details = $tax_details;
         $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;

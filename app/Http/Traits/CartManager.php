@@ -592,7 +592,7 @@ trait cartManager{
                         }
                         unset($prod->product->taxCategory);
                     }
-                  
+                    // dd($prod->product->taxCategory->toArray());
                     $prod->taxdata = $taxData;
 
                     if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
@@ -1116,7 +1116,9 @@ trait cartManager{
             }
 
             $other_taxes=array_sum($taxCharges);
-            $other_taxes_string='tax_fixed_fee:'.$taxCharges['total_fixed_fee_tax'].',tax_service_charges:'.$taxCharges['total_service_fee'].',tax_delivery_charges:'.$taxCharges['deliver_fee_charges'].',tax_markup_fee:'.$taxCharges['total_markup_fee_tax'];
+            $other_taxes_string='tax_fixed_fee:'.$taxCharges['total_fixed_fee_tax'].',tax_service_charges:'.$taxCharges['total_service_fee'].',tax_delivery_charges:'.$taxCharges['deliver_fee_charges'].',tax_markup_fee:'.$taxCharges['total_markup_fee_tax'].',product_tax_fee:'.$total_taxable_amount;;
+
+
           
             $cart->other_taxes = $other_taxes;
             $cart->other_taxes_string = $other_taxes_string;
