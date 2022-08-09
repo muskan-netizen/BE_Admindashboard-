@@ -1245,9 +1245,14 @@ class CartController extends BaseController
         } else {
             $cart->total_payable_amount = ($total_paying  + $total_tax) - ($total_disc_amount + $loyalty_amount_saved); 
         }
+        if($total_taxable_amount>0){
+            $cart->total_payable_amount = $cart->total_payable_amount +$total_taxable_amount;
+        }
+
         if($cart->total_fixed_fee_amount){
             $cart->total_payable_amount = $cart->total_payable_amount +$cart->total_fixed_fee_amount;
         }
+
         $wallet_amount_used = 0;
         if (isset($user)) {
             if ($user->balanceFloat > 0) {
