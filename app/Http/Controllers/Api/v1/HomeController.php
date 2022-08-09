@@ -63,9 +63,9 @@ class HomeController extends BaseController
             //pr($vendorMode);
             $homeData['profile']->preferences->vendorMode = $vendorMode;
             //dd($homeData['profile']);
-            // $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
-            // $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
-            // $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
+            $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
+            $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
+            $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
             $search_nomenclature = $this->getNomenclatureName('Search', $langId, false);
             $vendors_nomenclature = $this->getNomenclatureName('Vendors', $langId, false);
             $fixed_fee_nomenclature = $this->getNomenclatureName('fixed_fee', $langId, false);
@@ -75,9 +75,9 @@ class HomeController extends BaseController
             $want_to_tip=ucwords(str_replace("_"," ",$want_to_tip));
             $passbase = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
 
-            // $homeData['profile']->preferences->delivery_nomenclature = $delivery_nomenclature;
-            // $homeData['profile']->preferences->dinein_nomenclature = $dinein_nomenclature;
-            // $homeData['profile']->preferences->takeaway_nomenclature = $takeaway_nomenclature;
+            $homeData['profile']->preferences->delivery_nomenclature = $delivery_nomenclature;
+            $homeData['profile']->preferences->dinein_nomenclature = $dinein_nomenclature;
+            $homeData['profile']->preferences->takeaway_nomenclature = $takeaway_nomenclature;
             $homeData['profile']->preferences->search_nomenclature = $search_nomenclature;
             $homeData['profile']->preferences->vendors_nomenclature = $vendors_nomenclature;
             $homeData['profile']->preferences->fixed_fee_nomenclature = $fixed_fee_nomenclature;
