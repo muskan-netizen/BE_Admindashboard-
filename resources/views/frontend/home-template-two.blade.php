@@ -355,7 +355,7 @@ height: auto;
     </div>
 </section>
 @endif
-@endif
+
 
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
