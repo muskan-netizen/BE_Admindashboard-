@@ -262,11 +262,15 @@ class HomeController extends BaseController
             if (empty($type))
             $type = 'delivery';
 
+
+            $categoryTypes = getServiceTypesCategory($type);
             // if ($request->has('type')) {
             //     if (empty($request->type)) {
             //         $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
             //     } else {
-                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+                    $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                        $q->whereIn('type_id',$categoryTypes);
+                    })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 
             //     }
             // } else {

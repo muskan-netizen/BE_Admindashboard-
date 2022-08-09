@@ -473,10 +473,19 @@ class UserhomeController extends FrontController
 
             if (count($home_page_labels) == 0)
                 $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
-                
-                $request->merge(['type'=>Session::get('vendorType'),'noTinJson'=>1] );
+              
+            $request->merge(['type'=>Session::get('vendorType'),'noTinJson'=>1] );
             $homePageData = $this->postHomePageData($request);
-            pr($homePageData);
+
+            $home_page_labels = $home_page_labels->map(function($da) use ($homePageData) {
+                if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' ){
+                    $da[$da->slug] = $homePageData[$da->slug];
+                }
+                return $da;
+               
+            });
+               
+            pr($home_page_labels);
             $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
             if ($only_cab_booking == 1)
                 return Redirect::route('categoryDetail', 'cabservice');
@@ -869,9 +878,9 @@ class UserhomeController extends FrontController
                 'vendors' => $vendors->toArray(),
                 'new_products' => $new_products,
                 'homePageLabels' => $home_page_labels->toArray(),
-                'feature_products' => $feature_products,
-                'on_sale_products' => $on_sale_products,
-                'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
+                'featured_products' => $feature_products,
+                'on_sale' => $on_sale_products,
+                'best_sellers' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
                 'active_orders' => $activeOrders
             ];
             return $data ;
