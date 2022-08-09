@@ -1298,7 +1298,8 @@ class CartController extends FrontController
                 $vendorData->payable_amount = decimal_format($payable_amount);
                 $vendorData->discount_amount = decimal_format($discount_amount);
                 $vendorData->discount_percent = decimal_format($discount_percent);
-                $vendorData->taxable_amount = decimal_format($taxable_amount);  Log::info($taxable_amount);
+                $vendorData->taxable_amount = decimal_format($taxable_amount);  
+                //\Log::info($taxable_amount);
                 $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount);
                 $vendorData->product_sub_total_amount = decimal_format($subtotal_amount);
                 $vendorData->isDeliverable = 1;

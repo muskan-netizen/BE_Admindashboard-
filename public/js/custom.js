@@ -4686,7 +4686,7 @@ $(document).ready(function () {
             break;
             case '42':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
+                // console.log('order', order);
                 if (order != '') {
                     //payWithDpo
                     payWithDpo(order);
@@ -4697,7 +4697,7 @@ $(document).ready(function () {
             break;
             case '43':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
+                // console.log('order', order);
                 if (order != '') {
                     paymentViaUPay(address_id, order);
                 }
