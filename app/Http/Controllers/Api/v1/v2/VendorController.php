@@ -2095,6 +2095,8 @@ class VendorController extends BaseController{
             $longitude = $user->longitude;
             $limit = $request->has('limit') ? $request->limit : 15;
             $page = $request->has('page') ? $request->page : 1;
+            $type = $request->has('type') ? $request->type : 'delivery';
+            pr($type);
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $langId = $user->language;
@@ -2161,7 +2163,7 @@ class VendorController extends BaseController{
             $vendor->share_link = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/vendor/".$vendor->slug;
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     
-            $product_category_ids =  Product::where('vendor_id', $vid)->pluck('category_id');
+            $product_category_ids =  Product::byProductCategoryServiceType($type)->where('vendor_id', $vid)->pluck('category_id');
             $product_category_ids = $product_category_ids->isNotEmpty() ? $product_category_ids->toArray() : [];
             
             if($vendor->vendor_templete_id == 5){
@@ -2220,7 +2222,7 @@ class VendorController extends BaseController{
                         }
                     }
                 }
-                $products = Product::with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                $products = Product::byProductCategoryServiceType($type)->with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
                             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                             ->where('category_translations.language_id', $langId);
                         }, 'inwishlist' => function($qry) use($userid){
