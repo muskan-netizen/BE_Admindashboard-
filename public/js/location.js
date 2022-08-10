@@ -425,7 +425,7 @@ $(document).ready( async function () {
 
                 if($("body").hasClass("al_body_template_six")){
                     $(".main_shimer").hide();
-                    console.log('al_body_template_six');
+                    $(".shimmer_effect").hide();
                 }else{
                     $(".shimmer_effect").hide();
                 }
