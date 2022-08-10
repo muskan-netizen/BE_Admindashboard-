@@ -32,9 +32,7 @@ class UPayController extends FrontController
             Auth::login($user);
         }
         $user = Auth::user();
-        $request['amount'] = $this->getDollarCompareAmount($request->amount);
-        $data['user_email'] = $user->email??'';
-        $data['user_phone'] = $user->phone_number??'';
+        $data['amount'] = $this->getDollarCompareAmount($request->amount);
         $references = [];
         $ref_data = [];
         if($request->payment_from == 'cart'){
@@ -59,9 +57,16 @@ class UPayController extends FrontController
             }
             array_push($references, $ref_data);
         }
-        $data['references'] = $references;
-        // $data['redirect_url'] = "https://ab21-180-188-237-239.ngrok.io";
-    	$redirect_url = $this->createPaymentRequest($data); 
-        return view('frontend.payment_gatway.upay_view')->with(['data' => $redirect_url,'key'=>$this->aes_key,'endpoint'=>$this->endpoint,'uidd'=>$this->uidd]);
+        $formData = [
+          'Amt' => $data['amount'],
+          'full_name' => 'Sujata Mehta',
+          'Email' => $user->email??'',
+          'Mobile' => $user->phone_number??'',
+          'Redir' => $data['redirect_url']??'http://192.168.1.3:8060',
+          'References' => $references
+        ];
+        $info = json_encode($formData);
+        return view('frontend.payment_gatway.
+            ')->with(['data' => $info,'key'=>$this->aes_key,'endpoint'=>$this->endpoint,'uidd'=>$this->uidd]);
     }
 }
