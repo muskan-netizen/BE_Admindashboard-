@@ -931,108 +931,32 @@ $checkSlot = findSlot('', $vendor->id, '');
             </div>
         </section>
 
-        <!-- <section class="chooseYourOffer mb-5">
-        	<div class="container">
-        		<div class="row">
-        			<div class="col-md-6 offset-md-3">
-        				<div class="viewAllProductSec">
-        					<div class="card mb-3">
-        						<div class="card-body">
-        							<div class="d-flex align-items-center justify-content-between border-bottom">
-        								<p class="m-0 productTitle">One night simple hotel break</p>
-        								<ul class="m-0 p-0 d-flex align-items-center">
-        									<li>From</li>
-        									<li class="ml-2"><span class="productsPrice">AED 166.00</span><br> <sup>per person (min. 2)</sup></li>
-        								</ul>
-        							</div>
-        							<ul class="productDetails pl-0 pr-lg-5 m-0 position-relative">
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">One night bed and breakfast</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Use of the leisure facilities</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Bottle of sparkling wine</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Robe, towel and slippers provided</p>
-			                            </li>
-			                        </ul>
-			                        <ul class="p-0 m-0 productBookingBtns position-relative d-flex align-items-center justify-content-between">
-			                        	<li><a href="#"><img src="{{asset('frontend/template_six/spaimages/flash_on.svg') }}"> Instant book</a></li>
-			                        	<li class="d-flex align-items-center"><button class="alProductBtns mr-2">More details and book</button> <button class="alProductBtns outlineBtn">Buy as a gift</button></li>
-			                        </ul>
-
-        						</div>
-        					</div>
-        					<div class="card mb-3">
-        						<div class="card-body">
-        							<div class="d-flex align-items-center justify-content-between border-bottom">
-        								<p class="m-0 productTitle">One night simple hotel break</p>
-        								<ul class="m-0 p-0 d-flex align-items-center">
-        									<li>From</li>
-        									<li class="ml-2"><span class="productsPrice">AED 166.00</span><br> <sup>per person (min. 2)</sup></li>
-        								</ul>
-        							</div>
-        							<ul class="productDetails pl-0 pr-lg-5 m-0 position-relative">
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">One night bed and breakfast</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Use of the leisure facilities</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Bottle of sparkling wine</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Robe, towel and slippers provided</p>
-			                            </li>
-			                        </ul>
-			                        <ul class="p-0 m-0 productBookingBtns position-relative d-flex align-items-center justify-content-between">
-			                        	<li><a href="#"><img src="{{asset('frontend/template_six/spaimages/flash_on.svg') }}"> Instant book</a></li>
-			                        	<li class="d-flex align-items-center"><button class="alProductBtns mr-2">More details and book</button> <button class="alProductBtns outlineBtn">Buy as a gift</button></li>
-			                        </ul>
-
-        						</div>
-        					</div>
-        				</div>
-        			</div>
-        		</div>
-        	</div>
-        </section> -->
-        <!-- chooseYourOffer start -->
+        
 
         <!-- Why people visit here start -->
         {{-- <p>{!! $vendor->dynamic_html !!}</p> --}}
-        {{-- <section class="whyPeopleVisit py-5">
+        @foreach ($vendor->vendor_section as $key=>$vendorSection)
+        <section class="whyPeopleVisit py-5" id="vendor_section_{{ $vendorSection->id }}">
         	<div class="container">
         		<div class="row">
         			<div class="col-md-12">
         				<div class="alSpaListHead text-center text-lg-left col-12 mb-5">
-	                        <p class="alLgFontSize">Why people visit here</p>
+	                        <p class="alLgFontSize">{{ $vendorSection->headingTranslation->first() ?  $vendorSection->headingTranslation->first()->heading : 'NA' }}</p>
 	                    </div>
         			</div>
-
-        			<div class="col-md-6">
+                    @foreach ($vendorSection->SectionTranslation as $subkey=>$SectionTranslation)
+                    <div class="col-md-6">
         				<div class="whyPeopleVisitDetails mb-4">
-	        				<p>Hotel Spa Venue</p>
-	        				<p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Cursus sit amet dictum sit amet justo. </p>
-        				</div>
-        				<div class="whyPeopleVisitDetails mb-4">
-	        				<p>Hotel Spa Venue</p>
-	        				<p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Cursus sit amet dictum sit amet justo. </p>
+	        				<p>{{ $SectionTranslation->first() ?  $SectionTranslation->first()->title : 'NA'  }}</p>
+	        				<p class="alBodyText">{{ $SectionTranslation->first() ?  $SectionTranslation->first()->description : 'NA'  }}</p>
         				</div>
         			</div>
-        			<div class="col-md-6">
-        				<div class="whyPeopleVisitDetails mb-4">
-	        				<p>Hotel Spa Venue</p>
-	        				<p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Cursus sit amet dictum sit amet justo. </p>
-        				</div>
-        			</div>
+                    @endforeach
         		</div>
         	</div>
-        </section> --}}
+        </section>
+        @endforeach
+    
         <!-- Why people visit here end -->
 
         <!-- More spas nearby start -->
@@ -1702,7 +1626,7 @@ $checkSlot = findSlot('', $vendor->id, '');
 
          map = new google.maps.Map(document.getElementById('vendor-map'), {
              center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-             zoom: 13
+             zoom: 12
          });
 
          var url = window.location.origin;

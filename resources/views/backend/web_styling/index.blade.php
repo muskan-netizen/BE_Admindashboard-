@@ -94,7 +94,8 @@
                                    
                                         @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                                             @php
-                                                $VendorTypesName   = $vendor_typ_key.'icon';
+                                                $VendorTypesName   = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+
                                                 $clientVendorTypes = $vendor_typ_key.'_check';
                                             @endphp
                                             @if($client_preference_detail->$clientVendorTypes == 1)

@@ -2,7 +2,7 @@
     <div class="logo-box m-hide d-lg-block">
         @php
             $urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
-            $clientData = \App\Models\Client::select('id', 'logo','dark_logo','socket_url')->where('id', '>', 0)->first();
+            $clientData = \App\Models\Client::select('id', 'logo','dark_logo','socket_url')->first();
             $client_preference = \App\Models\ClientPreference::where(['id' => 1])->first();
             if($clientData){
                 if($client_preference->theme_admin == 'dark'){

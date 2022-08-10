@@ -37,14 +37,14 @@ height: auto;
 {{-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> --}}
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos alTwoHomeShimmer">
-    <div class="container-fulid shimmer_effect topBar">
+    <div class="container-fulid shimmer_effect  main_shimer topBar">
         <div class="row">
             <div class="col-12 cards">
                 <div class="top_bar loading"></div>
             </div>
         </div>
     </div>
-    <div class="container shimmer_effect topBar">
+    <div class="container shimmer_effect main_shimer topBar">
         <div class="row">
             <div class="col-2 cards">
                 <div class="logoArea_bar loading"></div>
@@ -60,21 +60,21 @@ height: auto;
             </div>
         </div>
     </div>
-    <div class="container-fulid mt-1 mb-1 shimmer_effect topBar">
+    <div class="container-fulid mt-1 mb-1 shimmer_effect main_shimer topBar">
         <div class="row">
             <div class="col-12 cards">
                 <div class="top_bar loading"></div>
             </div>
         </div>
     </div>
-	<div class="container_al mb-3 shimmer_effect">
+	<div class="container_al mb-3 shimmer_effect main_shimer">
 		<div class="row">
 			<div class="col-12 cards">
 				<div class="cardbanner loading"></div>
 			</div>
 		</div>
 	</div>
-	<div class="container mb-5 shimmer_effect">
+	<div class="container mb-5 shimmer_effect main_shimer">
         <div class="row">
             <div class="col-1 grid-row">
                 <div class="card_image loading"></div>
@@ -347,7 +347,15 @@ height: auto;
 
 	</div>
 </section>
+@else
+<section class="home-slider-wrapper">
+    <div class="container-fulid">
+        <div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel"></div>
+        <div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;"></div>
+    </div>
+</section>
 @endif
+
 
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
@@ -644,11 +652,12 @@ height: auto;
     <div class="vendors">
         @foreach($homePageLabels as $key => $homePageLabel)
         @if($homePageLabel->slug == 'pickup_delivery')
-        @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
-        @include('frontend.booking.cabbooking-single-module')
-        @endif
+            @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
+                @include('frontend.booking.cabbooking-single-module')
+            @endif
         @elseif($homePageLabel->slug == 'dynamic_page')
-        @include('frontend.included_files.dynamic_page')
+        
+            @include('frontend.included_files.dynamic_page')
         @else
         <div class="container render_full_{{$homePageLabel->slug}} d-none" id="{{$homePageLabel->slug.$key}}">
             <div class="row">

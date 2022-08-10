@@ -162,7 +162,7 @@ class CustomDomain{
             }
           }
           if(empty(Session::get('selectedAddress'))){
-            Session::put('vendorType', $clientPreference->Default_location_name);
+            Session::put('selectedAddress', $clientPreference->Default_location_name);
           }
          
           if($vendor_mode_count ==1){

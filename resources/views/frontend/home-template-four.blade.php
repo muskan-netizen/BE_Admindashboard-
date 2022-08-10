@@ -19,14 +19,14 @@
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos">
-	<div class="container-fliud mb-md-5 mb-2 shimmer_effect al_tabsShimmer">
+	<div class="container-fliud mb-md-5 mb-2 shimmer_effect main_shimer al_tabsShimmer">
 		<div class="row">
 			<div class="col-lg-10 offset-lg-1 cards">
 				<div class="cardbanner loading"></div>
 			</div>
 		</div>
 	</div>
-	<div class="container-fliud mb-5 shimmer_effect px-md-3">
+	<div class="container-fliud mb-5 shimmer_effect main_shimer px-md-3">
 		<div class="row">
 			<div class="col-lg-10 offset-lg-1 cards">
 				<h2 class="h2-heading loading mb-3"></h2> </div>
@@ -195,10 +195,16 @@
 
 		</div>
 	</section>
+	@else
+	<section class="home-slider-wrapper">
+		<div class="container-fulid">
+			<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel"></div>
+			<div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;"></div>
+		</div>
+	</section>
+	@endif
 
 </article><!-- gradinet sec start -->
-
- @endif
 
 
 <!-- no-store-wrapper start -->

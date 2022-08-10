@@ -1975,7 +1975,7 @@ class VendorController extends BaseController{
         $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
         $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
 
-        $type = 'delivery';
+        $type = $request->has('type') ? $request->type : 'delivery';
         if ($request->has('type')) {
             if (empty($request->type)) {
                 $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
@@ -1988,6 +1988,12 @@ class VendorController extends BaseController{
         }
 
         $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
+
+        // get vendor by category typ
+        $categoryTypes = getServiceTypesCategory($type);
+        $vendorData = $vendorData->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+            $q->whereIn('type_id',$categoryTypes);
+        });
 
         if (($preferences) && ($preferences->is_hyperlocal == 1)) {
             $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;

@@ -1,5 +1,10 @@
 @extends('layouts.vertical', ['title' => 'Orders'])
 @section('content')
+@php
+   
+    $clientData = \App\Models\Client::select('socket_url')->first();
+   
+@endphp
 <style type="text/css">
 .ellipsis {white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}body {font-size: 0.75rem;}.order_data>div,.order_head h4 {padding: 0 !important;
 }.order-page .card-box {padding: 20px 20px 5px !important;}.progress-order {width: calc(100% + 48px);margin: -24px 0 20px;background: #00000012;
@@ -74,11 +79,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                        <div class="order_detail order_detail_data align-items-top pb-1 mb-0 card-box no-gutters h-100">
                                         <ul class="alBtnsOnOrders d-flex justify-content-end">
+                                            @if( (!Auth::user()->is_superadmin) && ($clientData->socket_url) )
                                             <li>
                                                 <a data-toggle="tooltip" data-placement="top" title="Start Chat" class="start_chat btn-info" data-vendor_order_id="<%= vendor.id%>" data-vendor_id="<%= vendor.vendor_id %>" data-orderId="<%= order.order_id  %>" data-order_id="<%= order.id %>"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">
                                                     <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
                                                   </svg></a>
                                             </li>
+                                            @endif
                                         </ul>
                                         
                                         <a href="<%= vendor.vendor_detail_url %>" class="row">
@@ -207,11 +214,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                                 <% } %>
                                                             </li>
                                                             <% } %>
-                                                        <% if(order.fixed_fee_amount > 0 || order.fixed_fee_amount < 0) { %>
+                                                        <% if(vendor.fixed_fee > 0 || vendor.fixed_fee < 0) { %>
                                                             <li class="d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{ __($fixedFee) }}</label>
-                                                                <% if(order.fixed_fee_amount !== null) { %>
-                                                                <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.fixed_fee_amount) %></span>
+                                                                <% if(vendor.fixed_fee !== null) { %>
+                                                                <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.fixed_fee) %></span>
                                                                 <% }else { %>
                                                                     <span>{{$clientCurrency->currency->symbol}} 0.00</span>
                                                                 <% } %>
