@@ -501,13 +501,13 @@ use Illuminate\Support\Arr;
                                                 </li>
 
                                                 <% if(vendor_product.addon.length != 0) { %>
-                                                    <div class="row align-items-md-center">
+                                                    <div class="row align-items-md-center m-0">
                                                         <div class="col-12 alVendorProductDetails">
                                                             <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                                                         </div>
                                                     </div>
                                                     <% _.each(vendor_product.addon, function(addon, ad){%>
-                                                    <div class="row alVendorProductDetails">
+                                                    <div class="row alVendorProductDetails m-0">
                                                         <div class="col-md-3 col-sm-4 items-details text-left">
                                                             <p class="p-0 m-0"><%= addon.option.title %></p>
                                                         </div>

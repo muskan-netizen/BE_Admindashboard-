@@ -64,7 +64,7 @@ $checkSlot = findSlot('', $vendor->id, '');
 					        <li class="breadcrumb-item pr-3"><a href="javascript:void(0)">{{  $vendor->country ?? '' }}</a></li>
                         @endif
                         @if( $vendor->state)
-					        <li class="breadcrumb-item active pl-4" aria-current="page">{{ $vendor->state ?? '' }}</li>
+					        <li class="breadcrumb-item active" aria-current="page">{{ $vendor->state ?? '' }}</li>
                         @endif
 					  </ol>
 					</nav><!-- breadcrumb end -->

@@ -18,7 +18,7 @@
 }
 ::-webkit-scrollbar{width: 8px;}
 ::-webkit-scrollbar-track{  background: #f1f1f1; }
-::-webkit-scrollbar-thumb{  background: #CAAE73; }
+::-webkit-scrollbar-thumb{  background: var(--theme-deafult); }
 ::-webkit-scrollbar-thumb:hover{  background: #555; }
 body{margin: 0;background-color: #fff;font-family: 'MontserratRegular' !important;overflow-x: hidden;}
 .main-menu{position: relative;left: 0;margin: 0 auto;right: 0;display: inline-block;width: 100%;top: 20px;z-index: 9999;}
@@ -31,6 +31,7 @@ body{margin: 0;background-color: #fff;font-family: 'MontserratRegular' !importan
 .vendor_mods_section{order: 2;}
 .rightHead{order: 3;}
 .al_body_template_six ul li{margin-bottom: 0;}
+.al_body_template_six .btn-solid{border-radius: 50px;}
 /*================== common css ==============*/
 a:hover{text-decoration: none;color: var(--top-header-color);}li{list-style: none}
 .alBodyText{font-size: 14px;color: #B6B6B6;line-height: 24px;}
@@ -118,7 +119,8 @@ opacity .25s ease-in-out;background: none;font-size: 1.5rem;font-weight: 300;vis
 scrollbar-width: none;-ms-overflow-style: none}
 a.view-cart{font-size: 14px;}
 .ellips{text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
-.supplier-rating{width: 100%;padding: 0 15px;}
+.supplier-rating{width: 100%;padding: 0 15px;min-height: 120px;}
+.suppliers-slider-vendors .supplier-rating{min-height: auto;}
 div#dark-light-btn-toggle{display: none;}
 .al_body_template_six span.rating-number{position: absolute;top: 5px;right: 10px;padding: 3px 10px;background-color: var(--theme-deafult);color: var(--top-header-color); border-radius: 30px;}
 .al_body_template_six .suppliers-box{position: relative;}

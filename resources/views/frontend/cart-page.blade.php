@@ -35,7 +35,7 @@
 
     <div class="col-lg-8" id="cart_template">
         <div class="shoping_cart px-3 py-2">
-            <div class="row mb-2 border-bottom">
+            <div class="row border-bottom">
                         <div class="col-6">
                             <div class="single_cart_heading">
                                     <h3>Shopping Cart</h3>
@@ -390,13 +390,13 @@
                 </div>
             </div>
         </div>
-            <hr class="my-1">
+
             @endforeach
 
-            <div class="row mb-md-1 alFourTemplateCartButtons mt-3">
+            <div class="row mb-md-1 alFourTemplateCartButtons mt-2 pt-2 border-top">
                 <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                     <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
-     {{__('Continue Shopping')}}</a>
+                        {{__('Continue Shopping')}}</a>
                 </div>
             </div>
         </div>
