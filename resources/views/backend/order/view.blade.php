@@ -337,7 +337,7 @@ $timezone = Auth::user()->timezone;
                                             @if (isset($product->user_product_order_form))
                                             <a href="javascript:void(0)" class="Order_product_form float-right "  data-product_form_id="{{$product->id}}">
                                                 <span class="badge badge-info mr-2">
-                                                    {{__('Product form ')}}
+                                                    {{$nomenclatureProductOrderForm}}
                                                 </span>
                                             </a>
                                             @endif

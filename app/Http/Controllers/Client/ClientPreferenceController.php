@@ -7,10 +7,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty};
+use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
+use Session;
+
 class ClientPreferenceController extends BaseController{
     use \App\Http\Traits\ClientPreferenceManager;
     use ApiResponser;
@@ -48,6 +50,10 @@ class ClientPreferenceController extends BaseController{
         $tags = Tag::with('primary')->get();
         $slots = ClientSlot::get();
        
+        $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
+        $nomenclaturesTranslation = Nomenclature::where('label','Product Order Form')->first();
+        $nomenclatureProductOrderForm = !empty($nomenclaturesTranslation)? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclaturesTranslation->id,'language_id'=>$langId])->first()->name : "Product Order Form";
+
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
                                                 'slots'=>$slots,
@@ -61,7 +67,8 @@ class ClientPreferenceController extends BaseController{
                                                 'file_types' => $file_types,
                                                 'vendor_registration_documents' => $vendor_registration_documents,
                                                 'driver_registration_documents' => $driver_registration_documents, 
-                                                'file_types_driver' => $file_types_driver
+                                                'file_types_driver' => $file_types_driver,
+                                                'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm
                                                 
                                             ]);
     }

@@ -13,7 +13,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet};
+use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -710,10 +710,8 @@ class OrderController extends BaseController
         }
         $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
 
-        // $rr = OrderVendorReport::first();
-         //return $vendor_order_statuses;
-        
-        //pr($order->KYC_document->toArray());`
+        $nomenclaturesTranslation = Nomenclature::where('label','Product Order Form')->first();
+        $nomenclatureProductOrderForm = !empty($nomenclaturesTranslation)? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclaturesTranslation->id,'language_id'=>$langId])->first()->name : "Product Order Form";
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 
             'order' => $order,
@@ -727,7 +725,8 @@ class OrderController extends BaseController
             'user_docs' => $user_docs,
             'vendor_data' => $vendor_data,
             "category_KYC_document" =>$category_KYC_document,
-            'driver_data' => (($driver_data)?json_decode($driver_data):'')
+            'driver_data' => (($driver_data)?json_decode($driver_data):''),
+            'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm
         ]);
     }
 
