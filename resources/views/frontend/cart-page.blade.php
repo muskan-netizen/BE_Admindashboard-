@@ -435,20 +435,20 @@
             @endif
         @endif
         <div class="col-12">
-            @if(isset($cart) && !empty($cart) && $client_preference_detail->business_type == 'laundry')
+            @if(isset($cart_details) && !empty($cart_details) && $client_preference_detail->business_type == 'laundry')
             <div class="row">
                 <div class="col-4"><span>{{__('Comment for Pickup Driver ')}}</span></div>
-                <div class="col-8"><input class="form-control" type="text" placeholder="{{__('Eg. Please reach before time if possible')}}" id="comment_for_pickup_driver" value ="{{$cart->comment_for_pickup_driver??''}}" name="comment_for_pickup_driver"></div>
+                <div class="col-8"><input class="form-control" type="text" placeholder="{{__('Eg. Please reach before time if possible')}}" id="comment_for_pickup_driver" value ="{{$cart_details->comment_for_pickup_driver??''}}" name="comment_for_pickup_driver"></div>
             </div>
             <hr class="my-2">
             <div class="row">
                 <div class="col-4">{{__('Comment for Dropoff Driver ')}}</div>
-                <div class="col-8"><input class="form-control" type="text" placeholder="{{__('Eg. Do call me before drop off')}}" id="comment_for_dropoff_driver" value ="{{$cart->comment_for_dropoff_driver??''}}"  name="comment_for_dropoff_driver"></div>
+                <div class="col-8"><input class="form-control" type="text" placeholder="{{__('Eg. Do call me before drop off')}}" id="comment_for_dropoff_driver" value ="{{$cart_details->comment_for_dropoff_driver??''}}"  name="comment_for_dropoff_driver"></div>
             </div>
             <hr class="my-2">
             <div class="row">
                 <div class="col-4">{{__('Comment for Vendor ')}}</div>
-                <div class="col-8"><input class="form-control" type="text"  placeholder="{{__('Eg. Please do the whites separately')}}" id="comment_for_vendor" value ="{{$cart->comment_for_vendor??''}}"  name="comment_for_vendor"></div>
+                <div class="col-8"><input class="form-control" type="text"  placeholder="{{__('Eg. Please do the whites separately')}}" id="comment_for_vendor" value ="{{$cart_details->comment_for_vendor??''}}"  name="comment_for_vendor"></div>
             </div>
 
             <hr class="my-2">
@@ -483,7 +483,7 @@
                             <label for="">{{__('Schedule Dropoff ')}} </label> <span class="loaderfordrop"><img class="img-fluid" style="display:none;" id="loaderfordrop" src="{{asset('front-assets/images/loading.gif')}}" alt=""></span>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <input type="date" id="dropoff_schedule_datetime" class="form-control dropoff_schedule_datetime" placeholder="Inline calendar" value="{{ (($cart_details->dropoff_scheduled_date_time != '')?$cart_details->dropoff_scheduled_date_time : $cart_details->my_dropoff_delay_date )}}"  min="{{$cart_details->my_dropoff_delay_date}}" >
+                                    <input type="date" id="dropoff_schedule_datetime" class="form-control dropoff_schedule_datetime" placeholder="Inline calendar" value="{{ ((@$cart_details->dropoff_scheduled_date_time)?@$cart_details->dropoff_scheduled_date_time : @$cart_details->my_dropoff_delay_date )}}"  min="{{@$cart_details->my_dropoff_delay_date}}" >
                                     <input type="hidden" id="checkDropoffSlot" value="1">
                                 </div>
                                 <div class="col-md-6 schedule_dropoff_slot">
@@ -505,7 +505,7 @@
 
                 <div class="col-12 alFourSpecificInstructions">
                    <span class="pb-1"> {{__('Specific instructions')}}</span>
-                    <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions">
+                    <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions?')}}" id="specific_instructions" value ="{{$cart_details->specific_instructions??''}}"  name="specific_instructions">
                 </div>
             </div>
 

@@ -147,6 +147,17 @@ class CartController extends FrontController
 
     public function postCartRequestFromEstimation(Request $request)
     {
+        $js = json_decode($request->addonoptID);
+        $addonAr = array();
+        $addonsoptAr = array();
+        foreach($js as $add)
+        {
+            $addonAr[$add->pid]= $add->addonAr;
+            $addonsoptAr[$add->pid]= $add->optAr;
+        }
+
+        // dd($addonsoptAr);
+
         $product_ids = explode(',', $request->product_id);
         $user = Auth::user();
         $vendor_id = $request->vendor_id;
@@ -167,25 +178,25 @@ class CartController extends FrontController
     
             $addon_price = 0; 
 
-            foreach($product->sets as $set){
-                array_push($addon_id, strval($set->addon_id));
-                $addon_price = $set->setoptions->sum('price');
+            // foreach($product->sets as $set){
+            //     array_push($addon_id, strval($set->addon_id));
+            //     $addon_price = $set->setoptions->sum('price');
     
-                foreach($set->setoptions as $key => $option){
-                    array_push($option_id, strval($option->id) );
-                }
-            } 
+            //     foreach($set->setoptions as $key => $option){
+            //         array_push($option_id, strval($option->id) );
+            //     }
+            // } 
 
             $request->merge([
-                "addonID" => $addon_id
+                "addonID" => $addonAr[$product->id]
             ]);
 
             $request->merge([
-                "addonoptID" => array_unique($option_id)
+                "addonoptID" => $addonsoptAr[$product->id]
             ]);
-
-            // dd($addon_id);
-
+            // \Log::info($request->addonID);
+            // \Log::info($request->addonoptID);
+           
             $result = $this->postAddToCart($request);
             // echo $result;
         }
@@ -319,12 +330,16 @@ class CartController extends FrontController
             if($request->has('addonoptID')){
                 $addon_options = $request->addonoptID;
             }
-
+            // \Log::info($addonSets);
             foreach($addon_options as $key => $opt){
                 if(isset($addon_ids[$key])){
                     $addonSets[$addon_ids[$key]][] = $opt;
                 }
             }
+
+            // \Log::info($addon_options);
+            // \Log::info($addonSets);
+            // die;
             
             foreach($addonSets as $key => $value){
                 $addon = AddonSet::join('addon_set_translations as ast', 'ast.addon_id', 'addon_sets.id')
@@ -350,7 +365,7 @@ class CartController extends FrontController
                     ], 400);
                 }
             }
-
+           
             $oldquantity = $isnew = 0;
             $cart_product_detail = [
                 'status'  => '0',
@@ -1283,7 +1298,8 @@ class CartController extends FrontController
                 $vendorData->payable_amount = decimal_format($payable_amount);
                 $vendorData->discount_amount = decimal_format($discount_amount);
                 $vendorData->discount_percent = decimal_format($discount_percent);
-                $vendorData->taxable_amount = decimal_format($taxable_amount);  Log::info($taxable_amount);
+                $vendorData->taxable_amount = decimal_format($taxable_amount);  
+                //\Log::info($taxable_amount);
                 $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount);
                 $vendorData->product_sub_total_amount = decimal_format($subtotal_amount);
                 $vendorData->isDeliverable = 1;
