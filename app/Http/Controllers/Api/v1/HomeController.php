@@ -264,6 +264,7 @@ class HomeController extends BaseController
 
 
             $categoryTypes = getServiceTypesCategory($type);
+            pr($categoryTypes);
             // if ($request->has('type')) {
             //     if (empty($request->type)) {
             //         $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');

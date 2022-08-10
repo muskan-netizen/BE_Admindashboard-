@@ -936,6 +936,9 @@ if (!function_exists('getServiceTypesCategory')) {
             if($client_preference->business_type == 'taxi'){
                 $service_types= ['pick_drop_service'];
             }
+            if($client_preference->business_type == 'laundry'){
+                $service_types= ['laundry_service'];
+            }
            
             $types =  $types->whereIn('service_type',$service_types);
             $types_id = $types->pluck('id')->toArray();
