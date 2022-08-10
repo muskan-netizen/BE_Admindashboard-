@@ -263,9 +263,8 @@ class ProductController extends BaseController
         $set_product_tags = ProductTag::where('product_id',$product->id)->pluck('tag_id')->toArray();
 
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
-        $nomenclatures_translation_id=Nomenclature::where('label','Product Order Form')->first()->id;
-        $nomenclatureProductOrderForm = NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$langId])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$langId])->first()->name : "Product Order Form";
-
+        $nomenclaturesTranslation = Nomenclature::where('label','Product Order Form')->first();
+        $nomenclatureProductOrderForm = !empty($nomenclaturesTranslation)? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclaturesTranslation->id,'language_id'=>$langId])->first()->name : "Product Order Form";
 
         return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids]);
     }
