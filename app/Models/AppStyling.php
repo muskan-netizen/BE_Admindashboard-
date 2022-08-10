@@ -17,7 +17,7 @@ class AppStyling extends Model{
         $app_styles_array = [];
         $app_styles = AppStyling::select('id','name')->with('styleOption')->get();
         foreach ($app_styles as $app_style) {
-            $key_name = str_replace(" ","_",strtolower($app_style->name));;
+            $key_name = str_replace(" ","_",strtolower($app_style->name));
             if($app_style->name == "Tab Bar Style" || $app_style->name == "Home Page Style"){
                 $template_id = $app_style->styleOption->template_id;
             }else {

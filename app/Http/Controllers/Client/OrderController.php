@@ -706,9 +706,8 @@ class OrderController extends BaseController
         }
         $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
 
-        $nomenclatures_translation_id=Nomenclature::where('label','Product Order Form')->first()->id;
-        $nomenclatureProductOrderForm = NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$langId])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$langId])->first()->name : "Product form";
-        
+        $nomenclaturesTranslation = Nomenclature::where('label','Product Order Form')->first();
+        $nomenclatureProductOrderForm = !empty($nomenclaturesTranslation)? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclaturesTranslation->id,'language_id'=>$langId])->first()->name : "Product Order Form";
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 
             'order' => $order,

@@ -153,6 +153,7 @@ class AuthController extends BaseController
         $data['verify_details'] = $verified;
         $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
         $data['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
+        $data['is_superadmin'] = $user->is_superadmin ?? 0;
         //$data['is_admin'] = $user->is_admin;
         $data['client_preference'] = $prefer;
         $data['dial_code'] = $user->dial_code;
@@ -259,6 +260,7 @@ class AuthController extends BaseController
         $data['verify_details'] = $verified;
         $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
         $data['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
+        $data['is_superadmin'] = $user->is_superadmin ?? 0;
         //$data['is_admin'] = $user->is_admin;
         $data['client_preference'] = $prefer;
         $data['dial_code'] = $user->dial_code;
@@ -984,6 +986,7 @@ class AuthController extends BaseController
             $data['verify_details'] = $verified;
             $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
             $data['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
+            $data['is_superadmin'] = $user->is_superadmin ?? 0;
             //$data['is_admin'] = $user->is_admin;
             $data['client_preference'] = $prefer;
             $data['dial_code'] = $user->dial_code;
@@ -1208,7 +1211,7 @@ class AuthController extends BaseController
                 $data['verify_details'] = $verified;
                 $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
                 $data['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
-                //$data['is_admin'] = $user->is_admin;
+                $data['is_superadmin'] = $user->is_superadmin ?? 0;
                 $data['client_preference'] = $prefer;
                 $data['dial_code'] = $user->dial_code;
                 $data['phone_number'] = $user->phone_number;

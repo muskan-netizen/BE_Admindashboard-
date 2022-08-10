@@ -264,22 +264,15 @@ class HomeController extends BaseController
 
 
             $categoryTypes = getServiceTypesCategory($type);
-            pr($categoryTypes);
-            // if ($request->has('type')) {
-            //     if (empty($request->type)) {
-            //         $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
-            //     } else {
-                    $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
-                        $q->whereIn('type_id',$categoryTypes);
-                    })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+            
+           
+            $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                $q->whereIn('type_id',$categoryTypes);
+            })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 
-            //     }
-            // } else {
-            //     $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','closed_store_order_scheduled')->withAvg('product', 'averageRating');
-            // }
 
             $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
-            // dd($longitude.'--'.$type);
+
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
                 $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
@@ -296,14 +289,20 @@ class HomeController extends BaseController
                     $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
                 //}
             }
-
+           
             //filter on ratings
             if($venderFilterbest && ($venderFilterbest == 1) ){
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
             $allVendorData = clone $vendorData;
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
-            $venderIds = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
+            $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
+            
+            // \Log::info($vendorData->toSql());
+            // \Log::info($venderIds);
+            // \Log::info($ses_vendors);
+
+
             $timezone = $user->timezone ?? 'Asia/Kolkata';
             $start_date = new DateTime("now", new  DateTimeZone($timezone) );
             $start_date =  $start_date->format('Y-m-d');
@@ -384,7 +383,7 @@ class HomeController extends BaseController
             if($venderFilterOpen && ($venderFilterOpen == 1) ){
                 $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
             }
-
+            //pr($vendorData);
 
 
             // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
