@@ -384,7 +384,7 @@ class HomeController extends BaseController
             if($venderFilterOpen && ($venderFilterOpen == 1) ){
                 $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
             }
-            //pr($vendorData);
+           
 
 
             // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
@@ -497,6 +497,7 @@ class HomeController extends BaseController
                 }
             }
            
+
             // End Mobile Banners
             $categories = $this->categoryNav($langId,  $venderIds,$type);
             $homeData['vendors'] = $vendorData;
