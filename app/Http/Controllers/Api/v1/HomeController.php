@@ -297,8 +297,15 @@ class HomeController extends BaseController
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
             $allVendorData = clone $vendorData;
-            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
-            $venderIds = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id')->toArray();
+           // $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
+            $venderIds = $allVendorData->pluck('id');
+
+
+            \Log::info($vendorData->toSql());
+            \Log::info($venderIds);
+            \Log::info($ses_vendors);
+
+
             $timezone = $user->timezone ?? 'Asia/Kolkata';
             $start_date = new DateTime("now", new  DateTimeZone($timezone) );
             $start_date =  $start_date->format('Y-m-d');
@@ -491,7 +498,6 @@ class HomeController extends BaseController
                 }
             }
             // End Mobile Banners
-
             $categories = $this->categoryNav($langId,  $venderIds,$type);
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
