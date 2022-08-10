@@ -298,8 +298,7 @@ class HomeController extends BaseController
             }
             $allVendorData = clone $vendorData;
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
-            $venderIds = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
-
+            $venderIds = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id')->toArray();
             $timezone = $user->timezone ?? 'Asia/Kolkata';
             $start_date = new DateTime("now", new  DateTimeZone($timezone) );
             $start_date =  $start_date->format('Y-m-d');
