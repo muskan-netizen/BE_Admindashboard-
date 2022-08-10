@@ -347,7 +347,15 @@ height: auto;
 
 	</div>
 </section>
+@else
+<section class="home-slider-wrapper">
+    <div class="container-fulid">
+        <div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel"></div>
+        <div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;"></div>
+    </div>
+</section>
 @endif
+
 
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
@@ -644,11 +652,12 @@ height: auto;
     <div class="vendors">
         @foreach($homePageLabels as $key => $homePageLabel)
         @if($homePageLabel->slug == 'pickup_delivery')
-        @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
-        @include('frontend.booking.cabbooking-single-module')
-        @endif
+            @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
+                @include('frontend.booking.cabbooking-single-module')
+            @endif
         @elseif($homePageLabel->slug == 'dynamic_page')
-        @include('frontend.included_files.dynamic_page')
+        
+            @include('frontend.included_files.dynamic_page')
         @else
         <div class="container render_full_{{$homePageLabel->slug}} d-none" id="{{$homePageLabel->slug.$key}}">
             <div class="row">

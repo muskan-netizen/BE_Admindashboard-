@@ -422,13 +422,57 @@ $(document).ready( async function () {
             complete:function(data){
                 remove_spinner('#our_vendor_main_div');
                 // Hide image container
-                $(".shimmer_effect").hide();
+
+                if($("body").hasClass("al_body_template_six")){
+                    $(".main_shimer").hide();
+                    $(".shimmer_effect").hide();
+                }else{
+                    $(".shimmer_effect").hide();
+                }
+               
                 $(".home-slider, .home-banner-slider").show();
-            //    $("#our_vendor_main_div").show();
+               //  $("#our_vendor_main_div").show();
             }
         });
     }
 
+    function getHomePageBanners(lat='', long='') {
+        ajaxDataSet = {};
+        if ((lat) && (long)) {
+            ajaxDataSet.latitude = lat;
+            ajaxDataSet.longitude = long;
+        }
+       
+        $.ajax({
+            data: ajaxDataSet,
+            type: "POST",
+            dataType: 'json',
+            url: home_page_banners_url,
+            beforeSend: function(){
+
+            },
+            success: function (response) {
+                if (response.status == "Success") {
+                    $(".al_desktop_banner").html('');
+                    if(response.data.banners != ''){
+                        let desktop_banners_template = _.template($('#desktop_banners_template').html());
+                        $(".al_desktop_banner").append(desktop_banners_template({ banners: response.data.banners }));
+                    }
+                    if(response.data.mobile_banners != ''){
+                        $(".al_mobile_banner").html('');
+                        let mobile_banners_template = _.template($('#mobile_banners_template').html());
+                        $(".al_mobile_banner").append(mobile_banners_template({ banners: response.data.mobile_banners }));
+                    }
+
+                    $('.carousel').carousel();
+                }
+            },
+            complete:function(data){
+                // Hide image container
+                // $(".shimmer_effect").hide();
+            }
+        });
+    }
 
     function myFunctionGetDataHomePage(item, index) {
         $(".shimmer_effect_"+item).show();
@@ -511,18 +555,6 @@ $(document).ready( async function () {
                 if (response.status == "Success") {
                     var path = window.location.pathname;
                     if (path == '/') {
-
-                        // if(index ==  0){
-                        //     $(".al_desktop_banner").html('');
-                        //     let desktop_banners_template = _.template($('#desktop_banners_template').html());
-                        //     $(".al_desktop_banner").append(desktop_banners_template({ banners: response.data.banners }));
-
-                        //     $(".al_mobile_banner").html('');
-                        //     let mobile_banners_template = _.template($('#mobile_banners_template').html());
-                        //     $(".al_mobile_banner").append(mobile_banners_template({ banners: response.data.mobile_banners }));
-
-                        //     $('.carousel').carousel();
-                        // }
 
                         let products_template = _.template($('#products_template').html());
                         
@@ -820,12 +852,14 @@ $(document).ready( async function () {
                         $("#remove_cart_modal").modal('show');
                         $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
                     } else {
+                        getHomePageBanners(latitude, longitude);
                         getHomePageCategoryMenu(latitude, longitude);
                         getHomePage(latitude, longitude);
                         let selected_address = $("#address-input").val();
                         $(".homepage-address span").text(selected_address).attr({ "title": selected_address, "data-original-title": selected_address });
                     }
                 } else {
+                    getHomePageBanners(latitude, longitude);
                     getHomePageCategoryMenu(latitude, longitude);
                     getHomePage(latitude, longitude);
                 }

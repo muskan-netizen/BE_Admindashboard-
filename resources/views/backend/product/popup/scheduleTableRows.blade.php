@@ -31,6 +31,7 @@ Booking Schedule For:<p class="sku-name pl-1"></p>
             <th>Start Date/Time</th>
             <th>End Date/Time</th>
             <th>Memo</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tfoot>
@@ -38,6 +39,7 @@ Booking Schedule For:<p class="sku-name pl-1"></p>
             <th>Start Date/Time</th>
             <th>End Date/Time</th>
             <th>Memo</th>
+            <th>Action</th>
             {{-- <th>Status</th> --}}
         </tr>
     </tfoot>
