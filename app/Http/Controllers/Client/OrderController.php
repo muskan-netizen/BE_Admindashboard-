@@ -1144,7 +1144,7 @@ class OrderController extends BaseController
                 }
             }
         }
-
+        \Log::info('getDispatchLaundryDomain');
         /////////////// **************** for laundry accept order *************** ////////////////
         $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
 
@@ -1170,7 +1170,7 @@ class OrderController extends BaseController
                             }
 
 
-
+                            \Log::info('placeRequestToDispatchLaundry');
                             $order_dispatchs = $this->placeRequestToDispatchLaundry($request->order_id, $request->vendor_id, $dispatch_domain_laundry, $team_tag, $colm);
                         }
 
@@ -1326,10 +1326,10 @@ class OrderController extends BaseController
         } catch (\Exception $e) {
             Log::info($e->getMessage());
             return 2;
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
+            // return response()->json([
+            //     'status' => 'error',
+            //     'message' => $e->getMessage()
+            // ]);
         }
     }
 
@@ -1462,6 +1462,8 @@ class OrderController extends BaseController
     // place Request To Dispatch for Laundry
     public function placeRequestToDispatchLaundry($order, $vendor, $dispatch_domain, $team_tag, $colm)
     {
+        \Log::info('placeRequestToDispatchLaundry -- 1');
+
         try {
             $order = Order::find($order);
             $customer = User::find($order->user_id);
@@ -1480,7 +1482,7 @@ class OrderController extends BaseController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
-            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
             $rtype = 'P';
@@ -1580,14 +1582,14 @@ class OrderController extends BaseController
                 'task' => $tasks,
                 'request_type'=>$rtype??'P',
                 'is_restricted' => $order_vendor->is_restricted??'0',
-                'vendor_id' => $vendor_details->id,
-                'order_vendor_id' => $order_vendor->id,
+                'vendor_id' => $vendor_details->id??'',
+                'order_vendor_id' => $order_vendor->id??'',
                 'dbname' => $client->database_name,
-                'order_id' => $order->id,
+                'order_id' => $order->id??'',
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image
             ];
-
+            \Log::info(json_encode($postdata));
             // if($order_vendor->is_restricted == 1)
             // {
             //     $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -1604,6 +1606,8 @@ class OrderController extends BaseController
             ]);
 
             $url = $dispatch_domain->laundry_service_key_url;
+            \Log::info('domain --'.$url);
+
             $res = $client->post(
                 $url . '/api/task/create',
                 ['form_params' => ($postdata)]
@@ -1621,7 +1625,7 @@ class OrderController extends BaseController
             }
             return 2;
         } catch (\Exception $e) {
-
+            \Log::info($e->getMessage());
             return 2;
             return response()->json([
                 'status' => 'error',
