@@ -382,6 +382,10 @@ class OrderController extends BaseController
                 }
             }
         }
+        elseif($request->has('sort_order') && ($request->sort_order == 'newest_slot')){
+            // $now = Carbon::now()->toDateTimeString();
+            $orders = $orders->orderBy(DB::raw('ISNULL(scheduled_date_time), scheduled_date_time'), 'ASC')->orderBy('created_at', 'DESC');
+        }
         else{
             $orders = $orders->select('*', 'id as total_discount_calculate')->orderBy('id', 'DESC');
         }
