@@ -289,7 +289,7 @@ class OrderController extends BaseController
                             $vendor_markup_amount = $vendor_markup_amount + $variant->markup_price;
                             $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                             $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
-                            $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges + $fixed_fee_amount;
+                            $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
                             $product_payable_amount = 0;
                             $opt_quantity_price = 0;
                             if (!empty($vendor_cart_product->addon)) {
@@ -344,8 +344,8 @@ class OrderController extends BaseController
                                             $order_vendor->user_to_vendor_time = intval($delivery_duration);
                                         }
                                         else if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
-                                            Log::info($vendor_cart_product->vendor->timeofLineOfSightDistance);
-                                            Log::info($order_vendor->order_pre_time);
+                                           // Log::info($vendor_cart_product->vendor->timeofLineOfSightDistance);
+                                           // Log::info($order_vendor->order_pre_time);
                                             if($order_vendor->order_pre_time)
                                             $order_vendor->user_to_vendor_time = $vendor_cart_product->vendor->timeofLineOfSightDistance - $order_vendor->order_pre_time;
                                         }
