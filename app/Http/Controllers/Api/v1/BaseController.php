@@ -410,9 +410,11 @@ class BaseController extends Controller{
         if($vendorType){
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
         }
+
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
             $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+            \Log::info($latitude.'--'.$longitude.'--'.$vendorType);
 
             if(!empty($latitude) && !empty($longitude) ){
                 $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function($query) use($latitude, $longitude){

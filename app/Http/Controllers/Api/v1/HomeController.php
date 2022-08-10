@@ -274,7 +274,7 @@ class HomeController extends BaseController
             // }
 
             $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
-
+            // dd($longitude.'--'.$type);
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
                 $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
@@ -297,15 +297,8 @@ class HomeController extends BaseController
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
             $allVendorData = clone $vendorData;
-           // $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
-            $venderIds = $allVendorData->pluck('id');
-
-
-            \Log::info($vendorData->toSql());
-            \Log::info($venderIds);
-            \Log::info($ses_vendors);
-
-
+            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
+            $venderIds = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
             $timezone = $user->timezone ?? 'Asia/Kolkata';
             $start_date = new DateTime("now", new  DateTimeZone($timezone) );
             $start_date =  $start_date->format('Y-m-d');
