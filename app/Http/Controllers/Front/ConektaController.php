@@ -18,7 +18,7 @@ class ConektaController extends Controller
 	    $this->creds_arr = json_decode($this->upay_creds->credentials);
 	    $this->public_key = $this->creds_arr->public_key ?? '';
 	    $this->private_key = $this->creds_arr->private_key ?? '';
-        $this->url = url('payment/telr');
+        $this->url = url('payment/conekta'); 
         // $this->url = "https://ab21-180-188-237-239.ngrok.io/payment/telr";
 	}
 	public function beforePayment(Request $request)
