@@ -475,6 +475,13 @@ $preference = $client_preference_detail;
 @endsection
 @section('script')
 <script type="text/javascript">
+function showKeycode(e) {
+   if(e.code == 'KeyZ'){
+      alert(e.keyCode);
+   }
+}
+
+document.addEventListener('keydown',showKeycode);
    // AOS.init();
    // 	$('.center').slick({
    //   centerMode: true,
