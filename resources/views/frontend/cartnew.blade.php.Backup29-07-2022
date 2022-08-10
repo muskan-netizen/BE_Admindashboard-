@@ -457,7 +457,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                         <div class=" col-3 <%= vendor_product.faq_count %>  " id="product_faq_dev_<%= vendor_product.product_id %>">
                             <input type="hidden" name="product_faq_ids" value="<%= vendor_product.product_id %>">
                             <div class="text-center my-3 btn-product-order-form-div">
-                                <button class="clproduct_cart_order_form btn btn-solid w-100" id="add__cart_product_form" data-dev_remove_id="product_faq_dev_<%= vendor_product.product_id %>" data-product_id="<%= vendor_product.product_id %>"  data-vendor_id="<%= vendor_product.vendor_id %>">{{__('Product Order Form')}}</button>
+                                <button class="clproduct_cart_order_form btn btn-solid w-100" id="add__cart_product_form" data-dev_remove_id="product_faq_dev_<%= vendor_product.product_id %>" data-product_id="<%= vendor_product.product_id %>"  data-vendor_id="<%= vendor_product.vendor_id %>">{{$nomenclatureProductOrderForm}}</button>
                             </div>
                         </div>
                         <% } %>
