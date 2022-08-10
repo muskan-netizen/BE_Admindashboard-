@@ -422,9 +422,15 @@ $(document).ready( async function () {
             complete:function(data){
                 remove_spinner('#our_vendor_main_div');
                 // Hide image container
-                $(".shimmer_effect").hide();
+
+                if($("body").hasClass("al_body_template_six")){
+                    $(".main_shimer").hide();
+                }else{
+                    $(".shimmer_effect").hide();
+                }
+               
                 $(".home-slider, .home-banner-slider").show();
-            //    $("#our_vendor_main_div").show();
+               //  $("#our_vendor_main_div").show();
             }
         });
     }
