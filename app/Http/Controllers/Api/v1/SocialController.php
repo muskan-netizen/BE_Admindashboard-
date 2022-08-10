@@ -188,6 +188,7 @@ class SocialController extends BaseController{
             $client_preference = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
             $preferData['map_key'] = $client_preference->map_key;
             $preferData['theme_admin'] = $client_preference->theme_admin;
+            $response['is_superadmin'] = $user->is_superadmin ?? 0;
             $preferData['date_format'] = $client_preference->date_format;
             $preferData['time_format'] = $client_preference->time_format;
             $preferData['map_provider'] = $client_preference->map_provider;
