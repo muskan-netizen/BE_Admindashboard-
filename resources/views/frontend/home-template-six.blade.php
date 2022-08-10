@@ -243,7 +243,7 @@
 		  %>
 		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
 			 <a class="banner-img-outer" href="<%= url %>">
-				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>" />
+				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>sw/300<%= banner.image.image_path %>" />
 				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>">
 			 </a>
 		  </div>

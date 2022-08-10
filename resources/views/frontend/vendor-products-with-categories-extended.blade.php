@@ -595,7 +595,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         				</div>
         			</div>
                     @endforeach
-        			
+
         		</div>
         	</div>
         </section>
@@ -631,7 +631,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         <!-- Why people visit here end -->
 
         <!-- More spas nearby start -->
-        <section class="moreSpasNearby py-5">
+        <section class="moreSpasNearby pt-5 pb-0">
         	<div class="container">
         		<div class="row">
         			<div class="col-md-12">
@@ -655,13 +655,14 @@ $checkSlot = findSlot('', $vendor->id, '');
         </section>
         <!-- More spas nearby end -->
 
+        @foreach($Map_vendors as $key => $value)
         <!-- sections SpasRelated start -->
         <section class="SpasRelated py-5">
             <div class="container">
                 <div class="row">
                     <!-- alSpaListSlider start -->
                     <div class="Spasslider w-100" id="Spasslider">
-                        @foreach($Map_vendors as $key => $value)
+
                             <div>
                                 <div class="SpasRelatedItems mx-2">
                                     <div class="SpasRelatedItemsImageBox">
@@ -674,13 +675,14 @@ $checkSlot = findSlot('', $vendor->id, '');
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+
 
 
                     </div><!-- alSpaListSlider start -->
                 </div>
             </div>
         </section>
+        @endforeach
 
     <script type="text/template" id="header_cart_template_ondemand">
         <ul class="pl-2 pr-2 pb-2 pt-0 ">
