@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq,TaxRate};
+use App\Models\{ ProductVariant,ProductBooking };
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -53,217 +53,224 @@ class RentalProductController extends BaseController
     public function getScheduleTableData(Request $request)
     {
         $data  = [[
-                   "name" => "Tiger Nixon", 
-                   "hr" => [
-                      "position" => "System Architect", 
-                      "salary" => "$320,800", 
-                      "start_date" => "2011/04/25" 
-                   ], 
-                   "contact" => [
-                         "Edinburgh", 
-                         "5421" 
-                    ] 
+                "name" => "Tiger Nixon", 
+                "hr" => [
+                "position" => "System Architect", 
+                "salary" => "$320,800", 
+                "start_date" => "2011/04/25" 
                 ], 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
+                "contact" => [
+                    "Edinburgh", 
+                    "5421" 
+                ] 
+            ], 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
                 ], 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
-                ]
-                , 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
-                ]
-                , 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
-                ]
-                , 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
-                ]
-                , 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
-                ]
-                , 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
-                ]
-                , 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
-                ]
-                , 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
-                ]
-                , 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
-                ]
-                , 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
-                ]
-                , 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
-                ]
-                , 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
-                ]
-                , 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
-                ]
-                , 
-                [
-                    "name" => "Donna Snider", 
-                    "hr" => [
-                        "position" => "Customer Support", 
-                        "salary" => "$112,000", 
-                        "start_date" => "2011/01/25" 
-                    ], 
-                    "contact" => [
-                            "New York", 
-                            "4226" 
-                    ] 
-                ]
-            
-            
-            ]; 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ], 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
+                ], 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ]
+            , 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
+                ], 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ]
+            , 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
+                ], 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ]
+            , 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
+                ], 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ]
+            , 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
+                ], 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ]
+            , 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
+                ], 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ]
+            , 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
+                ], 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ]
+            , 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
+                ], 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ]
+            , 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
+                ], 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ]
+            , 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
+                ], 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ]
+            , 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
+                ], 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ]
+            , 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
+                ], 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ]
+            , 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
+                ], 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ]
+            , 
+            [
+                "name" => "Donna Snider", 
+                "hr" => [
+                    "position" => "Customer Support", 
+                    "salary" => "$112,000", 
+                    "start_date" => "2011/01/25" 
+                ], 
+                "contact" => [
+                        "New York", 
+                        "4226" 
+                ] 
+            ]
         
+        
+        ]; 
+ 
         return response()->json(array('success' => true, 'data' => $data));
      
      }
 
+     public function getScheduleTableBlockedData(Request $request)
+     {
+         $ProductBlockedBooking  = ProductBooking::where(['product_id'=>$request->product_id,'variant_id'=>$request->variant_id,'booking_type'=>'blocked'])->get();
+         return response()->json(array('success' => true, 'data' => $ProductBlockedBooking));
+      
+      }
+     
 
 }

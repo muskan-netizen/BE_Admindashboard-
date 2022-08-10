@@ -914,18 +914,30 @@ if (!function_exists('getServiceTypesCategory')) {
     function getServiceTypesCategory($vendorType) {
         //echo $vendorType; exit();
         try {
+            $client_preference = ClientPreference::select('business_type')->first();
             $types =   Type::query();
+            $service_types = [];
             if($vendorType =="delivery" || $vendorType =="dine_in" || $vendorType =="takeaway"){
-                $types =  $types->where('service_type','products_service');
+                $service_types= ['products_service'];
+               // $types =  $types->where('service_type','products_service');
             }elseif($vendorType =="rental" ){
-                $types =  $types->where('service_type','rental_service');
+                $service_types= ['rental_service'];
+               // $types =  $types->where('service_type','rental_service');
             }elseif($vendorType =="pick_drop" ){
-                $types =  $types->where('service_type','pick_drop_service');
+                $service_types= ['pick_drop_service'];
+               // $types =  $types->where('service_type','pick_drop_service');
             }elseif($vendorType =="on_demand" ){
-                $types =  $types->where('service_type','on_demand_service');
+                $service_types= ['on_demand_service'];
+              //  $types =  $types->where('service_type','on_demand_service');
             }elseif($vendorType =="laundry" ){
-                $types =  $types->where('service_type','laundry_service');
+                $service_types= ['laundry_service'];
+               // $types =  $types->where('service_type','laundry_service');
             }
+            if($client_preference->business_type == 'taxi'){
+                $service_types= ['pick_drop_service'];
+            }
+           
+            $types =  $types->whereIn('service_type',$service_types);
             $types_id = $types->pluck('id')->toArray();
             return $types_id ;
         } catch (\Throwable $th) {

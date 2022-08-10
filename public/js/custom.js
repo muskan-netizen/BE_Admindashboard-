@@ -1,32 +1,29 @@
-$(document).ready(async function () {
-    //alert();
-    //await setTimeout(function(){
-        var footer_height = $('.footer-light').height();
-        var header_height = $('.site-header').height();
-        var window_height = $(window).height();
-        var header_content_width = $('#content-wrap').height();
+$(document).ready(function () {
+    var footer_height = $('.footer-light').height();
+    var header_height = $('.site-header').height();
+    var window_height = $(window).height();
+    var header_content_width = $('#content-wrap').height();
 
-        // console.log('header_height',header_height,'footer_height',footer_height);
-        jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
-        jQuery("#content-wrap").css('padding-bottom', footer_height);
+    // console.log('header_height',header_height,'footer_height',footer_height);
+    jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
+    jQuery("#content-wrap").css('padding-bottom', footer_height);
 
 
-        jQuery(window).scroll(function () {
-            var scroll = jQuery(window).scrollTop();
-            if (scroll <= 100) {
-                jQuery(".site-header").removeClass("fixed-bar");
+    jQuery(window).scroll(function () {
+        var scroll = jQuery(window).scrollTop();
+        if (scroll <= 100) {
+            jQuery(".site-header").removeClass("fixed-bar");
 
-            } else {
-                jQuery(".site-header").addClass("fixed-bar");
-            }
-        });
+        } else {
+            jQuery(".site-header").addClass("fixed-bar");
+        }
+    });
 
-        $('.scrollspy-menu a').on('click',function(){
-            $("html, body").animate({ scrollTop:  $('#'+$(this).data('slug')).offset().top - (header_height+30) });
-        })
-    //},3000)
-
+    $('.scrollspy-menu a').on('click',function(){
+        $("html, body").animate({ scrollTop:  $('#'+$(this).data('slug')).offset().top - (header_height+30) });
+    })
 });
+
 
 
 $(".mobile-account .fa").click(function(){
@@ -136,7 +133,7 @@ window.loadMainMenuSlider = function loadMainMenuSlider() {
     $(".menu-slider").slick({arrows:!0,dots:!1,infinite:!1,variableWidth:!0,autoplay:!1,speed:300,slidesToShow:13,slidesToScroll:3,responsive:[{breakpoint:1400,settings:{slidesToShow:12,slidesToScroll:2}},{breakpoint:1367,settings:{slidesToShow:8,slidesToScroll:2}},{breakpoint:991,settings:{slidesToShow:6,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:4,slidesToScroll:2}},{breakpoint:576,settings:{slidesToShow:4,slidesToScroll:2}}]});
 }
 
-// loadMainMenuSlider();
+loadMainMenuSlider();
 
 window.resizeMenuSlider = function resizeMenuSlider() {
     var windowWidth = $(window).width();
@@ -362,18 +359,6 @@ $(document).ready(function () {
         }
         return true;
     }
-
-    function isNumberKeyMax(evt) {
-        // var charCode = (evt.which) ? evt.which : evt.keyCode;
-        // if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
-        //     return false;
-        // }
-        console.log(evt.value);
-        // if($('#txtNumber').val()<-10 || $('#txtNumber').val()>10 ){
-        //     $('#errorMsg').show();
-        // }
-        //return true;
-    }
     $('.addWishList').click(function () {
         var sku = $(this).attr('proSku');
         var remveFrmWishlist = $(this).attr('remWishlist');
@@ -477,14 +462,14 @@ $(document).ready(function () {
         fpxBank.mount('#fpx-bank-element');
     }
 
-    if (($("#stripe-card-element").length > 0) && (stripe_publishable_key != '')) {
+    if ($("#stripe-card-element").length > 0) {
         stripeInitialize();
     }
-    if (($("#fpx-bank-element").length > 0) && (stripe_fpx_publishable_key != '')) {
+    if ($("#fpx-bank-element").length > 0) {
         stripeFPXInitialize();
     }
 
-    if (($("#ideal-bank-element").length > 0) && (stripe_ideal_publishable_key != '')) {
+    if ($("#ideal-bank-element").length > 0) {
         stripeIdealInitialize();
     }
 
@@ -1719,7 +1704,6 @@ $(document).ready(function () {
                 var response = $.parseJSON(error.responseText);
                 // success_error_alert('error', response.message, ".payment_response");
                 if ($('.cart_response').length > 0) {
-                    $('#proceed_to_pay_modal').modal('hide');
                     $(".cart_response").removeClass('d-none');
                     success_error_alert('error', response.message, ".cart_response");
                     $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
@@ -2153,7 +2137,7 @@ $(document).ready(function () {
                     $("#cart_table").html('');
                     $(".spinner-box").hide();
                     $("#mycart").html(response.mycart);
-
+                   
                     //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
@@ -2179,8 +2163,8 @@ $(document).ready(function () {
                                 // $('#placeorder_form .left_box').html('');
                                 // $('#placeorder_form .left_box').html(cart_details.left_section);
 
-
-
+                                
+                                
 
                                 $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);
@@ -2265,14 +2249,14 @@ $(document).ready(function () {
                             $("#header_cart_main_ul_ondemand").append(empty_cart_template());
                         }
                         if ($("#header_cart_main_ul_ondemand").length != 0) {
-
+                           
                             $('#header_cart_main_ul_ondemand').html('');
                             $("#header_cart_main_ul_ondemand").removeClass("d-none");
                             $("#header_cart_main_ul_ondemand").show();
                             let empty_cart_template = _.template($('#empty_cart_template').html());
                             $("#header_cart_main_ul_ondemand").append(empty_cart_template());
                         }
-
+                        
                     }
                 }
             },
@@ -2848,7 +2832,7 @@ $(document).ready(function () {
                 if (response.status == 'success') {
                     $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     returnResponse = true;
-                    //cartHeader();
+                    cartHeader();
                 } else {
                     Swal.fire({
                         // title: "Warning!",
@@ -3617,29 +3601,16 @@ $(document).ready(function () {
     }
 
 
-    if ($(".ondemand-time-slots")[0]){
-        let cur_date = $('input[name="booking_date"]:checked').val();
-        if(cur_date && cur_date != undefined){
-            let cart_product_id = $('input[name="booking_date"]:checked').data("cart_product_id");
-            let product_vendor_id = $('input[name="booking_date"]:checked').data("product_vendor_id");
 
-            showSlotOnDate(cur_date,cart_product_id,product_vendor_id)
-        }
-
-    }
 
     // get time slots according to date
     $(document).on('click', '.check-time-slots', function () {
-        //$(".check-time-slots").removeAttr('checked');
         let cur_date = $(this).val();
         let cart_product_id = $(this).data("cart_product_id");
         let product_vendor_id = $(this).data("product_vendor_id");
-        //$(this).addAttr('checked');
-        showSlotOnDate(cur_date,cart_product_id,product_vendor_id)
-    });
-    function showSlotOnDate(cur_date,cart_product_id,product_vendor_id){
         getTimeSlots(cur_date, cart_product_id , product_vendor_id);
-    }
+
+    });
 
     $(document).on('change', '.vendor_schedule_datetime, .vendor_schedule_slot', function () {
 
@@ -4309,10 +4280,6 @@ $(document).ready(function () {
                 paymentViaTelr('', payment_option_id, '');
             break;
 
-            case 47:
-                paymentViaKhalti('', '');
-            break;
-
         }
 
     }
@@ -4719,6 +4686,7 @@ $(document).ready(function () {
             break;
             case '42':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
                 if (order != '') {
                     //payWithDpo
                     payWithDpo(order);
@@ -4729,6 +4697,7 @@ $(document).ready(function () {
             break;
             case '43':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
                 if (order != '') {
                     paymentViaUPay(address_id, order);
                 }
@@ -4738,6 +4707,7 @@ $(document).ready(function () {
             break;
             case '44':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
                 if (order != '') {
                     paymentViaConekta(address_id, order);
                 }
@@ -4747,6 +4717,7 @@ $(document).ready(function () {
             break;
             case '45':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
                 if (order != '') {
                     paymentViaTelr(address_id, order);
                 }
@@ -4755,15 +4726,7 @@ $(document).ready(function () {
                 }
             break;
 
-            case '47':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    paymentViaKhalti(address_id, order, payment_from='cart');
-                }
-                else{
-                    return false;
-                }
-            break;
+
         }
 
     }
@@ -4978,9 +4941,6 @@ $(document).ready(function () {
                 paymentViaTelr('', payment_option_id, '');
                 break;
 
-            case 47:
-                paymentViaKhalti('', '');
-                break;
         }
     }
 
