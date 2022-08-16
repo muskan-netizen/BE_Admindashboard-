@@ -34,11 +34,14 @@ class ProductBookingController extends BaseController
           $block_time = explode('-', $request->blocktime);
           $start_time = date("Y-m-d H:i:s",strtotime($block_time[0]));
           $end_time = date("Y-m-d H:i:s",strtotime($block_time[1]));
+          
           $start_end_block_time = $request->blocktime;
-          // $ProductBooking  = ProductBooking::where(['variant_id'=>$request->variant_id,'product_id'=>$request->product_id,'booking_start_end'=>$start_end_block_time]);
 
-          // $ProductBooking  = ProductBooking::where(['variant_id'=>$request->variant_id,'product_id'=>$request->product_id])->whereDate('start_date_time', '>=', date("Y-m-d H:i:s" , strtotime($start_time)))->orwhereDate('end_date_time', '<=', date("Y-m-d H:i:s" , strtotime($end_time)))->first();
-          $ProductBooking  = ProductBooking::where(['variant_id'=>$request->variant_id,'product_id'=>$request->product_id])->whereDate('end_date_time', '<=', date("Y-m-d H:i:s" , strtotime($start_time)))->first();
+          $ProductBooking  = ProductBooking::where(['variant_id'=>$request->variant_id,'product_id'=>$request->product_id])
+                                            ->where(function ($query) use ($start_time , $end_time ){
+                                                $query->where('start_date_time', '<=', $start_time)
+                                                      ->where('end_date_time', '>=', $end_time);
+                                            })->first();
           
           if (!$ProductBooking) {
             $status = ProductBooking::Create(['memo'=>$request->memo,'variant_id'=>$request->variant_id,'product_id'=>$request->product_id,'start_date_time'=>$start_time,'end_date_time'=>$end_time,'booking_start_end'=>$start_end_block_time]);
