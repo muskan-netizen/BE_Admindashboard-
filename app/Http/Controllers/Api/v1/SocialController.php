@@ -183,6 +183,9 @@ class SocialController extends BaseController{
             $response['email'] = $customer->email;
             $response['is_admin'] = $customer->is_admin;
             $response['phone_number'] = $customer->phone_number;
+            $response['is_superadmin'] = $customer->is_superadmin ?? 0;
+            $response['id'] = $customer->id;
+            $response['phone_number'] = $customer->phone_number;
             $verified['is_email_verified'] = 1;
             $verified['is_phone_verified'] = $customer->is_phone_verified;
             $client_preference = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();

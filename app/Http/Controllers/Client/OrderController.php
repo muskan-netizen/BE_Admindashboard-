@@ -13,7 +13,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet};
+use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -382,6 +382,10 @@ class OrderController extends BaseController
                 }
             }
         }
+        elseif($request->has('sort_order') && ($request->sort_order == 'newest_slot')){
+            // $now = Carbon::now()->toDateTimeString();
+            $orders = $orders->orderBy(DB::raw('ISNULL(scheduled_date_time), scheduled_date_time'), 'ASC')->orderBy('created_at', 'DESC');
+        }
         else{
             $orders = $orders->select('*', 'id as total_discount_calculate')->orderBy('id', 'DESC');
         }
@@ -536,7 +540,7 @@ class OrderController extends BaseController
                 if ($luxury_option->title == 'takeaway') {
                     $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
                 } elseif ($luxury_option->title == 'dine_in') {
-                    $luxury_option_name = 'Dine-In';
+                    $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
                 } else {
                     $luxury_option_name = getNomenclatureName($luxury_option->title, $langId, false);
                     //$luxury_option_name = 'Delivery';
@@ -679,7 +683,7 @@ class OrderController extends BaseController
             if ($luxury_option->title == 'takeaway') {
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
             } elseif ($luxury_option->title == 'dine_in') {
-                $luxury_option_name = 'Dine-In';
+                $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
             } else {
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
             }
@@ -706,10 +710,15 @@ class OrderController extends BaseController
         }
         $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
 
-        // $rr = OrderVendorReport::first();
-         //return $vendor_order_statuses;
+        $nomenclature = Nomenclature::where('label','Product Order Form')->first();
+        $nomenclatureProductOrderForm = "Product Order Form";
+        if(!empty($nomenclature)){
+            $nomenclatureTranslation = NomenclatureTranslation::where(['nomenclature_id'=>$nomenclature->id,'language_id'=>$langId])->first();
+            if(!empty($nomenclatureTranslation->name)){
+                $nomenclatureProductOrderForm = $nomenclatureTranslation->name;
+            }
+        }
         
-        //pr($order->KYC_document->toArray());`
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 
             'order' => $order,
@@ -723,7 +732,8 @@ class OrderController extends BaseController
             'user_docs' => $user_docs,
             'vendor_data' => $vendor_data,
             "category_KYC_document" =>$category_KYC_document,
-            'driver_data' => (($driver_data)?json_decode($driver_data):'')
+            'driver_data' => (($driver_data)?json_decode($driver_data):''),
+            'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm
         ]);
     }
 
@@ -2030,7 +2040,7 @@ class OrderController extends BaseController
             if ($luxury_option->title == 'takeaway') {
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
             } elseif ($luxury_option->title == 'dine_in') {
-                $luxury_option_name = 'Dine-In';
+                $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
             } else {
                 //$luxury_option_name = 'Delivery';
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);

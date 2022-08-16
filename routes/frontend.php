@@ -177,7 +177,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/upay','Front\ConektaController@afterPayment')->name('payment.upay.afterPayment');
 	//Conekta
 	Route::match(['get','post'],'payment/conekta/page','Front\ConektaController@beforePayment')->name('payment.conekta.beforePayment');
-	Route::match(['get','post'],'payment/conekta','Front\ConektaController@afterPayment')->name('payment.conekta.afterPayment');
+	Route::match(['get','post'],'payment/conekta//{status}/{payment_from}/{come_from}/{amount}/{order_number?}','Front\ConektaController@afterPayment')->name('payment.conekta.afterPayment');
 	//Telr
 	Route::match(['get','post'],'payment/telr/page','Front\TelrController@beforePayment')->name('payment.telr.beforePayment');
 	Route::match(['get','post'],'payment/telr/{status}/{payment_from}/{come_from}/{amount}/{order_number?}','Front\TelrController@afterPayment')->name('payment.telr.afterPayment');
@@ -344,7 +344,7 @@ Route::group(['middleware' => ['domain']], function () {
 		'uses' => 'Front\CustomerAuthController@resetPasswordForm'
 	]);
 	Route::get('/autocomplete-search', 'Front\SearchController@postAutocompleteSearch')->name('autocomplete');
-	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
+	Route::get('/search-all/{keyword}/{slug}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
 	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
 	Route::get('/homeTest', 'Front\UserhomeController@indexTest')->name('homeTest');
 	Route::get('/homeTemplateOne', 'Front\UserhomeController@indexTemplateOne')->name('indexTemplateOne');
