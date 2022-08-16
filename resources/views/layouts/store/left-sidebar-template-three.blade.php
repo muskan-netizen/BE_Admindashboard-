@@ -267,8 +267,10 @@ $pages = \App\Models\Page::with([
                                     @endif
                                     @endif
                                     <script type="text/template" id="search_box_main_div_template">
-                                        <a class="text-left al_search_viewall d-block ml-2" id="search_map_view" href="#">{{__("Map View")}}</a>
-                                        <a class="text-right al_search_viewall d-block mr-2 mb-1" id="search_viewall" href="#">{{__("View All")}}</a>
+                                    <div class='row d-flex justify-content-between m-0 px-2'>
+                                        <a class="al_search_viewall" id="search_map_view" href="#">{{__("Map View")}}</a>
+                                        <a class="al_search_viewall" id="search_viewall" href="#">{{__("View All")}}</a>
+                                    </div>
                                     <div class="row mx-0">
                                         <% _.each(results, function(result, k){%>
                                         <a class="col-12 text-center al_search_results list-items pt-2" href="<%=result.redirect_url %>">
