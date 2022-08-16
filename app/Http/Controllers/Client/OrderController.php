@@ -540,7 +540,7 @@ class OrderController extends BaseController
                 if ($luxury_option->title == 'takeaway') {
                     $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
                 } elseif ($luxury_option->title == 'dine_in') {
-                    $luxury_option_name = 'Dine-In';
+                    $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
                 } else {
                     $luxury_option_name = getNomenclatureName($luxury_option->title, $langId, false);
                     //$luxury_option_name = 'Delivery';
@@ -683,7 +683,7 @@ class OrderController extends BaseController
             if ($luxury_option->title == 'takeaway') {
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
             } elseif ($luxury_option->title == 'dine_in') {
-                $luxury_option_name = 'Dine-In';
+                $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
             } else {
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
             }
@@ -2040,7 +2040,7 @@ class OrderController extends BaseController
             if ($luxury_option->title == 'takeaway') {
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
             } elseif ($luxury_option->title == 'dine_in') {
-                $luxury_option_name = 'Dine-In';
+                $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
             } else {
                 //$luxury_option_name = 'Delivery';
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
