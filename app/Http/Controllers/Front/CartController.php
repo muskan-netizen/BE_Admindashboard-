@@ -140,8 +140,14 @@ class CartController extends FrontController
 
         $ageVerify= VerificationOption::where('code','yoti')->first();
 
-        $nomenclaturesTranslation = Nomenclature::where('label','Product Order Form')->first();
-        $nomenclatureProductOrderForm = !empty($nomenclaturesTranslation)? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclaturesTranslation->id,'language_id'=>$langId])->first()->name : "Product Order Form";
+        $nomenclature = Nomenclature::where('label','Product Order Form')->first();
+        $nomenclatureProductOrderForm = "Product Order Form";
+        if(!empty($nomenclature)){
+            $nomenclatureTranslation = NomenclatureTranslation::where(['nomenclature_id'=>$nomenclature->id,'language_id'=>$langId])->first();
+            if(!empty($nomenclatureTranslation->name)){
+                $nomenclatureProductOrderForm = $nomenclatureTranslation->name;
+            }
+        }
 
         return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
        // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
