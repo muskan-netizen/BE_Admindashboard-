@@ -218,7 +218,7 @@ class SearchController extends FrontController{
                 $addres[] = $res['longitude'];
                 $vendorLatLong[] = $addres;
             }
-// pr($response);
+
             return view('frontend.searchResultsMapView')->with(['listData'=>$response, 'vendorLatLong'=>$vendorLatLong, 'navCategories'=>$navCategories, 'keyword'=>$keyword]);    
         }
         return view('frontend.searchResults')->with(['listData'=>$response, 'navCategories'=>$navCategories, 'keyword'=>$keyword]);
