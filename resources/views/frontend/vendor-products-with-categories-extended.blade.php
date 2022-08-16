@@ -1327,22 +1327,22 @@ $checkSlot = findSlot('', $vendor->id, '');
                             minWidth: 250,
                             minheight: 250,
                         });
-                   // images = 'https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/Clientlogo/612e24163debe.png@webp';
+                    images = "{{ asset('assets/images/mapVendoricon.png') }}";
 
                     var image = {
-                        //url: images, // url
-                        scaledSize: new google.maps.Size(50, 50), // scaled size
+                        url: images, // url
+                        scaledSize: new google.maps.Size(30, 40), // scaled size
                         origin: new google.maps.Point(0,0), // origin
                         anchor: new google.maps.Point(22,22) // anchor
                     };
                     const marker = new google.maps.Marker({
-                            map: map,
+                            icon: image,
                             position: { lat: parseFloat(vendor.latitude), lng: parseFloat(vendor.longitude) },
-                           //icon: image,
+                            map: map,
                         });
-                        marker.addListener("click", () => {
-                            infowindow.open(map, marker);
-                        });
+                    marker.addListener("click", () => {
+                        infowindow.open(map, marker);
+                    });
 
                 }
 
