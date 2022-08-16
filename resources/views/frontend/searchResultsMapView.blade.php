@@ -62,18 +62,15 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
                 var contentString = '';
 
                 contentString =
-                    '<div id="content" style="max-width:200px">' +
-                    '<div class="row no-gutters align-items-center">'+
-                '<div class="col-sm-4">'+
-                '<div class="img_box mb-sm-0 mb-2"> <img src="'+vendor.image_url+'"/></div> </div>'+
+                    '<a target="_blank" href="'+vendor.redirect_url+'"><div id="content" style="max-width:200px">' +
                     '<div id="siteNotice">' +
-                    '<a target="_blank" href="'+vendor.redirect_url+'"><h5 id="firstHeading" class="firstHeading col-10 mt-0">'+vendor.name+'</h5></a>' +
+                    '<h5 id="firstHeading" class="firstHeading col-10 mt-0">'+vendor.name+'</h5>' +
                     '<div id="bodyContent">' +
                     "<p><b>Address :- </b> " +vendor.address+ " " +
                     ".</p>" +
                     '<p><b>Contact: +'+ vendor?.dial_code +vendor?.phone_no+' </p>' +
                     "</div>" +
-                    "</div>";
+                    "</div></a>";
 
                 const infowindow = new google.maps.InfoWindow({
                     content: contentString,
