@@ -177,7 +177,8 @@ class SearchController extends FrontController{
         }
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
                         ->leftjoin('types', 'types.id', 'categories.type_id')
-                        ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')
+                        ->leftjoin('vendors', 'vendors.id','categories.vendor_id')
+                        ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to','vendors.latitude','vendors.longitude','vendors.address','vendors.dial_code','vendors.phone_no')
                         ->where('categories.id', '>', '1')
                         ->where('categories.is_visible', 1)
                         ->where('categories.status', '!=', 2)
@@ -192,7 +193,7 @@ class SearchController extends FrontController{
         foreach ($categories as $category) {
             $redirect_url = route('categoryDetail', $category->slug);
             $image_url = $category->image['proxy_url'].'300/300'.$category->image['image_path'];
-            $response[] = ['id' => $category->id, 'name' => $category->name, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
+            $response[] = ['id' => $category->id, 'name' => $category->name,'latitude' => $category->latitude,'longitude' => $category->longitude,'image_url' => $image_url, 'redirect_url' => $redirect_url];
         }
         $products = Product::with('media')->join('product_translations as pt', 'pt.product_id', 'products.id')->join('vendors', 'vendors.id','products.vendor_id')
                     ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description','products.vendor_id','vendors.slug as vendor_slug','products.url_slug','vendors.latitude','vendors.longitude','vendors.address','vendors.dial_code','vendors.phone_no')
@@ -211,16 +212,17 @@ class SearchController extends FrontController{
 
         $language_id = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($language_id);
-        if($slug == 'map-view'){
-            $vendorLatLong = [];
-            foreach($response as $res){
-                $addres[] = $res['latitude'];
-                $addres[] = $res['longitude'];
-                $vendorLatLong[] = $addres;
-            }
+        $vendorLatLong = [];
 
-            return view('frontend.searchResultsMapView')->with(['listData'=>$response, 'vendorLatLong'=>$vendorLatLong, 'navCategories'=>$navCategories, 'keyword'=>$keyword]);    
+        if(!empty($response)){
+            foreach($response as $res){
+                if(!empty($res['latitude']) && !empty($res['longitude'])){
+                    $addres[] = [$res['latitude'],$res['longitude']];
+                    $vendorLatLong = $addres;
+                }
+            }
         }
-        return view('frontend.searchResults')->with(['listData'=>$response, 'navCategories'=>$navCategories, 'keyword'=>$keyword]);
+        // pr($vendorLatLong);
+        return view('frontend.searchResults')->with(['listData'=>$response, 'vendorLatLong'=>$vendorLatLong, 'navCategories'=>$navCategories, 'keyword'=>$keyword]);
     }
 }
