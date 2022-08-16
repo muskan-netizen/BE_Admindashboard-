@@ -760,7 +760,7 @@ class OrderController extends BaseController
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type=='D') {
                         //Create Shipping request for dispatcher
-                        \Log::info('11');
+                       // \Log::info('11');
                         $order_dispatch = $this->checkIfanyProductLastMileon($request);
                         if ($order_dispatch && $order_dispatch == 1){
                             $stats = $this->insertInVendorOrderDispatchStatus($request);
@@ -1144,7 +1144,7 @@ class OrderController extends BaseController
                 }
             }
         }
-        \Log::info('getDispatchLaundryDomain');
+       // \Log::info('getDispatchLaundryDomain');
         /////////////// **************** for laundry accept order *************** ////////////////
         $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
 
@@ -1170,7 +1170,7 @@ class OrderController extends BaseController
                             }
 
 
-                            \Log::info('placeRequestToDispatchLaundry');
+                            //\Log::info('placeRequestToDispatchLaundry');
                             $order_dispatchs = $this->placeRequestToDispatchLaundry($request->order_id, $request->vendor_id, $dispatch_domain_laundry, $team_tag, $colm);
                         }
 
@@ -1462,7 +1462,7 @@ class OrderController extends BaseController
     // place Request To Dispatch for Laundry
     public function placeRequestToDispatchLaundry($order, $vendor, $dispatch_domain, $team_tag, $colm)
     {
-        \Log::info('placeRequestToDispatchLaundry -- 1');
+       // \Log::info('placeRequestToDispatchLaundry -- 1');
 
         try {
             $order = Order::find($order);
@@ -1589,7 +1589,7 @@ class OrderController extends BaseController
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image
             ];
-            \Log::info(json_encode($postdata));
+            //\Log::info(json_encode($postdata));
             // if($order_vendor->is_restricted == 1)
             // {
             //     $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -1606,7 +1606,7 @@ class OrderController extends BaseController
             ]);
 
             $url = $dispatch_domain->laundry_service_key_url;
-            \Log::info('domain --'.$url);
+           // \Log::info('domain --'.$url);
 
             $res = $client->post(
                 $url . '/api/task/create',
