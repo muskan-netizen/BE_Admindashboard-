@@ -919,24 +919,21 @@ if (!function_exists('getServiceTypesCategory')) {
             $service_types = [];
             if($vendorType =="delivery" || $vendorType =="dine_in" || $vendorType =="takeaway"){
                 $service_types= ['products_service'];
-               // $types =  $types->where('service_type','products_service');
             }elseif($vendorType =="rental" ){
                 $service_types= ['rental_service'];
-               // $types =  $types->where('service_type','rental_service');
             }elseif($vendorType =="pick_drop" ){
                 $service_types= ['pick_drop_service'];
-               // $types =  $types->where('service_type','pick_drop_service');
             }elseif($vendorType =="on_demand" ){
                 $service_types= ['on_demand_service'];
-              //  $types =  $types->where('service_type','on_demand_service');
             }elseif($vendorType =="laundry" ){
                 $service_types= ['laundry_service'];
-               // $types =  $types->where('service_type','laundry_service');
             }
             if($client_preference->business_type == 'taxi'){
                 $service_types= ['pick_drop_service'];
             }elseif($client_preference->business_type == 'laundry'){
                 $service_types= ['laundry_service'];
+            }elseif($client_preference->business_type == 'home_service'){
+                $service_types= ['on_demand_service'];
             }
            
             $types =  $types->whereIn('service_type',$service_types);
