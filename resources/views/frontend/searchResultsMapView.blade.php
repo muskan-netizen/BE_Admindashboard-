@@ -2,6 +2,8 @@
 @section('css')
 <style type="text/css">
 .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.slick-track{margin-left:0}.product-box .product-detail h4,.product-box .product-info h4{font-size:16px}
+body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !important;line-height: 37px;border-radius: 90px;text-align: center;}
+
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
@@ -60,10 +62,10 @@
                 var contentString = '';
 
                 contentString =
-                    '<div id="content">' +
+                    '<div id="content" style="max-width:200px">' +
                     '<div id="siteNotice">' +
-                    "</div>" +
-                    '<h5 id="firstHeading" class="firstHeading">'+vendor.name+'</h5>' +
+                    "</div><div class='row'>" +
+                    '<h5 id="firstHeading" class="firstHeading col-10 mt-0">'+vendor.name+'</h5> <a class="btn btn-solid col-2 al-show-vendor-map-btn" target="_blank" href="'+vendor.redirect_url+'">Go</a></div>' +
                     '<div id="bodyContent">' +
                     "<p><b>Address :- </b> " +vendor.address+ " " +
                     ".</p>" +
