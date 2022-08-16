@@ -51,8 +51,15 @@ class ClientPreferenceController extends BaseController{
         $slots = ClientSlot::get();
        
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
-        $nomenclaturesTranslation = Nomenclature::where('label','Product Order Form')->first();
-        $nomenclatureProductOrderForm = !empty($nomenclaturesTranslation)? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclaturesTranslation->id,'language_id'=>$langId])->first()->name : "Product Order Form";
+
+        $nomenclature = Nomenclature::where('label','Product Order Form')->first();
+        $nomenclatureProductOrderForm = "Product Order Form";
+        if(!empty($nomenclature)){
+            $nomenclatureTranslation = NomenclatureTranslation::where(['nomenclature_id'=>$nomenclature->id,'language_id'=>$langId])->first();
+            if(!empty($nomenclatureTranslation->name)){
+                $nomenclatureProductOrderForm = $nomenclatureTranslation->name;
+            }
+        }
 
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
