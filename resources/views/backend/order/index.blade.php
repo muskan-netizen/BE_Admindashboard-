@@ -444,6 +444,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     <select class="form-control" id="sort_order">
                         <option value="">{{ __('Change Sort') }}</option>
                         <option value="distance">{{ __('Distance') }}</option>
+                        <option value="newest_slot">{{ __('Latest Slot') }}</option>
                     </select>
                 </div> --}}
                 <div class="col">
