@@ -382,6 +382,10 @@ class OrderController extends BaseController
                 }
             }
         }
+        elseif($request->has('sort_order') && ($request->sort_order == 'newest_slot')){
+            // $now = Carbon::now()->toDateTimeString();
+            $orders = $orders->orderBy(DB::raw('ISNULL(scheduled_date_time), scheduled_date_time'), 'ASC')->orderBy('created_at', 'DESC');
+        }
         else{
             $orders = $orders->select('*', 'id as total_discount_calculate')->orderBy('id', 'DESC');
         }
@@ -536,7 +540,7 @@ class OrderController extends BaseController
                 if ($luxury_option->title == 'takeaway') {
                     $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
                 } elseif ($luxury_option->title == 'dine_in') {
-                    $luxury_option_name = 'Dine-In';
+                    $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
                 } else {
                     $luxury_option_name = getNomenclatureName($luxury_option->title, $langId, false);
                     //$luxury_option_name = 'Delivery';
@@ -679,7 +683,7 @@ class OrderController extends BaseController
             if ($luxury_option->title == 'takeaway') {
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
             } elseif ($luxury_option->title == 'dine_in') {
-                $luxury_option_name = 'Dine-In';
+                $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
             } else {
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
             }
@@ -706,8 +710,15 @@ class OrderController extends BaseController
         }
         $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
 
-        $nomenclaturesTranslation = Nomenclature::where('label','Product Order Form')->first();
-        $nomenclatureProductOrderForm = !empty($nomenclaturesTranslation)? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclaturesTranslation->id,'language_id'=>$langId])->first()->name : "Product Order Form";
+        $nomenclature = Nomenclature::where('label','Product Order Form')->first();
+        $nomenclatureProductOrderForm = "Product Order Form";
+        if(!empty($nomenclature)){
+            $nomenclatureTranslation = NomenclatureTranslation::where(['nomenclature_id'=>$nomenclature->id,'language_id'=>$langId])->first();
+            if($nomenclatureTranslation){
+                $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
+            }
+        }
+        
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 
             'order' => $order,
@@ -2029,7 +2040,7 @@ class OrderController extends BaseController
             if ($luxury_option->title == 'takeaway') {
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
             } elseif ($luxury_option->title == 'dine_in') {
-                $luxury_option_name = 'Dine-In';
+                $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
             } else {
                 //$luxury_option_name = 'Delivery';
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
