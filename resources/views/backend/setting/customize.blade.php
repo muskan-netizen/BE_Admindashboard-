@@ -237,7 +237,7 @@
                             <label for="primary_currency">{{ __("Primary Currency") }}</label>
                             <select class="form-control al_box_height" id="primary_currency" name="primary_currency">
                                 @foreach($currencies as $currency)
-                                <option iso="{{$currency->iso_code.' '.$currency->symbol}}" {{ (isset($preference) && $preference->primary->currency->id == $currency->id) ? "selected" : ""}} value="{{$currency->id}}"> {{$currency->iso_code.' '.$currency->symbol}} </option>
+                                <option iso="{{$currency->iso_code.' '.$currency->symbol}}" {{ (isset($preference) && $preference->currency_id == $currency->id) ? "selected" : ""}} value="{{$currency->id}}"> {{$currency->iso_code.' '.$currency->symbol}} </option>
                                 @endforeach
                             </select>
                         </div>
@@ -245,7 +245,7 @@
                             <label for="currency">{{ __("Additional Currency") }}</label>
                             <select class="form-control al_box_height select2-multiple" id="currency" name="currency_data[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
                                 @foreach($currencies as $currency)
-                                @if($preference->primary->currency->id != $currency->id)
+                                @if($preference->currency_id != $currency->id)
                                 <option value="{{$currency->id}}" iso="{{$currency->iso_code}}" {{ (isset($preference) && in_array($currency->id, $cli_currs))? "selected" : "" }}> {{$currency->iso_code}} {{!empty($currency->symbol) ? $currency->symbol : ''}} </option>
                                 @endif
                                 @endforeach

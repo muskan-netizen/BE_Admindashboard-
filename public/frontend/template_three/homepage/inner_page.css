@@ -160,7 +160,7 @@ body .modal-content #address-map-container{overflow:hidden;border-radius: 10px 1
 body #page-container #footer .footer-theme .sub-title .contact-list li span{padding-left:0}
 .site-header.fixed-bar .nav-cate-img.activ_nav{display:none}
 .site-header.fixed-bar .current_category{color:var(--theme-deafult)}
-
+.current_category{color:var(--theme-deafult)!important}
 .displayProducts .product-wrapper-grid .inner_spacing span.rating i{color:#fff}.displayProducts .product-wrapper-grid .inner_spacing span.rating{top:12px;position:absolute;right:12px;height:22px;width:50px;background-color:#409a40;line-height:22px;border-radius:6px;box-shadow:0 0 10px rgb(0 0 0 / 5%);color:#fff;text-align:center;padding-right:0;font-size:12px}.switch-primary.product_tag_filter .lable img{height:16px;width:16px}.al_body_template_three #register .file.file--upload label{border-radius:10px;overflow:hidden}
 .al_body_template_three #register .file .update_pic{opacity:0}.top-banner-content.small-section{padding:20px 0 10px}
 .product-right.inner_spacing span.rating{top:12px;position:absolute;right:12px;height:30px;width:50px;
