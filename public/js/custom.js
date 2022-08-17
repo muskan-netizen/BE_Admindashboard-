@@ -254,6 +254,12 @@ $(document).ready(function () {
         window.location.href = url;
         return false;
     });
+    $(document).on("click", "#search_map_view", function (e) {
+        let keyword = $("#main_search_box").val();
+        let url = "/search-all/" + keyword + "/map-view";
+        window.location.href = url;
+        return false;
+    });
     $('input[type=search]').on('search', function () {
         $('#search_box_main_div').html('').hide();
     });

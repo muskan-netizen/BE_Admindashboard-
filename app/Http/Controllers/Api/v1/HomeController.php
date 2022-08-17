@@ -383,7 +383,7 @@ class HomeController extends BaseController
             if($venderFilterOpen && ($venderFilterOpen == 1) ){
                 $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
             }
-            //pr($vendorData);
+           
 
 
             // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
@@ -441,9 +441,10 @@ class HomeController extends BaseController
                     'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
                 );
             }
+           
 
             $isVendorArea = 0;
-
+            
             // Start Mobile Banners
             $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
             ->where('status', 1)->where('validity_on', 1)
@@ -478,14 +479,14 @@ class HomeController extends BaseController
                     if (!empty($value->link) && $value->link == 'vendor') {
                         $bannerLink = $value->redirect_vendor_id;
                         if ($bannerLink) {
-                            $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude')->where('status', 1)->where('id', $value->redirect_vendor_id)->first();
-                            if ($vendorData) {
-                                $vendorData->is_show_category = ($vendorData->vendor_templete_id == 2 || $vendorData->vendor_templete_id == 4) ? 1 : 0;
+                            $vendorDataSingle = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude')->where('status', 1)->where('id', $value->redirect_vendor_id)->first();
+                            if ($vendorDataSingle) {
+                                $vendorDataSingle->is_show_category = ($vendorDataSingle->vendor_templete_id == 2 || $vendorDataSingle->vendor_templete_id == 4) ? 1 : 0;
                             }
-                            $is_show_category = (($vendorData) && ($vendorData->vendor_templete_id == 1)) ? 0 : 1;
+                            $is_show_category = (($vendorDataSingle) && ($vendorDataSingle->vendor_templete_id == 1)) ? 0 : 1;
                             $value->is_show_category = $is_show_category;
-                            $value->redirect_name = $vendorData->name ?? '';
-                            $value->vendor = $vendorData;
+                            $value->redirect_name = $vendorDataSingle->name ?? '';
+                            $value->vendor = $vendorDataSingle;
                         }
                     }
                     $value->redirect_to = ucwords($value->link);
@@ -494,6 +495,8 @@ class HomeController extends BaseController
                     unset($value->redirect_vendor_id);
                 }
             }
+           
+
             // End Mobile Banners
             $categories = $this->categoryNav($langId,  $venderIds,$type);
             $homeData['vendors'] = $vendorData;
