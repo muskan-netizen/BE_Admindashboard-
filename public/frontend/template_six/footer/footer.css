@@ -115,7 +115,7 @@ body .footer-theme .sub-title h4, .footer-title h4{font-size: 15px;}
 .alMobileLocations{margin-top: -80px;}
 .oneYearsMembership img{width: 100%}
 .nav-tabs.navigation-tab_al.nav-material .nav-link{font-size: 8px;padding: 4px 6px;}
-.footer-title{border-bottom:0 ;}
+.footer-title{border-bottom:none; margin-top: 0 !important;}
 body .footer-theme .sub-title h4, .footer-title h4{margin-bottom: 0;}
 .footer-mobile-contant{display: block !important;text-align: left;padding-bottom: 20px;border-bottom: 1px solid;margin-bottom: 20px;}
 .al_QRcode a.col-12{display: block;padding: 0;}
@@ -181,4 +181,15 @@ body .footer-theme .sub-title h4, .footer-title h4{margin-bottom: 0;}
 .top-banner-wrapper form{padding: 0 20px;}
 .account-sidebar{border-radius: 35px;font-weight: 400;}
 
+/* ----------- step css start ========== */
+.home-serivces .step-icon{height: 30px;width: 30px;line-height: 30px;margin-right: 5px;font-size: 14px;}
+.home-serivces .step p{font-size: 12px;}
+.home-serivces .step.step3{margin-left: -30px;}
+.home-serivces .step.step2{margin-left: -30px;padding-right: 30px;}
+.home-serivces .step.active{padding-right: 30px;}
+.home-serivces .step{padding-right: 0;}
+.al_body_template_six #main-nav li a{font-size: 12px;font-weight: 400;line-height: 24px;}
+.classes_wrapper .col-md-9.col-sm-8.pr-md-2{order: 2;}
+.classes_wrapper{padding: 10px 10px; border-radius: 20px;}
+.alShoppingList{right: -30px;}
 }

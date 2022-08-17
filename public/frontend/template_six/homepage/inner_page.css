@@ -177,6 +177,7 @@ span.pagingInfo{position:absolute;top:-80px;right:35px;color:#fff}ol.breadcrumb{
 span.pagingInfo{position:absolute;top:-80px;right:35px;color:#fff}ol.breadcrumb{background-color:transparent}.breadcrumb-item.active{color:#CAAE73}.breadcrumb-item{position:relative;font-size:14px}.breadcrumb-item+.breadcrumb-item::before{border:solid #CAAE73;border-width:0 2px 2px 0;display:inline-block;padding:3px;transform:rotate(-45deg);-webkit-transform:rotate(-45deg);position:absolute;content:"";left:0;top:7px}.alShareLink{color:#CAAE73;cursor:pointer}.productsPrice{font-size:24px}
 .productBookingBtns{position:relative;width:100%}
 .productDetails p{line-height: 30px;}
+.productDetails p:empty{display:none;}
 .productDetails{max-height:160px;overflow-x:hidden;overflow-y:auto;padding-bottom:20px}
 .ac-royo-btn::before,
 .productBookingBtns:before{left: 0; height:50px;width:100%;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,#FFF 100%);position:absolute;content:"";top:-50px;z-index:1}
