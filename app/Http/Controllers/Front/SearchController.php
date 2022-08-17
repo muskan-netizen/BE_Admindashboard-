@@ -193,7 +193,7 @@ class SearchController extends FrontController{
         foreach ($categories as $category) {
             $redirect_url = route('categoryDetail', $category->slug);
             $image_url = $category->image['proxy_url'].'300/300'.$category->image['image_path'];
-            $response[] = ['id' => $category->id, 'name' => $category->name,'latitude' => $category->latitude,'longitude' => $category->longitude,'image_url' => $image_url, 'redirect_url' => $redirect_url];
+            $response[] = ['id' => $category->id, 'name' => $category->name,'latitude' => $category->latitude,'longitude' => $category->longitude, 'address'=>$category->address, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
         }
         $products = Product::with('media')->join('product_translations as pt', 'pt.product_id', 'products.id')->join('vendors', 'vendors.id','products.vendor_id')
                     ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description','products.vendor_id','vendors.slug as vendor_slug','products.url_slug','vendors.latitude','vendors.longitude','vendors.address','vendors.dial_code','vendors.phone_no')
@@ -207,7 +207,7 @@ class SearchController extends FrontController{
         foreach ($products as $product) {
             $redirect_url = route('productDetail', [$product->vendor_slug,$product->url_slug]);
             $image_url = $product->media->first() ? $product->media->first()->image->path['proxy_url'].'300/300'.$product->media->first()->image->path['image_path'] : '';
-            $response[] = ['id' => $product->id, 'name' => $product->dataname,'latitude' => $product->latitude,'longitude' => $product->longitude, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
+            $response[] = ['id' => $product->id, 'name' => $product->dataname,'latitude' => $product->latitude,'longitude' => $product->longitude, 'address'=>$product->address, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
         }
 
         $language_id = Session::get('customerLanguage');
@@ -222,7 +222,6 @@ class SearchController extends FrontController{
                 }
             }
         }
-        // pr($vendorLatLong);
         return view('frontend.searchResults')->with(['listData'=>$response, 'vendorLatLong'=>$vendorLatLong, 'navCategories'=>$navCategories, 'keyword'=>$keyword]);
     }
 }

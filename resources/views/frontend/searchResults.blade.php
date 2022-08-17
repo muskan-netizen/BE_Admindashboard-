@@ -171,7 +171,7 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
 
         var url = window.location.origin;
         var vendorData = {!!json_encode($listData)!!};
-        console.log('vendorData', vendorData);
+
         //    vendor  markers
         for (let i = 0; i < vendorData.length; i++) {
             vendor = vendorData[i];
