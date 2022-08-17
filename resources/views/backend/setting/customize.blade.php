@@ -126,7 +126,6 @@
             </form>
         </div>
         <!-- Date & Time sec end -->
-        <!--Vendor Type &  Distance to Time Calculator start -->
         <div class="col-lg-4 col-xl-3 mb-3">
             <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
                 <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
@@ -153,51 +152,8 @@
                     </div>
                 </div>
             </form>
-            @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
-            @php
-                $typeArray = getCategoryTypes();
-            @endphp
-            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}"> 
-                @csrf
-                <input type="hidden" name="send_to" id="send_to" value="customize">
-                <input type="hidden" name="verify_vendor_type" id="verify_vendor_type" value="1">
-                <div class="card-box mb-2">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
-                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                    </div>
-                    <div class="row align-items-start">
-                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-                            @php
-                                $VendorTypesName = $vendor_typ_key.'_check';
-                            @endphp
-                            @if(in_array($vendor_typ_key, $typeArray)) 
-                                <div class="col-md-12">
-                                    <div class="form-group d-flex justify-content-between">
-                                        <label for="{{$VendorTypesName}}" class="mr-3 mb-0 ">{{getDynamicTypeName($vendor_typ_value)}}</label>
-                                        <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" @if((isset($preference) && $preference->$VendorTypesName == '1')) checked='checked' @endif>
-                                    </div>
-                                </div>
-                            @endif    
-                        @endforeach
-                        <!-- <div class="col-md-12">
-                            <div class="form-group d-flex justify-content-between">
-                                <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
-                                <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group d-flex justify-content-between">
-                                <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
-                                <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
-                            </div>
-                        </div>-->
-                    </div>
-                </div>
-            </form>
-            @endif
+            
         </div>
-        <!--Vendor Type &  Distance to Time Calculator end -->
         <!-- Localization start -->
         <div class="col-lg-5 col-xl-6 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
@@ -271,8 +227,65 @@
         <!-- Localization end -->
     </div>
     <!--Localization end -->
-
-    <!-- Links Start -->
+{{-- vendoe typs section aline by harbans singh :) --}}
+    <div class="row">
+        <div class="col-12">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __("Vendor Type") }}</h4>
+        </div>
+        </div>
+    </div>
+    <div class="row col-spacing">
+        <!--Vendor Type &  Distance to Time Calculator start -->
+        <div class="col-lg-4 col-xl-3 mb-3">
+            @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
+            @php
+                $typeArray = getCategoryTypes();
+            @endphp
+            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}"> 
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <input type="hidden" name="verify_vendor_type" id="verify_vendor_type" value="1">
+                <div class="card-box mb-2">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="row align-items-start">
+                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                            @php
+                                $VendorTypesName = $vendor_typ_key.'_check';
+                            @endphp
+                            @if(in_array($vendor_typ_key, $typeArray)) 
+                                <div class="col-md-12">
+                                    <div class="form-group d-flex justify-content-between">
+                                        <label for="{{$VendorTypesName}}" class="mr-3 mb-0 ">{{getDynamicTypeName($vendor_typ_value)}}</label>
+                                        <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" @if((isset($preference) && $preference->$VendorTypesName == '1')) checked='checked' @endif>
+                                    </div>
+                                </div>
+                            @endif    
+                        @endforeach
+                        <!-- <div class="col-md-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
+                                <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
+                                <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
+                            </div>
+                        </div>-->
+                    </div>
+                </div>
+            </form>
+            @endif
+        </div>
+        <!--Vendor Type &  Distance to Time Calculator end -->
+    </div>
+{{-- vendoe typs section --}}
+        <!-- Links Start -->
     <div class="row">
       <div class="col-12">
          <div class="page-title-box">
@@ -574,6 +587,29 @@
                                     <input type="text" name="laundry_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Laundry'))}}">
                                     @if($k == 0)
                                         @if($errors->has('laundry_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Appointment") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="appointment_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="appointment_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Appointment'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('appointment_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>

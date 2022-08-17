@@ -157,7 +157,7 @@ class VendorController extends BaseController
         }else{
             $build = array();
             
-            $categories = Category::serviceType()->with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+            $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
             ->where('id', '>', '1')
             // ->where('is_core', 1)
             ->whereNotIn('type_id', [4, 5])
@@ -1714,7 +1714,7 @@ class VendorController extends BaseController
             $q->whereNull('deleted_at')->orWhere('deleted_at', '');
         })
         ->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
-        
+       
         $p_categories = collect();
         $product_categories_hierarchy = '';
         if ($product_categories) {
@@ -1724,7 +1724,7 @@ class VendorController extends BaseController
             $product_categories_build = $this->buildTree($p_categories->toArray());
             $product_categories_hierarchy = $this->getCategoryOptionsHeirarchy($product_categories_build, $langId);
             foreach($product_categories_hierarchy as $k => $cat){
-                $myArr = array(1,3,7,8,9,10);
+                $myArr = array(1,3,7,8,9,10,11);
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
                     unset($product_categories_hierarchy[$k]);
                 }
@@ -1734,7 +1734,6 @@ class VendorController extends BaseController
         foreach($product_categories_hierarchy as $key => $product_category){
             $options[] = "<option value=".$product_category['id'].">".$product_category['hierarchy']."</option>";
         }
-
         return response()->json(['status' => 1, 'message' => 'Product Categories', 'product_categories' => $product_categories_hierarchy, 'options' => $options]);
     }
 

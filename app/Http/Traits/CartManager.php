@@ -396,6 +396,7 @@ trait cartManager{
                 
 
                 $slots = (object)showSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
+               
                 if($cartData->count() > 1){
                     $vendorData->selected_slot = $vendorData->schedule_slot;
                 }
