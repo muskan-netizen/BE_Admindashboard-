@@ -382,6 +382,10 @@ class OrderController extends BaseController
                 }
             }
         }
+        elseif($request->has('sort_order') && ($request->sort_order == 'newest_slot')){
+            // $now = Carbon::now()->toDateTimeString();
+            $orders = $orders->orderBy(DB::raw('ISNULL(scheduled_date_time), scheduled_date_time'), 'ASC')->orderBy('created_at', 'DESC');
+        }
         else{
             $orders = $orders->select('*', 'id as total_discount_calculate')->orderBy('id', 'DESC');
         }
@@ -536,7 +540,7 @@ class OrderController extends BaseController
                 if ($luxury_option->title == 'takeaway') {
                     $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
                 } elseif ($luxury_option->title == 'dine_in') {
-                    $luxury_option_name = 'Dine-In';
+                    $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
                 } else {
                     $luxury_option_name = getNomenclatureName($luxury_option->title, $langId, false);
                     //$luxury_option_name = 'Delivery';
@@ -679,7 +683,7 @@ class OrderController extends BaseController
             if ($luxury_option->title == 'takeaway') {
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
             } elseif ($luxury_option->title == 'dine_in') {
-                $luxury_option_name = 'Dine-In';
+                $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
             } else {
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
             }
@@ -710,8 +714,8 @@ class OrderController extends BaseController
         $nomenclatureProductOrderForm = "Product Order Form";
         if(!empty($nomenclature)){
             $nomenclatureTranslation = NomenclatureTranslation::where(['nomenclature_id'=>$nomenclature->id,'language_id'=>$langId])->first();
-            if(!empty($nomenclatureTranslation->name)){
-                $nomenclatureProductOrderForm = $nomenclatureTranslation->name;
+            if($nomenclatureTranslation){
+                $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
         
@@ -2036,7 +2040,7 @@ class OrderController extends BaseController
             if ($luxury_option->title == 'takeaway') {
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
             } elseif ($luxury_option->title == 'dine_in') {
-                $luxury_option_name = 'Dine-In';
+                $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
             } else {
                 //$luxury_option_name = 'Delivery';
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
