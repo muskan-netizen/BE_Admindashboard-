@@ -129,7 +129,7 @@ class SearchController extends FrontController{
         return $this->successResponse($response);
     }
 
-    public function showSearchResults($domain="", $keyword, $slug=""){
+    public function showSearchResults($domain="", $keyword){
 
         $response = [];
         $keyword = $keyword;
