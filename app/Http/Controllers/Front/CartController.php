@@ -1101,7 +1101,8 @@ class CartController extends FrontController
 
                     $select = '';
 
-                    if ($action == 'delivery') {
+                    if ($action == 'delivery' || $action =='appointment' ) {
+                   
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
                         $deliveryCharges = 0;
@@ -2174,6 +2175,7 @@ class CartController extends FrontController
     # get delivery fee from dispatcher
     public function getDeliveryFeeDispatcher($vendor_id, $schedule_datetime_del='')
     {
+      
         try {
             $dispatch_domain = $this->checkIfLastMileOn();
             if ($dispatch_domain && $dispatch_domain != false) {
@@ -2192,20 +2194,39 @@ class CartController extends FrontController
                     );
                     $postdata =  ['locations' => $location, 'schedule_datetime_del' => $schedule_datetime_del];
                     
-                    $client = new GClient([
-                        'headers' => [
-                            'personaltoken' => $dispatch_domain->delivery_service_key,
-                            'shortcode' => $dispatch_domain->delivery_service_key_code,
-                            'content-type' => 'application/json'
-                        ]
-                    ]);
+                    $vendorType =  (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
+                    if($vendorType == 'appointment'){
+                        $client = new GClient([
+                            'headers' => [
+                                'personaltoken' => $dispatch_domain->appointment_service_key,
+                                'shortcode' => $dispatch_domain->appointment_service_key_code,
+                                'content-type' => 'application/json'
+                            ]
+                        ]);
+                        
+                        $url = $dispatch_domain->appointment_service_key_url;
+                        $res = $client->post(
+                            $url . '/api/get-delivery-fee',
+                            ['form_params' => ($postdata)]
+                        );
+                        $response = json_decode($res->getBody(), true);
+                    }else{
+                        $client = new GClient([
+                            'headers' => [
+                                'personaltoken' => $dispatch_domain->delivery_service_key,
+                                'shortcode' => $dispatch_domain->delivery_service_key_code,
+                                'content-type' => 'application/json'
+                            ]
+                        ]);
+                        
+                        $url = $dispatch_domain->delivery_service_key_url;
+                        $res = $client->post(
+                            $url . '/api/get-delivery-fee',
+                            ['form_params' => ($postdata)]
+                        );
+                        $response = json_decode($res->getBody(), true);
+                    }
                     
-                    $url = $dispatch_domain->delivery_service_key_url;
-                    $res = $client->post(
-                        $url . '/api/get-delivery-fee',
-                        ['form_params' => ($postdata)]
-                    );
-                    $response = json_decode($res->getBody(), true);
                     if ($response && $response['message'] == 'success') {
                         $response_array[] = array('delivery_fee' => $response['total'], 'total_duration' => $response['total_duration']);
                         return $response_array;
@@ -2218,8 +2239,12 @@ class CartController extends FrontController
     # check if last mile delivery on
     public function checkIfLastMileOn()
     {
+        $vendorType =  (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
         $preference = ClientPreference::first();
-        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+        if(( $vendorType = 'appointment') && ($preference->need_appointment_service == 1 && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_code) && !empty($preference->appointment_service_key_url)) ){
+            return $preference;
+        }
+        elseif ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
             return $preference;
         else
             return false;

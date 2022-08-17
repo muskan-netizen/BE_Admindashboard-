@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Traits;
 
-use App\Http\Controllers\Front\PromoCodeController;
+use App\Http\Controllers\Front\{PromoCodeController,CartController};
 use App\Models\CaregoryKycDoc;
 use App\Models\Cart;
 use App\Models\CartDeliveryFee;
@@ -395,7 +395,7 @@ trait cartManager{
                 }
                 
 
-                $slots = (object)showSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
+            $slots = (object)showSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
                
                 if($cartData->count() > 1){
                     $vendorData->selected_slot = $vendorData->schedule_slot;
@@ -618,13 +618,14 @@ trait cartManager{
 
                     $select = '';
 
-                    if ($action == 'delivery') {
+                    if ($action == 'delivery' || $action == 'appointment') {
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
                         $deliveryCharges = 0;
                         $code = (($code)?$code:$cart->shipping_delivery_type);
                         if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
-                            $deliveries = $this->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del);
+                            $deliveriesNew = new CartController();
+                            $deliveries = $deliveriesNew->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del);
                             if (isset($deliveries[0])) {
                                 $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                 if (count($deliveries)>1) {

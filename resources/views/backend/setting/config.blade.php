@@ -108,7 +108,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          @endif
 
-         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
+         {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
 
             <div class="col-lg-3 col-md-6 mb-3">
                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -164,7 +164,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                </div><!-- On Demand Services section end -->
             </form>
             </div>
-         @endif
+         @endif --}}
 
 
          @if($client_preference_detail->enable_inventory_service == 1)
@@ -217,7 +217,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          @endif
 
-         @if($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app' )
+         {{-- @if($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app' )
 
             <div class="col-lg-3 col-md-6 mb-3">
                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -273,11 +273,11 @@ $sms_crendential = json_decode($preference->sms_credentials);
                </div><!-- Pickup & Delivery section end -->
                </form>
             </div>
-         @endif
+         @endif --}}
 
 
 
-         @if($client_preference_detail->business_type == 'laundry')
+         {{-- @if($client_preference_detail->business_type == 'laundry')
             <div class="col-lg-3 col-md-6 mb-3">
                <!-- laundry section start -->
                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -359,7 +359,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                </div>
                </form>
             </div>
-         @endif
+         @endif --}}
 
 
    </div>

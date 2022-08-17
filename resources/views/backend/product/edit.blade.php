@@ -78,8 +78,11 @@
 </style>
 @endsection
 @php 
-$lastmileShow = array('7','10');
+$lastmileShow = array('7','10','11');
 
+if($client_preference_detail->appointment_check == 1 && ($client_preference_detail->need_appointment_service == '1') ){
+    $lastmileShow = array_diff($lastmileShow,['11']);
+}
 @endphp
 @section('content')
 <div class="container-fluid">
