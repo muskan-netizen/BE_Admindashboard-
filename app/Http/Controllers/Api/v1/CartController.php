@@ -624,6 +624,10 @@ class CartController extends BaseController
             $total_markup_charges = 0 ;
 
             foreach ($cartData as $ven_key => $vendorData) {
+                $deliver_fee_charges = 0;
+                $total_fixed_fee_tax = 0;
+                $total_service_fee = 0;
+                $total_markup_fee_tax = 0;
                 $PromoFreeDeliver = 0;
                 $total_fixed_fee_amount =$total_fixed_fee_amount+ $vendorData->vendor->fixed_fee_amount;
                 $is_promo_code_available = 0;
@@ -676,10 +680,7 @@ class CartController extends BaseController
                 $delivery_fee_charges = 0.00;
                 $couponData = $couponProducts = array();
 
-                $deliver_fee_charges = 0;
-                $total_fixed_fee_tax = 0;
-                $total_service_fee = 0;
-                $total_markup_fee_tax = 0;
+               
                
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
                     if(isset($prod->product) && !empty($prod->product)){
