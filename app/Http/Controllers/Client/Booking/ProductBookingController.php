@@ -29,7 +29,7 @@ class ProductBookingController extends BaseController
     public function addBlockSlot(Request $request)
     {
      
-      //try {
+      try {
         DB::beginTransaction(); //Initiate transaction
           $block_time = explode('-', $request->blocktime);
           $start_time = date("Y-m-d H:i:s",strtotime($block_time[0]));
@@ -51,10 +51,10 @@ class ProductBookingController extends BaseController
          
         DB::commit(); //Commit transaction after all the operations
         return response()->json(array('success' => true, 'message'=>'Manual time added sucessfully.'));
-      // } catch (Exception $e) {
-      //     DB::rollBack();
-      //     return response()->json(array('success' => false, 'message'=>'Something went wrong.'));
-      // }
+      } catch (Exception $e) {
+          DB::rollBack();
+          return response()->json(array('success' => false, 'message'=>'Something went wrong.'));
+      }
      
     }
     

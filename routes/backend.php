@@ -451,7 +451,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
           // rental product 
           Route::post('rentalVariantRow', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
-
+          Route::post('updateProductVariantSet', 'Client\RentalProductController@updateProductVariantSet')->name('rental-product.updateProductVariantSet');   # update all product actions
           Route::get('getScheduleTableData', 'Client\RentalProductController@getScheduleTableData')->name('rental-product.getScheduleTableData');   # update all product actions
           Route::get('getScheduleTableBlockedData', 'Client\RentalProductController@getScheduleTableBlockedData')->name('rental-product.getScheduleTableBlockedData');   # update all product actions
         
