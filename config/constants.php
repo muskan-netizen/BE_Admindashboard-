@@ -59,5 +59,6 @@ return [
     'pick_drop'    => '5',        // Rides or pickup delivery products will be shown in this flow.
     'on_demand'    => '6', // Services that are available any time you want to use it. 
     'laundry'      => '7',            // Laundry related products are mentioned in this flow.
+    'appointment'  => '8',  
   ],
 ];

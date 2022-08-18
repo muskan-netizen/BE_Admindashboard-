@@ -448,7 +448,6 @@ class OrderController extends BaseController
             $query->whereIn('order_status_option_id', $order_status_optionsd);
         })->count();
 
-
         // // Delivery orders count
         // if(isset($delivery_orders)){
         //     $delivery_orders = $delivery_orders->where('luxury_option_id', 1)->count();
@@ -545,13 +544,16 @@ class OrderController extends BaseController
                     $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
                 } elseif ($luxury_option->title == 'dine_in') {
                     $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
+                }
+                elseif ($luxury_option->title == 'on_demand') {
+                    $luxury_option_name = $this->getNomenclatureName('Services', $langId, false);
                 } else {
                     $luxury_option_name = getNomenclatureName($luxury_option->title, $langId, false);
                     //$luxury_option_name = 'Delivery';
                 }
                 $luxury_option_name = ucwords(str_replace('_', ' ', $luxury_option_name));
             }
-            $order->luxury_option_name = __($luxury_option_name);
+            $order->luxury_option_name = $luxury_option_name;
             if ($order->vendors->count() == 0) {
                 $orders->forget($key);
             }
@@ -688,7 +690,9 @@ class OrderController extends BaseController
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
             } elseif ($luxury_option->title == 'dine_in') {
                 $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
-            } else {
+            }elseif ($luxury_option->title == 'on_demand') {
+                $luxury_option_name = $this->getNomenclatureName('Services', $langId, false);
+            }  else {
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
             }
         }
@@ -2045,7 +2049,9 @@ class OrderController extends BaseController
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
             } elseif ($luxury_option->title == 'dine_in') {
                 $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
-            } else {
+            }elseif ($luxury_option->title == 'on_demand') {
+                $luxury_option_name = $this->getNomenclatureName('Services', $langId, false);
+            }  else {
                 //$luxury_option_name = 'Delivery';
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
             }
