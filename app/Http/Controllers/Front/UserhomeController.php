@@ -29,10 +29,13 @@ class UserhomeController extends FrontController
 
     public function setTheme(Request $request)
     {
+        $clientData = Client::select('id', 'logo','dark_logo','socket_url')->where('id', '>', 0)->first();
         if ($request->theme_color == "dark") {
             Session::put('config_theme', $request->theme_color);
+            return response()->json(['success' => true, 'logo' => $clientData->dark_logo['original']]);
         } else {
             Session::forget('config_theme');
+            return response()->json(['success' => true, 'logo' => $clientData->logo['original']]);
         }
     }
     public function getConfig()
@@ -280,6 +283,13 @@ class UserhomeController extends FrontController
             Session::put('navCategories', $navCategories);
             $clientPreferences = ClientPreference::first();
             $count = 0;
+            $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
+
+            if(count($navCategories) > 0 && $vendor_type =='pick_drop' ){
+                $categoriesSlug = $navCategories[0]->slug;
+                return redirect()->route('categoryDetail',$categoriesSlug); 
+            }
+           
             if ($clientPreferences) {
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
                     $clientVendorTypes = $vendor_typ_key.'_check';

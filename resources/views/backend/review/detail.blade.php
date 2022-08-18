@@ -82,6 +82,7 @@
                                             <th>{{ __('Review') }}</th>
                                             <th>{{ __('Rating') }}</th>
                                             <th>{{ __('Images') }}</th>
+                                            <th>{{ __('Admin Approval') }}</th>
                                             <th>{{ __('Action') }}</th>
                                         </tr>
                                     </thead>
@@ -116,12 +117,19 @@
                                                 <td>
                                                     <div class='form-ul'>
                                                         <div class='inner-div'>
-                                                           <a href='{{ route('review.delete',[$reviwe->id]) }}' class='action-icon'>
-                                                               <i class='mdi mdi-delete' title='Delete review'></i>
-                                                            </a>
+                                                            <input type='checkbox' data-id='' id='ss' data-plugin='switchery' name='userAccountStatus' class='chk_box' data-color='#43bee1' checked>
                                                         </div>
                                                     </div>
-
+                                                </td>
+                                                <td>
+                                                    <div class='form-ul'>
+                                                        <div class='inner-div'>
+                                                            <a href='{{ route('review.delete',[$reviwe->id]) }}' class='action-icon'>
+                                                                <i class='mdi mdi-delete' title='Delete review'></i>
+                                                             </a>
+                                                           
+                                                        </div>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @endforeach

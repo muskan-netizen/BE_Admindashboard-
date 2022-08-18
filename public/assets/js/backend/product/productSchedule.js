@@ -4,14 +4,13 @@ $(function(){
         var pid = $(this).attr('data-product_id');
         var vid = $(this).attr('data-varient_id');
         var title = $(this).attr('data-variant_title');
-    
             $("#scheduleTable").dataTable().fnDestroy()
             $('#scheduleTable').DataTable({
                 processing: true,
                 scrollY: '200px',
                 scrollCollapse: true,   
                 responsive: true,
-                ajax: '/client/getScheduleTableData',
+                ajax: `/client/getScheduleTableData?variant_id=${vid}&product_id=${pid}`,
                 columns: [
                     { data: 'name' },
                     { data: 'hr.position' },
@@ -26,11 +25,14 @@ $(function(){
                 scrollY: '200px',
                 responsive: true,
                 scrollCollapse: true,
-                ajax: '/client/getScheduleTableData',
+                ajax: `/client/getScheduleTableBlockedData?variant_id=${vid}&product_id=${pid}`,
                 columns: [
-                    { data: 'name' },
-                    { data: 'hr.start_date' },
-                    { data: 'hr.position' },
+                    { data: 'start_date_time' },
+                    { data: 'end_date_time' },
+                    { data: 'memo' },
+                    {data: "id" , render : function ( data, type, row, meta ) {
+                        return `<a href=""><i class="mdi mdi-square-edit-outline"></i></a> |  <a href=""><i class="mdi mdi-delete"></i></a> `;
+                    }},
                     
                     // { data: 'hr.salary' },
                 ],
@@ -52,9 +54,9 @@ $(function(){
         
     });
 
-    function add_manual_block_time(product_id,varient_id,product_title){
+    function add_manual_block_time(product_id,variant_id,product_title){
         console.log(product_id);
-        console.log(varient_id);
+        console.log(variant_id);
         console.log(product_title);
         Swal.fire({
             title: 'Add Manual Time',
@@ -68,7 +70,7 @@ $(function(){
                             <textarea style="height:100px" type="text" id="memo" class="swal2-input m-0" placeholder="Memo"></textarea>
                         </div>
                     </div>`,
-            confirmButtonText: 'Sign in',
+            confirmButtonText: 'Submit',
             focusConfirm: false,
             preConfirm: () => {
               const memo = Swal.getPopup().querySelector('#memo').value
@@ -78,10 +80,6 @@ $(function(){
               }
               return { blocktime: blocktime, memo: memo }
             },onOpen: function() {
-                // $('#datetimepicker').datetimepicker({
-                //     //format: 'DD/MM/YYYY hh:mm A',
-                //     defaultDate: new Date()
-                // });
                 $(function() {
                     $('#blocktime').daterangepicker({
                       timePicker: true,
@@ -89,16 +87,50 @@ $(function(){
                       endDate: moment().startOf('hour').add(24, 'hour'),
                       minDate:new Date(),
                       locale: {
-                        format: 'M/DD hh:mm A'
+                        format: 'M/DD/YY hh:mm A'
                       }
                     });
                   });
             }
-          }).then((result) => {
-            Swal.fire(`
-            blocktime: ${result.value.blocktime}
-              memo: ${result.value.memo}
-            `.trim())
+          }).then(async (result) => {
+            var formData = {
+              blocktime:result.value.blocktime,
+              memo:result.value.memo,
+              variant_id:variant_id,
+              product_id:product_id,
+              booking_slot:$('#blocktime').val()
+            }
+            await add_blocked_time(formData)
+            // Swal.fire(`
+            // blocktime: ${result.value.blocktime}
+            //   memo: ${result.value.memo}
+            // `.trim())
           })
     } 
+
+    async function add_blocked_time(formData){
+        console.log(formData);
+        axios.post(`/client/booking/addBlockSlot`, formData)
+        .then(async response => {
+         //console.log(response);
+            if(response.data.success){
+                Swal.fire(
+                    'Manual time added successfully!',                                    
+                    'success'
+                )
+            } else{
+                Swal.fire(
+                    'This slot is already booked, Please try other.',                                    
+                    'error'
+                )
+            }
+        })
+        .catch(e => {
+            Swal.fire(
+                'Something went wrong, try again later!',                                    
+                'error'
+            )
+        })    
+    } 
+    
 })

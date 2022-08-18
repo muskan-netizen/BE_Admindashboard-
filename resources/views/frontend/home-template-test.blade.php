@@ -467,14 +467,24 @@ $preference = $client_preference_detail;
    </div>
 </div>
 @endsection
+@section('home-page')
+<script type="text/javascript" src="{{asset('front-assets/js/homepage.js')}}"></script>
+@endsection
 @section('js-script')
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/less@4"></script>
+{{-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/less@4"></script> --}}
 {{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
 @endsection
 @section('script')
 <script type="text/javascript">
+function showKeycode(e) {
+   if(e.code == 'KeyZ'){
+      alert(e.keyCode);
+   }
+}
+
+document.addEventListener('keydown',showKeycode);
    // AOS.init();
    // 	$('.center').slick({
    //   centerMode: true,

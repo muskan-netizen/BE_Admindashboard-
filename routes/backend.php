@@ -424,11 +424,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('static-dropoff/edit', 'Client\StaticDropoffController@edit')->name('static-dropoff.edit');
         Route::delete('static-dropoff/destroy/{id}', 'Client\StaticDropoffController@delete')->name('static-dropoff.destroy');
 
-        // rental product 
-        Route::post('rentalVariantRow', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
+      
 
-        Route::get('getScheduleTableData', 'Client\RentalProductController@getScheduleTableData')->name('rental-product.getScheduleTableData');   # update all product actions
-    
         Route::post('facilty/store', 'Client\FaciltyController@store')->name('facilty.store');
         Route::post('facilty/update', 'Client\FaciltyController@update')->name('facilty.update');
         Route::get('facilty/edit', 'Client\FaciltyController@show')->name('facilty.edit');
@@ -446,6 +443,17 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vsection/deleteSection/{sid}', 'Client\VendorSectionController@destroy')->name('vsection.delete');
         Route::get('vsection/show/{sid}', 'Client\VendorSectionController@show')->name('vsection.edit');
         Route::post('vsection/update', 'Client\VendorSectionController@update')->name('vsection.update');
+
+
+        // booking route
+        Route::post('booking/addBlockSlot', 'Client\Booking\ProductBookingController@addBlockSlot')->name('product-booking.addBlockSlot');   # update all product actions
+
+
+          // rental product 
+          Route::post('rentalVariantRow', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
+          Route::post('updateProductVariantSet', 'Client\RentalProductController@updateProductVariantSet')->name('rental-product.updateProductVariantSet');   # update all product actions
+          Route::get('getScheduleTableData', 'Client\RentalProductController@getScheduleTableData')->name('rental-product.getScheduleTableData');   # update all product actions
+          Route::get('getScheduleTableBlockedData', 'Client\RentalProductController@getScheduleTableBlockedData')->name('rental-product.getScheduleTableBlockedData');   # update all product actions
         
     });
 });
