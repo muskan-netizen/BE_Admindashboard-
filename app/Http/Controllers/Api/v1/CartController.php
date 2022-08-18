@@ -1211,13 +1211,13 @@ class CartController extends BaseController
         }else{
             $cart->without_category_kyc = 1; 
         }
+        if($cartID){
+            $other_taxes_string='tax_fixed_fee:'.$total_fixed_fee_tax.',tax_service_charges:'.$total_service_fee.',tax_delivery_charges:'.$deliver_fee_charges.',tax_markup_fee:'.$total_markup_fee_tax.',product_tax_fee:'.$total_taxable_amount;
 
-        $other_taxes_string='tax_fixed_fee:'.$total_fixed_fee_tax.',tax_service_charges:'.$total_service_fee.',tax_delivery_charges:'.$deliver_fee_charges.',tax_markup_fee:'.$total_markup_fee_tax.',product_tax_fee:'.$total_taxable_amount;
-
-        $userCart = Cart::find($cartID);
-        $userCart->total_other_taxes  = $other_taxes_string;
-        $userCart->save();
-
+            $userCart = Cart::find($cartID);
+            $userCart->total_other_taxes  = $other_taxes_string;
+            $userCart->save();
+        }
 
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
