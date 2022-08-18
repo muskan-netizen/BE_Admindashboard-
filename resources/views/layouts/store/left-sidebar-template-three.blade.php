@@ -482,7 +482,7 @@ $pages = \App\Models\Page::with([
             </div>
         </div>
         @if(count($navCategories))
-        <div class="menu-navigation_al">
+        <div class="menu-navigation al">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">
