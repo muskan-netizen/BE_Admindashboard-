@@ -186,6 +186,9 @@
                                     </div>
                                     <div id="product_variant_wrapper">
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
+                                        <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
+                                        <input type="hidden" name="start_time" id="start_time" value="">
+                                        <input type="hidden" name="end_time" id="end_time" value="">
                                         @if($product->inquiry_only == 0)
                                             <h3 id="productPriceValue" class="mb-md-3">
                                                 <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
@@ -211,6 +214,7 @@
                                                         <li class="firstChild">{{$variant->title}}</li>
                                                         <li class="otherSize">
                                                             @foreach($variant->option2 as $k => $optn)
+                                                            @if($optn->status==1)
                                                             <?php $var_id = $variant->variant_type_id;
                                                             $opt_id = $optn->variant_option_id;
                                                             $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
@@ -219,6 +223,7 @@
                                                                 <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
                                                                 <span class="checkround"></span>
                                                             </label>
+                                                            @endif
                                                             @endforeach
                                                         </li>
                                                     </ul>
@@ -231,6 +236,10 @@
                                     <div id="variant_response">
                                         <span class="text-danger mb-2 mt-2"></span>
                                     </div>
+                                    @if($product->category->categoryDetail->type_id == 10)
+                                        @include('frontend.product-part.booking-slot')
+                                    @endif
+                                    
                                     <div id="product_variant_quantity_wrapper">
                                         @if($product->inquiry_only == 0)
                                         <div class="product-description border-product pb-0">

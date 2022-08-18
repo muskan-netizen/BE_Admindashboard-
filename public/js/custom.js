@@ -254,6 +254,12 @@ $(document).ready(function () {
         window.location.href = url;
         return false;
     });
+    $(document).on("click", "#search_map_view", function (e) {
+        let keyword = $("#main_search_box").val();
+        let url = "/search-all/" + keyword + "/map-view";
+        window.location.href = url;
+        return false;
+    });
     $('input[type=search]').on('search', function () {
         $('#search_box_main_div').html('').hide();
     });
@@ -2798,22 +2804,24 @@ $(document).ready(function () {
                 if ((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) {
                     $("#single_vendor_remove_cart_btn").attr({
                         'data-product_id': product_id,
-                        'data-variant_id': $('#prod_variant_id').val(),
+                        'data-variant_id': (vendor_type == 'rental') ? $('#prod_variant_id').val() :$('#available_product_variant').val(),
                         'data-quantity': $('.quantity_count').val(),
                         'data-vendor_id': vendor_id,
                         'data-page': 'productDetail'
                     });
                     $("#single_vendor_order_modal").modal('show');
                 } else {
-                    var variant_id = $('#prod_variant_id').val();
+                    var variant_id =  (vendor_type == 'rental') ? $('#prod_variant_id').val() :$('#available_product_variant').val();
+                    var start_date =  $('#start_time').val();
+                    var end_date =  $('#end_date').val();
                     var quantity = $('.quantity_count').val();
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id);
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id) {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='') {
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -2827,6 +2835,8 @@ $(document).ready(function () {
                 "addonoptID": addonoptids,
                 "quantity": quantity,
                 "variant_id": variant_id,
+                "start_date":start_date,
+                "end_date":end_date
             },
             success: function (response) {
                 if (response.status == 'success') {

@@ -19,7 +19,7 @@ class AppStyling extends Model{
         foreach ($app_styles as $app_style) {
             $key_name = str_replace(" ","_",strtolower($app_style->name));
             if($app_style->name == "Tab Bar Style" || $app_style->name == "Home Page Style"){
-                $template_id = $app_style->styleOption->template_id;
+                $template_id = $app_style->styleOption ? $app_style->styleOption->template_id : 3;
             }else {
                 $template_id = $app_style->styleOption->name;
             }

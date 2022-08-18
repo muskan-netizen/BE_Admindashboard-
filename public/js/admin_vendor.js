@@ -142,6 +142,16 @@ $(document).ready(function() {
                     autocompletesWraps.push('edit');
                     loadMap(autocompletesWraps);
                     $('.dropify').dropify();
+                    var input = document.querySelector("#editVendorBox #vendor_phone_number");
+                    console.log(input); 
+                    if(input){
+                        window.intlTelInput(input, {
+                            separateDialCode: true,
+                            hiddenInput: "contact",
+                            utilsScript: "{{asset('assets/js/utils.js')}}",
+                            initialCountry: "",
+                        });
+                    }
                 }
             });
         });
