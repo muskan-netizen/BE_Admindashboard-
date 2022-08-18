@@ -271,51 +271,46 @@ $(document).ready( async function () {
     })
 
     async function vendorType(latitude, longitude, type = "delivery"){
-        await  getHomePageCategoryMenu(latitude, longitude, type);
-        await  getHomePage(latitude, longitude, type);
-        setTimeout(function(){
-            getcart();
-        }, 3000);
-        // $.ajax({
-        //     type: "get",
-        //     dataType: 'json',
-        //     url: cart_details_url,
-        //     success: function (response) {
-        //         if (response.data != "") {
-        //             let cartProducts = response.data.products;
-        //             if (cartProducts != "") {
-        //                 $("#remove_cart_modal").modal('show');
-        //                 $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
-        //                 $(".nav-tabs.vendor_mods").attr("data-mod", type);
-        //             } else {
-        //                 getHomePageCategoryMenu(latitude, longitude, type);
-        //                 getHomePage(latitude, longitude, type);
-        //             }
-        //         } else {
-        //             getHomePageCategoryMenu(latitude, longitude, type);
-        //             getHomePage(latitude, longitude, type);
-        //         }
-        //     }
-        // });
-    }
-    function getcart(){
         $.ajax({
             type: "get",
             dataType: 'json',
             url: cart_details_url,
-            success: function (response) {
+            success: async function (response) {
                 if (response.data != "") {
                     let cartProducts = response.data.products;
                     if (cartProducts != "") {
                         $("#remove_cart_modal").modal('show');
                         $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
                         $(".nav-tabs.vendor_mods").attr("data-mod", type);
-                    } 
-                } 
+                    } else {
+                        await  getHomePageCategoryMenu(latitude, longitude, type);
+                        await getHomePage(latitude, longitude, type);
+                    }
+                } else {
+                    await getHomePageCategoryMenu(latitude, longitude, type);
+                    await getHomePage(latitude, longitude, type);
+                }
             }
         });
-
     }
+    // function getcart(){
+    //     $.ajax({
+    //         type: "get",
+    //         dataType: 'json',
+    //         url: cart_details_url,
+    //         success: function (response) {
+    //             if (response.data != "") {
+    //                 let cartProducts = response.data.products;
+    //                 if (cartProducts != "") {
+    //                     $("#remove_cart_modal").modal('show');
+    //                     $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
+    //                     $(".nav-tabs.vendor_mods").attr("data-mod", type);
+    //                 } 
+    //             } 
+    //         }
+    //     });
+
+    // }
 
     async function getHomePage(latitude, longitude, vtype = "") {
         if(vtype != ''){
