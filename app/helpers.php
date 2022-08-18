@@ -973,7 +973,7 @@ if (!function_exists('getCategoryTypes')) {
             break;
         
             case "super_app":
-                $typeArray =['delivery','dinein','takeaway','rental','pick_drop','on_demand','laundry','appointment'];
+                $typeArray =['delivery','dinein','takeaway','rental','pick_drop','on_demand','appointment'];
             break;
             default:
             $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];

@@ -2178,7 +2178,9 @@ $(document).ready(function () {
                                 if (vendor_type != 'delivery' &&  vendor_type !='on_demand') {
                                     var latitude = $('#latitude').val();
                                     var longitude = $('#longitude').val();
-                                    displayMapLocation(latitude, longitude, 'vendor-address-map');
+                                    if($('#vendor-address-map').length > 0){
+                                        displayMapLocation(latitude, longitude, 'vendor-address-map');
+                                    }
                                 }
                                 initialize();
                                 if (cart_details.deliver_status == 0) {

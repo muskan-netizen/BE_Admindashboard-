@@ -2178,6 +2178,7 @@ class CartController extends FrontController
       
         try {
             $dispatch_domain = $this->checkIfLastMileOn();
+            
             if ($dispatch_domain && $dispatch_domain != false) {
                 $customer = User::find(Auth::id());
                 $cus_address = UserAddress::where('user_id', Auth::id())->where('status',1)->orderBy('is_primary', 'desc')->first();
@@ -2241,10 +2242,11 @@ class CartController extends FrontController
     {
         $vendorType =  (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
         $preference = ClientPreference::first();
-        if(( $vendorType = 'appointment') && ($preference->need_appointment_service == 1 && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_code) && !empty($preference->appointment_service_key_url)) ){
+       
+        if(( $vendorType == 'appointment') && ( ($preference->need_appointment_service == 1) && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_code) && !empty($preference->appointment_service_key_url)) ){
             return $preference;
         }
-        elseif ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+        elseif ( ( $vendorType != 'appointment') && $preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
             return $preference;
         else
             return false;
