@@ -1632,9 +1632,9 @@ $checkSlot = findSlot('', $vendor->id, '');
              vendor = vendorData[i];
 
              if(vendor.address != null && vendor.latitude != "0.00000000" && vendor.longitude != "0.00000000" ){
-                 var contentString = '';
+                var contentString = '';
 
-                     contentString =
+                contentString =
                          '<div id="content">' +
                          '<div id="siteNotice">' +
                          "</div>" +
@@ -1647,27 +1647,27 @@ $checkSlot = findSlot('', $vendor->id, '');
                          "</div>";
 
 
-                 const infowindow = new google.maps.InfoWindow({
-                         content: contentString,
-                         minWidth: 250,
-                         minheight: 250,
-                     });
-                // images = 'https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/Clientlogo/612e24163debe.png@webp';
+                const infowindow = new google.maps.InfoWindow({
+                                    content: contentString,
+                                    minWidth: 250,
+                                    minheight: 250,
+                                });
+                images = "{{ asset('assets/images/mapVendoricon.png') }}";
 
-                 var image = {
-                     //url: images, // url
-                     scaledSize: new google.maps.Size(50, 50), // scaled size
-                     origin: new google.maps.Point(0,0), // origin
-                     anchor: new google.maps.Point(22,22) // anchor
-                 };
-                 const marker = new google.maps.Marker({
-                         map: map,
-                         position: { lat: parseFloat(vendor.latitude), lng: parseFloat(vendor.longitude) },
-                        //icon: image,
-                     });
-                     marker.addListener("click", () => {
-                         infowindow.open(map, marker);
-                     });
+                var image = {
+                        url: images, // url
+                        scaledSize: new google.maps.Size(30, 40), // scaled size
+                        origin: new google.maps.Point(0,0), // origin
+                        anchor: new google.maps.Point(22,22) // anchor
+                    };
+                const marker = new google.maps.Marker({
+                            icon: image,
+                            map: map,
+                            position: { lat: parseFloat(vendor.latitude), lng: parseFloat(vendor.longitude) },
+                        });
+                marker.addListener("click", () => {
+                    infowindow.open(map, marker);
+                });
 
              }
 
