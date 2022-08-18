@@ -714,8 +714,8 @@ class OrderController extends BaseController
         $nomenclatureProductOrderForm = "Product Order Form";
         if(!empty($nomenclature)){
             $nomenclatureTranslation = NomenclatureTranslation::where(['nomenclature_id'=>$nomenclature->id,'language_id'=>$langId])->first();
-            if(!empty($nomenclatureTranslation->name)){
-                $nomenclatureProductOrderForm = $nomenclatureTranslation->name;
+            if($nomenclatureTranslation){
+                $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
         

@@ -552,4 +552,11 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('user/chat/fetchOrderDetail', 'Front\ChatController@fetchOrderDetail')->name('userChat.fetchOrderDetail');
 	Route::post('user/chat/startChat', 'Front\ChatController@startChat')->name('userChat.startChat');
 
+
+
+	/**
+	 * booking routes
+	 */
+	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
+
 });

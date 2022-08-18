@@ -52,7 +52,7 @@
                   
                         @if(isset($opt) && !empty($opt->title) && isset($var) && !empty($var->title) )
                             <div class="checkbox checkbox-success form-check-inline pr-3">
-                                <?php print_r(@$existOptions[$key]);print_r($key);print_r($opt->id)  ?>
+                                <?php //print_r(@$existOptions[$key]);print_r($key);print_r($opt->id)  ?>
                                 <option data-product_id="{{$product_id}}" data-p_variant_id="{{$varnt->id}}" data-opt="{{$opt->id}}" data-varId="{{$var->id}}" value="{{$opt->id}}" <?php echo ($opt->id == @$existOptions[$key]) ? "selected" : '' ?> >{{$opt->title}}</option>
                                 {{-- <input type="checkbox" name="variant{{$var->id}}" class="intpCheck" opt="{{$opt->id.';'.$opt->title}}" varId="{{$var->id.';'.$var->title}}" id="opt_vid_{{$opt->id}}" @if(in_array($opt->id, $existOptions)) checked @endif>
                                 <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label> --}}
