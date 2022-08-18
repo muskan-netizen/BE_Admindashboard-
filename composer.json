@@ -19,6 +19,7 @@
         "braintree/braintree_php": "^6.8",
         "checkout/checkout-sdk-php": "^1.0",
         "coinbase/coinbase-commerce": "^1.0",
+        "conekta/conekta-php": "^4.3",
         "darvinstudio/omnipay-telr": "^1.0",
         "developersrede/erede-php": "^5.1",
         "dg/mysql-dump": "^1.5",
