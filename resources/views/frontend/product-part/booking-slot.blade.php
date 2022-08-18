@@ -49,7 +49,7 @@
 </div>
 
 
-@section('script')
+@section('script-bottom-js')
 
     {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" ></script> --}}
   {{-- <script src="{{ asset('assets/js/backend/product/productSchedule.js')}}"></script> --}}
@@ -93,7 +93,7 @@
           checkInPicker.setStartDate(selectedStartDate);
           checkInPicker.setEndDate(selectedEndDate);
           var formData = {
-            variant_id:$('.product_id:checked').val(),
+            variant_option_id:$('.changeVariant:checked').val(),
             product_id:$("input[name='product_id']").val(),
             selectedStartDate:selectedStartDate,
             selectedEndDate:selectedEndDate
@@ -107,17 +107,29 @@
             axios.post(`/booking/checkProductAvailibility`, formData)
             .then(async response => {
             console.log(response);
-                // if(response.data.success){
-                //     Swal.fire(
-                //         'Manual time added successfully!',                                    
-                //         'success'
-                //     )
-                // } else{
-                //     Swal.fire(
-                //         'This slot is already booked, Please try other.',                                    
-                //         'error'
-                //     )
-                // }
+                var data = response.data.variant_data;
+                console.log
+                if(response.data.success){
+                  var available_product_variant = data.available_product_variant;
+                  var end_time = data.end_time;
+                  var start_time = data.start_time;
+                  if(available_product_variant) {
+                    $('#available_product_variant').val(available_product_variant);
+                    $('#start_time').val(start_time);
+                    $('#end_time').val(end_time);
+                  } else {
+                    Swal.fire(
+                      'Already booked, Please select diffrent slot!',                                    
+                      'error'
+                    )
+                  }
+                 
+                } else{
+                  Swal.fire(
+                    'Something went wrong, try again later!',                                    
+                    'error'
+                  )
+                }
             })
             .catch(e => {
                 Swal.fire(
