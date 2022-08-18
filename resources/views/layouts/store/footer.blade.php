@@ -59,12 +59,14 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('assets/js/constants.js')}}"></script>
 <script defer type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
+
 <script defer type="text/javascript" src="{{asset('front-assets/js/popper.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
+@yield('home-page')
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
 <script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/spinner.js')}}"></script>
@@ -184,9 +186,12 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
     });
 </script>
 @endif
+<script src="{{asset('assets/libs/moment/moment.min.js')}}"></script>
+<script src="{{asset('assets/libs/datetimepicker/daterangepicker.min.js')}}" ></script>
 @if((!empty($socket_url)))
 <!-- /** socket_accept */ -->
 <script src="{{$socket_url}}/socket.io/socket.io.js"></script>
+
 @endif
 @if((!empty(Auth::user())))
 

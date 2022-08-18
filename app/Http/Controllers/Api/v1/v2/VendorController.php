@@ -2196,7 +2196,7 @@ class VendorController extends BaseController{
                     }]);
                     
                     if(isset($request->category_id))
-                    $vendor_categories = $vendor_categories->where('id',$request->category_id);
+                    $vendor_categories = $vendor_categories->where('parent_id',$request->category_id);
 
                  
                     
