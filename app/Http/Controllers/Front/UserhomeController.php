@@ -677,7 +677,6 @@ class UserhomeController extends FrontController
         }
 
         $trendingVendors = Vendor::with('slot.day', 'slotDate')->whereIn('id', $subscribed_vendors_for_trending)->where('status', 1)->inRandomOrder()->get();
-        dd($trendingVendors->all());    
         if ((!empty($trendingVendors) && count($trendingVendors) > 0)) {
             foreach ($trendingVendors as $key => $value) {
                 $value->tag_title = $trending_vendors_title??'0';
