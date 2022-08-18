@@ -51,4 +51,13 @@ return [
     'laundry_service'    => "Laundry Service",
     'appointment_service'=> "Appointment Service",
   ],
+  'VendorTypesLuxuryOptions' => [
+    'delivery'     => '1',           // Delivery of the order will be sent to the ccustomer.
+    'dinein'       => '2',            // Customer can order and dine in the restaurant.
+    'takeaway'     => '3',           // Customer can order and take there meal along with them.
+    'rental'       => '4',            // Products which are available for rents will be mentioned in this flow.
+    'pick_drop'    => '5',        // Rides or pickup delivery products will be shown in this flow.
+    'on_demand'    => '6', // Services that are available any time you want to use it. 
+    'laundry'      => '7',            // Laundry related products are mentioned in this flow.
+  ],
 ];
