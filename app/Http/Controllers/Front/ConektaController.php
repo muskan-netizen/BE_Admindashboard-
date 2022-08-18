@@ -14,12 +14,12 @@ class ConektaController extends Controller
 	use \App\Http\Traits\ApiResponser;
 	public function __construct()
   	{
-		$this->upay_creds = PaymentOption::select('credentials')->where('code', 'conekta')->where('status', 1)->first();
-	    $this->creds_arr = json_decode($this->upay_creds->credentials);
+		$this->conekta_creds = PaymentOption::select('credentials')->where('code', 'conekta')->where('status', 1)->first();
+	    $this->creds_arr = json_decode($this->conekta_creds->credentials);
 	    $this->public_key = $this->creds_arr->public_key ?? '';
 	    $this->private_key = $this->creds_arr->private_key ?? '';
         $this->url = url('payment/conekta'); 
-        // $this->url = "https://ab21-180-188-237-239.ngrok.io/payment/telr";
+        // $this->url = "https://7e79-180-188-237-23.ngrok.io/payment/conekta";
 	}
 	public function beforePayment(Request $request)
     {
