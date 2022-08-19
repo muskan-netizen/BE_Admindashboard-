@@ -604,6 +604,9 @@ class CartController extends BaseController
         $total_fixed_fee_amount = 0;
         $total_markup_amount = 0;
         $order_sub_total = 0;
+        $deliver_fee_charges = 0;
+        $total_fixed_fee_tax = 0;
+        $total_markup_fee_tax = 0;
         $totalDeliveryCharges = 0;
         if ($cartData) {
             $cart_dinein_table_id = NULL;
