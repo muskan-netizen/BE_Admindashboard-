@@ -1,3 +1,4 @@
+
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Vendor'])
 
 @section('css')
@@ -235,7 +236,72 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane {{($tab == 'configuration') ? 'active show' : '' }} " id="configuration">
+                       @if($vendor->vendor_templete_id ==  6)
+                        <div class="card-box">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-sm-6">
+                                            <h4 class="mb-2 "><span> {{ __('Vendor Section') }} </span></h4>
+                                        </div>
+                                        <div class="col-sm-6 text-center text-sm-right">
+                                            <button class="btn btn-info openVendorSectionModal" > {{ __('Add Vendor Section') }}</button>
+                                        </div>
+                                    </div>
+                                  
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="table-responsive mb-3" style="height: 330px; overflow-y: auto;">
+                                                <table class="table table-centered table-nowrap table-striped" id="products-datatable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{{ __('#') }}</th>
+                                                            <th>{{ __('Name') }}</th>
+                                                            <th>{{ __('Sub Section') }}</th>
+                                                            <th style="width: 85px;">{{ __('Action') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($vendorSection as $key=>$section)
+                                                        <tr>
+                                                            <td class="table-user">
+                                                                <a href="javascript:void(0);" class="text-body">{{$key+1}}</a>
+                                                            </td>
+                                                            <td class="table-user">
+                                                                <a href="javascript:void(0);" class="text-body">{{ ($section->primary ??false) ? $section->primary->heading : '' }}</a>
+                                                            </td>
+                                                            <td class="table-user">
+                                                                <a href="javascript:void(0);" class="text-body">{{$section->section_count}}</a>
+                                                            </td>
 
+                                                            <td>
+                                                                
+
+                                                                <button type="button" class="btn btn-primary-outline action-icon editSectionBtn" data-id="{{$section->id}}" data-language_id="{{ ($section->primary ??false) ? $section->primary->language_id : '' }}"><i class="mdi mdi-square-edit-outline"></i></button>
+
+                                                                <form action="{{route('vsection.delete', $section->id)}}" method="POST" class="action-icon">
+                                                                    @csrf
+                                                                    <input type="hidden" value="{{$section->id}}" name="area_id">
+                                                                    <button type="submit" onclick="return confirm('Are you sure? You want to delete the section.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>
+
+                                                                </form>
+                                                            </td>
+                                                        </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+
+                                            
+
+                                        </div>
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                         {{-- <div class="row">
                                 <div class="col-md-12">
                                     <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" id="slot-configs" method="post">
@@ -809,6 +875,7 @@
 @include('backend.vendor.profile-modals')
 @include('backend.vendor.modals.laundry.pickup-modals')
 @include('backend.vendor.modals.laundry.dropoff-modals')
+@include('backend.vendor.modals.add-section')
 @endsection
 
 @section('script')
@@ -831,6 +898,7 @@
     $( document ).ready(function() {
         $(".base_url").html(base_url);
     });
+    
     $(document).on("click", ".editTablebtn", function() {
         let table_id = $(this).data('id');
         $.ajax({

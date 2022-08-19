@@ -51,6 +51,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 
 </script>
 @yield('pre-custom-script')
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 {{-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> --}}
 <script type="text/javascript" src="{{asset('front-assets/js/axios.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
@@ -58,18 +59,19 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('assets/js/constants.js')}}"></script>
 <script defer type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
+
 <script defer type="text/javascript" src="{{asset('front-assets/js/popper.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
+@yield('home-page')
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
-<script defer type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/spinner.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/custom.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/location.js')}}"></script>
-
 
 {{--
 <!-- All js merged -->
@@ -184,9 +186,12 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
     });
 </script>
 @endif
+<script src="{{asset('assets/libs/moment/moment.min.js')}}"></script>
+<script src="{{asset('assets/libs/datetimepicker/daterangepicker.min.js')}}" ></script>
 @if((!empty($socket_url)))
 <!-- /** socket_accept */ -->
 <script src="{{$socket_url}}/socket.io/socket.io.js"></script>
+
 @endif
 @if((!empty(Auth::user())))
 
@@ -203,11 +208,11 @@ window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-5LPF1QP3Y3');
-$(document).ready(function() {
-    @if(!isset($_COOKIE['show-subscription-plan']) && ($showSubscriptionPlanPopUp == 1) && (Route::current()->getName() != 'userHome'))
+@if(!isset($_COOKIE['show-subscription-plan']) && ($showSubscriptionPlanPopUp == 1) && (Route::current()->getName() != 'userHome'))
+    $(document).ready(function() {
         $("#show-subscription-plan-mdl").modal("show");
-    @endif
-});
+    });
+@endif
 </script>
 <!-- End googletagmanager -->
 @php
@@ -221,7 +226,7 @@ if($showSubscriptionPlanPopUp == 1){
     var selected_address = 0;
     var vendor_type = "delivery";
     var currentRouteName = "{{Route::currentRouteName()}}";
-    @if(Session::has('vendorType'))
+    @if(Session::has('vendorType') && (Session::get('vendorType') != '') )
         vendor_type = "{{Session::get('vendorType')}}";
     @endif
     var autocomplete_url = "{{ route('autocomplete') }}";
@@ -244,6 +249,7 @@ if($showSubscriptionPlanPopUp == 1){
     var home_page_data_url = "{{ route('homePageData') }}";
     var home_page_data_url_new = "{{ route('homePageDataNew') }}";
     var postHomePageDataSingle = "{{ route('postHomePageDataSingle') }}";
+    var home_page_banners_url = "{{ route('postHomePageDataBanners') }}";
     var home_page_data_url_category_menu = "{{ route('homePageDataCategoryMenu') }}";
     var client_preferences_url = "{{ route('getClientPreferences') }}";
     var check_isolate_single_vendor_url = "{{ route('checkIsolateSingleVendor') }}";
@@ -325,6 +331,7 @@ if($showSubscriptionPlanPopUp == 1){
 // Client Perference  Detail
     var client_preference_web_color = "{{getClientPreferenceDetail()->web_color}}";
     var client_preference_web_rgb_color = "{{getClientPreferenceDetail()->wb_color_rgb}}";
+    var stop_accepting_orders = "{{getClientPreferenceDetail()->stop_order_acceptance_for_users ?? 0}}";
 
 // Client Detail
     var client_company_name = "{{getClientDetail()->company_name}}";
@@ -433,6 +440,24 @@ if($showSubscriptionPlanPopUp == 1){
        }
     }
     @endif
+
+    if((stop_accepting_orders == 1) && ((window.location.pathname == '/') || (window.location.pathname == '/viewcart'))){
+        swal.fire({
+            // title: "{{__('Sorry')}}",
+            text:"{{__('There is an extremely high demand right now. Please return later!')}}",
+            imageUrl: "{{ URL::asset('/images/order_waiting.gif') }}",
+            imageWidth: '40%',
+            imageHeight: '10%',
+            imageAlt: "Image",
+            // icon: 'warning',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            // timer: 5000
+        }).then((result) => {
+            return false;
+        });
+    }
 </script>
 
 @yield('script')
+@yield('script-bottom-js')

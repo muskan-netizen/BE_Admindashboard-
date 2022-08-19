@@ -7,10 +7,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty};
+use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
+use Session;
+
 class ClientPreferenceController extends BaseController{
     use \App\Http\Traits\ClientPreferenceManager;
     use ApiResponser;
@@ -48,6 +50,17 @@ class ClientPreferenceController extends BaseController{
         $tags = Tag::with('primary')->get();
         $slots = ClientSlot::get();
        
+        $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
+
+        $nomenclature = Nomenclature::where('label','Product Order Form')->first();
+        $nomenclatureProductOrderForm = "Product Order Form";
+        if(!empty($nomenclature)){
+            $nomenclatureTranslation = NomenclatureTranslation::where(['nomenclature_id'=>$nomenclature->id,'language_id'=>$langId])->first();
+            if($nomenclatureTranslation){
+                $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
+            }
+        }
+
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
                                                 'slots'=>$slots,
@@ -61,7 +74,8 @@ class ClientPreferenceController extends BaseController{
                                                 'file_types' => $file_types,
                                                 'vendor_registration_documents' => $vendor_registration_documents,
                                                 'driver_registration_documents' => $driver_registration_documents, 
-                                                'file_types_driver' => $file_types_driver
+                                                'file_types_driver' => $file_types_driver,
+                                                'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm
                                                 
                                             ]);
     }
@@ -310,6 +324,8 @@ class ClientPreferenceController extends BaseController{
             $preference->book_for_friend = ($request->has('book_for_friend') && $request->book_for_friend == 'on') ? 1 : 0;
             $preference->is_static_dropoff = ($request->has('is_static_dropoff') && $request->is_static_dropoff == 'on') ? 1 : 0;
             $preference->is_vendor_tags = ($request->has('is_vendor_tags') && $request->is_vendor_tags == 'on') ? 1 : 0;
+            $preference->is_service_area_for_banners = ($request->has('is_service_area_for_banners') && $request->is_service_area_for_banners == 'on') ? 1 : 0;
+            $preference->stop_order_acceptance_for_users = ($request->has('stop_order_acceptance_for_users') && $request->stop_order_acceptance_for_users == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
@@ -670,7 +686,7 @@ class ClientPreferenceController extends BaseController{
     {
         $method_id_arr = $data['method_id'];
         $method_name_arr = $data['method_name'];
-        $active_arr = $data['active'];
+        $active_arr = $data['active'];                  
         if(!empty($method_id_arr)){
             foreach ($method_id_arr as $key => $id) {
                 $saved_creds = VerificationOption::select('credentials')->where('id', $id)->first();

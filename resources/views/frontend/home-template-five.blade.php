@@ -43,7 +43,7 @@
 @section('content')
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos Taxi_banner_shimmer">
-    <div class="container shimmer_effect">
+    <div class="container shimmer_effect main_shimer">
 		<div class="row">
 			<div class="col-12 cards">
 				<div class="cardbanner loading"></div>
@@ -54,7 +54,7 @@
 
 <!-- Shimmer Efferct Start -->
 <section class="section-b-space_  p-0 ratio_asos">
- 	<div class="container mb-md-5 shimmer_effect">
+ 	<div class="container mb-md-5 shimmer_effect main_shimer">
 		<div class="row mt-5">
 			<div class="col-12 cards mb-5">
 				<h2 class="h2-heading loading mb-3"></h2>
@@ -175,8 +175,14 @@
 
 	</div>
 </section>
-
- @endif
+@else
+<section class="home-slider-wrapper">
+	<div class="container-fulid">
+		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel"></div>
+		<div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;"></div>
+	</div>
+</section>
+@endif
 
 
 
@@ -198,6 +204,75 @@
         @endif
     </div>
 </section><!-- no-store-wrapper end -->
+
+<script type="text/template" id="desktop_banners_template">
+	<div class="carousel-inner">
+	   <% _.each(banners, function(banner, k){%>
+		  <%
+		  var url='#';
+		  if(banner.link == 'category'){
+			 if(banner.category != null){
+				url = "{{route('categoryDetail')}}" + "/" + banner.category.slug;
+			 }
+		  }
+          else if(banner.link == 'vendor'){
+			 if(banner.vendor != null){
+				url = "{{route('vendorDetail')}}" + "/" + banner.vendor.slug;
+			 }
+		  }
+		  %>
+		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
+			 <a class="banner-img-outer" href="<%= url %>">
+				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>" />
+				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>">
+			 </a>
+		  </div>
+	   <% }); %>
+	</div>
+	<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="sr-only">Previous</span>
+	</a>
+	<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="sr-only">Next</span>
+	</a>
+</script>
+
+<script type="text/template" id="mobile_banners_template">
+	<div class="carousel-inner">
+	   <% _.each(banners, function(banner, k){%>
+		  <%
+		  var url='#';
+		  if(banner.link == 'category'){
+			 if(banner.category != null){
+				url = "{{route('categoryDetail')}}" + "/" + banner.category.slug;
+			 }
+		  }
+          else if(banner.link == 'vendor'){
+			 if(banner.vendor != null){
+				url = "{{route('vendorDetail')}}" + "/" + banner.vendor.slug;
+			 }
+		  }
+		  %>
+		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
+			 <a class="banner-img-outer" href="<%= url %>">
+				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>400/150<%= banner.image.image_path %>" />
+				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>400/150<%= banner.image.image_path %>">
+			 </a>
+		  </div>
+	   <% }); %>
+	</div>
+	<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="sr-only">Previous</span>
+	</a>
+	<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="sr-only">Next</span>
+	</a>
+</script>
+
  <!-- vendors_template start -->
 <script type="text/template" id="vendors_template" >
 

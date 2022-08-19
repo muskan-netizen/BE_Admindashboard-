@@ -17,9 +17,10 @@ $(document).ready(function(){
     });
     $(document).on('click', '.addExistRow', function() {
         
-        var psku = $('#sku').val();
+        var product_sku = $('#sku').val();
         var pid = $(this).attr('data-product_id');
         var vid = $(this).attr('data-varient_id');
+        var category_id = $(this).attr('data-category_id');
         var variant_ids = [];
         var variant_name = $("input[name='variant_titles[]']").val();;
         var exist = [];
@@ -32,17 +33,22 @@ $(document).ready(function(){
             exist.push($(this).val());
         });
 
-        axios.post(`/client/rental-variant_row`, {
-            sku:  psku,   
+        axios.post(`/client/rentalVariantRow`, {
+            sku:product_sku,   
             existing:exist,
             variant_ids:variant_ids,
             variant_name:variant_name,
             pid:pid,
             vid:vid,
+            category_id:category_id
         })
         .then(async response => {
             $($thisRow).hide();
              console.log(response);
+             if(response.data.htmlData != undefined) {
+               $('.product_variant_table').append(response.data.htmlData);
+             }
+             
         })
         .catch(e => {
             Swal.fire(
@@ -51,7 +57,58 @@ $(document).ready(function(){
             )
         })    
     });
+
+
+    $(document).on('change', '.variant_sets', function() {
+        
+        var product_id = $(this).find(':selected').attr('data-product_id');
+        var variant_id = $(this).find(':selected').attr('data-varid');
+        var p_variant_id = $(this).find(':selected').attr('data-p_variant_id');
+        var p_variant_option_id = $(this).val();
+        // if(!product_id || !variant_id || !p_variant_id || !p_variant_option_id) {
+        //     Swal.fire(
+        //         'All fields are required!',                                    
+        //         'error'
+        //     )
+        //     return false;
+        // }
+        axios.post(`/client/updateProductVariantSet`, {
+            product_id:product_id,   
+            variant_id:variant_id,
+            p_variant_option_id:p_variant_option_id,
+            p_variant_id:p_variant_id,
+        })
+        .then(async response => {
+         
+             console.log(response);
+             if(response.data.success) {
+                Swal.fire(
+                    'Updated successfully!',                                    
+                    'success'
+                )
+             }
+             
+        })
+        .catch(e => {
+            Swal.fire(
+                'Something went wrong, try again later!',                                    
+                'error'
+            )
+        })    
+    });
+
+
+
     
 })
 
 
+
+
+function isNumberKeyMax(evt) {
+
+    if(((evt.target.value > 59)  || (evt.target.value < 0))){
+        $(evt.target).val(0);
+    }
+    return true;
+}

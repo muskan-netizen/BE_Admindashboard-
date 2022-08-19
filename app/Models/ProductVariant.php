@@ -10,7 +10,7 @@ use App\Models\UserVendor;
 
 class ProductVariant extends Model
 {
-	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price'];
+	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price'];
 
   protected $appends = ['actual_price'];
 
@@ -136,5 +136,18 @@ class ProductVariant extends Model
            
     }
 
-    
+    public function getMarkupPriceAttribute($value)
+    {
+        $checkMarkup = 0;
+        $vendor = Product::where('id', $this->product_id)->value('vendor_id');
+        $checkMarkup = Vendor::where('id',$vendor)->value('add_markup_price');
+        //if vendor price add with markup price
+           if($checkMarkup){
+                return $value;
+            }
+        
+            return 0;  
+           
+    }
+
 }

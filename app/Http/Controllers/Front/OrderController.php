@@ -705,7 +705,7 @@ class OrderController extends FrontController
 
             $fixed_fee_amount=$request->total_fixed_fee_amount??0.00;
             DB::beginTransaction();
-            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area')->first();
+            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area','stop_order_acceptance_for_users')->first();
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (!empty($request->user_id))) {
@@ -722,6 +722,10 @@ class OrderController extends FrontController
                 if ($saved_transaction) {
                     return $this->errorResponse('Transaction has already been done', 400);
                 }
+            }
+
+            if(isset($preferences->stop_order_acceptance_for_users) && ($preferences->stop_order_acceptance_for_users == 1)){
+                return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
             }
 
             $loyalty_amount_saved = 0;
@@ -1099,6 +1103,13 @@ class OrderController extends FrontController
                     }
 
                     $coupon_name = $vendor_cart_product->coupon->promo->name;
+                    if ($vendor_cart_product->coupon->promo->allow_free_delivery) {
+                        $total_discount += $delivery_fee;
+                        $vendor_payable_amount -= $delivery_fee;
+                        $vendor_discount_amount += $delivery_fee;
+                    }
+
+
                     if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
                         $amount = round($vendor_cart_product->coupon->promo->amount);
                         $total_discount += $amount;
@@ -1143,7 +1154,11 @@ class OrderController extends FrontController
                 // $OrderVendor->taxable_amount   = $vendor_taxable_amount;
 
               
-
+                $fixedFeeAmount=0.00;
+                if(isset($vendor_cart_product->vendor->fixed_fee_amount)){
+                    $fixedFeeAmount=$vendor_cart_product->vendor->fixed_fee_amount;
+                }
+                $OrderVendor->fixed_fee = $fixedFeeAmount; 
                 $OrderVendor->taxable_amount = $new_vendor_taxable_amount; 
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->payable_amount = $vendor_payable_amount;
@@ -1153,7 +1168,8 @@ class OrderController extends FrontController
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
                     if (($vendor_info->commission_percent) != null && $actual_amount > 0) {
-                        $OrderVendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($actual_amount / 100), 2);
+                        $actual_amountComm = $actual_amount - $vendor_markup_amount;
+                        $OrderVendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($actual_amountComm / 100), 2);
                     }
                     if (($vendor_info->commission_fixed_per_order) != null && $actual_amount > 0) {
                         $OrderVendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
@@ -2382,27 +2398,32 @@ class OrderController extends FrontController
 
                 $data = json_decode($this->driverDocuments());
                 $driver_registration_documents = $data->documents;
-
                 $rules_array = [
                     'name' => 'required',
-                    'phone_number' => 'required',
+                    'phonenumber' => 'required',
                     'type' => 'required',
                     'team' => 'required'
                 ];
                 foreach ($driver_registration_documents as $driver_registration_document) {
                     if($driver_registration_document->is_required == 1){
                         $name = str_replace(" ", "_", $driver_registration_document->name);
+                        $name = preg_replace('/[^A-Za-z0-9\-]/', '', $name);
                         $rules_array[$name] = 'required';
                     }
                 }
-                $validator = Validator::make($request->all(), $rules_array, [
+                $requestAllData = [];
+                foreach($request->all() as $key => $requestData){
+                    $newKey =  preg_replace('/[^A-Za-z0-9\-]/', '', $key);
+                    $requestAllData[$newKey] =  $requestData;
+                }
+                $validator = Validator::make($requestAllData, $rules_array, [
                     "name.required" => __('The name field is required.'),
-                    "phone_number.required" => __('The phone number field is required.'),
+                    "phonenumber.required" => __('The phone number field is requiredfff.'),
                     "type.required" => __('The type field is required.'),
                     "vehicle_type_id.required" => __('The transport type is required.'),
                     "make_model.required" => __('The transport details field is required.'),
                     "uid.required" => __('The UID field is required.'),
-                    "plate_number.required" => __('The licence plate field is required.'),
+                    "platenumber.required" => __('The licence plate field is required.'),
                     "color.required" => __('The color field is required.'),
                     "team.required" => __('The team field is required.')
                 ]);

@@ -40,7 +40,8 @@ class PayphoneController extends FrontController
       $this->token = $json->token;
       $this->app_url = 'https://pay.payphonetodoesposible.com/api/button/Prepare';
       $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD1';
+        \Log::info($primaryCurrency->currency->iso_code);
    }
 
 

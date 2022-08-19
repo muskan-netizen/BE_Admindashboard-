@@ -48,7 +48,7 @@ class Product extends Model implements Auditable{
 
    
     public function variant(){
-      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id','container_charges','markup_price')->where('status', 1);
+      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id','container_charges','markup_price','incremental_price')->where('status', 1);
     }
 
     public function translation($langId = 0){
@@ -301,7 +301,7 @@ class Product extends Model implements Auditable{
 
     public function getActualPriceAttribute()
     {
-        //if vendor actual price = price - markup price
+       // if vendor actual price = price - markup price
         if(auth()->user() !=null && !auth()->user()->is_admin == 1){
                 return $this->price - $this->markup_price??0;
         }
@@ -310,15 +310,35 @@ class Product extends Model implements Auditable{
 
     public function getPriceAttribute($value)
     {
+        $checkMarkup = 0;
+        $vendor = Product::where('id', $this->product_id)->value('vendor_id');
+        $checkMarkup = Vendor::where('id',$vendor)->value('add_markup_price');
         //if vendor price add with markup price
            if(auth()->user() !=null && auth()->user()->is_admin == 1){
-            $vendor = Product::where('id', $this->product_id)->value('vendor_id');
             $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor)->first();
             if($userVendor){
                 return $value;
             }
-           }
+        }
+           if($checkMarkup){
                 return $value + $this->markup_price??0;
+            }
+        
+            return $value;  
+           
+    }
+
+    public function getMarkupPriceAttribute($value)
+    {
+        $checkMarkup = 0;
+        $vendor = Product::where('id', $this->product_id)->value('vendor_id');
+        $checkMarkup = Vendor::where('id',$vendor)->value('add_markup_price');
+        //if vendor price add with markup price
+           if($checkMarkup){
+                return $value;
+            }
+        
+            return 0;  
            
     }
 

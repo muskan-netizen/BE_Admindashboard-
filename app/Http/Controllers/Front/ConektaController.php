@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, WalletController, FrontController};
 use Auth, Log, Redirect;
-use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, CartDeliveryFee, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, Transaction};
+use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, CartDeliveryFee, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, Transaction, CaregoryKycDoc};
 
 class ConektaController extends Controller
 { 
@@ -14,10 +14,12 @@ class ConektaController extends Controller
 	use \App\Http\Traits\ApiResponser;
 	public function __construct()
   	{
-		$this->upay_creds = PaymentOption::select('credentials')->where('code', 'conekta')->where('status', 1)->first();
-	    $this->creds_arr = json_decode($this->upay_creds->credentials);
+		$this->conekta_creds = PaymentOption::select('credentials')->where('code', 'conekta')->where('status', 1)->first();
+	    $this->creds_arr = json_decode($this->conekta_creds->credentials);
 	    $this->public_key = $this->creds_arr->public_key ?? '';
 	    $this->private_key = $this->creds_arr->private_key ?? '';
+        $this->url = url('payment/conekta'); 
+        // $this->url = "https://7e79-180-188-237-23.ngrok.io/payment/conekta";
 	}
 	public function beforePayment(Request $request)
     {
@@ -30,77 +32,94 @@ class ConektaController extends Controller
             $user = User::where('auth_token', $request->auth_token)->first();
             Auth::login($user);
         }
+        $lineItems = [];
         if($data['payment_from'] == "cart"){
-        	$data['checkout_name'] = "Online Shopping";
+            $item = [
+                'name'=> 'Cart',
+                'description'=> 'Cart Checkout',
+                'unit_price'=> (int)($data['amount'] * 100),
+                'quantity'=> 1,
+                'sku'=> 'cart',
+                'category'=> 'cart',
+                'tags' => array('cart')
+            ];
+            array_push($lineItems, $item);
+            // if(isset($data['cart_id']))
+            // {
+            //     $order = Order::where('order_number', $data['order_number'])->with('products')->first();
+            //     foreach($order->products as $cp)
+            //     {
+            //         $item = [
+            //             'name'=> $cp->product->title??'',
+            //             'description'=> $cp->product->description??"Product description is not found",
+            //             'unit_price'=> (int)($data['amount'] * 100),
+            //             'quantity'=> $cp->quantity,
+            //             'sku'=> $cp->product->sku??'',
+            //             'category'=> $cp->product->category->categoryDetail->slug??"cart",
+            //             'tags' => array('cart')
+            //         ];
+            //         array_push($lineItems, $item);
+            //     }
+            // }
         }elseif($data['payment_from'] == "wallet"){
-        	$data['checkout_name'] = "Wallet Checkout";
+            $item = [
+                'name'=> 'Wallet',
+                'description'=> 'Wallet Checkout',
+                'unit_price'=> (int)($data['amount'] * 100),
+                'quantity'=> 1,
+                'sku'=> 'wallet',
+                'category'=> 'wallet',
+                'tags' => array('wallet')
+            ];
+            array_push($lineItems, $item);
         }elseif($data['payment_from'] == "tip"){
-        	$data['checkout_name'] = "Tip Checkout";
+        	$item = [
+                'name' =>  'Tip',
+                'description' => 'Tip Checkout',
+                'unit_price' => (int)($data['amount'] * 100),
+                'quantity' => 1,
+                'sku' => 'tip',
+                'category' => 'tip',
+                'tags' => ['tip']
+            ];
+            array_push($lineItems, $item);
         }elseif($data['payment_from'] == "subscription"){
-        	$data['checkout_name'] = "Subscription Checkout";
+        	$item = [
+                'name' =>  'Subscription',
+                'description' => 'Subscription Checkout',
+                'unit_price' => (int)($data['amount'] * 100),
+                'quantity' => 1,
+                'sku' => 'subscription',
+                'category' => 'subscription',
+                'tags' => ['subscription']
+            ];
         }
+        $data['line_items'] = $lineItems;
         $user = Auth::user();
         $data['customer_name'] = $user->name;
         $data['customer_email'] = $user->email??'dummy@yopmail.com';
         $data['customer_phone'] = '+'.($user->dial_code??'91').($user->phone_number??'9876543210');
-         // dd($data);
-        $token_response = $this->createToken();
-    	$response = $this->createCheckout($data);
-    	dd($response);
-    	return Redirect::to($response->url);
-    }
-    public function postPayment(Request $request)
-    {
-        Log::info("Post Payment");
-        Log::info($request->all());
-        if($request->come_from == "app")
+    	$redirect_url = $this->createCheckout($data); 
+        if(!is_null($redirect_url))
         {
-            $user = User::where('auth_token', $request->auth_token)->first();
-            Auth::login($user);
+            return Redirect::to($redirect_url);
         }
-    	$user = Auth::user();
-    	$cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-        $amount = $this->getDollarCompareAmount($request->amount);
-    	$data = $request->all();
-    	$request['username'] = $user->name;
-    	$request['email'] = $user->email;
-    	$request['source'] = 'WEB';
-    	$request['amount'] = $amount*100;
-        if($request->payment_from == 'cart'){
-            $request['description'] = 'Order Checkout';
-            if($request->has('order_number')){
-                $request['reference'] = $request->order_number;
-            }
-        }
-        elseif($request->payment_from == 'wallet'){
-            $request['description'] = 'Wallet Checkout';
-            $request['reference'] = $user->id;
-        }
-        elseif($request->payment_from == 'tip'){
-            $request['description'] = 'Tip Checkout';
-            if($request->has('order_number')){
-                $request['reference'] = $request->order_number;
-            }
-        }
-        elseif($request->payment_from == 'subscription'){
-            $request['description'] = 'Subscription Checkout';
-            if($request->has('subscription_id')){
-                $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $request->subscription_id)->where('status', '1')->first();
-                $request['reference'] = $request->subscription_id;
-            }
-        }
-    	$payment = $this->create_payment($request->all());
-    	$request['amount'] = $amount;
-    	if($payment->paymentStatus == 'APPROVED')
-    	{
-            $returnUrl = $this->sucessPayment($request,$payment);
+    }
+    public function afterPayment(Request $request, $domain='',$status,$payment_from,$come_from,$amount,$order_number)
+    { 
+        $request['payment_from'] = $payment_from;
+        $request['come_from'] = $come_from;
+        $request['amount'] = $amount;
+        $request['order_number'] = $order_number;
+        if($status == 'success')
+        {
+            $returnUrl = $this->sucessPayment($request,$request->cart_id);
         } else{
-            $returnUrl = $this->failedPayment($request,$payment);
+            $returnUrl = $this->failedPayment($request);
         }
-        // dd($returnUrl);
         return Redirect::to(url($returnUrl));
     }
-    public function sucessPayment($request, $pamyent)
+    public function sucessPayment($request, $transactionId)
     {
         if($request->come_from == "app")
         {
@@ -108,7 +127,7 @@ class ConektaController extends Controller
             Auth::login($user);
         }
         $user = Auth::user();
-    	$transactionId = $pamyent->id;
+    	// $transactionId = $pamyent->id;
     	if($request->payment_from == 'cart'){
             $order_number = $request->order_number;
             $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();

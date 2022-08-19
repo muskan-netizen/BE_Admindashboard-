@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout,ProductTag,Facilty,WebStylingOption};
+use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout,ProductTag,Facilty,WebStylingOption,VendorSection};
 use Log;
 class VendorController extends FrontController
 {
@@ -30,7 +30,11 @@ class VendorController extends FrontController
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 30;
         $ses_vendors = $this->getServiceAreaVendors();
 
-        $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'address', 'order_pre_time','is_show_vendor_details' ,'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where(['status'=> 1,$vendorType => 1]);
+        $categoryTypes = getServiceTypesCategory($vendorType);
+        
+        $vendors = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+            $q->whereIn('type_id',$categoryTypes);
+        })->with('products')->select('id', 'name', 'banner', 'address', 'order_pre_time','is_show_vendor_details' ,'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where(['status'=> 1,$vendorType => 1]);
 
         if (($preferences) && ($preferences->is_hyperlocal == 1)) {
             $latitude = Session::get('latitude') ?? $preferences->Default_latitude;
@@ -194,6 +198,14 @@ class VendorController extends FrontController
                 $page = 'products-with-categories-extended';
                 $products = Product::select('averageRating')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
                 $vendor->vendorRating = $this->vendorRating($products);
+                $Vendor_section = VendorSection::with(['headingTranslation'=> function($q) use($langId){
+                                                        $q->where('language_id', $langId);
+                                                    },'SectionTranslation'=> function($q) use($langId){
+                                                        $q->where('language_id', $langId);
+                                                    }])->where('vendor_id',$vendor->id)->get();
+                // pr($vendor->id);
+                //pr($Vendor_section);
+                $vendor->vendor_section = $Vendor_section;
                 $vendor->facilty  = [];
                 if( (isset($preferences->is_vendor_tags)) && ($preferences->is_vendor_tags == 1) ){
                     $vendor->facilty  = Facilty::with(['translations'=> function ($q) use ($langId) {
@@ -593,7 +605,7 @@ class VendorController extends FrontController
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
                         'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price','barcode');
                             $q->groupBy('product_id');
                         },
                     ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
@@ -631,7 +643,7 @@ class VendorController extends FrontController
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                 },
                 'variant' => function($q) use($langId, $variant_id){
-                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price');
+                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price');
                     $q->where('id', $variant_id);
                     // $q->groupBy('product_id');
                 },'variant.media.pimage.image','variant.checkIfInCart',
@@ -721,7 +733,7 @@ class VendorController extends FrontController
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
                         'variant' => function($q) use($langId, $variantIds,$order_type){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price', 'markup_price','barcode');
                             // if(!empty($variantIds)){
                             //     $q->whereIn('id', $variantIds);
                             // }
@@ -860,7 +872,7 @@ class VendorController extends FrontController
 
                 },
                 'variant' => function($q) use($langId){
-                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price');
+                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price');
                     // $q->groupBy('product_id');
                 },'variant.checkIfInCart',
                 'addOn' => function ($q1) use ($langId) {
@@ -1057,7 +1069,7 @@ class VendorController extends FrontController
                     $q->groupBy('product_id');
                 },
                 'variant' => function($q) use($langId){
-                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price');
+                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price');
                     // $q->groupBy('product_id');
                 },
                 'addOn' => function ($q1) use ($langId) {

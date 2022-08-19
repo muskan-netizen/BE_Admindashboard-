@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\AhoyController;
-use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty};
+use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty,VendorSection};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
 use DB,Log;
@@ -488,6 +488,16 @@ class VendorController extends BaseController
             $build = $this->buildTree($categories->toArray());
             $categoryToggle = $this->printTreeToggle($build, $active);
         }
+        $vendorSection = VendorSection::with(['primary','SectionTranslation'=>function($q){
+            $q->join('client_languages as cl', 'cl.language_id', 'vendor_section_translations.language_id')->where('cl.is_primary', 1)->count();
+        }])->where('vendor_id', $vendor->id)->get();
+        $vendorSection = $vendorSection->map(function($da) {
+            $count = count($da->SectionTranslation);
+            $da->section_count = $count;
+            unset($da->SectionTranslation);
+            return $da;
+        });
+       
         $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
         $returnData = array();
         $returnData['client_preferences'] = $client_preferences;
@@ -505,6 +515,7 @@ class VendorController extends BaseController
         $returnData['VendorCategory'] = $VendorCategory;
         $returnData['templetes'] = $templetes;
         $returnData['builds'] = $build;
+        $returnData['vendorSection'] = $vendorSection;
         $returnData['is_payout_enabled'] = $this->is_payout_enabled;
         if((isset($preferences['subscription_mode'])) && ($preferences['subscription_mode'] == 1)){
             $subscriptions_data = $this->getSubscriptionPlans($id);
@@ -516,7 +527,7 @@ class VendorController extends BaseController
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         $facilties = Facilty::with(['primary'])->get();
         $vendor_facilty_ids = VendorFacilty::where('vendor_id',$vendor->id)->pluck('facilty_id')->toArray();
-
+       
         return view('backend/vendor/show')->with($returnData)
                 ->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,
                     'clientCurrency'=>$clientCurrency,'vendor_for_ondemand' => $vendor_for_ondemand,
@@ -529,7 +540,7 @@ class VendorController extends BaseController
         $csvVendors = [];
         $vendor = Vendor::findOrFail($id);
         $VendorCategory = VendorCategory::where('vendor_id', $id)->where('status', 1)->pluck('category_id')->toArray();
-        $categories = Category::serviceType()->with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+        $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
             ->where('id', '>', '1')
             ->where(function ($q) use ($id) {
                 $q->whereNull('vendor_id')
@@ -550,6 +561,7 @@ class VendorController extends BaseController
                 $active[] = $category->id;
             }
         }
+       // pr($categories);
         if ($categories) {
             $build = $this->buildTree($categories->toArray());
             $tree = $this->printTree($build, 'vendor', $active);
@@ -1091,34 +1103,51 @@ class VendorController extends BaseController
     {
         $vendor = Vendor::where('id', $id)->first();
         $msg = 'Order configuration';
-        $vendor->show_slot = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
-        $vendor->auto_accept_order = ($request->has('auto_accept_order') && $request->auto_accept_order == 'on') ? 1 : 0;
-        $vendor->need_container_charges = ($request->has('need_container_charges') && $request->need_container_charges == 'on') ? 1 : 0;
-        $vendor->add_markup_price = ($request->has('add_markup_price') && $request->add_markup_price == 'on') ? 1 : 0;
-        $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
-        // $vendor->cron_for_service_area = ($request->has('cron_for_service_area') && $request->cron_for_service_area == 'on') ? 1 : 0;
-        if($request->has('slot_minutes')){
-            $vendor->slot_minutes   = ($request->slot_minutes>0)?$request->slot_minutes:0;
-        }
-        $vendor->closed_store_order_scheduled = (($request->has('show_slot')) ? 0 : ($request->closed_store_order_scheduled == 'on')) ? 1 : 0;
-        $vendor->fixed_fee = ($request->has('fixed_fee') && $request->fixed_fee == 'on') ? 1 : 0;
-        $vendor->price_bifurcation = ($request->has('price_bifurcation') && $request->price_bifurcation == 'on') ? 1 : 0;
-        // $vendor->fixed_fee_amount = $request->has('fixed_fee_amount') ? $request->fixed_fee_amount : 0.00;
 
-        $vendor->fixed_fee_amount = $request->has('fixed_fee') ? $request->fixed_fee_amount : 0.00;
+        if (!$request->has('commission_percent')) {
+
+            $vendor->show_slot = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
+            $vendor->auto_accept_order = ($request->has('auto_accept_order') && $request->auto_accept_order == 'on') ? 1 : 0;
+            $vendor->need_container_charges = ($request->has('need_container_charges') && $request->need_container_charges == 'on') ? 1 : 0;
+            $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
+            // $vendor->cron_for_service_area = ($request->has('cron_for_service_area') && $request->cron_for_service_area == 'on') ? 1 : 0;
+            if($request->has('slot_minutes')){
+                $vendor->slot_minutes   = ($request->slot_minutes>0)?$request->slot_minutes:0;
+            }
+            $vendor->closed_store_order_scheduled = (($request->has('show_slot')) ? 0 : ($request->closed_store_order_scheduled == 'on')) ? 1 : 0;
+            $vendor->fixed_fee = ($request->has('fixed_fee') && $request->fixed_fee == 'on') ? 1 : 0;
+            $vendor->price_bifurcation = ($request->has('price_bifurcation') && $request->price_bifurcation == 'on') ? 1 : 0;
+            // $vendor->fixed_fee_amount = $request->has('fixed_fee_amount') ? $request->fixed_fee_amount : 0.00;
+
+            $vendor->fixed_fee_amount = $request->has('fixed_fee') ? $request->fixed_fee_amount : 0.00;
         
-        $vendor->service_charges_tax = ($request->has('service_charges_tax') && $request->service_charges_tax == 'on') ? 1 : 0;
-        $vendor->service_charges_tax_id=$request->service_charges_tax_id != 0 && $vendor->service_charges_tax !=0 ? $request->service_charges_tax_id:0;
+        }else{
+
+            //Commission & Taxes (Visible For Admin)
+            $vendor->commission_percent         = $request->commission_percent;
+            $vendor->commission_fixed_per_order = $request->commission_fixed_per_order;
+            $vendor->commission_monthly         = $request->commission_monthly;
+            $vendor->service_fee_percent        = $request->service_fee_percent;
+            //$vendor->add_category = ($request->has('add_category') && $request->add_category == 'on') ? 1 : 0;
+            $vendor->show_slot  = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
+            $msg = 'commission configuration';
+
+            $vendor->service_charges_tax = ($request->has('service_charges_tax') && $request->service_charges_tax == 'on') ? 1 : 0;
+            $vendor->service_charges_tax_id=$request->service_charges_tax_id != 0 && $vendor->service_charges_tax !=0 ? $request->service_charges_tax_id:0;
+            $vendor->add_markup_price = ($request->has('add_markup_price') && $request->add_markup_price == 'on') ? 1 : 0;
+            $vendor->markup_price_tax_id=$request->markup_price_tax_id != 0 && $vendor->add_markup_price !=0 ? $request->markup_price_tax_id:0;
+
+            $vendor->delivery_charges_tax = ($request->has('delivery_charges_tax') && $request->delivery_charges_tax == 'on') ? 1 : 0;
+            $vendor->delivery_charges_tax_id=$request->delivery_charges_tax_id != 0 && $vendor->delivery_charges_tax !=0 ? $request->delivery_charges_tax_id:0;
+
+            $vendor->container_charges_tax = $request->container_charges_tax == 'on' ? 1 : 0;
+            $vendor->container_charges_tax_id=$request->container_charges_tax_id != 0 && $vendor->container_charges_tax !=0 ? $request->container_charges_tax_id:0;
+                    
+            $vendor->fixed_fee_tax = $request->fixed_fee_tax == 'on' ? 1 : 0;
+            $vendor->fixed_fee_tax_id=$request->fixed_fee_tax_id != 0 && $vendor->fixed_fee_tax !=0 ? $request->fixed_fee_tax_id:0;
+
+            }
        
-        
-        $vendor->delivery_charges_tax = ($request->has('delivery_charges_tax') && $request->delivery_charges_tax == 'on') ? 1 : 0;
-        $vendor->delivery_charges_tax_id=$request->delivery_charges_tax_id != 0 && $vendor->delivery_charges_tax !=0 ? $request->delivery_charges_tax_id:0;
-       
-        $vendor->container_charges_tax = $request->container_charges_tax == 'on' ? 1 : 0;
-        $vendor->container_charges_tax_id=$request->container_charges_tax_id != 0 && $vendor->container_charges_tax !=0 ? $request->container_charges_tax_id:0;
-                
-        $vendor->fixed_fee_tax = $request->fixed_fee_tax == 'on' ? 1 : 0;
-        $vendor->fixed_fee_tax_id=$request->fixed_fee_tax_id != 0 && $vendor->fixed_fee_tax !=0 ? $request->fixed_fee_tax_id:0;
                 
 
         // Set order limit - By Ovi
@@ -1148,15 +1177,8 @@ class VendorController extends BaseController
         }
 
         $vendor->is_show_vendor_details = ($request->has('is_show_vendor_details') && $request->is_show_vendor_details == 'on') ? 1 : 0;
-        if ($request->has('commission_percent')) {
-            $vendor->commission_percent         = $request->commission_percent;
-            $vendor->commission_fixed_per_order = $request->commission_fixed_per_order;
-            $vendor->commission_monthly         = $request->commission_monthly;
-            $vendor->service_fee_percent        = $request->service_fee_percent;
-            //$vendor->add_category = ($request->has('add_category') && $request->add_category == 'on') ? 1 : 0;
-            $vendor->show_slot         = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
-            $msg = 'commission configuration';
-        }
+       
+        
         if($request->has('rescheduling_charges')){
             $vendor->rescheduling_charges   = $request->rescheduling_charges;
         }
@@ -1173,8 +1195,11 @@ class VendorController extends BaseController
         if ($request->has('easebuzz_sub_merchent_id')) {
             $vendor->easebuzz_sub_merchent_id = $request->has('easebuzz_sub_merchent_id') ? $request->easebuzz_sub_merchent_id : NULL;
         }
+
+
        // $vendor->dynamic_html =  $request->has('dynamic_html') ? $request->dynamic_html : NULL;
         $vendor->save();
+
         if ($request->has('facilty_ids')) {
             foreach($request->facilty_ids as $facilty_id){
                 $VendorFacilty =  VendorFacilty::where(['vendor_id' =>   $vendor->id, 'facilty_id'=> $facilty_id])->first();

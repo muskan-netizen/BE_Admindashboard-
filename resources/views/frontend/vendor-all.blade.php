@@ -23,7 +23,7 @@
                <div class="supplier-rating">
                   <h6 class="mb-1 ellips">{{$vendor->name}}</h6>
                   @if($client_preference_detail && $client_preference_detail->rating_check == 1 && $vendor->vendorRating > 0)
-                  <span class="rating-number">{{$vendor->vendorRating}}</span>
+                  <span class="rating-number"><i class="fa fa-star"></i> {{$vendor->vendorRating}}</span>
                   @endif
                   <p title="{{$vendor->categoriesList}}" class="vendor-cate {{$vendor->is_show_vendor_details == 1 ? ' border-bottom':''}} pb-1 mb-1 ellips">{{$vendor->categoriesList}}</p>
                   <div class="product-timing">

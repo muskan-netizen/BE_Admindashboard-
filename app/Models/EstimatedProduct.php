@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class EstimatedProduct extends Model
 {
     use HasFactory;
+    protected $table = 'estimated_product_new';
+
 
     public function estimated_product_cart(){
         return $this->belongsTo('App\Models\EstimatedProductCart', 'estimated_cart_id' );

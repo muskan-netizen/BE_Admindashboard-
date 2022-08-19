@@ -1,8 +1,12 @@
 @php
-$clientData = \App\Models\Client::select('id', 'logo')
+$clientData = \App\Models\Client::select('id', 'logo','dark_logo')
     ->where('id', '>', 0)
     ->first();
-$urlImg = $clientData ? $clientData->logo['original'] : ' ';
+if(Session::get('config_theme') == 'dark'){
+    $urlImg = $clientData ? $clientData->dark_logo['original'] : ' ';
+}else{
+    $urlImg = $clientData ? $clientData->logo['original'] : ' ';
+}
 $languageList = \App\Models\ClientLanguage::with('language')
     ->where('is_active', 1)
     ->orderBy('is_primary', 'desc')
@@ -475,7 +479,7 @@ $pages = \App\Models\Page::with([
             </div>
         </div>
         @if(count($navCategories))
-        <div class="menu-navigation_al">
+        <div class="menu-navigation al">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">
