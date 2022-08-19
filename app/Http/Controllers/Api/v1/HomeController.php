@@ -270,7 +270,6 @@ class HomeController extends BaseController
                 $q->whereIn('type_id',$categoryTypes);
             })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 
-            
 
             $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
 

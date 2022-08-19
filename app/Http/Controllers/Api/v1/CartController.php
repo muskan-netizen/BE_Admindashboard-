@@ -66,6 +66,9 @@ class CartController extends BaseController
             }
             $cart = $cart->first();
             if ($cart) {
+
+                $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
+
                 $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
                                 $q->where('age_restriction',1);
                             })->count();
@@ -80,17 +83,18 @@ class CartController extends BaseController
                     }else{
                         $passbase['status'] = $user->passbase_verification->status;
                     }
-                }
 
-                $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
-                $cartData->passbase_check = $passbase['check'];
-                $cartData->passbase_status= $passbase['status'];
+                    $cartData->passbase_check = $passbase['check']??0;
+                    $cartData->passbase_status= $passbase['status']??'';
+                }
+               
                 return $this->successResponse($cartData);
             }
 
             return $this->successResponse($cart);
         } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode());
+            \Log::info($e->getMessage());
+            return $this->successResponse([]);
         }
     }
 
@@ -501,6 +505,13 @@ class CartController extends BaseController
     /**         *      Cart  Date      *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
+        try{
+        $total_fixed_fee_tax = 0;
+        $total_service_fee = 0;
+        $deliver_fee_charges = 0;
+        $total_markup_fee_tax = 0;
+        $total_taxable_amount = 0;
+
         $preferences = ClientPreference::first();
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         if (!$cart) {
@@ -1221,7 +1232,7 @@ class CartController extends BaseController
         $userCart = Cart::find($cartID);
         $userCart->total_other_taxes  = $other_taxes_string;
         $userCart->save();
-
+        
 
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
@@ -1298,6 +1309,13 @@ class CartController extends BaseController
             $cart->off_scheduling_at_cart =  $preferences->off_scheduling_at_cart;
         }
         return $cart;
+
+
+        }catch(\Exception $ex)
+        {
+            \Log::info($ex->getMessage());
+            return [];
+        }
     }
 
     public function uploadPrescriptions(Request $request){

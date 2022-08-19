@@ -228,7 +228,9 @@ class BaseController extends Controller{
     }
 
     public function categoryNav($lang_id, $vends=[],$type = 'delivery') {
+
         $categoryTypes = getServiceTypesCategory($type);
+
         $preferences = ClientPreference::select('is_hyperlocal', 'client_code', 'language_id', 'celebrity_check')->first();
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
                     ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')
@@ -273,7 +275,6 @@ class BaseController extends Controller{
         if($categories){
             $categories = $this->buildTree($categories->toArray());
         }
-
         return $categories;
     }
 
