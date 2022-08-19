@@ -1,9 +1,65 @@
 @extends('layouts.store', ['title' => "Search Results"])
 @section('css')
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/icons.min.css')}}">
 <style type="text/css">
 .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.slick-track{margin-left:0}.product-box .product-detail h4,.product-box .product-info h4{font-size:16px}
 body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !important;line-height: 37px;border-radius: 90px;text-align: center;}
-
+.gm-style-iw.gm-style-iw-c {
+    width: 300px ;
+    padding: 12px ;
+    position: absolute;
+    box-sizing: border-box;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    transform: translate3d(-50%,-100%,0);
+    background-color: white;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 2px 7px 1px rgb(0 0 0 / 30%);
+}
+.gm-style .gm-style-iw-d {
+    overflow: hidden !important;
+}
+.img_box {
+    width: 100%;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.img_box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.user_name label {
+    font-size: 14px;
+    color: #000;
+    text-transform: capitalize;
+    margin: 0 0 12px !important;
+    display: block;
+}
+.user_info span, .user_info b {
+    font-size: 12px;
+    font-weight: 500;
+}
+.user_info i {
+    font-size: 14px;
+    width: 20px;
+    text-align: center;
+    color: #6658dd;
+}
+.gm-style-iw-d b.d-block.mb-2 {
+    display: flex !important;
+    vertical-align: middle;
+    align-items: start;
+    padding-right:10px;
+}
+.gm-style-iw-d b.d-block.mb-2 i {
+    margin-right: 8px;
+    margin-top: 3px;
+    padding-left: 5px;
+}
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
@@ -40,63 +96,7 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
 <script src="{{asset('front-assets/js/rangeSlider.min.js')}}"></script>
 <script src="{{asset('front-assets/js/my-sliders.js')}}"></script>
 <script>
-    vendorAllOnMap();
-    function vendorAllOnMap() {
-        var latitude = "{{ $vendorLatLong[0][0] }}";
-        var longitude = "{{ $vendorLatLong[0][1] }}";
-        var latlng = new google.maps.LatLng(latitude, longitude);
-
-        map = new google.maps.Map(document.getElementById('vendor-map'), {
-            center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-            zoom: 12
-        });
-
-        var url = window.location.origin;
-        var vendorData = {!!json_encode($listData)!!};
-        console.log('vendorData', vendorData);
-        //    vendor  markers
-        for (let i = 0; i < vendorData.length; i++) {
-            vendor = vendorData[i];
-
-            if(vendor.address != null && vendor.latitude != "0.00000000" && vendor.longitude != "0.00000000" ){
-                var contentString = '';
-
-                contentString =
-                    '<a target="_blank" href="'+vendor.redirect_url+'"><div id="content" style="max-width:200px">' +
-                    '<div id="siteNotice">' +
-                    '<h5 id="firstHeading" class="firstHeading col-10 mt-0">'+vendor.name+'</h5>' +
-                    '<div id="bodyContent">' +
-                    "<p><b>Address :- </b> " +vendor.address+ " " +
-                    ".</p>" +
-                    '<p><b>Contact: +'+ vendor?.dial_code +vendor?.phone_no+' </p>' +
-                    "</div>" +
-                    "</div></a>";
-
-                const infowindow = new google.maps.InfoWindow({
-                    content: contentString,
-                    minWidth: 250,
-                    minheight: 250,
-                });
-                // images = 'https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/Clientlogo/612e24163debe.png@webp';
-
-                var image = {
-                    //url: images, // url
-                    scaledSize: new google.maps.Size(50, 50), // scaled size
-                    origin: new google.maps.Point(0,0), // origin
-                    anchor: new google.maps.Point(22,22) // anchor
-                };
-                const marker = new google.maps.Marker({
-                    map: map,
-                    position: { lat: parseFloat(vendor.latitude), lng: parseFloat(vendor.longitude) },
-                //icon: image,
-                });
-                marker.addListener("click", () => {
-                    infowindow.open(map, marker);
-                });
-            }
-
-        }
-    }
+    
 
 </script>
 @endsection
