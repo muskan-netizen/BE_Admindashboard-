@@ -319,7 +319,7 @@ class ProductController extends FrontController{
                 //     }
                 // }
                 // $pv_ids = $newIds;
-
+                 
                 if ($product_variant) {
                     $pv_ids = array();
                     foreach ($product_variant as $k => $variant) {
@@ -346,6 +346,7 @@ class ProductController extends FrontController{
                         }
                     }
                 }
+                
             }
         }
         $sets = array();
@@ -355,7 +356,7 @@ class ProductController extends FrontController{
         }])
         ->select('id')
         ->where('id', $product->id)->first();
-
+        //dd($availableSets);
         $data['availableSets'] = $availableSets->variantSet;
 
         if($pv_ids){
