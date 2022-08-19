@@ -101,4 +101,38 @@ class OrderProduct extends Model{
       return $base64;
       }
     }
+
+
+    public function getActualPriceAttribute()
+    {
+        //if vendor actual price = price - markup price
+        if(auth()->user() !=null && auth()->user()->is_admin == 1){
+                return $this->price - $this->markup_price??0;
+        }
+                return $this->price;
+    }
+
+   
+    // public function getMarkupPriceAttribute($value)
+    // {
+    //   if(auth()->user() !=null && auth()->user()->is_admin == 1){
+    //             return 0;   
+    //   }  
+    //   return $value;
+    // }
+
+    public function getPriceAttribute($value)
+    {
+        // //if vendor price add with markup price
+        //    if(auth()->user() !=null && auth()->user()->is_admin == 1){
+        //     $vendor = Product::where('id', $this->product_id)->value('vendor_id');
+        //     $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor)->first();
+        //     if($userVendor){
+        //         return $value;
+        //     }
+        //    }
+        //        // return $value + $this->markup_price??0;
+                return $value??0;
+           
+    }
 }

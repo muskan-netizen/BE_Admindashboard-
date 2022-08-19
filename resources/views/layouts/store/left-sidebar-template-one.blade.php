@@ -1,8 +1,13 @@
 @php
-$clientData = \App\Models\Client::select('id', 'logo')
+$clientData = \App\Models\Client::select('id', 'logo', 'dark_logo')
 ->where('id', '>', 0)
 ->first();
-$urlImg = $clientData ? $clientData->logo['original'] : ' ';
+if(Session::get('config_theme') == 'dark'){
+    $urlImg = $clientData ? $clientData->dark_logo['original'] : ' ';
+}else{
+    $urlImg = $clientData ? $clientData->logo['original'] : ' ';
+}
+
 $languageList = \App\Models\ClientLanguage::with('language')
 ->where('is_active', 1)
 ->orderBy('is_primary', 'desc')
@@ -144,7 +149,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
             <div class="container p-0 align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
                     <div class="row mobile-header align-items-center justify-content-between my-sm-2">
-                        <div class="logo col-2">
+                        <div class="logo">
                             <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" style="height:60px" href="{{route('userHome')}}"><img alt="" src="{{$urlImg}}"></a>
                         </div>
                         <div class="al_count_tabs my-1">
@@ -152,21 +157,21 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                             <ul class="nav nav-tabs navigation-tab nav-material tab-icons vendor_mods"
                                 id="top-tab" role="tablist">
                                 @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-                                        @php
-                                            $clientVendorTypes = $vendor_typ_key.'_check';
-                                            $VendorTypesName   = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-                                            $NomenclatureName  = getNomenclatureName($vendor_typ_value, true);
-                                        @endphp
+                                    @php
+                                    $clientVendorTypes = $vendor_typ_key.'_check';
+                                    $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                                    $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+                                    @endphp
 
-                                        @if($client_preference_detail->$clientVendorTypes == 1)
-                                        <li class="navigation-tab-item" role="presentation"> <a
-                                        class="nav-link {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
-                                        id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
-                                        aria-controls="profile" aria-selected="false">{{$NomenclatureName}}</a> </li>
-                                        @endif
-                                    @endforeach
-                                    <!-- @if($client_preference_detail->delivery_check==1) @php
-                                    $Delivery=getNomenclatureName('Delivery', true); 
+                                    @if($client_preference_detail->$clientVendorTypes == 1)
+                                    <li class="navigation-tab-item" role="presentation"> <a
+                                    class="nav-link {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
+                                    id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
+                                    aria-controls="profile" aria-selected="false">{{$NomenclatureName}}</a> </li>
+                                    @endif
+                                @endforeach
+                                    {{-- @if($client_preference_detail->delivery_check==1) @php
+                                    $Delivery=getNomenclatureName('Delivery', true);
                                     $Delivery=($Delivery==='Delivery') ?
                                     __('Delivery') : $Delivery; @endphp
                                     <li class="navigation-tab-item" role="presentation"> <a
@@ -174,7 +179,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                             id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab"
                                             aria-controls="profile" aria-selected="false">{{$Delivery}}</a> </li>
                                     @endif @if($client_preference_detail->dinein_check==1) @php
-                                    $Dine_In=getNomenclatureName('Dine-In', true); 
+                                    $Dine_In=getNomenclatureName('Dine-In', true);
                                     $Dine_In=($Dine_In==='Dine-In') ?
                                     __('Dine-In') : $Dine_In; @endphp
                                     <li class="navigation-tab-item" role="presentation"> <a
@@ -188,7 +193,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                             class="nav-link {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}"
                                             id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab"
                                             aria-controls="takeaway_tab" aria-selected="false">{{$Takeaway}}</a> </li>
-                                    @endif -->
+                                    @endif --}}
                                 <div class="navigation-tab-overlay"></div>
                             </ul>
                             @endif
@@ -641,7 +646,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
             <ul>
                 @foreach($languageList as $key => $listl)
                     <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)
                             ({{$listl->language->nativeName}})
                             @endif </a>
                     </li>

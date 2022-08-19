@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="{{ asset('front-assets/css/main.css') }}" /> -->
 
     <link rel="stylesheet" href="{{asset('css/jquery.exzoom.css')}}">
-    <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.btn-disabled{opacity:.5;pointer-events:none}.fab{font:normal normal normal 14px/1 FontAwesome;font-size:inherit}
     #number{display:block}#exzoom{display:none}.exzoom .exzoom_btn a.exzoom_next_btn{right:-12px} .exzoom .exzoom_nav .exzoom_nav_inner{-webkit-transition:all .5s;-moz-transition:all .5s;transition:all .5s}
@@ -71,7 +70,7 @@
                             </div>
                         </div>--}}
                         <div class="row">
-                            <div class="col-lg-5 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                            <div class="col-lg-5 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                 {{-- <div class="product__carousel">
                                     <div class="gallery-parent">
                                         @php
@@ -187,6 +186,9 @@
                                     </div>
                                     <div id="product_variant_wrapper">
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
+                                        <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
+                                        <input type="hidden" name="start_time" id="start_time" value="">
+                                        <input type="hidden" name="end_time" id="end_time" value="">
                                         @if($product->inquiry_only == 0)
                                             <h3 id="productPriceValue" class="mb-md-3">
                                                 <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
@@ -212,6 +214,7 @@
                                                         <li class="firstChild">{{$variant->title}}</li>
                                                         <li class="otherSize">
                                                             @foreach($variant->option2 as $k => $optn)
+                                                            @if($optn->status==1)
                                                             <?php $var_id = $variant->variant_type_id;
                                                             $opt_id = $optn->variant_option_id;
                                                             $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
@@ -220,6 +223,7 @@
                                                                 <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
                                                                 <span class="checkround"></span>
                                                             </label>
+                                                            @endif
                                                             @endforeach
                                                         </li>
                                                     </ul>
@@ -232,6 +236,10 @@
                                     <div id="variant_response">
                                         <span class="text-danger mb-2 mt-2"></span>
                                     </div>
+                                    @if($product->category->categoryDetail->type_id == 10)
+                                        @include('frontend.product-part.booking-slot')
+                                    @endif
+                                    
                                     <div id="product_variant_quantity_wrapper">
                                         @if($product->inquiry_only == 0)
                                         <div class="product-description border-product pb-0">
@@ -334,7 +342,7 @@
                                                                 }
                                                             @endphp
                                                             @if( ($min_select != '') || ($max_select != '') )
-                                                                <small>({{$min_select.$max_select}} Selections allowed)</small>
+                                                                <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
                                                             @endif
                                                         </h4>
                                                     </td>
@@ -722,11 +730,12 @@
 @section('js-script')
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
-<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
 @endsection
 @section('script')
 <script>
+    var maximumquantitylert = "{{__('Quantity is not available in stock')}}";
+    var minimumquantitylert = "{{__('Minimum Quantity count is')}}";
     $(document).on('click', '.submitInquiryForm', function(e) {
         e.preventDefault();
         var formData = new FormData(document.getElementById("inquiry-form"));

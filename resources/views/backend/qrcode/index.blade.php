@@ -67,18 +67,29 @@
                             <thead>
                                 <tr>
                                     <th>{{ __("Code") }}</th>
-                                    {{-- <th>{{__("Image")}}</th>
-                                    <th>{{__("Action")}}</th> --}}
+                                     {{-- <th>{{__("Vendor")}}</th> --}}
+                                   {{-- <th>{{__("Action")}}</th> --}}
                                 </tr>
                             </thead>
                             <tbody id="post_list">
-                                @foreach ($codes as $item)
+                                @forelse ($codes as $item)
                                            <tr>
                                             <td>
                                                 {{$item->code}}
                                             </td>
+                                            {{-- <td>
+                                                {{@$item->vendorDetail->name}}
+                                            </td> --}}
                                            </tr>
-                                       @endforeach
+
+                                           @empty
+                                           <tr>
+                                            <td colspan="5" class="text-center">
+                                               No record found.
+                                            </td>
+                                           </tr>
+
+                                       @endforelse
                             </tbody>
                         </table>
                     </div>

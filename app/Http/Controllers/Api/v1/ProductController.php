@@ -34,7 +34,7 @@ class ProductController extends BaseController
                         $qry->where('user_id', $userid);
                     },
                     'variant' => function($v){
-                        $v->select('id', 'sku', 'product_id', 'title', 'quantity','price','barcode','tax_category_id');
+                        $v->select('id', 'sku', 'product_id', 'title', 'quantity','price','markup_price','barcode','tax_category_id');
                     },
                     'variant.vimage.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell',
                     'addOn' => function($q1) use($langId){
@@ -119,7 +119,7 @@ class ProductController extends BaseController
                             ->where('category_translations.language_id', $langId);
                         },
                         'variant' => function($v){
-                            $v->select('id', 'sku', 'product_id', 'title', 'quantity','price','barcode','tax_category_id')
+                            $v->select('id', 'sku', 'product_id', 'title', 'quantity','price','markup_price','barcode','tax_category_id')
                             ->groupBy('product_id'); // return first variant
                         },
                         'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell',
@@ -286,7 +286,7 @@ class ProductController extends BaseController
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
                         'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
                             $q->groupBy('product_id');
                         },
                     ])->select('id', 'sku', 'averageRating')
@@ -337,6 +337,7 @@ class ProductController extends BaseController
                 if (!empty($pv_ids)) {
                     $product_variant = $product_variant->whereIn('product_variant_id', $pv_ids);
                 }
+                
                 $product_variant = $product_variant->where('product_id', $product->id)->get();
 
                 if ($product_variant) {

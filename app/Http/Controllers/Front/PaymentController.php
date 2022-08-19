@@ -48,7 +48,7 @@ class PaymentController extends FrontController{
                     if(!empty($vendor_cart_product->addon)){
                         foreach ($vendor_cart_product->addon as $ck => $addon) {
                             $opt_quantity_price = 0;
-                            $opt_price_in_currency = $addon->option->price;
+                            $opt_price_in_currency = $addon->option->price??0;
                             $opt_price_in_doller_compare = $opt_price_in_currency * $dollar_compare;
                             $opt_quantity_price = $opt_price_in_doller_compare * $vendor_cart_product->quantity;
                             $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
@@ -91,6 +91,10 @@ class PaymentController extends FrontController{
                     $payment_option->title = __('Digicel MyCash');
                 }elseif($payment_option->code == 'windcave'){
                     $payment_option->title = __('Windcave (Debit/Credit card)');
+                }elseif($payment_option->code == 'stripe_ideal'){
+                    $payment_option->title = __('iDEAL');
+                }elseif($payment_option->code == 'authorize_net'){
+                    $payment_option->title = __('Credit/Debit Card');
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);

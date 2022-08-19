@@ -66,86 +66,83 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                         <div class="page-title">
                             <h2>{{ __('My Subscriptions') }}</h2>
                         </div>
-                    </div>
-                </div>
 
-                <div class="row">
-                    @if(!empty($subscription))
-                    <div class="col-12 mb-4">
-
-                            <div class="card subscript-box">
-                                @if( (empty($subscription->cancelled_at)) || (!empty($subscription->cancelled_at)) && ($subscription->cancelled_at >= $now))
-                                <div class="row align-items-center mb-2">
-                                    <div class="col-sm-3 text-center">
-                                        <div class="gold-icon">
-                                            <img src="{{$subscription->plan->image['proxy_url'].'100/100'.$subscription->plan->image['image_path']}}" alt="">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-9 mt-3 mt-sm-0">
-                                        <div class="row align-items-end border-left-top pt-sm-0 pt-2">
-                                            <div class="col-12">
-                                                <div class="d-flex align-items-center justify-content-between">
-                                                    <h3 class="d-inline-block"><b>{{ $subscription->plan->title }}</b></h3>
-                                                    <span class="plan-price">{{ Session::get('currencySymbol') . ($subscription->subscription_amount * $clientCurrency->doller_compare) }} / {{ $subscription->frequency }}</span>
-                                                </div>
-                                                <p>{{ $subscription->plan->description }}</p>
-                                                <?php /* ?><ul class="mb-3">
-                                                    @foreach($subscription->features as $feature)
-                                                        <li><i class="fa fa-check"></i> {{ $feature->feature->title }}</li>
-                                                    @endforeach
-                                                </ul><?php */ ?>
+                        <div class="row">
+                            @if(!empty($subscription))
+                            <div class="col-12 mb-4">
+                                <div class="card subscript-box">
+                                    @if( (empty($subscription->cancelled_at)) || (!empty($subscription->cancelled_at)) && ($subscription->cancelled_at >= $now))
+                                    <div class="row align-items-center mb-2">
+                                        <div class="col-sm-3 text-center">
+                                            <div class="gold-icon">
+                                                <img src="{{$subscription->plan->image['proxy_url'].'100/100'.$subscription->plan->image['image_path']}}" alt="">
                                             </div>
+                                        </div>
+                                        <div class="col-sm-9 mt-3 mt-sm-0">
+                                            <div class="row align-items-end border-left-top pt-sm-0 pt-2">
+                                                <div class="col-12">
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <h3 class="d-inline-block"><b>{{ $subscription->plan->title }}</b></h3>
+                                                        <span class="plan-price">{{ Session::get('currencySymbol') . ($subscription->subscription_amount * $clientCurrency->doller_compare) }} / {{ $subscription->frequency }}</span>
+                                                    </div>
+                                                    <p>{{ $subscription->plan->description }}</p>
+                                                    <?php /* ?><ul class="mb-3">
+                                                        @foreach($subscription->features as $feature)
+                                                            <li><i class="fa fa-check"></i> {{ $feature->feature->title }}</li>
+                                                        @endforeach
+                                                    </ul><?php */ ?>
+                                                </div>
 
-                                            <div class="col-sm-6 form-group mb-0">
-                                                <b class="mr-2">
-                                                    @if(!empty($subscription->cancelled_at))
-                                                        @if( $subscription->end_date >= $now )
-                                                            {{ __('Cancels On') }}
+                                                <div class="col-sm-6 form-group mb-0">
+                                                    <b class="mr-2">
+                                                        @if(!empty($subscription->cancelled_at))
+                                                            @if( $subscription->end_date >= $now )
+                                                                {{ __('Cancels On') }}
+                                                            @else
+                                                                {{ __('Cancelled On') }}
+                                                            @endif
                                                         @else
-                                                            {{ __('Cancelled On') }}
+                                                            @if( $subscription->end_date >= $now )
+                                                                {{ __('Upcoming Billing Date') }}
+                                                            @else
+                                                                {{ __('Expired On') }}
+                                                            @endif
+                                                        @endif
+                                                    </b>
+                                                    <span>{{ dateTimeInUserTimeZone($subscription->end_date, $timezone, true, false) }}</span>
+                                                </div>
+                                                <div class="col-sm-6 mb-0 text-center text-sm-right">
+                                                    @if( $subscription->end_date >= $now )
+                                                        @if($subscription->plan->status == 1)
+                                                            <a class="btn btn-solid subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">{{ __('Pay now') }} ({{ Session::get('currencySymbol') . ($subscription->plan->price * $clientCurrency->doller_compare) }})</a>
+                                                        @endif
+                                                        @if(empty($subscription->cancelled_at))
+                                                            <a class="cancel-subscription-link btn btn-solid" href="#cancel-subscription" data-toggle="modal" data-id="{{ $subscription->slug }}">{{ __('Cancel') }}</a>
                                                         @endif
                                                     @else
-                                                        @if( $subscription->end_date >= $now )
-                                                            {{ __('Upcoming Billing Date') }}
-                                                        @else
-                                                            {{ __('Expired On') }}
+                                                        @if($subscription->plan->status == 1)
+                                                            <a class="btn btn-solid subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">{{ __('Renew') }} ({{ Session::get('currencySymbol') . ($subscription->plan->price * $clientCurrency->doller_compare) }})</a>
                                                         @endif
                                                     @endif
-                                                </b>
-                                                <span>{{ dateTimeInUserTimeZone($subscription->end_date, $timezone, true, false) }}</span>
-                                            </div>
-                                            <div class="col-sm-6 mb-0 text-center text-sm-right">
-                                                @if( $subscription->end_date >= $now )
-                                                    @if($subscription->plan->status == 1)
-                                                        <a class="btn btn-solid subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">{{ __('Pay now') }} ({{ Session::get('currencySymbol') . ($subscription->plan->price * $clientCurrency->doller_compare) }})</a>
-                                                    @endif
-                                                    @if(empty($subscription->cancelled_at))
-                                                        <a class="cancel-subscription-link btn btn-solid" href="#cancel-subscription" data-toggle="modal" data-id="{{ $subscription->slug }}">{{ __('Cancel') }}</a>
-                                                    @endif
-                                                @else
-                                                    @if($subscription->plan->status == 1)
-                                                        <a class="btn btn-solid subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">{{ __('Renew') }} ({{ Session::get('currencySymbol') . ($subscription->plan->price * $clientCurrency->doller_compare) }})</a>
-                                                    @endif
-                                                @endif
-                                            </div>
+                                                </div>
 
+                                            </div>
                                         </div>
                                     </div>
+                                    @endif
                                 </div>
-                                @endif
                             </div>
+                            @endif
 
-                    </div>
-                    @endif
-
-                    @if($subscription_plans->isNotEmpty())
-                        @foreach($subscription_plans as $plan)
-                            <div class="col-md-3 col-sm-6 mb-3 mb-md-2">
-                                <div class="pricingtable">
-                                    <div class="gold-icon position-relative">
-                                        <img src="{{ $plan->image['proxy_url'].'100/100'.$plan->image['image_path'] }}">
-                                        <div class="pricingtable-header position-absolute">
-                                            <div class="price-value"> <b>{{ Session::get('currencySymbol') . ($plan->price * $clientCurrency->doller_compare) }}</b> <span class="month">{{ $plan->frequency }}</span> </div>
+                            @if($subscription_plans->isNotEmpty())
+                                @foreach($subscription_plans as $plan)
+                                <div class="col-md-3 col-sm-6 mb-3 mb-md-2">
+                                    <div class="pricingtable">
+                                        <div class="gold-icon position-relative">
+                                            <img src="{{ $plan->image['proxy_url'].'100/100'.$plan->image['image_path'] }}">
+                                            <div class="pricingtable-header position-absolute">
+                                                <div class="price-value"> <b>{{ Session::get('currencySymbol') . ($plan->price * $clientCurrency->doller_compare) }}</b> <span class="month">{{ $plan->frequency }}</span> </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="p-2">
@@ -167,10 +164,14 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                                         @endif
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
-                    @endif
+                                @endforeach
+                            @endif
+                        </div>
+                    </div>
+
                 </div>
+
+
 
             </div>
         </div>
@@ -228,7 +229,7 @@ ul li {margin: 0 0 10px;color: #6c757d;}
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="" id="subscription_payment_form"> 
+      <form action="" id="subscription_payment_form">
         @csrf
         @method('POST')
         <div>
@@ -314,7 +315,7 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                               <!-- A Stripe Element will be inserted here. -->
                             </div>
                         </div>
-                       
+
                         <span class="error text-danger"id="error-message"></span>
                     </div>
                 <% } %>
@@ -378,6 +379,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('payphone',$client_payment_options))
 <script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
 @endif
+@if(in_array('khalti',$client_payment_options))
+    <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
+@endif
 <script type="text/javascript">
     var stripe_fpx = '';
     var fpxBank = '';
@@ -406,8 +410,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
+    var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
+    var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
-    var stripe_ideal_publishable_key ='{{ $stripe_ideal_publishable_key }}';
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();

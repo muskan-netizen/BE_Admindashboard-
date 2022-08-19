@@ -146,6 +146,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::delete('app-styling/deleteTutorials/{id}', 'Client\AppStylingController@deleteTutorials')->name('styling.deleteTutorials');
         Route::resource('category', 'Client\CategoryController');
         Route::post('categoryOrder', 'Client\CategoryController@updateOrder')->name('category.order');
+        Route::post('category/translation', 'Client\CategoryController@getCategoryTranslation');
         Route::get('category/delete/{id}', 'Client\CategoryController@destroy');
         Route::resource('variant', 'Client\VariantController');
         Route::post('variant/order', 'Client\VariantController@updateOrders')->name('variant.order');
@@ -182,7 +183,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('tag/update', [TagController::class, 'update'])->name('tag.update');
         Route::post('tag/delete', [TagController::class, 'destroy'])->name('tag.delete');
 
-        Route::get('estimations/barcode', [EstimationController::class, 'barcode'])->name('estimations.barcode');
+        Route::get('estimations/barcode/{vendor?}', [EstimationController::class, 'barcode'])->name('estimations.barcode');
         Route::resource('estimations', 'Client\EstimationController');
         Route::resource('estimationsAddon', 'Client\EstimationAddonController');
 
@@ -244,6 +245,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/activeCategory/{id}', 'Client\VendorController@activeCategory')->name('vendor.category.update');
         Route::post('vendor/addCategory/{id}', 'Client\TableBookingController@storeCategory')->name('vendor.addCategory');
         Route::get('vendor/vendor_specific_categories/{id}', 'Client\VendorController@vendor_specific_categories')->name('vendor.specific_categories');
+        Route::post('vendor/saveCronStatusForServiceArea/{id}', 'Client\VendorController@updateCronStatusForServiceArea')->name('vendor.serviceArea.cron.update');
         Route::post('vendor/updateCategory/{id}', 'Client\TableBookingController@updateCategory')->name('vendor.updateCategory');
         Route::get('vendor/table/category/edit', 'Client\TableBookingController@editCategory')->name('vendor_table_category_edit');
         Route::get('vendor/table/number/edit', 'Client\TableBookingController@editTable')->name('vendor_table_edit');
@@ -273,12 +275,14 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/serviceArea/{vid}', 'Client\ServiceAreaController@store')->name('vendor.serviceArea');
         Route::post('vendor/editArea/{vid}', 'Client\ServiceAreaController@edit')->name('vendor.serviceArea.edit');
         Route::post('vendor/updateArea/{id}', 'Client\ServiceAreaController@update');
+        Route::post('vendor/updateAreaStatusForSlot/{id}', 'Client\ServiceAreaController@updateActiveStatusForSlot');
         Route::post('vendor/deleteArea/{vid}', 'Client\ServiceAreaController@destroy')->name('vendor.serviceArea.delete');
         Route::post('draw-circle-with-radius/{vid}', 'Client\ServiceAreaController@drawCircleWithRadius')->name('draw.circle.with.radius');
         Route::resource('order', 'Client\OrderController');
         Route::post('orders/filter', 'Client\OrderController@postOrderFilter')->name('orders.filter');
         Route::get('orders/product_faq/{product_id}', 'Client\OrderController@viewProductForm')->name('orders.product_faq');
         Route::get('order/return/{status}', 'Client\OrderController@returnOrders')->name('backend.order.returns');
+        Route::post('order/return-filter', 'Client\OrderController@returnOrderFilter')->name('backend.order.returns.filter');
         Route::get('rescheduled-orders', 'Client\OrderController@rescheduledOrders')->name('rescheduled.orders'); //Added By Ovi
         Route::get('order/return-modal/get-return-product-modal', 'Client\OrderController@getReturnProductModal')->name('get-return-product-modal');
         Route::post('order/update-product-return-client', 'Client\OrderController@updateProductReturn')->name('update.order.return.client');
@@ -402,11 +406,55 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('cancel-order/requests', 'Client\OrderCancelRequestsController@index')->name('cancel-order.requests');
         Route::get('cancel-order/requests/filter', 'Client\OrderCancelRequestsController@filter')->name('cancel-order.requests.filter');
         Route::post('cancel-order/request/status/update', 'Client\OrderCancelRequestsController@updateStatus')->name('cancel-order.request.status.update');
+
+        /**Chat resourses */
+        //Route::resource('chat', 'Client\ChatController');
+        //Route::get('chat/user/{room_id?}', 'Client\ChatController@index')->name("chat.index");
+        Route::get('chat/vendorUser/{room_id?}', 'Client\ChatController@VendorUserChat')->name("chat.VendorUserChat");
+        Route::post('chat/startChat', 'Client\ChatController@startChat')->name('chat.startChat');
+        Route::get('chat/vendor/{room_id?}', 'Client\ChatController@UserVendorChat')->name("chat.UserVendorChat");
+        Route::post('chat/joinChatRoom', 'Client\ChatController@JoinRoom')->name('chat.joinChatRoom');
+        Route::post('chat/sendMessage', 'Client\ChatController@sendMessage')->name('chat.sendMessage');
+        Route::get('chat/agentUser/{room_id?}', 'Client\ChatController@userAgentChatRoom')->name("chat.userAgentChatRoom");
+
+        Route::post('chat/fetchOrderDetail', 'Client\ChatController@fetchOrderDetail')->name('chat.fetchOrderDetail');
         //static dropoff edit
         Route::get('static-dropoff/index', 'Client\StaticDropoffController@index')->name('static-dropoff.index');
         Route::post('static-dropoff/save', 'Client\StaticDropoffController@store')->name('static-dropoff.create');
         Route::get('static-dropoff/edit', 'Client\StaticDropoffController@edit')->name('static-dropoff.edit');
         Route::delete('static-dropoff/destroy/{id}', 'Client\StaticDropoffController@delete')->name('static-dropoff.destroy');
+
+      
+
+        Route::post('facilty/store', 'Client\FaciltyController@store')->name('facilty.store');
+        Route::post('facilty/update', 'Client\FaciltyController@update')->name('facilty.update');
+        Route::get('facilty/edit', 'Client\FaciltyController@show')->name('facilty.edit');
+        Route::post('facilty/delete', 'Client\FaciltyController@destroy')->name('facilty.delete');
+
+        // Service Area for Banners Routes
+        Route::post('banner/serviceArea', 'Client\ServiceAreaForBannerController@store')->name('banner.serviceArea');
+        Route::post('banner/editArea/{id}', 'Client\ServiceAreaForBannerController@edit')->name('banner.serviceArea.edit');
+        Route::post('banner/updateArea/{id}', 'Client\ServiceAreaForBannerController@update');
+        Route::post('banner/deleteArea/{id}', 'Client\ServiceAreaForBannerController@destroy')->name('banner.serviceArea.delete');
+        Route::post('banner/draw-circle-with-radius', 'Client\ServiceAreaForBannerController@drawCircleWithRadius')->name('banner.draw.circle.with.radius');
+
+        // vendor section route
+        Route::post('vsection/store', 'Client\VendorSectionController@store')->name('vsection.store');
+        Route::post('vsection/deleteSection/{sid}', 'Client\VendorSectionController@destroy')->name('vsection.delete');
+        Route::get('vsection/show/{sid}', 'Client\VendorSectionController@show')->name('vsection.edit');
+        Route::post('vsection/update', 'Client\VendorSectionController@update')->name('vsection.update');
+
+
+        // booking route
+        Route::post('booking/addBlockSlot', 'Client\Booking\ProductBookingController@addBlockSlot')->name('product-booking.addBlockSlot');   # update all product actions
+
+
+          // rental product 
+          Route::post('rentalVariantRow', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
+          Route::post('updateProductVariantSet', 'Client\RentalProductController@updateProductVariantSet')->name('rental-product.updateProductVariantSet');   # update all product actions
+          Route::get('getScheduleTableData', 'Client\RentalProductController@getScheduleTableData')->name('rental-product.getScheduleTableData');   # update all product actions
+          Route::get('getScheduleTableBlockedData', 'Client\RentalProductController@getScheduleTableBlockedData')->name('rental-product.getScheduleTableBlockedData');   # update all product actions
+        
     });
 });
 

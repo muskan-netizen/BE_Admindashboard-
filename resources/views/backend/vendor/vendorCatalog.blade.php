@@ -474,12 +474,18 @@
                                 </a>
                                 @endif
                                
-
+                            @if($client_preference_detail->business_type == 'laundry')
                                 <div class="col-md-4 text-right mb-2">
                                     <button class="btn btn-info button" id="import_global"
                                         type="button">{{ __('Import Global Product') }}</button>
                                 </div>
                                 
+                                {{-- <div class="col-md-4 text-right mb-2">
+                                    <button class="btn btn-info button" id="import_bagqrcode"
+                                        type="button">{{ __('Import Bag Qrcode') }}</button>
+                                </div> --}}
+                            @endif
+
                                 <div class="col-md-12">
                                     <form method="post" enctype="multipart/form-data" id="save_imported_products">
                                         @csrf
@@ -626,7 +632,10 @@
                                   @endif
                                   <option value="for_live">{{__('Draft/Published')}}</option>
                                   <option value="for_tax">{{__('Tax Category')}}</option>
-                                  <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock ')}}</option>
+                                @if(@$vendor->add_markup_price)
+                                  <option value="for_markup">{{__('Markup Price')}}</option>
+                                @endif
+                                  <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock')}}</option>
                                   <option value="delete">{{__('Delete')}}</option>
                              </select>
                          </div>
@@ -642,6 +651,10 @@
                                  <input type="checkbox" id="is_new" data-plugin="switchery" name="is_new"
                                      class="chk_box" data-color="#43bee1">
                              </div>
+                             <div class="col-md-6 justify-content-between mb-2" id="for_markup" style="display:none;">
+                                {!! Form::label('title', __('Markup Price'), ['class' => 'control-label']) !!}
+                                <input type="number" id="markup_price"  name="markup_price" class="form-control">
+                            </div>
                                <div class="col-md-6 justify-content-between mb-2"   id="for_featured" style="display:none;">
                                  {!! Form::label('title', __('Featured'), ['class' => 'control-label']) !!}
                                  <input type="checkbox" id="is_featured" data-plugin="switchery" name="is_featured"
@@ -734,6 +747,99 @@
         </div>
     </div>
     <!-- End Global product import popup -->
+
+    <!-- import qrcode modal popup -->
+
+    <div id="import-bagqrcode-modal" class="modal fade importQrcodeBtn" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <h4 class="modal-title">{{ __('Import QR Codes') }}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+
+
+                        <div class="col-md-12 text-center">
+
+                            <div class="col-md-4 text-right mb-2">
+                                <button class="btn btn-info button"
+                                    type="button"> <a href="{{ route('estimations.barcode',$vendor->id) }}">{{ __('View Bag Qrcode') }}</a></button>
+                            </div>
+
+                            <div id="import_csv" class="row align-items-center mb-3">
+                                
+                                <div class="col-md-12">
+                                    <form method="post" enctype="multipart/form-data" id="save_imported_qrcode">
+                                        @csrf
+
+                                        <a href="{{ url('file-download' . '/sample_qrcode.csv') }}">{{ __('Download Sample file here!') }}</a>
+                                        <input type="hidden" value="{{ $vendor->id }}" name="vendor_id" />
+                                        <input type="file" accept=".csv" onchange="submitQrcodeImportForm()"
+                                            data-plugins="dropify" name="qrcode_excel" class="dropify" />
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="table table-centered table-nowrap table-striped" id="">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>{{ __('File Name') }}</th>
+                                            <th colspan="2">{{ __('Status') }}</th>
+                                            <th>{{ __('Link') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody >
+                                        @forelse ($files as $csv)
+
+                                        <tr data-row-id="{{ $csv->id }}">
+                                            <td> {{ $loop->iteration }}</td>
+                                            <td> {{ $csv->name }}</td>
+                                            @if ($csv->status == 1)
+                                                <td>{{ __('Pending') }}</td>
+                                                <td></td>
+                                            @elseif($csv->status == 2)
+                                                <td>{{ __('Success') }}</td>
+                                                <td></td>
+                                            @else
+                                                <td>{{ __('Errors') }}</td>
+                                                <td class="position-relative text-center alTooltipHover">
+                                                    <i class="mdi mdi-exclamation-thick"></i>
+                                                    <ul class="tooltip_error">
+                                                        <?php $error_csv = json_decode($csv->error); ?>
+                                                        @foreach ($error_csv as $err)
+                                                            <li>
+                                                                {{ $err }}
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </td>
+                                            @endif
+                                            <td> <a href="{{ $csv->storage_url }}">{{ __('Download') }}</a> </td>
+                                        </tr>
+                                        @empty
+                                        <tr><td>No record found.</td></tr>
+                                    @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!--- End popup qrcode -->
+
+
     <script type="text/javascript">
         $(".all-product_check").click(function() {
             if ($(this).is(':checked')) {
@@ -760,6 +866,7 @@
             $("#for_last_mile").css("display", "none");
             $("#for_live").css("display", "none");
             $("#for_tax").css("display", "none");
+            $("#for_markup").css("display", "none");
             $("#for_sell_when_out_of_stock").css("display", "none");
             $("#"+ actionfor).css("display", "block");
         });
@@ -806,6 +913,7 @@
             var is_new = $('#is_new').prop('checked');
             var is_featured = $('#is_featured').prop('checked');
             var is_live = $('#is_live').val();
+            var markup_price = $('#markup_price').val();
             var tax_category = $('#tax_category_for').val();
             var action_for = $('#action_for').val();
             var last_mile = $('#last_mile').prop('checked');
@@ -826,7 +934,7 @@
             $.ajax({
                 type: "post",
                 url: '{{route("product.update.action")}}',
-                data: {_token: CSRF_TOKEN,action_for:action_for,sell_when_out_of_stock:sell_when_out_of_stock,last_mile:last_mile, is_new: is_new, is_featured: is_featured, is_live: is_live, tax_category: tax_category, product_id: product_id},
+                data: {_token: CSRF_TOKEN,action_for:action_for,sell_when_out_of_stock:sell_when_out_of_stock,last_mile:last_mile, is_new: is_new, is_featured: is_featured, is_live: is_live, tax_category: tax_category,markup_price:markup_price, product_id: product_id},
                  success: function(resp) {
                     if (resp.status == 'success') {
                         $.NotificationApp.send("Success", resp.message, "top-right", "#5ba035",
@@ -890,6 +998,11 @@
         $("#import_global").click(function() {
             $("#import-product").modal('hide');
             $("#global-product-modal").modal('show');
+        });
+
+        $("#import_bagqrcode").click(function() {
+            $("#import-product").modal('hide');
+            $("#import-bagqrcode-modal").modal('show');
         });
 
         $("#import_woocommerce").hide();
@@ -1274,6 +1387,57 @@
             });
         });
 
+
+
+        $('.importQrcodeBtn').click(function() {
+            $('#import-qrcode').modal({
+                keyboard: false
+            });
+        });
+ 
+        function submitQrcodeImportForm() {
+        var form = document.getElementById('save_imported_qrcode');
+        var formData = new FormData(form);
+        var data_uri = "{{route('qrcode.import')}}";
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: data_uri,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                // location.reload();
+                if (response.status == 'success') {
+                    $(".modal .close").click();
+                    location.reload();
+                } else {
+
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text(response.message);
+                }
+                return response;
+            },
+            beforeSend: function() {
+
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $(".loader_box").hide();
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+               
+            }
+        });
+    }
 
     </script>
 @endsection

@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
+use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\{VendorSlotDate, Vendor, VendorSlot, SlotDay, ServiceArea};
 
 class ServiceAreaController extends BaseController{
+
+    use ApiResponser;
+
     /**
      * Store a newly created resource in storage.
      *
@@ -101,6 +105,38 @@ class ServiceAreaController extends BaseController{
         $area->save();
         return redirect()->back()->with('success', 'Service area updated successfully!');
 
+    }
+
+    /**
+     * Update the active status for specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\ServiceArea  $serviceArea
+     * @return \Illuminate\Http\Response
+     */
+    public function updateActiveStatusForSlot(Request $request, $domain = '', $id){
+        try{
+            $rules = array(
+                'status' => 'required'
+            );
+            $messages = array(
+                'status.required' => 'Status is required'
+            );
+            $validation  = Validator::make($request->all(), $rules, $messages);
+
+            if ($validation->fails()) {
+                foreach ($validation->errors()->toArray() as $error_key => $error_value) {
+                    return $this->errorResponse(__($error_value[0]), 422);
+                }
+            }
+            $area = ServiceArea::where('id', $id)->where('vendor_id', $request->vid)->firstOrFail();
+            $area->is_active_for_vendor_slot = $request->status;
+            $area->save();
+            return $this->successResponse('', __('Service area updated successfully!'));
+        }
+        catch(\Exception $ex){
+            return $this->errorResponse($ex->getMessage(), 422);
+        }
     }
 
     /**

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, ProductVariant, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation, Tag};
+use App\Models\{Client, ClientPreference, ProductVariant, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation, Tag,Facilty};
 use GuzzleHttp\Client as GCLIENT;
 
 class CategoryController extends BaseController
@@ -44,20 +44,19 @@ class CategoryController extends BaseController
             $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
 
         $categories = $categories->get();
-
         if ($categories) {
-            $build = $this->buildTree($categories->toArray());
+            $build = $this->buildTree($categories->toArray());;
             $tree = $this->printTree($build);
         }
         $tags = Tag::with('primary')->get();
+        $facilties = Facilty::with('primary')->get();
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
             ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
             ->where('client_languages.client_code', Auth::user()->code)
             ->where('client_languages.is_active', 1)
             ->orderBy('client_languages.is_primary', 'desc')->get();
 
-
-        return view('backend.catalog.index')->with(['categories' => $categories, 'html' => $tree,  'languages' => $langs, 'variants' => $variants, 'brands' => $brands, 'build' => $build, 'tags'=>$tags]);
+        return view('backend.catalog.index')->with(['categories' => $categories, 'html' => $tree,  'languages' => $langs, 'variants' => $variants, 'brands' => $brands, 'build' => $build, 'tags'=>$tags,'facilties'=>$facilties,'client_languages'=>$langs]);
     }
 
     /**
@@ -91,7 +90,7 @@ class CategoryController extends BaseController
 
 
 
-        $parCategory = Category::with('translation_one')->select('id', 'slug')->where('deleted_at', NULL)->whereIn('type_id', ['1', '3', '6', '8','9'])->where('is_core', 1)->where('status', 1)->get();
+        $parCategory = Category::with('translation_one')->select('id', 'slug')->where('deleted_at', NULL)->whereIn('type_id', ['1', '3', '6', '8','9','11'])->where('is_core', 1)->where('status', 1)->get();
         $vendor_list = Vendor::select('id', 'name')->where('status', '!=', $this->blocking)->get();
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
             ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
@@ -113,7 +112,7 @@ class CategoryController extends BaseController
     public function store(Request $request)
     {
         $rules = array(
-            'name.0' => 'required|string|max:60',
+            'cat_lang.name' => 'required|string|max:60',
             'slug' => 'required|string|max:30|unique:categories',
         );
         if ($request->type == 'Vendor') {
@@ -123,16 +122,16 @@ class CategoryController extends BaseController
         $cate = new Category();
         $save = $this->save($request, $cate, 'false');
         if ($save > 0) {
-            foreach ($request->language_id as $key => $value) {
-                $category_translation = new Category_translation();
-                $category_translation->name = $request->name[$key];
-                $category_translation->meta_title = $request->meta_title[$key];
-                $category_translation->meta_description = $request->meta_description[$key];
-                $category_translation->meta_keywords = $request->meta_keywords[$key];
-                $category_translation->category_id = $save;
-                $category_translation->language_id = $request->language_id[$key];
-                $category_translation->save();
-            }
+            $languageId = $request->cat_lang['lang_id'];
+            $trans = new Category_translation();
+            $trans->category_id = $save;
+            $trans->language_id = $languageId;
+            $trans->name = $request->cat_lang['name'];
+            $trans->meta_title = $request->cat_lang['meta_title'];
+            $trans->meta_description = $request->cat_lang['meta_description'];
+            $trans->meta_keywords = $request->cat_lang['meta_keywords'];
+            $trans->save();
+
             $hs = new CategoryHistory();
             $hs->category_id = $save;
             $hs->action = 'Add';
@@ -200,13 +199,22 @@ class CategoryController extends BaseController
         foreach ($category->translationSetUnique as $key => $value) {
             $existlangs[] = $value->language_id;
         }
-        $parCategory = Category::with('translation_one')->select('id', 'slug')->where('categories.id', '!=', $id)->where('status', '!=', $this->blocking)->whereIn('type_id', ['1', '3', '6', '8','9'])->where('deleted_at', NULL)->get();
+        $parCategory = Category::with('translation_one')->select('id', 'slug')->where('categories.id', '!=', $id)->where('status', '!=', $this->blocking)->whereIn('type_id', ['1', '3', '6', '8','9','11'])->where('deleted_at', NULL)->get();
         $dispatcher_warning_page_options = DispatcherWarningPage::where('status', 1)->get();
         $dispatcher_template_type_options = DispatcherTemplateTypeOption::where('status', 1)->get();
 
 
         $returnHTML = view('backend.catalog.edit-category')->with(['typeArray' => $type, 'category' => $category,  'languages' => $langs, 'is_vendor' => $is_vendor, 'parCategory' => $parCategory, 'langIds' => $langIds, 'existlangs' => $existlangs, 'tagList' => $tagList, 'dispatcher_warning_page_options' => $dispatcher_warning_page_options, 'dispatcher_template_type_options' => $dispatcher_template_type_options, 'preference' => $preference])->render();
         return response()->json(array('success' => true, 'html' => $returnHTML));
+    }
+
+    public function getCategoryTranslation(Request $request){
+        $trans = [];
+        if(!empty($request->categoryId) && !empty($request->languageId)){
+            $trans = Category_translation::where('category_id', $request->categoryId)->where('language_id', $request->languageId)->first();
+            return response()->json(array('status' => 'success', 'data' => $trans));
+        }
+        return response()->json(array('status' => 'error', 'data' => $trans));
     }
 
     /**
@@ -220,26 +228,27 @@ class CategoryController extends BaseController
     {
         $rules = array(
             'slug' => 'required|string|max:30|unique:categories,slug,' . $id,
-            'name.0' => 'required|string|max:60',
+            'cat_lang.name' => 'required|string|max:60',
         );
         $validation  = Validator::make($request->all(), $rules)->validate();
         $category = Category::where('id', $id)->first();
         $save = $this->save($request, $category, 'true');
         if ($save > 0) {
-            if ($request->has('language_id')) {
-                foreach ($request->language_id as $key => $value) {
-                    $trans = Category_translation::where('category_id', $save)->where('language_id', $value)->first();
-                    if (!$trans) {
-                        $trans = new Category_translation();
-                        $trans->category_id = $save;
-                        $trans->language_id = $value;
-                    }
-                    $trans->name = $request->name[$key];
-                    $trans->meta_title = $request->meta_title[$key];
-                    $trans->meta_description = $request->meta_description[$key];
-                    $trans->meta_keywords = $request->meta_keywords[$key];
-                    $trans->save();
+            if (!empty($request->cat_lang['language_id'])) {
+                $languageId = $request->cat_lang['language_id'];
+                $trans = Category_translation::where('category_id', $save)->where('language_id', $languageId)->first();
+                if (!$trans) {
+                    $trans = new Category_translation();
+                    $trans->category_id = $save;
+                    $trans->language_id = $languageId;
                 }
+                $trans->name = $request->cat_lang['name'];
+                $trans->meta_title = $request->cat_lang['meta_title'];
+                $trans->meta_description = $request->cat_lang['meta_description'];
+                $trans->meta_keywords = $request->cat_lang['meta_keywords'];
+                $trans->save();                
+                    $trans->save();
+                $trans->save();                
             }
             $hs = new CategoryHistory();
             $hs->action = 'Update';
@@ -324,6 +333,15 @@ class CategoryController extends BaseController
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $cate->image = Storage::disk('s3')->put('/category/image', $file, 'public');
+            }
+            if ($request->hasFile('cat_banner')) {
+                $catBannerImages = [];
+                if(!empty($request->cat_banner)){
+                    foreach($request->cat_banner as $catBanner){
+                        $catBannerImages[] = Storage::disk('s3')->put('/category/image', $catBanner, 'public');
+                    }
+                }
+                $cate->sub_cat_banners = implode(',',$catBannerImages);
             }
             $cate->save();
             $tagDelete = CategoryTag::where('category_id', $cate->id)->delete();

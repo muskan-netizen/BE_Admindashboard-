@@ -6,10 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 use Session;
+use App\Models\UserVendor;
 
 class ProductVariant extends Model
 {
-	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges'];
+	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price'];
+
+  protected $appends = ['actual_price'];
+
 
 	public function getImageAttribute($value)
     {
@@ -64,7 +68,7 @@ class ProductVariant extends Model
     }
     public function product()
     {
-        return $this->belongsTo('App\Models\Product', 'product_id', 'id')->select('id', 'sku', 'title', 'averageRating', 'inquiry_only', 'vendor_id', 'has_inventory', 'sell_when_out_of_stock', 'batch_count', 'minimum_order_count');
+        return $this->belongsTo('App\Models\Product', 'product_id', 'id')->select('id', 'sku', 'title', 'averageRating', 'inquiry_only', 'vendor_id', 'has_inventory', 'sell_when_out_of_stock', 'batch_count', 'minimum_order_count','markup_price');
     }
     public function wishlist(){
        return $this->hasOne('App\Models\UserWishlist', 'product_id', 'product_id')->select('product_id', 'user_id');
@@ -102,6 +106,48 @@ class ProductVariant extends Model
         });
     }
 
-    
-    
+
+    public function getActualPriceAttribute()
+    {
+       // if vendor actual price = price - markup price
+        if(auth()->user() !=null && !auth()->user()->is_admin == 1){
+                return $this->price - $this->markup_price??0;
+        }
+                return $this->price;
+    }
+
+    public function getPriceAttribute($value)
+    {
+        $checkMarkup = 0;
+        $vendor = Product::where('id', $this->product_id)->value('vendor_id');
+        $checkMarkup = Vendor::where('id',$vendor)->value('add_markup_price');
+        //if vendor price add with markup price
+           if(auth()->user() !=null && auth()->user()->is_admin == 1){
+            $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor)->first();
+            if($userVendor){
+                return $value;
+            }
+        }
+           if($checkMarkup){
+                return $value + $this->markup_price??0;
+            }
+        
+            return $value;  
+           
+    }
+
+    public function getMarkupPriceAttribute($value)
+    {
+        $checkMarkup = 0;
+        $vendor = Product::where('id', $this->product_id)->value('vendor_id');
+        $checkMarkup = Vendor::where('id',$vendor)->value('add_markup_price');
+        //if vendor price add with markup price
+           if($checkMarkup){
+                return $value;
+            }
+        
+            return 0;  
+           
+    }
+
 }

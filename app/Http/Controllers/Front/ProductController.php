@@ -214,7 +214,6 @@ class ProductController extends FrontController{
                 $new_url = $request->path()."?step=2";
                 return redirect($new_url);
             }
-
             $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
             return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
         }
@@ -272,7 +271,7 @@ class ProductController extends FrontController{
             }else{
                 $product_page = "product";
             }
-            return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available]); 
+            return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available]);
 
         }
    }
@@ -320,7 +319,7 @@ class ProductController extends FrontController{
                 //     }
                 // }
                 // $pv_ids = $newIds;
-
+                 
                 if ($product_variant) {
                     $pv_ids = array();
                     foreach ($product_variant as $k => $variant) {
@@ -347,16 +346,17 @@ class ProductController extends FrontController{
                         }
                     }
                 }
+                
             }
         }
         $sets = array();
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $availableSets = Product::with(['variantSet.variantDetail','variantSet.option2'=>function($q)use($product, $pv_ids){
-            $q->where('product_id', $product->id); //->whereIn('product_variant_id', $pv_ids);
+           // $q->where('product_id', $product->id); //->whereIn('product_variant_id', $pv_ids);
         }])
         ->select('id')
         ->where('id', $product->id)->first();
-
+        //dd($availableSets);
         $data['availableSets'] = $availableSets->variantSet;
 
         if($pv_ids){
@@ -414,10 +414,10 @@ class ProductController extends FrontController{
         }
         return response()->json(array('status' => 'Error', 'message' => 'This option is currenty not available', 'data' => $data));
     }
-    # get product faq 
+    # get product faq
     public function getProductFaq(Request $request,$domain = '',$product_id){
             $langId = Session::get('customerLanguage');
-            
+
             if(empty($langId))
             $langId = ClientLanguage::orderBy('is_primary','desc')->value('language_id');
 
@@ -435,7 +435,7 @@ class ProductController extends FrontController{
 
             //return $this->errorResponse('Invalid product form ', 404);
 
-        
+
     }
 
 }

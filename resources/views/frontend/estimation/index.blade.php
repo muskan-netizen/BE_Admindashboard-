@@ -531,7 +531,7 @@
                                                                                         aria-hidden="true"></i>
                                                                                 </span>
                                                                             </div>
-                                                                            <div class="customizable-text">customizable
+                                                                            <div class="customizable-text">{{ _('customizable')}}
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -670,18 +670,18 @@
                                                     <%
                                                         var min_select = '';
                                                         if(estimate_addon_set.min_select > 0){
-                                                            min_select = 'Minimum ' + estimate_addon_set.min_select;
+                                                            min_select = "{{ __('Minimum')}} " + estimate_addon_set.min_select;
                                                         }
                                                         var max_select = '';
                                                         if(estimate_addon_set.max_select > 0){
-                                                            max_select = 'Maximum ' + estimate_addon_set.max_select;
+                                                            max_select = "{{ __('Maximum')}} " + estimate_addon_set.max_select;
                                                         }
                                                         if( (min_select != '') && (max_select != '') ){
-                                                            min_select = min_select + ' and ';
+                                                            min_select = min_select + " {{ __('and')}} ";
                                                         }
                                                     %>
                                                     <% if( (min_select != '') || (max_select != '') ) { %>
-                                                        <small><%=min_select + max_select %> Selections allowed</small>
+                                                        <small><%=min_select + max_select %> {{ __('Selections Allowed')}}</small>
                                                     <% } %>
                                                 </div>
                                               
@@ -707,7 +707,7 @@
 
                                                     <div class="checkbox-success d-flex mb-1">
                                                         <input type="hidden" id="fake_product_id" name="fake_product_id" value="<%= estimateAddOnData.id %>">
-                                                        <select class="pr-2 mb-0 flex-fill font-14 estimate_product_addon_option" name="addonOptionData[<%= key1 %>][]" required>
+                                                        <select class="pr-2 mb-0 flex-fill font-14 estimate_product_addon_option form-control" name="addonOptionData[<%= key1 %>][]" required>
                                                             <option value="">--Please Select--</option>
                                                             <% _.each(estimate_addon_set.option, function(option, key2){ %>
                                                             <option value="<%= option.id %>"><%= option.title %></option>
@@ -992,8 +992,9 @@
                             "addonoptID":      option_id,
                             "from_estimation": true,
                         };
-                        // console.log(data);
-                        // return false;
+                        // alert('ih');
+                        //  console.log(data);
+                        //  return false;
                 $.ajax({
                     type: "POST",
                     url: url,

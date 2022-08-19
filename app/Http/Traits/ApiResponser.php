@@ -20,7 +20,7 @@ use Auth;
 use App\Models\Cart;
 use App\Models\EmailTemplate;
 use App\Models\UserAddress;
-use App\Models\{Product, OrderProductRating, ClientPreference,UserDevice,NotificationTemplate};
+use App\Models\{Product, OrderProductRating, ClientPreference,UserDevice, NotificationTemplate};
 
 trait ApiResponser
 {

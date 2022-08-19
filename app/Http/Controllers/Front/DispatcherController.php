@@ -10,7 +10,7 @@ use Auth;
 use Session;
 use DB;
 use App\Http\Traits\ApiResponser;
-use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate,ProductVariantSet};
+use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport};
 
 class DispatcherController extends FrontController
 {
@@ -20,12 +20,37 @@ class DispatcherController extends FrontController
     /******************    ---- order status update from dispatch (Need to dispatcher_status_option_id ) -----   ******************/
     public function dispatchOrderStatusUpdate(DispatchOrderStatusUpdateRequest $request, $domain = '', $web_hook_code)
     {
-
         try {
             DB::beginTransaction();
             $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();
 
             if($checkiftokenExist){
+            
+                 //Checking Bag QrCode imported in order panel only if qrcheck parameter is came from dispatcher
+                 if(isset($request->check_qr) && isset($request->qr_code))
+                 {
+                     $code = QrcodeImport::with('vendorDetail')->where('code',$request->qr_code)->first();
+                     if(!isset($code->code))
+                     {
+                        return response()->json([
+                                'status' => '0',
+                                'message' => 'Not Found'
+                            ]);
+                     }
+                 }
+                
+
+                //  \Log::info('hi');
+                 if($request->check_qr=='5' && isset($request->qr_code))
+                 {
+                    $order = Order::where('order_number',$request->order_number)->first();
+                    $code = QrcodeImport::with('vendorDetail')->where('code',$request->qr_code)->first();
+                    if($code){
+                        $qrcodes = OrderQrcodeLinks::updateOrCreate(['order_id' => $order->id,'qrcode_id'=>$code->id], ['order_id'=>$order->id,'order_number'=>$order->order_number,'qrcode_id'=>$code->id,'code'=>$code->code]);
+                    }
+                 }
+
+
                 $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
                     'order_id' =>  $checkiftokenExist->order_id,
                     'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
@@ -82,9 +107,10 @@ class DispatcherController extends FrontController
             }
             OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
 
-                    DB::commit();
+             $data = ['order'=>$update,'vendor_detail'=>$code->vendorDetail??[]];
+            DB::commit();
                     $message = "Order status updated.";
-                    return $this->successResponse($update, $message);
+                    return $this->successResponse($data??[], $message);
 
             }else{
                 DB::rollback();

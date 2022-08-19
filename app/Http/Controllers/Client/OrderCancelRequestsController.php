@@ -55,9 +55,17 @@ class OrderCancelRequestsController extends BaseController
             });
         }
         $rejected_requests_count = $rejected_requests_count->count();
+        // all vendors
+        $vendors = Vendor::where('status', '!=', '2')->orderBy('id', 'desc');
+        if ($user->is_superadmin == 0) {
+            $vendors = $vendors->whereHas('permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
+            });
+        }
+        $vendors = $vendors->get();
         
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-        return view('backend.order_cancel_requests.index', compact('pending_requests_count', 'approved_requests_count', 'rejected_requests_count', 'clientCurrency'));
+        return view('backend.order_cancel_requests.index', compact('pending_requests_count', 'approved_requests_count', 'rejected_requests_count', 'clientCurrency','vendors'));
     }
 
     public function filter(Request $request, $domain = '')
@@ -72,6 +80,31 @@ class OrderCancelRequestsController extends BaseController
                 $query->where('user_id', $user->id);
             });
         }
+        if (!empty($request->search_keyword)) {
+            $req->whereHas('order', function ($query)  use ($request) {
+                $query->whereHas('address', function ($q) use($request){
+                    $q->where('house_number', 'like', '%' . $request->search_keyword . '%')
+                    ->orWhere('address', 'like', '%' . $request->search_keyword . '%')
+                    ->orWhere('street', 'like', '%' . $request->search_keyword . '%')
+                    ->orWhere('city', 'like', '%' . $request->search_keyword . '%')
+                    ->orWhere('state', 'like', '%' . $request->search_keyword . '%')
+                    ->orWhere('pincode', 'like', '%' . $request->search_keyword . '%')
+                    ->orWhere('country', 'like', '%' . $request->search_keyword . '%');
+                })->orWhere('order_number', 'like', '%' . $request->search_keyword . '%');
+            });
+        }
+        //get by vendor
+        if (!empty($request->get('vendor_id'))) {
+            $req->where('vendor_id', $request->get('vendor_id'));
+        }
+        //filer bitween date
+        if (!empty($request->get('date_filter'))) {
+            $date_date_filter = explode(' to ', $request->get('date_filter'));
+            $to_date = (!empty($date_date_filter[1])) ? $date_date_filter[1] : $date_date_filter[0];
+            $from_date = $date_date_filter[0];
+
+            $req->whereBetween('created_at',[$from_date . " 00:00:00", $to_date . " 23:59:59"]);
+        } 
         $req = $req->orderBy('id', 'desc');
 
         return Datatables::of($req)

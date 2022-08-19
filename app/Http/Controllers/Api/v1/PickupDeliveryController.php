@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Validator;
@@ -234,7 +234,7 @@ class PickupDeliveryController extends BaseController{
         try {
             $order_place = $this->orderPlaceForPickupDelivery($request);
             if($order_place && $order_place['status'] == 200){
-                if (($request->payment_option_id == 1) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
+                if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                     $data = [];
                     $order = $order_place['data'];
                     $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
@@ -242,7 +242,7 @@ class PickupDeliveryController extends BaseController{
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
 
                         //Send message if ride is booked for friend
-                        if($request->type == 1 && isset($request->friendPhoneNumber))
+                        if($request->bookingType == 1 && isset($request->friendPhoneNumber))
                         {
                             $msg = "Hi ".$request->friendName??'User'.", ".$user->name." has booked a ride for you.";
                             $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
@@ -279,6 +279,8 @@ class PickupDeliveryController extends BaseController{
         $taxable_amount = 0;
         $payable_amount = 0;
         $user = Auth::user();
+        $action = 'pick_drop';
+        $luxury_option = LuxuryOption::where('title', $action)->first();
         $request->address_id = $request->address_id ??null;
         $request->payment_option_id = $request->payment_option_id ??1;
         if ($user) {
@@ -329,9 +331,10 @@ class PickupDeliveryController extends BaseController{
                 $order->address_id = $request->address_id;
                 $order->payment_option_id = $payment_option;
                 /*book for a friend*/
-                $order->type = $request->type;
+                $order->type = $request->bookingType ?? 0;
                 $order->friend_name = $request->friendName;
                 $order->friend_phone_number = $request->friendPhoneNumber;
+                $order->luxury_option_id = $luxury_option->id;
 
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
@@ -593,7 +596,6 @@ class PickupDeliveryController extends BaseController{
                     $request->scheduled_date_time = $schedule_datetime_del;
                     $request->order_time = $schedule_datetime_del;
                 }
-
                 $dynamic = uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
@@ -603,7 +605,7 @@ class PickupDeliveryController extends BaseController{
                 $team_tag = $unique."_".$vendor;
                 $product = Product::find($request->product_id);
                 $order_agent_tag = $product->tags??'';
-                $type=$request->type??0;
+                $type = $request->bookingType ?? 0;
                 $friendName=$request->friendName?? null;
                 $friendPhoneNumber=$request->friendPhoneNumber?? null;
                 if(empty($friendPhoneNumber)){
@@ -618,7 +620,7 @@ class PickupDeliveryController extends BaseController{
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
-                
+                $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -641,7 +643,13 @@ class PickupDeliveryController extends BaseController{
                             'images_array' => $request->images_array??null,
                             'type'=>$type,
                             'friend_name'=>$friendName,
-                            'friend_phone_number'=>$friendPhoneNumber
+                            'friend_phone_number'=>$friendPhoneNumber,
+                            'vendor_id' => $vendor,
+                            'order_vendor_id' => $order_vendor->id,
+                            'dbname' => $client_do->database_name,
+                            'order_id' => $order->id,
+                            'customer_id' => $order->user_id,
+                            'user_icon' => $customer->image
                         ];
 
 
@@ -703,7 +711,58 @@ class PickupDeliveryController extends BaseController{
 
     }
 
+      /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAgents(Request $request){
 
+        try{
+            $validator = Validator::make(request()->all(), [
+                'latitude' => 'required',
+                'longitude' => 'required',
+            ]);
+
+            if($validator->fails()){
+                return $this->errorResponse($validator->messages(), 422);
+            }
+
+            $postdata = [
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude
+            ];
+
+            if(!empty($request->tag)){
+                $postdata['tag'] = $request->tag;
+            }
+
+            $dispatch_domain = $this->checkIfPickupDeliveryOn();
+                      
+            $header = ['headers' => ['personaltoken' => !empty($dispatch_domain->delivery_service_key)? $dispatch_domain->delivery_service_key : $dispatch_domain->pickup_delivery_service_key,
+                'shortcode' => !empty($dispatch_domain->delivery_service_key_code)? $dispatch_domain->delivery_service_key_code : $dispatch_domain->pickup_delivery_service_key_code,
+                'content-type' => 'application/json']
+            ];
+
+            $client = new GClient($header);
+            $url    = !empty($dispatch_domain->delivery_service_key_url)? $dispatch_domain->delivery_service_key_url.'/api/get/agents' : $dispatch_domain->pickup_delivery_service_key_url.'/api/get/agents';
+            $res = $client->post(
+                $url,
+                ['form_params' => (
+                        $postdata
+                    )]
+            );
+            $response = json_decode($res->getBody(), true);
+            return $response;
+
+        }catch(\Exception $e){
+            $data = [];
+            $data['status'] = 400;
+            $data['message'] =  $e->getMessage();
+            return $data;
+        }
+
+    }
 
 
       /**

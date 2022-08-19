@@ -314,7 +314,7 @@ $timezone = Auth::user()->timezone;
                                     $taxable_amount = 0;
                                     $adminRevenue = 0;
                                     $storeRevenue = 0;
-                                    $revenue = ($vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
+                                    $revenue = ($vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount+$vendor->total_markup_price);
                                     @endphp
                                     @foreach($vendor->products as $product)
                                     @if($product->order_id == $order->id)
@@ -322,7 +322,7 @@ $timezone = Auth::user()->timezone;
                                     $taxable_amount = $vendor->taxable_amount;
                                     $vendor_service_fee = $vendor->service_fee_percentage_amount;
                                     $container_charges = $vendor->total_container_charges;
-                                    $sub_total += $product->total_amount;
+                                    $sub_total += $product->actual_price;
                                     @endphp
                                     <tr>
                                         <th scope="row" class="product-modal2">
@@ -337,7 +337,7 @@ $timezone = Auth::user()->timezone;
                                             @if (isset($product->user_product_order_form))
                                             <a href="javascript:void(0)" class="Order_product_form float-right "  data-product_form_id="{{$product->id}}">
                                                 <span class="badge badge-info mr-2">
-                                                    {{__('Product form ')}}
+                                                    {{$nomenclatureProductOrderForm}}
                                                 </span>
                                             </a>
                                             @endif
@@ -369,7 +369,7 @@ $timezone = Auth::user()->timezone;
                                         </td>
                                         <td>{{ $product->quantity }}</td>
                                         <td>
-                                            {{$clientCurrency->currency->symbol}}{{decimal_format($product->price)}}
+                                            {{$clientCurrency->currency->symbol}}{{decimal_format($product->actual_price)}}
                                             @if($product->addon->isNotEmpty())
                                                 <hr class="my-2">
                                                 @foreach($product->addon as $addon)
@@ -378,7 +378,7 @@ $timezone = Auth::user()->timezone;
                                             @endif
                                         </td>
 
-                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($product->total_amount)}}</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($product->actual_price * $product->quantity)}}</td>
                                     </tr>
                                     @endif
                                     @endforeach
@@ -438,20 +438,22 @@ $timezone = Auth::user()->timezone;
                                             <td>{{$clientCurrency->currency->symbol}}@money($container_charges)</td>
                                         </tr>
                                     @endif
+                                    @php
+                                        $adminRevenue = ($revenue+$taxable_amount+$container_charges+$vendor_service_fee+$vendor->delivery_fee)-$adminDiscount;
+
+                                        $storeRevenue = ($sub_total +$order->fixed_fee_amount ) - $revenue - $vendorDiscount;
+                                
+                                    @endphp
 
                                     {{-- @if(Auth::user()->is_superadmin) --}}
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{$client_head->name}} {{ __("Revenue") }} :</th>
-                                        @php
-                                            $adminRevenue = ($revenue+$taxable_amount+$container_charges+$vendor_service_fee+$vendor->delivery_fee)-$adminDiscount;
-                                        @endphp
+                                       
                                         <td>{{$clientCurrency->currency->symbol}}{{decimal_format($adminRevenue)}}</td>
                                     </tr>
+                                   
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
-                                        @php
-                                            $storeRevenue = $sub_total - $revenue - $vendorDiscount;
-                                        @endphp
                                         {{-- <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->sub_total * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)}}</td> --}}
                                         <td>{{$clientCurrency->currency->symbol}}{{decimal_format($storeRevenue)}}</td>
                                     </tr>
