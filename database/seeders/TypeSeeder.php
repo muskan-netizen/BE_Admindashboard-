@@ -108,7 +108,7 @@ class TypeSeeder extends Seeder
                 
             ],
             [
-                'id' => 11,
+                'id' => 12,
                 'sequence' => 11,
                 'title' => 'Appointment',
                 'service_type' => 'appointment_service',

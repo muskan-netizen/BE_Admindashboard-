@@ -213,7 +213,7 @@ class VendorController extends FrontController
                     }])->get();
                 }
                  // if vendor type selecter on demand service by harbans i don't want to do this garvage 
-                if($type == 'on_demand' || $type == 'appointment' ){
+                if($type == 'on_demand' || $type == 'appointment'){
                     $cartDataGet    = $this->getCartOnDemand($request);
                     $cartData       = $cartDataGet['cartData'];
                     $period         = $cartDataGet['period'];

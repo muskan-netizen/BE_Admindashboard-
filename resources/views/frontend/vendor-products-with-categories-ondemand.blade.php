@@ -181,7 +181,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                     <ul id='main-nav-list'>
                                        @if(!empty($category->childs) && count($category->childs) > 0)
                                             @foreach ($category->childs as $key => $childs)
-                                                @if($childs->type_id == 8)
+                                                @if($childs->type_id == 8 || $childs->type_id == 12 )
                                                 <li><a href="#section_set{{$key}}">{{ $childs['translation_name'] ?? ''}}</a></li>
                                                 @endif
                                             @endforeach
@@ -202,7 +202,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                         <!-- Start Conent Wrapper -->
                                         <div id='main-wrapper'  class="@if(app('request')->input('addons') == 1) d-none @endif">
                                                     @foreach ($category->childs as $key => $childs)
-                                                        @if($childs->type_id == 8)
+                                                        @if($childs->type_id == 8 || $childs->type_id == 12 )
 
                                                             <h4><b>{{ $childs->translation_name }}</b></h4>
                                                             <div class='' id='section_set{{$key}}'>
