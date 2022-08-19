@@ -424,21 +424,8 @@ height: auto;
 		<span class="sr-only">Next</span>
 	</a>
 </script>
-{{dd($homePageLabels)}}
-<section class="section-b-space ratio_asos  pt-0 mt-0 pb-0 mt-0" id="our_vendor_main_div">
-    <div class="vendors">
-       @foreach($homePageLabels as $key => $homePageLabel) 
-       @if($homePageLabel->slug == 'pickup_delivery')
-            @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
-                @include('frontend.booking.cabbooking-single-module')
-            @endif
-       @elseif($homePageLabel->slug == 'best_sellers')
-       @else
-       @endif 
-       @endforeach
-    </div>
- </section>
-<script type="text/template" id="vendors_template">
+
+{{-- <script type="text/template" id="vendors_template">
     <% _.each(vendors, function(vendor, k){%>
         <div class="product-box scale-effect">
             <div class="img-wrapper">
@@ -657,11 +644,11 @@ height: auto;
 
         <% }); %>
     <% }); %>
-</script>
+</script> --}}
 
 
 
-<section class="section-b-space ratio_asos d-none pb-0 pt-0 mt-0 al_template_two_content" id="our_vendor_main_div">
+<section class="section-b-space ratio_asos pb-0 pt-0 mt-0 al_template_two_content" id="our_vendor_main_div">
     <div class="vendors">
         @foreach($homePageLabels as $key => $homePageLabel)
         @if($homePageLabel->slug == 'pickup_delivery')
@@ -672,19 +659,58 @@ height: auto;
         
             @include('frontend.included_files.dynamic_page')
         @else
-        <div class="container render_full_{{$homePageLabel->slug}} d-none" id="{{$homePageLabel->slug.$key}}">
+        <div class="container render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
             <div class="row">
                 <div class="col-12"   >
                     @if($homePageLabel->slug == 'vendors')
                     <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
                     @elseif($homePageLabel->slug == 'trending_vendors')
                     <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
+                    @elseif($homePageLabel->slug == 'best_sellers')
+                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
                     @elseif($homePageLabel->slug == 'recent_orders')
                     <div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
                     @elseif($homePageLabel->slug == 'brands')
-                    <div class="brand-slider product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}" ></div>
+                    <div class="brand-slider product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}" >
+                        @foreach ($homePageData[$homePageLabel->slug] as $brand )
+                            <a class="barnd-img-outer" href="{{$brand->redirect_url }}">
+                                <img class="blur-up lazyloaded" src="{{ $brand->image['image_fit'].'260/260'.$brand->image['image_path'] }}" alt="">
+                            </a>
+                        @endforeach
+                    </div>
                     @else
-                    <div class="product-4-{{$homePageLabel->slug}} product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}"></div>
+                    <div class="product-4-{{$homePageLabel->slug}} product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}">
+                        @foreach ($homePageData[$homePageLabel->slug] as $product )
+                        <div>
+                            <a class="card scale-effect text-center" href="{{ $product['vendor']->slug }}/product/{{ $product['url_slug'] }}">
+                                <label class="product-tag">@if($product["tag_title"] != 0) {{$product["tag_title"]}} @else {{$homePageLabel->title}}@endif </label>
+                                <div class="product-image">
+                                    <img class="blur-up lazyloaded" src="{{ $product['image_url'] }}" alt="">
+                                </div>
+                                <div class="media-body align-self-center">
+                                    <div class="inner_spacing px-0">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <h3 class="m-0">{{ $product["title"] }}</h3>
+                                            @if($client_preference_detail)
+                                                @if($client_preference_detail->rating_check == 1)
+                                                    @if($product["averageRating"] >0)
+                                                        <span class="rating">{{ $product["averageRating"] }} <i class="fa fa-star text-white p-0"></i></span>
+                                                    @endif 
+                                                @endif
+                                            @endif
+                                        </div>
+                                        <p>{{ $product["vendor_name"] }}</p>
+                                        <h4>
+                                            @if($product["inquiry_only"] == 0)
+                                            {{$product["price"]}}
+                                            @endif
+                                        </h4>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        @endforeach
+                    </div>
                     @endif
                 </div>
             </div>
