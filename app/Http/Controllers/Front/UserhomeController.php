@@ -220,13 +220,13 @@ class UserhomeController extends FrontController
                                     ->orderBy('id', 'asc')
                                     ->where('status', 1)
                                     ->orderBy('parent_id', 'asc')->get();
-            if ($categories) {
-                $builds = $this->buildTree($categories->toArray());
-            }
+                if ($categories) {
+                    $builds = $this->buildTree($categories->toArray());
+                }
 
-            $VendorCategory =array();
+                $VendorCategory =array();
 
-            $templetes  = \DB::table('vendor_templetes')->where('status', 1)->get();
+                $templetes  = \DB::table('vendor_templetes')->where('status', 1)->get();
                 $server = env('APP_ENV', 'development');
                 $langId = session()->get('customerLanguage');
                 $privacy = Page::with(['translations' => function ($q) use($langId) {
@@ -247,20 +247,20 @@ class UserhomeController extends FrontController
                 // }else{
                 //     return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
                 // }
-            } else {
-            $tag = [];
-            $showTag = implode(',', $tag);
-            $client = Client::with('country')->first();
-           // pr( $this->driverDocuments());
-            $driverDocs = json_decode($this->driverDocuments());
-            $driver_registration_documents = $driverDocs->documents;
-            foreach ($driverDocs->documents as $key => $doc) {
-                $name = str_replace(" ", "_", $doc->name);
-                $doc->slug = $name;
-            }
-            $teams = $driverDocs->all_teams;
-            $tags = $driverDocs->agent_tags;
-            return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
+        }else {
+                $tag = [];
+                    $showTag = implode(',', $tag);
+                    $client = Client::with('country')->first();
+                    // pr( $this->driverDocuments());
+                    $driverDocs = json_decode($this->driverDocuments());
+                    $driver_registration_documents = $driverDocs->documents;
+                    foreach ($driverDocs->documents as $key => $doc) {
+                        $name = str_replace(" ", "_", $doc->name);
+                        $doc->slug = $name;
+                    }
+                $teams = $driverDocs->all_teams;
+                $tags = $driverDocs->agent_tags;
+                return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
         }
     }
     public function index(Request $request, $domain='')

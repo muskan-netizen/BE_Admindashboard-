@@ -28,6 +28,13 @@
             @endif
             </div>
             @endif
+            @if($vendor_for_appointment_delivery > 0)
+            <div class="for_appointment_delivery_service_only">
+            @if( ($client_preferences->need_appointment_service == 1) && ($vendor->appointment == 1 ) )
+            <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmAppointmentDispatcher" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (Appointment)") }} </button>
+            @endif
+            </div>
+            @endif
 
             @endif
         </div>
@@ -922,6 +929,12 @@ $( document ).ready(function() {
                         $('.for_on_demand_service_only').html('<button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcherOnDemand" data-id="'+response.data.product_categories[0].vendor_id+'">{{__("Login Into Dispatcher (On Demand Services)")}} </button>');
                     }else{
                         $('.for_on_demand_service_only').html('');
+                    }
+                    if(response.data.check_appointment_service == 1)
+                    {
+                        $('.for_appointment_delivery_service_only').html('<button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmAppointmentDispatcher" data-id="'+response.data.product_categories[0].vendor_id+'">{{__("Login Into Dispatcher (On Demand Services)")}} </button>');
+                    }else{
+                        $('.for_appointment_delivery_service_only').html('');
                     }
 
 

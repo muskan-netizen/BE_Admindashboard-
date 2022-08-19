@@ -186,6 +186,17 @@ trait ApiResponser
 			return false;
 	}
 
+	# check if on demand service  on
+	public function checkIfAppointmentOnCommon()
+	{
+		$preference = ClientPreference::select('id', 'need_appointment_service', 'appointment_service_key_code', 'appointment_service_key', 'appointment_service_key_url')->first();
+		if ($preference->need_appointment_service == 1 && !empty($preference->appointment_service_key_code) && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_url))
+			return $preference;
+		else
+			return false;
+	}
+
+
 
 	# set currency in session
 	public function setCurrencyInSesion(){

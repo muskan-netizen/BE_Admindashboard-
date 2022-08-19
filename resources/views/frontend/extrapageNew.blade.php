@@ -235,11 +235,26 @@
                                 @if($mod_count > 1)
                                 @if($client_preferences)
                                     <div class="form-row">
-                                        @if($client_preferences->dinein_check == 1)
+                                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                                            @php
+                                                $clientVendorTypes = $vendor_typ_key.'_check';
+                                                $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                                                $vendor_DynamicTypeName = $vendor_typ_key == "dinein" ? 'Dine-In' : $vendor_typ_value ;
+                                            @endphp
+                                            @if($client_preferences->$clientVendorTypes == 1 )
+                                                <div class="col-md-2 col-4 mb-3">
+                                                    <label for="">{{getDynamicTypeName($vendor_DynamicTypeName)}}</label>
+                                                    <div class="mt-md-1">
+                                                        <input type="checkbox" data-plugin="switchery" checked data-color="#43bee1" id="{{$VendorTypesName}}" name="{{$VendorTypesName}}">
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                        {{-- @if($client_preferences->dinein_check == 1)
                                         @php
                                         $Dine_In = getNomenclatureName('Dine-In', true);
                                         $Dine_In = ($Dine_In === 'Dine-In') ? __('Dine-In') : $Dine_In;
-                                    @endphp
+                                         @endphp
                                             <div class="col-md-2 col-4 mb-3">
                                                 <label for="">{{$Dine_In}}</label>
                                                 <div class="mt-md-1">
@@ -260,17 +275,17 @@
                                             </div>
                                         @endif
                                         @if($client_preferences->delivery_check == 1)
-                                        @php
-                                        $Delivery = getNomenclatureName('Delivery', true);
-                                        $Delivery = ($Delivery === 'Delivery') ? __('Delivery') : $Delivery;
-                                        @endphp
-                                            <div class="col-md-2 col-4 mb-3">
-                                                <label for="">{{$Delivery}}</label>
-                                                <div class="mt-md-1">
-                                                    <input type="checkbox" data-plugin="switchery" data-color="#43bee1" id="delivery" name="delivery">
+                                            @php
+                                            $Delivery = getNomenclatureName('Delivery', true);
+                                            $Delivery = ($Delivery === 'Delivery') ? __('Delivery') : $Delivery;
+                                            @endphp
+                                                <div class="col-md-2 col-4 mb-3">
+                                                    <label for="">{{$Delivery}}</label>
+                                                    <div class="mt-md-1">
+                                                        <input type="checkbox" data-plugin="switchery" data-color="#43bee1" id="delivery" name="delivery">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        @endif
+                                        @endif --}}
                                     </div>
                                 @endif
                                 @endif
