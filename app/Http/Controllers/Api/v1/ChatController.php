@@ -181,7 +181,9 @@ class ChatController extends BaseController
                     'order_user_id' =>$orderby_user_id,
                     'type'=>$data['type'],
                     'db_name'=>$data['db_name'],
-                    'client_id'=>$data['client_id']
+                    'client_id'=>$data['client_id'],
+                    'agent_db'=>@$data['agent_db'],
+                    'agent_id'=>@$data['agent_id'],
                 ]);
                 $statusCode = $response->getStatusCode();
                 if($statusCode == 200) {
