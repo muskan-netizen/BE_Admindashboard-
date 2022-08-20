@@ -382,6 +382,10 @@ class OrderController extends BaseController
                 }
             }
         }
+        elseif($request->has('sort_order') && ($request->sort_order == 'newest_slot')){
+            // $now = Carbon::now()->toDateTimeString();
+            $orders = $orders->orderBy(DB::raw('ISNULL(scheduled_date_time), scheduled_date_time'), 'ASC')->orderBy('created_at', 'DESC');
+        }
         else{
             $orders = $orders->select('*', 'id as total_discount_calculate')->orderBy('id', 'DESC');
         }
@@ -706,8 +710,15 @@ class OrderController extends BaseController
         }
         $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
 
-        $nomenclaturesTranslation = Nomenclature::where('label','Product Order Form')->first();
-        $nomenclatureProductOrderForm = !empty($nomenclaturesTranslation)? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclaturesTranslation->id,'language_id'=>$langId])->first()->name : "Product Order Form";
+        $nomenclature = Nomenclature::where('label','Product Order Form')->first();
+        $nomenclatureProductOrderForm = "Product Order Form";
+        if(!empty($nomenclature)){
+            $nomenclatureTranslation = NomenclatureTranslation::where(['nomenclature_id'=>$nomenclature->id,'language_id'=>$langId])->first();
+            if($nomenclatureTranslation){
+                $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
+            }
+        }
+        
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 
             'order' => $order,
@@ -760,7 +771,7 @@ class OrderController extends BaseController
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type=='D') {
                         //Create Shipping request for dispatcher
-                        \Log::info('11');
+                       // \Log::info('11');
                         $order_dispatch = $this->checkIfanyProductLastMileon($request);
                         if ($order_dispatch && $order_dispatch == 1){
                             $stats = $this->insertInVendorOrderDispatchStatus($request);
@@ -1144,7 +1155,7 @@ class OrderController extends BaseController
                 }
             }
         }
-
+       // \Log::info('getDispatchLaundryDomain');
         /////////////// **************** for laundry accept order *************** ////////////////
         $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
 
@@ -1170,7 +1181,7 @@ class OrderController extends BaseController
                             }
 
 
-
+                            //\Log::info('placeRequestToDispatchLaundry');
                             $order_dispatchs = $this->placeRequestToDispatchLaundry($request->order_id, $request->vendor_id, $dispatch_domain_laundry, $team_tag, $colm);
                         }
 
@@ -1326,10 +1337,10 @@ class OrderController extends BaseController
         } catch (\Exception $e) {
             Log::info($e->getMessage());
             return 2;
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
+            // return response()->json([
+            //     'status' => 'error',
+            //     'message' => $e->getMessage()
+            // ]);
         }
     }
 
@@ -1462,6 +1473,8 @@ class OrderController extends BaseController
     // place Request To Dispatch for Laundry
     public function placeRequestToDispatchLaundry($order, $vendor, $dispatch_domain, $team_tag, $colm)
     {
+       // \Log::info('placeRequestToDispatchLaundry -- 1');
+
         try {
             $order = Order::find($order);
             $customer = User::find($order->user_id);
@@ -1480,7 +1493,7 @@ class OrderController extends BaseController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
-            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
             $rtype = 'P';
@@ -1580,14 +1593,14 @@ class OrderController extends BaseController
                 'task' => $tasks,
                 'request_type'=>$rtype??'P',
                 'is_restricted' => $order_vendor->is_restricted??'0',
-                'vendor_id' => $vendor_details->id,
-                'order_vendor_id' => $order_vendor->id,
+                'vendor_id' => $vendor_details->id??'',
+                'order_vendor_id' => $order_vendor->id??'',
                 'dbname' => $client->database_name,
-                'order_id' => $order->id,
+                'order_id' => $order->id??'',
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image
             ];
-
+            //\Log::info(json_encode($postdata));
             // if($order_vendor->is_restricted == 1)
             // {
             //     $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -1604,6 +1617,8 @@ class OrderController extends BaseController
             ]);
 
             $url = $dispatch_domain->laundry_service_key_url;
+           // \Log::info('domain --'.$url);
+
             $res = $client->post(
                 $url . '/api/task/create',
                 ['form_params' => ($postdata)]
@@ -1621,7 +1636,7 @@ class OrderController extends BaseController
             }
             return 2;
         } catch (\Exception $e) {
-
+            \Log::info($e->getMessage());
             return 2;
             return response()->json([
                 'status' => 'error',

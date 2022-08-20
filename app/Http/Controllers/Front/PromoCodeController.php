@@ -139,12 +139,11 @@ class PromoCodeController extends Controller{
                         if($addon_option->exists()){
                             $addon_price = $addon_option->first()->price * $cart_product->quantity;
                         }                        
-                        $product_addon_price += $addon_price;
+                        $product_addon_price += $addon_price??0;
                     }
                 }
                 $total_minimum_spend += $product_addon_price;
             }
-            \Log::info($request->cart_product_ids);
             if ($product_ids) {
                 if(isset($request->cart_product_ids) && !empty($request->cart_product_ids))
                 {
