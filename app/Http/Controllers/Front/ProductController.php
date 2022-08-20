@@ -352,7 +352,8 @@ class ProductController extends FrontController{
         $sets = array();
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $availableSets = Product::with(['variantSet.variantDetail','variantSet.option2'=>function($q)use($product, $pv_ids){
-           // $q->where('product_id', $product->id); //->whereIn('product_variant_id', $pv_ids);
+            //$q->where('product_id', $product->id); 
+            //->whereIn('product_variant_id', $pv_ids);
         }])
         ->select('id')
         ->where('id', $product->id)->first();
