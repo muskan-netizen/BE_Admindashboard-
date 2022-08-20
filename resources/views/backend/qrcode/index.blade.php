@@ -67,7 +67,7 @@
                             <thead>
                                 <tr>
                                     <th>{{ __("Code") }}</th>
-                                     <th>{{__("Vendor")}}</th>
+                                     {{-- <th>{{__("Vendor")}}</th> --}}
                                    {{-- <th>{{__("Action")}}</th> --}}
                                 </tr>
                             </thead>
@@ -77,9 +77,9 @@
                                             <td>
                                                 {{$item->code}}
                                             </td>
-                                            <td>
+                                            {{-- <td>
                                                 {{@$item->vendorDetail->name}}
-                                            </td>
+                                            </td> --}}
                                            </tr>
 
                                            @empty

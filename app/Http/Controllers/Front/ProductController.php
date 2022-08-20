@@ -124,7 +124,7 @@ class ProductController extends FrontController{
                 $query->where('user_wishlists.user_id', $user->id);
             });
         }
-        $product = $product->with('related')->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count' )
+        $product = $product->with('related')->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration' )
             ->whereHas('vendor',function($q) use($vendor){
                 $q->where('slug',$vendor);
             })->where('url_slug', $url_slug)
@@ -352,7 +352,7 @@ class ProductController extends FrontController{
         $sets = array();
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $availableSets = Product::with(['variantSet.variantDetail','variantSet.option2'=>function($q)use($product, $pv_ids){
-            //$q->where('product_id', $product->id); //->whereIn('product_variant_id', $pv_ids);
+           // $q->where('product_id', $product->id); //->whereIn('product_variant_id', $pv_ids);
         }])
         ->select('id')
         ->where('id', $product->id)->first();
