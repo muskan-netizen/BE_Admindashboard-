@@ -257,10 +257,10 @@ class VendorController extends BaseController
         $checks = array();
         foreach ($request->only('name', 'address', 'latitude', 'longitude', 'desc','short_desc') as $key => $value) {
             $vendor->{$key} = $value;
-        }
-
+        }      
         $client_preference = (object)Session::get('preferences');
         $single_vendor_type = "delivery";
+        $count = 0;
         if($client_preference){
             foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
                 $clientVendorTypes = $vendor_typ_key.'_check';
@@ -271,6 +271,16 @@ class VendorController extends BaseController
                     $count++;
                 }
             }
+        }
+
+        if($count > 1){
+            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
+            }
+        }
+        else{
+            $vendor->$single_vendor_type = 1;
         }
 
         if($count > 1){
