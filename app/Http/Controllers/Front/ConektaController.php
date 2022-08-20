@@ -19,7 +19,7 @@ class ConektaController extends Controller
 	    $this->public_key = $this->creds_arr->public_key ?? '';
 	    $this->private_key = $this->creds_arr->private_key ?? '';
         $this->url = url('payment/conekta'); 
-        // $this->url = "https://7e79-180-188-237-23.ngrok.io/payment/conekta";
+        // $this->url = "https://460a-180-188-237-23.ngrok.io/payment/conekta";
 	}
 	public function beforePayment(Request $request)
     {
@@ -44,23 +44,6 @@ class ConektaController extends Controller
                 'tags' => array('cart')
             ];
             array_push($lineItems, $item);
-            // if(isset($data['cart_id']))
-            // {
-            //     $order = Order::where('order_number', $data['order_number'])->with('products')->first();
-            //     foreach($order->products as $cp)
-            //     {
-            //         $item = [
-            //             'name'=> $cp->product->title??'',
-            //             'description'=> $cp->product->description??"Product description is not found",
-            //             'unit_price'=> (int)($data['amount'] * 100),
-            //             'quantity'=> $cp->quantity,
-            //             'sku'=> $cp->product->sku??'',
-            //             'category'=> $cp->product->category->categoryDetail->slug??"cart",
-            //             'tags' => array('cart')
-            //         ];
-            //         array_push($lineItems, $item);
-            //     }
-            // }
         }elseif($data['payment_from'] == "wallet"){
             $item = [
                 'name'=> 'Wallet',
@@ -107,13 +90,14 @@ class ConektaController extends Controller
     }
     public function afterPayment(Request $request, $domain='',$status,$payment_from,$come_from,$amount,$order_number)
     { 
+        // Auth::loginUsingId(1);
         $request['payment_from'] = $payment_from;
         $request['come_from'] = $come_from;
         $request['amount'] = $amount;
         $request['order_number'] = $order_number;
         if($status == 'success')
         {
-            $returnUrl = $this->sucessPayment($request,$request->cart_id);
+            $returnUrl = $this->sucessPayment($request,$request->checkout_id);
         } else{
             $returnUrl = $this->failedPayment($request);
         }
