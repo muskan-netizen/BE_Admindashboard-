@@ -53,15 +53,15 @@ class VendorController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function getFilterData(Request $request){
-        $dinein_check = '';
-        $takeaway_check = '';
-        $delivery_check = '';
-        $client_preference = ClientPreference::first();
-        if($client_preference){
-            $dinein_check = $client_preference->dinein_check;
-            $takeaway_check = $client_preference->takeaway_check;
-            $delivery_check = $client_preference->delivery_check;
-        }
+        // $dinein_check = '';
+        // $takeaway_check = '';
+        // $delivery_check = '';
+        $client_preference = (object)Session::get('preferences');
+        // if($client_preference){
+        //     $dinein_check = $client_preference->dinein_check;
+        //     $takeaway_check = $client_preference->takeaway_check;
+        //     $delivery_check = $client_preference->delivery_check;
+        // }
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->where('status', $request->status)->orderBy('id', 'desc');
         if (Auth::user()->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {
@@ -84,9 +84,18 @@ class VendorController extends BaseController
                 $vendor->show_slot_label="danger";
                 $vendor->show_slot_option = "Closed";
             }
-            $offers[]= $dinein_check == 1 && $vendor->dine_in == 1 ? __('Dine In') : '';
-            $offers[]= $takeaway_check == 1 && $vendor->takeaway == 1 ? __('Take Away') : '';
-            $offers[]= $delivery_check == 1 && $vendor->delivery == 1 ? __('Delivery') : '';
+            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                $clientVendorTypes = $vendor_typ_key.'_check';
+                $NomenclitureName =  $vendor_typ_key == "dinein" ? 'Dine-In' : $vendor_typ_value;
+                if($client_preference->$clientVendorTypes == 1){
+                    $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
+                    $offers[]=  $vendor->$VendorTypesName == 1 ? getNomenclatureName($NomenclitureName) : $NomenclitureName;
+                }
+            }
+            // $offers[]= $dinein_check == 1 && $vendor->dine_in == 1 ? __('Dine In') : '';
+            // $offers[]= $takeaway_check == 1 && $vendor->takeaway == 1 ? __('Take Away') : '';
+            // $offers[]= $delivery_check == 1 && $vendor->delivery == 1 ? __('Delivery') : '';
             $vendor->offers = $offers;
         }
         return Datatables::of($vendors)
@@ -249,13 +258,31 @@ class VendorController extends BaseController
         foreach ($request->only('name', 'address', 'latitude', 'longitude', 'desc','short_desc') as $key => $value) {
             $vendor->{$key} = $value;
         }
-        foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
-            $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-            $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
+
+        $client_preference = (object)Session::get('preferences');
+        $single_vendor_type = "delivery";
+        if($client_preference){
+            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                $clientVendorTypes = $vendor_typ_key.'_check';
+                if($client_preference->$clientVendorTypes == 1){
+                    if($count == 0){
+                        $single_vendor_type = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
+                    }
+                    $count++;
+                }
+            }
         }
-        // $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
-        // $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
-        // $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
+
+        if($count > 1){
+            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
+            }
+        }
+        else{
+            $vendor->$single_vendor_type = 1;
+        }
+        
         if ($update == 'false') {
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
