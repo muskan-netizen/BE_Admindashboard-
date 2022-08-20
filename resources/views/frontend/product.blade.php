@@ -211,7 +211,6 @@
                                                         <li class="firstChild">{{$variant->title}}</li>
                                                         <li class="otherSize">
                                                             @foreach($variant->option2 as $k => $optn)
-                                                            @if($optn->status==1)
                                                             <?php $var_id = $variant->variant_type_id;
                                                             $opt_id = $optn->variant_option_id;
                                                             $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
@@ -220,7 +219,6 @@
                                                                 <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
                                                                 <span class="checkround"></span>
                                                             </label>
-                                                            @endif
                                                             @endforeach
                                                         </li>
                                                     </ul>
