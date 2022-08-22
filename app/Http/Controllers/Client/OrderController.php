@@ -1154,7 +1154,7 @@ class OrderController extends BaseController
                             //echo " type+;adk";
                             //pr($checkdeliveryFeeAdded);
                             $order_dispatchs = $this->placeRequestToDispatchAppointment($request->order_id, $request->vendor_id, $dispatch_domain_Appointment);
-                            dd($order_dispatchs);
+                            //dd($order_dispatchs);
                             if ($order_dispatchs && $order_dispatchs == 1) {
                                 $Appointment = 1;
                                 return 1;
@@ -1165,7 +1165,7 @@ class OrderController extends BaseController
                 }
             }
         }
-        dd('adasd');
+       // dd('adasd');
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
             if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){

@@ -138,7 +138,7 @@ trait OrderTrait{
     public function placeRequestToDispatchAppointment($order, $vendor, $dispatch_domain)
     {
        
-        //try {
+        try {
 
             $order = Order::find($order);
             $customer = User::find($order->user_id);
@@ -254,13 +254,13 @@ trait OrderTrait{
                 return 1;
             }
             return 2;
-        // } catch (\Exception $e) {
-        //     return 2;
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => $e->getMessage()
-        //     ]);
-        // }
+        } catch (\Exception $e) {
+            return 2;
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
     }
    
 
