@@ -1150,7 +1150,7 @@ class OrderController extends BaseController
                         //echo $Appointment . 'app';
                         //echo $checkdeliveryFeeAdded->delivery_fee . '$checkdeliveryFeeAdded->delivery_fee';
                        
-                        if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee >= 0) {
+                        if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
                             //echo " type+;adk";
                             //pr($checkdeliveryFeeAdded);
                             $order_dispatchs = $this->placeRequestToDispatchAppointment($request->order_id, $request->vendor_id, $dispatch_domain_Appointment);

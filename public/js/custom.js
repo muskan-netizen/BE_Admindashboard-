@@ -2726,7 +2726,6 @@ $(document).ready(function () {
     });
 
     $(document).on("click", ".addToCart", function () {
-
         if (!$.hasAjaxRunning()) {
             addToCart();
         }
@@ -2754,7 +2753,7 @@ $(document).ready(function () {
 
 
     function addToCart() {
-
+     
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
 
@@ -2804,26 +2803,33 @@ $(document).ready(function () {
             var sVendorResponse = checkIsolateSingleVendor(vendor_id);
             if (sVendorResponse.status == 'Success') {
                 if ((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) {
+                    var start_date =  $('#start_time').val();
+                    var end_date =  $('#end_time').val();
+                    var incremental_hrs =  $('#incremental_hrs').val();
                     $("#single_vendor_remove_cart_btn").attr({
                         'data-product_id': product_id,
                         'data-variant_id': (vendor_type == 'rental') ? $('#prod_variant_id').val() :$('#available_product_variant').val(),
                         'data-quantity': $('.quantity_count').val(),
                         'data-vendor_id': vendor_id,
-                        'data-page': 'productDetail'
+                        'data-page': 'productDetail',
+                        'data-start_time':start_date,
+                        'data-end_time':end_date,
+                        'data-incremental_hrs':incremental_hrs
                     });
                     $("#single_vendor_order_modal").modal('show');
                 } else {
                     var variant_id =  (vendor_type == 'rental') ? $('#prod_variant_id').val() :$('#available_product_variant').val();
                     var start_date =  $('#start_time').val();
-                    var end_date =  $('#end_date').val();
+                    var end_date =  $('#end_time').val();
                     var quantity = $('.quantity_count').val();
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date);
+                    var incremental_hrs =  $('#incremental_hrs').val();
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='') {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='') {
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -2838,7 +2844,8 @@ $(document).ready(function () {
                 "quantity": quantity,
                 "variant_id": variant_id,
                 "start_date":start_date,
-                "end_date":end_date
+                "end_date":end_date,
+                "incremental_hrs":incremental_hrs
             },
             success: function (response) {
                 if (response.status == 'success') {
@@ -2876,8 +2883,12 @@ $(document).ready(function () {
         var variant_id = $(this).attr('data-variant_id');
         var quantity = $(this).attr('data-quantity');
         var vendor_id = $(this).attr('data-vendor_id');
+        var start_date = $(this).attr('data-start_time');
+        var end_date = $(this).attr('data-end_time'); 
+        var incremental_hrs = $(this).attr('data-incremental_hrs');
+       
         if ($(this).attr('data-page') == 'productDetail') {
-            submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id);
+            submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs);
         } else if ($(this).attr('data-page') == 'vendorProducts') {
             var elem = $(this).attr('data-element_id');
             submitAddtoCartProductsAddons($('#' + elem), addonids, addonoptids, product_id, variant_id, quantity, vendor_id);

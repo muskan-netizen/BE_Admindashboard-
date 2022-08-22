@@ -1,3 +1,5 @@
+@php $serviceType =  Session::get('vendorType'); @endphp
+
 @if($cart_details->totalQuantity<=0)
     <div class="container" >
         <div class="row mt-2 mb-4 mb-lg-5">
@@ -55,10 +57,16 @@
                     <div class="col-md-2 text-center">
                         <span>Price</span>
                     </div>
-
+                @if($serviceType ==  'rental')
+                    <div class="col-md-2 text-center">
+                        <span>Additional Increment Duration</span>
+                    </div>
+                @else
                     <div class="col-md-2 text-center">
                         <span>Quantity</span>
                     </div>
+                @endif
+                    
 
                     <div class="col-md-4 text-center">
                         <span>Total</span>
@@ -169,30 +177,48 @@
                             <div class="col-6 col-md-2 text-left order-md-4">
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
                             </div>
-                            <div class="col-10 col-md-4 text-md-center order-md-3">
-                                <div class="number d-flex justify-content-md-center">
-                                    <div class="counter-container d-flex align-items-center">
-                                        <span class="minus qty-minus" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
-                                        data-batch_count="{{$vendor_product->product->batch_count }}" data-id="{{$vendor_product->id }}" data-base_price=" {{$vendor_product->pvariant->price }}" data-vendor_id="{{$vendor_product->vendor_id }}">
-                                            <i class="fa fa-minus" aria-hidden="true"></i>
-                                        </span>
-                                        <input placeholder="1" type="text" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
-                                        data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
-                                        <span class="plus qty-plus" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
-                                            data-batch_count="{{$vendor_product->product->batch_count }}" data-id="{{$vendor_product->id }}" data-base_price=" {{$vendor_product->pvariant->price }}">
-                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                        </span>
+                            @if($serviceType ==  'rental')
+                                <div class="col-10 col-md-4 text-md-center order-md-3">
+                                    <div class="number d-flex justify-content-md-center">
+                                        <div style="display: none;" class="counter-container d-flex align-items-center">
+                                            <input placeholder="1" type="text" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
+                                            data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
+                                            
+                                        </div>
+                                        <p></p>
+                                        <?php 
+
+                                       // pr($vendor_product);
+                                        ?>
                                     </div>
                                 </div>
-                                @if($cart_details->pharmacy_check == 1)
-                                    @if($vendor_product->product->pharmacy_check == 1)
-                                        <button type="button" class="float-left btn btn-solid prescription_btn mt-2" data-cart="{{$vendor_product->cart_id }}" data-product="{{$vendor_product->product->id }}" data-vendor_id="{{$vendor_product->vendor_id }}">{{ __('Add Prescription')}}</button>
-                                        @if($vendor_product->cart_product_prescription > 0)
-                                            <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{$vendor_product->cart_product_prescription }} {{ __('Prescription Added')}}</strong></h4>
+                            @else
+
+                                <div class="col-10 col-md-4 text-md-center order-md-3">
+                                    <div class="number d-flex justify-content-md-center">
+                                        <div class="counter-container d-flex align-items-center">
+                                            <span class="minus qty-minus" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
+                                            data-batch_count="{{$vendor_product->product->batch_count }}" data-id="{{$vendor_product->id }}" data-base_price=" {{$vendor_product->pvariant->price }}" data-vendor_id="{{$vendor_product->vendor_id }}">
+                                                <i class="fa fa-minus" aria-hidden="true"></i>
+                                            </span>
+                                            <input placeholder="1" type="text" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
+                                            data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
+                                            <span class="plus qty-plus" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
+                                                data-batch_count="{{$vendor_product->product->batch_count }}" data-id="{{$vendor_product->id }}" data-base_price=" {{$vendor_product->pvariant->price }}">
+                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    @if($cart_details->pharmacy_check == 1)
+                                        @if($vendor_product->product->pharmacy_check == 1)
+                                            <button type="button" class="float-left btn btn-solid prescription_btn mt-2" data-cart="{{$vendor_product->cart_id }}" data-product="{{$vendor_product->product->id }}" data-vendor_id="{{$vendor_product->vendor_id }}">{{ __('Add Prescription')}}</button>
+                                            @if($vendor_product->cart_product_prescription > 0)
+                                                <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{$vendor_product->cart_product_prescription }} {{ __('Prescription Added')}}</strong></h4>
+                                            @endif
                                         @endif
                                     @endif
-                                @endif
-                            </div>
+                                </div>
+                            @endif
                             <div class="col-2 col-md-1 text-right text-md-center p-in order-md-5">
                                 <a class="action-icon d-block remove_product_via_cart" data-product="{{$vendor_product->id }}" data-vendor_id="{{$vendor_product->vendor_id }}">
                                     <i class="fa fa-trash-o" aria-hidden="true"></i>

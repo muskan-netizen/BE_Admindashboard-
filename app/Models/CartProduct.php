@@ -9,7 +9,7 @@ class CartProduct extends Model{
 
     use HasFactory;
 
-    protected $fillable = ['cart_id','product_id', 'vendor_id', 'vendor_dinein_table_id', 'quantity', 'status', 'variant_id', 'is_tax_applied', 'tax_rate_id', 'currency_id', 'tax_category_id', 'luxury_option_id','schedule_type','scheduled_date_time','scheduled_slot'];
+    protected $fillable = ['cart_id','product_id', 'vendor_id', 'vendor_dinein_table_id', 'quantity', 'status', 'variant_id', 'is_tax_applied', 'tax_rate_id', 'currency_id', 'tax_category_id', 'luxury_option_id','schedule_type','scheduled_date_time','scheduled_slot','start_date_time','end_date_time','additional_increments_hrs_min'];
 
     protected $touches = ['cart'];
 

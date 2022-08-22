@@ -221,6 +221,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div>
                 </div>
+                {{-- @php
+                pr($product->toArray()); @endphp --}}
                 @if($product->category->categoryDetail->type_id != 7)
                 <div class="card-box">
 
@@ -294,7 +296,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </div>
                         </div>
                     </div>
-                    @if($product->category->categoryDetail->type_id == 10)
+                    @if(  in_array( $product->category->categoryDetail->type_id , [10,12]) )
                         <div class="row col-md-12 mb-2">
                             <div class="col-4 mb-2 row">
                                 <div class="col-12">
@@ -310,6 +312,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     {!!Form::input('number','minimum_duration_min', $product->minimum_duration_min, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'minimum_duration_min', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
                                 </div>
                             </div>
+                            @if($product->category->categoryDetail->type_id  ==  10)
                             <div class="col-4 mb-2 row">
                                 <div class="col-12">
                                     {!! Form::label('title', __('Additional Increment Duration'), ['class' => 'control-label']) !!}
@@ -338,22 +341,24 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 </div>
 
                             </div>
+                            @endif
                         </div>
                         {{-- <div class="row mb-2">
                            
                         </div> --}}
-
-                        <div class="row mb-2">
-                            <div class="col-sm-3">
-                                {!! Form::label('title', __('Fix Check-in time'),['class' => 'control-label']) !!} <br />
-                                <input type="checkbox" bid="" id="is_fix_check_in_time" data-plugin="switchery" name="is_fix_check_in_time" class="chk_box" data-color="#43bee1" @if($product->is_fix_check_in_time == 1) checked @endif>
+                        @if($product->category->categoryDetail->type_id  ==  10)
+                            <div class="row mb-2">
+                                <div class="col-sm-3">
+                                    {!! Form::label('title', __('Fix Check-in time'),['class' => 'control-label']) !!} <br />
+                                    <input type="checkbox" bid="" id="is_fix_check_in_time" data-plugin="switchery" name="is_fix_check_in_time" class="chk_box" data-color="#43bee1" @if($product->is_fix_check_in_time == 1) checked @endif>
+                                </div>
+                                <div class="col-4 mb-2 check_in_time @if($product->is_fix_check_in_time != 1) d-none @endif">
+                                    {!! Form::label('title', __('Check in time'), ['class' => 'control-label']) !!}
+                                    {!! Form::text('check_in_time', $product->check_in_time, ['class'=>'form-control', 'id' => 'range-datepicker', 'placeholder' => '00:00']) !!}
+                                </div>
+                            
                             </div>
-                            <div class="col-4 mb-2 check_in_time @if($product->is_fix_check_in_time != 1) d-none @endif">
-                                {!! Form::label('title', __('Check in time'), ['class' => 'control-label']) !!}
-                                {!! Form::text('check_in_time', $product->check_in_time, ['class'=>'form-control', 'id' => 'range-datepicker', 'placeholder' => '00:00']) !!}
-                            </div>
-                           
-                        </div>
+                        @endif
                     @endif
 
                 </div>

@@ -2020,79 +2020,79 @@ class CartController extends FrontController
 
 
         //Fetch all delivery fee option
-        public function getDeliveryOptions($vendorData,$preferences,$payable_amount,$address,$schedule_datetime_del='')
-        {
-            $option = array();
-            $delivery_count = 0;
-            try {
-                if($vendorData->vendor_id)
-                {
-                   Session()->put('vid',$vendorData->vendor_id);
-
-            if($preferences->static_delivey_fee != 1)
+    public function getDeliveryOptions($vendorData,$preferences,$payable_amount,$address,$schedule_datetime_del='')
+    {
+        $option = array();
+        $delivery_count = 0;
+        try {
+            if($vendorData->vendor_id)
             {
+                Session()->put('vid',$vendorData->vendor_id);
 
-                //Dispatcher Delivery changes and estimated delivery duration code
-                $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del);
-                if (!empty($deliver_response_array[0])){
-                    $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format($deliver_response_array[0]['delivery_fee'], 2, '.', ''):'0.00';
-                    $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
-                    $option[] = array(
-                        'type'=>'D',
-                        'courier_name'=>__('Dispatcher'),
-                        'rate' => $deliver_charge,
+                if($preferences->static_delivey_fee != 1)
+                {
+
+                    //Dispatcher Delivery changes and estimated delivery duration code
+                    $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del);
+                    if (!empty($deliver_response_array[0])){
+                        $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format($deliver_response_array[0]['delivery_fee'], 2, '.', ''):'0.00';
+                        $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
+                        $option[] = array(
+                            'type'=>'D',
+                            'courier_name'=>__('Dispatcher'),
+                            'rate' => $deliver_charge,
+                            'courier_company_id' => 0,
+                            'etd' => 0,
+                            'duration' => $delivery_duration,
+                            'etd_hours' => 0,
+                            'estimated_delivery_days' => 0,
+                            'code' => 'D_0'
+                        );
+                    }
+
+
+                //Lalamove Delivery changes code
+                $lalamove = new LalaMovesController();
+                $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
+                if($deliver_lalmove_fee>0)
+                {
+                    $deliver_charge_lalamove = decimal_format($deliver_lalmove_fee);
+
+                    $optionLala[] = array(
+                        'type'=>'L',
+                        'courier_name'=>__('Lalamove'),
+                        'rate' => $deliver_charge_lalamove,
                         'courier_company_id' => 0,
                         'etd' => 0,
-                        'duration' => $delivery_duration,
                         'etd_hours' => 0,
+                        'duration' => 0,
                         'estimated_delivery_days' => 0,
-                        'code' => 'D_0'
+                        'code' => 'L_0'
                     );
+                    $option = array_merge($option,$optionLala);
+                }
+                //End Lalamove Delivery changes code
+
+                if($vendorData->vendor->pincode){
+                    //get Shippo Services Delivery changes code
+                    $shipo = new ShippoController();
+                    $deliver_shipo_fee = $shipo->getServices($vendorData->vendor_id);
+                    if($deliver_shipo_fee)
+                    {
+                        $option = array_merge($option,$deliver_shipo_fee);
+                    }
                 }
 
 
-            //Lalamove Delivery changes code
-            $lalamove = new LalaMovesController();
-            $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
-            if($deliver_lalmove_fee>0)
-            {
-                $deliver_charge_lalamove = decimal_format($deliver_lalmove_fee);
-
-                $optionLala[] = array(
-                    'type'=>'L',
-                    'courier_name'=>__('Lalamove'),
-                    'rate' => $deliver_charge_lalamove,
-                    'courier_company_id' => 0,
-                    'etd' => 0,
-                    'etd_hours' => 0,
-                    'duration' => 0,
-                    'estimated_delivery_days' => 0,
-                    'code' => 'L_0'
-                );
-                $option = array_merge($option,$optionLala);
-            }
-            //End Lalamove Delivery changes code
-
-            if($vendorData->vendor->pincode){
-                //get Shippo Services Delivery changes code
-                $shipo = new ShippoController();
-                $deliver_shipo_fee = $shipo->getServices($vendorData->vendor_id);
-                if($deliver_shipo_fee)
-                {
-                    $option = array_merge($option,$deliver_shipo_fee);
+                if($vendorData->vendor->shiprocket_pickup_name){
+                    //getShiprocketFee Delivery changes code
+                    $ship = new ShiprocketController();
+                    $deliver_ship_fee = $ship->getCourierService($vendorData->vendor_id);
+                    if($deliver_ship_fee)
+                    {
+                        $option = array_merge($option,$deliver_ship_fee);
+                    }
                 }
-            }
-
-
-            if($vendorData->vendor->shiprocket_pickup_name){
-                //getShiprocketFee Delivery changes code
-                $ship = new ShiprocketController();
-                $deliver_ship_fee = $ship->getCourierService($vendorData->vendor_id);
-                if($deliver_ship_fee)
-                {
-                    $option = array_merge($option,$deliver_ship_fee);
-                }
-            }
 
                 //getDunzo Delivery fee changes code
                 $dunzo = new DunzoController();
@@ -2117,49 +2117,49 @@ class CartController extends FrontController
                 }
                 // \Log::info($vendorData->vendor->ahoy_location);
                 if(isset($vendorData->vendor->ahoy_location)){
-                  //getAhoy (Masa) Delivery fee changes code
-                  $ahoy = new AhoyController();
-                  if($ahoy->status){
-                      $deliver_ahoy_fee = $ahoy->getPreOrderFee($vendorData->vendor_id,$address);
-                      if($deliver_ahoy_fee>0)
-                      {
-                          $deliver_charge_ahoy = decimal_format($deliver_ahoy_fee);
-                          $optionAhoy[] = array(
-                              'type'=>'M',
-                              'courier_name'=>__('Ahoy'),
-                              'rate' => $deliver_charge_ahoy,
-                              'courier_company_id' => 0,
-                              'etd' => 0,
-                              'etd_hours' => 0,
-                              'duration' => 0,
-                              'estimated_delivery_days' => 0,
-                              'code' => 'M_0'
-                          );
-                          $option = array_merge($option,$optionAhoy);
-                      }
-                  }
+                    //getAhoy (Masa) Delivery fee changes code
+                    $ahoy = new AhoyController();
+                    if($ahoy->status){
+                        $deliver_ahoy_fee = $ahoy->getPreOrderFee($vendorData->vendor_id,$address);
+                        if($deliver_ahoy_fee>0)
+                        {
+                            $deliver_charge_ahoy = decimal_format($deliver_ahoy_fee);
+                            $optionAhoy[] = array(
+                                'type'=>'M',
+                                'courier_name'=>__('Ahoy'),
+                                'rate' => $deliver_charge_ahoy,
+                                'courier_company_id' => 0,
+                                'etd' => 0,
+                                'etd_hours' => 0,
+                                'duration' => 0,
+                                'estimated_delivery_days' => 0,
+                                'code' => 'M_0'
+                            );
+                            $option = array_merge($option,$optionAhoy);
+                        }
+                    }
                 }
 
 
-        }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
-             # for static fees
-                if( $payable_amount >= (float)($vendorData->vendor->order_amount_for_delivery_fee)){
-                    $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_maximum);
-                }elseif($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)){
-                    $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_minimum);
-                }
+                }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
+                # for static fees
+                    if( $payable_amount >= (float)($vendorData->vendor->order_amount_for_delivery_fee)){
+                        $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_maximum);
+                    }elseif($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)){
+                        $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_minimum);
+                    }
 
-                $option[] = array(
-                    'type'=>'D',
-                    'courier_name'=>__('Static'),
-                    'rate' => $deliveryCharges,
-                    'courier_company_id' => 0,
-                    'etd' => 0,
-                    'etd_hours' => 0,
-                    'duration' => 0,
-                    'estimated_delivery_days' => 0,
-                    'code' => 'D_0'
-                );
+                    $option[] = array(
+                        'type'=>'D',
+                        'courier_name'=>__('Static'),
+                        'rate' => $deliveryCharges,
+                        'courier_company_id' => 0,
+                        'etd' => 0,
+                        'etd_hours' => 0,
+                        'duration' => 0,
+                        'estimated_delivery_days' => 0,
+                        'code' => 'D_0'
+                    );
 
            }//End statis fe code
 
@@ -2244,7 +2244,7 @@ class CartController extends FrontController
         $preference = ClientPreference::first();
        
         if(( $vendorType == 'appointment') && ( ($preference->need_appointment_service == 1) && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_code) && !empty($preference->appointment_service_key_url)) ){
-            return $preference;
+            //return $preference;
         }
         elseif ( ( $vendorType != 'appointment') && $preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
             return $preference;
