@@ -80,6 +80,8 @@
 
   <script type="text/javascript">
      $(function(e) {
+        var selectedStartDate = ''; // selected start
+        var selectedEndDate = ''; // selected end
         var currentDate = moment().format("M/DD/YY hh:mm A");
         $checkinInput = $('#blocktime');
         $checkoutInput = $('#blocktime2');
@@ -162,8 +164,8 @@
             autoApply: true,
             autoUpdateInput: false
         }, function(start, end, label) {
-          var selectedStartDate = start.format('M/DD/YY hh:mm A'); // selected start
-          var selectedEndDate = end.format('M/DD/YY hh:mm A'); // selected end
+           selectedStartDate = start.format('M/DD/YY hh:mm A'); // selected start
+           selectedEndDate = end.format('M/DD/YY hh:mm A'); // selected end
 
           // Updating Fields with selected dates
           $checkinInput.val(selectedStartDate);
