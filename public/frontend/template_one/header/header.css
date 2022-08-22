@@ -354,3 +354,9 @@ body.al_body_template_two{
         padding:0
     }
 }
+
+.search_bar .icon-nav .btn.btn-solid_al svg path{
+    stroke: var(--theme-deafult);
+}
+
+.search_bar .icon-nav .fav-button i{font-size: 18px;}

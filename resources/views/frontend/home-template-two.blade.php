@@ -296,16 +296,16 @@ height: auto;
 </section>
 <!-- shimmer_effect end -->
 @if(count($banners))
-<section class="home-slider-wrapper pt-md-3 pb-0">
-	<div class="container">
+<section class="home-slider-wrapper p-0">
+	<div class="container-fluid">
 		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 			<div class="carousel-inner">
 				@foreach($banners as $key => $banner)
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
 					 <a class="banner-img-outer" href="{{$url??'#'}}">
-                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}" />
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1920/500' . $banner->image['image_path']}}" />
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1920/500' . $banner->image['image_path']}}">
 					</a>
 					</div>
 				@endforeach
@@ -352,7 +352,7 @@ height: auto;
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
@@ -367,8 +367,8 @@ height: auto;
 		  %>
 		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
 			 <a class="banner-img-outer" href="<%= url %>">
-				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>" />
-				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>">
+				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1920/500<%= banner.image.image_path %>" />
+				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>1920/500<%= banner.image.image_path %>">
 			 </a>
 		  </div>
 	   <% }); %>
@@ -386,7 +386,7 @@ height: auto;
 <script type="text/template" id="mobile_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
