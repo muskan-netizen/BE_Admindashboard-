@@ -47,20 +47,20 @@
                             </div>
                         </div>
             </div>
-            <div class="row border-bottom product_title_add py-1">
-                    <div class="col-md-4">
+            <div class="row border-bottom product_title_add py-1 no-gutters">
+                    <div class="col-md-4 col">
                         <span>Product Details</span>
                     </div>
 
-                    <div class="col-md-2 text-center">
+                    <div class="col-md-2 col text-center">
                         <span>Price</span>
                     </div>
 
-                    <div class="col-md-2 text-center">
+                    <div class="col-md-2 col text-center">
                         <span>Quantity</span>
                     </div>
 
-                    <div class="col-md-4 text-center">
+                    <div class="col-md-4 col text-center">
                         <span>Total</span>
                     </div>
 

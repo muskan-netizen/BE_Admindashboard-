@@ -16,7 +16,7 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                     <div class="page-title-box">
                         <div class="page-title-right">
                             <div class="d-flex align-items-center mb-3">
-                                <input type="text" id="range-datepicker" class="form-control flatpickr-input active" placeholder="2018-10-03 to 2018-10-10" readonly="">
+                                <input type="text" id="range-datepicker" class="form-control flatpickr-input active alCustomDateInput" placeholder="2018-10-03 to 2018-10-10" readonly="">
                                 <a href="javascript: void(0);" class="btn btn-blue ml-2" id="dashboard_refresh_btn">
                                     <i class="mdi mdi-autorenew"></i>
                                 </a>

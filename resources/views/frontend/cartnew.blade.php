@@ -180,6 +180,10 @@ right: 20px;
     .al_body_template_two .show-prescription-doc {
    width:100%;
 }
+.item-show-cart h4 {font-size:14px !important;}
+.product_title_add span {
+    font-size: 12px;
+}
 }
 </style>
 

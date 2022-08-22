@@ -161,7 +161,7 @@ $pages = \App\Models\Page::with([
                     <div class="row d-flex align-items-center justify-content-between">
                         <div class="col-lg-2">
                             <div class="logo_area d-none d-lg-block">
-                                <a class="navbar-brand m-0" href="{{ route('userHome') }}"><img alt="" class="w-100" src="{{$urlImg}}"></a>
+                                <a class="navbar-brand m-0" href="{{ route('userHome') }}"><img alt="" style="height:80px;" src="{{$urlImg}}"></a>
                             </div>
                             <div class="col-12 d-block d-lg-none p-0">
                                 <div class="row no-gutters">
@@ -252,7 +252,7 @@ $pages = \App\Models\Page::with([
                                                         <ul class="onhover-show-div">
                                                             @foreach($languageList as $key => $listl)
                                                                 <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                                                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)
                                                                         ({{$listl->language->nativeName}})
                                                                         @endif </a>
                                                                 </li>
@@ -416,19 +416,19 @@ $pages = \App\Models\Page::with([
                                             langId="{{ $listl->language_id }}">{{ $listl->language->name }}</a>
                                     </li>
                                 @endforeach -->
-                                        
+
 
                                         @if(count($languageList) > 1)
                                         <li class="onhover-dropdown mobile-account pr-2">
                                             <span class="al_BGcolor"><i class="fa fa-globe" aria-hidden="true"></i></span>
                                             {{__('Language')}}
-                                            
+
                                             <ul class="onhover-show-div">
                                                 <li class="{{ session()->get('locale') == $listl->language->sort_code ? 'active' : '' }}">
                                                     <a href="javascript:void(0)" class="customerLang" langId="{{ $listl->language_id }}">{{ $listl->language->name }}</a>
-                                                </li>                                                
+                                                </li>
                                             </ul>
-                                            
+
                                         </li>
                                         @endif
 
