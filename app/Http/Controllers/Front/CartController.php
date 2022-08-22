@@ -328,6 +328,8 @@ class CartController extends FrontController
                      $request->quantity = $productDetail->variant[0]->quantity;
                 }
             }
+            // echo 'pass';
+            // pr($request->toArray());
             //\Log::info($request->addon_id);
 
             $addonSets = $addon_ids = $addon_options = array();
@@ -386,7 +388,10 @@ class CartController extends FrontController
                 'product_id' => $request->product_id,
                 'variant_id'  => $request->variant_id,
                 'currency_id' => $client_currency->currency_id,
-                'luxury_option_id' => ($luxury_option) ? $luxury_option->id : 0
+                'luxury_option_id' => ($luxury_option) ? $luxury_option->id : 0,
+                'start_date_time'  => $request->has('start_date') ? $request->start_date : null,
+                'end_date_time' => $request->has('end_date') ? $request->end_date : null,
+                'additional_increments_hrs_min' => $request->has('incremental_hrs') ? $request->incremental_hrs : null,
             ];
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
