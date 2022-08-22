@@ -1,32 +1,29 @@
-$(document).ready(async function () {
-    //alert();
-    //await setTimeout(function(){
-        var footer_height = $('.footer-light').height();
-        var header_height = $('.site-header').height();
-        var window_height = $(window).height();
-        var header_content_width = $('#content-wrap').height();
+$(document).ready(function () {
+    var footer_height = $('.footer-light').height();
+    var header_height = $('.site-header').height();
+    var window_height = $(window).height();
+    var header_content_width = $('#content-wrap').height();
 
-        // console.log('header_height',header_height,'footer_height',footer_height);
-        jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
-        jQuery("#content-wrap").css('padding-bottom', footer_height);
+    // console.log('header_height',header_height,'footer_height',footer_height);
+    jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
+    jQuery("#content-wrap").css('padding-bottom', footer_height);
 
 
-        jQuery(window).scroll(function () {
-            var scroll = jQuery(window).scrollTop();
-            if (scroll <= 100) {
-                jQuery(".site-header").removeClass("fixed-bar");
+    jQuery(window).scroll(function () {
+        var scroll = jQuery(window).scrollTop();
+        if (scroll <= 100) {
+            jQuery(".site-header").removeClass("fixed-bar");
 
-            } else {
-                jQuery(".site-header").addClass("fixed-bar");
-            }
-        });
+        } else {
+            jQuery(".site-header").addClass("fixed-bar");
+        }
+    });
 
-        $('.scrollspy-menu a').on('click',function(){
-            $("html, body").animate({ scrollTop:  $('#'+$(this).data('slug')).offset().top - (header_height+30) });
-        })
-   // },1000)
-
+    $('.scrollspy-menu a').on('click',function(){
+        $("html, body").animate({ scrollTop:  $('#'+$(this).data('slug')).offset().top - (header_height+30) });
+    })
 });
+
 
 
 $(".mobile-account .fa").click(function(){
@@ -136,7 +133,7 @@ window.loadMainMenuSlider = function loadMainMenuSlider() {
     $(".menu-slider").slick({arrows:!0,dots:!1,infinite:!1,variableWidth:!0,autoplay:!1,speed:300,slidesToShow:13,slidesToScroll:3,responsive:[{breakpoint:1400,settings:{slidesToShow:12,slidesToScroll:2}},{breakpoint:1367,settings:{slidesToShow:8,slidesToScroll:2}},{breakpoint:991,settings:{slidesToShow:6,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:4,slidesToScroll:2}},{breakpoint:576,settings:{slidesToShow:4,slidesToScroll:2}}]});
 }
 
-// loadMainMenuSlider();
+loadMainMenuSlider();
 
 window.resizeMenuSlider = function resizeMenuSlider() {
     var windowWidth = $(window).width();
@@ -257,6 +254,12 @@ $(document).ready(function () {
         window.location.href = url;
         return false;
     });
+    $(document).on("click", "#search_map_view", function (e) {
+        let keyword = $("#main_search_box").val();
+        let url = "/search-all/" + keyword + "/map-view";
+        window.location.href = url;
+        return false;
+    });
     $('input[type=search]').on('search', function () {
         $('#search_box_main_div').html('').hide();
     });
@@ -361,18 +364,6 @@ $(document).ready(function () {
             return false;
         }
         return true;
-    }
-
-    function isNumberKeyMax(evt) {
-        // var charCode = (evt.which) ? evt.which : evt.keyCode;
-        // if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
-        //     return false;
-        // }
-        console.log(evt.value);
-        // if($('#txtNumber').val()<-10 || $('#txtNumber').val()>10 ){
-        //     $('#errorMsg').show();
-        // }
-        //return true;
     }
     $('.addWishList').click(function () {
         var sku = $(this).attr('proSku');
@@ -483,7 +474,7 @@ $(document).ready(function () {
     if (($("#fpx-bank-element").length > 0) && (stripe_fpx_publishable_key != '')) {
         stripeFPXInitialize();
     }
- 
+
     if (($("#ideal-bank-element").length > 0) && (stripe_ideal_publishable_key != '')) {
         stripeIdealInitialize();
     }
@@ -1719,7 +1710,6 @@ $(document).ready(function () {
                 var response = $.parseJSON(error.responseText);
                 // success_error_alert('error', response.message, ".payment_response");
                 if ($('.cart_response').length > 0) {
-                    $('#proceed_to_pay_modal').modal('hide');
                     $(".cart_response").removeClass('d-none');
                     success_error_alert('error', response.message, ".cart_response");
                     $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
@@ -2734,7 +2724,6 @@ $(document).ready(function () {
     });
 
     $(document).on("click", ".addToCart", function () {
-
         if (!$.hasAjaxRunning()) {
             addToCart();
         }
@@ -2762,7 +2751,7 @@ $(document).ready(function () {
 
 
     function addToCart() {
-
+     
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
 
@@ -2812,24 +2801,33 @@ $(document).ready(function () {
             var sVendorResponse = checkIsolateSingleVendor(vendor_id);
             if (sVendorResponse.status == 'Success') {
                 if ((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) {
+                    var start_date =  $('#start_time').val();
+                    var end_date =  $('#end_time').val();
+                    var incremental_hrs =  $('#incremental_hrs').val();
                     $("#single_vendor_remove_cart_btn").attr({
                         'data-product_id': product_id,
-                        'data-variant_id': $('#prod_variant_id').val(),
+                        'data-variant_id': (vendor_type == 'rental') ? $('#prod_variant_id').val() :$('#available_product_variant').val(),
                         'data-quantity': $('.quantity_count').val(),
                         'data-vendor_id': vendor_id,
-                        'data-page': 'productDetail'
+                        'data-page': 'productDetail',
+                        'data-start_time':start_date,
+                        'data-end_time':end_date,
+                        'data-incremental_hrs':incremental_hrs
                     });
                     $("#single_vendor_order_modal").modal('show');
                 } else {
-                    var variant_id = $('#prod_variant_id').val();
+                    var variant_id =  (vendor_type == 'rental') ? $('#prod_variant_id').val() :$('#available_product_variant').val();
+                    var start_date =  $('#start_time').val();
+                    var end_date =  $('#end_time').val();
                     var quantity = $('.quantity_count').val();
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id);
+                    var incremental_hrs =  $('#incremental_hrs').val();
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id) {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='') {
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -2843,12 +2841,15 @@ $(document).ready(function () {
                 "addonoptID": addonoptids,
                 "quantity": quantity,
                 "variant_id": variant_id,
+                "start_date":start_date,
+                "end_date":end_date,
+                "incremental_hrs":incremental_hrs
             },
             success: function (response) {
                 if (response.status == 'success') {
                     $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     returnResponse = true;
-                    //cartHeader();
+                    cartHeader();
                 } else {
                     Swal.fire({
                         // title: "Warning!",
@@ -2880,8 +2881,12 @@ $(document).ready(function () {
         var variant_id = $(this).attr('data-variant_id');
         var quantity = $(this).attr('data-quantity');
         var vendor_id = $(this).attr('data-vendor_id');
+        var start_date = $(this).attr('data-start_time');
+        var end_date = $(this).attr('data-end_time'); 
+        var incremental_hrs = $(this).attr('data-incremental_hrs');
+       
         if ($(this).attr('data-page') == 'productDetail') {
-            submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id);
+            submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs);
         } else if ($(this).attr('data-page') == 'vendorProducts') {
             var elem = $(this).attr('data-element_id');
             submitAddtoCartProductsAddons($('#' + elem), addonids, addonoptids, product_id, variant_id, quantity, vendor_id);
@@ -3617,29 +3622,16 @@ $(document).ready(function () {
     }
 
 
-    if ($(".ondemand-time-slots")[0]){
-        let cur_date = $('input[name="booking_date"]:checked').val();
-        if(cur_date && cur_date != undefined){
-            let cart_product_id = $('input[name="booking_date"]:checked').data("cart_product_id");
-            let product_vendor_id = $('input[name="booking_date"]:checked').data("product_vendor_id");
 
-            showSlotOnDate(cur_date,cart_product_id,product_vendor_id)
-        }
-
-    }
 
     // get time slots according to date
     $(document).on('click', '.check-time-slots', function () {
-        //$(".check-time-slots").removeAttr('checked');
         let cur_date = $(this).val();
         let cart_product_id = $(this).data("cart_product_id");
         let product_vendor_id = $(this).data("product_vendor_id");
-        //$(this).addAttr('checked');
-        showSlotOnDate(cur_date,cart_product_id,product_vendor_id)
-    });
-    function showSlotOnDate(cur_date,cart_product_id,product_vendor_id){
         getTimeSlots(cur_date, cart_product_id , product_vendor_id);
-    }
+
+    });
 
     $(document).on('change', '.vendor_schedule_datetime, .vendor_schedule_slot', function () {
 
@@ -4308,11 +4300,9 @@ $(document).ready(function () {
             case 45:
                 paymentViaTelr('', payment_option_id, '');
             break;
-
             case 47:
                 paymentViaKhalti('', ''); 
             break;
-        
         }
 
     }
@@ -4719,6 +4709,7 @@ $(document).ready(function () {
             break;
             case '42':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                // console.log('order', order);
                 if (order != '') {
                     //payWithDpo
                     payWithDpo(order);
@@ -4729,6 +4720,7 @@ $(document).ready(function () {
             break;
             case '43':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                // console.log('order', order);
                 if (order != '') {
                     paymentViaUPay(address_id, order);
                 }
@@ -4738,6 +4730,7 @@ $(document).ready(function () {
             break;
             case '44':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
                 if (order != '') {
                     paymentViaConekta(address_id, order);
                 }
@@ -4747,6 +4740,7 @@ $(document).ready(function () {
             break;
             case '45':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
                 if (order != '') {
                     paymentViaTelr(address_id, order);
                 }
@@ -4754,7 +4748,7 @@ $(document).ready(function () {
                     return false;
                 }
             break;
-           
+
             case '47':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
@@ -4977,7 +4971,6 @@ $(document).ready(function () {
             case 45:
                 paymentViaTelr('', payment_option_id, '');
                 break;
-
             case 47:
                 paymentViaKhalti('', ''); 
                 break;

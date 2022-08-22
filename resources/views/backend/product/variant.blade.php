@@ -1,7 +1,7 @@
 
 <div class="card-box" >
     <div class="row mb-2 bg-light">
-        <div class="col-8" style="margin:auto;">
+        <div class="col-8" >
             <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
         </div>
         {{-- @if($productVariants->count() > 0)
@@ -41,7 +41,12 @@
                 <thead>
                     <th>{{ __("Image") }}</th>
                     <th>{{ __("Name") }}</th>
-                    {{-- <th>{{ __("Variants") }}</th> --}}
+                    {{-- <th>{{ __("Variants Sets") }}</th> --}}
+                        @if($productVariants)
+                            @foreach($productVariants as $vk => $var)
+                                <th>{{$var->title??null}}</th>
+                            @endforeach
+                        @endif
                     <th>{{ __("Price") }}</th>
                     {{-- <th>{{ __('Minimum Duration') }}</th> --}}
                     <th>{{ __('Incremental Price') }}</th>

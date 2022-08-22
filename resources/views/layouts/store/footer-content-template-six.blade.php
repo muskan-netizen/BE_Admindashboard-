@@ -21,15 +21,15 @@ $applocale = session()->get('applocale');
 @endif
 @if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify'))
 <footer id="footer" class="footer-light al_footer_template_six">
-   <section class="section-b-space pt-5 pb-3">
+   <section class="section-b-space py-md-5 pt-3 pb-0">
       <div class="container">
-         <div class="row footer-theme partition-f py-lg-3 py-2">
+         <div class="row footer-theme partition-f">
             @if($client_preference_detail->show_contact_us == 1)
             <div class="col-12 d-block d-md-none">
-               <div class="footer-contant">
-                  <div class="store-btn mb-3 d-flex align-items-center justify-content-start">
+               <div class="footer-contant alQRcodeBox">
+                  <div class="store-btn col-12 d-flex align-items-center justify-content-between">
                      @if($client_preference_detail->show_qr_on_footer)
-                     <ul class="row">
+                     <ul class="row w-100">
                         <li class="col-6 text-center">
                            <div class="al_QRcode col-12">
                               {!! QrCode::size(60)->generate($client_preference_detail->ios_link??'#') !!} <br>
@@ -180,7 +180,7 @@ $applocale = session()->get('applocale');
             </div>
             @endif
             @if(count($pages))
-            <div class="col-lg-2 col-md-6 pt-md-4 pt-lg-0">
+            <div class="col-lg-3 col-md-6 pt-md-4 pt-lg-0">
                <div class="sub-title">
                   <div class="footer-title mt-0">
                      <h4 class="mt-0">{{ __('Quick Links') }}</h4>
@@ -242,6 +242,44 @@ $applocale = session()->get('applocale');
                </div>
             </div>
             @endif
+
+            @if($client_preference_detail->show_payment_icons == 1)
+            <div class="col-lg-3 col-md-6 payment-card mobile-border">
+               <div class="sub-title">
+                  <div class="footer-title mt-0">
+                     <h4 class="mt-0">{{ __('Payment Method') }}</h4>
+                  </div>
+                  <div class="footer-contant">
+                     @if($client_preference_detail->show_payment_icons == 1)
+                     <div class="payment-card-bottom text-center d-flex mb-2">
+                        <ul>
+                           @foreach($paymentMethod as $payment_method)
+                           <li>
+                              <a href="#"><img src="{{ $payment_method->image_url }}"></a>
+                           </li>
+                           @endforeach
+                        </ul>
+                     </div>
+                     @endif
+                     @if(count($social_media_details))
+                     <div class="footer-title mt-0">
+                        <h4 class="mt-0">{{ __('Keep In Touch') }}</h4>
+                     </div>
+                     <ul class="social-links d-flex">
+                        @foreach($social_media_details as $social_media_detail)
+                        <li class="d-block">
+                           <a href="{{http_check($social_media_detail->url)}}" target="_blank">
+                           <i class="fa fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
+                           <span class="d-none">{{$social_media_detail->icon ? ucfirst($social_media_detail->icon) : "Facebook"}}</span>
+                           </a>
+                        </li>
+                        @endforeach
+                     </ul>
+                     @endif
+                  </div>
+               </div>
+            </div>
+            @endif
             @if($client_preference_detail->show_qr_on_footer)
             <div class="col-lg-3 col-md-6 d-none d-md-block mobile-border">
                <div class="sub-title">
@@ -251,10 +289,10 @@ $applocale = session()->get('applocale');
                   <div class="footer-contant">
                      <div class="store-btn mb-3 mb-sm-0 d-none d-md-block">
                         <ul class="row">
-                           <li class="col-6 text-center">
-                              <div class="al_QRcode col-12">
+                           <li class="col-6 text-center p-0">
+                              <div class="al_QRcode col-12 p-0">
                                  {!! QrCode::size(60)->generate($client_preference_detail->ios_link??'#') !!} <br>
-                                 <a class="col-12 mt-2" href="{{$client_preference_detail->ios_link??'#'}}" target="_blank">
+                                 <a class="col-12 mt-2 p-0" href="{{$client_preference_detail->ios_link??'#'}}" target="_blank">
                                     <svg style="height: 30px" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 161 41">
                                        <defs>
                                           <style> .cls-1{stroke:#515251;stroke-miterlimit:10;}.cls-2{fill:#fff;}</style>
@@ -287,10 +325,10 @@ $applocale = session()->get('applocale');
                                  </a>
                               </div>
                            </li>
-                           <li class="col-6 text-center">
-                              <div class="al_QRcode col-12">
+                           <li class="col-6 text-center p-0">
+                              <div class="al_QRcode col-12 p-0">
                                  {!! QrCode::size(60)->generate($client_preference_detail->android_app_link??'#') !!} <br>
-                                 <a class="col-12 mt-2" href="{{$client_preference_detail->android_app_link??'#'}}" target="_blank">
+                                 <a class="col-12 mt-2 p-0" href="{{$client_preference_detail->android_app_link??'#'}}" target="_blank">
                                     <svg style="height:30px" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 161 41">
                                        <defs>
                                           <style>.cls-1{stroke:#515251;stroke-miterlimit:10;}.cls-2{fill:#fff;}.cls-3{fill:#5ccae7;}.cls-4{fill:#33c3f2;}.cls-5{fill:#6abe55;}.cls-6{fill:#ee3540;}.cls-7{fill:#fcc210;}</style>
@@ -325,43 +363,6 @@ $applocale = session()->get('applocale');
                         </ul>
                         <!-- <img class="blur-up lazyload" data-src="{{ getImageUrl(asset('front-assets/images/google-play.svg'),'270/48') }}" alt=""> -->
                      </div>
-                  </div>
-               </div>
-            </div>
-            @endif
-            @if($client_preference_detail->show_payment_icons == 1)
-            <div class="col-lg-3 col-md-6 payment-card mobile-border">
-               <div class="sub-title">
-                  <div class="footer-title mt-0">
-                     <h4 class="mt-0">{{ __('Payment Method') }}</h4>
-                  </div>
-                  <div class="footer-contant">
-                     @if($client_preference_detail->show_payment_icons == 1)
-                     <div class="payment-card-bottom text-center d-flex mb-2">
-                        <ul>
-                           @foreach($paymentMethod as $payment_method)
-                           <li>
-                              <a href="#"><img src="{{ $payment_method->image_url }}"></a>
-                           </li>
-                           @endforeach
-                        </ul>
-                     </div>
-                     @endif
-                     @if(count($social_media_details))
-                     <div class="footer-title mt-0">
-                        <h4 class="mt-0">{{ __('Keep In Touch') }}</h4>
-                     </div>
-                     <ul class="social-links d-flex">
-                        @foreach($social_media_details as $social_media_detail)
-                        <li class="d-block">
-                           <a href="{{http_check($social_media_detail->url)}}" target="_blank">
-                           <i class="fa fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
-                           <span class="d-none">{{$social_media_detail->icon ? ucfirst($social_media_detail->icon) : "Facebook"}}</span>
-                           </a>
-                        </li>
-                        @endforeach
-                     </ul>
-                     @endif
                   </div>
                </div>
             </div>
@@ -463,8 +464,4 @@ $applocale = session()->get('applocale');
    </div>
 </div>
 
-
-<script>
-
-</script>
 

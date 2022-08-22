@@ -337,7 +337,7 @@ $timezone = Auth::user()->timezone;
                                             @if (isset($product->user_product_order_form))
                                             <a href="javascript:void(0)" class="Order_product_form float-right "  data-product_form_id="{{$product->id}}">
                                                 <span class="badge badge-info mr-2">
-                                                    {{__('Product form ')}}
+                                                    {{$nomenclatureProductOrderForm}}
                                                 </span>
                                             </a>
                                             @endif
@@ -445,7 +445,7 @@ $timezone = Auth::user()->timezone;
                                 
                                     @endphp
 
-                                    @if(Auth::user()->is_superadmin)
+                                    {{-- @if(Auth::user()->is_superadmin) --}}
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{$client_head->name}} {{ __("Revenue") }} :</th>
                                        
@@ -457,7 +457,7 @@ $timezone = Auth::user()->timezone;
                                         {{-- <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->sub_total * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)}}</td> --}}
                                         <td>{{$clientCurrency->currency->symbol}}{{decimal_format($storeRevenue)}}</td>
                                     </tr>
-                                    @endif
+                                    {{-- @endif --}}
                                     @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Redeemed Loyality Points") }} :</th>

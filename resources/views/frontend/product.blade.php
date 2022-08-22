@@ -70,7 +70,7 @@
                             </div>
                         </div>--}}
                         <div class="row">
-                            <div class="col-lg-5 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                            <div class="col-lg-5 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                 {{-- <div class="product__carousel">
                                     <div class="gallery-parent">
                                         @php
@@ -186,6 +186,9 @@
                                     </div>
                                     <div id="product_variant_wrapper">
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
+                                        <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
+                                        <input type="hidden" name="start_time" id="start_time" value="">
+                                        <input type="hidden" name="end_time" id="end_time" value="">
                                         @if($product->inquiry_only == 0)
                                             <h3 id="productPriceValue" class="mb-md-3">
                                                 <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
@@ -231,7 +234,11 @@
                                     <div id="variant_response">
                                         <span class="text-danger mb-2 mt-2"></span>
                                     </div>
-                                    <div id="product_variant_quantity_wrapper">
+                                    @if($product->category->categoryDetail->type_id == 10)
+                                        @include('frontend.product-part.booking-slot')
+                                    @endif
+                                    
+                                    <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'block'; ?>">
                                         @if($product->inquiry_only == 0)
                                         <div class="product-description border-product pb-0">
                                             <h6 class="product-title mt-0">{{__('Quantity')}}:
@@ -258,7 +265,7 @@
                                                     </span>
                                                     <input type="text" name="quantity"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="quantity" class="form-control input-qty-number quantity_count"  value="{{$product->minimum_order_count??1}}" data-minimum_order_count={{$product->minimum_order_count}}>
                                                     <span class="input-group-prepend quant-plus">
-                                                        <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}>
+                                                        <button type="button" class="btn quantity-right-plus" data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}>
                                                             <i class="ti-angle-right"></i>
                                                         </button>
                                                     </span>

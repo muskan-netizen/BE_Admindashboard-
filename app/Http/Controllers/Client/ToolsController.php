@@ -244,6 +244,23 @@ class ToolsController extends BaseController
             $new_addOn->save();
         }
 
+          //Product Faq Questions
+          foreach ($from_product->ProductFaq as $faq) {
+            $new_faq = $faq;
+            $new_faq = $new_faq->replicate();
+            $new_faq->product_id = $product->id;
+            $new_faq->save();
+
+                //Faq transalations
+                foreach ($faq->translations as $faqTran) {
+                    $new_faqTran = $faqTran;
+                    $new_faqTran = $new_faqTran->replicate();
+                    $new_faqTran->product_faq_id = $new_faq->id;
+                    $new_faqTran->save();
+                }
+            
+        }
+
         foreach ($from_product->celebrities as $celebrity) {
             $new_celebrity = $celebrity;
             $new_celebrity = $new_celebrity->replicate();

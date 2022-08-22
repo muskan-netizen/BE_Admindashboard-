@@ -83,10 +83,12 @@ use Illuminate\Support\Arr;
                                                             @endphp
 
                                                             <div class="row classes_wrapper no-gutters align-items-center" href="#">
-                                                                <div class="col-md-9 col-sm-8 pr-md-2 alSixHomeServiceSteps">
+                                                                <div class="col-md-9 col-sm-8 pr-md-2 ">
                                                                     <h5 class="mb-1"><b>{!! (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku !!}</b></h5>
-                                                                    <p class="mb-1">{!! (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku !!}</p>
-                                                                    <div class="d-flex align-items-center justify-content-between">
+                                                                    <div class="productDetails pr-2">
+                                                                        <p class="mb-1 ">{!! (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku !!}</p>
+                                                                    </div>
+                                                                    <div class="d-flex align-items-center justify-content-between productBookingBtns">
                                                                         <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
                                                                             {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
                                                                         @endif</h5>
@@ -177,7 +179,7 @@ use Illuminate\Support\Arr;
                                                 @foreach($listData as $key => $data)
                                                 {{-- new product design  --}}
                                                 <div class="row classes_wrapper no-gutters align-items-center" href="#">
-                                                    <div class="col-md-9 col-sm-8 pr-md-2 alSixHomeServiceSteps">
+                                                    <div class="col-md-9 col-sm-8 pr-md-2 productDetails">
                                                         <h5 class="mb-1"><b>{!! $data->translation_title !!}</b></h5>
                                                         <p class="mb-1">{!! $data->translation_description !!}</p>
                                                     </div>
