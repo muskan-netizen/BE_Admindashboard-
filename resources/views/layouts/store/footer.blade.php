@@ -460,3 +460,4 @@ if($showSubscriptionPlanPopUp == 1){
 </script>
 
 @yield('script')
+@yield('script-bottom-js')

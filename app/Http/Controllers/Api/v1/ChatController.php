@@ -160,7 +160,7 @@ class ChatController extends BaseController
                 $socket_url = $this->client_data->socket_url;
                 $room_id = $order->order_number;
                 if($data['type']=='agent_to_user'){
-                    $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id.'-agent_user';
+                    $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id.'-agentId-'.@$data['agent_id'];
                 } else {
                     $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
                 }
@@ -181,7 +181,9 @@ class ChatController extends BaseController
                     'order_user_id' =>$orderby_user_id,
                     'type'=>$data['type'],
                     'db_name'=>$data['db_name'],
-                    'client_id'=>$data['client_id']
+                    'client_id'=>$data['client_id'],
+                    'agent_db'=>@$data['agent_db'],
+                    'agent_id'=>@$data['agent_id'],
                 ]);
                 $statusCode = $response->getStatusCode();
                 if($statusCode == 200) {
