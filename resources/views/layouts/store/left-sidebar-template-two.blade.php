@@ -171,7 +171,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
       <div class="row align-items-center py-md-2 position-initial">
          <div class="col-lg-2 col-5">
             <a class="navbar-brand mr-0" style="height:60px" href="{{route('userHome')}}">
-               <img alt="" src="{{$urlImg}}">
+               <img id="theme-logo" alt="" src="{{$urlImg}}">
             </a>
          </div>
          <div class="col-lg-7 main-menu d-block order-lg-1 order-2 ">
