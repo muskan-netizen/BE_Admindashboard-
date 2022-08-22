@@ -57,17 +57,15 @@
                     <div class="col-md-2 text-center">
                         <span>Price</span>
                     </div>
-                @if($serviceType ==  'rental')
-                    <div class="col-md-2 text-center">
-                        <span>Additional Increment Duration</span>
-                    </div>
-                @else
+                    @if($serviceType ==  'rental')
+                        <div class="col-md-2 text-center">
+                            <span>Additional Increment Duration</span>
+                        </div>
+                    @else
                     <div class="col-md-2 text-center">
                         <span>Quantity</span>
                     </div>
-                @endif
-                    
-
+                    @endif
                     <div class="col-md-4 text-center">
                         <span>Total</span>
                     </div>
@@ -180,20 +178,30 @@
                             @if($serviceType ==  'rental')
                                 <div class="col-10 col-md-4 text-md-center order-md-3">
                                     <div class="number d-flex justify-content-md-center">
-                                        <div style="display: none;" class="counter-container d-flex align-items-center">
-                                            <input placeholder="1" type="text" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
+                                        <div style="display: none !important;" class="counter-container d-flex align-items-center">
+                                            <input placeholder="1"  type="number" min="0"  data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
                                             data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
                                             
                                         </div>
-                                        <p></p>
-                                        <?php 
-
-                                       // pr($vendor_product);
-                                        ?>
+                                        <div class="qty-box mb-3">
+                                            <div class="input-group">
+                                                <span class="input-group-prepend">
+                                                    <button type="button" class="btn incremental-left-minus" data-type="minus" data-field=""><i class="ti-angle-left"></i>
+                                                    </button>
+                                                </span>
+                                                <input readonly  step="{{@$vendor_product->product->additional_increments.'.'.@$vendor_product->product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs"  value="{{$vendor_product->additional_increments_hrs_min }}" data-incremental_hrs={{@$vendor_product->product->additional_increments}}>
+                                                <span class="input-group-prepend quant-plus">
+                                                    <button type="button" class="btn incremental-right-plus" data-type="plus" data-field=""  data-incremental_hrs={{@$vendor_product->product->additional_increments}}>
+                                                        <i class="ti-angle-right"></i>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    
                                     </div>
+                                   
                                 </div>
                             @else
-
                                 <div class="col-10 col-md-4 text-md-center order-md-3">
                                     <div class="number d-flex justify-content-md-center">
                                         <div class="counter-container d-flex align-items-center">
@@ -219,12 +227,26 @@
                                     @endif
                                 </div>
                             @endif
+
                             <div class="col-2 col-md-1 text-right text-md-center p-in order-md-5">
                                 <a class="action-icon d-block remove_product_via_cart" data-product="{{$vendor_product->id }}" data-vendor_id="{{$vendor_product->vendor_id }}">
                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                 </a>
                             </div>
                         </div>
+
+                        <hr class="my-2">
+                        <div class="row align-items-md-center alRentalStartDate">
+                            <div class="col-3">
+                                <h6 class="m-0 pl-0">Start Date</h6>
+                                <p>{{date("m/d/Y g:i A", strtotime($vendor_product->start_date_time))}}</p>
+                            </div>
+                            <div class="col-3">
+                                <h6 class="m-0 pl-0">End Date</h6>
+                                <p>{{date("m/d/Y g:i A", strtotime($vendor_product->start_date_time))}}</p>
+                            </div>
+                        </div>
+
                        @if(count($vendor_product->addon) != 0)
                             <hr class="my-2">
                             <div class="row align-items-md-center add_head">
@@ -232,6 +254,7 @@
                                     <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                                 </div>
                             </div>
+                            
                             @foreach($vendor_product->addon as $ad=>$addon)
                             @if($addon->option)
                                 <div class="row">
