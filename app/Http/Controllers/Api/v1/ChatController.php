@@ -160,7 +160,7 @@ class ChatController extends BaseController
                 $socket_url = $this->client_data->socket_url;
                 $room_id = $order->order_number;
                 if($data['type']=='agent_to_user'){
-                    $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id.'-agent_user';
+                    $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id.'-agentId-'.@$data['agent_id'];
                 } else {
                     $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
                 }
