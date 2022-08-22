@@ -59,7 +59,7 @@
                     </div>
                     @if($serviceType ==  'rental')
                         <div class="col-md-2 text-center">
-                            <span>Additional Increment Duration</span>
+                            <span>Extended duration By(hr:min)</span>
                         </div>
                     @else
                     <div class="col-md-2 text-center">
@@ -173,7 +173,7 @@
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }}</div>
                             </div>
                             <div class="col-6 col-md-2 text-left order-md-4">
-                                <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
+                                <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price + $vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min) }}</div>
                             </div>
                             @if($serviceType ==  'rental')
                                 <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -183,18 +183,27 @@
                                             data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
                                             
                                         </div>
-                                        <div class="qty-box mb-3">
+                                        <div class="qty-box alCartInput">
                                             <div class="input-group">
-                                                <span class="input-group-prepend">
+                                                @php 
+                                                    $dura = 0;
+                                                    if($vendor_product->additional_increments_hrs_min) {
+                                                        $dura = explode('.',$vendor_product->additional_increments_hrs_min);
+                                                        $dura = sprintf("%02d",$dura[0]).':'.sprintf("%02d", $dura[1]);
+                                                    }
+
+                                                @endphp
+                                                <p>{{$dura}} hr:min/{{Session::get('currencySymbol')}}{{ $vendor_product->pvariant->incremental_price}} </p>
+                                                {{-- <span class="input-group-prepend">
                                                     <button type="button" class="btn incremental-left-minus" data-type="minus" data-field=""><i class="ti-angle-left"></i>
                                                     </button>
-                                                </span>
-                                                <input readonly  step="{{@$vendor_product->product->additional_increments.'.'.@$vendor_product->product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs"  value="{{$vendor_product->additional_increments_hrs_min }}" data-incremental_hrs={{@$vendor_product->product->additional_increments}}>
-                                                <span class="input-group-prepend quant-plus">
+                                                </span> --}}
+                                                {{-- <input  readonly  step="{{@$vendor_product->product->additional_increments.'.'.@$vendor_product->product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs p-0 border"  value="{{$vendor_product->additional_increments_hrs_min }}" data-incremental_hrs={{@$vendor_product->product->additional_increments}}> --}}
+                                                {{-- <span class="input-group-prepend quant-plus">
                                                     <button type="button" class="btn incremental-right-plus" data-type="plus" data-field=""  data-incremental_hrs={{@$vendor_product->product->additional_increments}}>
                                                         <i class="ti-angle-right"></i>
                                                     </button>
-                                                </span>
+                                                </span> --}}
                                             </div>
                                         </div>
                                     
