@@ -188,7 +188,7 @@
                                         <p></p>
                                         <?php 
 
-                                        pr($vendor_product);
+                                       // pr($vendor_product);
                                         ?>
                                     </div>
                                 </div>
