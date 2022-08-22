@@ -137,7 +137,8 @@ trait OrderTrait{
      // place Request To Dispatch for Appointment
     public function placeRequestToDispatchAppointment($order, $vendor, $dispatch_domain)
     {
-        try {
+       
+        //try {
 
             $order = Order::find($order);
             $customer = User::find($order->user_id);
@@ -152,7 +153,9 @@ trait OrderTrait{
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
+          
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+           
             $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
@@ -195,6 +198,7 @@ trait OrderTrait{
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
             $client = CP::orderBy('id', 'asc')->first();
+           // pr( $order_vendor );
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -213,18 +217,20 @@ trait OrderTrait{
                 'task' => $tasks,
                 'is_restricted' => $order_vendor->is_restricted,
                 'vendor_id' => $vendor_details->id,
-                'order_vendor_id' => $order_vendor->id,
-                'dbname' => $client->database_name,
-                'order_id' => $order->id,
-                'customer_id' => $order->user_id,
+                'order_vendor_id' => @$order_vendor->id,
+                'dbname' => @$client->database_name,
+                'order_id' => @$order->id,
+                'customer_id' => @$order->user_id,
                 'user_icon' => $customer->image
             ];
+           // pr( $postdata );
+           
             if($order_vendor->is_restricted == 1)
             {
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
                 $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
             }
-
+          
 
             $client = new Client([
                 'headers' => [
@@ -248,13 +254,13 @@ trait OrderTrait{
                 return 1;
             }
             return 2;
-        } catch (\Exception $e) {
-            return 2;
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
-        }
+        // } catch (\Exception $e) {
+        //     return 2;
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => $e->getMessage()
+        //     ]);
+        // }
     }
    
 

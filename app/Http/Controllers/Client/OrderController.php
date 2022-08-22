@@ -1129,8 +1129,43 @@ class OrderController extends BaseController
 
     public function checkIfanyProductLastMileon($request)
     {
+       
         $order_dispatchs = 2;
-        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        
+        $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
+       
+
+       
+        /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
+        if ($luxury_option_id == 8) { // only for appointment type 
+            $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
+            if($dispatch_domain_Appointment && $dispatch_domain_Appointment != false){
+                $Appointment = 0;
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                
+                
+                    if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 12) {
+                        $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
+                        //echo $Appointment . 'app';
+                        //echo $checkdeliveryFeeAdded->delivery_fee . '$checkdeliveryFeeAdded->delivery_fee';
+                       
+                        if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee >= 0) {
+                            //echo " type+;adk";
+                            //pr($checkdeliveryFeeAdded);
+                            $order_dispatchs = $this->placeRequestToDispatchAppointment($request->order_id, $request->vendor_id, $dispatch_domain_Appointment);
+                            dd($order_dispatchs);
+                            if ($order_dispatchs && $order_dispatchs == 1) {
+                                $Appointment = 1;
+                                return 1;
+                            }
+                        }
+                    }
+                    //pr('ad');
+                }
+            }
+        }
+        dd('adasd');
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
             if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
