@@ -397,7 +397,11 @@ class OrderController extends BaseController
             
             if($preferences->$clientVendorTypes == 1){
                 $vendorTypeOrders = $VendorTypesName.'_orders';
+
                 $$vendorTypeOrders = clone $orders;
+                $luxury_option_id = config('constants.VendorTypesLuxuryOptions.'.$vendor_typ_key);
+                $$vendorTypeOrders = $$vendorTypeOrders->where('luxury_option_id', $luxury_option_id)->count();
+                $response[$vendorTypeOrders] = $$vendorTypeOrders;
             }
         }
 
@@ -445,47 +449,47 @@ class OrderController extends BaseController
         })->count();
 
 
-        // Delivery orders count
-        if(isset($delivery_orders)){
-            $delivery_orders = $delivery_orders->where('luxury_option_id', 1)->count();
-            $response['delivery_orders'] = $delivery_orders;
-        }
+        // // Delivery orders count
+        // if(isset($delivery_orders)){
+        //     $delivery_orders = $delivery_orders->where('luxury_option_id', 1)->count();
+        //     $response['delivery_orders'] = $delivery_orders;
+        // }
 
-        // Dine in orders count
-        if(isset($dine_in_orders)){
-            $dine_in_orders = $dine_in_orders->where('luxury_option_id', 2)->count();
-            $response['dine_in_orders'] = $dine_in_orders;
-        }
+        // // Dine in orders count
+        // if(isset($dine_in_orders)){
+        //     $dine_in_orders = $dine_in_orders->where('luxury_option_id', 2)->count();
+        //     $response['dine_in_orders'] = $dine_in_orders;
+        // }
 
-        // Takeaway orders count
-        if(isset($takeaway_orders)){
-            $takeaway_orders = $takeaway_orders->where('luxury_option_id', 3)->count();
-            $response['takeaway_orders'] = $takeaway_orders;
-        }
+        // // Takeaway orders count
+        // if(isset($takeaway_orders)){
+        //     $takeaway_orders = $takeaway_orders->where('luxury_option_id', 3)->count();
+        //     $response['takeaway_orders'] = $takeaway_orders;
+        // }
 
-        // Rental orders count
-        if(isset($rental_orders)){
-            $rental_orders = $rental_orders->where('luxury_option_id', 4)->count();
-            $response['rental_orders'] = $rental_orders;
-        }
+        // // Rental orders count
+        // if(isset($rental_orders)){
+        //     $rental_orders = $rental_orders->where('luxury_option_id', 4)->count();
+        //     $response['rental_orders'] = $rental_orders;
+        // }
 
-        // Pick drop orders count
-        if(isset($pick_drop_orders)){
-            $pick_drop_orders = $pick_drop_orders->where('luxury_option_id', 5)->count();
-            $response['pick_drop_orders'] = $pick_drop_orders;
-        }
+        // // Pick drop orders count
+        // if(isset($pick_drop_orders)){
+        //     $pick_drop_orders = $pick_drop_orders->where('luxury_option_id', 5)->count();
+        //     $response['pick_drop_orders'] = $pick_drop_orders;
+        // }
 
-        // On demand orders count
-        if(isset($on_demand_orders)){
-            $on_demand_orders = $on_demand_orders->where('luxury_option_id', 6)->count();
-            $response['on_demand_orders'] = $on_demand_orders;
-        }
+        // // On demand orders count
+        // if(isset($on_demand_orders)){
+        //     $on_demand_orders = $on_demand_orders->where('luxury_option_id', 6)->count();
+        //     $response['on_demand_orders'] = $on_demand_orders;
+        // }
 
-        // Laundry orders count
-        if(isset($laundry_orders)){
-            $laundry_orders = $laundry_orders->where('luxury_option_id', 7)->count();
-            $response['laundry_orders'] = $laundry_orders;
-        }
+        // // Laundry orders count
+        // if(isset($laundry_orders)){
+        //     $laundry_orders = $laundry_orders->where('luxury_option_id', 7)->count();
+        //     $response['laundry_orders'] = $laundry_orders;
+        // }
 
 
         foreach ($orders as $key => $order) {
