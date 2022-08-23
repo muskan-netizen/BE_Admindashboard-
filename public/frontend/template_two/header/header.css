@@ -67,6 +67,13 @@
     transition: right linear .2s;
     box-shadow: 0 0 5px rgb(0 0 0 / 50%);
 }
+.al_body_template_two  .home-slider-wrapper .container-fluid{max-width: 100%;padding: 0;}
+.al_body_template_two  .home-slider-wrapper .container-fluid .banner-img-outer img{
+    max-height: 550px;
+    object-fit: cover;
+    max-width: 100%;
+}
+.alNewShopingCart svg path{fill: var(--theme-deafult)}
 
 
 @media (max-width: 767px){
