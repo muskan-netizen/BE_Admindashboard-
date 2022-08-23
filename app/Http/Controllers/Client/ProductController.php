@@ -318,8 +318,6 @@ class ProductController extends BaseController
                 $product->{$k} = $val;
             }
 
-
-
             $product->sku = $request->sku;
             $product->markup_price = $request->markup_price;
             $product->url_slug = $request->url_slug;
@@ -473,6 +471,7 @@ class ProductController extends BaseController
 
                 
 
+
                 $existv = array();
             
                 if ($request->has('variant_ids')) {
@@ -494,6 +493,7 @@ class ProductController extends BaseController
                             $variantData->save();
                             //pr($variantData->toArray());
                         }
+
                     }
                     $delOpt = ProductVariant::whereNotIN('id', $existv)->where('product_id', $product->id)->whereNull('title')->delete();
                 } else {
