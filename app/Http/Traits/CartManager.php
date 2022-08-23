@@ -492,6 +492,17 @@ trait cartManager{
                     $quantity_price = 0;
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                     $price_in_currency = $prod->pvariant->price??0;
+                    if($cartData[0]->luxury_option_id == 4 ){ // for rental case
+                        if(($prod->pvariant->incremental_price_per_min!='' && $prod->pvariant->incremental_price_per_min > 0)){
+                            $prod->additional_price = ($prod->additional_increments_hrs_min / $prod->pvariant->incremental_price_per_min);
+                        } else {
+                            $prod->additional_price = 0.00;
+                        }
+                        
+                        //$payable_amount =  $price_in_currency + $prod->additional_price;
+                        $sub_total += $prod->additional_price;
+                    }
+                    
                     $totalMarkup += $prod->pvariant->markup_price * $prod->quantity??0;
                     $price_in_doller_compare = $prod->pvariant->price??0; 
                     $container_charges_in_currency = $prod->pvariant->container_charges??0;
@@ -530,7 +541,7 @@ trait cartManager{
                     $prod->quantity_container_charges = decimal_format($quantity_container_charges);
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
                     
-                    $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
+                    $payable_amount = $payable_amount + $prod->additional_price + $quantity_price + $quantity_container_charges;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
                     if(
@@ -812,6 +823,8 @@ trait cartManager{
                 $vendorData->discount_percent = decimal_format($discount_percent);
                 $vendorData->taxable_amount = decimal_format($taxable_amount);  
                 //Log::info($taxable_amount);
+                // \Log::info($payable_amount);
+
                 $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount);
                 $vendorData->product_sub_total_amount = decimal_format($subtotal_amount);
                 $vendorData->isDeliverable = 1;

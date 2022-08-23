@@ -4,6 +4,7 @@
 //$total_amount = $order->payable_amount+$order->total_other_taxes_amount;
 $total_amount = $order->payable_amount;
 $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges;
+$additional_price=0;
 @endphp
 <section class="section-b-space light-layout_alFour">
     <div class="container">
@@ -31,11 +32,13 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                     <div class="col-lg-6">
                         <div class="product-order py-3">
                             <h3>{{__('Your Order Details')}}</h3>
+                         
                             @foreach($order->products as $product)
-
+                            
                                 @php
-
+                                   // pr($product);
                                     $image = count($product->media) ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
+                                    $additional_price+= $product->incremental_price;
                                 @endphp
 
 
@@ -70,6 +73,8 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                                                     <h5>{{Session::get('currencySymbol')}}{{decimal_format($product->price * @$clientCurrency->doller_compare)}}</h5>
                                                     <h4>{{__('Container Charges')}}</h4>
                                                     <p>{{decimal_format($product->container_charges)}}</p>
+                                                    <h4>{{__('Extented Duration Price')}}</h4>
+                                                    <p>{{decimal_format($product->incremental_price)}}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -130,7 +135,7 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                                     <li>{{__('Total')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
                                     <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount + $order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>
                                     @else
-                                    <li>{{__('Total')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
+                                    <li>{{__('Total')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
                                     @if($order->subscription_discount > 0)
                                         <li>{{__('Subscription Discount')}} <span> - {{Session::get('currencySymbol')}}{{decimal_format($order->subscription_discount * @$clientCurrency->doller_compare)}}</span></li>

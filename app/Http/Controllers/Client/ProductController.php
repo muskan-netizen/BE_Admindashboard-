@@ -479,10 +479,18 @@ class ProductController extends BaseController
                     $existv[] = $value;
                   
                     if ($variantData) {
+                        $per_min = 0;
+                        if(isset($request->variant_incremental_price[$key])) {
+                            if($request->variant_incremental_price[$key] !='' && $request->variant_incremental_price[$key] > 0){
+                                $per_min = (($request->additional_increments*60)+($request->additional_increments_min))/($request->variant_incremental_price[$key]);
+                            }
+                        }
+                       
                        // pr($request->all());
                         $variantData->title             = @$request->variant_titles[$key];
                         $variantData->price             = @$request->variant_price[$key];
                         $variantData->incremental_price             = @$request->variant_incremental_price[$key]??0;
+                        $variantData->incremental_price_per_min             = @$per_min;
                         $variantData->markup_price      = @$request->markup_price[$key];
                         $variantData->compare_at_price  = @$request->variant_compare_price[$key];
                         $variantData->container_charges  = @$request->container_charges[$key]??"";

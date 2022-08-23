@@ -2850,6 +2850,9 @@ $(document).ready(function () {
                     $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     returnResponse = true;
                     cartHeader();
+                    if(vendor_type == 'rental') {
+                       location.href =  '/viewcart';
+                    }
                 } else {
                     Swal.fire({
                         // title: "Warning!",

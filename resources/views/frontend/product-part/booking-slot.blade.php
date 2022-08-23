@@ -59,7 +59,7 @@
                   <button type="button" class="btn incremental-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="ti-angle-left"></i>
                   </button>
               </span>
-              <input readonly  step="{{$product->additional_increments.'.'.$product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs"  value="0" data-incremental_hrs={{$product->additional_increments}}>
+              <input readonly  step="{{$product->additional_increments*60+$product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs"  value="0" data-incremental_hrs={{$product->additional_increments}}>
               <span class="input-group-prepend quant-plus">
                   <button type="button" class="btn incremental-right-plus" data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-incremental_hrs={{$product->additional_increments}}>
                       <i class="ti-angle-right"></i>
