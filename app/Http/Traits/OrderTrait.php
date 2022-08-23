@@ -135,10 +135,10 @@ trait OrderTrait{
     }
 
      // place Request To Dispatch for Appointment
-    public function placeRequestToDispatchAppointment($order, $vendor, $dispatch_domain)
+    public function placeRequestToDispatchAppointment($order, $vendor, $dispatch_domain,$request)
     {
-       
-        try {
+     
+        // try {
 
             $order = Order::find($order);
             $customer = User::find($order->user_id);
@@ -155,8 +155,9 @@ trait OrderTrait{
             $call_back_url = route('dispatch-order-update', $dynamic);
           
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+         
+            $order_vendor = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
            
-            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -175,19 +176,6 @@ trait OrderTrait{
                 'flat_no'     => null,
                 'email'       => $vendor_details->email ?? null,
                 'phone_number' => $vendor_details->phone_no ?? null,
-            );
-
-            $tasks[] = array(
-                'task_type_id' => 2,
-                'latitude' => $cus_address->latitude ?? '',
-                'longitude' => $cus_address->longitude ?? '',
-                'short_name' => '',
-                'address' => $cus_address->address ?? '',
-                'post_code' => $cus_address->pincode ?? '',
-                'barcode' => '',
-                'flat_no'     => $cus_address->house_number ?? null,
-                'email'       => $customer->email ?? null,
-                'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
             );
 
             if ($customer->dial_code == "971") {
@@ -223,7 +211,7 @@ trait OrderTrait{
                 'customer_id' => @$order->user_id,
                 'user_icon' => $customer->image
             ];
-           // pr( $postdata );
+           pr( $postdata );
            
             if($order_vendor->is_restricted == 1)
             {
@@ -254,13 +242,13 @@ trait OrderTrait{
                 return 1;
             }
             return 2;
-        } catch (\Exception $e) {
-            return 2;
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
-        }
+        // } catch (\Exception $e) {
+        //     return 2;
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => $e->getMessage()
+        //     ]);
+        // }
     }
    
 

@@ -1132,10 +1132,8 @@ class OrderController extends BaseController
        
         $order_dispatchs = 2;
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-        
+       // pr( $checkdeliveryFeeAdded);
         $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
-       
-
        
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
         if ($luxury_option_id == 8) { // only for appointment type 
@@ -1151,10 +1149,10 @@ class OrderController extends BaseController
                         //echo $checkdeliveryFeeAdded->delivery_fee . '$checkdeliveryFeeAdded->delivery_fee';
                        
                         if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
-                            //echo " type+;adk";
+                          
                             //pr($checkdeliveryFeeAdded);
-                            $order_dispatchs = $this->placeRequestToDispatchAppointment($request->order_id, $request->vendor_id, $dispatch_domain_Appointment);
-                            //dd($order_dispatchs);
+                            $order_dispatchs = $this->placeRequestToDispatchAppointment($request->order_id, $request->vendor_id, $dispatch_domain_Appointment ,$request);
+                            dd($order_dispatchs);
                             if ($order_dispatchs && $order_dispatchs == 1) {
                                 $Appointment = 1;
                                 return 1;
@@ -1165,7 +1163,7 @@ class OrderController extends BaseController
                 }
             }
         }
-       // dd('adasd');
+         dd('adasd');
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
             if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){

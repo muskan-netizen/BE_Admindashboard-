@@ -2179,7 +2179,7 @@ $(document).ready(function () {
                                     var latitude = $('#latitude').val();
                                     var longitude = $('#longitude').val();
                                     if($('#vendor-address-map').length > 0){
-                                        displayMapLocation(latitude, longitude, 'vendor-address-map');
+                                       displayMapLocation(latitude, longitude, 'vendor-address-map');
                                     }
                                 }
                                 initialize();
