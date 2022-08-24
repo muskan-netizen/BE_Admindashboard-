@@ -1182,6 +1182,7 @@
         <div class="col-lg-6 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
+                <input type="hidden" name="slotting_and_scheduling" id="slotting_and_scheduling" value="1">
                 <input type="hidden" name="send_to" id="send_to" value="customize">
                 <div class="card-box mb-0 pb-1 h-100">
                     <div class="d-flex align-items-center justify-content-between">
