@@ -1,6 +1,6 @@
 <style>
 
-.al_body_template_three .single_product-input input {
+.alRentalSinglePageView .single_product-input input {
     width: 48%;
     display: inline-block;
     border: none;
@@ -8,72 +8,97 @@
     padding: 30px 0px 10px 4px;
     font-size: 13px;
 }
-.al_body_template_three .single_product-input {
+.alRentalSinglePageView .single_product-input {
     border: 1px solid#cfc9c9;
-    width: 45%;
+    width: 56%;
     border-radius: 5px;
     position: relative;
 }
-.al_body_template_three .single_cart-temp_label{
-  width: 45%;
+.alRentalSinglePageView .single_cart-temp_label{
+  width: 56%;
   position: absolute;
-  z-index: 999;
+  z-index: 1;
 }
-.al_body_template_three .single_cart-temp_label label{
+.alRentalSinglePageView .single_cart-temp_label label{
     display: inline-block;
-    width: 45%;
+    width: 46%;
     font-size: 12px;
     padding: 6px 0px 0px 6px;
     color: #000;
 }
-.al_body_template_three .single_product-input input:nth-child(1) {
+
+.alRentalSinglePageView .single_product-input input:nth-child(1) {
   border-right: 1px solid#cfc9c9;
     border: 1px solid#cfc9c9;
     border-top: none;
     border-bottom: none;
     border-left: none;
 }
+.disclaimer{
+    font-style: italic;
+}
 </style>
-
-<div class="addManualTime">
-  <div class="addManualTimeGroup" style="text-align:left;">
-    <div class="single_cart-temp_label">
-      <label class="text-left mb-0">Start/Date Time</label>    
-      <label class="text-left mb-0">End/Date Time</label>    
-    </div>
-      <div class="single_product-input mb-2">
-        <input id="blocktime" class="form-control" autofocus>
-        <input id="blocktime2" class="form-control">
+<div class="alRentalSinglePageView">
+  <div class="addManualTime">
+    <div class="addManualTimeGroup" style="text-align:left;">
+      <div class="single_cart-temp_label">
+        <label class="text-left mb-0">Start/Date Time</label>    
+        <label class="text-left mb-0">End/Date Time</label>    
       </div>
+        <div class="single_product-input mb-2">
+          <input id="blocktime" class="form-control" autofocus>
+          <input id="blocktime2" class="form-control">
+        </div>
+    </div>
+    
   </div>
-  
-</div>
-<div id="product_variant_additional_increment_wrapper">
-  <div class="product-description border-product pb-0">
-      {{-- <h6 class="product-title mt-0">{{__('Extended duration By('.@$product->additional_increments.'hr:'.@$product->additional_increments_min.'min/'.Session::get('currencySymbol').number_format(@$product->variant[0]->incremental_price * @$product->variant[0]->multiplier,2,".",",").')')}}:
-     </h6> --}}
-
-      <div class="mt-0">{{__('Duration') }}:<span class="duration">{{ @$product->minimum_duration*60+@$product->minimum_duration_min }} min = <p class="total_price">{{Session::get('currencySymbol').number_format(@$product->variant[0]->price * @$product->variant[0]->multiplier,2,".",",")}}</p></span> 
-      </div>
-      <div class="disclaimer">
-        <p> (Extra minutes will be calculated in multiple of {{Session::get('currencySymbol').number_format(@$product->variant[0]->incremental_price * @$product->variant[0]->multiplier,2,".",",")}} per 182 min)    </p>
-    </div>
-     
+  <div id="product_variant_additional_increment_wrapper" >
+    <div class="product-description border-product pb-0">
+        {{-- <h6 class="product-title mt-0">{{__('Extended duration By('.@$product->additional_increments.'hr:'.@$product->additional_increments_min.'min/'.Session::get('currencySymbol').number_format(@$product->variant[0]->incremental_price * @$product->variant[0]->multiplier,2,".",",").')')}}:
+      </h6> --}}
+      <div class="mt-0">{{__('Duration') }}:
+      
       <div class="qty-box mb-3">
           <div class="input-group">
-              <span class="input-group-prepend">
-                  <button type="button" class="btn incremental-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="ti-angle-left"></i>
-                  </button>
-              </span>
-              <input readonly  step="{{$product->additional_increments*60+$product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs"  value="0" data-incremental_hrs={{$product->additional_increments}}>
-              <span class="input-group-prepend quant-plus">
-                  <button type="button" class="btn incremental-right-plus" data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-incremental_hrs={{$product->additional_increments}}>
-                      <i class="ti-angle-right"></i>
-                  </button>
-              </span>
-          </div>
+                <span class="input-group-prepend">
+                    <button type="button" class="btn incremental-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="ti-angle-left"></i>
+                    </button>
+                </span>
+                <input style="display: none" readonly  step="{{$product->additional_increments*60+$product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs"  value="0">
+
+                <input style="width: 135px" readonly type="text"  id="incremental_hrs_hidden" class="form-control input-qty-number"  value="{{$product->minimum_duration.' hour '.$product->minimum_duration_min. ' min'}}">
+
+                <span class="input-group-prepend quant-plus">
+                    <button type="button" class="btn incremental-right-plus" data-type="plus" data-field="">
+                        <i class="ti-angle-right"></i>
+                    </button>
+                </span>
+            </div>
+        </div>
+        <div class="mt-0">
+          <div class="duration">
+            <div class="total_duration d-flex align-items-center">
+              {{Session::get('currencySymbol')}} 
+              <b class="total_price m-0 pr-1">
+                {{number_format(@$product->variant[0]->price * @$product->variant[0]->multiplier,2,".",",")}}
+              </b> {{__("for first")}} 
+              <b class="m-0 px-1">{{ @$product->additional_increments}}</b> {{__("hour")}} 
+              <b class="m-0 px-1">{{@$product->additional_increments_min}}</b> {{__("min")}}
+            </div>
+          </div> 
+        </div>
+        <div class="disclaimer mb-3">
+          <span class="d-flex align-items-center"> 
+            {{__("Extra duration will be charged")}} 
+              <b class="px-1">{{Session::get('currencySymbol').number_format(@$product->variant[0]->incremental_price * @$product->variant[0]->multiplier,2,".",",")}} </b>
+            {{__("per")}} 
+              <b class="px-1">{{ ($product->additional_increments) }}</b> {{__("hour")}} <b class="px-1">{{($product->additional_increments_min)}} </b>
+            {{__("min")}}    
+          
+          </span>
+        </div>
       </div>
-      
+    </div>
   </div>
 </div>
 
@@ -85,7 +110,16 @@
   {{-- <script src="{{ asset('assets/js/backend/product/productSchedule.js')}}"></script> --}}
 
   <script type="text/javascript">
+    function timeConvertCal(hr,min){
+      return (parseInt(hr)*parseInt(60)+parseInt(min)); 
+    }
     let product_variant_data  =  [];
+    let default_minutes =  timeConvertCal("{{$product->minimum_duration}},{{$product->minimum_duration_min}}");
+    let incremental_price = '{{@$product->variant[0]->incremental_price}}';
+    let actual_price = '{{@$product->variant[0]->actual_price}}';
+    let default_currency = "{{Session::get('currencySymbol')}}";
+    let default_step = timeConvertCal("{{$product->additional_increments}},{{$product->additional_increments_min}}");
+
      $(function(e) {
        
         var selectedStartDate = ''; // selected start
@@ -143,7 +177,8 @@
             
             console.log($($checkoutInput).val());
             console.log(document.getElementById('incremental_hrs').value);
-            calculation(incremental_hrs,)
+           
+            
 
         });
 
@@ -171,9 +206,12 @@
                 selectedStartDate:start_current_time,
                 selectedEndDate:end_current_time
               }
-              check_product_availibility(formData);
+            check_product_availibility(formData);
             console.log($($checkoutInput).val());
             console.log(document.getElementById('incremental_hrs').value);
+            // if(product_variant_data) {
+            //   calculation(incremental_hrs,product_variant_data.incremental_price,product_variant_data.incremental_price_per_min);
+            // }
           //}, 700);
           
         });
@@ -237,6 +275,11 @@
                     $('#start_time').val(start_time);
                     $('#end_time').val(end_time);
                     product_variant_data = data.product_variant_data;
+                    if(product_variant_data) {
+                      var incremental_hrs = document.getElementById('incremental_hrs').value;
+                      populateProductData(product_variant_data);
+                      calculation(incremental_hrs,product_variant_data.incremental_price,product_variant_data.incremental_price_per_min);
+                    }
                   } else {
                     Swal.fire(
                       'Already booked, Please select diffrent slot!',                                    
@@ -259,6 +302,30 @@
                 )
             })    
         } 
+
+        function calculation(incremental_min,incremental_price,incremental_price_per_min){
+            var total_additional_price = NumberFormatHelper.formatPrice((incremental_min/incremental_price_per_min));
+            console.log(total_additional_price);
+            var total_minutes =  (parseInt(default_minutes)+parseInt(incremental_min));
+            var total_calculated_price =  (parseInt(actual_price)+parseInt(total_additional_price));
+            $('.total_duration').html(total_minutes);
+            $('.total_price').html(NumberFormatHelper.formatPrice(total_calculated_price));
+
+        }
+      
+        function populateProductData(productData){
+            if(productData){
+              actual_price = NumberFormatHelper.formatPrice(productData.actual_price);
+              incremental_price = productData.incremental_price;
+              $('.product_fixed_price').html(actual_price);
+              default_minutes = timeConvertCal(productData.product.minimum_duration,productData.product.minimum_duration_min);
+              default_step = timeConvertCal(productData.product.additional_increments,productData.product.additional_increments_min)
+              $('.total_duration').html(default_minutes);
+              $('.total_price').html(actual_price);
+              $('.disclaimer').html(`<p>(Extra minutes will be calculated in multiple of ${default_currency}${incremental_price} per ${default_step} min)</p>`);
+              $("#incremental_hrs").attr('step', default_step);
+            }
+        }  
 
       });
   </script>

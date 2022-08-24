@@ -5,7 +5,7 @@ span.duration {
 }
 span.duration p.total_price {
     margin: 0;
-    padding-left: 7px;
+    padding-left: 0px;
     font-weight: 600;
     color: #000;
 }
