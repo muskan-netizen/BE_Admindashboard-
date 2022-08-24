@@ -11,7 +11,12 @@
 .iti.iti--allow-dropdown .phone,
 .flag-container .phone {padding: 17px 0 17px 100px !important;}
 .mdi-icons {color: #43bee1;font-size: 26px;vertical-align: middle;}
- 
+.login-form input[type="radio"]:checked+label {
+    border: 1px solid #6658dd;
+}
+.ui-menu.ui-autocomplete {
+    z-index: 9000 !important;
+}
 .al_new_export_table.royo_customber_btn div.dataTables_wrapper div.dataTables_filter {position: absolute;right: 0;top: -92px;}
 .al_new_export_table.royo_customber_btn .dt-buttons.btn-group.flex-wrap {position: absolute;top: -92px !important;}
 
@@ -156,6 +161,7 @@
                         </button>
                         <button class="btn btn-info waves-effect waves-light text-sm-right addUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                         </button>
+                        <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal" data-target="#pay-receive-modal" data-backdrop="static" data-keyboard="false">{{__("Edit Wallet")}}</button>
                     </div>
 
     
@@ -605,12 +611,10 @@
                 targets: [1, 3],
                 className: "text-nowrap",
             }],
-            columns: [{
-                    data: 'serial',
-                    name: 'serial',
-                    orderable: false,
-                    searchable: false
-                },
+            columns: [
+                {data: '', name: 'serial', orderable: false, searchable: false, render: function (data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }},
                 {
                     data: 'date',
                     name: 'date',
@@ -635,6 +639,8 @@
                         return '<span class="text-right ' + ((full.type == 'deposit') ? 'text-success' : ((full.type == 'withdraw') ? 'text-danger' : '')) + '">' + data + '</span>';
                     }
                 },
+                {data: 'remarks', name: 'remarks', orderable: false, searchable: false},
+                {data: 'created_by', name: 'created_by', orderable: false, searchable: false}
             ]
         });
     });
