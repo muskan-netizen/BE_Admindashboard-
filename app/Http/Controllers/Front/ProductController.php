@@ -173,7 +173,7 @@ class ProductController extends FrontController{
             }
             $sets[] = ['variant_types' => $variant_type_id, 'variant_options' => $variant_option_id];
         }
-        if($product->category->categoryDetail->type_id == 8){
+        if(  in_array($product->category->categoryDetail->type_id ,[8,12]) ){
             $cartDataGet = $this->getCartOnDemand($request);
             $nlistData = clone $product;
             $nlistData = $nlistData->where('url_slug', $url_slug)->paginate(10);

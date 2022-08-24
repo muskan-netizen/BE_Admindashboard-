@@ -125,6 +125,111 @@ class DispatcherController extends FrontController
         }
     }
 
+      /******************    ---- order status update from dispatch for single product base (Need to dispatcher_status_option_id ) -----   ******************/
+      public function dispatchOrderSingleProductStatusUpdate(DispatchOrderStatusUpdateRequest $request, $domain = '', $web_hook_code)
+      {
+          try {
+              DB::beginTransaction();
+              $checkiftokenExist = OrderProduct::where('web_hook_code',$web_hook_code)->first();
+  
+              if($checkiftokenExist){
+              
+                   //Checking Bag QrCode imported in order panel only if qrcheck parameter is came from dispatcher
+                   if(isset($request->check_qr) && isset($request->qr_code))
+                   {
+                       $code = QrcodeImport::with('vendorDetail')->where('code',$request->qr_code)->first();
+                       if(!isset($code->code))
+                       {
+                          return response()->json([
+                                  'status' => '0',
+                                  'message' => 'Not Found'
+                              ]);
+                       }
+                   }
+                  
+  
+                  //  \Log::info('hi');
+                   if($request->check_qr=='5' && isset($request->qr_code))
+                   {
+                      $order = Order::where('order_number',$request->order_number)->first();
+                      $code = QrcodeImport::with('vendorDetail')->where('code',$request->qr_code)->first();
+                      if($code){
+                          $qrcodes = OrderQrcodeLinks::updateOrCreate(['order_id' => $order->id,'qrcode_id'=>$code->id], ['order_id'=>$order->id,'order_number'=>$order->order_number,'qrcode_id'=>$code->id,'code'=>$code->code]);
+                      }
+                   }
+  
+  
+                  $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
+                      'order_id' =>  $checkiftokenExist->order_id,
+                      'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
+                      'vendor_id' =>  $checkiftokenExist->order_vendor_id,
+                      'order_vendor_product_id' =>  $checkiftokenExist->id,
+                      'type' =>  $request->task_type??1]);
+                      $this->sendOrderNotification($update->id);
+                      $type = $request->task_type??1;
+                     $dispatch_status = $request->dispatcher_status_option_id;
+  
+                      switch ($dispatch_status) {
+                          case 2:
+                              $request->status_option_id = 2;
+                              break;
+                        case 3:
+                          $request->status_option_id = 4;
+                          break;
+                        case 4:
+                          $request->status_option_id = 5;
+                          break;
+                        case 5:
+                          $request->status_option_id = 6;
+                          break;
+                        default:
+                         $request->status_option_id = null;
+                      }
+  
+                      # vendor status update
+  
+                      if(isset($request->status_option_id) && !empty($request->status_option_id) && $request->status_option_id == 6 && $type == 2){
+  
+                          $checkif= VendorOrderStatus::where(['order_id' =>  $checkiftokenExist->order_id,
+                          'order_status_option_id' =>  $request->status_option_id,
+                          'vendor_id' =>  $checkiftokenExist->vendor_id,
+                          'order_vendor_id' =>  $checkiftokenExist->id,
+                          ])->count();
+  
+                          if($checkif == 0){
+                              $update_vendor = VendorOrderStatus::updateOrCreate([
+                                  'order_id' =>  $checkiftokenExist->order_id,
+                                  'order_status_option_id' =>  $request->status_option_id,
+                                  'vendor_id' =>  $checkiftokenExist->vendor_id,
+                                  'order_vendor_id' =>  $checkiftokenExist->id  // order_vendor_product_id
+                                  ]);
+  
+                                  OrderProduct::where('id', $checkiftokenExist->id)->where('order_id', $checkiftokenExist->order_id)->update(['order_status_option_id' => $request->status_option_id]);
+                              }
+                      }
+              if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
+              {
+                  $update_tr = OrderProduct::where('web_hook_code',$web_hook_code)->update(['dispatch_traking_url' =>  $request->dispatch_traking_url]);
+              }
+              OrderProduct::where('id', $checkiftokenExist->id)->where('order_id', $checkiftokenExist->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
+  
+               $data = ['order'=>$update,'vendor_detail'=>$code->vendorDetail??[]];
+              DB::commit();
+                      $message = "Order status updated.";
+                      return $this->successResponse($data??[], $message);
+  
+              }else{
+                  DB::rollback();
+                  $message = "Invalid Order Token";
+                  return $this->errorResponse($message, 400);
+                 }
+  
+          } catch (Exception $e) {
+              DB::rollback();
+              return $this->errorResponse($e->getMessage(), $e->getCode());
+  
+          }
+      }
 
     /******************    ---- pickup delivery status update (Need to dispatcher_status_option_id ) -----   ******************/
     public function dispatchPickupDeliveryUpdate(Request $request, $domain = '', $web_hook_code)

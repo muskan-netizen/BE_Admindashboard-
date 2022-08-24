@@ -2292,7 +2292,6 @@ class CartController extends FrontController
 
     public function updateSchedule(Request $request, $domain = '')
     {
-        //pr($request->all());
         DB::beginTransaction();
         try{
 
@@ -2409,6 +2408,7 @@ class CartController extends FrontController
     # update schedule for home services basis on services
     public function updateProductSchedule(Request $request, $domain = '')
     {
+       //pr($request->all());
         DB::beginTransaction();
         try{
             $user = Auth::user();
@@ -2420,8 +2420,8 @@ class CartController extends FrontController
                 }
                 CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time]);
 
-                $cartProductDetails = CartProduct::where('id', $request->cart_product_id)->get()->first();
-                CartProduct::where('cart_id', $cartProductDetails->cart_id )->where('vendor_id', $cartProductDetails->vendor_id  )->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time]);
+                // $cartProductDetails = CartProduct::where('id', $request->cart_product_id)->get()->first();
+                // CartProduct::where('cart_id', $cartProductDetails->cart_id )->where('vendor_id', $cartProductDetails->vendor_id  )->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time]);
                 
                 DB::commit();
                 return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);

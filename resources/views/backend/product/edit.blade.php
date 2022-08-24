@@ -256,6 +256,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::text('markup_price', $product->variant[0]->markup_price, ['class'=>'form-control', 'id' => 'markup_price', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         @endif
+                        @if( in_array( $product->category->categoryDetail->type_id , [12]) )
+                        <div class="col-4  mb-2">
+                            {!! Form::label('title', __('Appointment Duration').' '. __('min:'), ['class' => 'control-label']) !!}
+                            {!!Form::input('number','minimum_duration_min', $product->minimum_duration_min, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'minimum_duration_min', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
+                        </div>
+                        @endif
                         {{-- <div class="col-4 mb-2">
                             {!! Form::label('title', 'Cost Price (Optional)', ['class' => 'control-label']) !!}
                             {!! Form::text('cost_price', $product->variant[0]->cost_price, ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
@@ -296,7 +302,9 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </div>
                         </div>
                     </div>
-                    @if(  in_array( $product->category->categoryDetail->type_id , [10,12]) )
+                    
+
+                    @if(  in_array( $product->category->categoryDetail->type_id , [10]) )
                         <div class="row col-md-12 mb-2">
                             <div class="col-4 mb-2 row">
                                 <div class="col-12">
@@ -312,7 +320,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     {!!Form::input('number','minimum_duration_min', $product->minimum_duration_min, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'minimum_duration_min', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
                                 </div>
                             </div>
-                            @if($product->category->categoryDetail->type_id  ==  10)
                             <div class="col-4 mb-2 row">
                                 <div class="col-12">
                                     {!! Form::label('title', __('Additional Increment Duration'), ['class' => 'control-label']) !!}
@@ -341,7 +348,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 </div>
 
                             </div>
-                            @endif
+                           
                         </div>
                         {{-- <div class="row mb-2">
                            

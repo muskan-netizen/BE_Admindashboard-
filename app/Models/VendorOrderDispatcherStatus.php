@@ -9,7 +9,7 @@ class VendorOrderDispatcherStatus extends Model
     protected $table = 'vendor_order_dispatcher_statuses';
 
     protected $fillable = [
-        'dispatcher_id', 'order_id', 'dispatcher_status_option_id', 'vendor_id','type'
+        'dispatcher_id', 'order_id', 'dispatcher_status_option_id', 'vendor_id','type','order_vendor_product_id'
     ];
 
     protected $appends = ['status_data'];
