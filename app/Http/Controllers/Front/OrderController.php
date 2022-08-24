@@ -1033,6 +1033,11 @@ class OrderController extends FrontController
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }
+                    // added some columen for rental case 
+                    $order_product->start_date_time = $vendor_cart_product->start_date_time;
+                    $order_product->end_date_time = $vendor_cart_product->end_date_time;
+                    $order_product->additional_increments_hrs_min = $vendor_cart_product->additional_increments_hrs_min;
+
                     $order_product->save();
                     if (!empty($vendor_cart_product->addon)) {
                         

@@ -337,7 +337,7 @@ class ProductController extends FrontController{
                 }
                 else{
                     $product_variant = ProductVariantSet::where('variant_type_id', $request->variants[$key])
-                    ->where('variant_option_id', $request->options[$key])->where('product_id', $product->id)->get();
+                    ->where('variant_option_id', $request->options[$key])->where('product_variant_sets.product_id', $product->id)->get();
                     if($product_variant){
                         foreach ($product_variant as $k => $variant) {
                             if(!in_array($variant->product_variant_id, $pv_ids)){
@@ -352,14 +352,12 @@ class ProductController extends FrontController{
         $sets = array();
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $availableSets = Product::with(['variantSet.variantDetail','variantSet.option2'=>function($q)use($product, $pv_ids){
-            //$q->where('product_id', $product->id); 
-            //->whereIn('product_variant_id', $pv_ids);
+            $q->where('product_variant_sets.product_id', $product->id); //->whereIn('product_variant_id', $pv_ids);
         }])
+        //return $product;
         ->select('id')
-        ->where('id', $product->id)->first();
-        //dd($availableSets);
+        ->where('products.id', $product->id)->first();
         $data['availableSets'] = $availableSets->variantSet;
-
         if($pv_ids){
             $variantData = ProductVariant::with('product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart')->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
                 ->whereIn('id', $pv_ids)->get();
