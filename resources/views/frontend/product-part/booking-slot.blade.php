@@ -85,7 +85,7 @@
   {{-- <script src="{{ asset('assets/js/backend/product/productSchedule.js')}}"></script> --}}
 
   <script type="text/javascript">
-    var product_variant_data  =  [];
+    let product_variant_data  =  [];
      $(function(e) {
        
         var selectedStartDate = ''; // selected start
