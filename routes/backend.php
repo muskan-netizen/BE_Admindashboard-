@@ -231,6 +231,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/permissionsForUserViaVendor', 'Client\VendorController@permissionsForUserViaVendor')->name('permissionsForUserViaVendor');
         Route::DELETE('vendor/vendor-permission-del/{id}', 'Client\VendorController@userVendorPermissionDestroy')->name('user.vendor.permission.destroy');
         Route::get('vendor/catalogs/{id}', 'Client\VendorController@vendorCatalog')->name('vendor.catalogs');
+        Route::get('vendor/product/export/{id}', 'Client\VendorController@vendorProductExport')->name('vendor.product.export');
         Route::get('vendor/product/list/{id}', 'Client\VendorController@VendorProductFilter')->name('vendor.product');
         Route::get('global/product/list', 'Client\VendorController@VendorGlobalProductFilter')->name('vendor.global.product');
         Route::get('vendor/inventory-import/{id}', 'Client\VendorController@getInventoryImport')->name('get.inventory.import');
