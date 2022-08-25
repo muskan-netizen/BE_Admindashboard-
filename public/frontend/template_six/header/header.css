@@ -16,7 +16,7 @@
          url('../../../assets/fonts/MontserratRegular.ttf') format('truetype'),
          url('../../../assets/fonts/MontserratRegular.svg#MontserratRegular') format('svg');
 }
-::-webkit-scrollbar{width: 8px;}
+::-webkit-scrollbar{width: 8px;height: 8px;}
 ::-webkit-scrollbar-track{  background: #f1f1f1; }
 ::-webkit-scrollbar-thumb{  background: var(--theme-deafult); }
 ::-webkit-scrollbar-thumb:hover{  background: #555; }

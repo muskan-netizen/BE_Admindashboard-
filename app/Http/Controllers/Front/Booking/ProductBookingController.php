@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{ProductBooking};
+use App\Models\{ProductBooking, ProductVariant, ProductVariantSet};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -28,34 +28,30 @@ class ProductBookingController extends FrontController
      */
     public function checkProductAvailibility(Request $request)
     {
-      pr($request->all());
-     
-      // try {
-      //   DB::beginTransaction(); //Initiate transaction
-      //     $block_time = explode('-', $request->blocktime);
-      //     $start_time = date("Y-m-d H:i:s",strtotime($block_time[0]));
-      //     $end_time = date("Y-m-d H:i:s",strtotime($block_time[1]));
-          
-      //     $start_end_block_time = $request->blocktime;
-
-      //     $ProductBooking  = ProductBooking::where(['variant_id'=>$request->variant_id,'product_id'=>$request->product_id])
-      //                                       ->where(function ($query) use ($start_time , $end_time ){
-      //                                           $query->where('start_date_time', '<=', $start_time)
-      //                                                 ->where('end_date_time', '>=', $end_time);
-      //                                       })->first();
-          
-      //     if (!$ProductBooking) {
-      //       $status = ProductBooking::Create(['memo'=>$request->memo,'variant_id'=>$request->variant_id,'product_id'=>$request->product_id,'start_date_time'=>$start_time,'end_date_time'=>$end_time,'booking_start_end'=>$start_end_block_time]);
-      //     } else {
-      //       return response()->json(array('success' => false, 'message'=>'This slot is already booked, Please try other.'));
-      //     }
-         
-      //   DB::commit(); //Commit transaction after all the operations
-      //   return response()->json(array('success' => true, 'message'=>'Manual time added sucessfully.'));
-      // } catch (Exception $e) {
-      //     DB::rollBack();
-      //     return response()->json(array('success' => false, 'message'=>'Something went wrong.'));
-      // }
+      //pr($request->all());
+      try {
+          $block_time = explode('-', $request->blocktime);
+          $start_time = date("Y-m-d H:i:s",strtotime($request->selectedStartDate));
+          $end_time = date("Y-m-d H:i:s",strtotime($request->selectedEndDate));
+          $product_variant_id =  ProductVariantSet::where(['variant_option_id'=>$request->variant_option_id,'product_id'=>$request->product_id])->pluck('product_variant_id');
+          $product_variant_id = $product_variant_id->toArray();
+          $ProductBooking  = ProductBooking::whereIn('variant_id',$product_variant_id)->where('product_id',$request->product_id)
+                              ->where(function ($query) use ($start_time , $end_time ){
+                                  $query->where('start_date_time', '<=', $end_time)
+                                        ->where('end_date_time', '>=', $start_time);
+                              })->pluck('variant_id')->toArray();
+          $available_product_variant = array_values(array_diff($product_variant_id, $ProductBooking));
+          //print_r($available_product_variant);
+          $returnarr =  array();
+          $returnarr['available_product_variant'] =  @$available_product_variant[0];
+          $returnarr['product_id'] =  $request->product_id;
+          $returnarr['start_time'] =  $start_time;
+          $returnarr['end_time'] =  $end_time;
+          $returnarr['variant_option_id'] = $request->variant_option_id;
+          return response()->json(array('success' => true, 'variant_data'=>$returnarr ,'message'=>'Available product data.'));
+        } catch (Exception $e) {
+          return response()->json(array('error' => false, 'message'=>'Something went wrong.'));
+        }
      
     }
     

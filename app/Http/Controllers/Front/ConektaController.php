@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, WalletController, FrontController};
 use Auth, Log, Redirect;
-use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, CartDeliveryFee, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, Transaction};
+use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, CartDeliveryFee, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, Transaction, CaregoryKycDoc};
 
 class ConektaController extends Controller
 { 
@@ -14,12 +14,12 @@ class ConektaController extends Controller
 	use \App\Http\Traits\ApiResponser;
 	public function __construct()
   	{
-		$this->upay_creds = PaymentOption::select('credentials')->where('code', 'conekta')->where('status', 1)->first();
-	    $this->creds_arr = json_decode($this->upay_creds->credentials);
+		$this->conekta_creds = PaymentOption::select('credentials')->where('code', 'conekta')->where('status', 1)->first();
+	    $this->creds_arr = json_decode($this->conekta_creds->credentials);
 	    $this->public_key = $this->creds_arr->public_key ?? '';
 	    $this->private_key = $this->creds_arr->private_key ?? '';
-        $this->url = url('payment/telr');
-        // $this->url = "https://ab21-180-188-237-239.ngrok.io/payment/telr";
+        $this->url = url('payment/conekta'); 
+        // $this->url = "https://460a-180-188-237-23.ngrok.io/payment/conekta";
 	}
 	public function beforePayment(Request $request)
     {
@@ -44,23 +44,6 @@ class ConektaController extends Controller
                 'tags' => array('cart')
             ];
             array_push($lineItems, $item);
-            // if(isset($data['cart_id']))
-            // {
-            //     $order = Order::where('order_number', $data['order_number'])->with('products')->first();
-            //     foreach($order->products as $cp)
-            //     {
-            //         $item = [
-            //             'name'=> $cp->product->title??'',
-            //             'description'=> $cp->product->description??"Product description is not found",
-            //             'unit_price'=> (int)($data['amount'] * 100),
-            //             'quantity'=> $cp->quantity,
-            //             'sku'=> $cp->product->sku??'',
-            //             'category'=> $cp->product->category->categoryDetail->slug??"cart",
-            //             'tags' => array('cart')
-            //         ];
-            //         array_push($lineItems, $item);
-            //     }
-            // }
         }elseif($data['payment_from'] == "wallet"){
             $item = [
                 'name'=> 'Wallet',
@@ -105,21 +88,22 @@ class ConektaController extends Controller
             return Redirect::to($redirect_url);
         }
     }
-    public function postPayment(Request $request, $domain='',$status,$payment_from,$come_from,$amount,$order_number)
+    public function afterPayment(Request $request, $domain='',$status,$payment_from,$come_from,$amount,$order_number)
     { 
+        // Auth::loginUsingId(1);
         $request['payment_from'] = $payment_from;
         $request['come_from'] = $come_from;
         $request['amount'] = $amount;
         $request['order_number'] = $order_number;
         if($status == 'success')
         {
-            $returnUrl = $this->sucessPayment($request,$request->cart_id);
+            $returnUrl = $this->sucessPayment($request,$request->checkout_id);
         } else{
             $returnUrl = $this->failedPayment($request);
         }
         return Redirect::to(url($returnUrl));
     }
-    public function sucessPayment($request, $pamyent)
+    public function sucessPayment($request, $transactionId)
     {
         if($request->come_from == "app")
         {
@@ -127,7 +111,7 @@ class ConektaController extends Controller
             Auth::login($user);
         }
         $user = Auth::user();
-    	$transactionId = $pamyent->id;
+    	// $transactionId = $pamyent->id;
     	if($request->payment_from == 'cart'){
             $order_number = $request->order_number;
             $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();

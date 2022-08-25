@@ -682,23 +682,15 @@ body[dir="rtl"] .dataTables_filter {
   right: auto;
 }
 
-
-.commonModal .dt-buttons.btn-group.flex-wrap {
-  right: auto;
-  top: 8px;
-  left: 10px;
-}
-
-.dashboard_order_title h4 {
-  line-height: inherit !important;
-}
-body .apexcharts-legend.position-bottom.apexcharts-align-center, body .apexcharts-legend.position-top.apexcharts-align-center{
-  justify-content: center;
-  max-width: 246px;
-}
-body .apexcharts-legend.position-bottom .apexcharts-legend-series, body .apexcharts-legend.position-top .apexcharts-legend-series{
+/* ===================== dashboard ======================== */
+.apexcharts-canvas .apexcharts-legend.position-bottom .apexcharts-legend-series{
   display: block;
-  align-items: center;
+  align-items: end;
+  clear: both;
   width: 100%;
   text-align: right;
+}
+.apexcharts-canvas .apexcharts-legend.position-bottom.apexcharts-align-center{
+  justify-content: center;
+  max-width: 260px;
 }

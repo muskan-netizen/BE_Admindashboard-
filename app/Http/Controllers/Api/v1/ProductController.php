@@ -337,6 +337,7 @@ class ProductController extends BaseController
                 if (!empty($pv_ids)) {
                     $product_variant = $product_variant->whereIn('product_variant_id', $pv_ids);
                 }
+                
                 $product_variant = $product_variant->where('product_id', $product->id)->get();
 
                 if ($product_variant) {

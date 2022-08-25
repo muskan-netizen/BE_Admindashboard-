@@ -284,7 +284,7 @@ class ProductController extends BaseController
      */
     public function update(Request $request, $domain = '', $id)
     {
-       // dd($request->all());
+        ProductVariant::where('product_id',$id)->update(['status'=>0]);
         $product = Product::where('id', $id)->firstOrFail();
         $rule = array(
             'product_name' => 'required|string',
@@ -489,6 +489,7 @@ class ProductController extends BaseController
                         $variantData->cost_price        = @$request->variant_cost_price[$key];
                         $variantData->quantity          = @$request->variant_quantity[$key];
                         $variantData->tax_category_id   = @$request->tax_category;
+                        $variantData->status   = 1;
                         $variantData->save();
                         //pr($variantData->toArray());
                     }

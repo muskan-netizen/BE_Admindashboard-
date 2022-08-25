@@ -1033,6 +1033,11 @@ class OrderController extends FrontController
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }
+                    // added some columen for rental case 
+                    $order_product->start_date_time = $vendor_cart_product->start_date_time;
+                    $order_product->end_date_time = $vendor_cart_product->end_date_time;
+                    $order_product->additional_increments_hrs_min = $vendor_cart_product->additional_increments_hrs_min;
+
                     $order_product->save();
                     if (!empty($vendor_cart_product->addon)) {
                         
@@ -1103,6 +1108,13 @@ class OrderController extends FrontController
                     }
 
                     $coupon_name = $vendor_cart_product->coupon->promo->name;
+                    if ($vendor_cart_product->coupon->promo->allow_free_delivery) {
+                        $total_discount += $delivery_fee;
+                        $vendor_payable_amount -= $delivery_fee;
+                        $vendor_discount_amount += $delivery_fee;
+                    }
+
+
                     if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
                         $amount = round($vendor_cart_product->coupon->promo->amount);
                         $total_discount += $amount;

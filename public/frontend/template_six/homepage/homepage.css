@@ -10,6 +10,8 @@ body.al_body_template_six.light{visibility: visible;}
     overflow: hidden;
 }
 .carousel-inner a.banner-img-outer img{height: 100%;object-fit: cover;}
+
+
 /* ================================ Shimmer effect Start Form Here =========================================*/
 .container.mb-3.shimmer_effect.alcardCatagory .row{
     display: flex;
