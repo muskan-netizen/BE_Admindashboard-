@@ -837,6 +837,7 @@ class OrderController extends FrontController
             $addon_amount=0;
             $total_other_taxes=0.00;
             $additionalPrice=0.00;
+            $totalAdditionalPrice = 0.00;
 
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if(!empty($request->other_taxes_string)){
@@ -861,6 +862,8 @@ class OrderController extends FrontController
                 $vendor_products_total_amount = 0;
                 $vendor_taxable_amount = 0;
                 $is_restricted = 0;
+                $additionalPrice=0.00;
+
                 $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
 
                 /* Update details related to order vendor */
@@ -983,6 +986,7 @@ class OrderController extends FrontController
                     $order_product->additional_increments_hrs_min = @$vendor_cart_product->additional_increments_hrs_min;
                     $order_product->start_date_time = $vendor_cart_product->start_date_time;
                     $order_product->end_date_time = $vendor_cart_product->end_date_time;
+                    $order_product->total_booking_time = @$vendor_cart_product->total_booking_time;
                     
                     $order_product->container_charges = $variant->container_charges;
                     $order_product->order_vendor_id = $OrderVendor->id;
@@ -1157,6 +1161,7 @@ class OrderController extends FrontController
                 $vendor_payable_amount += $vendor_taxable_amount;
 
                 $payable_amount+= $additionalPrice;
+                $totalAdditionalPrice+= $additionalPrice;
 
 
                 $OrderVendor->coupon_id = $coupon_id;
@@ -1178,6 +1183,7 @@ class OrderController extends FrontController
                     $fixedFeeAmount=$vendor_cart_product->vendor->fixed_fee_amount;
                 }
                 $OrderVendor->fixed_fee = $fixedFeeAmount; 
+                $OrderVendor->additional_price = $additionalPrice; 
                 $OrderVendor->taxable_amount = $new_vendor_taxable_amount; 
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->payable_amount = $vendor_payable_amount;
@@ -1290,6 +1296,7 @@ class OrderController extends FrontController
             $order->luxury_option_id = $luxury_option->id;
             $order->payable_amount = $payable_amount;
             $order->fixed_fee_amount = $fixed_fee_amount;
+            $order->additional_price = $totalAdditionalPrice;
             $order->total_container_charges = $total_container_charges;
             if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                 $order->payment_status = 1;

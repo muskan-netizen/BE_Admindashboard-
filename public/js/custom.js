@@ -2804,6 +2804,7 @@ $(document).ready(function () {
                     var start_date =  $('#start_time').val();
                     var end_date =  $('#end_time').val();
                     var incremental_hrs =  $('#incremental_hrs').val();
+                    var total_booking_time =  $('#total_hrs').val();
                     $("#single_vendor_remove_cart_btn").attr({
                         'data-product_id': product_id,
                         'data-variant_id': (vendor_type == 'rental') ? $('#prod_variant_id').val() :$('#available_product_variant').val(),
@@ -2812,7 +2813,8 @@ $(document).ready(function () {
                         'data-page': 'productDetail',
                         'data-start_time':start_date,
                         'data-end_time':end_date,
-                        'data-incremental_hrs':incremental_hrs
+                        'data-incremental_hrs':incremental_hrs,
+                        'data-total_hrs':total_booking_time
                     });
                     $("#single_vendor_order_modal").modal('show');
                 } else {
@@ -2821,13 +2823,15 @@ $(document).ready(function () {
                     var end_date =  $('#end_time').val();
                     var quantity = $('.quantity_count').val();
                     var incremental_hrs =  $('#incremental_hrs').val();
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs);
+                    var total_booking_time =  $('#total_hrs').val();
+
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='') {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='') {
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -2843,7 +2847,8 @@ $(document).ready(function () {
                 "variant_id": variant_id,
                 "start_date":start_date,
                 "end_date":end_date,
-                "incremental_hrs":incremental_hrs
+                "incremental_hrs":incremental_hrs,
+                "total_booking_time":total_booking_time
             },
             success: function (response) {
                 if (response.status == 'success') {
@@ -2887,9 +2892,10 @@ $(document).ready(function () {
         var start_date = $(this).attr('data-start_time');
         var end_date = $(this).attr('data-end_time'); 
         var incremental_hrs = $(this).attr('data-incremental_hrs');
+        var total_booking_time =  $(this).attr('data-total_hrs');
        
         if ($(this).attr('data-page') == 'productDetail') {
-            submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs);
+            submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time);
         } else if ($(this).attr('data-page') == 'vendorProducts') {
             var elem = $(this).attr('data-element_id');
             submitAddtoCartProductsAddons($('#' + elem), addonids, addonoptids, product_id, variant_id, quantity, vendor_id);

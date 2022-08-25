@@ -342,7 +342,7 @@ $lastmileShow = array('7','10');
                            
                         </div> --}}
                         @if($product->category->categoryDetail->type_id  ==  10)
-                            <div class="row mb-2">
+                            <div class="row mb-2" style="display: none;">
                                 <div class="col-sm-3">
                                     {!! Form::label('title', __('Fix Check-in time'),['class' => 'control-label']) !!} <br />
                                     <input type="checkbox" bid="" id="is_fix_check_in_time" data-plugin="switchery" name="is_fix_check_in_time" class="chk_box" data-color="#43bee1" @if($product->is_fix_check_in_time == 1) checked @endif>

@@ -194,15 +194,9 @@
                                         <div class="qty-box alCartInput">
                                             <div class="input-group">
                                                 @php 
-                                                    $dura = 0;
-                                                    if($vendor_product->additional_increments_hrs_min) {
-                                                        // $dura = explode('.',$vendor_product->additional_increments_hrs_min);
-                                                        // $dura = sprintf("%02d",$dura[0]).':'.sprintf("%02d", $dura[1]);
-                                                        $dura = $vendor_product->additional_increments_hrs_min;
-                                                    }
-
+                                                    $dura = getHoursMinutes($vendor_product->total_booking_time);
                                                 @endphp
-                                                <p>{{$dura}} min</p>
+                                                <p>{{$dura}}</p>
                                                 {{-- <span class="input-group-prepend">
                                                     <button type="button" class="btn incremental-left-minus" data-type="minus" data-field=""><i class="ti-angle-left"></i>
                                                     </button>

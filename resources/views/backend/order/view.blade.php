@@ -470,11 +470,17 @@ $timezone = Auth::user()->timezone;
                                         <td style="width:200px;">{{$vendor->reject_reason}}</td>
                                     </tr>
                                     @endif
+                                    @if($vendor->additional_price>0)
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Additional Price") }} :</th>
+                                        <td style="width:200px;">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->additional_price)}}</td>
+                                    </tr>
+                                    @endif
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                                         <td>
                                             {{-- <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}</div> --}}
-                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($adminRevenue+$storeRevenue)}}</div> 
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($adminRevenue+$storeRevenue + $vendor->additional_price)}}</div> 
                                         </td>
                                     </tr>
                                 </tbody>

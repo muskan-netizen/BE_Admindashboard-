@@ -392,6 +392,7 @@ class CartController extends FrontController
                 'start_date_time'  => $request->has('start_date') ? $request->start_date : null,
                 'end_date_time' => $request->has('end_date') ? $request->end_date : null,
                 'additional_increments_hrs_min' => $request->has('incremental_hrs') ? $request->incremental_hrs : null,
+                'total_booking_time' => $request->has('total_booking_time') ? $request->total_booking_time : null,
             ];
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
