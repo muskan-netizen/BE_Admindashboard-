@@ -20,21 +20,21 @@ $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
         <ul>
             <li class="{{ (request()->is('user/profile')) ? 'active' : '' }}"><a href="{{route('user.profile')}}">{{ __('Account Info') }}</a></li>
             @if($clientData->socket_url)
-                <li>
-                    <a href="#chat" data-toggle="collapse"> 
+                <li  class="{{ (request()->is('user/chat/userVendor') || request()->is('user/chat/userAgent') ) ? 'active' : '' }}" >
+                    <a href="#chat" data-toggle="collapse">
                     <span class="mdi-message"></span>
                         <span> {{ __('Chat') }} </span>
                     </a>
                     <div class="collapse" id="chat">
                         <ul class="nav-second-level">
-                            <li>
+                            <li  class="{{ (request()->is('user/chat/userVendor')) ? 'active' : '' }}">
                                 <a href="{{route('userChat.UservendorChat')}}">{{ __('Vendor Chat') }}</a>
                             </li>
 
-                            <li>
+                            <li  class="{{ (request()->is('user/chat/userAgent')) ? 'active' : '' }}">
                                 <a href="{{route('userChat.UserAgentChat')}}">{{ __('Driver Chat') }}</a>
                             </li>
-                        
+
                             {{-- <li>
                                 <a href="{{route('report.productperformance')}}">{{ __("Product Performance Report") }}</a>
                             </li> --}}

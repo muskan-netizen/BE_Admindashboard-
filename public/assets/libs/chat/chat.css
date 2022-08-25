@@ -199,7 +199,11 @@ line-height: inherit;
 }
 
 
-
+@media(max-width:1499px){
+    .chat-box-wrapper {
+        max-height: 350px;
+    }
+}
 
 
 

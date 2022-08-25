@@ -91,7 +91,7 @@
                                 {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
                                 <div class="row">
                                     <form id="themeIcon-form" method="post" enctype="multipart/form-data">
-                                   
+
                                         @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                                             @php
                                                 $VendorTypesName   = config('constants.VendorTypesIcon.'.$vendor_typ_key);
@@ -106,12 +106,12 @@
                                                         <span class="invalid-feedback" role="alert">
                                                             <strong></strong>
                                                         </span>
-                                                        <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                                        <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 36x36</label>
                                                     </div>
                                                 </div>
-                                                @endif    
+                                                @endif
                                         @endforeach
-                                       
+
                                         {{-- <div class="col-md-4 mb-3">
                                             <div class="mb-0">
                                                 <label>{{ __("Delivery Icon") }}</label>
@@ -119,7 +119,7 @@
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong></strong>
                                                 </span>
-                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 36x36</label>
                                             </div>
                                         </div>
 
@@ -130,7 +130,7 @@
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong></strong>
                                                 </span>
-                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 36x36</label>
                                             </div>
                                         </div>
 
@@ -141,7 +141,7 @@
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong></strong>
                                                 </span>
-                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 36x36</label>
                                             </div>
                                         </div> --}}
 
@@ -175,7 +175,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                     </div>
 
                     <div class="col-md-4 h-100">
@@ -245,14 +245,14 @@
                             </ul>
                         </div>
                     </div>
-                    
+
                 </div>
             </form>
-          
-       
 
-              
-           
+
+
+
+
         </div>
         <div class="col-md-4 h-100">
             <form method="POST" action="{{route('web.styling.update_contact_up')}}">
@@ -335,7 +335,7 @@
             <div class="card-box pb-2 h-100">
                 <div class="d-flex align-items-center justify-content-between">
                    <h4 class="header-title m-0">{{ __("Payment Method Icons") }}</h4>
-                   
+
                       <!-- <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }} -->
                       <form id="show_payment_icons_form" action="{{route('styling.updatePaymentIcons')}}" method="post" enctype="multipart/form-data">
                         @csrf
@@ -697,7 +697,7 @@ $(document).on('click', '.deletePickupSection', function() {
     //     submitData();
     // });
     $("#show_payment_icons_id").change(function() {
-       
+
        $('#show_payment_icons_form').submit();
     });
     // $("#hide_nav_bar").change(function() {
@@ -748,7 +748,7 @@ $(document).on('click', '.deletePickupSection', function() {
             }
         });
     });
-   
+
 
 
     function submitDataNewPickup() {
