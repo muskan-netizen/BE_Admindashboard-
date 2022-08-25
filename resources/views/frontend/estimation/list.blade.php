@@ -27,7 +27,7 @@
                                                         class="rounded-circle avatar-lg" alt="profile-image">
                                                     </div>
                                                     @php
-                                                    $cnt = $vendor['product'][0]['needCnt'];
+                                                    $cnt = @$vendor['product'][0]['needCnt'];
                                                     //dd($cnt);
                                                     $final_price = 0;
                                                     $prod_ids = array();

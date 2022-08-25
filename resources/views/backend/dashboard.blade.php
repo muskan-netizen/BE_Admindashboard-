@@ -275,6 +275,8 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
         </div>
     </div>
 
+
+
 <script>
 @section('script')
 @endsection

@@ -201,6 +201,7 @@ class EstimationController extends FrontController
 
     public function searchProducts($userProducts, $langId)
     {
+            $dcnt = 0;
             // Make empty array for vendors, product keywords and adoon keywords
             $all_vendors = array();
             $keywords = array();
@@ -237,14 +238,15 @@ class EstimationController extends FrontController
 
             $data = array();
             //FEtch Vendor with Products
-            $vendorsgb = DB::select("SELECT v.id as vid,v.address,v.name as vname,v.logo,ps.title as ptitle,p.id as pid,pv.price as pprice from vendors as v join products as p on v.id=p.vendor_id join product_translations as ps on p.id=ps.product_id join product_variants as pv  on p.id=pv.product_id where v.status='1' and ps.title IN ($pkeys) and is_live='1' group by v.id");
+            $vendorsgb = DB::select("SELECT v.id as vid,v.address,v.name as vname,v.logo,ps.title as ptitle,p.id as pid,pv.price as pprice from vendors as v join products as p on v.id=p.vendor_id join product_translations as ps on p.id=ps.product_id join product_variants as pv  on p.id=pv.product_id where v.status='1' and p.deleted_at is null and ps.title IN ($pkeys) and is_live='1' group by v.id");
             foreach($vendorsgb as $vpg)
             {
+
                 $products = array();
-                $vendors = DB::select("SELECT v.id as vid,v.address,v.name as vname,v.logo,ps.title as ptitle,p.id as pid,pv.price as pprice from vendors as v join products as p on v.id=p.vendor_id join product_translations as ps on p.id=ps.product_id join product_variants as pv  on p.id=pv.product_id where v.status='1' and ps.title IN ($pkeys) and is_live='1' and v.id='$vpg->vid' group by ps.title ");
+                $vendors = DB::select("SELECT v.id as vid,v.address,v.name as vname,v.logo,ps.title as ptitle,p.id as pid,pv.price as pprice,p.deleted_at from vendors as v join products as p on v.id=p.vendor_id join product_translations as ps on p.id=ps.product_id join product_variants as pv  on p.id=pv.product_id where v.status='1' and ps.title IN ($pkeys) and is_live='1' and v.id='$vpg->vid' and p.deleted_at is null  group by ps.title ");
                 foreach($vendors as $vp)
                 {
-                
+                    
 
                     $pkeyCnt = 0;
                     $pkeyCnt = count($addonKeywords[$vp->ptitle]);

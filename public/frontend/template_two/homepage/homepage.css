@@ -1,4 +1,7 @@
-
+#main-menu.menu-slider li.active a{
+    color: var(--theme-deafult);
+    border-bottom: 1px solid var(--theme-deafult);
+}
 .fa-facebook-square:before, .fa-heart:before, .fa-twitter:before, .fa-user:before, .fa-whatsapp:before{font-family: FontAwesome !important;}
 .al_body_template_two .pixelstrap ul{padding: 5px 0;z-index: 9;}
 .al_body_template_two .common-banner{height: 300px;margin-bottom: 0px;}

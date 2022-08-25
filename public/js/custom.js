@@ -254,6 +254,12 @@ $(document).ready(function () {
         window.location.href = url;
         return false;
     });
+    $(document).on("click", "#search_map_view", function (e) {
+        let keyword = $("#main_search_box").val();
+        let url = "/search-all/" + keyword + "/map-view";
+        window.location.href = url;
+        return false;
+    });
     $('input[type=search]').on('search', function () {
         $('#search_box_main_div').html('').hide();
     });
@@ -462,14 +468,14 @@ $(document).ready(function () {
         fpxBank.mount('#fpx-bank-element');
     }
 
-    if ($("#stripe-card-element").length > 0) {
+    if (($("#stripe-card-element").length > 0) && (stripe_publishable_key != '')) {
         stripeInitialize();
     }
-    if ($("#fpx-bank-element").length > 0) {
+    if (($("#fpx-bank-element").length > 0) && (stripe_fpx_publishable_key != '')) {
         stripeFPXInitialize();
     }
 
-    if ($("#ideal-bank-element").length > 0) {
+    if (($("#ideal-bank-element").length > 0) && (stripe_ideal_publishable_key != '')) {
         stripeIdealInitialize();
     }
 
@@ -2720,7 +2726,6 @@ $(document).ready(function () {
     });
 
     $(document).on("click", ".addToCart", function () {
-
         if (!$.hasAjaxRunning()) {
             addToCart();
         }
@@ -2748,7 +2753,7 @@ $(document).ready(function () {
 
 
     function addToCart() {
-
+     
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
 
@@ -2798,24 +2803,33 @@ $(document).ready(function () {
             var sVendorResponse = checkIsolateSingleVendor(vendor_id);
             if (sVendorResponse.status == 'Success') {
                 if ((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) {
+                    var start_date =  $('#start_time').val();
+                    var end_date =  $('#end_time').val();
+                    var incremental_hrs =  $('#incremental_hrs').val();
                     $("#single_vendor_remove_cart_btn").attr({
                         'data-product_id': product_id,
-                        'data-variant_id': $('#prod_variant_id').val(),
+                        'data-variant_id': (vendor_type == 'rental') ? $('#prod_variant_id').val() :$('#available_product_variant').val(),
                         'data-quantity': $('.quantity_count').val(),
                         'data-vendor_id': vendor_id,
-                        'data-page': 'productDetail'
+                        'data-page': 'productDetail',
+                        'data-start_time':start_date,
+                        'data-end_time':end_date,
+                        'data-incremental_hrs':incremental_hrs
                     });
                     $("#single_vendor_order_modal").modal('show');
                 } else {
-                    var variant_id = $('#prod_variant_id').val();
+                    var variant_id =  (vendor_type == 'rental') ? $('#prod_variant_id').val() :$('#available_product_variant').val();
+                    var start_date =  $('#start_time').val();
+                    var end_date =  $('#end_time').val();
                     var quantity = $('.quantity_count').val();
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id);
+                    var incremental_hrs =  $('#incremental_hrs').val();
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id) {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='') {
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -2829,6 +2843,9 @@ $(document).ready(function () {
                 "addonoptID": addonoptids,
                 "quantity": quantity,
                 "variant_id": variant_id,
+                "start_date":start_date,
+                "end_date":end_date,
+                "incremental_hrs":incremental_hrs
             },
             success: function (response) {
                 if (response.status == 'success') {
@@ -2866,8 +2883,12 @@ $(document).ready(function () {
         var variant_id = $(this).attr('data-variant_id');
         var quantity = $(this).attr('data-quantity');
         var vendor_id = $(this).attr('data-vendor_id');
+        var start_date = $(this).attr('data-start_time');
+        var end_date = $(this).attr('data-end_time'); 
+        var incremental_hrs = $(this).attr('data-incremental_hrs');
+       
         if ($(this).attr('data-page') == 'productDetail') {
-            submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id);
+            submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs);
         } else if ($(this).attr('data-page') == 'vendorProducts') {
             var elem = $(this).attr('data-element_id');
             submitAddtoCartProductsAddons($('#' + elem), addonids, addonoptids, product_id, variant_id, quantity, vendor_id);
@@ -4281,7 +4302,9 @@ $(document).ready(function () {
             case 45:
                 paymentViaTelr('', payment_option_id, '');
             break;
-
+            case 47:
+                paymentViaKhalti('', ''); 
+            break;
         }
 
     }
@@ -4688,7 +4711,7 @@ $(document).ready(function () {
             break;
             case '42':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
+                // console.log('order', order);
                 if (order != '') {
                     //payWithDpo
                     payWithDpo(order);
@@ -4699,7 +4722,7 @@ $(document).ready(function () {
             break;
             case '43':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
+                // console.log('order', order);
                 if (order != '') {
                     paymentViaUPay(address_id, order);
                 }
@@ -4728,7 +4751,15 @@ $(document).ready(function () {
                 }
             break;
 
-
+            case '47':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaKhalti(address_id, order, payment_from='cart');
+                }
+                else{
+                    return false;
+                }
+            break;
         }
 
     }
@@ -4942,7 +4973,9 @@ $(document).ready(function () {
             case 45:
                 paymentViaTelr('', payment_option_id, '');
                 break;
-
+            case 47:
+                paymentViaKhalti('', ''); 
+                break;
         }
     }
 

@@ -1933,7 +1933,7 @@ class VendorController extends BaseController{
                     if ($luxury_option->title == 'takeaway') {
                         $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
                     } elseif ($luxury_option->title == 'dine_in') {
-                        $luxury_option_name = __('Dine-In');
+                        $luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
                     } else {
                         $luxury_option_name = __('Delivery');
                     }

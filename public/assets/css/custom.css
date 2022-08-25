@@ -682,3 +682,15 @@ body[dir="rtl"] .dataTables_filter {
   right: auto;
 }
 
+/* ===================== dashboard ======================== */
+.apexcharts-canvas .apexcharts-legend.position-bottom .apexcharts-legend-series{
+  display: block;
+  align-items: end;
+  clear: both;
+  width: 100%;
+  text-align: right;
+}
+.apexcharts-canvas .apexcharts-legend.position-bottom.apexcharts-align-center{
+  justify-content: center;
+  max-width: 260px;
+}

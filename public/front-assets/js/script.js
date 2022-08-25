@@ -785,6 +785,8 @@ body_event.on("click", ".theme-layout-version", function () {
         dataType: 'json',
         data: { 'theme_color': localStorage['theme_color'] },
         success: function (data) {
+            $(".logo-image").attr("src", data.logo);
+            $('#theme-logo').attr("src", data.logo);
         }
     });
     // return (

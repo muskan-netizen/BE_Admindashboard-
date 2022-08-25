@@ -208,7 +208,7 @@
 
 
 <!-- no-store-wrapper start -->
-<section class="no-store-wrapper mb-3 d-none" >
+<section class="no-store-wrapper mb-3" style="display:none;">
 	<div class="container"> @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
 		<div class="row">
 			<div class="col-12 text-center"> <img class="no-store-image mt-2 mb-2 blur-up lazyload" data-src="{{getImageUrl(asset('images/no-stores.svg'),'250/250')}}" style="max-height: 250px;"> </div>
@@ -222,7 +222,7 @@
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
@@ -256,7 +256,7 @@
 <script type="text/template" id="mobile_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
@@ -292,7 +292,7 @@
 	<% _.each(vendors, function(vendor, k){%>
 		<% if(k < 7){%>
 			<div class="col-lg-3 col-md-4 col-6">
-				<div class="product-card-box position-relative text-center al_custom_vendors_sec_al p-3">
+				<div class="product-card-box position-relative text-center al_custom_vendors_sec_al_">
 					<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 						<div class="suppliers-img-outer position-relative " style="height:100px">
 							<% if(vendor.is_vendor_closed==1){%>
