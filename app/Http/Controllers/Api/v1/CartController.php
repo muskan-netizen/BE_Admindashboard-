@@ -499,6 +499,9 @@ class CartController extends BaseController
     /**         *      Cart  Date      *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
+        $deliver_fee_charges = 0;
+        $total_fixed_fee_tax = 0;
+        $total_service_fee = 0;
         $preferences = ClientPreference::first();
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         if (!$cart) {
@@ -610,6 +613,9 @@ class CartController extends BaseController
             $PromoDelete = 0;
             $couponApplied = 0;
             $total_container_charges = 0 ;
+            $deliver_fee_charges = 0;
+            $total_fixed_fee_tax = 0;
+            $total_service_fee = 0;
             foreach ($cartData as $ven_key => $vendorData) {
                 $PromoFreeDeliver = 0;
                 $total_fixed_fee_amount =$total_fixed_fee_amount+ $vendorData->vendor->fixed_fee_amount;
