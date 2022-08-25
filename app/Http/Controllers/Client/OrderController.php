@@ -1137,8 +1137,6 @@ class OrderController extends BaseController
             if ($order_dispatchs && $order_dispatchs == 1)
                 return 1;
 
-
-            return 2;
         }
 
 
@@ -1369,7 +1367,7 @@ class OrderController extends BaseController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
-            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
