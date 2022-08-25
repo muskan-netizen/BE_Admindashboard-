@@ -135,4 +135,8 @@ class OrderProduct extends Model{
                 return $value??0;
            
     }
+    // get dispatch route for single product in case of on demand and appointmenet by harbans :)
+    public function Routes(){
+      return $this->hasMany('App\Models\OrderProductDispatchRoute', 'order_vendor_product_id', 'id')->with('status');
+    }
 }

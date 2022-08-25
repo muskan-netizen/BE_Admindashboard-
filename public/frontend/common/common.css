@@ -1,4 +1,17 @@
+
 .alProductViewPriceMin {display: block;font-size: 14px;color: #777;border-top: 1px solid #777;font-weight: 100;}
+span.duration {
+    display: flex;
+    vertical-align: middle;
+    align-items: center;
+}
+span.duration p.total_price {
+    margin: 0;
+    padding-left: 7px;
+    font-weight: 600;
+    color: #000;
+}
+
 /* ============= inner page home services page ============= */
 .booking-time .radios {
     width: 95%;

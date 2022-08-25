@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddOrderProductIdToOrderDispatcherStatusesTable extends Migration
+class AddIncrementalDurationPriceOrderVendorProductTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class AddOrderProductIdToOrderDispatcherStatusesTable extends Migration
      */
     public function up()
     {
-        Schema::table('vendor_order_dispatcher_statuses', function (Blueprint $table) {
-            $table->string('order_vendor_product_id')->default(0)->nullable()->comment('for single product dispatch');
+        Schema::table('order_vendor_products', function (Blueprint $table) {
+            //
+            $table->string('incremental_price')->default(0)->nullable();
         });
     }
 
@@ -25,8 +26,8 @@ class AddOrderProductIdToOrderDispatcherStatusesTable extends Migration
      */
     public function down()
     {
-        Schema::table('vendor_order_dispatcher_statuses', function (Blueprint $table) {
-            //
+        Schema::table('order_vendor_products', function (Blueprint $table) {
+            $table->dropColumn('incremental_price');
         });
     }
 }

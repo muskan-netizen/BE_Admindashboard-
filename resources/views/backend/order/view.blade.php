@@ -317,13 +317,13 @@ $timezone = Auth::user()->timezone;
                                     $revenue = ($vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount+$vendor->total_markup_price);
                                     @endphp
                                     @foreach($vendor->products as $product)
-                                    @if($product->order_id == $order->id)
-                                    @php
-                                    $taxable_amount = $vendor->taxable_amount;
-                                    $vendor_service_fee = $vendor->service_fee_percentage_amount;
-                                    $container_charges = $vendor->total_container_charges;
-                                    $sub_total += $product->actual_price;
-                                    @endphp
+                                        @if($product->order_id == $order->id)
+                                        @php
+                                        $taxable_amount = $vendor->taxable_amount;
+                                        $vendor_service_fee = $vendor->service_fee_percentage_amount;
+                                        $container_charges = $vendor->total_container_charges;
+                                        $sub_total += $product->actual_price;
+                                        @endphp
                                     <tr>
                                         <th scope="row" class="product-modal2">
 
@@ -380,6 +380,25 @@ $timezone = Auth::user()->timezone;
 
                                         <td>{{$clientCurrency->currency->symbol}}{{decimal_format($product->actual_price * $product->quantity)}}</td>
                                     </tr>
+                                        @if($product->routes->isNotEmpty())
+                                        <tr colspan="4" class="product_route">
+                                            <table class="table table-bordered table-centered mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>{{ __("dispatch Status") }}</th>
+                                                        <th>{{ __("Tracking URL") }}</th>
+                                                        <th>{{ __("last Update") }}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                @foreach ( $product->routes as $route)
+                                                <td>
+                                                {{ $route-> }}
+                                                </td>
+                                                @endforeach
+                                            </table>
+                                        </tr>
+                                        @endif
                                     @endif
                                     @endforeach
                                     <tr>

@@ -33,6 +33,7 @@ class ProductBookingController extends FrontController
           $block_time = explode('-', $request->blocktime);
           $start_time = date("Y-m-d H:i:s",strtotime($request->selectedStartDate));
           $end_time = date("Y-m-d H:i:s",strtotime($request->selectedEndDate));
+          $product_variant_data = array();
           $product_variant_id =  ProductVariantSet::where(['variant_option_id'=>$request->variant_option_id,'product_id'=>$request->product_id])->pluck('product_variant_id');
           $product_variant_id = $product_variant_id->toArray();
           $ProductBooking  = ProductBooking::whereIn('variant_id',$product_variant_id)->where('product_id',$request->product_id)
@@ -41,9 +42,12 @@ class ProductBookingController extends FrontController
                                         ->where('end_date_time', '>=', $start_time);
                               })->pluck('variant_id')->toArray();
           $available_product_variant = array_values(array_diff($product_variant_id, $ProductBooking));
-          //print_r($available_product_variant);
+          if(isset($available_product_variant[0])){
+            $product_variant_data =  ProductVariant::find($available_product_variant[0]);
+          }
           $returnarr =  array();
           $returnarr['available_product_variant'] =  @$available_product_variant[0];
+          $returnarr['product_variant_data'] = $product_variant_data;
           $returnarr['product_id'] =  $request->product_id;
           $returnarr['start_time'] =  $start_time;
           $returnarr['end_time'] =  $end_time;

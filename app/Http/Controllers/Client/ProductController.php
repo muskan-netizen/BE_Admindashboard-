@@ -475,33 +475,42 @@ class ProductController extends BaseController
                     ProductCrossSell::insert($crossArray);
                 }
 
-                
+
+
 
 
                 $existv = array();
-            
+
                 if ($request->has('variant_ids')) {
                     foreach ($request->variant_ids as $key => $value) {
                         $variantData = ProductVariant::where('id', $value)->first();
                         $existv[] = $value;
-                    
+
                         if ($variantData) {
-                        // pr($request->all());
+                            $per_min = 0;
+                            if (isset($request->variant_incremental_price[$key])) {
+                                if ($request->variant_incremental_price[$key] !='' && $request->variant_incremental_price[$key] > 0) {
+                                    $per_min = (($request->additional_increments*60)+($request->additional_increments_min))/($request->variant_incremental_price[$key]);
+                                }
+                            }
+
+                            // pr($request->all());
                             $variantData->title             = @$request->variant_titles[$key];
                             $variantData->price             = @$request->variant_price[$key];
                             $variantData->incremental_price             = @$request->variant_incremental_price[$key]??0;
+                            $variantData->incremental_price_per_min             = @$per_min;
                             $variantData->markup_price      = @$request->markup_price[$key];
                             $variantData->compare_at_price  = @$request->variant_compare_price[$key];
                             $variantData->container_charges  = @$request->container_charges[$key]??"";
                             $variantData->cost_price        = @$request->variant_cost_price[$key];
                             $variantData->quantity          = @$request->variant_quantity[$key];
                             $variantData->tax_category_id   = @$request->tax_category;
+                            $variantData->status   = 1;
                             $variantData->save();
                             //pr($variantData->toArray());
                         }
-
+                        $delOpt = ProductVariant::whereNotIN('id', $existv)->where('product_id', $product->id)->whereNull('title')->delete();
                     }
-                    $delOpt = ProductVariant::whereNotIN('id', $existv)->where('product_id', $product->id)->whereNull('title')->delete();
                 } else {
                     $variantData = ProductVariant::where('product_id', $product->id)->first();
                     if (!$variantData) {
@@ -520,10 +529,7 @@ class ProductController extends BaseController
                     $variantData->tax_category_id   = $request->tax_category;
                     $variantData->save();
                 }
-                
             }
-            // pr($request->variant_incremental_price);
-            // die;
             DB::commit();
             $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
             // return redirect('client/vendor/catalogs/' . $product->vendor_id)->with('toaster', $toaster);

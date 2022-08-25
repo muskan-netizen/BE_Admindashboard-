@@ -29,7 +29,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('dispatch-order-status-update-details/{id?}', 'Front\DispatcherController@dispatchOrderDetails')->name('dispatch-order-update-details'); // Order Status update Dispatch details
 	Route::get('dispatch-order-cancel-request/{id?}', 'Front\DispatcherController@dispatchOrderCancelRequest')->name('dispatch-order-cancel-request'); // Order Status update Dispatch details
 	Route::post('dispatch/customer/distance/notification/{id?}', 'Front\DispatcherController@dispatchCustomerDetails')->name('dispatch-customer-details'); // send distance & co2 emission push notification from dispatch to customer
-    Route::get('dispatch-order-product-status-update/{id?}', 'Front\DispatcherController@dispatchOrderSingleProductStatusUpdate')->name('dispatch-order-product-update'); // Order Status update Dispatch
+    Route::get('dispatch-order-product-status-update/{id?}', 'Front\DispatcherController@dispatchOrderSingleProductStatusUpdate')->name('dispatch-order-product-status-update'); // Order Status update Dispatch
 	Route::get('testsms', 'Front\FrontController@testsms');
 
     Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
@@ -395,7 +395,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('cart/pickup/schedule/slots', 'Front\CartController@checkPickupScheduleSlots')->name('cart.check_pickup_schedule_slots'); // Added by Ovi
 	Route::post('cart/dropoff/schedule/slots', 'Front\CartController@checkDropoffScheduleSlots')->name('cart.check_dropoff_schedule_slots'); // Added by Ovi
 
-	Route::post('cart/product-schedule/update', 'Front\CartController@updateProductSchedule')->name('cart.updateProductSchedule');
+	Route::post('cart/product-schedule/update', 'Front\CartController@updateProductSchedule')->name('cproduct-schedule/updat');
 	Route::get('cartProducts', 'Front\CartController@getCartData')->name('getCartProducts');
 	Route::get('cartDetails', 'Front\CartController@getCartProducts')->name('cartDetails');
 	Route::post('get/product/prescription', 'Front\CartController@getProductPrescription')->name('getProductPrescription');

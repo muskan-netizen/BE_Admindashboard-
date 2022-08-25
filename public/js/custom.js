@@ -2853,6 +2853,9 @@ $(document).ready(function () {
                     $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     returnResponse = true;
                     cartHeader();
+                    if(vendor_type == 'rental') {
+                       location.href =  '/viewcart';
+                    }
                 } else {
                     Swal.fire({
                         // title: "Warning!",
@@ -3636,14 +3639,13 @@ $(document).ready(function () {
 
     });
 
-    $(document).on('change', '.vendor_schedule_datetime, .vendor_schedule_slot', function () {
+    $(document).on('change', '.vendor_schedule_datetime, .vendor_schedule_slot', async function () {
 
         var task_type = 'schedule';
 
         let schedule_type = $(this).data("schedule_type");
         let cart_product_id = $(this).data("cart_product_id");
         let vendor_id = $(this).data("vendor_id");
-
 
 
         if(schedule_type == 'date'){
@@ -3656,6 +3658,7 @@ $(document).ready(function () {
                 url: check_schedule_slots,
                 data: { date: schedule_dt, vendor_id: vendor_id },
                 success: function (response) {
+                   
                     if (response.status == "Success") {
                         $('#vendor_schedule_slot_'+vendor_id).html(response.data);
                     } else {
@@ -3668,13 +3671,17 @@ $(document).ready(function () {
                     success_error_alert('error', response.message, ".cart_response");
                     $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
                 }
+
             });
         }else{
             var schedule_time = $(this).val();
             var schedule_dt = $(this).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
+            $responst = await checkSlotAvailability(this);
+            if($responst == 0){
+                return false;
+            }
         }
-
-
+      
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -3692,6 +3699,48 @@ $(document).ready(function () {
         });
 
     });
+    // Check Slot Availability
+    async function checkSlotAvailability(obj)
+    {
+      
+        var schedule_datetime = $(obj).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
+        var schedule_slot = $(obj).val();
+        var vendor_id = $(obj).data('vendor_id');
+        var res = 0;
+        var rep = await $.ajax({
+            type: "GET",
+            data: {
+                "schedule_datetime": schedule_datetime,
+                "schedule_slot":     schedule_slot,
+                "vendor_id":         vendor_id,
+            },
+            url: checkSlotOrdersUrl,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(output) {
+                console.log(output);
+                // Check if orderCount is greaten equal to orders_per_slot //&& (output.orders_per_slot !=0)
+                if(output.orderCount >= output.orders_per_slot && (output.orders_per_slot !=0)  ){
+                    success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
+                    // Disable the place order button
+                    $('#order_placed_btn').attr("disabled", true);
+                     res =0;
+                }else{
+                    // Enable the place order button
+                    $('#order_placed_btn').attr("disabled", false);
+                    res = 1;
+                }
+            },
+            error: function(output) {
+                // console.log(output);
+                res =0;
+            },
+
+        });
+        return res;
+    }
+
     $(document).on('click', '.selected-time', function () {
 
         let selected_time   = $(this).html();

@@ -13,7 +13,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet};
+use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet,OrderProductDispatchRoute};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -517,7 +517,7 @@ class OrderController extends BaseController
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
                     $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image)? $product->media->first()->image->path : getDefaultImagePath();
-                    if(!is_null($product->product) && ($product->quantity > $product->product->variant[0]->quantity))
+                    if(!is_null($product->product) && ($product->quantity > ($product->product->variant->first() ? $product->product->variant[0]->quantity : 0 ) ))
                     {
                         $vendor->isAlert = true;
                         $vendor->alertMessage = __("You are low on stock");
@@ -658,6 +658,10 @@ class OrderController extends BaseController
                 $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
+                $product->routes = []; // routes for single product 
+                if(in_array($order->luxury_option_id, [6,8])){ // for on demand service and appointment service code by harbans :)
+                    $product->routes =  $product->Routes; //OrderProductDispatchRoute::where(['order_vendor_product_id'=>'37'])->get();
+                }
                 foreach ($product->addon as $ck => $addons) {
                     $opt_price_in_currency = $addons->option->price??0;
                     $opt_price_in_doller_compare = $addons->option->price??0;
@@ -682,7 +686,7 @@ class OrderController extends BaseController
                 $vendor->dineInTableCategory = $vendor->dineInTable->category->title; //$vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
             }
         }
-        // dd($order->toArray());
+        pr( $product->toArray());
         $luxury_option_name = '';
         if ($order->luxury_option_id > 0) {
             $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();

@@ -216,7 +216,7 @@
                     </div>
                     @endif
                     @if($client_preference_detail->is_vendor_tags == '1')
-                        @if(count($facilties))
+                        @if(!empty($facilties))
                             <div class="col-md-12">
                                 <div class="form-group" id="social_link">
                                     {!! Form::label('title', 'Vendor Tags',['class' => 'control-label']) !!}

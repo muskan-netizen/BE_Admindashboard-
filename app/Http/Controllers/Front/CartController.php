@@ -2354,6 +2354,7 @@ class CartController extends FrontController
                 'schedule_dropoff' => $request->schedule_dropoff??null,
                 // 'scheduled_slot' => $request->schedule_time??null
                 ]);
+            
                 CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);
 
                 DB::commit();

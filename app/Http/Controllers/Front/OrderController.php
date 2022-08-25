@@ -836,6 +836,7 @@ class OrderController extends FrontController
             $rate=0;
             $addon_amount=0;
             $total_other_taxes=0.00;
+            $additionalPrice=0.00;
 
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if(!empty($request->other_taxes_string)){
@@ -876,7 +877,6 @@ class OrderController extends FrontController
                 $vendorProductIds = array();
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
-
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                         if (!empty($latitude) && !empty($longitude)) {
                             if(($preferences->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)){
@@ -974,15 +974,24 @@ class OrderController extends FrontController
                     $taxable_amount = $product_taxable_amount;
                     $vendor_taxable_amount = $taxable_amount;
 
-                  //  pr($vendor_taxable_amount);
                     $total_amount += $vendor_cart_product->quantity * $variant->price;
                     $order_product = new OrderProduct;
                     $order_product->order_id = $order->id;
                     $order_product->price = $variant->price;
                     $order_product->markup_price = $variant->markup_price;
+                    $order_product->additional_increments_hrs_min = @$vendor_cart_product->additional_increments_hrs_min;
+                    $order_product->start_date_time = $vendor_cart_product->start_date_time;
+                    $order_product->end_date_time = $vendor_cart_product->end_date_time;
+                    
                     $order_product->container_charges = $variant->container_charges;
                     $order_product->order_vendor_id = $OrderVendor->id;
                     $order_product->taxable_amount = $product_taxable_amount;
+                    if ($variant->incremental_price_per_min !='' && $variant->incremental_price_per_min > 0) {
+                        $additionalPrice += ($vendor_cart_product->additional_increments_hrs_min / $variant->incremental_price_per_min);
+
+                        $order_product->incremental_price = ($vendor_cart_product->additional_increments_hrs_min / $variant->incremental_price_per_min);
+                    }
+
                     $order_product->quantity = $vendor_cart_product->quantity;
                     $order_product->vendor_id = $vendor_cart_product->vendor_id;
                     $order_product->product_id = $vendor_cart_product->product_id;
@@ -1143,8 +1152,12 @@ class OrderController extends FrontController
                 //echo  "total_service_fee: ".$total_service_fee." | ";
 
                 //$total_delivery_fee += $delivery_fee;
+                $vendor_payable_amount += $additionalPrice;
                 $vendor_payable_amount += $delivery_fee;
                 $vendor_payable_amount += $vendor_taxable_amount;
+
+                $payable_amount+= $additionalPrice;
+
 
                 $OrderVendor->coupon_id = $coupon_id;
                 $OrderVendor->coupon_paid_by = $coupon_paid_by??1;
@@ -1185,6 +1198,7 @@ class OrderController extends FrontController
                     }
                 }
                 $OrderVendor->save();
+                //pr($OrderVendor->toArray());
                 $order_status = new VendorOrderStatus();
                 $order_status->order_id = $order->id;
                 $order_status->vendor_id = $vendor_id;
