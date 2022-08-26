@@ -84,17 +84,18 @@
               <b class="total_price m-0 pr-1">
                 {{number_format(@$product->variant[0]->price * @$product->variant[0]->multiplier,2,".",",")}}
               </b> {{__("for first")}} 
-              <b class="m-0 px-1">{{ @$product->minimum_duration}}</b> {{__("hour")}} 
-              <b class="m-0 px-1">{{@$product->minimum_duration_min}}</b> {{__("min")}}
+              <b class="m-0 px-1 min_hrs">{{ @$product->minimum_duration}}</b> {{__("hour")}} 
+              <b class="m-0 px-1 min_min">{{@$product->minimum_duration_min}}</b> {{__("min")}}
             </div>
           </div> 
         </div>
         <div class="disclaimer mb-3">
           <span class="d-flex align-items-center"> 
             {{__("Extra duration will be charged")}} 
-              <b class="px-1">{{Session::get('currencySymbol').number_format(@$product->variant[0]->incremental_price * @$product->variant[0]->multiplier,2,".",",")}} </b>
+            {{Session::get('currencySymbol')}}
+              <b class="px-1 variant_incremental_price">{{number_format(@$product->variant[0]->incremental_price * @$product->variant[0]->multiplier,2,".",",")}} </b>
             {{__("per")}} 
-              <b class="px-1">{{ ($product->additional_increments) }}</b> {{__("hour")}} <b class="px-1">{{($product->additional_increments_min)}} </b>
+              <b class="px-1 addtional_hrs">{{ ($product->additional_increments) }}</b> {{__("hour")}} <b class="px-1 addtional_min">{{($product->additional_increments_min)}} </b>
             {{__("min")}}    
           
           </span>
@@ -126,11 +127,12 @@
       return padTo2Digits(hours) + ' hour ' + padTo2Digits(minutes) + ' min';
     }
     let product_variant_data  =  [];
-    var default_minutes = incremental_price = actual_price = default_currency = default_step = '' ;
+    var default_minutes = incremental_price = actual_price = default_currency = default_step = base_hours_min ='' ;
     var min_dur_hrs = min_dur_min = additional_base_hr = additional_base_min =  total_min = '';
     $(function(e) {
-      total_min = default_minutes =  timeConvertCal('{{$product->minimum_duration}}','{{$product->minimum_duration_min}}');
-       incremental_price = '{{@$product->variant[0]->incremental_price}}';
+        total_min = default_minutes =  timeConvertCal('{{$product->minimum_duration}}','{{$product->minimum_duration_min}}');
+        base_hours_min = timeToHrMinConvertCal(default_minutes);
+        incremental_price = '{{@$product->variant[0]->incremental_price}}';
        actual_price = '{{@$product->variant[0]->actual_price}}';
        default_currency = "{{Session::get('currencySymbol')}}";
        default_step = timeConvertCal('{{$product->additional_increments}}','{{$product->additional_increments_min}}');
@@ -286,7 +288,8 @@
           checkInPicker.setStartDate(selectedStartDate);
           checkInPicker.setEndDate(selectedEndDate);
           //console.log(selectedEndDate);
-          $('.incremental_hrs').val(0)
+          $('.incremental_hrs').val(0);
+          $('#incremental_hrs_hidden').val(base_hours_min);
           var formData = {
             variant_option_id:$('.changeVariant:checked').val(),
             product_id:$("input[name='product_id']").val(),
@@ -361,11 +364,29 @@
               default_minutes = timeConvertCal(productData.product.minimum_duration,productData.product.minimum_duration_min);
               default_step = timeConvertCal(productData.product.additional_increments,productData.product.additional_increments_min)
               //$('.total_duration').html(default_minutes);
-              //$('.total_price').html(actual_price);
+              $('.total_price').html(actual_price);
+              $('.min_hrs').html(productData.product.minimum_duration);
+              $('.min_min').html(productData.product.minimum_duration_min);
+              $('.addtional_hrs').html(productData.product.additional_increments);
+              $('.addtional_min').html(productData.product.additional_increments_min);
+              $('.variant_incremental_price').html(productData.incremental_price);
               //$('.disclaimer').html(`<p>(Extra minutes will be calculated in multiple of ${default_currency}${incremental_price} per ${default_step} min)</p>`);
-              //$("#incremental_hrs").attr('step', default_step);
+              $("#incremental_hrs").attr('step', default_step);
             }
         }  
+
+        function init(){
+          $('.incremental_hrs').val(0);
+          $('#incremental_hrs_hidden').val(base_hours_min);
+          var formData = {
+            variant_option_id:$('.changeVariant:checked').val(),
+            product_id:$("input[name='product_id']").val(),
+            selectedStartDate:$('#blocktime').val(),
+            selectedEndDate:$('#blocktime2').val()
+          }
+          check_product_availibility(formData);
+        }
+        init();
 
       });
   </script>

@@ -198,6 +198,7 @@
                                             </h3>
                                         @endif
                                     </div>
+                                   
                                     <div id="product_variant_options_wrapper">
                                         @if(!empty($product->variantSet))
                                             @php
@@ -549,7 +550,7 @@
     <input type="hidden" name="variant_id" id="prod_variant_id" value="<%= variant.id %>">
     <% if(variant.product.inquiry_only == 0) { %>
         <h3 id="productPriceValue" class="mb-md-3">
-            <b class="mr-1"><span class="product_fixed_price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(variant.productPrice) %></span></b>
+            <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price"><%= Helper.formatPrice(variant.productPrice) %></span></b>
             <% if(variant.compare_at_price > 0 ) { %>
                 <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price"><%= Helper.formatPrice(variant.compare_at_price) %></span></span>
             <% } %>
@@ -854,6 +855,15 @@
                     $("#variant_response span").html('');
                     var response = resp.data;
                     if(response.variant != ''){
+                        if(vendor_type == 'rental'){
+                            // $('.incremental_hrs').val(0);
+                            // $('.base_hours_min').val();
+                            $('.incremental_hrs').val(0);
+                            $('#incremental_hrs_hidden').val(base_hours_min);
+                            $('.incremental-left-minus').click();
+                            //$('#blocktime, #blocktime2').change();
+                        }
+                        
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
