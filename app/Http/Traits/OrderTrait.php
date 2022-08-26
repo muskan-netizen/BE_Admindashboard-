@@ -44,7 +44,10 @@ trait OrderTrait{
         //pr($canceld_order_payments->toArray());
         $vendor_payble_amount = $order->vendors->first()->payable_amount;
         // vendor contribution in order
-        $vendor_contribution_percentage = ($vendor_payble_amount / $order_total_amount) * 100;
+        $vendor_contribution_percentage = 0;
+        if($order_total_amount > 0){
+            $vendor_contribution_percentage = ($vendor_payble_amount / $order_total_amount) * 100;
+        }
 
         $vendor_loyalty_amount =  $vendor_loyalty_points = $vendor_wallet_amount = $vendor_loyalty_points_earned = $vendor_online_payment_amount = 0;   
 
@@ -53,7 +56,10 @@ trait OrderTrait{
             $total_loyalty_amount = $order->loyalty_amount_saved ;
           
             // get loyalty points as pr 1 rup (primery Currency)
-            $redeem_points_per_primary_currency =  $order->loyalty_points_used /  $order->loyalty_amount_saved;
+            $redeem_points_per_primary_currency = 0;
+            if($order->loyalty_amount_saved > 0){
+                $redeem_points_per_primary_currency =  $order->loyalty_points_used /  $order->loyalty_amount_saved;
+            }
             
             // vendot loyalty amount in order
             $vendor_loyalty_amount =  ($total_loyalty_amount * $vendor_contribution_percentage ) / 100;
