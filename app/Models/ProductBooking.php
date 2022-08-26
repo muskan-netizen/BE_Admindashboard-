@@ -21,5 +21,9 @@ class ProductBooking extends Model
     {
         return $this->hasMany('App\Models\OrderProduct', 'product_id', 'id');
     }
+    public function user()
+    {
+        return $this->hasOne('App\Models\User', 'id', 'order_user_id');
+    }
  
 }

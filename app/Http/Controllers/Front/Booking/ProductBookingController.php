@@ -43,7 +43,7 @@ class ProductBookingController extends FrontController
                               })->pluck('variant_id')->toArray();
           $available_product_variant = array_values(array_diff($product_variant_id, $ProductBooking));
           if(isset($available_product_variant[0])){
-            $product_variant_data =  ProductVariant::where('id',$available_product_variant[0])->with(['product'])->first();
+            $product_variant_data =  ProductVariant::where('id',$available_product_variant[0])->with(['product','checkIfInCart'])->first();
           }
           $returnarr =  array();
           $returnarr['available_product_variant'] =  @$available_product_variant[0];

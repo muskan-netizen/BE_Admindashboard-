@@ -1053,6 +1053,23 @@ class OrderController extends FrontController
                     $order_product->additional_increments_hrs_min = $vendor_cart_product->additional_increments_hrs_min;
 
                     $order_product->save();
+                    // book for rental 
+                    if($luxury_option->id==4){
+                       
+                        $data   =   [
+                                        'memo' =>  __('Booked for order #').$order->order_number,
+                                        'variant_id' => $order_product->variant_id,
+                                        'product_id' => $order_product->product_id,
+                                        'start_date' => $order_product->start_date_time,
+                                        'order_user_id' =>$order->user_id,
+                                        'order_vendor_id' =>$order_product->vendor_id,
+                                        'end_date' => $order_product->end_date_time
+                                    ];                 
+                                         
+                        $res =   $this->bookingSlot($data);
+                       //pr($res);
+                    }
+                   // pr($order_product);
                     if (!empty($vendor_cart_product->addon)) {
                         
                         foreach ($vendor_cart_product->addon as $ck => $addon) {
@@ -1211,6 +1228,8 @@ class OrderController extends FrontController
                 $order_status->order_vendor_id = $OrderVendor->id;
                 $order_status->order_status_option_id = 1;
                 $order_status->save();
+
+                
             }//End cart product loop
             //echo "loop end";
             $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
@@ -1391,6 +1410,10 @@ class OrderController extends FrontController
                 }
             }
            
+            // if(){
+            //     $this->bookingSlot($vendor_cart_products);
+            // }
+            
             DB::commit();
             //$this->sendSuccessSMS($request, $order);
 

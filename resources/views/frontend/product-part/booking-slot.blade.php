@@ -322,6 +322,12 @@
                       var incremental_hrs = document.getElementById('incremental_hrs').value;
                       populateProductData(product_variant_data);
                       calculation(incremental_hrs,product_variant_data.incremental_price,product_variant_data.incremental_price_per_min);
+                      if(product_variant_data.check_if_in_cart.length > 0){
+                          product_variant_data.check_if_in_cart.map(checkIfInCart);
+                        //checkIfInCart(product_variant_data.check_if_in_cart);
+                      } else {
+                        localStorage.setItem('in_cart','false');
+                      }
                     }
                   } else {
                     Swal.fire(
@@ -385,6 +391,15 @@
             selectedEndDate:$('#blocktime2').val()
           }
           check_product_availibility(formData);
+        }
+
+
+        function checkIfInCart(v_p) {
+          localStorage.setItem('in_cart','false');
+            if(v_p.variant_id == $('#prod_variant_id').val()){
+                localStorage.setItem('in_cart','true');
+            }
+        
         }
         init();
 

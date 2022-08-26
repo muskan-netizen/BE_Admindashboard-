@@ -449,6 +449,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         // booking route
         Route::post('booking/addBlockSlot', 'Client\Booking\ProductBookingController@addBlockSlot')->name('product-booking.addBlockSlot');   # update all product actions
+        Route::post('booking/deleteSlot', 'Client\Booking\ProductBookingController@deleteSlot')->name('product-booking.deleteSlot');   # update all product actions
 
 
           // rental product 

@@ -12,10 +12,10 @@ $(function(){
                 responsive: true,
                 ajax: `/client/getScheduleTableData?variant_id=${vid}&product_id=${pid}`,
                 columns: [
-                    { data: 'name' },
-                    { data: 'hr.position' },
-                    { data: 'hr.start_date' },
-                    { data: 'hr.start_date' },
+                    { data: 'id' },
+                    { data: 'user_name' },
+                    { data: 'start_date_time' },
+                    { data: 'end_date_time' },
                     // { data: 'hr.salary' },
                 ],
             });
@@ -31,7 +31,8 @@ $(function(){
                     { data: 'end_date_time' },
                     { data: 'memo' },
                     {data: "id" , render : function ( data, type, row, meta ) {
-                        return `<a href=""><i class="mdi mdi-square-edit-outline"></i></a> |  <a href=""><i class="mdi mdi-delete"></i></a> `;
+                        console.log(row);
+                        return `<a href="" class="editbooking" data-row_id='${row.id}' data-start_date='${row.id}' data-end_date='${row.id}'><i class="mdi mdi-square-edit-outline"></i></a> |  <a href=""  class="deletebooking"  data-delete_booking_id='${row.id}'><i class="mdi mdi-delete"></i></a> `;
                     }},
                     
                     // { data: 'hr.salary' },
@@ -132,5 +133,12 @@ $(function(){
             )
         })    
     } 
+    $(document).on('click', '.deletebooking', function() {
+        var pid = $(this).attr('data-delete_booking_id');
+        alert(pid);
+    });
+    function deleteBooking(id){
+
+    }
     
 })

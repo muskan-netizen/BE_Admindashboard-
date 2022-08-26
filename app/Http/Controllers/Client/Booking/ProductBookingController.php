@@ -58,5 +58,23 @@ class ProductBookingController extends BaseController
      
     }
     
+    public function deleteSlot(Request $request)
+    {
+     pr($request->all());
+      try {
+        DB::beginTransaction(); //Initiate transaction
+        
+
+          $ProductBooking  = ProductBooking::where('id',)->delete();
+          
+        DB::commit(); //Commit transaction after all the operations
+        return response()->json(array('success' => true, 'message'=>'Manual time added sucessfully.'));
+      } catch (Exception $e) {
+          DB::rollBack();
+          return response()->json(array('success' => false, 'message'=>'Something went wrong.'));
+      }
+     
+    }
+    
 
 }
