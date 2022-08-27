@@ -25,6 +25,7 @@ use App\Http\Controllers\AhoyController;
 use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty,VendorSection};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
+use App\Exports\VendorProductExport;
 use DB,Log;
 use App\Models\VendorRegistrationDocument;
 use Exception;
@@ -2257,7 +2258,9 @@ class VendorController extends BaseController
 
   
     
-
+    public function vendorProductExport(Request $request) {
+        return Excel::download(new VendorProductExport($request->id), 'vendor_products.xlsx');
+    }
 
 
     

@@ -314,7 +314,7 @@ $timezone = Auth::user()->timezone;
                                     $taxable_amount = 0;
                                     $adminRevenue = 0;
                                     $storeRevenue = 0;
-                                    $revenue = ($vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount+$vendor->total_markup_price);
+                                    $revenue = ($vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount + $vendor->total_markup_price);
                                     @endphp
                                     @foreach($vendor->products as $product)
                                     @if($product->order_id == $order->id)
@@ -322,7 +322,7 @@ $timezone = Auth::user()->timezone;
                                     $taxable_amount = $vendor->taxable_amount;
                                     $vendor_service_fee = $vendor->service_fee_percentage_amount;
                                     $container_charges = $vendor->total_container_charges;
-                                    $sub_total += $product->actual_price;
+                                    $sub_total += $product->total_amount;
                                     @endphp
                                     <tr>
                                         <th scope="row" class="product-modal2">
@@ -378,7 +378,7 @@ $timezone = Auth::user()->timezone;
                                             @endif
                                         </td>
 
-                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($product->actual_price * $product->quantity)}}</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($product->total_amount)}}</td>
                                     </tr>
                                     @endif
                                     @endforeach
@@ -439,9 +439,10 @@ $timezone = Auth::user()->timezone;
                                         </tr>
                                     @endif
                                     @php
-                                        $adminRevenue = ($revenue+$taxable_amount+$container_charges+$vendor_service_fee+$vendor->delivery_fee)-$adminDiscount;
+                            
+                                        $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
 
-                                        $storeRevenue = ($sub_total +$order->fixed_fee_amount ) - $revenue - $vendorDiscount;
+                                        $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
                                 
                                     @endphp
 
@@ -454,7 +455,7 @@ $timezone = Auth::user()->timezone;
                                    
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
-                                        {{-- <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->sub_total * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)}}</td> --}}
+                                        {{-- <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->sub_total * $clientCurrency->doller_compare - $revenue - $vendorDiscount)}}</td> --}}
                                         <td>{{$clientCurrency->currency->symbol}}{{decimal_format($storeRevenue)}}</td>
                                     </tr>
                                     {{-- @endif --}}
@@ -480,7 +481,7 @@ $timezone = Auth::user()->timezone;
                                         <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                                         <td>
                                             {{-- <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}</div> --}}
-                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($adminRevenue+$storeRevenue + $vendor->additional_price)}}</div> 
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($adminRevenue+$storeRevenue + @$vendor->additional_price)}}</div> 
                                         </td>
                                     </tr>
                                 </tbody>
