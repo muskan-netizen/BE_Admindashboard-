@@ -58,17 +58,44 @@ class ProductBookingController extends BaseController
      
     }
     
-    public function deleteSlot(Request $request)
+    public function deleteSlot($domen = '' , $id)
     {
-     pr($request->all());
+      try {
+          DB::beginTransaction(); //Initiate transaction
+             // ProductBooking::where('id',$id)->delete();
+          DB::commit(); //Commit transaction after all the operations
+          return response()->json(array('success' => true, 'message'=>'Deleted sucessfully.'));
+      } catch (Exception $e) {
+          DB::rollBack();
+          return response()->json(array('success' => false, 'message'=>'Something went wrong.'));
+      }
+     
+    }
+    public function updateBlockSlot(Request $request)
+    {
+     //pr($request->all());
       try {
         DB::beginTransaction(); //Initiate transaction
-        
-
-          $ProductBooking  = ProductBooking::where('id',)->delete();
+          $block_time = explode('-', $request->blocktime);
+          $start_time = date("Y-m-d H:i:s",strtotime($block_time[0]));
+          $end_time = date("Y-m-d H:i:s",strtotime($block_time[1]));
           
+          $start_end_block_time = $request->blocktime;
+
+          $ProductBooking  = ProductBooking::where('id','!=',$request->booking_id)
+                                            ->where(function ($query) use ($start_time , $end_time ){
+                                                $query->where('start_date_time', '<=', $start_time)
+                                                      ->where('end_date_time', '>=', $end_time);
+                                            })->first();
+         // pr($ProductBooking);
+          if (!$ProductBooking) {
+            $status = ProductBooking::where('id',$request->booking_id)->update(['memo'=>$request->memo,'start_date_time'=>$start_time,'end_date_time'=>$end_time,'booking_start_end'=>$start_end_block_time]);
+          } else {
+            return response()->json(array('success' => false, 'message'=>'This slot is already booked, Please try other.'));
+          }
+         
         DB::commit(); //Commit transaction after all the operations
-        return response()->json(array('success' => true, 'message'=>'Manual time added sucessfully.'));
+        return response()->json(array('success' => true, 'message'=>'Manual time update sucessfully.'));
       } catch (Exception $e) {
           DB::rollBack();
           return response()->json(array('success' => false, 'message'=>'Something went wrong.'));

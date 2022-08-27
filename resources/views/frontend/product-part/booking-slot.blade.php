@@ -270,7 +270,7 @@
             // "maxDate": moment().add('months', 1),
             autoApply: true,
             autoUpdateInput: false
-        }, function(start, end, label) {
+        }, async function(start, end, label) {
            selectedStartDate = start.format('M/DD/YY hh:mm A'); // selected start
            selectedEndDate = end.format('M/DD/YY hh:mm A'); // selected end
 
@@ -296,7 +296,10 @@
             selectedStartDate:selectedStartDate,
             selectedEndDate:selectedEndDate
           }
+          await calculateExtraTimeforproduct(selectedStartDate,selectedEndDate);
+         
           check_product_availibility(formData);
+          
 
         });
 
@@ -391,6 +394,37 @@
             selectedEndDate:$('#blocktime2').val()
           }
           check_product_availibility(formData);
+        }
+
+        function diff_minutes(dt2, dt1) {
+          var start_date = new Date(dt2);
+          var end_date = new Date(dt2);
+          console.log(dt2);
+          console.log(dt1);
+          return Math.abs(new Date(dt2) - new Date(dt1))/60000;
+          // var diff =(end_date.getTime() - start_date.getTime()) / 1000;
+          // diff /= 60;
+          // return Math.abs(Math.round(diff));
+
+        }
+        function calculateExtraTimeforproduct(selectedStartDate,selectedEndDate){
+          var total_sel_min = diff_minutes(selectedStartDate,selectedEndDate);
+          console.log(parseInt(total_sel_min));
+          console.log(parseFloat(total_sel_min) - Number(default_minutes)); 
+          var remaining = parseFloat(total_sel_min) - Number(default_minutes);
+          //default_step
+          var divide = parseInt(remaining)/default_step;
+          divide = Math.floor(divide);
+          var reminder = parseInt(remaining)%default_step;
+          if(reminder > 0){
+            divide = parseInt(divide) + 1;
+          }
+          var extra_t_min = parseInt(180)*parseInt(divide); 
+         
+          $('#incremental_hrs').val(extra_t_min);
+          var t_min_hr_min = parseInt(extra_t_min)+parseInt(default_minutes);
+         
+          $('#incremental_hrs_hidden').val(timeToHrMinConvertCal(t_min_hr_min));
         }
 
 

@@ -152,6 +152,7 @@ trait OrderTrait{
                                 'product_id'=>$request->product_id,
                                 'order_vendor_id'=>$request->vendor_id,
                                 'start_date_time'=>$start_time,
+                                'booking_type'=>'new_booking',
                                 'end_date_time'=>$end_time,
                                 'order_user_id' => $request->order_user_id,
                                 'booking_start_end'=>$start_end_block_time

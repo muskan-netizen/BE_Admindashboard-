@@ -376,13 +376,13 @@ class ProductController extends BaseController
                 if(isset($product->category) && in_array($product->category->categoryDetail->type_id,[8,9]))
                 $product->sell_when_out_of_stock = 1;
             }
-            $product->minimum_duration = $request->minimum_duration??null;
-            $product->additional_increments = $request->additional_increments??null;
-            $product->buffer_time_duration  = $request->buffer_time_duration??null;
-            $product->check_in_time         = $request->check_in_time??null;
-            $product->minimum_duration_min = $request->minimum_duration_min??null;
-            $product->additional_increments_min = $request->additional_increments_min??null;
-            $product->buffer_time_duration_min = $request->buffer_time_duration_min??null;
+            $product->minimum_duration = str_pad($request->minimum_duration, 2, '0', STR_PAD_LEFT)??null;
+            $product->additional_increments = str_pad($request->additional_increments, 2, '0', STR_PAD_LEFT)??null;
+            $product->buffer_time_duration  = str_pad($request->buffer_time_duration, 2, '0', STR_PAD_LEFT)??null;
+            $product->check_in_time         = str_pad($request->check_in_time, 2, '0', STR_PAD_LEFT)??null;
+            $product->minimum_duration_min = str_pad($request->minimum_duration_min, 2, '0', STR_PAD_LEFT)??null;
+            $product->additional_increments_min = str_pad($request->additional_increments_min, 2, '0', STR_PAD_LEFT)??null;
+            $product->buffer_time_duration_min = str_pad($request->buffer_time_duration_min, 2, '0', STR_PAD_LEFT)??null;
             $product->is_fix_check_in_time = ($request->has('is_fix_check_in_time') && $request->is_fix_check_in_time == 'on') ? 1 : 0;
             $product->save();
 

@@ -300,11 +300,11 @@ $lastmileShow = array('7','10');
                                 <div class="col-6 pl-3">
                                     {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
 
-                                    {!!Form::input('number','minimum_duration', $product->minimum_duration, ['min' => '0','class'=>'form-control', 'id' => 'minimum_duration', 'placeholder' => '0', 'onkeyup' => 'return isNumberKey(event)']) !!}
+                                    {!!Form::input('number','minimum_duration', $product->minimum_duration, ['min' => '00','class'=>'form-control', 'id' => 'minimum_duration', 'placeholder' => '00', 'onkeyup' => 'return isNumberKey(event)']) !!}
                                 </div>
                                 <div class="col-6 pr-3">
                                     {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
-                                    {!!Form::input('number','minimum_duration_min', $product->minimum_duration_min, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'minimum_duration_min', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
+                                    {!!Form::input('number','minimum_duration_min', $product->minimum_duration_min, ['min' => '00','max' => '59','class'=>'form-control', 'id' => 'minimum_duration_min', 'placeholder' => '00', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
                                 </div>
                             </div>
                             @if($product->category->categoryDetail->type_id  ==  10)
