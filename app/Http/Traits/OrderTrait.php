@@ -3,9 +3,10 @@ namespace App\Http\Traits;
 
 use DB;
 use HttpRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference};
+use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,};
 
 trait OrderTrait{
 
@@ -136,6 +137,38 @@ trait OrderTrait{
         return  $data;
 
     }
-   
+
+    public function bookingSlot($request)
+    {
+
+        $request = (object) $request;
+       
+        try {
+            DB::beginTransaction(); //Initiate transaction
+             
+              $start_time = date("Y-m-d H:i:s",strtotime($request->start_date));
+              $end_time = date("Y-m-d H:i:s",strtotime($request->end_date));
+             
+              
+              $start_end_block_time = $start_time;
+    
+              $status = ProductBooking::Create([
+                                'memo'=>$request->memo,
+                                'variant_id'=>$request->variant_id,
+                                'product_id'=>$request->product_id,
+                                'order_vendor_id'=>$request->order_vendor_id,
+                                'start_date_time'=>$start_time,
+                                'booking_type'=>'new_booking',
+                                'end_date_time'=>$end_time,
+                                'order_user_id' => $request->order_user_id,
+                                'booking_start_end'=>$start_end_block_time
+                                ]);
+            DB::commit(); //Commit transaction after all the operations
+            return 1 ;
+          } catch (Exception $e) {
+              DB::rollBack();
+              return 0;
+          }
+    }
 
 }
