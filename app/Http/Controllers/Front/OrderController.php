@@ -1065,7 +1065,7 @@ class OrderController extends FrontController
                                         'order_vendor_id' =>$order_product->vendor_id,
                                         'end_date' => $order_product->end_date_time
                                     ];                 
-                                         
+                        //pr($data);     
                         $res =   $this->bookingSlot($data);
                        //pr($res);
                     }

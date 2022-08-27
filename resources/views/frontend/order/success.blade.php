@@ -66,17 +66,7 @@ $serviceType =  Session::get('vendorType');
                                                 <div>
                                                     @if($serviceType=='rental')
                                                         <h4>{{__('Duration')}}</h4>
-                                                        @php 
-                                                        $dura = getHoursMinutes($product->total_booking_time);
-                                                       // $dura = $product->total_booking_time;
-                                                        // if($product->additional_increments_hrs_min) {
-                                                        //     // $dura = explode('.',$vendor_product->additional_increments_hrs_min);
-                                                        //     // $dura = sprintf("%02d",$dura[0]).':'.sprintf("%02d", $dura[1]);
-                                                        //     $min_hrs =  getMinutes($vendor_product->product->minimum_duration,$vendor_product->product->minimum_duration_min);
-                                                        //     $dura = getHoursMinutes(($vendor_product->additional_increments_hrs_min)+($min_hrs));
-                                                        // }
-    
-                                                    @endphp
+                                                        @php  $dura = getHoursMinutes($product->total_booking_time);  @endphp
                                                         <h5>{{$dura}}</h5>
                                                     @else
                                                         <h4>{{__('Quantity')}}</h4>
@@ -89,9 +79,11 @@ $serviceType =  Session::get('vendorType');
                                                 <div>
                                                     <h4>{{__('Price')}}</h4>
                                                     <h5>{{Session::get('currencySymbol')}}{{decimal_format($product->price * @$clientCurrency->doller_compare)}}</h5>
+                                                    @if($product->container_charges>0)
                                                     <h4>{{__('Container Charges')}}</h4>
                                                     <p>{{decimal_format($product->container_charges)}}</p>
-                                                    @if($serviceType=='rental')
+                                                    @endif
+                                                    @if($serviceType=='rental' && $product->incremental_price>0)
                                                         <h4>{{__('Additional Price')}}</h4>
                                                         <p>{{decimal_format($product->incremental_price)}}</p>
                                                     @endif

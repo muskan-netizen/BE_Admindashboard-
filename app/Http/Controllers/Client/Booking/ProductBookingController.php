@@ -57,7 +57,13 @@ class ProductBookingController extends BaseController
       }
      
     }
-    
+    /**
+     * Delete slot
+     *
+     * @param Request $request
+     * @param mixed $name
+     * @return void
+     */
     public function deleteSlot($domen = '' , $id)
     {
       try {
@@ -71,11 +77,18 @@ class ProductBookingController extends BaseController
       }
      
     }
+    /**
+     *  UpdateBlockSlot
+     *
+     * @param Request $request
+     * @param mixed $name
+     * @return void
+     */
     public function updateBlockSlot(Request $request)
     {
-     //pr($request->all());
+   
       try {
-        DB::beginTransaction(); //Initiate transaction
+          DB::beginTransaction(); //Initiate transaction
           $block_time = explode('-', $request->blocktime);
           $start_time = date("Y-m-d H:i:s",strtotime($block_time[0]));
           $end_time = date("Y-m-d H:i:s",strtotime($block_time[1]));
@@ -87,7 +100,7 @@ class ProductBookingController extends BaseController
                                                 $query->where('start_date_time', '<=', $start_time)
                                                       ->where('end_date_time', '>=', $end_time);
                                             })->first();
-         // pr($ProductBooking);
+  
           if (!$ProductBooking) {
             $status = ProductBooking::where('id',$request->booking_id)->update(['memo'=>$request->memo,'start_date_time'=>$start_time,'end_date_time'=>$end_time,'booking_start_end'=>$start_end_block_time]);
           } else {

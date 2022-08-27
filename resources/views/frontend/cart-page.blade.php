@@ -246,18 +246,19 @@
                                 </a>
                             </div>
                         </div>
-
+                        @if($serviceType ==  'rental')
                         <hr class="my-2">
-                        <div class="row align-items-md-center alRentalStartDate">
-                            <div class="col-3">
-                                <h6 class="m-0 pl-0">Start Date</h6>
-                                <p>{{date("m/d/Y g:i A", strtotime($vendor_product->start_date_time))}}</p>
+                            <div class="row align-items-md-center alRentalStartDate">
+                                <div class="col-3">
+                                    <h6 class="m-0 pl-0">Start Date</h6>
+                                    <p>{{date("m/d/Y g:i A", strtotime($vendor_product->start_date_time))}}</p>
+                                </div>
+                                <div class="col-3">
+                                    <h6 class="m-0 pl-0">End Date</h6>
+                                    <p>{{date("m/d/Y g:i A", strtotime($vendor_product->end_date_time))}}</p>
+                                </div>
                             </div>
-                            <div class="col-3">
-                                <h6 class="m-0 pl-0">End Date</h6>
-                                <p>{{date("m/d/Y g:i A", strtotime($vendor_product->end_date_time))}}</p>
-                            </div>
-                        </div>
+                        @endif
 
                        @if(count($vendor_product->addon) != 0)
                             <hr class="my-2">

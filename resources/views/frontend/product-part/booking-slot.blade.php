@@ -240,7 +240,7 @@
                 selectedStartDate:start_current_time,
                 selectedEndDate:end_current_time
               }
-            check_product_availibility(formData);
+          
             // console.log($($checkoutInput).val());
             // console.log(document.getElementById('incremental_hrs').value);
               console.log('total',total_min);
@@ -249,6 +249,7 @@
               $('#total_hrs').val(total_min);
               //console.log(timeToHrMinConvertCal(total_min));
               $('#incremental_hrs_hidden').val(timeToHrMinConvertCal(total_min));
+              check_product_availibility(formData);
             // if(product_variant_data) {
             //   calculation(incremental_hrs,product_variant_data.incremental_price,product_variant_data.incremental_price_per_min);
             // }
@@ -333,25 +334,28 @@
                       }
                     }
                   } else {
-                    Swal.fire(
-                      'Already booked, Please select diffrent slot!',                                    
-                      'error'
-                    )
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Oops...',
+                      text: 'Already booked, Please select diffrent slot!',
+                    })
                   }
                  
                 } else{
-                  Swal.fire(
-                    'Something went wrong, try again later!',                                    
-                    'error'
-                  )
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Oops...',
+                      text: 'Something went wrong, try again later!',
+                    })
                 }
             })
             .catch(e => {
               console.log(e);
-                Swal.fire(
-                    'Something went wrong, try again later!',                                    
-                    'error'
-                )
+                Swal.fire({
+                      icon: 'error',
+                      title: 'Oops...',
+                      text: 'Something went wrong, try again later!',
+                })
             })    
         } 
 
@@ -425,6 +429,8 @@
           var t_min_hr_min = parseInt(extra_t_min)+parseInt(default_minutes);
          
           $('#incremental_hrs_hidden').val(timeToHrMinConvertCal(t_min_hr_min));
+          $('#total_hrs').val(parseInt(t_min_hr_min)+parseInt(default_minutes));
+           console.log(parseInt(t_min_hr_min)+parseInt(default_minutes));
         }
 
 

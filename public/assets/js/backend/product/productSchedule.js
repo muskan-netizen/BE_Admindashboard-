@@ -132,23 +132,28 @@ $(function(){
                // setInterval( function () {
                     
                 //}, 30000 );
-                Swal.fire(
-                    'Manual time added successfully!',                                    
-                    'success'
-                )
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Manual time added successfully!',
+                    //footer: '<a href="">Why do I have this issue?</a>'
+                })
                 block.ajax.reload();
             } else{
-                Swal.fire(
-                    'This slot is already booked, Please try other.',                                    
-                    'error'
-                )
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops',
+                    text: 'This slot is already booked, Please try other.',
+                    //footer: '<a href="">Why do I have this issue?</a>'
+                })
             }
         })
         .catch(e => {
-            Swal.fire(
-                'Something went wrong, try again later!',                                    
-                'error'
-            )
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong, try again later!',
+            })
         })    
     } 
     $(document).on('click', '.deletebooking', function() {
@@ -161,23 +166,27 @@ $(function(){
         .then(async response => {
          //console.log(response);
             if(response.data.success){
-                Swal.fire(
-                    'Deleted successfully!',                                    
-                    'success'
-                );
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Deleted successfully!',
+                    //footer: '<a href="">Why do I have this issue?</a>'
+                })
                 updateData();
             } else{
-                Swal.fire(
-                    'This slot is already booked, Please try other.',                                    
-                    'error'
-                )
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'This slot is already booked, Please try other.',
+                })
             }
         })
         .catch(e => {
-            Swal.fire(
-                'Something went wrong, try again later!',                                    
-                'error'
-            )
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong, try again later!',
+            })
         })    
 
     }
@@ -254,24 +263,28 @@ $(function(){
         .then(async response => {
          //console.log(response);
             if(response.data.success){
-                
-                Swal.fire(
-                    'Manual time Updated successfully!',                                    
-                    'success'
-                )
+ 
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Manual time Updated successfully!',
+                    //footer: '<a href="">Why do I have this issue?</a>'
+                    })
                 updateData()
             } else{
-                Swal.fire(
-                    'This slot is already booked, Please try other.',                                    
-                    'error'
-                )
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'This slot is already booked, Please try other.',
+              })
             }
         })
         .catch(e => {
-            Swal.fire(
-                'Something went wrong, try again later!',                                    
-                'error'
-            )
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong, try again later!',
+            })
         })    
     } 
     function updateData() {

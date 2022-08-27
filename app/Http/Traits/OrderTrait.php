@@ -156,7 +156,7 @@ trait OrderTrait{
                                 'memo'=>$request->memo,
                                 'variant_id'=>$request->variant_id,
                                 'product_id'=>$request->product_id,
-                                'order_vendor_id'=>$request->vendor_id,
+                                'order_vendor_id'=>$request->order_vendor_id,
                                 'start_date_time'=>$start_time,
                                 'booking_type'=>'new_booking',
                                 'end_date_time'=>$end_time,
