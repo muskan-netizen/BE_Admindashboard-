@@ -57,19 +57,16 @@
                     <div class="col-md-2 col text-center">
                         <span>Price</span>
                     </div>
-
-                @if($serviceType ==  'rental')
-                    <div class="col-md-2 text-center">
-                        <span>Additional Increment Duration</span>
-                    </div>
-                @else
+                    @if($serviceType ==  'rental')
+                        <div class="col-md-2 text-center">
+                            <span>Duration By(min)</span>
+                        </div>
+                    @else
                     <div class="col-md-2 text-center">
                         <span>Quantity</span>
                     </div>
-                @endif
-
-
-                    <div class="col-md-4 col text-center">
+                    @endif
+                    <div class="col-md-4 text-center">
                         <span>Total</span>
                     </div>
 
@@ -176,25 +173,32 @@
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }}</div>
                             </div>
                             <div class="col-6 col-md-2 text-left order-md-4">
-                                <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
+                                @if($serviceType ==  'rental')
+                                    <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price + ($vendor_product->additional_increments_hrs_min/$vendor_product->pvariant->incremental_price_per_min )) }}</div>
+                                    @php
+                                     $additionalPrice = ($vendor_product->additional_increments_hrs_min/$vendor_product->pvariant->incremental_price_per_min );
+                                    @endphp
+                                @else
+                                    <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
+                                @endif
+
                             </div>
                             @if($serviceType ==  'rental')
                                 <div class="col-10 col-md-4 text-md-center order-md-3">
                                     <div class="number d-flex justify-content-md-center">
-                                        <div style="display: none;" class="counter-container d-flex align-items-center">
-                                            <input placeholder="1" type="text" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
+                                        <div style="display: none !important;" class="counter-container d-flex align-items-center">
+                                            <input placeholder="1"  type="number" min="0"  data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
                                             data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
 
                                         </div>
                                         <p></p>
-                                        <?php
+                                        <?php 
 
                                        // pr($vendor_product);
                                         ?>
                                     </div>
                                 </div>
                             @else
-
                                 <div class="col-10 col-md-4 text-md-center order-md-3">
                                     <div class="number d-flex justify-content-md-center">
                                         <div class="counter-container d-flex align-items-center">
@@ -220,12 +224,27 @@
                                     @endif
                                 </div>
                             @endif
+
                             <div class="col-2 col-md-1 text-right text-md-center p-in order-md-5">
                                 <a class="action-icon d-block remove_product_via_cart" data-product="{{$vendor_product->id }}" data-vendor_id="{{$vendor_product->vendor_id }}">
                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                 </a>
                             </div>
                         </div>
+                        @if($serviceType ==  'rental')
+                        <hr class="my-2">
+                            <div class="row align-items-md-center alRentalStartDate">
+                                <div class="col-3">
+                                    <h6 class="m-0 pl-0">Start Date</h6>
+                                    <p>{{date("m/d/Y g:i A", strtotime($vendor_product->start_date_time))}}</p>
+                                </div>
+                                <div class="col-3">
+                                    <h6 class="m-0 pl-0">End Date</h6>
+                                    <p>{{date("m/d/Y g:i A", strtotime($vendor_product->end_date_time))}}</p>
+                                </div>
+                            </div>
+                        @endif
+
                        @if(count($vendor_product->addon) != 0)
                             <hr class="my-2">
                             <div class="row align-items-md-center add_head">
@@ -233,6 +252,7 @@
                                     <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                                 </div>
                             </div>
+                            
                             @foreach($vendor_product->addon as $ad=>$addon)
                             @if($addon->option)
                                 <div class="row">
@@ -410,7 +430,7 @@
                                     <label class="m-0 radio">{{__('Sub Total')}} :</label>
                                 </div>
                                 <div class="col-7 text-right">
-                                    <p class="total_amt m-0">{{Session::get('currencySymbol')}} {{decimal_format($product->product_total_amount+$product->vendor->fixed_fee_amount)}}</p>
+                                    <p class="total_amt m-0">{{Session::get('currencySymbol')}} {{decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount)}}</p>
                                 </div>
                             @endif
                         </div>
@@ -589,14 +609,25 @@
             }
             @endphp
             <input type="hidden" id="other_taxes_string" value="{{$other_taxes_string}}">
-
+            @if($serviceType ==  'rental')
+                {{-- <div class="row">
+                    <div class="col-6">{{__('Extended Duration')}}</div>
+                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
+                    </div>  
+                </div> --}}
+            @endif
 
             @if($price_bifurcation!=1)
             <!-- <hr class="my-2"> -->
             <div class="row">
                 <div class="col-6">{{__('Total')}}</div>
+                {{-- @if($serviceType ==  'rental')
+                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount+$vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
+                    <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
+                @else  --}}
                 <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount)}}</b></span>
-                <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
+                    <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
+                {{-- @endif --}}
             </div>
             <hr class="my-2">
             @endif
