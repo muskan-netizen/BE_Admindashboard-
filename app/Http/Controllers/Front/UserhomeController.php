@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Contracts\Session\Session as SessionSession;
-use App\Models\{Currency, Banner, MobileBanner, FaqTranslations, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency,Client, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption, SubscriptionInvoicesVendor, Order, VendorOrderStatus,CabBookingLayoutTranslation,ShowSubscriptionPlanOnSignup};
+use App\Models\{Currency, Banner, MobileBanner, FaqTranslations, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency,Client, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption, SubscriptionInvoicesVendor, Order, VendorOrderStatus,CabBookingLayoutTranslation,ShowSubscriptionPlanOnSignup,VendorCities};
 use Illuminate\Contracts\View\View;
 use Illuminate\View\View as ViewView;
 use Redirect;
@@ -1189,8 +1189,10 @@ class UserhomeController extends FrontController
         }
 
 
+
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
+      
         if(isset($slug)){
             $categoryTypes = getServiceTypesCategory($request->type);
             $vendors = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
@@ -1292,58 +1294,8 @@ class UserhomeController extends FrontController
             $vendors = [];
         }
 
-
-
         if (isset($slug) && $slug == 'trending_vendors') {
-            $now = Carbon::now()->toDateTimeString();
-            $subscribed_vendors_for_trending = SubscriptionInvoicesVendor::with('features')->whereHas('features', function ($query) {
-                $query->where(['subscription_invoice_features_vendor.feature_id' => 1]);
-            })
-            ->select('id', 'vendor_id', 'subscription_id')
-            ->where('end_date', '>=', $now)
-            ->pluck('vendor_id')->toArray();
-
-            $trendingVendors = Vendor::with('slot.day', 'slotDate')->whereIn('id', $subscribed_vendors_for_trending)->where('status', 1)->inRandomOrder()->get();
-
-            if ((!empty($trendingVendors) && count($trendingVendors) > 0)) {
-                foreach ($trendingVendors as $key => $value) {
-                    $value->tag_title = $trending_vendors_title??'0';
-                    $value->vendorRating = $this->vendorRating($value->products);
-                    // $value->name = Str::limit($value->name, 15, '..');
-                    if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                        $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
-                    }
-                    $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
-                    $categoriesList = '';
-                    foreach ($vendorCategories as $key => $category) {
-                        if ($category->category) {
-                            $categoriesList = $categoriesList . @$category->category->translation_one->name;
-                            if ($key !=  $vendorCategories->count() - 1) {
-                                $categoriesList = $categoriesList . ', ';
-                            }
-                        }
-                    }
-                    $value->categoriesList = $categoriesList;
-                    $value->is_vendor_closed = 0;
-                    if ($value->show_slot == 0) {
-                        if (($value->slotDate->isEmpty()) && ($value->slot->isEmpty())) {
-                            $value->is_vendor_closed = 1;
-                        } else {
-                            $value->is_vendor_closed = 0;
-                            if ($value->slotDate->isNotEmpty()) {
-                                $value->opening_time = Carbon::parse($value->slotDate->first()->start_time)->format('g:i A');
-                                $value->closing_time = Carbon::parse($value->slotDate->first()->end_time)->format('g:i A');
-                            } elseif ($value->slot->isNotEmpty()) {
-                                $value->opening_time = Carbon::parse($value->slot->first()->start_time)->format('g:i A');
-                                $value->closing_time = Carbon::parse($value->slot->first()->end_time)->format('g:i A');
-                            }
-                        }
-                    }
-                }
-            }
-            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $trendingVendors = $trendingVendors->sortBy('lineOfSightDistance')->values()->all();
-            }
+          
         }else{
             $trendingVendors = [];
         }
@@ -1527,6 +1479,25 @@ class UserhomeController extends FrontController
 
         }
 
+        $cities = [];
+
+        if (isset($slug) && $slug == 'cities'){    # if enable recent_orders section in
+
+            $cities =  VendorCities::with(['translations'=> function ($q) use($language_id) {
+                                $q->where('language_id', $language_id);
+                            }])->where(function ($q)  {
+                                $q->where('latitude','!=', null);
+                                $q->where('longitude','!=', null);
+                            })->get();
+            $cities = $cities->map(function($da) {
+                $da->title = $da->translations->first() ? $da->translations->first()->name : $da->slug ;
+                unset($da->translations);
+                return $da;
+            });
+        }else{
+
+        }
+        //pr($cities->toArray());
         $data = [
             'brands' => $brands,
             'banners' => [],
@@ -1536,7 +1507,8 @@ class UserhomeController extends FrontController
             'feature_products' => $feature_products,
             'on_sale_products' => $on_sale_products,
             'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
-            'active_orders' => $activeOrders
+            'active_orders' => $activeOrders,
+            'cities' => $cities
         ];
 
         return $this->successResponse($data);
