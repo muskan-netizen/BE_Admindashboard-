@@ -2129,7 +2129,15 @@ $(document).ready(function () {
         //     }
         // );
     }
-    function cartHeader(address_id) {
+    function checkIfInCart(v_p) {
+        v_p.vendor_products.map((data)=>{
+                console.log(data);
+                if(data.pvariant.id == $('#prod_variant_id').val()){
+                    localStorage.setItem('in_cart','true');
+                }
+        })
+    }
+    function cartHeader(address_id=null) {
         $(".shopping-cart").html("");
         $(".spinner-box").show();
 
@@ -2143,35 +2151,20 @@ $(document).ready(function () {
                     $("#cart_table").html('');
                     $(".spinner-box").hide();
                     $("#mycart").html(response.mycart);
-                   
+
                     //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
-                    if (response.cart_details.length != 0) {
-                        if (response.cart_details.products.length != 0) {
-                            //$('#cartTotalspan').html(response.cart_details.totalQuantity);
+                  
+                    if (cart_details!= undefined) {
+                        if (cart_details.products.length > 0) {
+                            //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
 
                              let header_cart_template = _.template($('#header_cart_template').html());
+                             
                              $("#header_cart_main_ul").append(header_cart_template(headerCartData));
                             if (response.cart_details.totalQuantity>0) {
-
-                                // simplified mock of the helpers
-
-                                // var extendedData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, client_preference_detail: client_preference_detail });
-
-                                // let cart_template = _.template($('#cart_template').html());
-                                // $("#cart_table").append(cart_template(extendedData));
-                                // $(".other_cart_products").html('');
-                                // let other_cart_products_template = _.template($('#other_cart_products_template').html());
-                                // $(".other_cart_products").append(other_cart_products_template(extendedData));
-                                // initializeSlider();
-                                // $('#placeorder_form .left_box').html('');
-                                // $('#placeorder_form .left_box').html(cart_details.left_section);
-
-                                
-                                
-
                                 $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);
 
@@ -2258,14 +2251,14 @@ $(document).ready(function () {
                             $("#header_cart_main_ul_ondemand").append(empty_cart_template());
                         }
                         if ($("#header_cart_main_ul_ondemand").length != 0) {
-                           
+
                             $('#header_cart_main_ul_ondemand').html('');
                             $("#header_cart_main_ul_ondemand").removeClass("d-none");
                             $("#header_cart_main_ul_ondemand").show();
                             let empty_cart_template = _.template($('#empty_cart_template').html());
                             $("#header_cart_main_ul_ondemand").append(empty_cart_template());
                         }
-                        
+
                     }
                 }
             },
@@ -2689,11 +2682,13 @@ $(document).ready(function () {
                     }
                 },
                 success: function (response) {
+
                     if ($("#add_edit_address").length > 0) {
+
                         $("#add_edit_address").modal('hide');
                         location.reload();
                     } else {
-                        $('#add_new_address_form').hide();
+                        $("#add_new_address_form_modal").modal('hide');
                         // let address_template = _.template($('#address_template').html());
                         if (address.length > 0) {
                             //   $('#order_placed_btn').attr('disabled', false);
@@ -2727,6 +2722,15 @@ $(document).ready(function () {
     });
 
     $(document).on("click", ".addToCart", function () {
+        if(localStorage.in_cart == "true"){
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Product is already in cart!',
+                //footer: '<a href="">Why do I have this issue?</a>'
+              })
+            return false;
+        }
         if (!$.hasAjaxRunning()) {
             addToCart();
         }
@@ -2807,6 +2811,7 @@ $(document).ready(function () {
                     var start_date =  $('#start_time').val();
                     var end_date =  $('#end_time').val();
                     var incremental_hrs =  $('#incremental_hrs').val();
+                    var total_booking_time =  $('#total_hrs').val();
                     $("#single_vendor_remove_cart_btn").attr({
                         'data-product_id': product_id,
                         'data-variant_id': (vendor_type == 'rental') ? $('#prod_variant_id').val() :$('#available_product_variant').val(),
@@ -2815,7 +2820,8 @@ $(document).ready(function () {
                         'data-page': 'productDetail',
                         'data-start_time':start_date,
                         'data-end_time':end_date,
-                        'data-incremental_hrs':incremental_hrs
+                        'data-incremental_hrs':incremental_hrs,
+                        'data-total_hrs':total_booking_time
                     });
                     $("#single_vendor_order_modal").modal('show');
                 } else {
@@ -2824,13 +2830,15 @@ $(document).ready(function () {
                     var end_date =  $('#end_time').val();
                     var quantity = $('.quantity_count').val();
                     var incremental_hrs =  $('#incremental_hrs').val();
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs);
+                    var total_booking_time =  $('#total_hrs').val();
+
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='') {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='') {
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -2846,7 +2854,8 @@ $(document).ready(function () {
                 "variant_id": variant_id,
                 "start_date":start_date,
                 "end_date":end_date,
-                "incremental_hrs":incremental_hrs
+                "incremental_hrs":incremental_hrs,
+                "total_booking_time":total_booking_time
             },
             success: function (response) {
                 if (response.status == 'success') {
@@ -2890,9 +2899,10 @@ $(document).ready(function () {
         var start_date = $(this).attr('data-start_time');
         var end_date = $(this).attr('data-end_time'); 
         var incremental_hrs = $(this).attr('data-incremental_hrs');
+        var total_booking_time =  $(this).attr('data-total_hrs');
        
         if ($(this).attr('data-page') == 'productDetail') {
-            submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs);
+            submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time);
         } else if ($(this).attr('data-page') == 'vendorProducts') {
             var elem = $(this).attr('data-element_id');
             submitAddtoCartProductsAddons($('#' + elem), addonids, addonoptids, product_id, variant_id, quantity, vendor_id);

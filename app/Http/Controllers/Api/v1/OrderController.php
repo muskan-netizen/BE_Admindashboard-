@@ -290,8 +290,8 @@ class OrderController extends BaseController
                             $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                             $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
                             $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
-                            $product_payable_amount = 0;
-                            $opt_quantity_price = 0;
+                            $productAddon_price = 0;
+                            
                             if (!empty($vendor_cart_product->addon)) {
                                 foreach ($vendor_cart_product->addon as $ck => $addon) {
                                     $opt_quantity_price = 0;
@@ -299,25 +299,26 @@ class OrderController extends BaseController
                                     $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                                     $opt_quantity_price = $opt_price_in_doller_compare *  $vendor_cart_product->quantity;
                                     $total_amount = $total_amount + $opt_quantity_price;
+                                    $productAddon_price = $productAddon_price + $opt_quantity_price;
                                     $payable_amount = $payable_amount + $opt_quantity_price;
                                     $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
                                 }
                             }
-
+                         
                             $vendor_taxable_amount = 0;
-                            // if (isset($vendor_cart_product->product->taxCategory)) {
-                            //     foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
-                            //         if (!in_array($tax_rate_detail->id, $tax_category_ids)) {
-                            //             $tax_category_ids[] = $tax_rate_detail->id;
-                            //         }
-                            //         $rate = round($tax_rate_detail->tax_rate);
-                            //         $tax_amount = ($price_in_dollar_compare * $rate) / 100;
-                            //         $product_tax = ($quantity_price+$opt_quantity_price) * $rate / 100;
-                            //         // $taxable_amount = $taxable_amount + $product_tax;
-                            //         $product_taxable_amount += $product_tax;
-                            //         $payable_amount = $payable_amount + $product_tax;
-                            //     }
-                            // }
+                            if (isset($vendor_cart_product->product->taxCategory)) {
+                                foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
+                                    if (!in_array($tax_rate_detail->id, $tax_category_ids)) {
+                                        $tax_category_ids[] = $tax_rate_detail->id;
+                                    }
+                                    $rate = round($tax_rate_detail->tax_rate);
+                                    $tax_amount = ($price_in_dollar_compare * $rate) / 100;
+                                    $product_tax = ($quantity_price+$productAddon_price) * $rate / 100;
+                                    $taxable_amount = $taxable_amount + $product_tax;
+                                    $product_taxable_amount += $product_tax;
+                                    //$payable_amount = $payable_amount + $product_tax;
+                                }
+                            }
                             if ($action == 'delivery') {
                                 $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                                 if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1) || isset($deliver_fee_data)) {
@@ -1078,7 +1079,7 @@ class OrderController extends BaseController
             // $call_back_url = route('dispatch-order-update', $dynamic);
 
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
-            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 

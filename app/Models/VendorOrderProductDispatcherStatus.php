@@ -36,12 +36,8 @@ class VendorOrderProductDispatcherStatus extends Model
                 $status_data['icon'] = asset('assets/icons/driver_1_1.png');
                 if($productcategorytype == "On Demand Service"):
                     $status_data['driver_status'] = __('Service Accepted');
-                elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
-                    $status_data['driver_status'] = __('Order Accepted');
-                elseif($productcategorytype == "Pickup/Parent" || $productcategorytype == "Pickup/Delivery"):
-                    $status_data['driver_status'] = __('Ride Accepted');
-                elseif($productcategorytype == "Laundry"):
-                    $status_data['driver_status'] = __('Order Accepted');
+                elseif($productcategorytype == "Appointment"):
+                    $status_data['driver_status'] = __('Appointment Accepted');
                 else:
                     $status_data['driver_status'] = __('Order Accepted');
                 endif;
@@ -53,7 +49,7 @@ class VendorOrderProductDispatcherStatus extends Model
             
             if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_2_1.png');
-                if($productcategorytype == "On Demand Service"):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment" ):
                     $status_data['driver_status'] = __('Service Executive Assigned');
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Delivery Executive Assigned');
@@ -73,7 +69,7 @@ class VendorOrderProductDispatcherStatus extends Model
             
             if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_3_1.png');
-                if($productcategorytype == "On Demand Service"):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment"):
                     $status_data['driver_status'] = __('Service Executive heading to you');
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Delivery Executive heading to the store');
@@ -86,7 +82,7 @@ class VendorOrderProductDispatcherStatus extends Model
                 endif;
             } else {
                 $status_data['icon'] = asset('assets/icons/driver_3_2.png');
-                if($productcategorytype == "On Demand Service"):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment"):
                     $status_data['driver_status'] = __('Service Executive arrived at your location');
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Delivery Executive heading to you');
@@ -103,7 +99,7 @@ class VendorOrderProductDispatcherStatus extends Model
         case 4:
             if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_4_1.png');
-                if($productcategorytype == "On Demand Service"):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment"):
                     $status_data['driver_status'] = __('Service Executive reaching at your location soon');
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Delivery Executive arrived at store');
@@ -117,7 +113,7 @@ class VendorOrderProductDispatcherStatus extends Model
 
             }else{
                 $status_data['icon'] = asset('assets/icons/driver_4_2.png');
-                if($productcategorytype == "On Demand Service"):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment"):
                     $status_data['driver_status'] = __('Service Under Process');
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Delivery Executive arrived at your location');
@@ -134,7 +130,7 @@ class VendorOrderProductDispatcherStatus extends Model
         case 5:
             if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_5_1.png');
-                if($productcategorytype == "On Demand Service"):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment"):
                     $status_data['driver_status'] = __('Service Executive is nearby your location');
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Order picked up');
@@ -147,7 +143,7 @@ class VendorOrderProductDispatcherStatus extends Model
                 endif;
             }else{
                 $status_data['icon'] = asset('assets/icons/driver_5_2.png');
-                if($productcategorytype == "On Demand Service"):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment" ):
                     $status_data['driver_status'] = __('Service Completed');
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Order Delivered');
@@ -166,7 +162,7 @@ class VendorOrderProductDispatcherStatus extends Model
         $status_data['driver_status'] = '';
        }
 
-       return $status_data;
+       return $status_data['driver_status'];
 
     }
 }

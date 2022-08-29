@@ -984,3 +984,32 @@ if (!function_exists('getCategoryTypes')) {
         return $typeArray;
     }
 }
+
+if (!function_exists('getHoursMinutes')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getHoursMinutes($minutes)
+    {
+        $hours = floor($minutes / 60);
+        $min = $minutes - ($hours * 60);
+        return $hours.' hour ' .$min. ' min ';
+
+    }
+}
+
+
+if (!function_exists('getMinutes')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getMinutes($hrs,$minutes)
+    {
+        $minutes = ($hrs*60)+($minutes);
+        return $minutes;
+
+    }
+}
+
+
+

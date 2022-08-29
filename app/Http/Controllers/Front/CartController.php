@@ -274,6 +274,7 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
+       // pr($request->all());
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
@@ -386,7 +387,11 @@ class CartController extends FrontController
                 'product_id' => $request->product_id,
                 'variant_id'  => $request->variant_id,
                 'currency_id' => $client_currency->currency_id,
-                'luxury_option_id' => ($luxury_option) ? $luxury_option->id : 0
+                'luxury_option_id' => ($luxury_option) ? $luxury_option->id : 0,
+                'start_date_time'  => $request->has('start_date') ? $request->start_date : null,
+                'end_date_time' => $request->has('end_date') ? $request->end_date : null,
+                'additional_increments_hrs_min' => $request->has('incremental_hrs') ? $request->incremental_hrs : null,
+                'total_booking_time' => $request->has('total_booking_time') ? $request->total_booking_time : null,
             ];
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
@@ -405,7 +410,7 @@ class CartController extends FrontController
                     }
                 }
             }
-            if ( (isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1) ) {
+            if ( ((isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1)) || ($luxury_option->id == 4) ) {
                 if ($checkVendorId) {
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }

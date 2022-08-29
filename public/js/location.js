@@ -271,6 +271,32 @@ $(document).ready( async function () {
     })
 
     async function vendorType(latitude, longitude, type = "delivery"){
+
+        await  getHomePageCategoryMenu(latitude, longitude, type);
+        await  getHomePage(latitude, longitude, type);
+        $.ajax({
+            type: "get",
+            dataType: 'json',
+            url: cart_details_url,
+            success: function (response) {
+                if (response.data != "") {
+                    let cartProducts = response.data.products;
+                    if (cartProducts != "") {
+                        $("#remove_cart_modal").modal('show');
+                        $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
+                        $(".nav-tabs.vendor_mods").attr("data-mod", type);
+                    } else {
+                        getHomePageCategoryMenu(latitude, longitude, type);
+                        getHomePage(latitude, longitude, type);
+                    }
+                } else {
+                    getHomePageCategoryMenu(latitude, longitude, type);
+                    getHomePage(latitude, longitude, type);
+                }
+            }
+        });
+    }
+    function getcart(){
         $.ajax({
             type: "get",
             dataType: 'json',
@@ -293,24 +319,6 @@ $(document).ready( async function () {
             }
         });
     }
-    // function getcart(){
-    //     $.ajax({
-    //         type: "get",
-    //         dataType: 'json',
-    //         url: cart_details_url,
-    //         success: function (response) {
-    //             if (response.data != "") {
-    //                 let cartProducts = response.data.products;
-    //                 if (cartProducts != "") {
-    //                     $("#remove_cart_modal").modal('show');
-    //                     $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
-    //                     $(".nav-tabs.vendor_mods").attr("data-mod", type);
-    //                 } 
-    //             } 
-    //         }
-    //     });
-
-    // }
 
     async function getHomePage(latitude, longitude, vtype = "") {
         if(vtype != ''){
@@ -502,6 +510,9 @@ $(document).ready( async function () {
                 getHomePageDataSingleBySingle(item, index);
                break;
             case 'dynamic_page':
+                getHomePageDataSingleBySingle(item, index);
+               break;
+            case 'cities':
                 getHomePageDataSingleBySingle(item, index);
                break;
           }
@@ -763,6 +774,33 @@ $(document).ready( async function () {
                                     $('.render_full_recent_orders').addClass('d-none');
                                 }
                                break;
+                            case 'cities':
+                               if (response.data.cities.length > 0) {
+                                if($('.suppliers-slider-cities').hasClass('slick-initialized')){
+                                    $(".suppliers-slider-cities").slick('destroy');
+                                    $(".render_cities").html('');
+                                }
+                                   let city_template = _.template($('#cities_template').html());
+                                   $(".render_cities").append(city_template({ cities: response.data.cities }));
+                                   $(".suppliers-slider-cities").slick({
+                                       arrows: true,
+                                       dots: false,
+                                       infinite: true,
+                                       speed: 300,
+                                       slidesToShow: 5,
+                                       slidesToScroll: 3,
+                                       responsive: [
+                                           {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},
+                                           {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 1}},
+                                           {breakpoint: 767,settings: {slidesToShow: 3,slidesToScroll: 1}},
+                                           {breakpoint: 360,settings: {slidesToShow: 3,slidesToScroll: 1}}
+                                       ]
+                                   });
+                                   $('.render_full_cities').removeClass('d-none');
+                               } else {
+                                   $('.render_full_cities').addClass('d-none');
+                               }
+                              break;
                           }
 
                           let vendors = response.data.vendors;

@@ -185,9 +185,11 @@ use Illuminate\Support\Arr;
                                                
                                                 {{-- new product design  --}}
                                                 <div class="row classes_wrapper no-gutters align-items-center" href="#">
-                                                    <div class="col-md-9 col-sm-8 pr-md-2 productDetails">
+                                                    <div class="col-md-9 col-sm-8 pr-md-2">
                                                         <h5 class="mb-1"><b>{!! $data->translation_title !!}</b></h5>
-                                                        <p class="mb-1">{!! $data->translation_description !!}</p>
+                                                        <div class="productDetails pr-2">
+                                                            <p class="mb-1">{!! $data->translation_description !!}</p>
+                                                        </div>
                                                     </div>
                                                     <div class="col-md-3 col-sm-4 mb-3">
                                                         <?php $imagePath = $imagePath2 = '';
@@ -507,13 +509,13 @@ use Illuminate\Support\Arr;
                                                 </li>
 
                                                 <% if(vendor_product.addon.length != 0) { %>
-                                                    <div class="row align-items-md-center">
+                                                    <div class="row align-items-md-center m-0">
                                                         <div class="col-12 alVendorProductDetails">
                                                             <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                                                         </div>
                                                     </div>
                                                     <% _.each(vendor_product.addon, function(addon, ad){%>
-                                                    <div class="row alVendorProductDetails">
+                                                    <div class="row alVendorProductDetails m-0">
                                                         <div class="col-md-3 col-sm-4 items-details text-left">
                                                             <p class="p-0 m-0"><%= addon.option.title %></p>
                                                         </div>
@@ -538,7 +540,7 @@ use Illuminate\Support\Arr;
                                         <h4 class="mb-2"><b>{!! (!empty($cart_data->product->translation->first())) ? $cart_data->product->translation->first()->title : $cart_data->product->sku !!}</b></h4>
 
                                         <h5 class="d-flex align-items-center justify-content-between pb-2">{{__('DATE & TIME')}} </h5>
-                                        <li class="alVendorProductDetails">
+                                        <li class="alVendorProductTotals">
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Date')}}</span>
@@ -547,7 +549,7 @@ use Illuminate\Support\Arr;
                                             </div>
                                         </li>
 
-                                        <li class="alVendorProductDetails">
+                                        <li class="alVendorProductTotals">
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Start Time')}}</span>

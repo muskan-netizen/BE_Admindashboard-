@@ -5,6 +5,7 @@
 $total_amount = $order->payable_amount;
 $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges;
 $additional_price=0;
+$serviceType =  Session::get('vendorType');
 @endphp
 <section class="section-b-space light-layout_alFour">
     <div class="container">
@@ -63,18 +64,29 @@ $additional_price=0;
                                             </div>
                                             <div class="col-4 order_detail">
                                                 <div>
-                                                    <h4>{{__('Quantity')}}</h4>
-                                                    <h5>{{$product->quantity}}</h5>
+                                                    @if($serviceType=='rental')
+                                                        <h4>{{__('Duration')}}</h4>
+                                                        @php  $dura = getHoursMinutes($product->total_booking_time);  @endphp
+                                                        <h5>{{$dura}}</h5>
+                                                    @else
+                                                        <h4>{{__('Quantity')}}</h4>
+                                                        
+                                                        <h5>{{$product->quantity}}</h5>
+                                                    @endif
                                                 </div>
                                             </div>
                                             <div class="col-4 order_detail">
                                                 <div>
                                                     <h4>{{__('Price')}}</h4>
                                                     <h5>{{Session::get('currencySymbol')}}{{decimal_format($product->price * @$clientCurrency->doller_compare)}}</h5>
+                                                    @if($product->container_charges>0)
                                                     <h4>{{__('Container Charges')}}</h4>
                                                     <p>{{decimal_format($product->container_charges)}}</p>
-                                                    <h4>{{__('Extented Duration Price')}}</h4>
-                                                    <p>{{decimal_format($product->incremental_price)}}</p>
+                                                    @endif
+                                                    @if($serviceType=='rental' && $product->incremental_price>0)
+                                                        <h4>{{__('Additional Price')}}</h4>
+                                                        <p>{{decimal_format($product->incremental_price)}}</p>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>

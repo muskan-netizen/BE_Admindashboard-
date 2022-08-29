@@ -28,7 +28,7 @@
                         @endif
 
                         <div class="top-banner-content small-section">
-                            <h4>{{ $category->translation_name }}</h4>
+                            <h4>{{ $category->translation_one->name }}</h4>
 <!-- deleted code -->
                         </div>
                     </div>

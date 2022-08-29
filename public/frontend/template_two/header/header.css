@@ -1,7 +1,7 @@
 .al_mobile_menu{
     display: none;
     position: absolute;
-    top: 0;
+    top: 10px;
     right: 0;
 }
 .al_toggle-menu {
@@ -53,7 +53,7 @@
     height: 100vh;
     position: absolute;
     right: -350px;
-    top: 0;
+    top: -10px;
     z-index: 999;
     -webkit-transition: right linear .2s;
     transition: right linear .2s;
@@ -77,8 +77,11 @@
 
 
 @media (max-width: 767px){
+.cab-booking-header{
+    padding: 10px 0;
+}
 .al_mobile_menu{
-display: block;
+    display: block;z-index: 9;
 }
 .al_body_template_two .main-menu .d-md-flex.mr-auto{
     max-width: 100%;

@@ -1,5 +1,15 @@
-
 .alProductViewPriceMin {display: block;font-size: 14px;color: #777;border-top: 1px solid #777;font-weight: 100;}
+.alSpaCityBox {
+    position: relative;
+    padding-bottom: 86%;
+    overflow: hidden;
+    border-radius: 10px;
+}
+.alSpaCityBox img {
+    position: absolute;
+    object-fit: cover;
+    height: 100%;
+}
 span.duration {
     display: flex;
     vertical-align: middle;
@@ -7,7 +17,7 @@ span.duration {
 }
 span.duration p.total_price {
     margin: 0;
-    padding-left: 7px;
+    padding-left: 0px;
     font-weight: 600;
     color: #000;
 }

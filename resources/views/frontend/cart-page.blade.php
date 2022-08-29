@@ -37,7 +37,7 @@
 
     <div class="col-lg-8" id="cart_template">
         <div class="shoping_cart px-3 py-2">
-            <div class="row mb-2 border-bottom">
+            <div class="row border-bottom">
                         <div class="col-6">
                             <div class="single_cart_heading">
                                     <h3>Shopping Cart</h3>
@@ -49,12 +49,12 @@
                             </div>
                         </div>
             </div>
-            <div class="row border-bottom product_title_add py-1">
-                    <div class="col-md-4">
+            <div class="row border-bottom product_title_add py-1 no-gutters">
+                    <div class="col-md-4 col">
                         <span>Product Details</span>
                     </div>
 
-                    <div class="col-md-2 text-center">
+                    <div class="col-md-2 col text-center">
                         <span>Price</span>
                     </div>
                     @if($serviceType ==  'rental')
@@ -173,11 +173,14 @@
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }}</div>
                             </div>
                             <div class="col-6 col-md-2 text-left order-md-4">
-                                @if($serviceType ==  'rental')
-                                    <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price + ($vendor_product->additional_increments_hrs_min/$vendor_product->pvariant->incremental_price_per_min )) }}</div>
-                                    @php
-                                     $additionalPrice = ($vendor_product->additional_increments_hrs_min/$vendor_product->pvariant->incremental_price_per_min );
-                                    @endphp
+                                @if($serviceType ==  'rental') 
+                                @php
+                                $additionalPrice = 0;
+                                if($vendor_product->pvariant->incremental_price_per_min > 0){
+                                    $additionalPrice = ($vendor_product->additional_increments_hrs_min/ $vendor_product->pvariant->incremental_price_per_min );
+                                }
+                                @endphp
+                                    <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price + ($additionalPrice )) }}</div>
                                 @else
                                     <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
                                 @endif
@@ -189,35 +192,14 @@
                                         <div style="display: none !important;" class="counter-container d-flex align-items-center">
                                             <input placeholder="1"  type="number" min="0"  data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
                                             data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
-                                            
-                                        </div>
-                                        <div class="qty-box alCartInput">
-                                            <div class="input-group">
-                                                @php 
-                                                    $dura = 0;
-                                                    if($vendor_product->additional_increments_hrs_min) {
-                                                        // $dura = explode('.',$vendor_product->additional_increments_hrs_min);
-                                                        // $dura = sprintf("%02d",$dura[0]).':'.sprintf("%02d", $dura[1]);
-                                                        $dura = $vendor_product->additional_increments_hrs_min;
-                                                    }
 
-                                                @endphp
-                                                <p>{{$dura}} min</p>
-                                                {{-- <span class="input-group-prepend">
-                                                    <button type="button" class="btn incremental-left-minus" data-type="minus" data-field=""><i class="ti-angle-left"></i>
-                                                    </button>
-                                                </span> --}}
-                                                {{-- <input  readonly  step="{{@$vendor_product->product->additional_increments.'.'.@$vendor_product->product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs p-0 border"  value="{{$vendor_product->additional_increments_hrs_min }}" data-incremental_hrs={{@$vendor_product->product->additional_increments}}> --}}
-                                                {{-- <span class="input-group-prepend quant-plus">
-                                                    <button type="button" class="btn incremental-right-plus" data-type="plus" data-field=""  data-incremental_hrs={{@$vendor_product->product->additional_increments}}>
-                                                        <i class="ti-angle-right"></i>
-                                                    </button>
-                                                </span> --}}
-                                            </div>
                                         </div>
-                                    
+                                        <p></p>
+                                        <?php 
+
+                                       // pr($vendor_product);
+                                        ?>
                                     </div>
-                                   
                                 </div>
                             @else
                                 <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -252,20 +234,21 @@
                                 </a>
                             </div>
                         </div>
-
-                        <hr class="my-2">
                         @if($serviceType ==  'rental')
-                        <div class="row align-items-md-center alRentalStartDate">
-                            <div class="col-3">
-                                <h6 class="m-0 pl-0">{{ __('Start Date') }}</h6>
-                                <p>{{date("m/d/Y g:i A", strtotime($vendor_product->start_date_time))}}</p>
+                         <hr class="my-2">
+
+                            <div class="row align-items-md-center alRentalStartDate">
+                                <div class="col-3">
+                                    <h6 class="m-0 pl-0">{{ __('Start Date') }}</h6>
+                                    <p>{{date("m/d/Y g:i A", strtotime($vendor_product->start_date_time))}}</p>
+                                </div>
+                                <div class="col-3">
+                                    <h6 class="m-0 pl-0">{{ __('End Date') }}</h6>
+                                    <p>{{date("m/d/Y g:i A", strtotime($vendor_product->end_date_time))}}</p>
+                                </div>
                             </div>
-                            <div class="col-3">
-                                <h6 class="m-0 pl-0">{{ __('End Date') }}</h6>
-                                <p>{{date("m/d/Y g:i A", strtotime($vendor_product->end_date_time))}}</p>
-                            </div>
-                        </div>
                         @endif
+
                        @if(count($vendor_product->addon) != 0)
                             <hr class="my-2">
                             <div class="row align-items-md-center add_head">
@@ -354,6 +337,32 @@
                 <input type="hidden" name="cart_product_ids[]" value="{{$vendor_product->product_id }}">
 
                 <hr class="my-1">
+
+                 {{-- Home Service Schedual code Start at down --}}
+                 @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ( in_array($serviceType ,['appointment','on_demand']) ))
+                 @if($client_preference_detail->business_type != 'laundry')
+                 <div class="row mb-1 d-flex align-items-center" style="{{(($product->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
+                     <div class="col-5 text-lg-right">
+                         <label class="m-0 radio">
+                             {{__('Scheduled Slot')}} :</label>
+                         </div>
+                     <div class="col-7 vendor_slot_cart">
+                        
+                         @if($product->slotsCnt != 0)
+                         <input type="hidden" class="custom-control-input check" id="tasknow" name="task_type" value='schedule' >
+                             <input type="date" class="form-control vendor_schedule_datetime" placeholder="Inline calendar" data-schedule_type="date" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" value="{{(($vendor_product->scheduled_date_time != '')?$vendor_product->scheduled_date_time : $product->delay_date ) }}"  min="{{(($product->delay_date != '0') ? $product->delay_date : '') }}" >
+                             <select  class="form-control vendor_schedule_slot" id="vendor_schedule_slot_{{$product->vendor_id }}" data-schedule_type="time" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" >
+                                 <option value="">{{__("Select Slot")}} </option>
+                                 @foreach($product->slots as $slot)
+                                    <option value="{{$slot->value}}" {{$slot->value == $product->selected_slot ? "selected" : ""}} >{{$slot->name }}</option>
+                                @endforeach
+                         </select>
+                         {{-- onchange="checkSlotAvailability(this);" --}}
+                         @endif
+                     </div>
+                 </div>
+                 @endif
+             @endif
             @endforeach
 
         {{-- End Product Detail Loop --}}
@@ -407,7 +416,7 @@
                        @endif
 
                         {{-- Home Service Schedual code Start at down --}}
-                        @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ($cart_details->vendorCnt > 1  || in_array($serviceType ,['appointment','on_demand']) ))
+                        @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ($cart_details->vendorCnt > 1  || (!in_array($serviceType ,['appointment','on_demand'])) ))
                             @if($client_preference_detail->business_type != 'laundry')
                             <div class="row mb-1 d-flex align-items-center" style="{{(($product->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
                                 <div class="col-5 text-lg-right">
@@ -461,13 +470,13 @@
                 </div>
             </div>
         </div>
-            <hr class="my-1">
+
             @endforeach
 
-            <div class="row mb-md-1 alFourTemplateCartButtons mt-3">
+            <div class="row mb-md-1 alFourTemplateCartButtons mt-2 pt-2 border-top">
                 <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                     <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
-     {{__('Continue Shopping')}}</a>
+                        {{__('Continue Shopping')}}</a>
                 </div>
             </div>
         </div>

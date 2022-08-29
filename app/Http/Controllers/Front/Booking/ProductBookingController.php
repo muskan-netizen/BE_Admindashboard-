@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{ProductBooking, ProductVariant, ProductVariantSet};
+use App\Models\{ProductBooking, ProductVariant, ProductVariantSet,Product};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -28,7 +28,6 @@ class ProductBookingController extends FrontController
      */
     public function checkProductAvailibility(Request $request)
     {
-      //pr($request->all());
       try {
           $block_time = explode('-', $request->blocktime);
           $start_time = date("Y-m-d H:i:s",strtotime($request->selectedStartDate));
@@ -43,7 +42,7 @@ class ProductBookingController extends FrontController
                               })->pluck('variant_id')->toArray();
           $available_product_variant = array_values(array_diff($product_variant_id, $ProductBooking));
           if(isset($available_product_variant[0])){
-            $product_variant_data =  ProductVariant::find($available_product_variant[0]);
+            $product_variant_data =  ProductVariant::where('id',$available_product_variant[0])->with(['product','checkIfInCart'])->first();
           }
           $returnarr =  array();
           $returnarr['available_product_variant'] =  @$available_product_variant[0];

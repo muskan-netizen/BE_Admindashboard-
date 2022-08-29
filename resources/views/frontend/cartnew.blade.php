@@ -121,13 +121,15 @@ width: 100%;
 .shoping_cart .cart-heading h5{font-size: 18px;font-weight: 400;}
 .new_cart {background: #fff;box-shadow: 10px 16px 14px 10px #eee9;border: 1px solid#eeeeee8c;}
 .cart_edit-addre{border-top: 1px solid#eee;}
-.new_cart .page-title {font-size:20px;font-weight: 600;color:#000;}.delivery_box label { color: #666363; font-size: 16px; line-height: 20px;display: block;width:100%;}
+.new_cart .page-title {font-size:20px;font-weight: 600;color:#000;}.delivery_box label { color: #666363; font-size: 16px; line-height: 28px;display: block;width:100%;}
 .alFourTemplateCartButtons a.shoping{color:#FA1C0A;}
 .cart_delivery{border-radius: 5px;background-color: #fff;box-shadow: 1px 4px 4px #eee;height:100%;
-display: flex;align-items: center;justify-content: center;border: 1px solid#eee;}
+display: flex;align-items: center;justify-content: center;border: 1px solid#eee;overflow: hidden;}
 .alFourTemplateCartButtons a.shoping i {font-size: 18px;vertical-align: bottom;padding-right: 5px;}
 .cart_all_address a {text-align: center;width: 100%;font-size: 14px;}
-.cart_delivery a {position: absolute;right: 4px;top: 8px;}
+.cart_delivery a {position: absolute;right: 10px;top: 10px;}
+.cart_delivery a.deleteAddress{position: absolute;right: -50px;top: 50%;color:red;-webkit-transform: translateY(-50%);transform: translateY(-50%);}
+.cart_delivery:hover a.deleteAddress{right: 10px;}
 .new_cart .add-address i {background: #fff;border: 1px solid#eee; padding: 16px;border-radius: 100%;height: 40px;width: 40px;display: flex;align-items: center;
 justify-content: center;font-size: 20px;box-shadow: 5px 6px 4px #eee;color: #ff3f3f;}
 .cart-checkout_btn button{width:100%;}.cart-checkout_btn #order_placed_btn {
@@ -155,9 +157,12 @@ padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .al_body_template_four .text-danger { font-size: 16px;}
 .al_body_template_four .clproduct_cart_order_form.btn.btn-solid {padding: 8px 0px;font-size: 12px;}
 .al_body_template_two .shoping_cart .alFourTemplateCartPage #product_faq_dev_42 .btn-product-order-form-div button {
-    font-size: 12px;padding: 6.7px 10px;}
+font-size: 12px;padding: 6.7px 10px;}
 .add_address_btn .btn-solid{font-size: 12px;padding: 6.7px 10px;}
-
+#add_new_address_form_modal button.close{
+position: absolute;
+right: 20px;
+}
 
 
 
@@ -174,6 +179,10 @@ padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 @media (max-width:576px){
     .al_body_template_two .show-prescription-doc {
    width:100%;
+}
+.item-show-cart h4 {font-size:14px !important;}
+.product_title_add span {
+    font-size: 12px;
 }
 }
 </style>

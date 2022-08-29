@@ -8,7 +8,7 @@ use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, Wal
 use Auth, Log, Redirect;
 use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, CartDeliveryFee, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, Transaction, CaregoryKycDoc};
 
-class ConektaController extends Controller
+class ConektaController extends FrontController
 { 
     use \App\Http\Traits\ConektaPaymentManager; 
 	use \App\Http\Traits\ApiResponser;

@@ -313,11 +313,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 <div class="col-6 pl-3">
                                     {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
 
-                                    {!!Form::input('number','minimum_duration', $product->minimum_duration, ['min' => '0','class'=>'form-control', 'id' => 'minimum_duration', 'placeholder' => '0', 'onkeyup' => 'return isNumberKey(event)']) !!}
+                                    {!!Form::input('number','minimum_duration', $product->minimum_duration, ['min' => '00','class'=>'form-control', 'id' => 'minimum_duration', 'placeholder' => '00', 'onkeyup' => 'return isNumberKey(event)']) !!}
                                 </div>
                                 <div class="col-6 pr-3">
                                     {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
-                                    {!!Form::input('number','minimum_duration_min', $product->minimum_duration_min, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'minimum_duration_min', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
+                                    {!!Form::input('number','minimum_duration_min', $product->minimum_duration_min, ['min' => '00','max' => '59','class'=>'form-control', 'id' => 'minimum_duration_min', 'placeholder' => '00', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
                                 </div>
                             </div>
                             <div class="col-4 mb-2 row">
@@ -354,7 +354,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                            
                         </div> --}}
                         @if($product->category->categoryDetail->type_id  ==  10)
-                            <div class="row mb-2">
+                            <div class="row mb-2" style="display: none;">
                                 <div class="col-sm-3">
                                     {!! Form::label('title', __('Fix Check-in time'),['class' => 'control-label']) !!} <br />
                                     <input type="checkbox" bid="" id="is_fix_check_in_time" data-plugin="switchery" name="is_fix_check_in_time" class="chk_box" data-color="#43bee1" @if($product->is_fix_check_in_time == 1) checked @endif>

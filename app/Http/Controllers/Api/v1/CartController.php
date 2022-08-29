@@ -511,6 +511,7 @@ class CartController extends BaseController
         $deliver_fee_charges = 0;
         $total_markup_fee_tax = 0;
         $total_taxable_amount = 0;
+  
 
         $preferences = ClientPreference::first();
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
@@ -636,7 +637,9 @@ class CartController extends BaseController
             $couponApplied = 0;
             $total_container_charges = 0 ;
             $total_markup_charges = 0 ;
-
+            $deliver_fee_charges = 0;
+            $total_fixed_fee_tax = 0;
+      
             foreach ($cartData as $ven_key => $vendorData) {
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;

@@ -658,9 +658,9 @@ class OrderController extends BaseController
                 $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
-                $product->routes = []; // routes for single product 
+                $product->routes = []; // routes for single product $product->Routes; //
                 if(in_array($order->luxury_option_id, [6,8])){ // for on demand service and appointment service code by harbans :)
-                    $product->routes =  $product->Routes; //OrderProductDispatchRoute::where(['order_vendor_product_id'=>'37'])->get();
+                    $product->routes =  $product->Routes; // OrderProductDispatchRoute::with('DispatchStatus')->where(['order_vendor_product_id'=>$product->id])->get()->toArray();
                 }
                 foreach ($product->addon as $ck => $addons) {
                     $opt_price_in_currency = $addons->option->price??0;
@@ -686,7 +686,7 @@ class OrderController extends BaseController
                 $vendor->dineInTableCategory = $vendor->dineInTable->category->title; //$vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
             }
         }
-        pr( $product->toArray());
+        //pr( $product->toArray());
         $luxury_option_name = '';
         if ($order->luxury_option_id > 0) {
             $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
@@ -1176,8 +1176,6 @@ class OrderController extends BaseController
             if ($order_dispatchs && $order_dispatchs == 1)
                 return 1;
 
-
-            return 2;
         }
 
 
@@ -1408,7 +1406,7 @@ class OrderController extends BaseController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
-            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 

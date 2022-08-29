@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Contracts\Session\Session as SessionSession;
-use App\Models\{Currency, Banner, MobileBanner, FaqTranslations, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency,Client, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption, SubscriptionInvoicesVendor, Order, VendorOrderStatus,CabBookingLayoutTranslation,ShowSubscriptionPlanOnSignup};
+use App\Models\{Currency, Banner, MobileBanner, FaqTranslations, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency,Client, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption, SubscriptionInvoicesVendor, Order, VendorOrderStatus,CabBookingLayoutTranslation,ShowSubscriptionPlanOnSignup,VendorCities};
 use Illuminate\Contracts\View\View;
 use Illuminate\View\View as ViewView;
 use Redirect;
@@ -1189,8 +1189,10 @@ class UserhomeController extends FrontController
         }
 
 
+
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
+      
         if(isset($slug)){
             $categoryTypes = getServiceTypesCategory($request->type);
             $vendors = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
@@ -1291,8 +1293,6 @@ class UserhomeController extends FrontController
         }else{
             $vendors = [];
         }
-
-
 
         if (isset($slug) && $slug == 'trending_vendors') {
             $now = Carbon::now()->toDateTimeString();
@@ -1527,6 +1527,25 @@ class UserhomeController extends FrontController
 
         }
 
+        $cities = [];
+
+        if (isset($slug) && $slug == 'cities'){    # if enable recent_orders section in
+
+            $cities =  VendorCities::with(['translations'=> function ($q) use($language_id) {
+                                $q->where('language_id', $language_id);
+                            }])->where(function ($q)  {
+                                $q->where('latitude','!=', null);
+                                $q->where('longitude','!=', null);
+                            })->get();
+            $cities = $cities->map(function($da) {
+                $da->title = $da->translations->first() ? $da->translations->first()->name : $da->slug ;
+                unset($da->translations);
+                return $da;
+            });
+        }else{
+
+        }
+        //pr($cities->toArray());
         $data = [
             'brands' => $brands,
             'banners' => [],
@@ -1536,7 +1555,8 @@ class UserhomeController extends FrontController
             'feature_products' => $feature_products,
             'on_sale_products' => $on_sale_products,
             'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
-            'active_orders' => $activeOrders
+            'active_orders' => $activeOrders,
+            'cities' => $cities
         ];
 
         return $this->successResponse($data);

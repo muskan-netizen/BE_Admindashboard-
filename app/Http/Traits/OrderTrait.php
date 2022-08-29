@@ -4,11 +4,14 @@ namespace App\Http\Traits;
 use DB;
 use Auth;
 use HttpRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use App\Models\Client as CP;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
-use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus};
+
+use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus};
+
 
 trait OrderTrait{
 
@@ -47,7 +50,10 @@ trait OrderTrait{
         //pr($canceld_order_payments->toArray());
         $vendor_payble_amount = $order->vendors->first()->payable_amount;
         // vendor contribution in order
-        $vendor_contribution_percentage = ($vendor_payble_amount / $order_total_amount) * 100;
+        $vendor_contribution_percentage = 0;
+        if($order_total_amount > 0){
+            $vendor_contribution_percentage = ($vendor_payble_amount / $order_total_amount) * 100;
+        }
 
         $vendor_loyalty_amount =  $vendor_loyalty_points = $vendor_wallet_amount = $vendor_loyalty_points_earned = $vendor_online_payment_amount = 0;   
 
@@ -56,7 +62,10 @@ trait OrderTrait{
             $total_loyalty_amount = $order->loyalty_amount_saved ;
           
             // get loyalty points as pr 1 rup (primery Currency)
-            $redeem_points_per_primary_currency =  $order->loyalty_points_used /  $order->loyalty_amount_saved;
+            $redeem_points_per_primary_currency = 0;
+            if($order->loyalty_amount_saved > 0){
+                $redeem_points_per_primary_currency =  $order->loyalty_points_used /  $order->loyalty_amount_saved;
+            }
             
             // vendot loyalty amount in order
             $vendor_loyalty_amount =  ($total_loyalty_amount * $vendor_contribution_percentage ) / 100;
@@ -133,6 +142,7 @@ trait OrderTrait{
         return  $data;
 
     }
+
 
      // place Request To Dispatch for Appointment
     public function placeRequestToDispatchSingleProduct($order, $vendor, $dispatch_domain,$request)
@@ -291,5 +301,39 @@ trait OrderTrait{
         }
     }
    
+
+    public function bookingSlot($request)
+    {
+
+        $request = (object) $request;
+       
+        try {
+            DB::beginTransaction(); //Initiate transaction
+             
+              $start_time = date("Y-m-d H:i:s",strtotime($request->start_date));
+              $end_time = date("Y-m-d H:i:s",strtotime($request->end_date));
+             
+              
+              $start_end_block_time = $start_time;
+    
+              $status = ProductBooking::Create([
+                                'memo'=>$request->memo,
+                                'variant_id'=>$request->variant_id,
+                                'product_id'=>$request->product_id,
+                                'order_vendor_id'=>$request->order_vendor_id,
+                                'start_date_time'=>$start_time,
+                                'booking_type'=>'new_booking',
+                                'end_date_time'=>$end_time,
+                                'order_user_id' => $request->order_user_id,
+                                'booking_start_end'=>$start_end_block_time
+                                ]);
+            DB::commit(); //Commit transaction after all the operations
+            return 1 ;
+          } catch (Exception $e) {
+              DB::rollBack();
+              return 0;
+          }
+    }
+
 
 }

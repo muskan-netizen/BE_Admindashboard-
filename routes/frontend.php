@@ -395,7 +395,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('cart/pickup/schedule/slots', 'Front\CartController@checkPickupScheduleSlots')->name('cart.check_pickup_schedule_slots'); // Added by Ovi
 	Route::post('cart/dropoff/schedule/slots', 'Front\CartController@checkDropoffScheduleSlots')->name('cart.check_dropoff_schedule_slots'); // Added by Ovi
 
-	Route::post('cart/product-schedule/update', 'Front\CartController@updateProductSchedule')->name('cproduct-schedule/updat');
+	Route::post('cart/product-schedule/update', 'Front\CartController@updateProductSchedule')->name('cart.updateProductSchedule');
 	Route::get('cartProducts', 'Front\CartController@getCartData')->name('getCartProducts');
 	Route::get('cartDetails', 'Front\CartController@getCartProducts')->name('cartDetails');
 	Route::post('get/product/prescription', 'Front\CartController@getProductPrescription')->name('getProductPrescription');
@@ -446,6 +446,10 @@ Route::group(['middleware' => ['domain']], function () {
 	//User Rider Routes
 	Route::post('rider/add','Front\RiderController@addRider')->name('rider.create');
 	Route::get('rider/delete','Front\RiderController@removeRider')->name('rider.remove');
+
+	//cities
+	Route::get('cities/{slug}','Front\VendorCitiesController@getCities')->name('city.getCities');
+
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
