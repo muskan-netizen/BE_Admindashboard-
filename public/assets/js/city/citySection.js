@@ -158,6 +158,7 @@ $(function(){
                 if (response.data.status == 'Success') {
                     
                     $('#vedorCityForm')[0].reset();
+                    document.getElementById('vendor_city_id').value = ''
                     var html = `<input type="file" id="vendor_city_image" name="vendor_city_image" class="dropify form-control" data-default-file="" required />`;
                     $('.vendor_city_image').html(html);
                     $('.dropify').dropify();
