@@ -2151,7 +2151,7 @@ $(document).ready(function () {
                     $("#cart_table").html('');
                     $(".spinner-box").hide();
                     $("#mycart").html(response.mycart);
-                   
+
                     //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
@@ -2248,14 +2248,14 @@ $(document).ready(function () {
                             $("#header_cart_main_ul_ondemand").append(empty_cart_template());
                         }
                         if ($("#header_cart_main_ul_ondemand").length != 0) {
-                           
+
                             $('#header_cart_main_ul_ondemand').html('');
                             $("#header_cart_main_ul_ondemand").removeClass("d-none");
                             $("#header_cart_main_ul_ondemand").show();
                             let empty_cart_template = _.template($('#empty_cart_template').html());
                             $("#header_cart_main_ul_ondemand").append(empty_cart_template());
                         }
-                        
+
                     }
                 }
             },
@@ -2679,11 +2679,13 @@ $(document).ready(function () {
                     }
                 },
                 success: function (response) {
+
                     if ($("#add_edit_address").length > 0) {
+
                         $("#add_edit_address").modal('hide');
                         location.reload();
                     } else {
-                        $('#add_new_address_form').hide();
+                        $("#add_new_address_form_modal").modal('hide');
                         // let address_template = _.template($('#address_template').html());
                         if (address.length > 0) {
                             //   $('#order_placed_btn').attr('disabled', false);
