@@ -9,7 +9,7 @@
         <form id="vedorCityForm" method="POST" action="javascript:void(0)" enctype="multipart/form-data">
             @csrf
             <div id="save_vendor_city" class="p-2 bg-light" style="border-radius: 15px;">
-               <input type="hidden" name="vendor_city_id" value="">
+               <input type="hidden" id="vendor_city_id" name="vendor_city_id" value="">
                <div class="row">
                   <div class="col-md-12">
                      <label>{{ __('Image') }}</label>
