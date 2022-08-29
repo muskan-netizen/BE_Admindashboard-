@@ -17,13 +17,15 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, VendorOrderStatus, UserAddress,OrderVendor, OrderReturnRequest};
+use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, VendorOrderStatus, UserAddress,OrderVendor, OrderReturnRequest, User};
 
 class DashBoardController extends BaseController{
     use ApiResponser;
-    public function index(){  
+
+    public function index(){ 
         return view('backend/dashboard');
     }
+
     public function postFilterData(Request $request){
         try {
             $user = Auth::user();
@@ -332,6 +334,132 @@ class DashBoardController extends BaseController{
             if($date_filter){
                 $return_requests->whereBetween('created_at', [$from_date, $end_date]);
             }
+
+            $total_customers = User::all()->count();
+            $total_orders    = Order::all()->count();
+            $revenueCurrentWeek = Order::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('payable_amount');
+            $revenueLastWeek = Order::whereBetween('created_at', [Carbon::now()->startOfWeek()->subWeek(), Carbon::now()->endOfWeek()->subWeek()])->sum('payable_amount');
+
+            #Get customers percentage since last month
+            $customers_currentmonth = User::whereBetween('created_at', [Carbon::now()->startOfMonth(),Carbon::now()->endOfMonth()])->count();
+            $customers_lastmonth = User::whereBetween('created_at', [Carbon::now()->startOfMonth()->subMonth(),Carbon::now()->endOfMonth()->subMonth()])->count();
+            $customers_increase = '';
+            $customers_decrease = '';
+            if($customers_lastmonth < $customers_currentmonth){
+                if($customers_lastmonth > 0){
+                    $percent_from = $customers_currentmonth - $customers_lastmonth;
+                    $customers_increase = $percent_from / $customers_lastmonth * 100; //increase percent
+                }else{
+                    $customers_increase = 100; //increase percent
+                }
+            }else{
+                if($customers_currentmonth > 0 )
+                {
+                        $percent_from = $customers_lastmonth -$customers_currentmonth;
+                        $customers_decrease = $percent_from / $customers_lastmonth * 100; //decrease percent
+                }else{
+                    $customers_decrease = 0;
+                }
+            }
+            if($customers_increase != ''){
+                $customers_increase = round($customers_increase, 2);
+            }
+            if($customers_decrease != ''){
+                $customers_decrease = round($customers_decrease, 2);
+            }
+
+            #Get orders percentage since last month
+            $orders_currentmonth = Order::whereBetween('created_at', [Carbon::now()->startOfMonth(),Carbon::now()->endOfMonth()])->count();
+            $orders_lastmonth = Order::whereBetween('created_at', [Carbon::now()->startOfMonth()->subMonth(),Carbon::now()->endOfMonth()->subMonth()])->count();
+            $orders_increase = '';
+            $orders_decrease = '';
+            if($orders_lastmonth < $orders_currentmonth){
+                if($orders_lastmonth > 0){
+                    $percent_from = $orders_currentmonth - $orders_lastmonth;
+                    $orders_increase = $percent_from / $orders_lastmonth * 100; //increase percent
+                }else{
+                    $orders_increase = 100; //increase percent
+                }
+            }else{
+                if($orders_currentmonth > 0 )
+                {
+                        $percent_from = $orders_lastmonth -$orders_currentmonth;
+                        $orders_decrease = $percent_from / $orders_lastmonth * 100; //decrease percent
+                }else{
+                    $orders_decrease = 0;
+                }
+            }
+            if($orders_increase != ''){
+                $orders_increase = round($orders_increase, 2);
+            }
+            if($orders_decrease != ''){
+                $orders_decrease = round($orders_decrease, 2);
+            }
+
+            #Get revenue percentage since last month
+            $revenue_currentmonth = Order::whereBetween('created_at', [Carbon::now()->startOfMonth(),Carbon::now()->endOfMonth()])->sum('payable_amount');
+            $revenue_lastmonth = Order::whereBetween('created_at', [Carbon::now()->startOfMonth()->subMonth(),Carbon::now()->endOfMonth()->subMonth()])->sum('payable_amount');
+            $revenue_increase = '';
+            $revenue_decrease = '';
+            if($revenue_lastmonth < $revenue_currentmonth){
+                if($revenue_lastmonth > 0){
+                    $percent_from = $revenue_currentmonth - $revenue_lastmonth;
+                    $revenue_increase = $percent_from / $revenue_lastmonth * 100; //increase percent
+                }else{
+                    $revenue_increase = 100; //increase percent
+                }
+            }else{
+                if($revenue_currentmonth > 0 )
+                {
+                        $percent_from = $revenue_lastmonth -$revenue_currentmonth;
+                        $revenue_decrease = $percent_from / $revenue_lastmonth * 100; //decrease percent
+                }else{
+                    $revenue_decrease = 0;
+                }
+            }
+            if($revenue_increase != ''){
+                $revenue_increase = round($revenue_increase, 2);
+            }
+            if($revenue_decrease != ''){
+                $revenue_decrease = round($revenue_decrease, 2);
+            }
+
+            #Get products percentage since last month
+            $products_currentmonth = Product::whereBetween('created_at', [Carbon::now()->startOfMonth(),Carbon::now()->endOfMonth()])->count();
+            $products_lastmonth = Product::whereBetween('created_at', [Carbon::now()->startOfMonth()->subMonth(),Carbon::now()->endOfMonth()->subMonth()])->count();
+            $products_increase = '';
+            $products_decrease = '';
+            if($products_lastmonth < $products_currentmonth){
+                if($products_lastmonth > 0){
+                    $percent_from = $products_currentmonth - $products_lastmonth;
+                    $products_increase = $percent_from / $products_lastmonth * 100; //increase percent
+                }else{
+                    $products_increase = 100; //increase percent
+                }
+            }else{
+                if($products_currentmonth > 0 )
+                {
+                        $percent_from = $products_lastmonth -$products_currentmonth;
+                        $products_decrease = $percent_from / $products_lastmonth * 100; //decrease percent
+                }else{
+                    $products_decrease = 0;
+                }
+            }
+            if($products_increase != ''){
+                $products_increase = round($products_increase, 2);
+            }
+            if($products_decrease != ''){
+                $products_decrease = round($products_decrease, 2);
+            }
+
+            # Month wise revenue total
+            $monthwise_revenue = [];
+            for($i=1; $i<=12; $i++)
+            {
+            $sale = Order::whereYear('created_at', date('Y'))->whereMonth('created_at', date($i))->sum('payable_amount');
+            $monthwise_revenue[] = round($sale);
+            }
+
             $return_requests = $return_requests->count();
             $response = [
                 'dates' => $dates,
@@ -344,7 +472,7 @@ class DashBoardController extends BaseController{
                 'total_vendor' => $total_vendor, 
                 'total_brands' => $total_brands, 
                 'total_banners' => $total_banners, 
-                'total_revenue' => $total_revenue, 
+                'total_revenue' => round($total_revenue), 
                 'total_products' => $total_products, 
                 'return_requests' => $return_requests,
                 'total_categories' => $total_categories,
@@ -352,6 +480,19 @@ class DashBoardController extends BaseController{
                 'total_pending_order' => $total_pending_order, 
                 'total_rejected_order' => $total_rejected_order, 
                 'total_delivered_order' => $total_delivered_order, 
+                'total_customers' => $total_customers, 
+                'total_orders' => $total_orders, 
+                'revenueCurrentWeek' => round($revenueCurrentWeek),
+                'revenueLastWeek' => round($revenueLastWeek),
+                'customers_increase' => $customers_increase,
+                'customers_decrease' => $customers_decrease,
+                'orders_increase' => $orders_increase,
+                'orders_decrease' => $orders_decrease,
+                'revenue_increase' => $revenue_increase,
+                'revenue_decrease' => $revenue_decrease,
+                'products_increase' => $products_increase,
+                'products_decrease' => $products_decrease,
+                'monthwise_revenue' => $monthwise_revenue,
             ];
             return $this->successResponse($response);
         } catch (Exception $e) {
