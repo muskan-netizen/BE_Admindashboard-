@@ -302,9 +302,6 @@ class FrontController extends Controller
                 $vendors[] = $value->id;
             }
         }
-
-        Session::put('vendors', $vendors);
-
         return $vendors;
     }
 
