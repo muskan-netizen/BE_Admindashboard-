@@ -174,13 +174,13 @@
                             </div>
                             <div class="col-6 col-md-2 text-left order-md-4">
                                 @if($serviceType ==  'rental') 
-                                    <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price + ($vendor_product->additional_increments_hrs_min/$vendor_product->pvariant->incremental_price_per_min )) }}</div>
-                                    {{-- @php
-                                    $additionalPrice = 0;
-                                    if($vendor_product->pvariant->incremental_price_per_min > 0){
-                                        $additionalPrice = ($vendor_product->additional_increments_hrs_min/ $vendor_product->pvariant->incremental_price_per_min );
-                                    }
-                                    @endphp --}}
+                                @php
+                                $additionalPrice = 0;
+                                if($vendor_product->pvariant->incremental_price_per_min > 0){
+                                    $additionalPrice = ($vendor_product->additional_increments_hrs_min/ $vendor_product->pvariant->incremental_price_per_min );
+                                }
+                                @endphp
+                                    <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price + ($additionalPrice )) }}</div>
                                 @else
                                     <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
                                 @endif
