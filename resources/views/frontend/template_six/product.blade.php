@@ -418,7 +418,7 @@
 
                             <div class="col-12 pl-0">
                                 @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                                <section class="tab-product m-0">
+                                <section class="tab-product mb-3">
                                     <div class="row">
                                         <div class="col-sm-12 col-lg-12">
                                             <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">

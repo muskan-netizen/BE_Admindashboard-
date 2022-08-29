@@ -208,7 +208,7 @@
 
 
 <!-- no-store-wrapper start -->
-<section class="no-store-wrapper mb-3 d-none" >
+<section class="no-store-wrapper mb-3" style="display:none;">
 	<div class="container"> @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
 		<div class="row">
 			<div class="col-12 text-center"> <img class="no-store-image mt-2 mb-2 blur-up lazyload" data-src="{{getImageUrl(asset('images/no-stores.svg'),'250/250')}}" style="max-height: 250px;"> </div>
@@ -222,7 +222,7 @@
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
@@ -256,7 +256,7 @@
 <script type="text/template" id="mobile_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
@@ -292,7 +292,7 @@
 	<% _.each(vendors, function(vendor, k){%>
 		<% if(k < 7){%>
 			<div class="col-lg-3 col-md-4 col-6">
-				<div class="product-card-box position-relative text-center al_custom_vendors_sec_al p-3">
+				<div class="product-card-box position-relative text-center al_custom_vendors_sec_al_">
 					<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 						<div class="suppliers-img-outer position-relative " style="height:100px">
 							<% if(vendor.is_vendor_closed==1){%>
@@ -492,6 +492,22 @@
 						<% }); %>
 </script><!-- recent_orders_template end -->
 
+<!-- cities start -->
+<script type="text/template" id="cities_template" >
+	<% _.each(cities, function(city, k){%>
+	   <div class="alSpaListSlider">
+		  <div>
+			 <div class="alSpaListBox">
+				<div class="alSpaCityBox">
+				   <a href="/cities/<%=city.slug %>"><img class="w-100" src="<%=city.image.image_fit %>260/260<%=city.image.image_path %>"></a>
+				</div>
+				<p><%=city.title %></p>
+			 </div>            
+		  </div>
+	   </div>
+		<% }); 
+	%>
+ </script><!-- cities cities end -->
 
 
 <!-- our_vendor_main_div start -->
@@ -523,6 +539,18 @@
 						</div>
 					</div>
 			</div>
+		@elseif($homePageLabel->slug == 'cities')
+		<section class="suppliers-section  ">
+			<div class="container mb-0"  >
+				<div class=" top-heading d-flex justify-content-between align-self-center">
+					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
+				</div>
+				<div class="col-12 p-0">
+					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+					</div>
+				</div>
+			</div>
+		</section>
 		</section> @elseif($homePageLabel->slug == 'trending_vendors')
 		<section class="suppliers-section" id="homepage_trending_vendors_div">
 			<div class="container"  >

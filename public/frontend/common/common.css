@@ -1,3 +1,14 @@
+.alSpaCityBox {
+    position: relative;
+    padding-bottom: 86%;
+    overflow: hidden;
+    border-radius: 10px;
+}
+.alSpaCityBox img {
+    position: absolute;
+    object-fit: cover;
+    height: 100%;
+}
 span.duration {
     display: flex;
     vertical-align: middle;
