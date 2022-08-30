@@ -121,6 +121,15 @@ class HomePageLabelSeeder extends Seeder
             'order_by' => 10,
         ]);
 
+        $already = HomePageLabel::where('slug', 'cities')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Cities',
+            'slug' => 'cities',
+            'order_by' => 11,
+        ]);
+
 
     }
 }
