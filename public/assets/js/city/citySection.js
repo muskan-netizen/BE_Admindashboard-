@@ -196,21 +196,21 @@ $(function(){
         var city_id = $(this).data('destroy_id');
         Swal.fire({
             title: 'Warning!',
-            text: 'Are you sure you?',
-            input: 'text',
-            inputPlaceholder: 'Delete',
+            text: 'Are you sure?',
+            // input: 'text',
+            // inputPlaceholder: 'Delete',
           }).then(({value}) => {
-            if (value === "Delete") {
+           // if (value === "Yes") {
                 deleteVendorCity(city_id);
                
-            }  else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Entered wrong text!',
-                    //footer: '<a href="">Why do I have this issue?</a>'
-                })
-            }
+            // }  else {
+            //     Swal.fire({
+            //         icon: 'error',
+            //         title: 'Oops...',
+            //         text: 'Entered wrong text!',
+            //         //footer: '<a href="">Why do I have this issue?</a>'
+            //     })
+            // }
           });
     });
 
