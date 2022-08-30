@@ -392,7 +392,7 @@ $timezone = Auth::user()->timezone;
 
                                         <td>{{$clientCurrency->currency->symbol}}{{decimal_format($product->total_amount)}}</td>
                                     </tr>
-                                    @if($product->routes->isNotEmpty())
+                                    @if(count($product->routes) >0)
                                     <tr class="route">
                                         <th scope="row" colspan="4" class="text-end">
                                             <div class="outer_div p-2">
@@ -405,7 +405,7 @@ $timezone = Auth::user()->timezone;
                                                     </tr>
                                                     @foreach ( $product->routes as $key => $route)
                                                     <tr>
-                                                        <td>{{ $key }}</td>
+                                                        <td>{{ $key+1 }}</td>
                                                         <td><a href="{{ $route->dispatch_traking_url }}" target="_blank">{{ __('Track') }}</a></td>
                                                         <td>{{ $route->DispatchStatus->first() ? $route->DispatchStatus[0]->status_data : 'na'  }}</td>
                                                     </tr>
@@ -827,6 +827,8 @@ $timezone = Auth::user()->timezone;
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
     $("#order_statuses li").click(function() {
+        var reload_page = `{{in_array($order->luxury_option_id,[6,8]) ? 1 : 0}}`;
+        
         Swal.fire({
             title: "{{__('Are you sure?')}}",
            // text:"{{__('You want to delete the banner.')}}",
@@ -853,6 +855,9 @@ $timezone = Auth::user()->timezone;
                         console.log(response);
                         that.addClass("completed");
                         if (status_option_id == 2) {
+                            if(reload_page ==1 || reload_page == '1'){
+                                setTimeout(function(){location.reload();}, 2500);
+                            }
                             that.next('li').remove();
                         }
                         if (status_option_id == 3) {

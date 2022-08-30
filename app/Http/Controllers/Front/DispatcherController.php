@@ -10,7 +10,7 @@ use Auth;
 use Session;
 use DB;
 use App\Http\Traits\ApiResponser;
-use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport};
+use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus};
 
 class DispatcherController extends FrontController
 {
@@ -160,7 +160,7 @@ class DispatcherController extends FrontController
   
   
                   $update = VendorOrderProductDispatcherStatus::updateOrCreate([
-                    'dispatcher_id' => null,
+                      'dispatcher_id' => null,
                       'order_id' =>  $checkiftokenExist->order_id,
                       'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
                       'vendor_id' =>  $checkiftokenExist->vendor_id,
@@ -194,14 +194,14 @@ class DispatcherController extends FrontController
                           $checkif= VendorOrderProductDispatcherStatus::where([
                             'order_id' =>  $checkiftokenExist->order_id,
                             'order_status_option_id' =>  $request->status_option_id,
-                            'order_product_route_id' =$checkiftokenExist->id
+                            'order_product_route_id' => $checkiftokenExist->id
                           ])->count();
                          
   
                         if($checkif == 0){
                             $update_vendor = VendorOrderProductDispatcherStatus::updateOrCreate([
                                 'order_id' =>  $checkiftokenExist->order_id,
-                                'order_product_route_id' =$checkiftokenExist->id
+                                'order_product_route_id' =>$checkiftokenExist->id,
                                 'order_status_option_id' =>  $request->status_option_id,
                                 ]);
                         }
@@ -226,7 +226,6 @@ class DispatcherController extends FrontController
           } catch (Exception $e) {
               DB::rollback();
               return $this->errorResponse($e->getMessage(), $e->getCode());
-  
           }
       }
 

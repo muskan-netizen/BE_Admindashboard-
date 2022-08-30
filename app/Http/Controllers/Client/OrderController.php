@@ -686,7 +686,7 @@ class OrderController extends BaseController
                 $vendor->dineInTableCategory = $vendor->dineInTable->category->title; //$vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
             }
         }
-        //pr( $product->toArray());
+     
         $luxury_option_name = '';
         if ($order->luxury_option_id > 0) {
             $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
@@ -730,7 +730,7 @@ class OrderController extends BaseController
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
-        
+           //pr( $order->toArray());
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 
             'order' => $order,

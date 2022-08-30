@@ -628,12 +628,19 @@ trait cartManager{
                     }
 
                     $select = '';
-
+                    if(!empty($user)){
+                        $scheduledDateTime = dateTimeInUserTimeZone($prod->scheduled_date_time, $user->timezone);
+                        $prod->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
+                    }else{
+                        $prod->scheduled_date_time = date('Y-m-d',strtotime($prod->scheduled_date_time)) ;
+                    }
                     if ($action == 'delivery' || $action == 'appointment') {
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
                         $deliveryCharges = 0;
                         $code = (($code)?$code:$cart->shipping_delivery_type);
+                      
+                    
                         if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
                             $deliveriesNew = new CartController();
                             $deliveries = $deliveriesNew->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del);

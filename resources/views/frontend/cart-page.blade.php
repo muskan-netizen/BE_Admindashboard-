@@ -341,12 +341,12 @@
                  {{-- Home Service Schedual code Start at down --}}
                  @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ( in_array($serviceType ,['appointment','on_demand']) ))
                  @if($client_preference_detail->business_type != 'laundry')
-                 <div class="row mb-1 d-flex align-items-center" style="{{(($product->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
-                     <div class="col-5 text-lg-right">
+                 <div class="row mb-1 d-flex align-items-center vendor_product_schedule_datetime" style="{{(($product->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
+                     <div class="col-5 offset-3 text-lg-right">
                          <label class="m-0 radio">
                              {{__('Scheduled Slot')}} :</label>
                          </div>
-                     <div class="col-7 vendor_slot_cart">
+                     <div class="col-4 vendor_slot_cart">
                         
                          @if($product->slotsCnt != 0)
                          <input type="hidden" class="custom-control-input check" id="tasknow" name="task_type" value='schedule' >
@@ -354,7 +354,7 @@
                              <select  class="form-control vendor_schedule_slot" id="vendor_schedule_slot_{{$product->vendor_id }}" data-schedule_type="time" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" >
                                  <option value="">{{__("Select Slot")}} </option>
                                  @foreach($product->slots as $slot)
-                                    <option value="{{$slot->value}}" {{$slot->value == $product->selected_slot ? "selected" : ""}} >{{$slot->name }}</option>
+                                    <option value="{{$slot->value}}" {{$slot->value == $product->schedule_slot ? "selected" : ""}} >{{$slot->name }}</option>
                                 @endforeach
                          </select>
                          {{-- onchange="checkSlotAvailability(this);" --}}
@@ -416,7 +416,7 @@
                        @endif
 
                         {{-- Home Service Schedual code Start at down --}}
-                        @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ($cart_details->vendorCnt > 1  || (!in_array($serviceType ,['appointment','on_demand'])) ))
+                        @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ($cart_details->vendorCnt > 1  && (!in_array($serviceType ,['appointment','on_demand'])) ))
                             @if($client_preference_detail->business_type != 'laundry')
                             <div class="row mb-1 d-flex align-items-center" style="{{(($product->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
                                 <div class="col-5 text-lg-right">
