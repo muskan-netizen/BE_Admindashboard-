@@ -311,9 +311,8 @@ class CartController extends FrontController
                     $sel->groupBy('product_id');
                 }
             ])->find($request->product_id);
-
-            # if product type is not equal to on demand
-            if( ($productDetail->category->categoryDetail->type_id != 8) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)){
+            # if product type is not equal to on demand and appointment
+            if( ( !in_array($productDetail->category->categoryDetail->type_id,[8,12])) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)){
                 if(!empty($already_added_product_in_cart)){
                     if($productDetail->variant[0]->quantity <= $already_added_product_in_cart->quantity){
                         return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart s')]);
@@ -375,7 +374,13 @@ class CartController extends FrontController
                     ], 400);
                 }
             }
-           
+            // total booking time for rental case 
+            $total_booking_time = $request->has('total_booking_time') ? $request->total_booking_time : null;
+
+            // total booking time as single service duration time as per service for get totel service time multiply by quantity
+            if(in_array($luxury_option->id,[6,8])){
+                $total_booking_time = $productDetail->minimum_duration_min;
+            }
             $oldquantity = $isnew = 0;
             $cart_product_detail = [
                 'status'  => '0',
@@ -391,7 +396,7 @@ class CartController extends FrontController
                 'start_date_time'  => $request->has('start_date') ? $request->start_date : null,
                 'end_date_time' => $request->has('end_date') ? $request->end_date : null,
                 'additional_increments_hrs_min' => $request->has('incremental_hrs') ? $request->incremental_hrs : null,
-                'total_booking_time' => $request->has('total_booking_time') ? $request->total_booking_time : null,
+                'total_booking_time' =>  $total_booking_time,
             ];
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
@@ -459,30 +464,7 @@ class CartController extends FrontController
                 $cartProduct->save();
             }
             $quantityCart = CartProduct::where('cart_id',$cart_detail->id)->sum('quantity');
-            // if ($checkIfExist) {
-            //     $checkIfExist->quantity = (int)$checkIfExist->quantity + $request->quantity;
-            //     $cart_detail->cartProducts()->save($checkIfExist);
-            // } else {
-                // $productForVendor = Product::where('id', $request->product_id)->first();
-
-                // $cart_product = CartProduct::updateOrCreate(['cart_id' =>  $cart_detail->id, 'product_id' => $request->product_id], $cart_product_detail);
-                // $create_cart_addons = [];
-                // if ($addon_options_ids) {
-                //     foreach ($addon_options_ids as $k => $addon_options_id) {
-                //         $create_cart_addons[] = [
-                //             'addon_id' => $addon_ids[$k],
-                //             'cart_id' => $cart_detail->id,
-                //             'option_id' => $addon_options_id,
-                //             'cart_product_id' => $cart_product->id,
-                //         ];
-                //     }
-                // }
-                // CartAddon::insert($create_cart_addons);
-            // }
-
-            // if($request->has('from_estimation')){
-            //     return 'Request From Estimation';
-            // }
+           
             return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0]);
         } catch (Exception $e) {
             \Log::info($e->getMessage());

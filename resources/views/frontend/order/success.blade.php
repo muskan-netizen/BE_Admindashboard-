@@ -7,6 +7,18 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
 $additional_price=0;
 $serviceType =  Session::get('vendorType');
 @endphp
+@section('customcss')
+<style>
+    .total_booking_time span {
+    display: inline-block;
+    font-size: 12px;
+    font-style: italic;
+    color: #777;
+    border-left: 1px solid #000;
+    padding-left: 5px;
+}
+</style>
+@endsection
 <section class="section-b-space light-layout_alFour">
     <div class="container">
         <div class="row">
@@ -78,7 +90,8 @@ $serviceType =  Session::get('vendorType');
                                             <div class="col-4 order_detail">
                                                 <div>
                                                     <h4>{{__('Price')}}</h4>
-                                                    <h5>{{Session::get('currencySymbol')}}{{decimal_format($product->price * @$clientCurrency->doller_compare)}}</h5>
+                                                    <h5 class="total_booking_time" >{{Session::get('currencySymbol')}}{{decimal_format($product->price * @$clientCurrency->doller_compare)}} @if(in_array($serviceType , ['appointment','on_demand'])) 
+                                                        <span > {{ $product->total_booking_time > 0 ? $product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif</h5>
                                                     @if($product->container_charges>0)
                                                     <h4>{{__('Container Charges')}}</h4>
                                                     <p>{{decimal_format($product->container_charges)}}</p>

@@ -400,7 +400,7 @@ $timezone = Auth::user()->timezone;
                                                 <table class="wp-table w-100">
                                                     <tr>
                                                         <th width="20%">#</th>
-                                                        <th width="40%">{{ __('Tracking Url') }}</th>
+                                                        <th width="40%">{{ __('Tracking URL') }}</th>
                                                         <th width="40%">{{ __('Status') }}</th>
                                                     </tr>
                                                     @foreach ( $product->routes as $key => $route)

@@ -295,7 +295,7 @@ class OrderController extends FrontController
             $total_other_taxes+=(float)$row;
         }
         $order->total_other_taxes_amount=$total_other_taxes;
-        //dd($order->toArray());
+        //pr($order->toArray());
 
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFeeNomenclatures'));
@@ -985,7 +985,11 @@ class OrderController extends FrontController
                     $order_product->additional_increments_hrs_min = @$vendor_cart_product->additional_increments_hrs_min;
                     $order_product->start_date_time = $vendor_cart_product->start_date_time;
                     $order_product->end_date_time = $vendor_cart_product->end_date_time;
-                    $order_product->total_booking_time = @$vendor_cart_product->total_booking_time;
+                    /**
+                     * for rental case total_booking_time as a total time 
+                     * for on_demand and appointment total booking time as single service duration time as per service for get totel service time multiply by quantity
+                     */
+                    $order_product->total_booking_time = @$vendor_cart_product->total_booking_time; 
                     
                     $order_product->container_charges = $variant->container_charges;
                     $order_product->order_vendor_id = $OrderVendor->id;

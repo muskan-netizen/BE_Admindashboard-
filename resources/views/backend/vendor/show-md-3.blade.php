@@ -28,7 +28,7 @@
             @endif
             </div>
             @endif
-            @if($vendor_for_appointment_delivery > 0)
+            @if($vendor_for_appointment_delivery > 0 && ($client_preferences->appointment_check == 1) )
             <div class="for_appointment_delivery_service_only">
             @if( ($client_preferences->need_appointment_service == 1) && ($vendor->appointment == 1 ) )
             <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmAppointmentDispatcher" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (Appointment)") }} </button>

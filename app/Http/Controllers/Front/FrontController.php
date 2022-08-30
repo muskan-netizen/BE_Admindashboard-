@@ -279,9 +279,8 @@ class FrontController extends Controller
     }
 
     public function getServiceAreaVendorsWithoutHyperlocal($latitude, $longitude){
-        $client_preferences = ClientPreference::where('id', '>', 0)->first();
         $vendorType = Session::get('vendorType');
-        $preferences = Session::has('preferences') ? Session::get('preferences') : $client_preferences;
+        $preferences = Session::has('preferences') ? Session::get('preferences') : ClientPreference::where('id', '>', 0)->first();;
         $serviceAreaVendors = Vendor::select('id', 'show_slot');
         $vendors = [];
         if($vendorType){
