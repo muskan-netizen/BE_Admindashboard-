@@ -158,7 +158,8 @@ $serviceType =  Session::get('vendorType');
                                     @if($order->taxable_amount > 0 || $order->total_other_taxes_amount> 0 )
 
                                     <li>{{__('Total')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
-                                    <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount + $order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>
+                                    {{--<li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount + $order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>--}}
+                                    <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>
                                     @else
                                     <li>{{__('Total')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif

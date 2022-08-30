@@ -149,16 +149,17 @@
             @foreach($product->vendor_products as $vendor_product)
                 <div class="row align-items-md-center vendor_products_tr alFourTemplateCartPage" id="tr_vendor_products_{{$vendor_product->id}}">
                     <div class="product-img col-3 col-md-2">
-                        @if($vendor_product->pvariant->media_one)
+                        @if(!empty($vendor_product->pvariant->media_one))
                             <img class='blur-up lazyload w-100' data-src="{{$vendor_product->pvariant->media_one->pimage->image->path->proxy_url.'200/200'.$vendor_product->pvariant->media_one->pimage->image->path->image_path}}">
-                        @elseif($vendor_product->pvariant->media_second && $vendor_product->pvariant->media_second->image != null)
+                        @elseif(!empty($vendor_product->pvariant->media_second) && !empty($vendor_product->pvariant->media_second->image))
                             <img class='blur-up lazyload w-100' data-src="{{ $vendor_product->pvariant->media_second->image->path->proxy_url.'200/200'. $vendor_product->pvariant->media_second->image->path->image_path}}">
-                        @else
+                        @elseif(!empty($vendor_product->image_ur))
                             <img class='blur-up lazyload w-100' data-src="{{$vendor_product->image_url}}">
                         @endif
                     </div>
                     <div class="col-9 col-md-10">
                         <div class="row align-items-md-center">
+                            @if(!empty($vendor_product->pvariant->vset))
                             <div class="col-md-3 order-md-1">
                                 <h4 class="cart_product_name">{{$vendor_product->product->category_name->name }}</h4>
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{$vendor_product->product->translation_one ? $vendor_product->product->translation_one->title :  $vendor_product->product->sku }}</strong></h4>
@@ -169,9 +170,13 @@
                                     @endif
                                 @endforeach
                             </div>
+                            @endif
+                            @if(!empty($vendor_product->pvariant->actual_price))
                             <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
                             </div>
+                            @endif
+                            @if(!empty($vendor_product->quantity_price))
                             <div class="col-6 col-md-2 text-left order-md-4">
                                 @if($serviceType ==  'rental') 
                                 @php
@@ -182,10 +187,11 @@
                                 @endphp
                                     <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price + ($additionalPrice )) }}</div>
                                 @else
-                                    <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
+                                <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
                                 @endif
-
+                                
                             </div>
+                            @endif
                             @if($serviceType ==  'rental')
                             <div class="col-10 col-md-4 text-md-center order-md-3">
                                 <div class="number d-flex justify-content-md-center">
@@ -221,13 +227,13 @@
                                     <div class="number d-flex justify-content-md-center">
                                         <div class="counter-container d-flex align-items-center">
                                             <span class="minus qty-minus" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
-                                            data-batch_count="{{$vendor_product->product->batch_count }}" data-id="{{$vendor_product->id }}" data-base_price=" {{$vendor_product->pvariant->price }}" data-vendor_id="{{$vendor_product->vendor_id }}">
+                                            data-batch_count="{{$vendor_product->product->batch_count }}" data-id="{{$vendor_product->id }}" data-base_price="{{!empty($vendor_product->pvariant->price)?$vendor_product->pvariant->price:'' }}" data-vendor_id="{{$vendor_product->vendor_id }}">
                                                 <i class="fa fa-minus" aria-hidden="true"></i>
                                             </span>
                                             <input placeholder="1" type="text" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
                                             data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
                                             <span class="plus qty-plus" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
-                                                data-batch_count="{{$vendor_product->product->batch_count }}" data-id="{{$vendor_product->id }}" data-base_price=" {{$vendor_product->pvariant->price }}">
+                                                data-batch_count="{{$vendor_product->product->batch_count }}" data-id="{{$vendor_product->id }}" data-base_price="{{!empty($vendor_product->pvariant->price)?$vendor_product->pvariant->price:'' }}">
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
                                             </span>
                                         </div>
@@ -244,7 +250,7 @@
                             @endif
 
                             <div class="col-2 col-md-1 text-right text-md-center p-in order-md-5">
-                                <a class="action-icon d-block remove_product_via_cart" data-product="{{$vendor_product->id }}" data-vendor_id="{{$vendor_product->vendor_id }}">
+                                <a class="action-icon d-block remove_product_via_cart" style="cursor: pointer;" data-product="{{$vendor_product->id }}" data-vendor_id="{{$vendor_product->vendor_id }}">
                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                 </a>
                             </div>
@@ -289,7 +295,7 @@
                             @endforeach
                        @endif
 
-                        @if($vendor_product->pvariant->container_charges > 0)
+                        @if(!empty($vendor_product->pvariant->container_charges) && $vendor_product->pvariant->container_charges > 0)
                             <div class="row">
                                 <div class="col-md-3 col-sm-4 items-details text-left">
                                     <p class="p-0 m-0 alert-danger">{{ __('Container Charges') }} *</p>
@@ -330,7 +336,7 @@
                             </div>
                         </div>
                     @endif
-                    @if($vendor_product->product_out_of_stock == 1)
+                    @if(!empty($vendor_product->product_out_of_stock) && $vendor_product->product_out_of_stock == 1)
                         <div class="col-12">
                             <div class="text-danger" style="font-size:12px;">
                                 <i class="fa fa-exclamation-circle"></i>{{__("This Product is out of stock")}}

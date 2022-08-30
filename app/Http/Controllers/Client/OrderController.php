@@ -517,7 +517,7 @@ class OrderController extends BaseController
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
                     $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image)? $product->media->first()->image->path : getDefaultImagePath();
-                    if(!is_null($product->product) && ($product->quantity > ($product->product->variant->first() ? $product->product->variant[0]->quantity : 0 ) ))
+                    if(!is_null($product->product) && ($product->has_inventory != 0) && ($product->quantity > ($product->product->variant->first() ? $product->product->variant[0]->quantity : 0 ) ))
                     {
                         $vendor->isAlert = true;
                         $vendor->alertMessage = __("You are low on stock");

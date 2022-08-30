@@ -1826,7 +1826,7 @@ class CartController extends FrontController
 
         if( ($productDetail->category->categoryDetail->type_id != 8) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0) ){
             if($productDetail->variant[0]->quantity < $request->quantity){
-                return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart')]);
+                return response()->json(['status' => 'error', 'quantity' => $productDetail->variant[0]->quantity, 'message' => __('Maximum quantity already added in your cart')]);
             }
 
         }
