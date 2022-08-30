@@ -303,7 +303,7 @@ class StoreController extends BaseController{
 				if($order->paymentOption->code == 'stripe'){
 					$order->paymentOption->title = __('Credit/Debit Card (Stripe)');
 				}elseif($order->paymentOption->code == 'kongapay'){
-					$order->paymentOption->code->title = 'Pay Now';
+					$order->paymentOption->title = 'Pay Now';
 				}elseif($order->paymentOption->code == 'mvodafone'){
 					$order->paymentOption->title = 'Vodafone M-PAiSA';
 				}
@@ -419,6 +419,7 @@ class StoreController extends BaseController{
 				});
 			})
 			->orderBy('id', 'DESC')->paginate($limit, $page);
+				
 			foreach ($order_list as $order) {
 				$order_status = [];
 				$product_details = [];
@@ -428,11 +429,12 @@ class StoreController extends BaseController{
 				$order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
 				$order->date_time = date("d-M-Y h:i A", strtotime($order->date_time));
 				// set payment option dynamic name
+			
 				if($order->paymentOption->code == 'stripe'){
 					$order->paymentOption->title = __('Credit/Debit Card (Stripe)');
 				}elseif($order->paymentOption->code == 'kongapay'){
-					$order->paymentOption->code->title = 'Pay Now';
-				}elseif($order->paymentOption->code == 'mvodafone'){
+					$order->paymentOption->title = 'Pay Now';
+				}elseif(@$order->paymentOption->code == 'mvodafone'){
 					$order->paymentOption->title = 'Vodafone M-PAiSA';
 				}
 				elseif($order->paymentOption->code == 'mobbex'){
