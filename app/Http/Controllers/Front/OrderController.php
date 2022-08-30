@@ -1295,7 +1295,10 @@ class OrderController extends FrontController
             }
             //echo  " Total payable_amount1=".$payable_amount."; <br>";
             //echo  " tip_amount=".$tip_amount." fixed_fee_amount=".$fixed_fee_amount." total_taxable_amount=".$total_taxable_amount."; <br>";
-            $payable_amount = $payable_amount + $tip_amount + $total_taxable_amount+$total_other_taxes;
+
+            
+            // $payable_amount = $payable_amount + $tip_amount + $total_taxable_amount+$total_other_taxes;
+            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
             //echo  " Total payable_amount2=".$payable_amount."; <br>";
             $order->total_service_fee = $total_service_fee;
             $order->total_delivery_fee = $total_delivery_fee;
