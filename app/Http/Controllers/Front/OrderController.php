@@ -279,9 +279,10 @@ class OrderController extends FrontController
         $currency_id = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
-        $order = Order::with(['products.pvariant.vset', 'products.pvariant.translation_one', 'address'])->findOrfail($request->order_id);
-        
-        $langId = Session::get('customerLanguage');
+        $order = Order::with(['products.pvariant.vset', 'products.pvariant.translation' => function ($q) use ($langId) {
+            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+            $q->where('language_id', $langId);}, 'address'])->findOrfail($request->order_id);
+
         $fixedFeeNomenclatures = $this->fixedFee($langId);
         $order_vendors =  OrderVendor::where('order_id', $request->order_id)->whereNotNull('dispatch_traking_url')->get();
         if (count($order_vendors)) {
@@ -295,7 +296,6 @@ class OrderController extends FrontController
             $total_other_taxes+=(float)$row;
         }
         $order->total_other_taxes_amount=$total_other_taxes;
-        //dd($order->toArray());
 
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFeeNomenclatures'));

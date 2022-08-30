@@ -1,35 +1,27 @@
-<div class="product-card-box al_box_third_template position-relative al">
-    <div class="add-to-fav 12">
-        <input id="fav_pro_one" type="checkbox">
-        <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
-    </div>
-    {{-- {{dd($product)}} --}}
-    <a class="common-product-box text-center" href="{{ $product["vendor"]->slug }}/product/{{ $product["url_slug"] }}">
-        <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $product["image_url"] }}" alt="" title="">
-            <div class="pref-timing"> </div>
+<div>
+    <a class="card scale-effect text-center" href="{{ $product['vendor']->slug }}/product/{{ $product['url_slug'] }}">
+        <label class="product-tag">@if($product["tag_title"] != 0) {{$product["tag_title"]}} @else {{$homePageLabel->title}}@endif </label>
+        <div class="product-image">
+            <img class="blur-up lazyloaded" src="{{ $product['image_url'] }}" alt="">
         </div>
         <div class="media-body align-self-center">
             <div class="inner_spacing px-0">
-                <div class="product-description">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h6 class="card_title ellips">{{ $product["title"] }}</h6> 
-                        @if($client_preference_detail && $client_preference_detail->rating_check==1) 
-                        @if($product["averageRating"] >0)
-                            <span class="rating-number">{{ $product["averageRating"] }}</span>
-                        @endif 
-                        @endif 
-                    </div>
-                    <p class="al_productText ellips">
-                        {{ $product["vendor_name"] }}
-                    </p>
-                    <p class="border-bottom pb-1">
-                        <span>{{__('In') . $product["category"]}} </span>
-                    </p>
-                    <div class="d-flex align-items-center justify-content-between al_clock"> 
-                        <b>{{ $product["price"] }}</b>
-                        <!-- <p><i class="fa fa-clock-o"></i> 30-40 min</p>  -->
-                    </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <h3 class="m-0">{{ $product["title"] }}</h3>
+                    @if($client_preference_detail)
+                        @if($client_preference_detail->rating_check == 1)
+                            @if($product["averageRating"] >0)
+                                <span class="rating">{{ $product["averageRating"] }} <i class="fa fa-star text-white p-0"></i></span>
+                            @endif 
+                        @endif
+                    @endif
                 </div>
+                <p>{{ $product["vendor_name"] }}</p>
+                <h4>
+                    @if($product["inquiry_only"] == 0)
+                    {{$product["price"]}}
+                    @endif
+                </h4>
             </div>
         </div>
     </a>

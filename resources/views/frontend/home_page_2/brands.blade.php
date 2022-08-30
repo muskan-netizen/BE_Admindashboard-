@@ -1,9 +1,3 @@
-<div>
-{{-- {{dd($brand)}} --}}
-    <a class="brand-box d-block black-box" href="{{ $brand->redirect_url }}">
-        <div class="brand-ing">
-            <img class="blur-up lazyload" data-src="{{ $brand->image['image_fit'].'260/260'.$brand->image['image_path'] }}" alt="" title="">
-        </div>
-        <h6>{{ $brand->translation_title }}</h6>
-    </a>
-</div>
+<a class="barnd-img-outer" href="{{$brand->redirect_url }}">
+    <img class="blur-up lazyloaded" src="{{ $brand->image['image_fit'].'260/260'.$brand->image['image_path'] }}" alt="">
+</a>

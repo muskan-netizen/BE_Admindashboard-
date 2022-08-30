@@ -339,6 +339,13 @@ $preference = $client_preference_detail;
 <section class="section-b-space ratio_asos  pt-0 mt-0 pb-0 mt-0" id="our_vendor_main_div">
    <div class="vendors">
       @foreach($homePageLabels as $key => $homePageLabel) 
+         {{-- @php if(count($homePageData[$homePageLabel->slug]) > 0){
+            $hide = 'd-none';
+         }else{
+            $hide = '';
+         }
+         @endphp --}}
+      {{-- {{dd(count($homePageData['featured_products']))}} --}}
          @if($homePageLabel->slug == 'pickup_delivery')
             @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
                @include('frontend.booking.cabbooking-single-module')
@@ -466,36 +473,60 @@ $preference = $client_preference_detail;
                   </div>
                </div>
             </section>
-         @elseif($homePageLabel->slug == 'trending_vendors')
+         @elseif($homePageLabel->slug == 'trending_vendors' && (count($homePageData['trending_vendors']) > 0)) 
             <section class="suppliers-section">
                <div class="container"  >
                   <div class="row">
                      <div class="col-12 top-heading d-flex align-items-center justify-content-between">
-                        <h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2>
+                        <h2 class="h2-heading abc">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2>
                      </div>
                      <div class="col-12">
                         <div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+                           @foreach ($homePageData['trending_vendors'] as $vendor )
+                           @include('frontend.home_page_1.vendor')
+                           @endforeach
                         </div>
                      </div>
                   </div>
                </div>
             </section>
          @else
-            <section class="container mb-0 render_full_{{$homePageLabel->slug}} " id="{{$homePageLabel->slug.$key}}"  >
+            <section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
                <div class="row" >
                   <div class="col-12 top-heading d-flex align-items-center justify-content-between">
-                     <h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2>
+                     <h2 class="h2-heading def"> @php
+                     if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}
+                     elseif(($homePageLabel->slug=='trending_vendors') && (count($homePageData['trending_vendors']) == 0)){ }
+                     elseif($homePageLabel->slug=='recent_orders'){
+                        if(count($homePageData['recent_orders']) == 0){
+                        }else{
+                           echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");
+                        }
+                     }
+                     else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2>
                      @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif
                   </div>
                </div>
                <div class="row">
                   <div class="col-12">
                      @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
-                     <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+                     <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+                        @foreach ($homePageData[$homePageLabel->slug] as $vendor )
+                        @include('frontend.home_page_1.vendor')
+                        @endforeach
+                     </div>
                      @elseif($homePageLabel->slug=='recent_orders')
-                     <div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+                     <div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+                        @foreach ($homePageData[$homePageLabel->slug] as $order )
+                        @include('frontend.home_page_1.recent_order')
+                        @endforeach
+                     </div>
                      @else
-                     <div class="product-4-{{$homePageLabel->slug}} product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+                     <div class="product-4-{{$homePageLabel->slug}} product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+                        @foreach ($homePageData[$homePageLabel->slug] as $product )
+                        @include('frontend.home_page_1.product')
+                        @endforeach 
+                     </div>
                      @endif
                   </div>
                </div>

@@ -50,7 +50,7 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                                             <div class="col-4 order_detail">
                                                 <div>
                                                     <h4>{{__('Product Name')}}</h4>
-                                                    <h5>{{$product->pvariant->translation_one->title ?? $product->pvariant->sku }}</h5>
+                                                    <h5>{{ (!empty($product->pvariant->translation) && isset($product->pvariant->translation[0])) ? $product->pvariant->translation[0]->title : ''}}</h5>
                                                     @foreach($product->pvariant->vset as $vset)
                                                         <label><span>{{$vset->optionData->trans->title}}:</span>{{$vset->variantDetail->trans->title}}</label>
                                                     @endforeach

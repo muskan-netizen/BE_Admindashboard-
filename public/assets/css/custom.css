@@ -13,7 +13,7 @@ input[type=radio], input[type=checkbox] {cursor: pointer !important;}
 @media (min-width: 1200px) {
 .geo_middle {height: calc(100vh - 690px);overflow-y: auto;overflow-x: hidden;margin: 0 0 20px;}#add-category-form .modal-lg, #edit-category-form .modal-lg {max-width: 70%;}
 }
-@media (min-width: 1300px) (max-width: 1400px) {
+@media (min-width: 1300px) and (max-width: 1400px) {
 #cardCollpase4 svg {padding-left: 0;margin-left: -36px;}
 }
 @media (max-width: 1366px) {
@@ -691,4 +691,9 @@ body[dir="rtl"] .dataTables_filter {
 
 .dashboard_order_title h4 {
   line-height: inherit !important;
+}
+
+.web-style .alSignUpImageControal .dropify-wrapper.has-preview {
+  width: 100%;
+  max-width: 100%;
 }
