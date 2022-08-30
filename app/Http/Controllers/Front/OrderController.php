@@ -1663,7 +1663,6 @@ class OrderController extends FrontController
                 $vendor_order_status->save();
 
                 if ($request->status_option_id == 2) {
-
                     if ($request->shipping_delivery_type=='D') {
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
                     if ($order_dispatch && $order_dispatch == 1) {
@@ -1689,10 +1688,7 @@ class OrderController extends FrontController
                 DB::commit();
                 $this->sendSuccessNotification($user->id, $request->vendor_id);
             }
-            // } catch(\Exception $e){
-            // DB::rollback();
-            // Log::info($e->getMessage());
-            // }
+            
         }
     }
 
@@ -1811,7 +1807,6 @@ class OrderController extends FrontController
         $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
         if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
             $ondemand = 0;
-            //    Log::info($dispatch_domain_ondemand);
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                 if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
                     $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
@@ -1883,7 +1878,7 @@ class OrderController extends FrontController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name',  'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
-            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -1924,7 +1919,6 @@ class OrderController extends FrontController
                 'email'       => $customer->email ?? null,
                 'phone_number' => ($customer->dial_code . $customer->phone_number ) ?? null,
             );
-
             if ($customer->dial_code == "971") {
                 // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                 $customerno = "0" . $customer->phone_number;
@@ -1932,6 +1926,7 @@ class OrderController extends FrontController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
+           
             $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
@@ -2001,9 +1996,6 @@ class OrderController extends FrontController
     public function placeRequestToDispatchOnDemand($order, $vendor, $dispatch_domain)
     {
         try {
-            //    Log::info($order);
-            //    Log::info($vendor);
-            //    Log::info($dispatch_domain);
             $order = Order::find($order);
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
@@ -2143,7 +2135,7 @@ class OrderController extends FrontController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'phone_no', 'email', 'longitude', 'address')->first();
-            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
             $rtype = 'P';
