@@ -1129,6 +1129,19 @@ class VendorController extends BaseController
         return $this->successResponse($vendor, 'Vendor deleted successfully!');
     }
 
+    public function updateVendorConfigProfile(Request $request, $domain = '',  $id){
+        $vendor = Vendor::where('id', $id)->first();
+        $msg = 'Order configuration';
+
+        if($request->has('is_show_vendor_details')){
+            $vendor->is_show_vendor_details = ($request->has('is_show_vendor_details') && $request->is_show_vendor_details == 'on') ? 1 : 0;
+            $vendor->save();
+        }
+
+        return redirect()->back()->with('success', $msg . ' updated successfully!');
+        
+    }
+
     /**     update vendor configuration data     */
     public function updateConfig(Request $request, $domain = '',  $id)
     {
@@ -1207,9 +1220,6 @@ class VendorController extends BaseController
             $vendor->delivery_fee_maximum   = $request->delivery_fee_maximum;
         }
 
-        $vendor->is_show_vendor_details = ($request->has('is_show_vendor_details') && $request->is_show_vendor_details == 'on') ? 1 : 0;
-       
-        
         if($request->has('rescheduling_charges')){
             $vendor->rescheduling_charges   = $request->rescheduling_charges;
         }

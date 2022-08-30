@@ -4,6 +4,8 @@
 //$total_amount = $order->payable_amount+$order->total_other_taxes_amount;
 $total_amount = $order->payable_amount;
 $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges;
+$additional_price=0;
+$serviceType =  Session::get('vendorType');
 @endphp
 <section class="section-b-space light-layout_alFour">
     <div class="container">
@@ -31,11 +33,13 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                     <div class="col-lg-6">
                         <div class="product-order py-3">
                             <h3>{{__('Your Order Details')}}</h3>
+                         
                             @foreach($order->products as $product)
-
+                            
                                 @php
-
+                                   // pr($product);
                                     $image = count($product->media) ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
+                                    $additional_price+= $product->incremental_price;
                                 @endphp
 
 
@@ -60,16 +64,29 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                                             </div>
                                             <div class="col-4 order_detail">
                                                 <div>
-                                                    <h4>{{__('Quantity')}}</h4>
-                                                    <h5>{{$product->quantity}}</h5>
+                                                    @if($serviceType=='rental')
+                                                        <h4>{{__('Duration')}}</h4>
+                                                        @php  $dura = getHoursMinutes($product->total_booking_time);  @endphp
+                                                        <h5>{{$dura}}</h5>
+                                                    @else
+                                                        <h4>{{__('Quantity')}}</h4>
+                                                        
+                                                        <h5>{{$product->quantity}}</h5>
+                                                    @endif
                                                 </div>
                                             </div>
                                             <div class="col-4 order_detail">
                                                 <div>
                                                     <h4>{{__('Price')}}</h4>
                                                     <h5>{{Session::get('currencySymbol')}}{{decimal_format($product->price * @$clientCurrency->doller_compare)}}</h5>
+                                                    @if($product->container_charges>0)
                                                     <h4>{{__('Container Charges')}}</h4>
                                                     <p>{{decimal_format($product->container_charges)}}</p>
+                                                    @endif
+                                                    @if($serviceType=='rental' && $product->incremental_price>0)
+                                                        <h4>{{__('Additional Price')}}</h4>
+                                                        <p>{{decimal_format($product->incremental_price)}}</p>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -128,9 +145,10 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                                     @if($order->taxable_amount > 0 || $order->total_other_taxes_amount> 0 )
 
                                     <li>{{__('Total')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
-                                    <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount + $order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>
+                                    {{--<li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount + $order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>--}}
+                                    <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>
                                     @else
-                                    <li>{{__('Total')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
+                                    <li>{{__('Total')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
                                     @if($order->subscription_discount > 0)
                                         <li>{{__('Subscription Discount')}} <span> - {{Session::get('currencySymbol')}}{{decimal_format($order->subscription_discount * @$clientCurrency->doller_compare)}}</span></li>

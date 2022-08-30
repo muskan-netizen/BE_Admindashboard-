@@ -274,6 +274,7 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
+       // pr($request->all());
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
@@ -392,6 +393,7 @@ class CartController extends FrontController
                 'start_date_time'  => $request->has('start_date') ? $request->start_date : null,
                 'end_date_time' => $request->has('end_date') ? $request->end_date : null,
                 'additional_increments_hrs_min' => $request->has('incremental_hrs') ? $request->incremental_hrs : null,
+                'total_booking_time' => $request->has('total_booking_time') ? $request->total_booking_time : null,
             ];
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
@@ -410,7 +412,7 @@ class CartController extends FrontController
                     }
                 }
             }
-            if ( (isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1) ) {
+            if ( ((isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1)) || ($luxury_option->id == 4) ) {
                 if ($checkVendorId) {
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
@@ -1843,7 +1845,7 @@ class CartController extends FrontController
 
         if( ($productDetail->category->categoryDetail->type_id != 8) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0) ){
             if($productDetail->variant[0]->quantity < $request->quantity){
-                return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart')]);
+                return response()->json(['status' => 'error', 'quantity' => $productDetail->variant[0]->quantity, 'message' => __('Maximum quantity already added in your cart')]);
             }
 
         }

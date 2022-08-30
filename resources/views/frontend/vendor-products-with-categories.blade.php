@@ -531,13 +531,13 @@
                                                         {{ Session::get('currencySymbol') }}<%=  Helper.formatPrice(vendor_product.quantity_price) %>
 
                                                     </span>
-                                                    <a class="action-icon remove_product_via_cart text-danger" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
+                                                    <a class="action-icon remove_product_via_cart text-danger" style="cursor: pointer;" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                                             <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                         </a>
                                                 </h6>
                                             </div>
                                         </li>
-
+                                        <hr class="my-2">
                                         <% if(vendor_product.addon.length != 0) { %>
                                             <div class="row align-items-md-center">
                                                 <div class="col-12">
@@ -556,6 +556,7 @@
                                                     <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
                                                 </div>
                                             </div>
+                                            <hr class="my-2">
                                             <% }); %>
                                         <% } %>
 

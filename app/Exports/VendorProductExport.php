@@ -21,10 +21,15 @@ class VendorProductExport implements FromCollection, WithHeadings, WithMapping{
     }
     public function collection(){
 
-        
-        $products = Product::with(['media.image', 'primary', 'category.cat', 'brand', 'tags.tag', 'variant.tax', 'addOn.addOnName', 'vatoptions', 'variantSets'])->select('id', 'sku', 'title', 'body_html','vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count')
-                    ->where('vendor_id', $this->id)->get();
+        $langId = Auth::user()->language;
+        $products = Product::with(['media.image', 'primary', 'category.cat', 'brand', 'tags.tag', 'variant.tax', 'addOn.addOnName', 'vatoptions', 'variantSets',
+                    'translation_one' => function($q) use($langId){
+                    $q->select('product_id', 'title', 'body_html')->where('language_id', $langId);
+                    }])->select('id', 'sku', 'title', 'body_html','vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count')
+                            ->where('vendor_id', $this->id)->get();
+        $langId = session()->get('customerLanguage');
         $dataArra = array();
+        //pr($products);
         foreach($products as $product):
             if(!empty($product->variant[0])):
                 $addonarray = array();
@@ -38,10 +43,11 @@ class VendorProductExport implements FromCollection, WithHeadings, WithMapping{
                 foreach($product->variant as $variant):
                     
                     $varientsetdata = ProductVariantSet::with(['variantDetail', 'optionData'])->where('product_variant_id', $variant->id)->where('product_id', $product->id)->first();
+                    //echo $product->title.'<br/>';
                     $array = array();
                     $array[] = $product->sku;
-                    $array[] = $product->title;
-                    $array[] = $product->body_html;
+                    $array[] = (!empty($product->primary))?$product->primary->title:$product->title;
+                    $array[] = (!empty($product->primary))?$product->primary->body_html:$product->body_html;
                     $array[] = ($product->is_live == 1) ? TRUE : FALSE;
                     $array[] = $product->category->cat->name;
                     $array[] = ($varientsetdata)?$varientsetdata->variantDetail->title:'';
@@ -62,7 +68,7 @@ class VendorProductExport implements FromCollection, WithHeadings, WithMapping{
                     $dataArra[] = $array;
                 endforeach;
             endif;
-        endforeach;
+        endforeach;//die;
         $collection = collect();
         return $collection->push($dataArra);
     }

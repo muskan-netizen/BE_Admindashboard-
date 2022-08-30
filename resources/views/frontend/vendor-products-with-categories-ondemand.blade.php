@@ -64,7 +64,7 @@ $checkSlot = findSlot('', $vendor->id, '');
 					        <li class="breadcrumb-item pr-3"><a href="javascript:void(0)">{{  $vendor->country ?? '' }}</a></li>
                         @endif
                         @if( $vendor->state)
-					        <li class="breadcrumb-item active pl-4" aria-current="page">{{ $vendor->state ?? '' }}</li>
+					        <li class="breadcrumb-item active" aria-current="page">{{ $vendor->state ?? '' }}</li>
                         @endif
 					  </ol>
 					</nav><!-- breadcrumb end -->
@@ -176,19 +176,21 @@ $checkSlot = findSlot('', $vendor->id, '');
                             <div class="col-md-8">
                                 @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && app('request')->input('addons') != 1)
 
-                                 <!-- Start Main Nav -->
-                                <nav id='main-nav'>
-                                    <ul id='main-nav-list'>
-                                       @if(!empty($category->childs) && count($category->childs) > 0)
-                                            @foreach ($category->childs as $key => $childs)
-                                                @if($childs->type_id == 8)
-                                                <li><a href="#section_set{{$key}}">{{ $childs['translation_name'] ?? ''}}</a></li>
-                                                @endif
-                                            @endforeach
-                                        @endif
-                                    </ul>
-                                </nav>
-                                <!-- End Main Nav -->
+                                    @if(!empty($category->childs) && count($category->childs) > 0)
+                                    @foreach ($category->childs as $key => $childs)
+                                    @if($childs->type_id == 8)
+                                    <!-- Start Main Nav -->
+                                    <nav id='main-nav'>
+                                        <ul id='main-nav-list'>
+
+                                                    <li><a href="#section_set{{$key}}">{{ $childs['translation_name'] ?? ''}}</a></li>
+
+                                        </ul>
+                                    </nav>
+                                    <!-- End Main Nav -->
+                                    @endif
+                                    @endforeach
+                                    @endif
 
                                 @endif
 
@@ -797,13 +799,13 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                         </li>
 
                                                         <% if(vendor_product.addon.length != 0) { %>
-                                                            <div class="row align-items-md-center">
+                                                            <div class="row align-items-md-center m-0">
                                                                 <div class="col-12 alVendorProductDetails">
                                                                     <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                                                                 </div>
                                                             </div>
                                                             <% _.each(vendor_product.addon, function(addon, ad){%>
-                                                            <div class="row alVendorProductDetails">
+                                                            <div class="row alVendorProductDetails m-0">
                                                                 <div class="col-md-3 col-sm-4 items-details text-left">
                                                                     <p class="p-0 m-0"><%= addon.option.title %></p>
                                                                 </div>
@@ -828,7 +830,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                 <h4 class="mb-2"><b>{!! (!empty($cart_data->product->translation->first())) ? $cart_data->product->translation->first()->title : $cart_data->product->sku !!}</b></h4>
 
                                                 <h5 class="d-flex align-items-center justify-content-between pb-2">{{__('DATE & TIME')}} </h5>
-                                                <li class="alVendorProductDetails">
+                                                <li class="alVendorProductTotals">
                                                     <div class='media-body'>
                                                         <h6 class="d-flex align-items-center justify-content-between">
                                                             <span class="ellips">{{__('Date')}}</span>
@@ -837,7 +839,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                     </div>
                                                 </li>
 
-                                                <li class="alVendorProductDetails">
+                                                <li class="alVendorProductTotals">
                                                     <div class='media-body'>
                                                         <h6 class="d-flex align-items-center justify-content-between">
                                                             <span class="ellips">{{__('Start Time')}}</span>
@@ -929,7 +931,7 @@ $checkSlot = findSlot('', $vendor->id, '');
             </div>
         </section>
 
-        
+
 
         <!-- Why people visit here start -->
         {{-- <p>{!! $vendor->dynamic_html !!}</p> --}}
@@ -954,11 +956,11 @@ $checkSlot = findSlot('', $vendor->id, '');
         	</div>
         </section>
         @endforeach
-    
+
         <!-- Why people visit here end -->
 
         <!-- More spas nearby start -->
-        <section class="moreSpasNearby py-5">
+        <section class="moreSpasNearby pt-5 pb-0">
         	<div class="container">
         		<div class="row">
         			<div class="col-md-12">
@@ -983,12 +985,13 @@ $checkSlot = findSlot('', $vendor->id, '');
         <!-- More spas nearby end -->
 
         <!-- sections SpasRelated start -->
+        @foreach($Map_vendors as $key => $value)
         <section class="SpasRelated py-5">
             <div class="container">
                 <div class="row">
                     <!-- alSpaListSlider start -->
                     <div class="Spasslider w-100" id="Spasslider">
-                        @foreach($Map_vendors as $key => $value)
+
                             <div>
                                 <div class="SpasRelatedItems mx-2">
                                     <div class="SpasRelatedItemsImageBox">
@@ -1001,11 +1004,12 @@ $checkSlot = findSlot('', $vendor->id, '');
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+
                     </div><!-- alSpaListSlider start -->
                 </div>
             </div>
         </section>
+        @endforeach
         @if(session('vendorType') != 'on_demand')
             <script type="text/template" id="header_cart_template_ondemand">
                 <ul class="pl-2 pr-2 pb-2 pt-0 ">

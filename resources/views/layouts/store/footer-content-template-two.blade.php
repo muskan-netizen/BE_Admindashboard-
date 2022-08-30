@@ -181,7 +181,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         </section>
         <div class="sub-footer">
             <div class="container">
-                <div class="row">
+                <div class="row d-flex align-items-center">
                     <div class="col-xl-6 col-md-6 col-sm-12">
                         <div class="footer-end">
                             <p><i class="fa fa-copyright" aria-hidden="true"></i> 2020-21</p>
@@ -190,7 +190,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     @if($client_preference_detail->show_payment_icons == 1)
                     <div class="col-xl-6 col-md-6 col-sm-12">
                         <div class="payment-card-bottom">
-                            <ul>
+                            <ul class="m-0 pt-2 pb-2">
                             @foreach($paymentMethod as $payment_method)
                                     <li>
                                         <a href="#"><img class="blur-up lazyload" style="height: 40px;" src="{{  getImageUrl($payment_method->image_url,'40/40') }}"></a>
@@ -202,7 +202,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 <li>
                                     <a href="#"><img class="blur-up lazyload" style="height: 40px;" data-src="{{ getImageUrl(asset('assets/images/mastercard.png'),'40/40') }}"></a>
                                 </li>
-                              
+
                                 <li>
                                     <a href="#"><img class="blur-up lazyload" style="height: 40px;" data-src="{{ getImageUrl(asset('assets/images/american-express.png'),'40/40') }}"></a>
                                 </li>

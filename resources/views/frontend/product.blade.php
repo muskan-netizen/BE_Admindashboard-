@@ -184,11 +184,11 @@
                                     <div class="description_txt mt-3">
                                         <p>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description : ''}}</p>
                                     </div>
+                                    <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
+                                    <input type="hidden" name="start_time" id="start_time" value="">
+                                    <input type="hidden" name="end_time" id="end_time" value="">
                                     <div id="product_variant_wrapper">
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
-                                        <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
-                                        <input type="hidden" name="start_time" id="start_time" value="">
-                                        <input type="hidden" name="end_time" id="end_time" value="">
                                         @if($product->inquiry_only == 0)
                                             <h3 id="productPriceValue" class="mb-md-3">
                                                 <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
@@ -198,6 +198,7 @@
                                             </h3>
                                         @endif
                                     </div>
+                                   
                                     <div id="product_variant_options_wrapper">
                                         @if(!empty($product->variantSet))
                                             @php
@@ -419,7 +420,7 @@
                         </div>
                     </div>
                     @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                    <section class="tab-product m-0">
+                    <section class="tab-product mb-3">
                         <div class="row">
                             <div class="col-sm-12 col-lg-12">
                                 <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
@@ -549,7 +550,7 @@
     <input type="hidden" name="variant_id" id="prod_variant_id" value="<%= variant.id %>">
     <% if(variant.product.inquiry_only == 0) { %>
         <h3 id="productPriceValue" class="mb-md-3">
-            <b class="mr-1"><span class="product_fixed_price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(variant.productPrice) %></span></b>
+            <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price"><%= Helper.formatPrice(variant.productPrice) %></span></b>
             <% if(variant.compare_at_price > 0 ) { %>
                 <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price"><%= Helper.formatPrice(variant.compare_at_price) %></span></span>
             <% } %>
@@ -854,6 +855,15 @@
                     $("#variant_response span").html('');
                     var response = resp.data;
                     if(response.variant != ''){
+                        if(vendor_type == 'rental'){
+                            // $('.incremental_hrs').val(0);
+                            // $('.base_hours_min').val();
+                            $('.incremental_hrs').val(0);
+                            $('#incremental_hrs_hidden').val(base_hours_min);
+                            $('.incremental-left-minus').click();
+                            //$('#blocktime, #blocktime2').change();
+                        }
+                        
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);

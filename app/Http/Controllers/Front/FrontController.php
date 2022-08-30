@@ -278,6 +278,33 @@ class FrontController extends Controller
         return $vendors;
     }
 
+    public function getServiceAreaVendorsWithoutHyperlocal($latitude, $longitude){
+        $client_preferences = ClientPreference::where('id', '>', 0)->first();
+        $vendorType = Session::get('vendorType');
+        $preferences = Session::has('preferences') ? Session::get('preferences') : $client_preferences;
+        $serviceAreaVendors = Vendor::select('id', 'show_slot');
+        $vendors = [];
+        if($vendorType){
+            $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
+        }
+
+        if (!empty($latitude) && !empty($longitude)) {
+            $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                $query->select('vendor_id')
+                ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+            });
+        }
+        $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
+
+
+        if($serviceAreaVendors->isNotEmpty()){
+            foreach($serviceAreaVendors as $value){
+                $vendors[] = $value->id;
+            }
+        }
+        return $vendors;
+    }
+
     public function loadDefaultImage(){
         $proxy_url = \Config::get('app.IMG_URL1');
         $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
