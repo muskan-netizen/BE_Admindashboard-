@@ -242,6 +242,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('vendor/payout/filter/{id}', 'Client\VendorController@payoutFilter')->name('vendor.payout.filter');
         Route::post('vendor/payout/create/{id}', 'Client\VendorController@vendorPayoutCreate')->name('vendor.payout.create');
         Route::post('vendor/saveConfig/{id}', 'Client\VendorController@updateConfig')->name('vendor.config.update');
+        Route::post('vendor/saveConfig/profile/{id}', 'Client\VendorController@updateVendorConfigProfile')->name('vendor.config.update.profile');
         Route::post('vendor/saveLocation/{id}', 'Client\VendorController@updateLocation')->name('vendor.config.pickuplocation');
         Route::post('vendor/activeCategory/{id}', 'Client\VendorController@activeCategory')->name('vendor.category.update');
         Route::post('vendor/addCategory/{id}', 'Client\TableBookingController@storeCategory')->name('vendor.addCategory');
@@ -450,13 +451,22 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         // booking route
         Route::post('booking/addBlockSlot', 'Client\Booking\ProductBookingController@addBlockSlot')->name('product-booking.addBlockSlot');   # update all product actions
+        Route::get('booking/deleteSlot/{id}', 'Client\Booking\ProductBookingController@deleteSlot')->name('product-booking.deleteSlot');   # update all product actions
+        Route::post('booking/updateBlockSlot', 'Client\Booking\ProductBookingController@updateBlockSlot')->name('product-booking.updateBlockSlot');   # update all product actions
 
 
-          // rental product 
-          Route::post('rentalVariantRow', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
-          Route::post('updateProductVariantSet', 'Client\RentalProductController@updateProductVariantSet')->name('rental-product.updateProductVariantSet');   # update all product actions
-          Route::get('getScheduleTableData', 'Client\RentalProductController@getScheduleTableData')->name('rental-product.getScheduleTableData');   # update all product actions
-          Route::get('getScheduleTableBlockedData', 'Client\RentalProductController@getScheduleTableBlockedData')->name('rental-product.getScheduleTableBlockedData');   # update all product actions
+        // rental product 
+        Route::post('rentalVariantRow', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
+        Route::post('updateProductVariantSet', 'Client\RentalProductController@updateProductVariantSet')->name('rental-product.updateProductVariantSet');   # update all product actions
+        Route::get('getScheduleTableData', 'Client\RentalProductController@getScheduleTableData')->name('rental-product.getScheduleTableData');   # update all product actions
+        Route::get('getScheduleTableBlockedData', 'Client\RentalProductController@getScheduleTableBlockedData')->name('rental-product.getScheduleTableBlockedData');   # update all product actions
+
+        // vendor cities for home page by harbans :)
+        Route::get('vendor_city/index', 'Client\VendorCitiesController@index')->name("vendor_city.index");
+        Route::post('vendor_city/store', 'Client\VendorCitiesController@store')->name('vendor_city.store');
+        Route::get('vendor_city/show/{id?}', 'Client\VendorCitiesController@show')->name("vendor_city.show");
+        Route::post('vendor_city/update', 'Client\VendorCitiesController@update')->name("vendor_city.update");
+        Route::get('vendor_city/destroy/{id}', 'Client\VendorCitiesController@destroy')->name('vendor_city.destroy');
         
     });
 });

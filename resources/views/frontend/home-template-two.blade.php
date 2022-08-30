@@ -646,7 +646,21 @@ height: auto;
     <% }); %>
 </script>
 
-
+<script type="text/template" id="cities_template" >
+    <% _.each(cities, function(city, k){%>
+       <div class="alSpaListSlider">
+          <div>
+             <div class="alSpaListBox">
+                <div class="alSpaCityBox">
+                   <a href="/cities/<%=city.slug %>"><img class="w-100" src="<%=city.image.image_fit %>260/260<%=city.image.image_path %>"></a>
+                </div>
+                <p><%=city.title %></p>
+             </div>            
+          </div>
+       </div>
+        <% }); 
+    %>
+ </script><!-- cities cities end -->
 
 <section class="section-b-space ratio_asos d-none pb-0 pt-0 mt-0 al_template_two_content" id="our_vendor_main_div">
     <div class="vendors">
@@ -665,6 +679,8 @@ height: auto;
                     @if($homePageLabel->slug == 'vendors')
                     <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
                     @elseif($homePageLabel->slug == 'trending_vendors')
+                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
+                    @elseif($homePageLabel->slug == 'cities')
                     <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
                     @elseif($homePageLabel->slug == 'recent_orders')
                     <div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>

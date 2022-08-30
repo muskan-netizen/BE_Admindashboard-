@@ -1,0 +1,34 @@
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  src: url(https://example.com/material-symbols.woff) format('woff');
+}
+.border-primary {
+  border-color: #727cf5 !important;
+}
+.bg-primary {
+  background-color: #727cf5 !important;
+}
+.btn-primary {
+  color: #fff;
+  background-color: #727cf5;
+  border-color: #727cf5;
+}
+#sidebar-menu .menuitem-active .active {
+  background-color: #727cf5;
+}
+.menu-title+.nav-second-level>li>a:hover {
+  background-color: rgba(114,124,245,.25);
+}
+.nav-second-level li a:focus, .nav-second-level li a:hover{
+  color: #727cf5;
+}
+.menu-title+.nav-second-level>li>a:hover span svg {
+  fill: #727cf5;
+}
+.menu-title+.nav-second-level>li>a:hover .cls-1, .menu-title+.nav-second-level>li>a:hover .cls-2 {
+  fill: #727cf5;
+}
+.nav-user {
+  padding: calc(31px * .5) 20px calc(31px * .5) !important;
+}
