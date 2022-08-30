@@ -21,7 +21,7 @@ $(document).ready(function () {
         getDashboardData(dashboard_filter_url);
     });
     $("#dashboard_refresh_btn").click(function () {
-        $flatpickr.clear();
+        // $flatpickr.clear();
         getDashboardData(dashboard_filter_url);
     });
     getDashboardData(dashboard_filter_url);
@@ -64,28 +64,36 @@ $(document).ready(function () {
                 $('#revenueCurrentWeek').html('$' + response.data.revenueCurrentWeek);
                 $('#revenueLastWeek').html('$' + response.data.revenueLastWeek);
                 if (response.data.customers_increase != '') {
-                    $('#customers_change').prepend('<span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i>' + response.data.customers_increase + '%</span>');
+                    $('#customers_change').html('');
+                    $('#customers_change').append('<span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i>' + response.data.customers_increase + '%</span><span class="text-nowrap">Since last month</span>');
                 }
                 if (response.data.customers_decrease != '') {
-                    $('#customers_change').prepend('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.customers_decrease + '%</span>');
+                    $('#customers_change').html("");
+                    $('#customers_change').append('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.customers_decrease + '%</span><span class="text-nowrap">Since last month</span>');
                 }
                 if (response.data.orders_increase != '') {
-                    $('#orders_change').prepend('<span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i>' + response.data.orders_increase + '%</span>');
+                    $('#orders_change').html('');
+                    $('#orders_change').append('<span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i>' + response.data.orders_increase + '%</span><span class="text-nowrap">Since last month</span>');
                 }
                 if (response.data.orders_decrease != '') {
-                    $('#orders_change').prepend('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.orders_decrease + '%</span>');
+                    $('#orders_change').html('');
+                    $('#orders_change').append('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.orders_decrease + '%</span><span class="text-nowrap">Since last month</span>');
                 }
                 if (response.data.revenue_increase != '') {
-                    $('#revenue_change').prepend('<span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i>' + response.data.revenue_increase + '%</span>');
+                    $('#revenue_change').html('');
+                    $('#revenue_change').append('<span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i>' + response.data.revenue_increase + '%</span><span class="text-nowrap">Since last month</span>');
                 }
                 if (response.data.revenue_decrease != '') {
-                    $('#revenue_change').prepend('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.revenue_decrease + '%</span>');
+                    $('#revenue_change').html('');
+                    $('#revenue_change').append('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.revenue_decrease + '%</span><span class="text-nowrap">Since last month</span>');
                 }
                 if (response.data.products_increase != '') {
-                    $('#products_change').prepend('<span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i>' + response.data.products_increase + '%</span>');
+                    $('#products_change').html('');
+                    $('#products_change').append('<span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i>' + response.data.products_increase + '%</span><span class="text-nowrap">Since last month</span>');
                 }
                 if (response.data.products_decrease != '') {
-                    $('#products_change').prepend('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.products_decrease + '%</span>');
+                    $('#products_change').html('');
+                    $('#products_change').append('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.products_decrease + '%</span><span class="text-nowrap">Since last month</span>');
                 }
                 Worldmap(response.data.markers);
                 // if (type == 'yearly') {
@@ -93,7 +101,8 @@ $(document).ready(function () {
                 // } else {
                 //     updateSales(response.data.revenue, response.data.sales, response.data.dates, "datetime")
                 // }
-                updateRevenue(response.data.monthwise_revenue)
+                updateRevenue(response.data.monthwise_revenue);
+                updateRevenueLineChart(response.data.currentweek_revenue_daywise, response.data.previousweek_revenue_daywise);
             }
         });
     }
@@ -249,15 +258,64 @@ $(document).ready(function () {
         });
     }
 
+    // New revenue bar chart monthly data show
     function updateRevenue(newrevenue) {
+        $('#revenue-bar-chart').html("");
+        var colors = ['#727cf5', '#e3eaef'];
+        var dataColors = $("#revenue-bar-chart").data('colors');
+        if (dataColors) {
+            colors = dataColors.split(",");
+        }
         var options = {
-            series: [{
-                name: 'Revenue',
-                data: newrevenue,
-            }]
+            chart: {
+                height: 257,
+                type: 'bar',
+                stacked: !0
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: !1, columnWidth: "20%"
+                }
+            },
+            dataLabels: { enabled: !1 },
+            stroke: { show: !0, width: 2, colors: ["transparent"] },
+            series: [{ name: "Revenue", data: newrevenue }],
+            zoom: { enabled: !1 },
+            legend: { show: !1 },
+            colors: colors,
+            xaxis: { categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], axisBorder: { show: !1 } },
+            yaxis: { labels: { formatter: function (e) { return "$" + e }, offsetX: -15 } },
+            fill: { opacity: 1 },
+            tooltip: { y: { formatter: function (e) { return "$" + e } } },
         };
-        console.log(options);
-        var chart = new ApexCharts(document.querySelector("#high-performing-product"), options);
+        var chart = new ApexCharts(document.querySelector("#revenue-bar-chart"), options);
         chart.render();
+    }
+
+    // New line chart current and previous week data show
+    function updateRevenueLineChart(current_data, previous_data) {
+        $('#revenue-line-chart').html("");
+        var colors = ["#727cf5", "#0acf97", "#fa5c7c", "#ffbc00"];
+        var dataColors = $("#revenue-line-chart").data('colors');
+        if (dataColors) {
+            colors = dataColors.split(",");
+        }
+        var options = {
+            chart: { height: 364, type: "line", dropShadow: { enabled: !0, opacity: .2, blur: 7, left: -7, top: 7 } },
+            dataLabels: { enabled: !1 },
+            stroke: { curve: "smooth", width: 4 },
+            series: [{ name: "Current Week", data: current_data }, { name: "Previous Week", data: previous_data }],
+            colors: colors,
+            zoom: { enabled: !1 },
+            legend: { show: !1 },
+            xaxis: {
+                type: "string", categories: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                tooltip: { enabled: !1 },
+                axisBorder: { show: !1 }
+            },
+            yaxis: { labels: { formatter: function (e) { return "$" + e }, offsetX: -15 } },
+        };
+        var chart1 = new ApexCharts(document.querySelector("#revenue-line-chart"), options);
+        chart1.render();
     }
 });

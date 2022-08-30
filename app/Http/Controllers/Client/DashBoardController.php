@@ -460,6 +460,27 @@ class DashBoardController extends BaseController{
             $monthwise_revenue[] = round($sale);
             }
 
+            # Previous week day wise revenue total
+            $previousweek_startdate = Carbon::now()->startOfWeek()->subWeek()->format('Y-m-d');
+            $previousweek_revenue_daywise = [];
+            for($i=0;$i<7;$i++)
+            {
+            $data = Order::where(\DB::raw("DATE(created_at)"), date('Y-m-d', strtotime($previousweek_startdate.'+'.$i.' day')))->sum('payable_amount');
+            $previousweek_revenue_daywise[] = round($data);
+            }
+
+            # Current week day wise revenue total
+            $currentweek_startdate = Carbon::now()->startOfWeek()->format('Y-m-d');
+            $currentweek_revenue_daywise = [];
+            for($i=0;$i<7;$i++)
+            {
+            $data = Order::where(\DB::raw("DATE(created_at)"), date('Y-m-d', strtotime($currentweek_startdate.'+'.$i.' day')))->sum('payable_amount');
+            $currentweek_revenue_daywise[] = round($data);
+            }
+
+            # Revenue location wise
+            $locationwise_revenue = Order::with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum')->whereYear('created_at', date('Y'))->whereNotNull('address_id')->get()->toArray();
+
             $return_requests = $return_requests->count();
             $response = [
                 'dates' => $dates,
@@ -493,6 +514,8 @@ class DashBoardController extends BaseController{
                 'products_increase' => $products_increase,
                 'products_decrease' => $products_decrease,
                 'monthwise_revenue' => $monthwise_revenue,
+                'previousweek_revenue_daywise' => $previousweek_revenue_daywise,
+                'currentweek_revenue_daywise' => $currentweek_revenue_daywise,
             ];
             return $this->successResponse($response);
         } catch (Exception $e) {

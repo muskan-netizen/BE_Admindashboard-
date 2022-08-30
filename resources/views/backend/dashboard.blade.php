@@ -53,7 +53,7 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                 <h3 class="mt-3 mb-3" id="total_customers">0</h3>
                                 <p class="mb-0" id="customers_change">
                                     <!-- <span class="text-success me-2" id="customers_change"></span> -->
-                                    <span class="text-nowrap">Since last month</span>
+                                    <!-- <span class="text-nowrap">Since last month</span> -->
                                 </p>
                             </div>
                         </div><!-- Customer box end here -->
@@ -69,7 +69,7 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                 <h3 class="mt-3 mb-3" id="total_orders">0</h3>
                                 <p class="mb-0" id="orders_change">
                                     <!-- <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 1.08%</span> -->
-                                    <span class="text-nowrap">Since last month</span>
+                                    <!-- <span class="text-nowrap">Since last month</span> -->
                                 </p>
                             </div>
                         </div><!-- Orders box end here -->
@@ -88,7 +88,7 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                 <h3 class="mt-3 mb-3" id="total_revenue">$0</h3>
                                 <p class="mb-0" id="revenue_change">
                                     <!-- <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 5.27%</span> -->
-                                    <span class="text-nowrap">Since last month</span>
+                                    <!-- <span class="text-nowrap">Since last month</span> -->
                                 </p>
                             </div>
                         </div><!-- Revenue box end here -->
@@ -104,7 +104,7 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                 <h3 class="mt-3 mb-3" id="total_products">+ 0</h3>
                                 <p class="mb-0" id="products_change">
                                     <!-- <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> 4.08%</span> -->
-                                    <span class="text-nowrap">Since last month</span>
+                                    <!-- <span class="text-nowrap">Since last month</span> -->
                                 </p>
                             </div>
                         </div><!-- Growth box end here -->
@@ -118,24 +118,20 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h4 class="header-title">Revenue</h4>
-                            <div class="dropdown">
+                            <!-- <div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 31px);">
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Action</a>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                         <div dir="ltr">
-                            <div id="high-performing-product" class="apex-charts" data-colors="#727cf5,#e3eaef"></div>
+                            <div id="revenue-bar-chart" class="apex-charts" data-colors="#727cf5,#e3eaef"></div>
                         </div>
                     </div><!-- month wise data shown end here  -->
                 </div>
@@ -152,21 +148,17 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                         <!-- total revenue title start here -->
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h4 class="header-title">REVENUE</h4>
-                            <div class="dropdown">
+                            <!-- <div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop " data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end " data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 31px);">
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Action</a>
                                 </div>
-                            </div>
+                            </div> -->
                         </div><!-- total revenue title start here -->
 
 
@@ -205,7 +197,7 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
 
                         <!-- Total earning chat start here -->
                         <div dir="ltr">
-                            <div id="revenue-chart" class="apex-charts mt-3" data-colors="#727cf5,#0acf97"></div>
+                            <div id="revenue-line-chart" class="apex-charts mt-3" data-colors="#727cf5,#0acf97" style="height: 364px"></div>
                         </div><!-- Total earning chat end here -->
 
 
@@ -218,21 +210,17 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <h4 class="header-title">Revenue By Location</h4>
-                            <div class="dropdown">
+                            <!-- <div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Action</a>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="mb-4 mt-3">
                             <div id="world-map-markers" style="height: 224px"></div>
@@ -275,7 +263,7 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
 
         </div>
 
-        <div class="row">
+        <!-- <div class="row d-none">
             <div class="col-xl-6 col-lg-12 order-lg-2 order-xl-1">
                 <div class="card">
                     <div class="card-body">
@@ -380,7 +368,7 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
 
                                 </tbody>
                             </table>
-                        </div> <!-- end table-responsive-->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -394,13 +382,9 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                     <i class="mdi mdi-dots-vertical"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Action</a>
                                 </div>
                             </div>
@@ -427,8 +411,8 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                 <span class="float-end">$154.02</span>
                             </p>
                         </div>
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
+                    </div>
+                </div>
             </div>
             <div class="col-xl-3 col-lg-6 order-lg-1">
                 <div class="card">
@@ -440,13 +424,9 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                     <i class="mdi mdi-dots-vertical"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Action</a>
                                 </div>
                             </div>
@@ -550,7 +530,6 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!-- end timeline -->
                                         </div>
                                     </div>
                                 </div>
@@ -563,11 +542,10 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                         <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
                             <div class="simplebar-scrollbar" style="height: 263px; transform: translate3d(0px, 0px, 0px); display: block;"></div>
                         </div>
-                    </div> <!-- end slimscroll -->
+                    </div>
                 </div>
-                <!-- end card-->
             </div>
-        </div>
+        </div> -->
 
     </div><!-- Dashboard end here -->
 
