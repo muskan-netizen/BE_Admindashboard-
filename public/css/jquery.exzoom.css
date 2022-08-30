@@ -96,3 +96,17 @@
         float: left; }
         .exzoom .exzoom_img_ul_outer .exzoom_img_ul li img {
           width: 100%; }
+
+          .al_body_template_three .alSingleProducts .exzoom_img_box {
+            width: 100% !important;}
+            .al_body_template_three .alSingleProducts .exzoom_img_box .exzoom_img_ul_outer {
+            width: 100% !important;}
+            .al_body_template_three .alSingleProducts .exzoom_img_box .exzoom_img_ul_outer ul.exzoom_img_ul {
+            width: 100% !important;
+            }
+            .al_body_template_three .alSingleProducts .exzoom_img_box .exzoom_img_ul_outer ul.exzoom_img_ul li {
+            width: 100% !important;
+            }
+            .al_body_template_three .alSingleProducts .exzoom_img_box .exzoom_img_ul_outer ul.exzoom_img_ul li img {
+            width: 100% !important;
+            }

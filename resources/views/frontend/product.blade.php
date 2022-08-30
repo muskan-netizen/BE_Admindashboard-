@@ -184,11 +184,11 @@
                                     <div class="description_txt mt-3">
                                         <p>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description : ''}}</p>
                                     </div>
+                                    <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
+                                    <input type="hidden" name="start_time" id="start_time" value="">
+                                    <input type="hidden" name="end_time" id="end_time" value="">
                                     <div id="product_variant_wrapper">
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
-                                        <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
-                                        <input type="hidden" name="start_time" id="start_time" value="">
-                                        <input type="hidden" name="end_time" id="end_time" value="">
                                         @if($product->inquiry_only == 0)
                                             <h3 id="productPriceValue" class="mb-md-3">
                                                 <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
@@ -198,6 +198,7 @@
                                             </h3>
                                         @endif
                                     </div>
+                                   
                                     <div id="product_variant_options_wrapper">
                                         @if(!empty($product->variantSet))
                                             @php
@@ -214,7 +215,6 @@
                                                         <li class="firstChild">{{$variant->title}}</li>
                                                         <li class="otherSize">
                                                             @foreach($variant->option2 as $k => $optn)
-                                                            @if($optn->status==1)
                                                             <?php $var_id = $variant->variant_type_id;
                                                             $opt_id = $optn->variant_option_id;
                                                             $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
@@ -223,7 +223,6 @@
                                                                 <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
                                                                 <span class="checkround"></span>
                                                             </label>
-                                                            @endif
                                                             @endforeach
                                                         </li>
                                                     </ul>
@@ -240,7 +239,7 @@
                                         @include('frontend.product-part.booking-slot')
                                     @endif
                                     
-                                    <div id="product_variant_quantity_wrapper">
+                                    <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'block'; ?>">
                                         @if($product->inquiry_only == 0)
                                         <div class="product-description border-product pb-0">
                                             <h6 class="product-title mt-0">{{__('Quantity')}}:
@@ -267,7 +266,7 @@
                                                     </span>
                                                     <input type="text" name="quantity"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="quantity" class="form-control input-qty-number quantity_count"  value="{{$product->minimum_order_count??1}}" data-minimum_order_count={{$product->minimum_order_count}}>
                                                     <span class="input-group-prepend quant-plus">
-                                                        <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}>
+                                                        <button type="button" class="btn quantity-right-plus" data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}>
                                                             <i class="ti-angle-right"></i>
                                                         </button>
                                                     </span>
@@ -421,7 +420,7 @@
                         </div>
                     </div>
                     @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                    <section class="tab-product m-0">
+                    <section class="tab-product mb-3">
                         <div class="row">
                             <div class="col-sm-12 col-lg-12">
                                 <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
@@ -551,7 +550,7 @@
     <input type="hidden" name="variant_id" id="prod_variant_id" value="<%= variant.id %>">
     <% if(variant.product.inquiry_only == 0) { %>
         <h3 id="productPriceValue" class="mb-md-3">
-            <b class="mr-1"><span class="product_fixed_price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(variant.productPrice) %></span></b>
+            <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price"><%= Helper.formatPrice(variant.productPrice) %></span></b>
             <% if(variant.compare_at_price > 0 ) { %>
                 <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price"><%= Helper.formatPrice(variant.compare_at_price) %></span></span>
             <% } %>
@@ -856,6 +855,15 @@
                     $("#variant_response span").html('');
                     var response = resp.data;
                     if(response.variant != ''){
+                        if(vendor_type == 'rental'){
+                            // $('.incremental_hrs').val(0);
+                            // $('.base_hours_min').val();
+                            $('.incremental_hrs').val(0);
+                            $('#incremental_hrs_hidden').val(base_hours_min);
+                            $('.incremental-left-minus').click();
+                            //$('#blocktime, #blocktime2').change();
+                        }
+                        
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);

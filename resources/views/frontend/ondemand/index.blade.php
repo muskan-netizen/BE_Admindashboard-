@@ -38,17 +38,20 @@ use Illuminate\Support\Arr;
                         @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && app('request')->input('addons') != 1)
 
                          <!-- Start Main Nav -->
-                        <nav id='main-nav'>
-                            <ul id='main-nav-list'>
-                               @if(!empty($category->childs) && count($category->childs) > 0)
-                                    @foreach ($category->childs as $key => $childs)
-                                        @if($childs->type_id == 8)
-                                        <li><a href="#section_set{{$key}}">{{ $childs['translation_name'] ?? ''}}</a></li>
-                                        @endif
-                                    @endforeach
-                                @endif
-                            </ul>
-                        </nav>
+                            @if(!empty($category->childs) && count($category->childs) > 0)
+                            <nav id='main-nav'>
+                                <ul id='main-nav-list'>
+                                @if(!empty($category->childs) && count($category->childs) > 0)
+                                        @foreach ($category->childs as $key => $childs)
+                                    
+                                            @if( in_array($childs->type_id , [8,12]))
+                                            <li><a href="#section_set{{$key}}">{{ $childs['translation_name'] ?? ''}}</a></li>
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                </ul>
+                            </nav>
+                            @endif
                         <!-- End Main Nav -->
 
                         @endif
@@ -62,7 +65,7 @@ use Illuminate\Support\Arr;
                                     <!-- Start Conent Wrapper -->
                                     <div id='main-wrapper'  class="@if(app('request')->input('addons') == 1) d-none @endif">
                                                 @foreach ($category->childs as $key => $childs)
-                                                @if($childs->type_id == 8)
+                                                @if( in_array($childs->type_id , [8,12]))
 
                                                 <h4><b>{{ $childs->translation_name }}</b></h4>
                                                     <div class='' id='section_set{{$key}}'>
@@ -91,8 +94,10 @@ use Illuminate\Support\Arr;
                                                                     <div class="d-flex align-items-center justify-content-between productBookingBtns">
                                                                         <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
                                                                             {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
-                                                                        @endif</h5>
-
+                                                                            @endif
+                                                                            <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
+                                                                        </h5>
+                                                                      
 
                                                                         @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
                                                                         @php
@@ -167,7 +172,7 @@ use Illuminate\Support\Arr;
                                         @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
                                         <div class="service-data-wrapper al @if(app('request')->input('addons') == 1) d-none @endif"  id="step-1-ondemand" >
                                             <div class="service-data">
-                                                <h4><b>{{ $category->translation_name }}</b></h4>
+                                                @if($category->translation_name !='')<h4><b>{{ $category->translation_name }}</b></h4>@endif
 
 
                                                 @if(!empty($category->image))
@@ -177,11 +182,14 @@ use Illuminate\Support\Arr;
                                                 @endif
                                                 @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
+                                               
                                                 {{-- new product design  --}}
                                                 <div class="row classes_wrapper no-gutters align-items-center" href="#">
-                                                    <div class="col-md-9 col-sm-8 pr-md-2 productDetails">
+                                                    <div class="col-md-9 col-sm-8 pr-md-2">
                                                         <h5 class="mb-1"><b>{!! $data->translation_title !!}</b></h5>
-                                                        <p class="mb-1">{!! $data->translation_description !!}</p>
+                                                        <div class="productDetails pr-2">
+                                                            <p class="mb-1">{!! $data->translation_description !!}</p>
+                                                        </div>
                                                     </div>
                                                     <div class="col-md-3 col-sm-4 mb-3">
                                                         <?php $imagePath = $imagePath2 = '';
@@ -198,10 +206,12 @@ use Illuminate\Support\Arr;
                                                     </div>
                                                     <div class="col-12 ac-royo-btn">
                                                         <div class="d-flex align-items-center justify-content-between">
-                                                                <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
+                                                                <h5 class="my-sm-0 my-3 ">@if($data->inquiry_only == 0)
                                                                     {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
-                                                                @endif</h5>
-
+                                                                    @endif
+                                                                    <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
+                                                                </h5>
+                                                                
                                                                 @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
                                                                 @php
                                                                     $cartcount = 1;
@@ -499,13 +509,13 @@ use Illuminate\Support\Arr;
                                                 </li>
 
                                                 <% if(vendor_product.addon.length != 0) { %>
-                                                    <div class="row align-items-md-center">
+                                                    <div class="row align-items-md-center m-0">
                                                         <div class="col-12 alVendorProductDetails">
                                                             <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                                                         </div>
                                                     </div>
                                                     <% _.each(vendor_product.addon, function(addon, ad){%>
-                                                    <div class="row alVendorProductDetails">
+                                                    <div class="row alVendorProductDetails m-0">
                                                         <div class="col-md-3 col-sm-4 items-details text-left">
                                                             <p class="p-0 m-0"><%= addon.option.title %></p>
                                                         </div>
@@ -530,7 +540,7 @@ use Illuminate\Support\Arr;
                                         <h4 class="mb-2"><b>{!! (!empty($cart_data->product->translation->first())) ? $cart_data->product->translation->first()->title : $cart_data->product->sku !!}</b></h4>
 
                                         <h5 class="d-flex align-items-center justify-content-between pb-2">{{__('DATE & TIME')}} </h5>
-                                        <li class="alVendorProductDetails">
+                                        <li class="alVendorProductTotals">
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Date')}}</span>
@@ -539,7 +549,7 @@ use Illuminate\Support\Arr;
                                             </div>
                                         </li>
 
-                                        <li class="alVendorProductDetails">
+                                        <li class="alVendorProductTotals">
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Start Time')}}</span>
@@ -721,6 +731,14 @@ use Illuminate\Support\Arr;
         </div>
     </div>
 </div>
+<script type="text/template" id="empty_cart_template">
+    <div class="row">
+        <div class="col-12 text-center pb-3">
+            <img class="w-50 pt-3 pb-1" src="{{ asset('front-assets/images/ic_emptycart.svg') }}" alt="">
+            <h5>{{ __('Your cart is empty') }}<br/>{{ __('Add an item to begin') }}</h5>
+        </div>
+    </div>
+</script>
 <!----- end payment section ------------->
 @endsection
 

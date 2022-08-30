@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{ProductBooking, ProductVariant, ProductVariantSet};
+use App\Models\{ProductBooking, ProductVariant, ProductVariantSet,Product};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -28,11 +28,11 @@ class ProductBookingController extends FrontController
      */
     public function checkProductAvailibility(Request $request)
     {
-      //pr($request->all());
       try {
           $block_time = explode('-', $request->blocktime);
           $start_time = date("Y-m-d H:i:s",strtotime($request->selectedStartDate));
           $end_time = date("Y-m-d H:i:s",strtotime($request->selectedEndDate));
+          $product_variant_data = array();
           $product_variant_id =  ProductVariantSet::where(['variant_option_id'=>$request->variant_option_id,'product_id'=>$request->product_id])->pluck('product_variant_id');
           $product_variant_id = $product_variant_id->toArray();
           $ProductBooking  = ProductBooking::whereIn('variant_id',$product_variant_id)->where('product_id',$request->product_id)
@@ -41,9 +41,12 @@ class ProductBookingController extends FrontController
                                         ->where('end_date_time', '>=', $start_time);
                               })->pluck('variant_id')->toArray();
           $available_product_variant = array_values(array_diff($product_variant_id, $ProductBooking));
-          //print_r($available_product_variant);
+          if(isset($available_product_variant[0])){
+            $product_variant_data =  ProductVariant::where('id',$available_product_variant[0])->with(['product','checkIfInCart'])->first();
+          }
           $returnarr =  array();
           $returnarr['available_product_variant'] =  @$available_product_variant[0];
+          $returnarr['product_variant_data'] = $product_variant_data;
           $returnarr['product_id'] =  $request->product_id;
           $returnarr['start_time'] =  $start_time;
           $returnarr['end_time'] =  $end_time;

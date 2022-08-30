@@ -108,7 +108,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          @endif
 
-         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
+         {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
 
             <div class="col-lg-3 col-md-6 mb-3">
                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -164,7 +164,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                </div><!-- On Demand Services section end -->
             </form>
             </div>
-         @endif
+         @endif --}}
 
 
          @if($client_preference_detail->enable_inventory_service == 1)
@@ -217,7 +217,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          @endif
 
-         @if($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app' )
+         {{-- @if($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app' )
 
             <div class="col-lg-3 col-md-6 mb-3">
                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -273,11 +273,11 @@ $sms_crendential = json_decode($preference->sms_credentials);
                </div><!-- Pickup & Delivery section end -->
                </form>
             </div>
-         @endif
+         @endif --}}
 
 
 
-         @if($client_preference_detail->business_type == 'laundry')
+         {{-- @if($client_preference_detail->business_type == 'laundry')
             <div class="col-lg-3 col-md-6 mb-3">
                <!-- laundry section start -->
                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -359,7 +359,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                </div>
                </form>
             </div>
-         @endif
+         @endif --}}
 
 
    </div>
@@ -1423,14 +1423,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                </div>
                <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                      <label for="db_audit_logs" class="mr-2 mb-0">{{__('Service Area For Banners')}}<small class="d-block pr-5">{{__('Enable service area for banners.')}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="is_service_area_for_banners" id="is_service_area_for_banners" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_service_area_for_banners == '1')) checked='checked' @endif>
                      </span>
                   </div>
                </div>
                <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                      <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Stop Order Acceptance')}}<small class="d-block pr-5">{{__('Activate to display a busy message to customers and stop accepting orders.')}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="stop_order_acceptance_for_users" id="stop_order_acceptance_for_users" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->stop_order_acceptance_for_users == '1')) checked='checked' @endif>
                      </span>

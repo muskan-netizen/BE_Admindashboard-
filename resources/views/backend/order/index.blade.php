@@ -176,6 +176,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.subtotal_amount) %></span>
                                                     </li>
                                                     <% } %>
+                                                    <% if(vendor.additional_price > 0 ) { %>
+                                                        <li class="d-flex align-items-center justify-content-between">
+                                                            <label class="m-0">{{ __('Additional Price') }}</label>
+                                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.additional_price) %></span>
+                                                            
+                                                        </li>
+                                                        <% } %>
                                                     <% if(vendor.discount_amount > 0 || vendor.discount_amount < 0) { %>
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Promocode') }}</label>
@@ -236,13 +243,15 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% } %>
                                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Amount') }}</label>
-                                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(vendor.payable_amount)+parseFloat(order.fixed_fee_amount)) %></span> --}}
+                                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(vendor.payable_amount)+parseFloat(order.fixed_fee_amount)+parseFloat(vendor.additional_price)) %></span> --}}
                                                         <%
                                                         if(vendor.delivery_fee == '' || vendor.delivery_fee == null){
                                                             vendor.delivery_fee = 0;
                                                         }
                                                         %>
-                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(vendor.subtotal_amount) - parseFloat(vendor.discount_amount) ) + parseFloat(vendor.total_container_charges) + parseFloat(vendor.taxable_amount) + parseFloat(vendor.service_fee_percentage_amount) + parseFloat(order.fixed_fee_amount) + parseFloat(vendor.delivery_fee )) %></span>
+                                                        
+
+                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(vendor.subtotal_amount) - parseFloat(vendor.discount_amount) ) + parseFloat(vendor.total_container_charges) + parseFloat(vendor.taxable_amount) + parseFloat(vendor.service_fee_percentage_amount) + parseFloat(order.fixed_fee_amount) + parseFloat(vendor.delivery_fee ) +parseFloat(vendor.additional_price)) %></span>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -287,6 +296,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <label class="m-0">{{ __('Total') }}</label>
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_amount) %></span>
                                     </li>
+
+                                    <% if(order.additional_price > 0 || order.additional_price < 0) { %>
+                                        <li class="d-flex align-items-center justify-content-between">
+                                                 <label class="m-0">{{ __('Tax') }}</label>
+                                                 <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.additional_price) %></span>
+                                         </li>
+                                      <% } %>
 
                                     <% if(order.total_other_taxes_amount > 0 || order.total_other_taxes_amount < 0) { %>
                                        <li class="d-flex align-items-center justify-content-between">
@@ -361,7 +377,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <label class="m-0">{{ __('Payable') }} </label>
                                         {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount)+parseFloat(order.fixed_fee_amount))%></span> --}}
 
-                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(order.total_amount) - parseFloat(order.total_discount_calculate) ) + parseFloat(order.total_container_charges) + parseFloat(order.taxable_amount) + parseFloat(order.total_service_fee) + parseFloat(order.fixed_fee_amount) + parseFloat(order.total_delivery_fee )) %></span> --}}
+                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(order.total_amount) - parseFloat(order.total_discount_calculate) ) + parseFloat(order.total_container_charges) + parseFloat(order.taxable_amount) + parseFloat(order.total_service_fee) + parseFloat(order.fixed_fee_amount) + parseFloat(order.total_delivery_fee ) + parseFloat(order.additional_price )) %></span> --}}
 
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount))%></span>  
                                     </li>
@@ -722,6 +738,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     }
                     if(response.data.laundry_orders !== undefined){
                         $("#laundry-orders").html("(" + response.data.laundry_orders + ")");
+                    }
+                    if(response.data.appointment_orders !== undefined){
+                        $("#appointment-orders").html("(" + response.data.appointment_orders + ")");
                     }
                  }
 
