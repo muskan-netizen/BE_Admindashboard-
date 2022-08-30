@@ -638,7 +638,7 @@ class OrderController extends BaseController
         if($order->paymentOption->code == 'stripe'){
             $order->paymentOption->title = __('Credit/Debit Card (Stripe)');
         }elseif($order->paymentOption->code == 'kongapay'){
-            $order->paymentOption->code->title = 'Pay Now';
+            $order->paymentOption->title = 'Pay Now';
         }elseif($order->paymentOption->code == 'mvodafone'){
             $order->paymentOption->title = 'Vodafone M-PAiSA';
         }
