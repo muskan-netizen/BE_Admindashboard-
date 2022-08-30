@@ -590,9 +590,9 @@ $(document).ready( async function () {
                                 }
                             break;
                             case 'vendors':
+                                $(".render_vendors").html('');
                                 if($('.suppliers-slider-vendors').hasClass('slick-initialized')){
                                     $(".suppliers-slider-vendors").slick('destroy');
-                                    $(".render_vendors").html('');
                                 }
                                 let vendors_template = _.template($('#vendors_template').html());
                                 $(".render_vendors").append(vendors_template({ vendors: response.data.vendors , type: vendor_language}));

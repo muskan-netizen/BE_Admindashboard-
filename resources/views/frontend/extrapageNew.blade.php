@@ -800,11 +800,19 @@ function isNumberKey(evt) {
 
     $(document).on('click', '.showMap', function() {
         var no = $(this).attr('num');
+
         var lats = document.getElementById(no + '_latitude').value;
         var lngs = document.getElementById(no + '_longitude').value;
         var address = document.getElementById(no+'_address').value;
-        console.log(lats + '--' + lngs);
 
+        var addressLatitude = document.getElementById('address-latitude');
+        var addressLongitude = document.getElementById('address-longitude');
+
+        if(addressLatitude != null && addressLongitude != null){
+            var lats = addressLatitude.value;
+            var lngs = addressLongitude.value;
+        }
+        
         document.getElementById('map_for').value = no;
 
         if (lats == null || lats == '0' || lats =='') {
