@@ -171,7 +171,7 @@
                                 @endforeach
                             </div>
                             @endif
-                            @if(!empty($vendor_product->pvariant->actual_price))
+                            @if(isset($vendor_product->pvariant->actual_price))
                             <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
                             </div>
@@ -362,7 +362,7 @@
                  {{-- Home Service Schedual code Start at down --}}
                  @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ( in_array($serviceType ,['appointment','on_demand']) ))
                  @if($client_preference_detail->business_type != 'laundry')
-                 <div class="row mb-1 d-flex align-items-center vendor_product_schedule_datetime" style="{{(($product->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
+                 <div class="row mb-1 d-flex align-items-center vendor_product_schedule_datetime" style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
                      <div class="col-5 offset-3 text-lg-right">
                          <label class="m-0 radio">
                              {{__('Scheduled Slot')}} :</label>
