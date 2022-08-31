@@ -42,7 +42,7 @@ class ProfileController extends BaseController{
                         $client_name = $client->name;
                         $sendto = $SendReferralRequest->email;
                         $mail_from = $client_preference_detail->mail_from;
-                        //try {
+                        try {
                             $email_template_content = '';
                             $email_template = EmailTemplate::where('id', 8)->first();
                             if($email_template){
@@ -69,10 +69,9 @@ class ProfileController extends BaseController{
                                     $message->to($sendto)->subject('Referral For Registration');
                                 }
                             );
-                        // } catch (\Exception $e) {
-                        // }
+                        } catch (\Exception $e) {
+                        }
                     }
-                    pr($t);
                     return response()->json(array('success' => true, 'message' => __('Send Successfully')));
                 }
             }
