@@ -106,6 +106,15 @@ class TypeSeeder extends Seeder
                 'image' => 'home_five.png',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
                 
+            ],
+            [
+                'id' => 12,
+                'sequence' => 11,
+                'title' => 'Appointment',
+                'service_type' => 'appointment_service',
+                'image' => 'appointment.png',
+                'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+                
             ]
         );
         foreach ($types as $type) {

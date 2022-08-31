@@ -84,7 +84,7 @@ class AddressController extends BaseController{
                 return $this->errorResponse(__('Address not found.'), 404);
             }
             $address->delete();
-            return $this->successResponse('', __('Address deleted successfully.'));
+            return $this->successResponse($address, __('Address deleted successfully.'));
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }

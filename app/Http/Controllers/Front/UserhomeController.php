@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Contracts\Session\Session as SessionSession;
-use App\Models\{Currency, Banner, MobileBanner, FaqTranslations, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency,Client, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption, SubscriptionInvoicesVendor, Order, VendorOrderStatus,CabBookingLayoutTranslation,ShowSubscriptionPlanOnSignup};
+use App\Models\{Currency, Banner, MobileBanner, FaqTranslations, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency,Client, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption, SubscriptionInvoicesVendor, Order, VendorOrderStatus,CabBookingLayoutTranslation,ShowSubscriptionPlanOnSignup,VendorCities};
 use Illuminate\Contracts\View\View;
 use Illuminate\View\View as ViewView;
 use Redirect;
@@ -220,13 +220,13 @@ class UserhomeController extends FrontController
                                     ->orderBy('id', 'asc')
                                     ->where('status', 1)
                                     ->orderBy('parent_id', 'asc')->get();
-            if ($categories) {
-                $builds = $this->buildTree($categories->toArray());
-            }
+                if ($categories) {
+                    $builds = $this->buildTree($categories->toArray());
+                }
 
-            $VendorCategory =array();
+                $VendorCategory =array();
 
-            $templetes  = \DB::table('vendor_templetes')->where('status', 1)->get();
+                $templetes  = \DB::table('vendor_templetes')->where('status', 1)->get();
                 $server = env('APP_ENV', 'development');
                 $langId = session()->get('customerLanguage');
                 $privacy = Page::with(['translations' => function ($q) use($langId) {
@@ -247,20 +247,20 @@ class UserhomeController extends FrontController
                 // }else{
                 //     return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
                 // }
-            } else {
-            $tag = [];
-            $showTag = implode(',', $tag);
-            $client = Client::with('country')->first();
-           // pr( $this->driverDocuments());
-            $driverDocs = json_decode($this->driverDocuments());
-            $driver_registration_documents = $driverDocs->documents;
-            foreach ($driverDocs->documents as $key => $doc) {
-                $name = str_replace(" ", "_", $doc->name);
-                $doc->slug = $name;
-            }
-            $teams = $driverDocs->all_teams;
-            $tags = $driverDocs->agent_tags;
-            return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
+        }else {
+                $tag = [];
+                    $showTag = implode(',', $tag);
+                    $client = Client::with('country')->first();
+                    // pr( $this->driverDocuments());
+                    $driverDocs = json_decode($this->driverDocuments());
+                    $driver_registration_documents = $driverDocs->documents;
+                    foreach ($driverDocs->documents as $key => $doc) {
+                        $name = str_replace(" ", "_", $doc->name);
+                        $doc->slug = $name;
+                    }
+                $teams = $driverDocs->all_teams;
+                $tags = $driverDocs->agent_tags;
+                return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
         }
     }
     public function index(Request $request, $domain='')
@@ -1140,6 +1140,7 @@ class UserhomeController extends FrontController
             $longitude = Session::get('longitude');
 
         }
+        $preferences = Session::has('preferences') ? Session::get('preferences') : ClientPreference::first();
         $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
         $p_dim = '300/300';
         if (isset($set_template)  && $set_template->template_id == 3){
@@ -1152,7 +1153,7 @@ class UserhomeController extends FrontController
         }
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
-        $preferences = ClientPreference::first();
+        //$preferences = ClientPreference::first();
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
 
@@ -1189,8 +1190,10 @@ class UserhomeController extends FrontController
         }
 
 
+
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
+      
         if(isset($slug)){
             $categoryTypes = getServiceTypesCategory($request->type);
             $vendors = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
@@ -1291,8 +1294,6 @@ class UserhomeController extends FrontController
         }else{
             $vendors = [];
         }
-
-
 
         if (isset($slug) && $slug == 'trending_vendors') {
             $now = Carbon::now()->toDateTimeString();
@@ -1527,6 +1528,25 @@ class UserhomeController extends FrontController
 
         }
 
+        $cities = [];
+
+        if ((isset($slug) && $slug == 'cities') && ($preferences->is_hyperlocal ==1) ){    # if enable cities section in
+
+            $cities =  VendorCities::with(['translations'=> function ($q) use($language_id) {
+                                $q->where('language_id', $language_id);
+                            }])->where(function ($q)  {
+                                $q->where('latitude','!=', null);
+                                $q->where('longitude','!=', null);
+                            })->get();
+            $cities = $cities->map(function($da) {
+                $da->title = $da->translations->first() ? $da->translations->first()->name : $da->slug ;
+                unset($da->translations);
+                return $da;
+            });
+        }else{
+
+        }
+        //pr($cities->toArray());
         $data = [
             'brands' => $brands,
             'banners' => [],
@@ -1536,7 +1556,8 @@ class UserhomeController extends FrontController
             'feature_products' => $feature_products,
             'on_sale_products' => $on_sale_products,
             'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
-            'active_orders' => $activeOrders
+            'active_orders' => $activeOrders,
+            'cities' => $cities
         ];
 
         return $this->successResponse($data);

@@ -237,7 +237,7 @@ class ProductController extends BaseController
             }
         }
         $otherProducts = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
-        $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode')->first();
+        $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
         $celebrities = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
 
         $agent_dispatcher_tags = [];
@@ -253,6 +253,12 @@ class ProductController extends BaseController
         {
             $vendor_id = $product->vendor_id;
             $agent_dispatcher_on_demand_tags = $this->getDispatcherOnDemandTags($vendor_id);
+
+        }
+        if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 12) # if type is on demand
+        {
+            $vendor_id = $product->vendor_id;
+            $agent_dispatcher_on_demand_tags = $this->getDispatcherAppointmentTags($vendor_id);
 
         }
 
@@ -376,13 +382,13 @@ class ProductController extends BaseController
                 if(isset($product->category) && in_array($product->category->categoryDetail->type_id,[8,9]))
                 $product->sell_when_out_of_stock = 1;
             }
-            $product->minimum_duration = $request->minimum_duration??null;
-            $product->additional_increments = $request->additional_increments??null;
-            $product->buffer_time_duration  = $request->buffer_time_duration??null;
-            $product->check_in_time         = $request->check_in_time??null;
-            $product->minimum_duration_min = $request->minimum_duration_min??null;
-            $product->additional_increments_min = $request->additional_increments_min??null;
-            $product->buffer_time_duration_min = $request->buffer_time_duration_min??null;
+            $product->minimum_duration = str_pad($request->minimum_duration, 2, '0', STR_PAD_LEFT)??null;
+            $product->additional_increments = str_pad($request->additional_increments, 2, '0', STR_PAD_LEFT)??null;
+            $product->buffer_time_duration  = str_pad($request->buffer_time_duration, 2, '0', STR_PAD_LEFT)??null;
+            $product->check_in_time         = str_pad($request->check_in_time, 2, '0', STR_PAD_LEFT)??null;
+            $product->minimum_duration_min = str_pad($request->minimum_duration_min, 2, '0', STR_PAD_LEFT)??null;
+            $product->additional_increments_min = str_pad($request->additional_increments_min, 2, '0', STR_PAD_LEFT)??null;
+            $product->buffer_time_duration_min = str_pad($request->buffer_time_duration_min, 2, '0', STR_PAD_LEFT)??null;
             $product->is_fix_check_in_time = ($request->has('is_fix_check_in_time') && $request->is_fix_check_in_time == 'on') ? 1 : 0;
             $product->save();
 
@@ -469,33 +475,42 @@ class ProductController extends BaseController
                     ProductCrossSell::insert($crossArray);
                 }
 
-                
+
+
 
 
                 $existv = array();
-            
+
                 if ($request->has('variant_ids')) {
                     foreach ($request->variant_ids as $key => $value) {
                         $variantData = ProductVariant::where('id', $value)->first();
                         $existv[] = $value;
-                    
+
                         if ($variantData) {
-                        // pr($request->all());
+                            $per_min = 0;
+                            if (isset($request->variant_incremental_price[$key])) {
+                                if ($request->variant_incremental_price[$key] !='' && $request->variant_incremental_price[$key] > 0) {
+                                    $per_min = (($request->additional_increments*60)+($request->additional_increments_min))/($request->variant_incremental_price[$key]);
+                                }
+                            }
+
+                            // pr($request->all());
                             $variantData->title             = @$request->variant_titles[$key];
                             $variantData->price             = @$request->variant_price[$key];
                             $variantData->incremental_price             = @$request->variant_incremental_price[$key]??0;
+                            $variantData->incremental_price_per_min             = @$per_min;
                             $variantData->markup_price      = @$request->markup_price[$key];
                             $variantData->compare_at_price  = @$request->variant_compare_price[$key];
                             $variantData->container_charges  = @$request->container_charges[$key]??"";
                             $variantData->cost_price        = @$request->variant_cost_price[$key];
                             $variantData->quantity          = @$request->variant_quantity[$key];
                             $variantData->tax_category_id   = @$request->tax_category;
+                            $variantData->status   = 1;
                             $variantData->save();
                             //pr($variantData->toArray());
                         }
-
+                        $delOpt = ProductVariant::whereNotIN('id', $existv)->where('product_id', $product->id)->whereNull('title')->delete();
                     }
-                    $delOpt = ProductVariant::whereNotIN('id', $existv)->where('product_id', $product->id)->whereNull('title')->delete();
                 } else {
                     $variantData = ProductVariant::where('product_id', $product->id)->first();
                     if (!$variantData) {
@@ -514,10 +529,7 @@ class ProductController extends BaseController
                     $variantData->tax_category_id   = $request->tax_category;
                     $variantData->save();
                 }
-                
             }
-            // pr($request->variant_incremental_price);
-            // die;
             DB::commit();
             $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
             // return redirect('client/vendor/catalogs/' . $product->vendor_id)->with('toaster', $toaster);
@@ -970,6 +982,34 @@ class ProductController extends BaseController
                             $url = $dispatch_domain->dispacher_home_other_service_key_url;
                             $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
                             $response = json_decode($res->getBody(), true);
+                            if($response && $response['message'] == 'success'){
+                                return $response['tags'];
+                            }
+            //                Log::info($response);
+                }
+            }
+            catch(\Exception $e){
+                // Log::info($e->getMessage());
+            }
+    }
+    # get dispatcher Appointment tags from dispatcher panel
+    public function getDispatcherAppointmentTags($vendor_id){
+     
+        try {
+            $dispatch_domain = $this->checkIfAppointmentOnCommon();
+                if ($dispatch_domain && $dispatch_domain != false) {
+
+                    $unique = Auth::user()->code;
+                    $email =  $unique.$vendor_id."_royodispatch@dispatch.com";
+
+                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->appointment_service_key,
+                                                        'shortcode' => $dispatch_domain->appointment_service_key_code,
+                                                        'content-type' => 'application/json']
+                                                            ]);
+                            $url = $dispatch_domain->appointment_service_key_url;
+                            $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
+                            $response = json_decode($res->getBody(), true);
+                           
                             if($response && $response['message'] == 'success'){
                                 return $response['tags'];
                             }

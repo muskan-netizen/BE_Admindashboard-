@@ -4,6 +4,20 @@
 @section('cssnew')
 <style>
 .menu-slider .slick-slide{margin:0 10px;}
+.alSpaCityBox {
+    position: relative;
+    padding-bottom: 75%;
+    background-color: #f7f7f7;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,.2);
+    overflow: hidden;
+}
+.alSpaCityBox img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
 </style>
 @endsection
 @section('content')
@@ -489,6 +503,22 @@
    				<% }); %>
    					<% }); %>
 </script><!-- recent_orders_template end -->
+<!-- cities start -->
+<script type="text/template" id="cities_template" >
+   <% _.each(cities, function(city, k){%>
+      <div class="alSpaListSlider">
+         <div>
+            <div class="alSpaListBox">
+               <div class="alSpaCityBox">
+                  <a href="/cities/<%=city.slug %>"><img class="w-100" src="<%=city.image.image_fit %>260/260<%=city.image.image_path %>"></a>
+               </div>
+               <p><%=city.title %></p>
+            </div>            
+         </div>
+      </div>
+   	<% }); 
+   %>
+</script><!-- cities cities end -->
 <!-- our_vendor_main_div start -->
 <section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0 {{isset($client_preference_detail) && $client_preference_detail->business_type == 'taxi' ? 'taxi' : ''}}" id="our_vendor_main_div" >
    <div class="vendors">
@@ -571,6 +601,16 @@
          </div>
          <div class="col-12 p-0">
             <div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+            </div>
+         </div>
+      </section>
+      @elseif($homePageLabel->slug == 'cities')
+      <section class="suppliers-section container render_full_{{$homePageLabel->slug}} d-none">
+         <div class=" top-heading d-flex justify-content-between align-self-center">
+            <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
+         </div>
+         <div class="col-12 p-0">
+            <div class="suppliers-slider-{{$homePageLabel->slug}} d-none product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
             </div>
          </div>
       </section>

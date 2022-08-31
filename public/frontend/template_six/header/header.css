@@ -30,8 +30,10 @@ body{margin: 0;background-color: #fff;font-family: 'MontserratRegular' !importan
 .logo a.navbar-brand img{height: 100%;}
 .vendor_mods_section{order: 2;}
 .rightHead{order: 3;}
-.al_body_template_six ul li{margin-bottom: 0;}
-.al_body_template_six .btn-solid{border-radius: 50px;}
+.al_body_template_six ul li{margin-bottom: 0;text-align: right;}
+.al_body_template_six .onhover-show-div  li{text-align: center;}}
+.alProductViewPriceMin span{display: block;font-size: 14px;color: #777;border-top: 1px solid #777;font-weight: 100;}
+
 /*================== common css ==============*/
 a:hover{text-decoration: none;color: var(--top-header-color);}li{list-style: none}
 .alBodyText{font-size: 14px;color: #B6B6B6;line-height: 24px;}

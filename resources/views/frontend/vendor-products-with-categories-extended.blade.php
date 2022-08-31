@@ -268,7 +268,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                             @if ($prod->variant[0]->compare_at_price > 0)
                                                                                 <span
                                                                                     class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
-                                                                            @endif</span><br> <sup>per person (min. 1)</sup></li>
+                                                                            @endif</span><br> <sup>{{ __('per person') }} {{ __('min ') . $prod->minimum_duration_min }}</sup></li>
                                                                     </ul>
                                                                 </div>
                                                                 <div class="productDetails pl-0 pr-lg-5 m-0 position-relative">
@@ -654,36 +654,33 @@ $checkSlot = findSlot('', $vendor->id, '');
         	</div>
         </section>
         <!-- More spas nearby end -->
-
-        @foreach($Map_vendors as $key => $value)
         <!-- sections SpasRelated start -->
         <section class="SpasRelated py-5">
             <div class="container">
                 <div class="row">
                     <!-- alSpaListSlider start -->
                     <div class="Spasslider w-100" id="Spasslider">
-
+                        @foreach($Map_vendors as $key => $value)
                             <div>
-                                <div class="SpasRelatedItems mx-2">
-                                    <div class="SpasRelatedItemsImageBox">
-                                        <img class="rounded" src="{{ $value->banner['image_fit'] . '400/400' . $value->banner['image_path'] }}">
+                                <a class="" href="{{route('vendorDetail')}}/{{  $value->slug }}">
+                                    <div class="SpasRelatedItems mx-2">
+                                        <div class="SpasRelatedItemsImageBox">
+                                            <img class="rounded" src="{{ $value->banner['image_fit'] . '400/400' . $value->banner['image_path'] }}">
+                                        </div>
+                                        <div class="SpasRelatedDetails p-2">
+                                            <p class="text-left m-0">{{ $value->name }}</p>
+                                            {{-- <a href="javascript:void(0)">10 Excellent (2 reviews)</a> --}}
+                                            <p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">{{ $value->state ?? 'NA' }}</span><span>{{ number_format($value->vendorToUserDistance ,2) }} {{ (!empty($client_preference_detail->distance_unit_for_time)) ? ($client_preference_detail->distance_unit_for_time ==  'kilometer' ? 'KM' : 'miles') : 'KM' }} {{ __('away') }}</span></p>
+                                        </div>
                                     </div>
-                                    <div class="SpasRelatedDetails p-2">
-                                        <p class="text-left m-0">{{ $value->name }}</p>
-                                        <a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-                                        <p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">{{ $value->state ?? 'NA' }}</span><span>{{ number_format($value->vendorToUserDistance ,2) }} {{ (!empty($client_preference_detail->distance_unit_for_time)) ? ($client_preference_detail->distance_unit_for_time ==  'kilometer' ? 'KM' : 'miles') : 'KM' }} {{ __('away') }}</span></p>
-                                    </div>
-                                </div>
+                                </a>
                             </div>
-
-
-
+                        @endforeach
                     </div><!-- alSpaListSlider start -->
                 </div>
             </div>
         </section>
-        @endforeach
-
+        
     <script type="text/template" id="header_cart_template_ondemand">
         <ul class="pl-2 pr-2 pb-2 pt-0 ">
             <div class="dcpj" >

@@ -126,7 +126,6 @@
             </form>
         </div>
         <!-- Date & Time sec end -->
-        <!--Vendor Type &  Distance to Time Calculator start -->
         <div class="col-lg-4 col-xl-3 mb-3">
             <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
                 <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
@@ -153,51 +152,8 @@
                     </div>
                 </div>
             </form>
-            @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
-            @php
-                $typeArray = getCategoryTypes();
-            @endphp
-            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}"> 
-                @csrf
-                <input type="hidden" name="send_to" id="send_to" value="customize">
-                <input type="hidden" name="verify_vendor_type" id="verify_vendor_type" value="1">
-                <div class="card-box mb-2">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
-                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                    </div>
-                    <div class="row align-items-start">
-                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-                            @php
-                                $VendorTypesName = $vendor_typ_key.'_check';
-                            @endphp
-                            @if(in_array($vendor_typ_key, $typeArray)) 
-                                <div class="col-md-12">
-                                    <div class="form-group d-flex justify-content-between">
-                                        <label for="{{$VendorTypesName}}" class="mr-3 mb-0 ">{{getDynamicTypeName($vendor_typ_value)}}</label>
-                                        <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" @if((isset($preference) && $preference->$VendorTypesName == '1')) checked='checked' @endif>
-                                    </div>
-                                </div>
-                            @endif    
-                        @endforeach
-                        <!-- <div class="col-md-12">
-                            <div class="form-group d-flex justify-content-between">
-                                <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
-                                <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group d-flex justify-content-between">
-                                <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
-                                <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
-                            </div>
-                        </div>-->
-                    </div>
-                </div>
-            </form>
-            @endif
+            
         </div>
-        <!--Vendor Type &  Distance to Time Calculator end -->
         <!-- Localization start -->
         <div class="col-lg-5 col-xl-6 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
@@ -271,8 +227,315 @@
         <!-- Localization end -->
     </div>
     <!--Localization end -->
+{{-- vendoe typs section aline by harbans singh :) --}}
+    <div class="row">
+        <div class="col-12">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __("Vendor Type") }}</h4>
+        </div>
+        </div>
+    </div>
+    <div class="row col-spacing">
+        <!--Vendor Type &  Distance to Time Calculator start -->
+        <div class="col-lg-4 col-xl-3 mb-3">
+            @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
+            @php
+                $typeArray = getCategoryTypes();
+            @endphp
+            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}"> 
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <input type="hidden" name="verify_vendor_type" id="verify_vendor_type" value="1">
+                <div class="card-box mb-2">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="row align-items-start">
+                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                            @php
+                                $VendorTypesName = $vendor_typ_key.'_check';
+                            @endphp
+                            @if(in_array($vendor_typ_key, $typeArray)) 
+                                <div class="col-md-12">
+                                    <div class="form-group d-flex justify-content-between">
+                                        <label for="{{$VendorTypesName}}" class="mr-3 mb-0 ">{{getDynamicTypeName($vendor_typ_value)}}</label>
+                                        <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" @if((isset($preference) && $preference->$VendorTypesName == '1')) checked='checked' @endif>
+                                    </div>
+                                </div>
+                            @endif    
+                        @endforeach
+                       
+                    </div>
+                </div>
+            </form>
+            @endif
+        </div>
+        <!--Vendor Type &  Distance to Time Calculator end -->
+        
+        @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry' && $client_preference_detail->on_demand_check == 1)
+            <div class="col-lg-3 col-md-6 mb-3">
+               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+                  @csrf
+               <!-- On Demand Services section start -->
+               <input type="hidden" name="send_to" id="send_to" value="customize">
+               <div class="card-box h-100">
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                     <h4 class="header-title mb-0">{{ __('On Demand Services') }}</h4>
+                     <button class="btn btn-info d-block" type="submit"  name="need_dispacher_home_other_service_submit_btn" value ="1"> {{ __("Save") }} </button>
+                  </div>
+                  <p class="sub-header">{{ __('Offer On Demand Services with Dispatcher.') }}</p>
+                  <div class="row">
+                     <div class="col-12">
+                        <div class="form-group mb-0">
+                           <div class="form-group mb-0 switchery-demo">
+                              <label for="need_dispacher_home_other_service" class="mr-3">{{ __('Enable') }}</label>
+                              <input type="checkbox" data-plugin="switchery" name="need_dispacher_home_other_service" id="need_dispacher_home_other_service" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_home_other_service == '1')) checked='checked' @endif>
+                           </div>
+                        </div>
 
-    <!-- Links Start -->
+                        <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
+                           <label for="dispacher_home_other_service_key_url">{{ __('Dispatcher URL') }} *(https://www.abc.com)</label>
+                           <input type="text" name="dispacher_home_other_service_key_url" id="dispacher_home_other_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('dispacher_home_other_service_key_url', $preference->dispacher_home_other_service_key_url ?? '')}}">
+                           @if($errors->has('dispacher_home_other_service_key_url'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('dispacher_home_other_service_key_url') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
+                           <label for="dispacher_home_other_service_key_code">{{ __('Dispatcher Short code') }}</label>
+                           <input type="text" name="dispacher_home_other_service_key_code" id="dispacher_home_other_service_key_code" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key_code', $preference->dispacher_home_other_service_key_code ?? '')}}">
+                           @if($errors->has('dispacher_home_other_service_key_code'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('dispacher_home_other_service_key_code') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
+                           <label for="dispacher_home_other_service_key">{{ __('Dispatcher API key') }}</label>
+                           <input type="text" name="dispacher_home_other_service_key" id="dispacher_home_other_service_key" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key', $preference->dispacher_home_other_service_key ?? '')}}">
+                           @if($errors->has('dispacher_home_other_service_key'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('dispacher_home_other_service_key') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+
+                     </div>
+                  </div>
+               </div><!-- On Demand Services section end -->
+            </form>
+            </div>
+        @endif
+        
+        @if($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app' && $client_preference_detail->pick_drop_check == 1 )
+
+            <div class="col-lg-3 col-md-6 mb-3">
+               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+                  @csrf
+               <!-- Pickup & Delivery section start -->
+               <div class="card-box h-100">
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                     <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
+                     <button class="btn btn-info d-block" type="submit"  name="need_dispacher_ride_submit_btn" value ="1"> {{ __("Save") }} </button>
+                  </div>
+                  <p class="sub-header">{{ __("Offer Pickup & Delivery with Dispatcher.") }}</p>
+                  <div class="row">
+                     <div class="col-12">
+                        <div class="form-group mb-0">
+                           <div class="form-group mb-0 switchery-demo">
+                              <label for="need_dispacher_ride" class="mr-3">{{ __("Enable") }}</label>
+                              <input type="checkbox" data-plugin="switchery" name="need_dispacher_ride" id="need_dispacher_ride" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_ride == '1')) checked='checked' @endif>
+                           </div>
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                           <label for="pickup_delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
+                           <input type="text" name="pickup_delivery_service_key_url" id="pickup_delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('pickup_delivery_service_key_url', $preference->pickup_delivery_service_key_url ?? '')}}">
+                           @if($errors->has('pickup_delivery_service_key_url'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('pickup_delivery_service_key_url') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                           <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
+                           <input type="text" name="pickup_delivery_service_key_code" id="pickup_delivery_service_key_code" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key_code', $preference->pickup_delivery_service_key_code ?? '')}}">
+                           @if($errors->has('pickup_delivery_service_key_code'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('pickup_delivery_service_key_code') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                           <label for="pickup_delivery_service_key">{{ __("Dispatcher API key") }}</label>
+                           <input type="text" name="pickup_delivery_service_key" id="pickup_delivery_service_key" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key', $preference->pickup_delivery_service_key ?? '')}}">
+                           @if($errors->has('pickup_delivery_service_key'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('pickup_delivery_service_key') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+
+                     </div>
+                  </div>
+               </div><!-- Pickup & Delivery section end -->
+               </form>
+            </div>
+        @endif
+
+        @if($client_preference_detail->business_type == 'laundry' && $client_preference_detail->laundry_check == 1 )
+            <div class="col-lg-3 col-md-6 mb-3">
+            <!-- laundry section start -->
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+            <div class="card-box h-100">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h4 class="header-title mb-0">{{ __("Laundry") }}</h4>
+                    <button class="btn btn-info d-block" type="submit" name="laundry_submit_btn" value ="1"> {{ __("Save") }} </button>
+                </div>
+                <p class="sub-header">{{ __("Offer laundry with Dispatcher.") }}</p>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group mb-0">
+                        <div class="form-group mb-0 switchery-demo">
+                            <label for="need_laundry_service" class="mr-3">{{ __("Enable") }}</label>
+                            <input data-plugin="switchery" name="need_laundry_service" id="need_laundry_service" class="form-control" data-color="#43bee1" type="checkbox" @if((isset($preference) && $preference->need_laundry_service == '1')) checked @endif >
+                        </div>
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="laundry_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
+                        <input type="text" name="laundry_service_key_url" id="laundry_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('laundry_service_key_url', $preference->laundry_service_key_url ?? '')}}">
+                        @if($errors->has('laundry_service_key_url'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('laundry_service_key_url') }}</strong>
+                        </span>
+                        @endif
+                        </div>
+                        <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="laundry_service_key_code">{{ __("Dispatcher Short code") }}</label>
+                        <input type="text" name="laundry_service_key_code" id="laundry_service_key_code" placeholder="" class="form-control" value="{{ old('laundry_service_key_code', $preference->laundry_service_key_code ?? '')}}">
+                        @if($errors->has('laundry_service_key_code'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('laundry_service_key_code') }}</strong>
+                        </span>
+                        @endif
+                        </div>
+                        <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="laundry_service_key">{{ __("Dispatcher API key") }}</label>
+                        <input type="text" name="laundry_service_key" id="laundry_service_key" placeholder="" class="form-control" value="{{ old('laundry_service_key', $preference->laundry_service_key ?? '')}}">
+                        @if($errors->has('laundry_service_key'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('laundry_service_key') }}</strong>
+                        </span>
+                        @endif
+                        </div>
+
+                        @if($laundry_teams != null && count($laundry_teams))
+                        <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{(isset($preference) && $preference->need_laundry_service == '1') ? '' : 'display: none;'}}" id="laundryPickupTeamListDiv">
+                        <div class="form-group">
+                            {!! Form::label('title', __('Team Tag For Laundry Pickup'),['class' => 'control-label']) !!}
+                            <select class="form-control" id="laundryPickupTeamList" name="laundry_pickup_team" data-toggle="select2" >
+                                <option value="0">{{__('Select Team Tag')}}</option>
+                                @foreach($laundry_teams as $nm)
+                                    <option value="{{$nm['name']}}" @if($preference->laundry_pickup_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
+                                @endforeach
+
+                            </select>
+                        </div>
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{(isset($preference) && $preference->need_laundry_service == '1') ? '' : 'display: none;'}}" id="laundryDropoffTeamListDiv">
+                        <div class="form-group">
+                            {!! Form::label('title', __('Team Tag For Laundry Dropoff'),['class' => 'control-label']) !!}
+                            <select class="form-control" id="laundryDropoffTeamList" name="laundry_dropoff_team" data-toggle="select2" >
+                                <option value="0">{{__('Select Team Tag')}}</option>
+                                @foreach($laundry_teams as $nm)
+                                    <option value="{{$nm['name']}}" @if($preference->laundry_dropoff_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
+                                @endforeach
+
+                            </select>
+                        </div>
+                        </div>
+                        @endif
+
+
+                    </div>
+                </div>
+            </div>
+            </form>
+            </div>
+        @endif
+
+        @if( $client_preference_detail->appointment_check == 1 )
+            <div class="col-lg-3 col-md-6 mb-3">
+            <!-- appointment section start -->
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+            <div class="card-box h-100">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h4 class="header-title mb-0">{{ getDynamicTypeName('Appointment')  }}</h4>
+                    <button class="btn btn-info d-block" type="submit" name="appointment_submit_btn" value ="1"> {{ __("Save") }} </button>
+                </div>
+                <p class="sub-header">{{ __("Offer appointment with Dispatcher.") }}</p>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group mb-0">
+                        <div class="form-group mb-0 switchery-demo">
+                            <label for="need_appointment_service" class="mr-3">{{ __("Enable") }}</label>
+                            <input data-plugin="switchery" name="need_appointment_service" id="need_appointment_service" class="form-control" data-color="#43bee1" type="checkbox" @if((isset($preference) && $preference->need_appointment_service == '1')) checked @endif >
+                        </div>
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 appointmentServiceFields" style="{{((isset($preference) && $preference->need_appointment_service == '1')) ? '' : 'display:none;'}}">
+                            <label for="appointment_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
+                                <input type="text" name="appointment_service_key_url" id="appointment_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('appointment_service_key_url', $preference->appointment_service_key_url ?? '')}}">
+                                @if($errors->has('appointment_service_key_url'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('appointment_service_key_url') }}</strong>
+                                </span>
+                                @endif
+                        </div>
+                        <div class="form-group mt-3 mb-0 appointmentServiceFields" style="{{((isset($preference) && $preference->need_appointment_service == '1')) ? '' : 'display:none;'}}">
+                            <label for="appointment_service_key_code">{{ __("Dispatcher Short code") }}</label>
+                            <input type="text" name="appointment_service_key_code" id="appointment_service_key_code" placeholder="" class="form-control" value="{{ old('appointment_service_key_code', $preference->appointment_service_key_code ?? '')}}">
+                            @if($errors->has('appointment_service_key_code'))
+                            <span class="text-danger" role="alert">
+                                <strong>{{ $errors->first('appointment_service_key_code') }}</strong>
+                            </span>
+                            @endif
+                        </div>
+                        <div class="form-group mt-3 mb-0 appointmentServiceFields" style="{{((isset($preference) && $preference->need_appointment_service == '1')) ? '' : 'display:none;'}}">
+                            <label for="appointment_service_key">{{ __("Dispatcher API key") }}</label>
+                            <input type="text" name="appointment_service_key" id="appointment_service_key" placeholder="" class="form-control" value="{{ old('appointment_service_key', $preference->appointment_service_key ?? '')}}">
+                            @if($errors->has('appointment_service_key'))
+                            <span class="text-danger" role="alert">
+                                <strong>{{ $errors->first('appointment_service_key') }}</strong>
+                            </span>
+                            @endif
+                        </div>
+
+                        
+
+
+                    </div>
+                </div>
+            </div>
+            </form>
+            </div>
+        @endif
+
+    </div>
+{{-- vendoe typs section --}}
+        <!-- Links Start -->
     <div class="row">
       <div class="col-12">
          <div class="page-title-box">
@@ -574,6 +837,29 @@
                                     <input type="text" name="laundry_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Laundry'))}}">
                                     @if($k == 0)
                                         @if($errors->has('laundry_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Appointment") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="appointment_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="appointment_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Appointment'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('appointment_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -2663,6 +2949,48 @@ $(document).ready(function(){
             $("#" + code + "_fields_wrapper").find('input').removeAttr('required');
         }
     });
+
+    var dispatcherDiv = $('#need_dispacher_ride');
+    var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
+    var laundry_service = $('#need_laundry_service');
+    var need_appointment_service = $('#need_appointment_service');
+    if(dispatcherDiv.length > 0){
+        dispatcherDiv[0].onchange = function() {
+            if ($('#need_dispacher_ride:checked').length != 1) {
+                $('.dispatcherFields').hide();
+            } else {
+                $('.dispatcherFields').show();
+            }
+        }
+    }
+
+    if(need_dispacher_home_other_service.length > 0){
+        need_dispacher_home_other_service[0].onchange = function() {
+            if ($('#need_dispacher_home_other_service:checked').length != 1) {
+                $('.home_other_dispatcherFields').hide();
+            } else {
+                $('.home_other_dispatcherFields').show();
+            }
+        }
+    }
+    if(laundry_service.length > 0){
+        laundry_service[0].onchange = function() {
+            if ($('#need_laundry_service:checked').length != 1) {
+                $('.laundryServiceFields').hide();
+            } else {
+                $('.laundryServiceFields').show();
+            }
+        }
+    }
+    if(need_appointment_service.length > 0){
+        need_appointment_service[0].onchange = function() {
+            if ($('#need_appointment_service:checked').length != 1) {
+                $('.appointmentServiceFields').hide();
+            } else {
+                $('.appointmentServiceFields').show();
+            }
+        }
+    }
 </script>
 
 @if($preference->is_static_dropoff == '1') 

@@ -226,10 +226,10 @@
                         <div class="tab-pane {{ $tab == 'catalog' ? 'active show' : '' }}" id="catalog">
                             <div class="card-box">
                                 <div class="row">
-                                    <div class="col-6">
+                                    <div class="col-4">
                                         <h4 class="mb-0"> {{ __('Catalog') }}</h4>
                                     </div>
-                                    <div class="col-6 d-flex align-items-center justify-content-end mb-3">
+                                    <div class="col-8 d-flex align-items-center justify-content-end mb-3">
 
                                             <div class="vendor-search">
                                                 <input class="form-control" id="vendor_search" type="search" placeholder="Product Search" aria-controls="vendor_product_table">
@@ -246,6 +246,11 @@
                                                 {{ $vendor->status == 1 ? '' : 'disabled' }}><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                                             </a>
+
+                                            <a class="btn btn-info waves-effect waves-light text-sm-right mx-2" dataid="0" href="{{ route('vendor.product.export', $vendor->id) }}"><i
+                                                    class="mdi mdi-plus-circle mr-1"></i> {{ __('Export') }}
+                                            </a>
+
                                             <a class="btn btn-info waves-effect waves-light text-sm-right @if($vendor->status == 1) addProductBtn @endif{{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Product') }}

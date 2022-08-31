@@ -941,7 +941,7 @@ class OrderController extends BaseController
                 $call_back_url = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/dispatch-order-status-update/" . $dynamic;
             //   $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
-            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -1638,6 +1638,8 @@ class OrderController extends BaseController
                     $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
                 } elseif ($luxury_option->title == 'dine_in') {
                     $luxury_option_name = __('Dine-In');
+                }elseif ($luxury_option->title == 'on_demand') {
+                    $luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
                 } else {
                     //$luxury_option_name = __('Delivery');
                     $luxury_option_name = getNomenclatureName($luxury_option->title);
@@ -1751,7 +1753,7 @@ class OrderController extends BaseController
                 if($order->paymentOption->code == 'stripe'){
                     $order->paymentOption->title = __('Credit/Debit Card (Stripe)');
                 }elseif($order->paymentOption->code == 'kongapay'){
-                    $order->paymentOption->code->title = 'Pay Now';
+                    $order->paymentOption->title = 'Pay Now';
                 }elseif($order->paymentOption->code == 'mvodafone'){
                     $order->paymentOption->title = 'Vodafone M-PAiSA';
                 }
@@ -1898,8 +1900,10 @@ class OrderController extends BaseController
                     if ($luxury_option->title == 'takeaway') {
                         $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
                     } elseif ($luxury_option->title == 'dine_in') {
-                        $luxury_option_name = 'Dine-In';
-                    } else {
+                        $luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+                    }elseif ($luxury_option->title == 'on_demand') {
+                        $luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
+                    }  else {
                         //$luxury_option_name = 'Delivery';
                         $luxury_option_name = getNomenclatureName($luxury_option->title);
                     }
@@ -2885,7 +2889,9 @@ class OrderController extends BaseController
             if ($luxury_option->title == 'takeaway') {
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
             } elseif ($luxury_option->title == 'dine_in') {
-                $luxury_option_name = 'Dine-In';
+                $luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+            }elseif ($luxury_option->title == 'on_demand') {
+                $luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
             } else {
                 //$luxury_option_name = 'Delivery';
                 $luxury_option_name = getNomenclatureName($luxury_option->title);

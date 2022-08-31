@@ -928,12 +928,15 @@ if (!function_exists('getServiceTypesCategory')) {
             }elseif($vendorType =="laundry" ){
                 $service_types= ['laundry_service'];
             }
+            elseif($vendorType =="appointment" ){
+                $service_types= ['appointment_service'];
+            }
             if($client_preference->business_type == 'taxi'){
                 $service_types= ['pick_drop_service'];
             }elseif($client_preference->business_type == 'laundry'){
                 $service_types= ['laundry_service'];
             }elseif($client_preference->business_type == 'home_service'){
-                $service_types= ['on_demand_service'];
+                $service_types= ['on_demand_service','appointment_service'];
             }
             if($client_preference->business_type == 'laundry'){
                 $service_types= ['laundry_service'];
@@ -973,7 +976,7 @@ if (!function_exists('getCategoryTypes')) {
             break;
         
             case "super_app":
-                $typeArray =['delivery','dinein','takeaway','rental','pick_drop','on_demand','laundry','appointment'];
+                $typeArray =['delivery','dinein','takeaway','rental','pick_drop','on_demand','appointment'];
             break;
             default:
             $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];
@@ -981,3 +984,32 @@ if (!function_exists('getCategoryTypes')) {
         return $typeArray;
     }
 }
+
+if (!function_exists('getHoursMinutes')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getHoursMinutes($minutes)
+    {
+        $hours = floor($minutes / 60);
+        $min = $minutes - ($hours * 60);
+        return $hours.' hour ' .$min. ' min ';
+
+    }
+}
+
+
+if (!function_exists('getMinutes')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getMinutes($hrs,$minutes)
+    {
+        $minutes = ($hrs*60)+($minutes);
+        return $minutes;
+
+    }
+}
+
+
+
