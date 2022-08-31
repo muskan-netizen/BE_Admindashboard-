@@ -124,7 +124,7 @@ class ProductController extends FrontController{
                 $query->where('user_wishlists.user_id', $user->id);
             });
         }
-        $product = $product->with('related')->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count' )
+        $product = $product->with('related')->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration' )
             ->whereHas('vendor',function($q) use($vendor){
                 $q->where('slug',$vendor);
             })->where('url_slug', $url_slug)
@@ -173,7 +173,7 @@ class ProductController extends FrontController{
             }
             $sets[] = ['variant_types' => $variant_type_id, 'variant_options' => $variant_option_id];
         }
-        if($product->category->categoryDetail->type_id == 8){
+        if(  in_array($product->category->categoryDetail->type_id ,[8,12]) ){
             $cartDataGet = $this->getCartOnDemand($request);
             $nlistData = clone $product;
             $nlistData = $nlistData->where('url_slug', $url_slug)->paginate(10);
@@ -319,7 +319,7 @@ class ProductController extends FrontController{
                 //     }
                 // }
                 // $pv_ids = $newIds;
-
+                 
                 if ($product_variant) {
                     $pv_ids = array();
                     foreach ($product_variant as $k => $variant) {
@@ -337,7 +337,7 @@ class ProductController extends FrontController{
                 }
                 else{
                     $product_variant = ProductVariantSet::where('variant_type_id', $request->variants[$key])
-                    ->where('variant_option_id', $request->options[$key])->where('product_id', $product->id)->get();
+                    ->where('variant_option_id', $request->options[$key])->where('product_variant_sets.product_id', $product->id)->get();
                     if($product_variant){
                         foreach ($product_variant as $k => $variant) {
                             if(!in_array($variant->product_variant_id, $pv_ids)){
@@ -346,18 +346,18 @@ class ProductController extends FrontController{
                         }
                     }
                 }
+                
             }
         }
         $sets = array();
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $availableSets = Product::with(['variantSet.variantDetail','variantSet.option2'=>function($q)use($product, $pv_ids){
-            $q->where('product_id', $product->id); //->whereIn('product_variant_id', $pv_ids);
+            $q->where('product_variant_sets.product_id', $product->id); //->whereIn('product_variant_id', $pv_ids);
         }])
+        //return $product;
         ->select('id')
-        ->where('id', $product->id)->first();
-
+        ->where('products.id', $product->id)->first();
         $data['availableSets'] = $availableSets->variantSet;
-
         if($pv_ids){
             $variantData = ProductVariant::with('product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart')->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
                 ->whereIn('id', $pv_ids)->get();

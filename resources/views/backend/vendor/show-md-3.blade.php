@@ -28,6 +28,13 @@
             @endif
             </div>
             @endif
+            @if($vendor_for_appointment_delivery > 0 && ($client_preferences->appointment_check == 1) )
+            <div class="for_appointment_delivery_service_only">
+            @if( ($client_preferences->need_appointment_service == 1) && ($vendor->appointment == 1 ) )
+            <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmAppointmentDispatcher" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (Appointment)") }} </button>
+            @endif
+            </div>
+            @endif
 
             @endif
         </div>
@@ -209,7 +216,7 @@
                     </div>
                     @endif
                     @if($client_preference_detail->is_vendor_tags == '1')
-                        @if(count($facilties))
+                        @if(!empty($facilties))
                             <div class="col-md-12">
                                 <div class="form-group" id="social_link">
                                     {!! Form::label('title', 'Vendor Tags',['class' => 'control-label']) !!}
@@ -334,7 +341,7 @@
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
-            <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
+            <form name="config-form" action="{{route('vendor.config.update.profile', $vendor->id)}}" class="needs-validation" method="post">
                 @csrf
                 <div class="row">
                     <div class="col-md-12">
@@ -922,6 +929,12 @@ $( document ).ready(function() {
                         $('.for_on_demand_service_only').html('<button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcherOnDemand" data-id="'+response.data.product_categories[0].vendor_id+'">{{__("Login Into Dispatcher (On Demand Services)")}} </button>');
                     }else{
                         $('.for_on_demand_service_only').html('');
+                    }
+                    if(response.data.check_appointment_service == 1)
+                    {
+                        $('.for_appointment_delivery_service_only').html('<button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmAppointmentDispatcher" data-id="'+response.data.product_categories[0].vendor_id+'">{{__("Login Into Dispatcher (On Demand Services)")}} </button>');
+                    }else{
+                        $('.for_appointment_delivery_service_only').html('');
                     }
 
 

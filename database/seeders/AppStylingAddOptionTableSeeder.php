@@ -34,5 +34,15 @@ class AppStylingAddOptionTableSeeder extends Seeder
             'created_at' => NULL,
             'updated_at' => NULL,
         ]);
+
+        $app_styling_option = AppStylingOption::updateOrCreate([ 
+            'image' => 'bar_six.png',
+        ],[
+            'app_styling_id' => 7,
+            'name' => 'Tab 6',
+            'image' => 'bar_six.png',
+            'is_selected' => '0',
+            'template_id' => '6',
+        ]);
     }
 }

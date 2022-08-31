@@ -26,7 +26,7 @@ $(document).ready( async function () {
         if($("#address-longitude").length > 0){
             longitude = $("#address-longitude").val();
         }
-       await getHomePageCategoryMenu(latitude, longitude);
+       //await getHomePageCategoryMenu(latitude, longitude);
         getHomePage(latitude, longitude);
         // $(document).ready(function () {
         if ($.cookie("age_restriction") != 1) {
@@ -207,7 +207,7 @@ $(document).ready( async function () {
             });
         }
     }
-    
+
     //$(".navigation-tab-item").click(function() {
     $(document).on('click','.navigation-tab-item > a',function() {
         if($.hasAjaxRunning()){
@@ -270,7 +270,10 @@ $(document).ready( async function () {
         // }
     })
 
-    function vendorType(latitude, longitude, type = "delivery"){
+    async function vendorType(latitude, longitude, type = "delivery"){
+
+        await  getHomePageCategoryMenu(latitude, longitude, type);
+        await  getHomePage(latitude, longitude, type);
         $.ajax({
             type: "get",
             dataType: 'json',
@@ -293,8 +296,31 @@ $(document).ready( async function () {
             }
         });
     }
+    function getcart(){
+        $.ajax({
+            type: "get",
+            dataType: 'json',
+            url: cart_details_url,
+            success: async function (response) {
+                if (response.data != "") {
+                    let cartProducts = response.data.products;
+                    if (cartProducts != "") {
+                        $("#remove_cart_modal").modal('show');
+                        $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
+                        $(".nav-tabs.vendor_mods").attr("data-mod", type);
+                    } else {
+                        await  getHomePageCategoryMenu(latitude, longitude, type);
+                        await getHomePage(latitude, longitude, type);
+                    }
+                } else {
+                    await getHomePageCategoryMenu(latitude, longitude, type);
+                    await getHomePage(latitude, longitude, type);
+                }
+            }
+        });
+    }
 
-    function getHomePage(latitude, longitude, vtype = "") {
+    async function getHomePage(latitude, longitude, vtype = "") {
         if(vtype != ''){
             vendor_type = vtype;
         }
@@ -370,7 +396,7 @@ $(document).ready( async function () {
                         // if (response.data.feature_products.length > 0) {
                         //     $('.render_full_featured_products').removeClass('d-none');
                         // } else {
-                        //     $('.render_full_featured_products').addClass('d-none');
+                        //     $('.render_full_featumyFunctionGetDataHomePagered_products').addClass('d-none');
                         // }
                         // if (vendors.length > 0) {
                         //     $('#our_vendor_main_div').removeClass('d-none');
@@ -399,55 +425,102 @@ $(document).ready( async function () {
             complete:function(data){
                 remove_spinner('#our_vendor_main_div');
                 // Hide image container
-                $(".shimmer_effect").hide();
+
+                if($("body").hasClass("al_body_template_six")){
+                    $(".main_shimer").hide();
+                    $(".shimmer_effect").hide();
+                }else{
+                    $(".shimmer_effect").hide();
+                }
+               
                 $(".home-slider, .home-banner-slider").show();
-            //    $("#our_vendor_main_div").show();
+               //  $("#our_vendor_main_div").show();
             }
         });
     }
 
+    function getHomePageBanners(lat='', long='') {
+        ajaxDataSet = {};
+        if ((lat) && (long)) {
+            ajaxDataSet.latitude = lat;
+            ajaxDataSet.longitude = long;
+        }
+       
+        $.ajax({
+            data: ajaxDataSet,
+            type: "POST",
+            dataType: 'json',
+            url: home_page_banners_url,
+            beforeSend: function(){
+
+            },
+            success: function (response) {
+                if (response.status == "Success") {
+                    $(".al_desktop_banner").html('');
+                    if(response.data.banners != ''){
+                        let desktop_banners_template = _.template($('#desktop_banners_template').html());
+                        $(".al_desktop_banner").append(desktop_banners_template({ banners: response.data.banners }));
+                    }
+                    if(response.data.mobile_banners != ''){
+                        $(".al_mobile_banner").html('');
+                        let mobile_banners_template = _.template($('#mobile_banners_template').html());
+                        $(".al_mobile_banner").append(mobile_banners_template({ banners: response.data.mobile_banners }));
+                    }
+
+                    $('.carousel').carousel();
+                }
+            },
+            complete:function(data){
+                // Hide image container
+                // $(".shimmer_effect").hide();
+            }
+        });
+    }
 
     function myFunctionGetDataHomePage(item, index) {
         $(".shimmer_effect_"+item).show();
 
         switch (item) {
             case 'trending_vendors':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                 break;
             case 'vendors':
-                    getHomePageDataSingleBySingle(item);
+                    getHomePageDataSingleBySingle(item, index);
                 break;
             case 'featured_products':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
 
               break;
             case 'new_products':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
               break;
             case 'on_sale':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
               break;
             case 'best_sellers':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                break;
             case 'brands':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                break;
             case 'recent_orders':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                break;
             case 'pickup_delivery':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
                break;
             case 'dynamic_page':
-                getHomePageDataSingleBySingle(item);
+                getHomePageDataSingleBySingle(item, index);
+               break;
+            case 'cities':
+                getHomePageDataSingleBySingle(item, index);
                break;
           }
 
         $(".shimmer_effect_"+item).hide();
     }
 
-    function getHomePageDataSingleBySingle(item) {
+    function getHomePageDataSingleBySingle(item, index) {
 
         let latitude = "";
         let longitude = "";
@@ -484,13 +557,13 @@ $(document).ready( async function () {
             beforeSend: function(){
 
             },
-            success: function (response) {
+            success: async function (response) {
                 if (response.status == "Success") {
                     var path = window.location.pathname;
                     if (path == '/') {
 
                         let products_template = _.template($('#products_template').html());
-
+                        
                         switch (item) {
                             case 'trending_vendors':
                                 if(response.data.trending_vendors.length > 0){
@@ -523,9 +596,9 @@ $(document).ready( async function () {
                                 }
                             break;
                             case 'vendors':
+                                $(".render_vendors").html('');
                                 if($('.suppliers-slider-vendors').hasClass('slick-initialized')){
                                     $(".suppliers-slider-vendors").slick('destroy');
-                                    $(".render_vendors").html('');
                                 }
                                 let vendors_template = _.template($('#vendors_template').html());
                                 $(".render_vendors").append(vendors_template({ vendors: response.data.vendors , type: vendor_language}));
@@ -701,6 +774,33 @@ $(document).ready( async function () {
                                     $('.render_full_recent_orders').addClass('d-none');
                                 }
                                break;
+                            case 'cities':
+                               if (response.data.cities.length > 0) {
+                                if($('.suppliers-slider-cities').hasClass('slick-initialized')){
+                                    $(".suppliers-slider-cities").slick('destroy');
+                                    $(".render_cities").html('');
+                                }
+                                   let city_template = _.template($('#cities_template').html());
+                                   $(".render_cities").append(city_template({ cities: response.data.cities }));
+                                   $(".suppliers-slider-cities").slick({
+                                       arrows: true,
+                                       dots: false,
+                                       infinite: true,
+                                       speed: 300,
+                                       slidesToShow: 5,
+                                       slidesToScroll: 3,
+                                       responsive: [
+                                           {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},
+                                           {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 1}},
+                                           {breakpoint: 767,settings: {slidesToShow: 3,slidesToScroll: 1}},
+                                           {breakpoint: 360,settings: {slidesToShow: 3,slidesToScroll: 1}}
+                                       ]
+                                   });
+                                   $('.render_full_cities').removeClass('d-none');
+                               } else {
+                                   $('.render_full_cities').addClass('d-none');
+                               }
+                              break;
                           }
 
                           let vendors = response.data.vendors;
@@ -785,12 +885,14 @@ $(document).ready( async function () {
                         $("#remove_cart_modal").modal('show');
                         $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
                     } else {
+                        getHomePageBanners(latitude, longitude);
                         getHomePageCategoryMenu(latitude, longitude);
                         getHomePage(latitude, longitude);
                         let selected_address = $("#address-input").val();
                         $(".homepage-address span").text(selected_address).attr({ "title": selected_address, "data-original-title": selected_address });
                     }
                 } else {
+                    getHomePageBanners(latitude, longitude);
                     getHomePageCategoryMenu(latitude, longitude);
                     getHomePage(latitude, longitude);
                 }
@@ -887,6 +989,7 @@ $(document).ready( async function () {
 
     ////////////// *****************   home page category icon **************** //////////////////
   async function getHomePageCategoryMenu(latitude, longitude, vtype = "") {
+
     if(vtype != ''){
         vendor_type = vtype;
     }

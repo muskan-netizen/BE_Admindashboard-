@@ -29,7 +29,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('dispatch-order-status-update-details/{id?}', 'Front\DispatcherController@dispatchOrderDetails')->name('dispatch-order-update-details'); // Order Status update Dispatch details
 	Route::get('dispatch-order-cancel-request/{id?}', 'Front\DispatcherController@dispatchOrderCancelRequest')->name('dispatch-order-cancel-request'); // Order Status update Dispatch details
 	Route::post('dispatch/customer/distance/notification/{id?}', 'Front\DispatcherController@dispatchCustomerDetails')->name('dispatch-customer-details'); // send distance & co2 emission push notification from dispatch to customer
-    Route::get('testsms', 'Front\FrontController@testsms');
+    Route::get('dispatch-order-product-status-update/{id?}', 'Front\DispatcherController@dispatchOrderSingleProductStatusUpdate')->name('dispatch-order-product-status-update'); // Order Status update Dispatch
+	Route::get('testsms', 'Front\FrontController@testsms');
 
     Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
 	Route::get('cabbooking', 'Front\CustomerAuthController@getTestHtmlPage');
@@ -177,7 +178,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/upay','Front\ConektaController@afterPayment')->name('payment.upay.afterPayment');
 	//Conekta
 	Route::match(['get','post'],'payment/conekta/page','Front\ConektaController@beforePayment')->name('payment.conekta.beforePayment');
-	Route::match(['get','post'],'payment/conekta','Front\ConektaController@afterPayment')->name('payment.conekta.afterPayment');
+	Route::match(['get','post'],'payment/conekta/{status}/{payment_from}/{come_from}/{amount}/{order_number?}','Front\ConektaController@afterPayment')->name('payment.conekta.afterPayment');
 	//Telr
 	Route::match(['get','post'],'payment/telr/page','Front\TelrController@beforePayment')->name('payment.telr.beforePayment');
 	Route::match(['get','post'],'payment/telr/{status}/{payment_from}/{come_from}/{amount}/{order_number?}','Front\TelrController@afterPayment')->name('payment.telr.afterPayment');
@@ -346,6 +347,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/autocomplete-search', 'Front\SearchController@postAutocompleteSearch')->name('autocomplete');
 	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
 	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
+	Route::get('/homeTest', 'Front\UserhomeController@indexTest')->name('homeTest');
 	Route::get('/homeTemplateOne', 'Front\UserhomeController@indexTemplateOne')->name('indexTemplateOne');
 	//Route::get('page/driver-registration', 'Front\UserhomeController@driverSignup')->name('page/driver-registration');
 	Route::post('page/driverSignup', 'Front\OrderController@driverSignup')->name('page.driverSignup');
@@ -354,6 +356,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::post('/homePageData', 'Front\UserhomeController@postHomePageData')->name('homePageData');
 	Route::post('/postHomePageDataSingle', 'Front\UserhomeController@postHomePageDataSingle')->name('postHomePageDataSingle');
+	Route::post('/postHomePageDataBanners', 'Front\UserhomeController@postHomePageDataBanners')->name('postHomePageDataBanners');
 	Route::post('/homePageDataNew', 'Front\UserhomeController@postHomePageDataNew')->name('homePageDataNew');
 	Route::post('/homePageDataCategoryMenu', 'Front\UserhomeController@homePageDataCategoryMenu')->name('homePageDataCategoryMenu');
 	Route::post('/theme', 'Front\UserhomeController@setTheme')->name('config.update');
@@ -443,6 +446,10 @@ Route::group(['middleware' => ['domain']], function () {
 	//User Rider Routes
 	Route::post('rider/add','Front\RiderController@addRider')->name('rider.create');
 	Route::get('rider/delete','Front\RiderController@removeRider')->name('rider.remove');
+
+	//cities
+	Route::get('cities/{slug}','Front\VendorCitiesController@getCities')->name('city.getCities');
+
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
@@ -549,5 +556,12 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
 	Route::post('user/chat/fetchOrderDetail', 'Front\ChatController@fetchOrderDetail')->name('userChat.fetchOrderDetail');
 	Route::post('user/chat/startChat', 'Front\ChatController@startChat')->name('userChat.startChat');
+
+
+
+	/**
+	 * booking routes
+	 */
+	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
 
 });

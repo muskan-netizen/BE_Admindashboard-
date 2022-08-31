@@ -118,6 +118,19 @@
                 </div>
             </div>
         </div>
-
+        @if(isset($client_preferences->is_service_area_for_banners) && ($client_preferences->is_service_area_for_banners == 1) && ($client_preferences->is_hyperlocal == 1))
+        <div class="row">
+            <div class="col-md-12" >
+                <div class="form-group">
+                    <label class="control-label">{{ __("Service Area") }}</label>
+                    <select class="form-control select2-multiple" name="banner_service_area[]" data-toggle="select2" multiple="multiple" placeholder="Select Service Area...">
+                        @foreach($areas as $area)
+                            <option value="{{$area->id}}" {{ (in_array($area->id, $selected_areas)) ? 'selected' : '' }}>{{$area->name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+        @endif
     </div>
 </div>

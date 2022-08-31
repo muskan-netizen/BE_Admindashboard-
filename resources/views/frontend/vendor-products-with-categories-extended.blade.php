@@ -9,7 +9,6 @@ $checkSlot = findSlot('', $vendor->id, '');
 @endsection
 @section('css-links')
 <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/price-range.css') }}">
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
     <!-- section start -->
@@ -55,36 +54,36 @@ $checkSlot = findSlot('', $vendor->id, '');
         <!-- section hero end -->
 
         <!-- single products content start -->
-        <section class="singleProductContent pb-5">
+        <section class="singleProductContent pb-md-5 pb-2">
         	<div class="container">
         		<div class="row">
 	        		<!-- breadcrumb start -->
-	        		<nav class="col-12 p-0" aria-label="breadcrumb">
+	        		<nav class="col-12" aria-label="breadcrumb">
 					  <ol class="breadcrumb p-0">
                         @if( $vendor->country)
 					        <li class="breadcrumb-item pr-3"><a href="javascript:void(0)">{{  $vendor->country ?? '' }}</a></li>
                         @endif
                         @if( $vendor->state)
-					        <li class="breadcrumb-item active pl-4" aria-current="page">{{ $vendor->state ?? '' }}</li>
+					        <li class="breadcrumb-item active" aria-current="page">{{ $vendor->state ?? '' }}</li>
                         @endif
 					  </ol>
 					</nav><!-- breadcrumb end -->
-					<div class="col-12 p-0">
+					<div class="col-12">
 						<div class="row">
-							<div class="col-md-7 p-0">
-								<div class="alSpaListHead text-center text-lg-left col-12 mb-4">
-			                        <p class="alLgFontSize pr-5">{{ $vendor->name }}</p>
+							<div class="col-md-7">
+								<div class="alSpaListHead text-center text-lg-left mb-md-4">
+			                        <p class="alLgFontSize pr-md-5">{{ $vendor->name }}</p>
 			                        <p class="alShareLink alBodyText d-flex align-items-center"><a href="javascript:void(0)">{{ $vendor->address }}
                                         {{-- <span class="ml-3"><img src="{{asset('frontend/template_six/spaimages/share.svg')  }}"></span> --}}
                                     </a></p>
 			                    </div>
 							</div>
-							<div class="col-md-5 p-0">
-								<div class="alSpaListHead text-center text-lg-left col-12 mt-3">
+							<div class="col-md-5">
+								<div class="alSpaListHead text-center text-lg-left mt-md-3 mb-md-0 mb-2">
 			                        <ul class="d-flex align-items-center">
                                         @if ($vendor->vendorRating > 0)
-		                        		    <li class="d-flex align-items-center"><img class="mr-2" src="{{asset('frontend/template_six/spaimages/Star.svg')  }}">  {{ $vendor->vendorRating }} {{ __('Very Good') }}</li>
-                                        
+		                        		<li class="d-flex align-items-center"><img class="mr-2" src="{{asset('frontend/template_six/spaimages/Star.svg')  }}">  {{ $vendor->vendorRating }} {{ __('Very Good') }}</li>
+
 		                        		<li class="border-left ml-3 pl-3">
                                             <a href="javascript:void(0)">{{ $vendor->review_count . ' customer reviews' }}</a>
                                         </li>
@@ -127,9 +126,9 @@ $checkSlot = findSlot('', $vendor->id, '');
                                 <li class="mr-4">
                                     <img class="mr-2" src="{{ $facilty->image['proxy_url'].'30/30'.$facilty->image['image_path']}}">
                                     <span>{{ $facilty->translations->first() ? $facilty->translations->first()->name : 'NA' }}</span>
-                                    
 
-                                    
+
+
                                 </li>
                                 @if($key ==6 && $key == ($total_facilty-1) )
                                 </div>
@@ -171,326 +170,336 @@ $checkSlot = findSlot('', $vendor->id, '');
         </section><!-- single products content end -->
 
         <!-- chooseYourOffer start -->
-        <section class="chooseYourOffer mb-5">
+        <section class="chooseYourOffer mb-md-5">
         	<div class="container">
-        		<div class="row">
-                    <div class="col-md-4"></div>
-                    <div class="col-md-8"></div>
-                    <div class="col-12">
-                        <div class="row vendor-products-wrapper">
-                            <div class="col-sm-4 col-lg-3 border-right al_white_bg_round p-0">
-                                <nav class="scrollspy-menu">
-                                    <ul>
-                                        @forelse($listData as $key => $data)
-                                            <li><a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation_one->name??'' }}({{ $data->products_count }})</a>
-                                            </li>
-                                        @empty
-                                        @endforelse
-                                    </ul>
-                                </nav>
-                            </div>
-                            <div class="col-md-8 col-lg-6 alScrollspyProduct">
-                                    <div class="row mt-2 d-flex align-items-start mb-sm-2 justify-content-center">
-                                        <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
-                                            <div class="radius-bar w-100">
-                                                <div class="search_form d-flex align-items-center border">
-                                                    <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
-                                                    <input class="form-control border-0 typeahead" type="search"
-                                                        placeholder="{{ __('Search') }}" id="vendor_search_box">
+                <div class="categories-product-list mt-sm-4">
+
+                    <a id="side_menu_toggle" class="d-md-none d-flex" href="javascript:void(0)">
+                        <div class="manu-bars">
+                            <span class="bar-line"></span>
+                            <span class="bar-line"></span>
+                            <span class="bar-line"></span>
+                        </div>
+                        <span>{{ _('Menu') }}</span>
+                    </a>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row vendor-products-wrapper">
+                                    <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
+                                        <nav class="scrollspy-menu">
+                                            <ul>
+                                                @forelse($listData as $key => $data)
+                                                <li>
+                                                    <a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation_one->name??'' }} <span> {{ $data->products_count }} </span></a>
+                                                </li>
+                                                @empty
+                                                @endforelse
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    <div class="col-md-8 col-lg-6 alScrollspyProduct">
+                                            <div class="row mt-2 d-flex align-items-start mb-sm-2 justify-content-center">
+                                                <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
+                                                    <div class="radius-bar w-100">
+                                                        <div class="search_form d-flex align-items-center border">
+                                                            <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                                            <input class="form-control border-0 typeahead" type="search"
+                                                                placeholder="{{ __('Search') }}" id="vendor_search_box">
+                                                        </div>
+                                                        <div class="list-box style-4" style="display:none;" id="search_box_main_div">
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="list-box style-4" style="display:none;" id="search_box_main_div">
+                                                <div class="col-5 text-right pl-0"><span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span>
+                                                    <select name="order_type" id='order_type' class="product_tag_filter p-1">
+                                                        <option value="featured">{{ __('Featured') }}</option>
+                                                        <option value="a_to_z">{{ __('A to Z') }}</option>
+                                                        <option value="z_to_a">{{ __('Z to A') }}</option>
+                                                        <option value="low_to_high">{{ __('Cost : Low to High') }}</option>
+                                                        <option value="high_to_low">{{ __('Cost : High to Low') }}</option>
+                                                        <option value="rating">{{ __('Avg. Customer Review') }}</option>
+                                                        <option value="newly_added">{{ __('Newest Arrivals') }}</option>
+                                                    </select>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-5 text-right pl-0"><span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span>
-                                            <select name="order_type" id='order_type' class="product_tag_filter p-1">
-                                                <option value="featured">{{ __('Featured') }}</option>
-                                                <option value="a_to_z">{{ __('A to Z') }}</option>
-                                                <option value="z_to_a">{{ __('Z to A') }}</option>
-                                                <option value="low_to_high">{{ __('Cost : Low to High') }}</option>
-                                                <option value="high_to_low">{{ __('Cost : High to Low') }}</option>
-                                                <option value="rating">{{ __('Avg. Customer Review') }}</option>
-                                                <option value="newly_added">{{ __('Newest Arrivals') }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
 
-                                    <div class="col-12 d-sm-flex justify-content-start mb-2 p-0">
-                                        @if (isset($tags) && !empty($tags))
-                                            @foreach ($tags as $key => $tag)
-                                                <label class="label-switch switch-primary product_tag_filter mr-2 mb-0">
-                                                    <input type="checkbox"
-                                                        class="switch switch-bootstrap product_tag_filter status"
-                                                        name="tag_id" id="product_tag_filter_{{ $key }}"
-                                                        data-tag_id="{{ $tag->id }}" value="
-                                                        {{ $tag->id }}">
-                                                    <span class="lable">
-                                                        @if (isset($tag->icon) && !empty($tag->icon))
-                                                            <img class="ml-1"
-                                                                src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}"
-                                                                alt="">
-                                                        @endif <span
-                                                            class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span>
-                                                    </span>
-                                                </label>
-                                            @endforeach
-                                        @endif
-                                    </div>
-                                @forelse($listData as $key => $data)
-                                    <section class="scrolling_section " id="{{ $data->category->slug }}">
-                                        @if (!empty($data->products))
-                                            <h2 class="category-head mt-0 mb-3">
-                                                {{ $data->category->translation_one->name??'' }}
-                                                ({{ $data->products_count }})
-                                            </h2>
-                                            <div class="viewAllProductSec" >
+                                            <div class="col-12 d-sm-flex justify-content-start mb-2 p-0">
+                                                @if (isset($tags) && !empty($tags))
+                                                    @foreach ($tags as $key => $tag)
+                                                        <label class="label-switch switch-primary product_tag_filter mr-2 mb-0">
+                                                            <input type="checkbox"
+                                                                class="switch switch-bootstrap product_tag_filter status"
+                                                                name="tag_id" id="product_tag_filter_{{ $key }}"
+                                                                data-tag_id="{{ $tag->id }}" value="
+                                                                {{ $tag->id }}">
+                                                            <span class="lable">
+                                                                @if (isset($tag->icon) && !empty($tag->icon))
+                                                                    <img class="ml-1"
+                                                                        src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}"
+                                                                        alt="">
+                                                                @endif <span
+                                                                    class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span>
+                                                            </span>
+                                                        </label>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                        @forelse($listData as $key => $data)
+                                            <section class="scrolling_section " id="{{ $data->category->slug }}">
+                                                @if (!empty($data->products))
+                                                    <h2 class="category-head mt-0 mb-3">
+                                                        {{ $data->category->translation_one->name??'' }}
+                                                        ({{ $data->products_count }})
+                                                    </h2>
+                                                    <div class="viewAllProductSec" >
 
-                                            @forelse($data->products as $prod)
+                                                    @forelse($data->products as $prod)
 
-                                                <div class="card mb-3 product_row"  data-p_sku="{{ $prod->sku }}"
-                                                    data-slug="{{ $prod->url_slug }}">
-                                                    <div class="card-body">
-                                                        <div class="d-flex align-items-center justify-content-between border-bottom">
-                                                            <p class="m-0 productTitle"> {{ $prod->translation_title }}</p>
-                                                            <ul class="m-0 p-0 d-flex align-items-center">
-                                                                <li>From</li>
+                                                        <div class="card mb-3 product_row"  data-p_sku="{{ $prod->sku }}"
+                                                            data-slug="{{ $prod->url_slug }}">
+                                                            <div class="card-body">
+                                                                <div class="d-flex align-items-center justify-content-between border-bottom">
+                                                                    <p class="m-0 productTitle"> {{ $prod->translation_title }}</p>
+                                                                    <ul class="m-0 p-0 d-flex align-items-center">
+                                                                        <li>From</li>
 
-                                                                <li class="ml-2"><span class="productsPrice">
-                                                                    {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,',') }}
-                                                                    @if ($prod->variant[0]->compare_at_price > 0)
-                                                                        <span
-                                                                            class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
-                                                                    @endif</span><br> <sup>per person (min. 1)</sup></li>
-                                                            </ul>
-                                                        </div>
-                                                        <div class="productDetails pl-0 pr-lg-5 m-0 position-relative">
-                                                            <p class="position-relative px-3 py-2">{!! $prod->translation_description !!} </p>
-                                                        </div>
-                                                        {{-- <ul class="productDetails pl-0 pr-lg-5 m-0 position-relative">
-                                                            <li class="position-relative px-3 py-2">
-                                                                <p class="m-0">One night bed and breakfast</p>
-                                                            </li>
-                                                            <li class="position-relative px-3 py-2">
-                                                                <p class="m-0">Use of the leisure facilities</p>
-                                                            </li>
-                                                            <li class="position-relative px-3 py-2">
-                                                                <p class="m-0">Bottle of sparkling wine</p>
-                                                            </li>
-                                                            <li class="position-relative px-3 py-2">
-                                                                <p class="m-0">Robe, towel and slippers provided</p>
-                                                            </li>
-                                                        </ul> --}}
-                                                        {{-- <ul class="p-0 m-0 productBookingBtns position-relative d-flex align-items-center justify-content-between">
-                                                            <li><a href="#"><img src="{{asset('frontend/template_six/spaimages/flash_on.svg') }}"> Instant book</a></li>
-                                                            <li class="d-flex align-items-center"><button class="alProductBtns mr-2">More details and book</button> <button class="alProductBtns outlineBtn">Buy as a gift</button></li>
-                                                        </ul> --}}
-                                                        <div class="productBookingBtns product_variant_quantity_wrapper">
-                                                            @php
-                                                                $data = $prod;
-                                                                $productVariantInCart = 0;
-                                                                $productVariantIdInCart = 0;
-                                                                $productVariantInCartWithDifferentAddons = 0;
-                                                                $cartProductId = 0;
-                                                                $cart_id = 0;
-                                                                $vendor_id = 0;
-                                                                $product_id = $data->id;
-                                                                $variant_id = $data->variant[0] ? $data->variant[0]->id : 0;
-                                                                $variant_price = 0;
-                                                                $variant_quantity = $prod->variant_quantity;
-                                                                $isAddonExist = 0;
-                                                                $minimum_order_count = $data->minimum_order_count == 0 ? 1 : $data->minimum_order_count;
-                                                                $batch_count = $data->batch_count;
-                                                                if (count($data->addOn) > 0) {
-                                                                    $isAddonExist = 1;
-                                                                }
-                                                            @endphp
-
-                                                            @foreach ($data->variant as $var)
-                                                                @if (isset($var->checkIfInCart) && count($var->checkIfInCart) > 0)
+                                                                        <li class="ml-2"><span class="productsPrice">
+                                                                            {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,',') }}
+                                                                            @if ($prod->variant[0]->compare_at_price > 0)
+                                                                                <span
+                                                                                    class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
+                                                                            @endif</span><br> <sup>{{ __('per person') }} {{ __('min ') . $prod->minimum_duration_min }}</sup></li>
+                                                                    </ul>
+                                                                </div>
+                                                                <div class="productDetails pl-0 pr-lg-5 m-0 position-relative">
+                                                                    <p class="position-relative px-3 py-2">{!! $prod->translation_description !!} </p>
+                                                                </div>
+                                                                {{-- <ul class="productDetails pl-0 pr-lg-5 m-0 position-relative">
+                                                                    <li class="position-relative px-3 py-2">
+                                                                        <p class="m-0">One night bed and breakfast</p>
+                                                                    </li>
+                                                                    <li class="position-relative px-3 py-2">
+                                                                        <p class="m-0">Use of the leisure facilities</p>
+                                                                    </li>
+                                                                    <li class="position-relative px-3 py-2">
+                                                                        <p class="m-0">Bottle of sparkling wine</p>
+                                                                    </li>
+                                                                    <li class="position-relative px-3 py-2">
+                                                                        <p class="m-0">Robe, towel and slippers provided</p>
+                                                                    </li>
+                                                                </ul> --}}
+                                                                {{-- <ul class="p-0 m-0 productBookingBtns position-relative d-flex align-items-center justify-content-between">
+                                                                    <li><a href="#"><img src="{{asset('frontend/template_six/spaimages/flash_on.svg') }}"> Instant book</a></li>
+                                                                    <li class="d-flex align-items-center"><button class="alProductBtns mr-2">More details and book</button> <button class="alProductBtns outlineBtn">Buy as a gift</button></li>
+                                                                </ul> --}}
+                                                                <div class="productBookingBtns product_variant_quantity_wrapper">
                                                                     @php
-                                                                        $productVariantInCart = 1;
-                                                                        $productVariantIdInCart = $var->checkIfInCart['0']['variant_id'];
-                                                                        $cartProductId = $var->checkIfInCart['0']['id'];
-                                                                        $cart_id = $var->checkIfInCart['0']['cart_id'];
-                                                                        // $variant_quantity = $var->checkIfInCart['0']['quantity'];
-                                                                        $variant_quantity = 0;
-                                                                        $vendor_id = $data->vendor_id;
+                                                                        $data = $prod;
+                                                                        $productVariantInCart = 0;
+                                                                        $productVariantIdInCart = 0;
+                                                                        $productVariantInCartWithDifferentAddons = 0;
+                                                                        $cartProductId = 0;
+                                                                        $cart_id = 0;
+                                                                        $vendor_id = 0;
                                                                         $product_id = $data->id;
+                                                                        $variant_id = $data->variant[0] ? $data->variant[0]->id : 0;
+                                                                        $variant_price = 0;
+                                                                        $variant_quantity = $prod->variant_quantity;
+                                                                        $isAddonExist = 0;
+                                                                        $minimum_order_count = $data->minimum_order_count == 0 ? 1 : $data->minimum_order_count;
                                                                         $batch_count = $data->batch_count;
-                                                                        $variant_price = decimal_format($var->price * $data->variant_multiplier);
-                                                                        if (count($var->checkIfInCart) > 1) {
-                                                                            $productVariantInCartWithDifferentAddons = 1;
-                                                                        }
-                                                                        foreach ($var->checkIfInCart as $cartVar) {
-                                                                            $variant_quantity = $variant_quantity + $cartVar['quantity'];
+                                                                        if (count($data->addOn) > 0) {
+                                                                            $isAddonExist = 1;
                                                                         }
                                                                     @endphp
-                                                                @break
 
-                                                                ;
-                                                            @endif
-                                                        @endforeach
+                                                                    @foreach ($data->variant as $var)
+                                                                        @if (isset($var->checkIfInCart) && count($var->checkIfInCart) > 0)
+                                                                            @php
+                                                                                $productVariantInCart = 1;
+                                                                                $productVariantIdInCart = $var->checkIfInCart['0']['variant_id'];
+                                                                                $cartProductId = $var->checkIfInCart['0']['id'];
+                                                                                $cart_id = $var->checkIfInCart['0']['cart_id'];
+                                                                                // $variant_quantity = $var->checkIfInCart['0']['quantity'];
+                                                                                $variant_quantity = 0;
+                                                                                $vendor_id = $data->vendor_id;
+                                                                                $product_id = $data->id;
+                                                                                $batch_count = $data->batch_count;
+                                                                                $variant_price = decimal_format($var->price * $data->variant_multiplier);
+                                                                                if (count($var->checkIfInCart) > 1) {
+                                                                                    $productVariantInCartWithDifferentAddons = 1;
+                                                                                }
+                                                                                foreach ($var->checkIfInCart as $cartVar) {
+                                                                                    $variant_quantity = $variant_quantity + $cartVar['quantity'];
+                                                                                }
+                                                                            @endphp
+                                                                        @break
 
-                                                        @if ($vendor->is_vendor_closed == 0 || ($vendor->closed_store_order_scheduled != 0 && $checkSlot != 0))
-                                                            @php
-                                                                $is_customizable = false;
-                                                                if ($isAddonExist > 0 && ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1)) {
-                                                                    $is_customizable = true;
-                                                                }
-                                                            @endphp
-
-                                                            @if ($productVariantInCart > 0)
-                                                                {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a>  alProductBtns--}}
-                                                                <a class="add-cart-btn add_vendor_product "
-                                                                    style="display:none;"
-                                                                    id="add_button_href{{ $cartProductId }}"
-                                                                    data-variant_id="{{ $productVariantIdInCart }}"
-                                                                    data-add_to_cart_url="{{ route('addToCart') }}"
-                                                                    data-vendor_id="{{ $vendor_id }}"
-                                                                    data-product_id="{{ $product_id }}"
-                                                                    data-addon="{{ $isAddonExist }}"
-                                                                    data-minimum_order_count="{{ $minimum_order_count }}"
-                                                                    data-batch_count="{{ $batch_count }}"
-                                                                    href="javascript:void(0)">{{ __('Add') }}
-                                                                    @if ($minimum_order_count > 0)
-                                                                        ({{ $minimum_order_count }})
+                                                                        ;
                                                                     @endif
-                                                                </a>
-                                                                <div class="number"
-                                                                    id="show_plus_minus{{ $cartProductId }}">
-                                                                    <span
-                                                                        class="minus qty-minus-product {{ $productVariantInCartWithDifferentAddons ? 'remove-customize' : '' }}"
-                                                                        data-variant_id="{{ $productVariantIdInCart }}"
-                                                                        data-parent_div_id="show_plus_minus{{ $cartProductId }}"
-                                                                        data-id="{{ $cartProductId }}"
-                                                                        data-base_price="{{ $variant_price }}"
-                                                                        data-vendor_id="{{ $vendor_id }}"
-                                                                        data-product_id="{{ $product_id }}"
-                                                                        data-cart="{{ $cart_id }}"
-                                                                        data-addon="{{ $isAddonExist }}"
-                                                                        data-minimum_order_count="{{ $minimum_order_count }}"
-                                                                        data-batch_count="{{ $batch_count }}">
-                                                                        <i class="fa fa-minus"
-                                                                            aria-hidden="true"></i>
-                                                                    </span>
-                                                                    <input
-                                                                        style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
-                                                                        placeholder="1" type="text"
-                                                                        value="{{ $variant_quantity }}"
-                                                                        class="input-number"
-                                                                        id="quantity_ondemand_{{ $cartProductId }}"
-                                                                        readonly>
-                                                                    <span
-                                                                        class="plus qty-plus-product {{ $is_customizable ? 'repeat-customize' : '' }}"
-                                                                        data-variant_id="{{ $productVariantIdInCart }}"
-                                                                        data-id="{{ $cartProductId }}"
-                                                                        data-base_price="{{ $variant_price }}"
-                                                                        data-vendor_id="{{ $vendor_id }}"
-                                                                        data-product_id="{{ $product_id }}"
-                                                                        data-cart="{{ $cart_id }}"
-                                                                        data-addon="{{ $isAddonExist }}"
-                                                                        data-batch_count="{{ $batch_count }}">
-                                                                        <i class="fa fa-plus"
-                                                                            aria-hidden="true"></i>
-                                                                    </span>
-                                                                </div>
-                                                            @else
-                                                                @if ($prod->has_inventory == 0 || ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1))
-                                                                    {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
-                                                                    <a class="add-cart-btn add_vendor_product"
-                                                                        id="aadd_button_href{{ $data->id }}"
-                                                                        data-variant_id="{{ $data->variant[0]->id }}"
-                                                                        data-add_to_cart_url="{{ route('addToCart') }}"
-                                                                        data-vendor_id="{{ $data->vendor_id }}"
-                                                                        data-product_id="{{ $data->id }}"
-                                                                        data-addon="{{ $isAddonExist }}"
-                                                                        data-batch_count="{{ $batch_count }}"
-                                                                        data-minimum_order_count="{{ $minimum_order_count }}"
-                                                                        href="javascript:void(0)">{{ __('Add') }}
-                                                                        @if ($minimum_order_count > 1)
-                                                                            ({{ $minimum_order_count }})
+                                                                @endforeach
+
+                                                                @if ($vendor->is_vendor_closed == 0 || ($vendor->closed_store_order_scheduled != 0 && $checkSlot != 0))
+                                                                    @php
+                                                                        $is_customizable = false;
+                                                                        if ($isAddonExist > 0 && ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1)) {
+                                                                            $is_customizable = true;
+                                                                        }
+                                                                    @endphp
+
+                                                                    @if ($productVariantInCart > 0)
+                                                                        {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a>  alProductBtns--}}
+                                                                        <a class="add-cart-btn add_vendor_product "
+                                                                            style="display:none;"
+                                                                            id="add_button_href{{ $cartProductId }}"
+                                                                            data-variant_id="{{ $productVariantIdInCart }}"
+                                                                            data-add_to_cart_url="{{ route('addToCart') }}"
+                                                                            data-vendor_id="{{ $vendor_id }}"
+                                                                            data-product_id="{{ $product_id }}"
+                                                                            data-addon="{{ $isAddonExist }}"
+                                                                            data-minimum_order_count="{{ $minimum_order_count }}"
+                                                                            data-batch_count="{{ $batch_count }}"
+                                                                            href="javascript:void(0)">{{ __('Add') }}
+                                                                            @if ($minimum_order_count > 0)
+                                                                                ({{ $minimum_order_count }})
+                                                                            @endif
+                                                                        </a>
+                                                                        <div class="number"
+                                                                            id="show_plus_minus{{ $cartProductId }}">
+                                                                            <span
+                                                                                class="minus qty-minus-product {{ $productVariantInCartWithDifferentAddons ? 'remove-customize' : '' }}"
+                                                                                data-variant_id="{{ $productVariantIdInCart }}"
+                                                                                data-parent_div_id="show_plus_minus{{ $cartProductId }}"
+                                                                                data-id="{{ $cartProductId }}"
+                                                                                data-base_price="{{ $variant_price }}"
+                                                                                data-vendor_id="{{ $vendor_id }}"
+                                                                                data-product_id="{{ $product_id }}"
+                                                                                data-cart="{{ $cart_id }}"
+                                                                                data-addon="{{ $isAddonExist }}"
+                                                                                data-minimum_order_count="{{ $minimum_order_count }}"
+                                                                                data-batch_count="{{ $batch_count }}">
+                                                                                <i class="fa fa-minus"
+                                                                                    aria-hidden="true"></i>
+                                                                            </span>
+                                                                            <input
+                                                                                style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
+                                                                                placeholder="1" type="text"
+                                                                                value="{{ $variant_quantity }}"
+                                                                                class="input-number"
+                                                                                id="quantity_ondemand_{{ $cartProductId }}"
+                                                                                readonly>
+                                                                            <span
+                                                                                class="plus qty-plus-product {{ $is_customizable ? 'repeat-customize' : '' }}"
+                                                                                data-variant_id="{{ $productVariantIdInCart }}"
+                                                                                data-id="{{ $cartProductId }}"
+                                                                                data-base_price="{{ $variant_price }}"
+                                                                                data-vendor_id="{{ $vendor_id }}"
+                                                                                data-product_id="{{ $product_id }}"
+                                                                                data-cart="{{ $cart_id }}"
+                                                                                data-addon="{{ $isAddonExist }}"
+                                                                                data-batch_count="{{ $batch_count }}">
+                                                                                <i class="fa fa-plus"
+                                                                                    aria-hidden="true"></i>
+                                                                            </span>
+                                                                        </div>
+                                                                    @else
+                                                                        @if ($prod->has_inventory == 0 || ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1))
+                                                                            {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
+                                                                            <a class="add-cart-btn add_vendor_product"
+                                                                                id="aadd_button_href{{ $data->id }}"
+                                                                                data-variant_id="{{ $data->variant[0]->id }}"
+                                                                                data-add_to_cart_url="{{ route('addToCart') }}"
+                                                                                data-vendor_id="{{ $data->vendor_id }}"
+                                                                                data-product_id="{{ $data->id }}"
+                                                                                data-addon="{{ $isAddonExist }}"
+                                                                                data-batch_count="{{ $batch_count }}"
+                                                                                data-minimum_order_count="{{ $minimum_order_count }}"
+                                                                                href="javascript:void(0)">{{ __('Add') }}
+                                                                                @if ($minimum_order_count > 1)
+                                                                                    ({{ $minimum_order_count }})
+                                                                                @endif
+                                                                            </a>
+                                                                            <div class="number"
+                                                                                style="display:none;"
+                                                                                id="ashow_plus_minus{{ $data->id }}">
+                                                                                <span
+                                                                                    class="minus qty-minus-product"
+                                                                                    data-parent_div_id="show_plus_minus{{ $data->id }}"
+                                                                                    data-id="{{ $data->id }}"
+                                                                                    data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
+                                                                                    data-vendor_id="{{ $data->vendor_id }}"
+                                                                                    data-batch_count="{{ $batch_count }}"
+                                                                                    data-minimum_order_count="{{ $minimum_order_count }}">
+                                                                                    <i class="fa fa-minus"
+                                                                                        aria-hidden="true"></i>
+                                                                                </span>
+                                                                                <input
+                                                                                    style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
+                                                                                    id="quantity_ondemand_d{{ $data->id }}"
+                                                                                    readonly
+                                                                                    placeholder="{{ $minimum_order_count }}"
+                                                                                    type="text"
+                                                                                    value="{{ $minimum_order_count }}"
+                                                                                    class="input-number input_qty"
+                                                                                    step="0.01">
+                                                                                <span
+                                                                                    class="plus qty-plus-product"
+                                                                                    data-id=""
+                                                                                    data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
+                                                                                    data-vendor_id="{{ $data->vendor_id }}"
+                                                                                    data-batch_count="{{ $batch_count }}"
+                                                                                    data-minimum_order_count="{{ $minimum_order_count }}">
+                                                                                    <i class="fa fa-plus"
+                                                                                        aria-hidden="true"></i>
+                                                                                </span>
+                                                                            </div>
+                                                                        @else
+                                                                            <span class="text-danger">{{ __('Out of stock') }}</span>
                                                                         @endif
-                                                                    </a>
-                                                                    <div class="number"
-                                                                        style="display:none;"
-                                                                        id="ashow_plus_minus{{ $data->id }}">
-                                                                        <span
-                                                                            class="minus qty-minus-product"
-                                                                            data-parent_div_id="show_plus_minus{{ $data->id }}"
-                                                                            data-id="{{ $data->id }}"
-                                                                            data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
-                                                                            data-vendor_id="{{ $data->vendor_id }}"
-                                                                            data-batch_count="{{ $batch_count }}"
-                                                                            data-minimum_order_count="{{ $minimum_order_count }}">
-                                                                            <i class="fa fa-minus"
-                                                                                aria-hidden="true"></i>
-                                                                        </span>
-                                                                        <input
-                                                                            style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
-                                                                            id="quantity_ondemand_d{{ $data->id }}"
-                                                                            readonly
-                                                                            placeholder="{{ $minimum_order_count }}"
-                                                                            type="text"
-                                                                            value="{{ $minimum_order_count }}"
-                                                                            class="input-number input_qty"
-                                                                            step="0.01">
-                                                                        <span
-                                                                            class="plus qty-plus-product"
-                                                                            data-id=""
-                                                                            data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
-                                                                            data-vendor_id="{{ $data->vendor_id }}"
-                                                                            data-batch_count="{{ $batch_count }}"
-                                                                            data-minimum_order_count="{{ $minimum_order_count }}">
-                                                                            <i class="fa fa-plus"
-                                                                                aria-hidden="true"></i>
-                                                                        </span>
-                                                                    </div>
-                                                                @else
-                                                                    <span class="text-danger">{{ __('Out of stock') }}</span>
+                                                                    @endif
+                                                                    @if ($is_customizable)
+                                                                        <div class="customizable-text">
+                                                                            {{ __('customizable') }}
+                                                                        </div>
+                                                                    @endif
                                                                 @endif
-                                                            @endif
-                                                            @if ($is_customizable)
-                                                                <div class="customizable-text">
-                                                                    {{ __('customizable') }}
-                                                                </div>
-                                                            @endif
-                                                        @endif
+                                                            </div>
+
+                                                            </div>
+                                                        </div>
+                                                    @empty
+                                                    @endforelse
                                                     </div>
 
+                                                @else
+                                                    <h4 class="mt-3 mb-3 text-center">No product found</h4>
+                                                @endif
+                                            </section>
+                                        @empty
+                                            <h4 class="mt-3 mb-3 text-center">No product found</h4>
+                                        @endforelse
+                                    </div>
+                                    <div class="col-12 col-lg-3 d-lg-inline-block d-none">
+                                        <div class="card-box p-0 cart-main-box">
+                                            <div class="p-2 d-flex align-items-center justify-content-between border-bottom">
+                                                <h4 class="right-card-title">{{ __('Cart') }}</h4>
+                                            </div>
+                                            <div class="cart-main-box-inside">
+                                                <div class="spinner-box">
+                                                    <div class="circle-border">
+                                                        <div class="circle-core"></div>
                                                     </div>
                                                 </div>
-                                            @empty
-                                            @endforelse
-                                            </div>
+                                                <div id="header_cart_main_ul_ondemand">
 
-                                        @else
-                                            <h4 class="mt-3 mb-3 text-center">No product found</h4>
-                                        @endif
-                                    </section>
-                                @empty
-                                    <h4 class="mt-3 mb-3 text-center">No product found</h4>
-                                @endforelse
-                            </div>
-                            <div class="col-12 col-lg-3 d-lg-inline-block d-none">
-                                <div class="card-box p-0 cart-main-box">
-                                    <div class="p-2 d-flex align-items-center justify-content-between border-bottom">
-                                        <h4 class="right-card-title">{{ __('Cart') }}</h4>
-                                    </div>
-                                    <div class="cart-main-box-inside">
-                                        <div class="spinner-box">
-                                            <div class="circle-border">
-                                                <div class="circle-core"></div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div id="header_cart_main_ul_ondemand">
-                                        
                                         </div>
                                     </div>
                                 </div>
+                                <hr class="d-none d-md-block">
                             </div>
                         </div>
-                        <hr class="d-none d-md-block">
-                    </div>
                 </div>
             </div>
         </section>
@@ -569,6 +578,28 @@ $checkSlot = findSlot('', $vendor->id, '');
 
         <!-- Why people visit here start -->
         {{-- <p>{{!! $vendor->dynamic_html !!}}</p> --}}
+        @foreach ($vendor->vendor_section as $key=>$vendorSection)
+        <section class="whyPeopleVisit py-5" id="vendor_section_{{ $vendorSection->id }}">
+        	<div class="container">
+        		<div class="row">
+        			<div class="col-md-12">
+        				<div class="alSpaListHead text-center text-lg-left col-12 mb-5">
+	                        <p class="alLgFontSize">{{ $vendorSection->headingTranslation->first() ?  $vendorSection->headingTranslation->first()->heading : 'NA' }}</p>
+	                    </div>
+        			</div>
+                    @foreach ($vendorSection->SectionTranslation as $subkey=>$SectionTranslation)
+                    <div class="col-md-6">
+        				<div class="whyPeopleVisitDetails mb-4">
+	        				<p>{{ $SectionTranslation->first() ?  $SectionTranslation->first()->title : 'NA'  }}</p>
+	        				<p class="alBodyText">{{ $SectionTranslation->first() ?  $SectionTranslation->first()->description : 'NA'  }}</p>
+        				</div>
+        			</div>
+                    @endforeach
+
+        		</div>
+        	</div>
+        </section>
+        @endforeach
         {{-- <section class="whyPeopleVisit py-5">
         	<div class="container">
         		<div class="row">
@@ -600,7 +631,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         <!-- Why people visit here end -->
 
         <!-- More spas nearby start -->
-        <section class="moreSpasNearby py-5">
+        <section class="moreSpasNearby pt-5 pb-0">
         	<div class="container">
         		<div class="row">
         			<div class="col-md-12">
@@ -623,7 +654,6 @@ $checkSlot = findSlot('', $vendor->id, '');
         	</div>
         </section>
         <!-- More spas nearby end -->
-
         <!-- sections SpasRelated start -->
         <section class="SpasRelated py-5">
             <div class="container">
@@ -632,25 +662,25 @@ $checkSlot = findSlot('', $vendor->id, '');
                     <div class="Spasslider w-100" id="Spasslider">
                         @foreach($Map_vendors as $key => $value)
                             <div>
-                                <div class="SpasRelatedItems mx-2">
-                                    <div class="SpasRelatedItemsImageBox">
-                                        <img class="rounded" src="{{ $value->banner['image_fit'] . '400/400' . $value->banner['image_path'] }}">
-                                    </div>                                    
-                                    <div class="SpasRelatedDetails p-2">
-                                        <p class="text-left m-0">{{ $value->name }}</p>
-                                        <a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-                                        <p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">{{ $value->state ?? 'NA' }}</span><span>{{ number_format($value->vendorToUserDistance ,2) }} {{ (!empty($client_preference_detail->distance_unit_for_time)) ? ($client_preference_detail->distance_unit_for_time ==  'kilometer' ? 'KM' : 'miles') : 'KM' }} {{ __('away') }}</span></p>
+                                <a class="" href="{{route('vendorDetail')}}/{{  $value->slug }}">
+                                    <div class="SpasRelatedItems mx-2">
+                                        <div class="SpasRelatedItemsImageBox">
+                                            <img class="rounded" src="{{ $value->banner['image_fit'] . '400/400' . $value->banner['image_path'] }}">
+                                        </div>
+                                        <div class="SpasRelatedDetails p-2">
+                                            <p class="text-left m-0">{{ $value->name }}</p>
+                                            {{-- <a href="javascript:void(0)">10 Excellent (2 reviews)</a> --}}
+                                            <p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">{{ $value->state ?? 'NA' }}</span><span>{{ number_format($value->vendorToUserDistance ,2) }} {{ (!empty($client_preference_detail->distance_unit_for_time)) ? ($client_preference_detail->distance_unit_for_time ==  'kilometer' ? 'KM' : 'miles') : 'KM' }} {{ __('away') }}</span></p>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         @endforeach
-                       
-
                     </div><!-- alSpaListSlider start -->
                 </div>
             </div>
         </section>
-
+        
     <script type="text/template" id="header_cart_template_ondemand">
         <ul class="pl-2 pr-2 pb-2 pt-0 ">
             <div class="dcpj" >
@@ -721,7 +751,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                 <% }); %>
 
                                 <h5 class="d-flex align-items-center justify-content-between pb-2">{{ __('PRICE DETAILS') }} </h5>
-                                <li class="p-0">
+                                <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
                                             <span class="ellips">{{ __('Price') }}</span>
@@ -730,7 +760,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                     </div>
                                 </li>
 
-                                <li class="p-0">
+                                <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
                                             <span class="ellips">{{ __('Tax') }}</span>
@@ -740,33 +770,33 @@ $checkSlot = findSlot('', $vendor->id, '');
                                 </li>
 
                                 <% if(cart_details.total_subscription_discount != undefined) { %>
-                                 <li class="p-0">
+                                 <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">- {{ __('Subscription Discount') }}</span>
-                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
+                                            <span class="ellips"> {{ __('Subscription Discount') }}</span>
+                                             <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
                                         </h6>
                                     </div>
                                 </li>
                                 <% } %>
 
                                 <% if(cart_details.loyalty_amount > 0) { %>
-                                <li class="p-0">
+                                <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">- {{ __('Loyalty Amount') }} </span>
-                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
+                                            <span class="ellips">{{ __('Loyalty Amount') }} </span>
+                                             <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
                                         </h6>
                                     </div>
                                 </li>
                                 <% } %>
 
                                 <% if(cart_details.wallet_amount_used > 0) { %>
-                                <li class="p-0">
+                                <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">- {{ __('Wallet Amount') }} </span>
-                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
+                                            <span class="ellips">{{ __('Wallet Amount') }} </span>
+                                             <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
                                         </h6>
                                     </div>
                                 </li>
@@ -915,7 +945,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                             <span class="minus qty-action" >
                                                 <i class="fa fa-minus" aria-hidden="true"></i>
                                             </span>
-                                            <input style="text-align:center; width:60px; height:24px; padding-bottom: 3px; border:none" placeholder="1" type="text" value="1" class="addon-input-number" step="1" readonly>
+                                            <input style="text-align:center; width:60px; height:24px; padding-bottom: 3px; border-width:0px 1px; border-style:solid; border-color:var(--theme-deafult);" placeholder="1" type="text" value="1" class="addon-input-number" step="1" readonly>
                                             <span class="plus qty-action" >
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
                                             </span>
@@ -1005,7 +1035,6 @@ $checkSlot = findSlot('', $vendor->id, '');
 
     <script src="{{ asset('front-assets/js/rangeSlider.min.js') }}"></script>
     <script src="{{ asset('front-assets/js/my-sliders.js') }}"></script>
-    <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script>
         // @if(!empty($vendor->banner))
         //     $(document).ready(function() {
@@ -1027,7 +1056,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                 captionText.innerHTML = this.alt;
             }
         }
-       
+
 
         // Get the <span> element that closes the modal
         var span = document.getElementsByClassName("close")[0];
@@ -1043,9 +1072,11 @@ $checkSlot = findSlot('', $vendor->id, '');
         jQuery(window).scroll(function() {
 
             var scroll = jQuery(window).scrollTop();
-            var categories_list_height = $('.vendor-products-wrapper').height() +400;
+            var header_height = $('.site-header.fixed-bar').height();
+            var product_section = $('.vendor-products-wrapper').offset().top - header_height;
+            var categories_list_height = $('.vendor-products-wrapper').height() + product_section;
 
-            if (scroll >= 400) {
+            if (scroll >= product_section) {
                 jQuery(".categories-product-list").addClass("fixed-bar");
             } else {
                 jQuery(".categories-product-list").removeClass("fixed-bar");
@@ -1121,7 +1152,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         var addonoptids = [];
         var ajaxCall = 'ToCancelPrevReq';
         let map;
-       
+
         $(document).on('click', '.show_subet_addeon', function(e) {
             e.preventDefault();
             var show_class = $(this).data("div_id_show");
@@ -1129,11 +1160,11 @@ $checkSlot = findSlot('', $vendor->id, '');
             $("#" + show_class).removeClass("d-none");
         });
         $(document).on('click', '#show_facilty', function(e) {
-            e.preventDefault();  
+            e.preventDefault();
             console.log('asd');
             $(this).addClass("d-none");
             $('#show_facilty_more').removeClass("d-none");
-           
+
         });
 
         $(document).delegate('.changeVariant', 'change', function() {
@@ -1257,7 +1288,7 @@ $checkSlot = findSlot('', $vendor->id, '');
             // }
         }
         vendorAllOnMap();
-     
+
         function vendorAllOnMap() {
             var latitude = "{{ $vendor->latitude }}";
             var longitude = "{{ $vendor->longitude }}";
@@ -1265,18 +1296,18 @@ $checkSlot = findSlot('', $vendor->id, '');
 
             map = new google.maps.Map(document.getElementById('vendor-map'), {
                 center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-                zoom: 13
+                zoom: 12
             });
-            
+
             var url = window.location.origin;
             var vendorData = {!!json_encode($Map_vendors)!!};
               //vendor  markers
             for (let i = 0; i < vendorData.length; i++) {
                 vendor = vendorData[i];
-               
+
                 if(vendor.address != null && vendor.latitude != "0.00000000" && vendor.longitude != "0.00000000" ){
                     var contentString = '';
-          
+
                         contentString =
                             '<div id="content">' +
                             '<div id="siteNotice">' +
@@ -1288,30 +1319,30 @@ $checkSlot = findSlot('', $vendor->id, '');
                             '<p><b>Contact: +'+ vendor?.dial_code +vendor?.phone_no+' </p>' +
                             "</div>" +
                             "</div>";
-                        
+
 
                     const infowindow = new google.maps.InfoWindow({
                             content: contentString,
                             minWidth: 250,
                             minheight: 250,
                         });
-                   // images = 'https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/Clientlogo/612e24163debe.png@webp';
-                    
+                    images = "{{ asset('assets/images/mapVendoricon.png') }}";
+
                     var image = {
-                        //url: images, // url
-                        scaledSize: new google.maps.Size(50, 50), // scaled size
+                        url: images, // url
+                        scaledSize: new google.maps.Size(30, 40), // scaled size
                         origin: new google.maps.Point(0,0), // origin
                         anchor: new google.maps.Point(22,22) // anchor
                     };
                     const marker = new google.maps.Marker({
-                            map: map,
+                            icon: image,
                             position: { lat: parseFloat(vendor.latitude), lng: parseFloat(vendor.longitude) },
-                           //icon: image,
+                            map: map,
                         });
-                        marker.addListener("click", () => {
-                            infowindow.open(map, marker);
-                        });
-                   
+                    marker.addListener("click", () => {
+                        infowindow.open(map, marker);
+                    });
+
                 }
 
             }

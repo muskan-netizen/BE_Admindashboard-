@@ -24,6 +24,30 @@
                 <h4 class="page-title">{{ __('Cancel Order Requests') }}</h4>
             </div>
         </div>
+        <div class="col-sm-12 mb-2 d-flex justify-content-end">
+            <div class="row align-items-center ">
+                <div class="col">
+                    <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
+                </div>
+                <div class="col">
+                    <select class="form-control" id="vendor_select_box">
+                        <option value="">{{ __('Select Vendor') }}</option>
+                        @forelse($vendors as $vendor)
+                            <option value="{{$vendor->id}}">{{$vendor->name}}</option>
+                        @empty
+                        @endforelse
+                    </select>
+                </div>
+                <div class="col">
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
+                            <i class="mdi mdi-close"></i>
+                        </button>
+                        <input type="search" class="form-control" placeholder="{{ __('Search...') }}" id="search_via_keyword">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="row">
         <div class="col-sm-12 col-lg-12 tab-product vendor-products pt-2 invisible">

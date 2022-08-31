@@ -25,12 +25,14 @@ use App\Http\Controllers\Client\BaseController;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CustomerExport;
+use App\Http\Traits\ApiResponser;
 use App\Models\UserDevice;
 use Session;
 use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, Role, Transaction,UserDocs,UserRegistrationDocuments,OrderVendor,VendorOrderStatus, ClientCurrency};
 
 class UserController extends BaseController
 {
+    use ApiResponser;
     private $folderName = '/profile/document';
 
     public function __construct()
@@ -117,8 +119,8 @@ class UserController extends BaseController
                 $date = dateTimeInUserTimeZone($users->created_at, $users->timezone);
                 return explode(' ',$date)[0] ; 
             })
-            ->addColumn('last_login', function($users) {
-                return is_null($users->last_login_at) ? ' - ' : dateTimeInUserTimeZone($users->last_login_at, $users->timezone);
+            ->addColumn('last_login', function($users) use($current_user) {
+                return is_null($users->last_login_at) ? ' - ' : dateTimeInUserTimeZone($users->last_login_at, $current_user->timezone);
             })
             ->addColumn('total_order_value', function($users) {
                 return decimal_format($users->orders->sum('total_amount'));
@@ -474,6 +476,16 @@ class UserController extends BaseController
         } else {
             $data['logo'] = $client->getRawOriginal('logo');
         }
+        
+        if ($request->hasFile('dark_logo')) {
+            $file = $request->file('dark_logo');
+            $file_name = 'Clientlogo/' . uniqid() . '.' .  $file->getClientOriginalExtension();
+            $path = Storage::disk('s3')->put($file_name, file_get_contents($file), 'public');
+            $data['dark_logo'] = $file_name;
+        } else {
+            $data['dark_logo'] = $client->getRawOriginal('dark_logo');
+        }
+        // pr($data);
         $client = Client::where('code', $user->code)->first();
         $client->update($data);
         $userdata = array();
@@ -547,33 +559,55 @@ class UserController extends BaseController
     public function filterWalletTransactions(Request $request)
     {
         $pagiNate = 10;
-        $user_transactions = Transaction::where('wallet_id', $request->walletId)->orderBy('id', 'desc')->get();
+        $trans = Transaction::where('wallet_id', $request->walletId)->orderBy('id', 'desc');
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         // dd($user_transactions->toArray());
-        foreach ($user_transactions as $key => $trans) {
-            // $user = User::find($trans->payable_id);
-            $trans->serial = $key + 1;
-            $trans->date = Carbon::parse($trans->created_at)->format('M d, Y, H:i A');
-            // $trans->date = convertDateTimeInTimeZone($trans->created_at, $user->timezone, 'l, F d, Y, H:i A');
-            $reason = json_decode($trans->meta, true);
-            $trans->description = $reason['description'] ?? $reason[0];
-            $trans->amount = $clientCurrency->currency->symbol . sprintf("%.2f", ($trans->amount / 100));
-            $trans->type = $trans->type;
-        }
-        return Datatables::of($user_transactions)
+        // foreach ($user_transactions as $key => $trans) {
+        //     // $user = User::find($trans->payable_id);
+        //     $trans->serial = $key + 1;
+        //     $trans->date = Carbon::parse($trans->created_at)->format('M d, Y, H:i A');
+        //     // $trans->date = convertDateTimeInTimeZone($trans->created_at, $user->timezone, 'l, F d, Y, H:i A');
+        //     $reason = json_decode($trans->meta, true);
+        //     $trans->description = $reason['description'] ?? $reason[0];
+        //     $trans->amount = $clientCurrency->currency->symbol . sprintf("%.2f", ($trans->amount / 100));
+        //     $trans->type = $trans->type;
+        // }
+        return Datatables::of($trans)
+            ->addColumn('date', function($trans) {
+                return Carbon::parse($trans->created_at)->format('M d, Y, H:i A');
+            })
+            ->editColumn('amount', function($trans) use($clientCurrency) {
+                return $clientCurrency->currency->symbol . sprintf("%.2f", ($trans->amount / 100));
+            })
+            ->addColumn('description', function($trans) {
+                $reason = json_decode($trans->meta, true);
+                $description = $reason['description'] ?? $reason[0];
+                return $description;
+            })
+            ->addColumn('remarks', function($trans) {
+                $reason = json_decode($trans->meta, true);
+                $remarks = $reason['remarks'] ?? '';
+                return $remarks;
+            })
+            ->addColumn('created_by', function($trans) {
+                $reason = json_decode($trans->meta, true);
+                $created_by = $reason['created_by'] ?? '';
+                if($created_by > 0){
+                    $user = User::find($created_by)->value('name');
+                    return $user;
+                }else{
+                    return '';
+                }
+            })
             ->addIndexColumn()
             ->rawColumns(['description'])
             ->filter(function ($instance) use ($request) {
                 if (!empty($request->get('search'))) {
-                    $instance->collection = $instance->collection->filter(function ($row) use ($request) {
-                        if (Str::contains(Str::lower($row['date']), Str::lower($request->get('search')))) {
-                            return true;
-                        } elseif (Str::contains(Str::lower($row['meta']), Str::lower($request->get('search')))) {
-                            return true;
-                        } elseif (Str::contains(Str::lower($row['amount']), Str::lower($request->get('search')))) {
-                            return true;
-                        }
-                        return false;
+                    $search = $request->get('search');
+                    $instance->where(function($query) use($search){
+                        $query->where('date', 'LIKE', '%'.$search.'%')
+                        ->orWhere('meta', 'LIKE', '%'.$search.'%')
+                        ->orWhere('amount', 'LIKE', '%'.$search.'%');
                     });
                 }
             })->make(true);
@@ -671,6 +705,68 @@ class UserController extends BaseController
                 $result = curl_exec($ch);
                 curl_close($ch);
             }
+        }
+    }
+
+    public function customSearch(Request $request, $domain = '')
+    {
+        $search = $request->search;
+        if (isset($search)) {
+            if ($search == '') {
+                $users = User::orderby('name', 'asc')->select('id', 'name', 'email')->where('status','1')->limit(10)->get();
+            } else {
+                $users = User::orderby('name', 'asc')->select('id', 'name', 'email')->where('status','1')
+                ->where(function($q) use($search){
+                    $q->where('name', 'like', '%'.$search.'%')->orWhere('email', 'like', '%'.$search.'%');
+                })
+                ->limit(10)->get();
+            }
+            $response = array();
+            foreach ($users as $user) {
+                $response[] = array("value" => $user->id, "label" => $user->name . '('.$user->email.')');
+            }
+
+            return response()->json($response);
+        } else {
+            return response()->json([]);
+        }
+    }
+
+    public function payReceive(Request $request, $domain = '')
+    {
+        try{
+            $user_id = $request->cusid;
+            $user = User::where('id', $user_id)->where('status', 1)->first();
+            $amount = $request->amount;
+            $wallet = $user->wallet;
+            if ($amount > 0) {
+                if($request->payment_type == 1){
+                    $wallet->depositFloat($amount, [
+                        'description' => 'Wallet has been <b>Credited</b>',
+                        'remarks' => $request->remarks,
+                        'created_by' => Auth::id()
+                    ]);
+                }
+                elseif($request->payment_type == 2){
+                    if($amount > $user->balanceFloat){
+                        return $this->errorResponse(__('Amount is greater than customer available funds'), 422);
+                    }
+                    $wallet->withdrawFloat($amount, [
+                        'description' => 'Wallet has been <b>Dedited</b>',
+                        'remarks' => $request->remarks,
+                        'created_by' => Auth::id()
+                    ]);
+                }
+                else{
+                    return $this->errorResponse(__('Invalid Data'), 422);
+                }
+                return $this->successResponse('', __('Payment is successfully completed'), 201);
+            }else{
+                return $this->errorResponse(__('Insufficient Amount'), 422);
+            }            
+        }
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
 }

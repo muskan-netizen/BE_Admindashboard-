@@ -1,6 +1,5 @@
 @extends('layouts.store', ['title' => 'Product'])
 @section('css')
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
 @section('content')
@@ -843,7 +842,18 @@ $('body').on('click', '.clproduct_order_form', function (event) {
 
 <script type="text/javascript">
     $(document).ready(function (e) {
-        
+
+        var path = window.location.pathname;
+        var inputs = path.split("/");
+        var lastslug = inputs[inputs.length - 1];
+        //console.log(lastslug);
+        $('#main-menu a').each(function(index, val) {
+            var href = $(val).attr('href');
+            if( (href.indexOf('category') !== -1) && (href.indexOf(lastslug) !== -1) ){
+                $(val).addClass('active');
+                $(val).parents("li").addClass('active');
+            }
+        })
         // if(parseInt($('input[name=is_for_friend]:checked')).val()==1){
         //     $('#label_for_me').removeClass('active');
         //     $('#label_for_friend').addClass('active');

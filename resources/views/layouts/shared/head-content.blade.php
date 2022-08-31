@@ -116,6 +116,8 @@ if($theme && !empty($theme->map_key)){
 @endif
 @endif
 @endif
+{{-- <link href="{{ asset('assets/libs/datetimepicker/jquery.datetimepicker.min.css') }}" rel="stylesheet" type="text/css" /> --}}
+<link href="{{ asset('assets/libs/datetimepicker/daterangepicker.css') }}" rel="stylesheet" type="text/css" />
 @yield('customcss')
 @php 
 $socket_url = ''; 

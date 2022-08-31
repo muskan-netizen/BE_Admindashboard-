@@ -291,9 +291,10 @@ class CategoryController extends BaseController
                 'tags.tag.translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }
-            ])->where('products.category_id', $category_id)->where('products.is_live', 1)
+            ])->join('product_translations', 'product_translations.product_id', '=', 'products.id')
+            ->where('products.category_id', $category_id)->where('products.is_live', 1)
                 ->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)
-                ->withCount(['variantSet','addOn'])->paginate($limit, $page);   
+                ->withCount(['variantSet','addOn'])->orderBy('product_translations.title', 'asc')->paginate($limit, $page);   
             if (!empty($products)) {
                 foreach ($products as $key => $product) {
                    
@@ -377,6 +378,7 @@ class CategoryController extends BaseController
             }
             $startRange = 0;
             $endRange = 20000;
+            $type = $request->has('type') ? $request->type : 'delivery';
             if ($request->has('range') && !empty($request->range)) {
                 $range = explode(';', $request->range);
                 $clientCurrency->doller_compare;
@@ -417,7 +419,7 @@ class CategoryController extends BaseController
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
         
-            $products = Product::has('vendor')->with([
+            $products = Product::byProductCategoryServiceType($type)->has('vendor')->with([
                 'category.categoryDetail', 'media.image',
                 'translation' => function ($q) use ($langId) {
                     $q->select('id','product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);

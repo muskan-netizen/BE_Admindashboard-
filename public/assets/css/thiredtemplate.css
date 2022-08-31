@@ -307,7 +307,7 @@ body .footer-theme .sub-title .contact-list i {margin-right: 5px;font-size: 14px
     .col-md-3.alOrderStatus {display: flex;justify-content: space-between;align-items: center;}
     .status_box li { margin: 0;}
     .tab-product .tab-content.nav-material p {font-size: 10px;}
-    footer#footer{margin-bottom: 50px;}
+    footer#footer{margin-bottom: 100px;padding-top: 20px;}
     #content-wrap { margin-bottom: 50px;}
     .container.mb-md-5.shimmer_effect {margin-top: 0;}
     .container.mb-md-5.shimmer_effect .col-12.cards { margin-bottom: 0;}
@@ -333,7 +333,7 @@ body .footer-theme .sub-title .contact-list i {margin-right: 5px;font-size: 14px
     .booking-experience{position: absolute;width: auto;top: 50px;left: 10px;}
     .al_body_template_three .cab-image-box{height:190px;}
     .dark.al_body_template_three .top-banner-content h4 {margin: 20px 0px;}
-    
+
     }
 
     body[dir="rtl"] .footer-theme .sub-title li {padding: 0;margin-bottom: 0; text-align: right!important;}

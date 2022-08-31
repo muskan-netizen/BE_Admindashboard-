@@ -77,6 +77,15 @@
     }
 </style>
 @endsection
+@php 
+$lastmileShow = array('7','10','11');
+
+$brandNotShow = array('7','8','12');
+
+if($client_preference_detail->appointment_check == 1 && ($client_preference_detail->need_appointment_service == '1') ){
+    $lastmileShow = array_diff($lastmileShow,['11']);
+}
+@endphp
 @section('content')
 <div class="container-fluid">
 
@@ -212,6 +221,8 @@
                         </div>
                     </div>
                 </div>
+                {{-- @php
+                pr($product->toArray()); @endphp --}}
                 @if($product->category->categoryDetail->type_id != 7)
                 <div class="card-box">
 
@@ -245,6 +256,12 @@
                             {!! Form::text('markup_price', $product->variant[0]->markup_price, ['class'=>'form-control', 'id' => 'markup_price', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         @endif
+                        @if( in_array( $product->category->categoryDetail->type_id , [12]) )
+                        <div class="col-4  mb-2">
+                            {!! Form::label('title', __('Appointment Duration').' '. __('min:'), ['class' => 'control-label']) !!}
+                            {!!Form::input('number','minimum_duration_min', $product->minimum_duration_min, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'minimum_duration_min', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
+                        </div>
+                        @endif
                         {{-- <div class="col-4 mb-2">
                             {!! Form::label('title', 'Cost Price (Optional)', ['class' => 'control-label']) !!}
                             {!! Form::text('cost_price', $product->variant[0]->cost_price, ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
@@ -252,7 +269,7 @@
                     </div>
                     @endif
                     <div class="row mb-2">
-                        @if(!in_array($product->category->categoryDetail->type_id,[8,9,10]))
+                        @if(!in_array($product->category->categoryDetail->type_id,[8,9,10,12]))
                         <div class="col-sm-4">
                             {!! Form::label('title', __('Track Inventory')) !!} <br>
                             <input type="checkbox" bid="" id="has_inventory" data-plugin="switchery" name="has_inventory" class="chk_box" data-color="#43bee1" {{$product->has_inventory == 1 ? 'checked' : ''}}>
@@ -261,7 +278,7 @@
 
                         <div class="col-sm-8 check_inventory ">
                             <div class="row">
-                                @if($product->category->categoryDetail->type_id != 8 && $product->category->categoryDetail->type_id != 10)
+                                @if( !in_array($product->category->categoryDetail->type_id,[8,10,12]) )
                                 @if($product->has_variant == 0)
                                 <div class="col-sm-4">
                                     {!! Form::label('title', __('Quantity'),['class' => 'control-label']) !!}
@@ -285,43 +302,79 @@
                             </div>
                         </div>
                     </div>
-                    @if($product->category->categoryDetail->type_id == 10)
-                        <div class="row mb-2">
-                            <div class="col-4 mb-2">
-                                {!! Form::label('title', __('Minimum Duration'), ['class' => 'control-label']) !!}
-                                {!!Form::input('number','minimum_duration', $product->minimum_duration, ['min' => '0','class'=>'form-control', 'id' => 'minimum_duration', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
-                            </div>
-                            <div class="col-4 mb-2">
-                                {!! Form::label('title', __('Additional Increments Duration'), ['class' => 'control-label']) !!}
-                                {!! Form::input('number','additional_increments', $product->additional_increments, ['min' => '0','class'=>'form-control', 'id' => 'additional_increments', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
-                            </div>
-                            <div class="col-4 mb-2">
-                                {!! Form::label('title', __('Buffer time Duration'), ['class' => 'control-label']) !!}
-                               
-                                {!! Form::input('number','buffer_time_duration', $product->buffer_time_duration, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
-                            </div>
-                        </div>
-                        <div class="row mb-2">
-                           
-                        </div>
+                    
 
-                        <div class="row mb-2">
-                            <div class="col-sm-3">
-                                {!! Form::label('title', __('Fix Check-in time'),['class' => 'control-label']) !!} <br />
-                                <input type="checkbox" bid="" id="is_fix_check_in_time" data-plugin="switchery" name="is_fix_check_in_time" class="chk_box" data-color="#43bee1" @if($product->is_fix_check_in_time == 1) checked @endif>
+                    @if(  in_array( $product->category->categoryDetail->type_id , [10]) )
+                        <div class="row col-md-12 mb-2">
+                            <div class="col-4 mb-2 row">
+                                <div class="col-12">
+                                    {!! Form::label('title', __('Minimum Duration'), ['class' => 'control-label']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
+
+                                    {!!Form::input('number','minimum_duration', $product->minimum_duration, ['min' => '00','class'=>'form-control', 'id' => 'minimum_duration', 'placeholder' => '00', 'onkeyup' => 'return isNumberKey(event)']) !!}
+                                </div>
+                                <div class="col-6 pr-3">
+                                    {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
+                                    {!!Form::input('number','minimum_duration_min', $product->minimum_duration_min, ['min' => '00','max' => '59','class'=>'form-control', 'id' => 'minimum_duration_min', 'placeholder' => '00', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
+                                </div>
                             </div>
-                            <div class="col-4 mb-2 check_in_time @if($product->is_fix_check_in_time != 1) d-none @endif">
-                                {!! Form::label('title', __('Check in time'), ['class' => 'control-label']) !!}
-                                {!! Form::text('check_in_time', $product->check_in_time, ['class'=>'form-control', 'id' => 'range-datepicker', 'placeholder' => '00:00']) !!}
+                            <div class="col-4 mb-2 row">
+                                <div class="col-12">
+                                    {!! Form::label('title', __('Additional Increment Duration'), ['class' => 'control-label']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
+                                    {!! Form::input('number','additional_increments', $product->additional_increments, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'additional_increments', 'placeholder' => '0', 'onkeyup' => 'return isNumberKey(event)']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
+                                    {!! Form::input('number','additional_increments_min', $product->additional_increments_min, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'additional_increments_min', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
+                                </div>
+                            
+                            </div>
+                            <div class="col-4 mb-2 row">
+                                <div class="col-12">
+                                    {!! Form::label('title', __('Buffer time Duration'), ['class' => 'control-label']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
+                                    {!! Form::input('number','buffer_time_duration', $product->buffer_time_duration, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
+                                    {!! Form::input('number','buffer_time_duration_min', $product->buffer_time_duration_min, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration_min', 'placeholder' => '0', 'onkeypress' => 'return isNumberKeyMax(event)']) !!}
+                                </div>
+
                             </div>
                            
                         </div>
+                        {{-- <div class="row mb-2">
+                           
+                        </div> --}}
+                        @if($product->category->categoryDetail->type_id  ==  10)
+                            <div class="row mb-2" style="display: none;">
+                                <div class="col-sm-3">
+                                    {!! Form::label('title', __('Fix Check-in time'),['class' => 'control-label']) !!} <br />
+                                    <input type="checkbox" bid="" id="is_fix_check_in_time" data-plugin="switchery" name="is_fix_check_in_time" class="chk_box" data-color="#43bee1" @if($product->is_fix_check_in_time == 1) checked @endif>
+                                </div>
+                                <div class="col-4 mb-2 check_in_time @if($product->is_fix_check_in_time != 1) d-none @endif">
+                                    {!! Form::label('title', __('Check in time'), ['class' => 'control-label']) !!}
+                                    {!! Form::text('check_in_time', $product->check_in_time, ['class'=>'form-control', 'id' => 'range-datepicker', 'placeholder' => '00:00']) !!}
+                                </div>
+                            
+                            </div>
+                        @endif
                     @endif
 
                 </div>
                 @endif
+                
                 @if($product->category->categoryDetail->type_id == 10)
-                @include('backend.product.variant')
+                    @include('backend.product.popup.scheduleTableRows')
+                    {{-- @include('backend.product.popup.addBlockTimeTablePopup') --}}
+                    @include('backend.product.variant')
                 @else
                     @if($productVariants->count() > 0)
                     <div class="card-box" >
@@ -471,7 +524,8 @@
                             @endif
                         @endif
                         {{-- $configData->need_delivery_service == 1 &&  --}}
-                        @if($product->category->categoryDetail->type_id != 7 && (!in_array($client_preference_detail->business_type,['taxi','laundry'])))
+                        {{-- @if($product->category->categoryDetail->type_id != 7 && (!in_array($client_preference_detail->business_type,['taxi','laundry']))) --}}
+                        @if((!in_array($product->category->categoryDetail->type_id,$lastmileShow)) && (!in_array($client_preference_detail->business_type,['taxi','laundry'])))
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Requires Last Mile Delivery'),['class' => 'control-label']) !!}
                             <input type="checkbox" id="last_mile" data-plugin="switchery" name="last_mile" class="chk_box" data-color="#43bee1" @if($product->Requires_last_mile == 1) checked @endif>
@@ -501,26 +555,26 @@
                             </select>
                         </div>
                         @endif
-                        @if($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8)
-                        <div class="col-md-6 d-flex justify-content-between mb-2">
-                            {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
-                            <select class="selectize-select1 form-control" name="tags" required>
-                                @if($agent_dispatcher_on_demand_tags != null && count($agent_dispatcher_on_demand_tags))
-                                    @foreach($agent_dispatcher_on_demand_tags as $key => $tags)
-                                    <option value="{{ $tags['name'] }}" @if($product->tags == $tags['name']) selected="selected" @endif>{{ ucfirst($tags['name']) }}</option>
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
-                        @endif
-                        @if($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8)
-                        <div class="col-md-6 d-flex justify-content-between mb-2">
-                            {!! Form::label('title', __('Mode Of Service'),['class' => 'control-label']) !!}
-                            <select class="selectize-select1 form-control" name="mode_of_service" required>
-                                <option value="instant" @if($product->mode_of_service == 'instant') selected="selected" @endif>{{ __('Instant') }}</option>
-                                <option value="schedule" @if($product->mode_of_service == 'schedule') selected="selected" @endif>{{ __('Schedule') }}</option>
-                            </select>
-                        </div>
+                       
+                        @if(($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8) || ($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12) )
+                            <div class="col-md-6 d-flex justify-content-between mb-2">
+                                {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
+                                <select class="selectize-select1 form-control" name="tags" required>
+                                    @if($agent_dispatcher_on_demand_tags != null && count($agent_dispatcher_on_demand_tags))
+                                        @foreach($agent_dispatcher_on_demand_tags as $key => $tags)
+                                        <option value="{{ $tags['name'] }}" @if($product->tags == $tags['name']) selected="selected" @endif>{{ ucfirst($tags['name']) }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 d-flex justify-content-between mb-2">
+                                {!! Form::label('title', __('Mode Of Service'),['class' => 'control-label']) !!}
+                                <select class="selectize-select1 form-control" name="mode_of_service" required>
+                                    <option value="instant" @if($product->mode_of_service == 'instant') selected="selected" @endif>{{ __('Instant') }}</option>
+                                    <option value="schedule" @if($product->mode_of_service == 'schedule') selected="selected" @endif>{{ __('Schedule') }}</option>
+                                </select>
+                            </div>
                         @endif
                         @if($configData->age_restriction_on_product_mode == 1)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
@@ -543,7 +597,7 @@
                             </select>
                         </div>
 
-                        @if($product->category->categoryDetail->type_id != 8 && $product->category->categoryDetail->type_id != 7)
+                        @if( !in_array($product->category->categoryDetail->type_id,[8,7,12]))
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Brand'),['class' => 'control-label']) !!}
                             <select class="form-control " id="brand_idBox" name="brand_id">
@@ -631,11 +685,11 @@
                         </select>
                     </div> --}}
 
-                    <div class="row">
+                    {{-- <div class="row">
                         <div class="col-md-12">
                         <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Taxes") }}</h5>
                         </div>
-                    </div>
+                    </div> --}}
                    
                     {{-- <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Container Charges'),['class' => 'control-label']) !!}
@@ -823,7 +877,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        @if($product->category->categoryDetail->type_id != 8)
+                        @if( !in_array($product->category->categoryDetail->type_id ,[8,12]))
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Up Sell Products'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="up_cell[]" data-toggle="select2" multiple="multiple" placeholder="Select gear...">
@@ -878,7 +932,7 @@
                     <div class="col-lg-12">
                              <div class="card-box pb-2">
                                 <div class="d-flex align-items-center justify-content-between">
-                                   <h4 class="header-title text-uppercase m-0">{{ __("Product Order Form") }}</h4>
+                                   <h4 class="header-title text-uppercase m-0">{{ $nomenclatureProductOrderForm }}</h4>
                                    <a class="btn btn-info d-block" id="add_product_faq_modal_btn">
                                       <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
                                    </a>
@@ -1085,6 +1139,43 @@
             if (confirm("Are you sure? You want to delete this variant.")) {
                 removeVariant(product_id, product_variant_id, is_product_delete);
             }
+        }
+    });
+    $(document).on('click', '.deleteExistRowRental', function() {
+        var that = $(this);
+        var product_id = "{{$product->id}}";
+        var product_variant_id = $(this).data('varient_id');
+        var rowCount = $('#product_tbody_' + product_id + ' tr').length;
+        if (rowCount == 1) {
+            var is_product_delete = 1;
+            Swal.fire({
+                title: 'Warning!',
+                text: 'Are you sure you?',
+                input: 'text',
+                inputPlaceholder: 'Delete',
+              }).then(({value}) => {
+                if (value === "Delete") {
+                    removeVariant(product_id, product_variant_id, is_product_delete);
+                    $(".addExistRow").css('display','none');
+                    $('.addExistRow').last().show();
+                    Swal.fire('Deleted!', 'Row has been deleted!', 'success')
+                } 
+              });
+        } else {
+            var is_product_delete = 0;
+            Swal.fire({
+                title: 'Warning!',
+                text: 'Are you sure you?',
+                input: 'text',
+                inputPlaceholder: 'Delete',
+              }).then(({value}) => {
+                if (value === "Delete") {
+                    removeVariant(product_id, product_variant_id, is_product_delete);
+                    $(".addExistRow").css('display','none');
+                    $('.addExistRow').last().show();
+                    Swal.fire('Deleted!', 'Row has been deleted!', 'success')
+                }   
+              });
         }
     });
 

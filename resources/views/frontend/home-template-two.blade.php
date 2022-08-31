@@ -37,14 +37,14 @@ height: auto;
 {{-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> --}}
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos alTwoHomeShimmer">
-    <div class="container-fulid shimmer_effect topBar">
+    <div class="container-fulid shimmer_effect  main_shimer topBar">
         <div class="row">
             <div class="col-12 cards">
                 <div class="top_bar loading"></div>
             </div>
         </div>
     </div>
-    <div class="container shimmer_effect topBar">
+    <div class="container shimmer_effect main_shimer topBar">
         <div class="row">
             <div class="col-2 cards">
                 <div class="logoArea_bar loading"></div>
@@ -60,21 +60,21 @@ height: auto;
             </div>
         </div>
     </div>
-    <div class="container-fulid mt-1 mb-1 shimmer_effect topBar">
+    <div class="container-fulid mt-1 mb-1 shimmer_effect main_shimer topBar">
         <div class="row">
             <div class="col-12 cards">
                 <div class="top_bar loading"></div>
             </div>
         </div>
     </div>
-	<div class="container_al mb-3 shimmer_effect">
+	<div class="container_al mb-3 shimmer_effect main_shimer">
 		<div class="row">
 			<div class="col-12 cards">
 				<div class="cardbanner loading"></div>
 			</div>
 		</div>
 	</div>
-	<div class="container mb-5 shimmer_effect">
+	<div class="container mb-5 shimmer_effect main_shimer">
         <div class="row">
             <div class="col-1 grid-row">
                 <div class="card_image loading"></div>
@@ -296,71 +296,135 @@ height: auto;
 </section>
 <!-- shimmer_effect end -->
 @if(count($banners))
-<section class="p-0 small-slider al_desktop_banner">
-    <div class="slide-1 home-slider mb-sm-2 ">
-        @foreach($banners as $banner)
-        @php
-        $url = '';
-        if($banner->link == 'category'){
-        if($banner->category != null){
-        $url = route('categoryDetail', $banner->category->slug);
-        }
-        }
-        else if($banner->link == 'vendor'){
-        if($banner->vendor != null){
-        $url = route('vendorDetail', $banner->vendor->slug);
-        }
-        }
-        @endphp
-        <div>
-            @if($url)
-            <a href="{{$url}}">
-                @endif
-                <div class="home text-center">
-                    <link rel="preload" as="image" href="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" />
-                    <img src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
-                </div>
-                @if($url)
-            </a>
-            @endif
-        </div>
-        @endforeach
+<section class="home-slider-wrapper p-0">
+	<div class="container-fluid">
+		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
+			<div class="carousel-inner">
+				@foreach($banners as $key => $banner)
+					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+					<div class="carousel-item @if($key == 0) active @endif">
+					 <a class="banner-img-outer" href="{{$url??'#'}}">
+                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1920/500' . $banner->image['image_path']}}" />
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1920/500' . $banner->image['image_path']}}">
+					</a>
+					</div>
+				@endforeach
+
+			</div>
+			<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="sr-only">Previous</span>
+			</a>
+			<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="sr-only">Next</span>
+			</a>
+		</div>
+
+		<div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;">
+			<div class="carousel-inner">
+
+				@foreach($mobile_banners as $key => $banner)
+					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+					<div class="carousel-item @if($key == 0) active @endif">
+					 <a class="banner-img-outer" href="{{$url??'#'}}">
+                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}" />
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}">
+					</a>
+					</div>
+				@endforeach
+
+			</div>
+			<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="sr-only">Previous</span>
+			</a>
+			<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="sr-only">Next</span>
+			</a>
+		</div>
+
+	</div>
+</section>
+@else
+<section class="home-slider-wrapper">
+    <div class="container-fulid">
+        <div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel"></div>
+        <div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;"></div>
     </div>
 </section>
 @endif
-@if(count($banners))
-<section class="p-0 small-slider al_mobile_banner" style="display:none;">
-    <div class="slide-1 home-slider mb-sm-2">
-        @foreach($banners as $banner)
-        @php
-        $url = '';
-        if($banner->link == 'category'){
-        if($banner->category != null){
-        $url = route('categoryDetail', $banner->category->slug);
-        }
-        }
-        else if($banner->link == 'vendor'){
-        if($banner->vendor != null){
-        $url = route('vendorDetail', $banner->vendor->slug);
-        }
-        }
-        @endphp
-        <div>
-            @if($url)
-            <a href="{{$url}}">
-                @endif
-                <div class="home text-center">
-                    <link rel="preload" as="image" href="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" />
-                    <img src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
-                </div>
-                @if($url)
-            </a>
-            @endif
-        </div>
-        @endforeach
-    </div>
-</section>
-@endif
+
+
+<script type="text/template" id="desktop_banners_template">
+	<div class="carousel-inner">
+	   <% _.each(banners, function(banner, k){%>
+		  <%
+		  var url='#';
+		  if(banner.link == 'category'){
+			 if(banner.category != null){
+				url = "{{route('categoryDetail')}}" + "/" + banner.category.slug;
+			 }
+		  }
+          else if(banner.link == 'vendor'){
+			 if(banner.vendor != null){
+				url = "{{route('vendorDetail')}}" + "/" + banner.vendor.slug;
+			 }
+		  }
+		  %>
+		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
+			 <a class="banner-img-outer" href="<%= url %>">
+				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1920/500<%= banner.image.image_path %>" />
+				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>1920/500<%= banner.image.image_path %>">
+			 </a>
+		  </div>
+	   <% }); %>
+	</div>
+	<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="sr-only">Previous</span>
+	</a>
+	<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="sr-only">Next</span>
+	</a>
+</script>
+
+<script type="text/template" id="mobile_banners_template">
+	<div class="carousel-inner">
+	   <% _.each(banners, function(banner, k){%>
+		  <%
+		  var url='#';
+		  if(banner.link == 'category'){
+			 if(banner.category != null){
+				url = "{{route('categoryDetail')}}" + "/" + banner.category.slug;
+			 }
+		  }
+          else if(banner.link == 'vendor'){
+			 if(banner.vendor != null){
+				url = "{{route('vendorDetail')}}" + "/" + banner.vendor.slug;
+			 }
+		  }
+		  %>
+		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
+			 <a class="banner-img-outer" href="<%= url %>">
+				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>400/150<%= banner.image.image_path %>" />
+				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>400/150<%= banner.image.image_path %>">
+			 </a>
+		  </div>
+	   <% }); %>
+	</div>
+	<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="sr-only">Previous</span>
+	</a>
+	<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="sr-only">Next</span>
+	</a>
+</script>
+
 <script type="text/template" id="vendors_template">
     <% _.each(vendors, function(vendor, k){%>
         <div class="product-box scale-effect">
@@ -582,17 +646,32 @@ height: auto;
     <% }); %>
 </script>
 
-
+<script type="text/template" id="cities_template" >
+    <% _.each(cities, function(city, k){%>
+       <div class="alSpaListSlider">
+          <div>
+             <div class="alSpaListBox">
+                <div class="alSpaCityBox">
+                   <a href="/cities/<%=city.slug %>"><img class="w-100" src="<%=city.image.image_fit %>260/260<%=city.image.image_path %>"></a>
+                </div>
+                <p><%=city.title %></p>
+             </div>            
+          </div>
+       </div>
+        <% }); 
+    %>
+ </script><!-- cities cities end -->
 
 <section class="section-b-space ratio_asos d-none pb-0 pt-0 mt-0 al_template_two_content" id="our_vendor_main_div">
     <div class="vendors">
         @foreach($homePageLabels as $key => $homePageLabel)
         @if($homePageLabel->slug == 'pickup_delivery')
-        @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
-        @include('frontend.booking.cabbooking-single-module')
-        @endif
+            @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
+                @include('frontend.booking.cabbooking-single-module')
+            @endif
         @elseif($homePageLabel->slug == 'dynamic_page')
-        @include('frontend.included_files.dynamic_page')
+        
+            @include('frontend.included_files.dynamic_page')
         @else
         <div class="container render_full_{{$homePageLabel->slug}} d-none" id="{{$homePageLabel->slug.$key}}">
             <div class="row">
@@ -600,6 +679,8 @@ height: auto;
                     @if($homePageLabel->slug == 'vendors')
                     <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
                     @elseif($homePageLabel->slug == 'trending_vendors')
+                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
+                    @elseif($homePageLabel->slug == 'cities')
                     <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
                     @elseif($homePageLabel->slug == 'recent_orders')
                     <div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>

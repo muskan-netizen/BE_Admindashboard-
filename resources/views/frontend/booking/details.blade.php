@@ -1,6 +1,5 @@
 @extends('layouts.store', ['title' => 'Booking Details'])
 @section('css')
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
 

@@ -165,6 +165,9 @@ class OrderController extends BaseController
                         return response()->json(['error' => 'Invalid address id.'], 404);
                     }
                 }
+                if(isset($client_preference->stop_order_acceptance_for_users) && ($client_preference->stop_order_acceptance_for_users == 1)){
+                    return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
+                }
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->first();
                 if ($cart) {
@@ -176,6 +179,9 @@ class OrderController extends BaseController
                             $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
                         }
                     }
+
+                            
+
                     $order = new Order;
                     $order->user_id = $user->id;
                     $order->order_number = generateOrderNo();
@@ -193,8 +199,16 @@ class OrderController extends BaseController
                     $order->is_gift = $request->is_gift ?? 0;
                     $order->user_latitude = $latitude ? $latitude : null;
                     $order->user_longitude = $longitude ? $longitude : null;
+
+                                $total_taxes = 0;
+                                if($cart->total_other_taxes!=''){
+                                    foreach(explode(",",$cart->total_other_taxes) as $row){
+                                    $row1 = explode(":",$row);
+                                        $total_taxes+=(float)$row1[1];
+                                    }
+                                }
+                    $order->taxable_amount = $total_taxes;
                     $order->save();
-                  
                   
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
@@ -275,9 +289,9 @@ class OrderController extends BaseController
                             $vendor_markup_amount = $vendor_markup_amount + $variant->markup_price;
                             $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                             $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
-                            $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges + $fixed_fee_amount;
-                            $product_payable_amount = 0;
-                            $opt_quantity_price = 0;
+                            $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
+                            $productAddon_price = 0;
+                            
                             if (!empty($vendor_cart_product->addon)) {
                                 foreach ($vendor_cart_product->addon as $ck => $addon) {
                                     $opt_quantity_price = 0;
@@ -285,11 +299,12 @@ class OrderController extends BaseController
                                     $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                                     $opt_quantity_price = $opt_price_in_doller_compare *  $vendor_cart_product->quantity;
                                     $total_amount = $total_amount + $opt_quantity_price;
+                                    $productAddon_price = $productAddon_price + $opt_quantity_price;
                                     $payable_amount = $payable_amount + $opt_quantity_price;
                                     $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
                                 }
                             }
-
+                         
                             $vendor_taxable_amount = 0;
                             if (isset($vendor_cart_product->product->taxCategory)) {
                                 foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
@@ -298,10 +313,10 @@ class OrderController extends BaseController
                                     }
                                     $rate = round($tax_rate_detail->tax_rate);
                                     $tax_amount = ($price_in_dollar_compare * $rate) / 100;
-                                    $product_tax = ($quantity_price+$opt_quantity_price) * $rate / 100;
-                                    // $taxable_amount = $taxable_amount + $product_tax;
+                                    $product_tax = ($quantity_price+$productAddon_price) * $rate / 100;
+                                    $taxable_amount = $taxable_amount + $product_tax;
                                     $product_taxable_amount += $product_tax;
-                                    $payable_amount = $payable_amount + $product_tax;
+                                    //$payable_amount = $payable_amount + $product_tax;
                                 }
                             }
                             if ($action == 'delivery') {
@@ -330,15 +345,15 @@ class OrderController extends BaseController
                                             $order_vendor->user_to_vendor_time = intval($delivery_duration);
                                         }
                                         else if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
-                                            Log::info($vendor_cart_product->vendor->timeofLineOfSightDistance);
-                                            Log::info($order_vendor->order_pre_time);
+                                           // Log::info($vendor_cart_product->vendor->timeofLineOfSightDistance);
+                                           // Log::info($order_vendor->order_pre_time);
                                             if($order_vendor->order_pre_time)
                                             $order_vendor->user_to_vendor_time = $vendor_cart_product->vendor->timeofLineOfSightDistance - $order_vendor->order_pre_time;
                                         }
                                     }
                                 }
                             }
-                            $taxable_amount += $product_taxable_amount;
+                            //$taxable_amount += $product_taxable_amount;
                             $vendor_taxable_amount += $taxable_amount;
                             //$total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
                             $total_amount += ($vendor_cart_product->quantity * $variant->price);
@@ -416,6 +431,13 @@ class OrderController extends BaseController
                             }
         
                             $coupon_name = $vendor_cart_product->coupon->promo->name;
+
+                            if ($vendor_cart_product->coupon->promo->allow_free_delivery) {
+                                $total_discount += $delivery_fee;
+                                $vendor_payable_amount -= $delivery_fee;
+                                $vendor_discount_amount += $delivery_fee;
+                            }
+                            
                             if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
                                 $coupon_discount_amount = $vendor_cart_product->coupon->promo->amount;
                                 $total_discount += $coupon_discount_amount;
@@ -487,6 +509,7 @@ class OrderController extends BaseController
                         $order_status->order_vendor_id = $order_vendor->id;
                         $order_status->save();
                     }
+                    $payable_amount = $payable_amount + $total_taxes;
                     $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
 
                     // calculate subscription discount
@@ -508,7 +531,7 @@ class OrderController extends BaseController
                     $total_discount = $total_discount + $total_subscription_discount;
                     $order->total_amount = $total_amount+$total_container_charges;
                     $order->total_discount = $total_discount;
-                    $order->taxable_amount = $taxable_amount;
+                    //$order->taxable_amount = $taxable_amount;
                     $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
                     if ($loyalty_amount_saved > 0) {
                         if ($loyalty_amount_saved > $payable_amount) {
@@ -918,7 +941,7 @@ class OrderController extends BaseController
                 $call_back_url = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/dispatch-order-status-update/" . $dynamic;
             //   $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
-            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -1056,7 +1079,7 @@ class OrderController extends BaseController
             // $call_back_url = route('dispatch-order-update', $dynamic);
 
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
-            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -1615,6 +1638,8 @@ class OrderController extends BaseController
                     $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
                 } elseif ($luxury_option->title == 'dine_in') {
                     $luxury_option_name = __('Dine-In');
+                }elseif ($luxury_option->title == 'on_demand') {
+                    $luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
                 } else {
                     //$luxury_option_name = __('Delivery');
                     $luxury_option_name = getNomenclatureName($luxury_option->title);
@@ -1728,7 +1753,7 @@ class OrderController extends BaseController
                 if($order->paymentOption->code == 'stripe'){
                     $order->paymentOption->title = __('Credit/Debit Card (Stripe)');
                 }elseif($order->paymentOption->code == 'kongapay'){
-                    $order->paymentOption->code->title = 'Pay Now';
+                    $order->paymentOption->title = 'Pay Now';
                 }elseif($order->paymentOption->code == 'mvodafone'){
                     $order->paymentOption->title = 'Vodafone M-PAiSA';
                 }
@@ -1875,8 +1900,10 @@ class OrderController extends BaseController
                     if ($luxury_option->title == 'takeaway') {
                         $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
                     } elseif ($luxury_option->title == 'dine_in') {
-                        $luxury_option_name = 'Dine-In';
-                    } else {
+                        $luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+                    }elseif ($luxury_option->title == 'on_demand') {
+                        $luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
+                    }  else {
                         //$luxury_option_name = 'Delivery';
                         $luxury_option_name = getNomenclatureName($luxury_option->title);
                     }
@@ -2862,7 +2889,9 @@ class OrderController extends BaseController
             if ($luxury_option->title == 'takeaway') {
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
             } elseif ($luxury_option->title == 'dine_in') {
-                $luxury_option_name = 'Dine-In';
+                $luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+            }elseif ($luxury_option->title == 'on_demand') {
+                $luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
             } else {
                 //$luxury_option_name = 'Delivery';
                 $luxury_option_name = getNomenclatureName($luxury_option->title);

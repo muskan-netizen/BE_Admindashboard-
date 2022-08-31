@@ -1,8 +1,12 @@
 @php
-$clientData = \App\Models\Client::select('id', 'logo')
+$clientData = \App\Models\Client::select('id', 'logo','dark_logo')
     ->where('id', '>', 0)
     ->first();
-$urlImg = $clientData ? $clientData->logo['original'] : ' ';
+if(Session::get('config_theme') == 'dark'){
+    $urlImg = $clientData ? $clientData->dark_logo['original'] : ' ';
+}else{
+    $urlImg = $clientData ? $clientData->logo['original'] : ' ';
+}
 $languageList = \App\Models\ClientLanguage::with('language')
     ->where('is_active', 1)
     ->orderBy('is_primary', 'desc')
@@ -170,9 +174,9 @@ $pages = \App\Models\Page::with([
                                         <span class="al_textTabsText">{{$NomenclatureName}}</span>
                                     </a>
                                 </li>
-                                
+
                                 @endif
-                            @endforeach    
+                            @endforeach
                             <!-- @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
                                 <li class="navigation-tab-item pr-lg-3" role="presentation">
                                     <a class="nav-link al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
@@ -220,9 +224,9 @@ $pages = \App\Models\Page::with([
                                         <span class="al_textTabsText">{{$NomenclatureName}}</span>
                                     </a>
                                 </li>
-                                
+
                                 @endif
-                            @endforeach     
+                            @endforeach
                             <!-- @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
                                 <li class="navigation-tab-item pr-lg-3" role="presentation">
                                     <a class="nav-link al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
@@ -471,7 +475,7 @@ $pages = \App\Models\Page::with([
         </div>
     </div>
     @if(count($navCategories))
-    <div class="menu-navigation_al">
+    <div class="menu-navigation al">
       <div class="container-fluid">
          <div class="row">
             <div class="col-12">

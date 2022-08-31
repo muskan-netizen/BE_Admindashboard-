@@ -94,7 +94,8 @@
                                    
                                         @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                                             @php
-                                                $VendorTypesName   = $vendor_typ_key.'icon';
+                                                $VendorTypesName   = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+
                                                 $clientVendorTypes = $vendor_typ_key.'_check';
                                             @endphp
                                             @if($client_preference_detail->$clientVendorTypes == 1)
@@ -462,6 +463,12 @@
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
                                 @endif
+                                @if($home_page_label->slug == 'cities')
+                                <a class="action-icon edit_cities_page" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
+                                    <i class="mdi mdi-pencil"></i>
+                                </a>
+                            
+                                @endif
                                 @if($home_page_label->slug == 'dynamic_page')
                                 <input type="checkbox" name="for_no_product_found_html[{{$key}}]" {{$home_page_label->for_no_product_found_html == 1 ? 'checked' : ''}} >{{__('For No Records')}}
                                 @else
@@ -576,15 +583,24 @@
 <!-- end cab booking template -->
 
 </div>
-
+@include('backend.web_styling.city-section-model')
 @endsection
 
 @section('script')
+
 <script src="{{asset('assets/js/jscolor.js')}}"></script>
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
 <!-- allow drop html -->
 <script>
+    var Default_latitude = `{{ $client_preference_detail->Default_latitude }}`;
+    var Default_longitude = `{{ $client_preference_detail->Default_longitude }}`;
+    if(!Default_latitude ){
+        Default_latitude = "30.7333";
+    }
+    if(!Default_longitude ){
+        Default_longitude = "76.7794";
+    }
     function allowDrop(ev) {
         console.log('allowDrop');
        ev.preventDefault();
@@ -648,6 +664,7 @@ $(document).on('click','.edit_dynamic_page',function(){
         });
 
 });
+
 
 
 $(document).on('click', '.deletePickupSection', function() {

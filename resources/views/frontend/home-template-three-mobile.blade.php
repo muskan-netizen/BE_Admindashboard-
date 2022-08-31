@@ -43,7 +43,7 @@ if(session()->has('applocale')){
 
     <!-- shimmer_effect start -->
     <article class="section-b-space_al_shimer position-absolute  p-0 ratio_asos">
-        <div class="container-fulid mb-5 shimmer_effect">
+        <div class="container-fulid mb-5 shimmer_effect main_shimer">
             <div class="row ">
                 <div class="col-12 cards d-flex justify-content-between">
                         <h2 class="h2-heading loading mb-3"></h2>
@@ -605,6 +605,21 @@ if(session()->has('applocale')){
                             <% }); %>
     </script><!-- recent_orders_template end -->
 
+    <script type="text/template" id="cities_template" >
+        <% _.each(cities, function(city, k){%>
+           <div class="alSpaListSlider">
+              <div>
+                 <div class="alSpaListBox">
+                    <div class="alSpaCityBox">
+                       <a href="/cities/<%=city.slug %>"><img class="w-100" src="<%=city.image.image_fit %>260/260<%=city.image.image_path %>"></a>
+                    </div>
+                    <p><%=city.title %></p>
+                 </div>            
+              </div>
+           </div>
+            <% }); 
+        %>
+     </script><!-- cities cities end -->
 
 
     <!-- our_vendor_main_div start -->
@@ -635,6 +650,19 @@ if(session()->has('applocale')){
                         </div>
                     </div>
                 </div>
+            @elseif($homePageLabel->slug == 'cities')
+                <section class="suppliers-section render_full_{{$homePageLabel->slug}} d-none ">
+                    <div class="container mb-0"  >
+                        <div class=" top-heading d-flex justify-content
+                        -between align-self-center">
+                            <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
+                        </div>
+                        <div class="col-12 p-0">
+                            <div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </section> @elseif($homePageLabel->slug == 'trending_vendors')
             <section class="suppliers-section">
                 <div class="container"  >

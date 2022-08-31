@@ -16,7 +16,7 @@ class CreateBannerServiceAreasTable extends Migration
         Schema::create('banner_service_areas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('banner_id')->nullable();
-            $table->unsignedBigInteger('service_area_id')->nullable()->comments('id from service area for banners');
+            $table->unsignedBigInteger('service_area_id')->nullable()->comment('id from service area for banners');
             $table->timestamps();
 
             $table->foreign('service_area_id')->references('id')->on('service_area_for_banners')->onDelete('cascade');

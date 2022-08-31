@@ -599,7 +599,14 @@ class PickupDeliveryController extends BaseController{
                 $dynamic = uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
-                $call_back_url = "https://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic;
+
+                if(!empty($client_do->custom_domain)){
+                    $domain = $client_do->custom_domain;
+                }else{
+                    $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
+                }
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
+                //$call_back_url = "https://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic;
                 $tasks = array();
                 $meta_data = '';
                 $team_tag = $unique."_".$vendor;
@@ -711,7 +718,58 @@ class PickupDeliveryController extends BaseController{
 
     }
 
+      /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAgents(Request $request){
 
+        try{
+            $validator = Validator::make(request()->all(), [
+                'latitude' => 'required',
+                'longitude' => 'required',
+            ]);
+
+            if($validator->fails()){
+                return $this->errorResponse($validator->messages(), 422);
+            }
+
+            $postdata = [
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude
+            ];
+
+            if(!empty($request->tag)){
+                $postdata['tag'] = $request->tag;
+            }
+
+            $dispatch_domain = $this->checkIfPickupDeliveryOn();
+                      
+            $header = ['headers' => ['personaltoken' => !empty($dispatch_domain->delivery_service_key)? $dispatch_domain->delivery_service_key : $dispatch_domain->pickup_delivery_service_key,
+                'shortcode' => !empty($dispatch_domain->delivery_service_key_code)? $dispatch_domain->delivery_service_key_code : $dispatch_domain->pickup_delivery_service_key_code,
+                'content-type' => 'application/json']
+            ];
+
+            $client = new GClient($header);
+            $url    = !empty($dispatch_domain->delivery_service_key_url)? $dispatch_domain->delivery_service_key_url.'/api/get/agents' : $dispatch_domain->pickup_delivery_service_key_url.'/api/get/agents';
+            $res = $client->post(
+                $url,
+                ['form_params' => (
+                        $postdata
+                    )]
+            );
+            $response = json_decode($res->getBody(), true);
+            return $response;
+
+        }catch(\Exception $e){
+            $data = [];
+            $data['status'] = 400;
+            $data['message'] =  $e->getMessage();
+            return $data;
+        }
+
+    }
 
 
       /**
