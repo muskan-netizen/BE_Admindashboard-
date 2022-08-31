@@ -203,7 +203,23 @@
                             <div class="">
                             {!! Form::label('title', __('Slot Type'),['class' => 'control-label']) !!}
                             </div>
-                            @if($vendor->dine_in == 1)
+                         
+                            @php
+                            $typeArray = getCategoryTypes();
+                            @endphp
+                            @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                                @php
+                                    $clientVendorTypes = $vendor_typ_key.'_check';
+                                    $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                                @endphp
+                                @if(($client_preferences->$clientVendorTypes == 1) && ($vendor->$VendorTypesName == 1) )
+                                    <div class="checkbox checkbox-success form-check pl-1 mb-1">
+                                        <input name="slot_type[]" type="checkbox" id="edit_{{ $VendorTypesName }}" checked value="{{ $VendorTypesName }}">
+                                        <label for="edit_dine_in">{{getDynamicTypeName($vendor_typ_value)}} </label>
+                                    </div>
+                                @endif
+                            @endforeach
+                            {{-- @if($vendor->dine_in == 1)
                             <div class="checkbox checkbox-success form-check pl-1 mb-1">
                                 <input name="slot_type[]" type="checkbox" id="edit_dine_in" checked value="dine_in">
                                 <label for="edit_dine_in"> {{ __("Dine in") }} </label>
@@ -220,7 +236,7 @@
                                 <input name="slot_type[]" type="checkbox" id="edit_delivery" checked value="delivery">
                                 <label for="edit_delivery"> {{ __("Delivery") }} </label>
                             </div>
-                            @endif
+                            @endif --}}
                         </div>
                     </div>
                     <!--<div class="row mb-2 weekDaysEdit">

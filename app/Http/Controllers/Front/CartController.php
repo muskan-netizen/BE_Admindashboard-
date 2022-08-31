@@ -311,9 +311,8 @@ class CartController extends FrontController
                     $sel->groupBy('product_id');
                 }
             ])->find($request->product_id);
-
-            # if product type is not equal to on demand
-            if( ($productDetail->category->categoryDetail->type_id != 8) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)){
+            # if product type is not equal to on demand and appointment
+            if( ( !in_array($productDetail->category->categoryDetail->type_id,[8,12])) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)){
                 if(!empty($already_added_product_in_cart)){
                     if($productDetail->variant[0]->quantity <= $already_added_product_in_cart->quantity){
                         return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart s')]);
@@ -329,8 +328,6 @@ class CartController extends FrontController
                      $request->quantity = $productDetail->variant[0]->quantity;
                 }
             }
-            // echo 'pass';
-            // pr($request->toArray());
             //\Log::info($request->addon_id);
 
             $addonSets = $addon_ids = $addon_options = array();
@@ -377,7 +374,13 @@ class CartController extends FrontController
                     ], 400);
                 }
             }
-           
+            // total booking time for rental case 
+            $total_booking_time = $request->has('total_booking_time') ? $request->total_booking_time : null;
+
+            // total booking time as single service duration time as per service for get totel service time multiply by quantity
+            if(in_array($luxury_option->id,[6,8])){
+                $total_booking_time = $productDetail->minimum_duration_min;
+            }
             $oldquantity = $isnew = 0;
             $cart_product_detail = [
                 'status'  => '0',
@@ -393,7 +396,7 @@ class CartController extends FrontController
                 'start_date_time'  => $request->has('start_date') ? $request->start_date : null,
                 'end_date_time' => $request->has('end_date') ? $request->end_date : null,
                 'additional_increments_hrs_min' => $request->has('incremental_hrs') ? $request->incremental_hrs : null,
-                'total_booking_time' => $request->has('total_booking_time') ? $request->total_booking_time : null,
+                'total_booking_time' =>  $total_booking_time,
             ];
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
@@ -461,30 +464,7 @@ class CartController extends FrontController
                 $cartProduct->save();
             }
             $quantityCart = CartProduct::where('cart_id',$cart_detail->id)->sum('quantity');
-            // if ($checkIfExist) {
-            //     $checkIfExist->quantity = (int)$checkIfExist->quantity + $request->quantity;
-            //     $cart_detail->cartProducts()->save($checkIfExist);
-            // } else {
-                // $productForVendor = Product::where('id', $request->product_id)->first();
-
-                // $cart_product = CartProduct::updateOrCreate(['cart_id' =>  $cart_detail->id, 'product_id' => $request->product_id], $cart_product_detail);
-                // $create_cart_addons = [];
-                // if ($addon_options_ids) {
-                //     foreach ($addon_options_ids as $k => $addon_options_id) {
-                //         $create_cart_addons[] = [
-                //             'addon_id' => $addon_ids[$k],
-                //             'cart_id' => $cart_detail->id,
-                //             'option_id' => $addon_options_id,
-                //             'cart_product_id' => $cart_product->id,
-                //         ];
-                //     }
-                // }
-                // CartAddon::insert($create_cart_addons);
-            // }
-
-            // if($request->has('from_estimation')){
-            //     return 'Request From Estimation';
-            // }
+           
             return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0]);
         } catch (Exception $e) {
             \Log::info($e->getMessage());
@@ -1108,7 +1088,8 @@ class CartController extends FrontController
 
                     $select = '';
 
-                    if ($action == 'delivery') {
+                    if ($action == 'delivery' || $action =='appointment' ) {
+                   
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
                         $deliveryCharges = 0;
@@ -2026,79 +2007,79 @@ class CartController extends FrontController
 
 
         //Fetch all delivery fee option
-        public function getDeliveryOptions($vendorData,$preferences,$payable_amount,$address,$schedule_datetime_del='')
-        {
-            $option = array();
-            $delivery_count = 0;
-            try {
-                if($vendorData->vendor_id)
-                {
-                   Session()->put('vid',$vendorData->vendor_id);
-
-            if($preferences->static_delivey_fee != 1)
+    public function getDeliveryOptions($vendorData,$preferences,$payable_amount,$address,$schedule_datetime_del='')
+    {
+        $option = array();
+        $delivery_count = 0;
+        try {
+            if($vendorData->vendor_id)
             {
+                Session()->put('vid',$vendorData->vendor_id);
 
-                //Dispatcher Delivery changes and estimated delivery duration code
-                $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del);
-                if (!empty($deliver_response_array[0])){
-                    $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format($deliver_response_array[0]['delivery_fee'], 2, '.', ''):'0.00';
-                    $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
-                    $option[] = array(
-                        'type'=>'D',
-                        'courier_name'=>__('Dispatcher'),
-                        'rate' => $deliver_charge,
+                if($preferences->static_delivey_fee != 1)
+                {
+
+                    //Dispatcher Delivery changes and estimated delivery duration code
+                    $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del);
+                    if (!empty($deliver_response_array[0])){
+                        $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format($deliver_response_array[0]['delivery_fee'], 2, '.', ''):'0.00';
+                        $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
+                        $option[] = array(
+                            'type'=>'D',
+                            'courier_name'=>__('Dispatcher'),
+                            'rate' => $deliver_charge,
+                            'courier_company_id' => 0,
+                            'etd' => 0,
+                            'duration' => $delivery_duration,
+                            'etd_hours' => 0,
+                            'estimated_delivery_days' => 0,
+                            'code' => 'D_0'
+                        );
+                    }
+
+
+                //Lalamove Delivery changes code
+                $lalamove = new LalaMovesController();
+                $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
+                if($deliver_lalmove_fee>0)
+                {
+                    $deliver_charge_lalamove = decimal_format($deliver_lalmove_fee);
+
+                    $optionLala[] = array(
+                        'type'=>'L',
+                        'courier_name'=>__('Lalamove'),
+                        'rate' => $deliver_charge_lalamove,
                         'courier_company_id' => 0,
                         'etd' => 0,
-                        'duration' => $delivery_duration,
                         'etd_hours' => 0,
+                        'duration' => 0,
                         'estimated_delivery_days' => 0,
-                        'code' => 'D_0'
+                        'code' => 'L_0'
                     );
+                    $option = array_merge($option,$optionLala);
+                }
+                //End Lalamove Delivery changes code
+
+                if($vendorData->vendor->pincode){
+                    //get Shippo Services Delivery changes code
+                    $shipo = new ShippoController();
+                    $deliver_shipo_fee = $shipo->getServices($vendorData->vendor_id);
+                    if($deliver_shipo_fee)
+                    {
+                        $option = array_merge($option,$deliver_shipo_fee);
+                    }
                 }
 
 
-            //Lalamove Delivery changes code
-            $lalamove = new LalaMovesController();
-            $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
-            if($deliver_lalmove_fee>0)
-            {
-                $deliver_charge_lalamove = decimal_format($deliver_lalmove_fee);
-
-                $optionLala[] = array(
-                    'type'=>'L',
-                    'courier_name'=>__('Lalamove'),
-                    'rate' => $deliver_charge_lalamove,
-                    'courier_company_id' => 0,
-                    'etd' => 0,
-                    'etd_hours' => 0,
-                    'duration' => 0,
-                    'estimated_delivery_days' => 0,
-                    'code' => 'L_0'
-                );
-                $option = array_merge($option,$optionLala);
-            }
-            //End Lalamove Delivery changes code
-
-            if($vendorData->vendor->pincode){
-                //get Shippo Services Delivery changes code
-                $shipo = new ShippoController();
-                $deliver_shipo_fee = $shipo->getServices($vendorData->vendor_id);
-                if($deliver_shipo_fee)
-                {
-                    $option = array_merge($option,$deliver_shipo_fee);
+                if($vendorData->vendor->shiprocket_pickup_name){
+                    //getShiprocketFee Delivery changes code
+                    $ship = new ShiprocketController();
+                    $deliver_ship_fee = $ship->getCourierService($vendorData->vendor_id);
+                    if($deliver_ship_fee)
+                    {
+                        $option = array_merge($option,$deliver_ship_fee);
+                    }
                 }
-            }
-
-
-            if($vendorData->vendor->shiprocket_pickup_name){
-                //getShiprocketFee Delivery changes code
-                $ship = new ShiprocketController();
-                $deliver_ship_fee = $ship->getCourierService($vendorData->vendor_id);
-                if($deliver_ship_fee)
-                {
-                    $option = array_merge($option,$deliver_ship_fee);
-                }
-            }
 
                 //getDunzo Delivery fee changes code
                 $dunzo = new DunzoController();
@@ -2123,49 +2104,49 @@ class CartController extends FrontController
                 }
                 // \Log::info($vendorData->vendor->ahoy_location);
                 if(isset($vendorData->vendor->ahoy_location)){
-                  //getAhoy (Masa) Delivery fee changes code
-                  $ahoy = new AhoyController();
-                  if($ahoy->status){
-                      $deliver_ahoy_fee = $ahoy->getPreOrderFee($vendorData->vendor_id,$address);
-                      if($deliver_ahoy_fee>0)
-                      {
-                          $deliver_charge_ahoy = decimal_format($deliver_ahoy_fee);
-                          $optionAhoy[] = array(
-                              'type'=>'M',
-                              'courier_name'=>__('Ahoy'),
-                              'rate' => $deliver_charge_ahoy,
-                              'courier_company_id' => 0,
-                              'etd' => 0,
-                              'etd_hours' => 0,
-                              'duration' => 0,
-                              'estimated_delivery_days' => 0,
-                              'code' => 'M_0'
-                          );
-                          $option = array_merge($option,$optionAhoy);
-                      }
-                  }
+                    //getAhoy (Masa) Delivery fee changes code
+                    $ahoy = new AhoyController();
+                    if($ahoy->status){
+                        $deliver_ahoy_fee = $ahoy->getPreOrderFee($vendorData->vendor_id,$address);
+                        if($deliver_ahoy_fee>0)
+                        {
+                            $deliver_charge_ahoy = decimal_format($deliver_ahoy_fee);
+                            $optionAhoy[] = array(
+                                'type'=>'M',
+                                'courier_name'=>__('Ahoy'),
+                                'rate' => $deliver_charge_ahoy,
+                                'courier_company_id' => 0,
+                                'etd' => 0,
+                                'etd_hours' => 0,
+                                'duration' => 0,
+                                'estimated_delivery_days' => 0,
+                                'code' => 'M_0'
+                            );
+                            $option = array_merge($option,$optionAhoy);
+                        }
+                    }
                 }
 
 
-        }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
-             # for static fees
-                if( $payable_amount >= (float)($vendorData->vendor->order_amount_for_delivery_fee)){
-                    $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_maximum);
-                }elseif($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)){
-                    $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_minimum);
-                }
+                }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
+                # for static fees
+                    if( $payable_amount >= (float)($vendorData->vendor->order_amount_for_delivery_fee)){
+                        $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_maximum);
+                    }elseif($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)){
+                        $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_minimum);
+                    }
 
-                $option[] = array(
-                    'type'=>'D',
-                    'courier_name'=>__('Static'),
-                    'rate' => $deliveryCharges,
-                    'courier_company_id' => 0,
-                    'etd' => 0,
-                    'etd_hours' => 0,
-                    'duration' => 0,
-                    'estimated_delivery_days' => 0,
-                    'code' => 'D_0'
-                );
+                    $option[] = array(
+                        'type'=>'D',
+                        'courier_name'=>__('Static'),
+                        'rate' => $deliveryCharges,
+                        'courier_company_id' => 0,
+                        'etd' => 0,
+                        'etd_hours' => 0,
+                        'duration' => 0,
+                        'estimated_delivery_days' => 0,
+                        'code' => 'D_0'
+                    );
 
            }//End statis fe code
 
@@ -2181,8 +2162,10 @@ class CartController extends FrontController
     # get delivery fee from dispatcher
     public function getDeliveryFeeDispatcher($vendor_id, $schedule_datetime_del='')
     {
+      
         try {
             $dispatch_domain = $this->checkIfLastMileOn();
+            
             if ($dispatch_domain && $dispatch_domain != false) {
                 $customer = User::find(Auth::id());
                 $cus_address = UserAddress::where('user_id', Auth::id())->where('status',1)->orderBy('is_primary', 'desc')->first();
@@ -2199,20 +2182,39 @@ class CartController extends FrontController
                     );
                     $postdata =  ['locations' => $location, 'schedule_datetime_del' => $schedule_datetime_del];
                     
-                    $client = new GClient([
-                        'headers' => [
-                            'personaltoken' => $dispatch_domain->delivery_service_key,
-                            'shortcode' => $dispatch_domain->delivery_service_key_code,
-                            'content-type' => 'application/json'
-                        ]
-                    ]);
+                    $vendorType =  (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
+                    if($vendorType == 'appointment'){
+                        $client = new GClient([
+                            'headers' => [
+                                'personaltoken' => $dispatch_domain->appointment_service_key,
+                                'shortcode' => $dispatch_domain->appointment_service_key_code,
+                                'content-type' => 'application/json'
+                            ]
+                        ]);
+                        
+                        $url = $dispatch_domain->appointment_service_key_url;
+                        $res = $client->post(
+                            $url . '/api/get-delivery-fee',
+                            ['form_params' => ($postdata)]
+                        );
+                        $response = json_decode($res->getBody(), true);
+                    }else{
+                        $client = new GClient([
+                            'headers' => [
+                                'personaltoken' => $dispatch_domain->delivery_service_key,
+                                'shortcode' => $dispatch_domain->delivery_service_key_code,
+                                'content-type' => 'application/json'
+                            ]
+                        ]);
+                        
+                        $url = $dispatch_domain->delivery_service_key_url;
+                        $res = $client->post(
+                            $url . '/api/get-delivery-fee',
+                            ['form_params' => ($postdata)]
+                        );
+                        $response = json_decode($res->getBody(), true);
+                    }
                     
-                    $url = $dispatch_domain->delivery_service_key_url;
-                    $res = $client->post(
-                        $url . '/api/get-delivery-fee',
-                        ['form_params' => ($postdata)]
-                    );
-                    $response = json_decode($res->getBody(), true);
                     if ($response && $response['message'] == 'success') {
                         $response_array[] = array('delivery_fee' => $response['total'], 'total_duration' => $response['total_duration']);
                         return $response_array;
@@ -2225,8 +2227,13 @@ class CartController extends FrontController
     # check if last mile delivery on
     public function checkIfLastMileOn()
     {
+        $vendorType =  (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
         $preference = ClientPreference::first();
-        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+       
+        if(( $vendorType == 'appointment') && ( ($preference->need_appointment_service == 1) && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_code) && !empty($preference->appointment_service_key_url)) ){
+            //return $preference;
+        }
+        elseif ( ( $vendorType != 'appointment') && $preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
             return $preference;
         else
             return false;
@@ -2272,7 +2279,6 @@ class CartController extends FrontController
 
     public function updateSchedule(Request $request, $domain = '')
     {
-        //pr($request->all());
         DB::beginTransaction();
         try{
 
@@ -2335,6 +2341,7 @@ class CartController extends FrontController
                 'schedule_dropoff' => $request->schedule_dropoff??null,
                 // 'scheduled_slot' => $request->schedule_time??null
                 ]);
+            
                 CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);
 
                 DB::commit();
@@ -2389,6 +2396,7 @@ class CartController extends FrontController
     # update schedule for home services basis on services
     public function updateProductSchedule(Request $request, $domain = '')
     {
+       //pr($request->all());
         DB::beginTransaction();
         try{
             $user = Auth::user();
@@ -2400,8 +2408,8 @@ class CartController extends FrontController
                 }
                 CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time]);
 
-                $cartProductDetails = CartProduct::where('id', $request->cart_product_id)->get()->first();
-                CartProduct::where('cart_id', $cartProductDetails->cart_id )->where('vendor_id', $cartProductDetails->vendor_id  )->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time]);
+                // $cartProductDetails = CartProduct::where('id', $request->cart_product_id)->get()->first();
+                // CartProduct::where('cart_id', $cartProductDetails->cart_id )->where('vendor_id', $cartProductDetails->vendor_id  )->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time]);
                 
                 DB::commit();
                 return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);

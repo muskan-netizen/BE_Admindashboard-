@@ -192,6 +192,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                     @endforeach
                                     @endif
 
+
                                 @endif
 
                                 <div class="card-box">
@@ -204,7 +205,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                         <!-- Start Conent Wrapper -->
                                         <div id='main-wrapper'  class="@if(app('request')->input('addons') == 1) d-none @endif">
                                                     @foreach ($category->childs as $key => $childs)
-                                                        @if($childs->type_id == 8)
+                                                        @if(in_array($childs->type_id , [8,12]) )
 
                                                             <h4><b>{{ $childs->translation_name }}</b></h4>
                                                             <div class='' id='section_set{{$key}}'>
@@ -335,7 +336,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                                         @if ($prod->variant[0]->compare_at_price > 0)
                                                                                             <span
                                                                                                 class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
-                                                                                        @endif</span><br> <sup>per person (min. 1)</sup></li>
+                                                                                        @endif</span><br> <sup>{{ __('per person') }} {{ __('min ') . $prod->minimum_duration_min }}</sup></li>
                                                                                 </ul>
                                                                             </div>
                                                                             <div class="productDetails pl-0 pr-lg-5 m-0 position-relative">

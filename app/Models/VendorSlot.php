@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class VendorSlot extends Model
 {
-    protected $fillable = ['vendor_id','category_id','geo_id','start_time','end_time','dine_in','takeaway','delivery','service_area_id'];
-
+    protected $fillable = ['vendor_id','category_id','geo_id','start_time','end_time','dine_in','takeaway','delivery','rental','pick_drop','on_demand','appointment','service_area_id'];
+    
     public function day(){
         $client = Client::first();
         $mytime = Carbon::now()->setTimezone($client->timezone);

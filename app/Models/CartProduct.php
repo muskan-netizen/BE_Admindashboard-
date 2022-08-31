@@ -27,7 +27,7 @@ class CartProduct extends Model{
     }
 
     public function vendor(){
-        return $this->belongsTo('App\Models\Vendor', 'vendor_id', 'id')->select('id', 'name', 'desc', 'logo', 'banner', 'latitude', 'longitude', 'order_pre_time', 'auto_reject_time', 'order_min_amount', 'show_slot', 'dine_in', 'delivery', 'takeaway', 'service_fee_percent','address','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','closed_store_order_scheduled','shiprocket_pickup_name','ahoy_location','fixed_fee','fixed_fee_amount','price_bifurcation','service_charges_tax','delivery_charges_tax','container_charges_tax','service_charges_tax_id'	,'delivery_charges_tax_id'	,'container_charges_tax_id'	, 'fixed_fee_tax','fixed_fee_tax_id','pincode','rental','pick_drop','on_demand','laundry','markup_price_tax_id','add_markup_price');
+        return $this->belongsTo('App\Models\Vendor', 'vendor_id', 'id')->select('id', 'name', 'desc', 'logo', 'banner', 'latitude', 'longitude', 'order_pre_time', 'auto_reject_time', 'order_min_amount', 'show_slot', 'dine_in', 'delivery', 'takeaway', 'service_fee_percent','address','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','closed_store_order_scheduled','shiprocket_pickup_name','ahoy_location','fixed_fee','fixed_fee_amount','price_bifurcation','service_charges_tax','delivery_charges_tax','container_charges_tax','service_charges_tax_id'	,'delivery_charges_tax_id'	,'container_charges_tax_id'	, 'fixed_fee_tax','fixed_fee_tax_id','pincode','rental','pick_drop','on_demand','laundry','appointment','markup_price_tax_id','add_markup_price');
     }
 
     public function slotCounts(){
@@ -49,7 +49,7 @@ class CartProduct extends Model{
     
 
     public function vendorProducts(){
-      return $this->hasMany(CartProduct::class, 'vendor_id', 'vendor_id')->leftjoin('client_currencies as cc', 'cc.currency_id', 'cart_products.currency_id')->select('cart_products.id', 'cart_products.cart_id', 'cart_products.product_id', 'cart_products.quantity', 'cart_products.variant_id', 'cart_products.is_tax_applied', 'cart_products.tax_category_id', 'cart_products.currency_id', 'cc.doller_compare', 'cart_products.vendor_id', 'cart_products.scheduled_date_time','cart_products.user_product_order_form','cart_products.start_date_time','cart_products.end_date_time','cart_products.additional_increments_hrs_min','cart_products.total_booking_time')->orderBy('cart_products.created_at', 'asc')->orderBy('cart_products.vendor_id', 'asc');
+      return $this->hasMany(CartProduct::class, 'vendor_id', 'vendor_id')->leftjoin('client_currencies as cc', 'cc.currency_id', 'cart_products.currency_id')->select('cart_products.id', 'cart_products.cart_id', 'cart_products.product_id', 'cart_products.quantity', 'cart_products.variant_id', 'cart_products.is_tax_applied', 'cart_products.tax_category_id', 'cart_products.currency_id', 'cc.doller_compare', 'cart_products.vendor_id', 'cart_products.scheduled_date_time','cart_products.user_product_order_form','cart_products.start_date_time','cart_products.end_date_time','cart_products.additional_increments_hrs_min','cart_products.total_booking_time','cart_products.schedule_slot','cart_products.total_booking_time')->orderBy('cart_products.created_at', 'asc')->orderBy('cart_products.vendor_id', 'asc');
     }
 
 

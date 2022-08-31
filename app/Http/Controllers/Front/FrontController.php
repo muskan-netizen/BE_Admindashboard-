@@ -279,9 +279,8 @@ class FrontController extends Controller
     }
 
     public function getServiceAreaVendorsWithoutHyperlocal($latitude, $longitude){
-        $client_preferences = ClientPreference::where('id', '>', 0)->first();
         $vendorType = Session::get('vendorType');
-        $preferences = Session::has('preferences') ? Session::get('preferences') : $client_preferences;
+        $preferences = Session::has('preferences') ? Session::get('preferences') : ClientPreference::where('id', '>', 0)->first();;
         $serviceAreaVendors = Vendor::select('id', 'show_slot');
         $vendors = [];
         if($vendorType){
@@ -333,7 +332,7 @@ class FrontController extends Controller
                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode')->orderBy('price');
                 $q->groupBy('product_id');
             },
-        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','minimum_order_count','batch_count');
+        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','minimum_order_count','batch_count','minimum_duration_min');
 
         if ($where !== '') {
             $products = $products->where($where, 1);

@@ -1764,6 +1764,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     // Check Slot Availability
     function checkSlotAvailability(obj)
     {
+       
         var url = "{{route('checkSlotOrders')}}"
         var schedule_datetime = $(obj).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
         var schedule_slot = $(obj).val();
@@ -1773,18 +1774,19 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
             data: {
                 "schedule_datetime": schedule_datetime,
                 "schedule_slot":     schedule_slot,
-                "vendor_id":                vendor_id,
+                "vendor_id":         vendor_id,
             },
             url: url,
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(output) {
-                // Check if orderCount is greaten equal to orders_per_slot
-                if(output.orderCount >= output.orders_per_slot){
+                // Check if orderCount is greaten equal to orders_per_slot //&& (output.orders_per_slot !=0)
+                if(output.orderCount >= output.orders_per_slot  ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
                     // Disable the place order button
                     $('#order_placed_btn').attr("disabled", true);
+                    return false;
                 }else{
                     // Enable the place order button
                     $('#order_placed_btn').attr("disabled", false);
