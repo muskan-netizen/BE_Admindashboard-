@@ -2341,7 +2341,7 @@ class VendorController extends BaseController{
              $limit = $request->has('limit') ? $request->limit : 12;
             $langId = $user->language;
           
-           
+          
          
             $variantSets =  ProductVariantSet::with(['options' => function($zx) use($langId){
                                 $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
