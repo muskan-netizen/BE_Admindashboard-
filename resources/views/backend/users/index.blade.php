@@ -25,6 +25,8 @@
 .royo_customber_btn .card-body {background: none !important;box-shadow: none !important;}
 
 
+.table_customber_add.royo_customber_btn div.dataTables_wrapper div.dataTables_filter {position: inherit;top: 0px !important;}
+
 @media  screen and (max-width:1800px){
 .royo_customber_btn .position-absolute {
     left: 35%;
@@ -155,7 +157,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="al_new_export_table royo_customber_btn">
+                <div class="al_new_export_table royo_customber_btn table_customber_add">
                     <div class="position-absolute mb-2">
                         <button class="btn btn-info waves-effect waves-light text-sm-right importUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                         </button>
@@ -323,6 +325,7 @@
             try {
                 $('#'+table).DataTable({
                     "dom": '<"toolbar">Bfrtip',
+                    "searching": true,
                     "destroy": true,
                     "scrollX": true,
                     "processing": true,
