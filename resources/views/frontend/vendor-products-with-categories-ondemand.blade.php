@@ -192,6 +192,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                     @endforeach
                                     @endif
 
+
                                 @endif
 
                                 <div class="card-box">
@@ -204,7 +205,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                         <!-- Start Conent Wrapper -->
                                         <div id='main-wrapper'  class="@if(app('request')->input('addons') == 1) d-none @endif">
                                                     @foreach ($category->childs as $key => $childs)
-                                                        @if($childs->type_id == 8)
+                                                        @if(in_array($childs->type_id , [8,12]) )
 
                                                             <h4><b>{{ $childs->translation_name }}</b></h4>
                                                             <div class='' id='section_set{{$key}}'>
@@ -335,7 +336,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                                         @if ($prod->variant[0]->compare_at_price > 0)
                                                                                             <span
                                                                                                 class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
-                                                                                        @endif</span><br> <sup>per person (min. 1)</sup></li>
+                                                                                        @endif</span><br> <sup>{{ __('per person') }} {{ __('min ') . $prod->minimum_duration_min }}</sup></li>
                                                                                 </ul>
                                                                             </div>
                                                                             <div class="productDetails pl-0 pr-lg-5 m-0 position-relative">
@@ -985,31 +986,31 @@ $checkSlot = findSlot('', $vendor->id, '');
         <!-- More spas nearby end -->
 
         <!-- sections SpasRelated start -->
-        @foreach($Map_vendors as $key => $value)
         <section class="SpasRelated py-5">
             <div class="container">
                 <div class="row">
                     <!-- alSpaListSlider start -->
                     <div class="Spasslider w-100" id="Spasslider">
-
+                        @foreach($Map_vendors as $key => $value)
                             <div>
+                                <a class="" href="{{route('vendorDetail')}}/{{  $value->slug }}">
                                 <div class="SpasRelatedItems mx-2">
                                     <div class="SpasRelatedItemsImageBox">
                                         <img class="rounded" src="{{ $value->banner['image_fit'] . '400/400' . $value->banner['image_path'] }}">
                                     </div>
                                     <div class="SpasRelatedDetails p-2">
                                         <p class="text-left m-0">{{ $value->name }}</p>
-                                        <a href="javascript:void(0)">10 Excellent (2 reviews)</a>
+                                        {{-- <a href="javascript:void(0)">10 Excellent (2 reviews)</a> --}}
                                         <p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">{{ $value->state ?? 'NA' }}</span><span>{{ number_format($value->vendorToUserDistance ,2) }} {{ (!empty($client_preference_detail->distance_unit_for_time)) ? ($client_preference_detail->distance_unit_for_time ==  'kilometer' ? 'KM' : 'miles') : 'KM' }} {{ __('away') }}</span></p>
                                     </div>
                                 </div>
+                                </a>
                             </div>
-
+                        @endforeach
                     </div><!-- alSpaListSlider start -->
                 </div>
             </div>
         </section>
-        @endforeach
         @if(session('vendorType') != 'on_demand')
             <script type="text/template" id="header_cart_template_ondemand">
                 <ul class="pl-2 pr-2 pb-2 pt-0 ">
@@ -1142,63 +1143,63 @@ $checkSlot = findSlot('', $vendor->id, '');
         @endif
     <script type="text/template" id="empty_cart_template">
         <div class="row">
-                                    <div class="col-12 text-center pb-3">
-                                        <img class="w-50 pt-3 pb-1" src="{{ asset('front-assets/images/ic_emptycart.svg') }}" alt="">
-                                        <h5>Your cart is empty<br/>{{ __('Add an item to begin') }}</h5>
-                                    </div>
-                                </div>
-                            </script>
+            <div class="col-12 text-center pb-3">
+                <img class="w-50 pt-3 pb-1" src="{{ asset('front-assets/images/ic_emptycart.svg') }}" alt="">
+                <h5>Your cart is empty<br/>{{ __('Add an item to begin') }}</h5>
+            </div>
+        </div>
+    </script>
     <script type="text/template" id="variant_image_template">
         <img src="<%= media.image_fit %>300/300<%= media.image_path %>" alt="">
-                            </script>
+    </script>
     <script type="text/template" id="variant_template">
         <% if(variant.product.inquiry_only == 0) { %>
-                                    <%= variant.productPrice %>
-                                    <% if(variant.compare_at_price > 0 ) { %>
-                                        <span class="org_price ml-1 font-14">{{ Session::get('currencySymbol') }}<%= variant.compare_at_price %></span>
-                                    <% } %>
-                                <% } %>
-                            </script>
+            <%= variant.productPrice %>
+            <% if(variant.compare_at_price > 0 ) { %>
+                <span class="org_price ml-1 font-14">{{ Session::get('currencySymbol') }}<%= variant.compare_at_price %></span>
+            <% } %>
+        <% } %>
+    </script>
     <script type="text/template" id="variant_quantity_template">
-        <% if(variant.quantity > 0){ %>
-                                    <%
-                                    var is_customizable = false;
-                                    if(variant.isAddonExist > 0){
-                                        is_customizable = true;
-                                    }
-                                    %>
-                                    <% if(variant.check_if_in_cart != '') { %>
-                                        {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
-                                        <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href<%= variant.check_if_in_cart.id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" href="javascript:void(0)">{{ __('Add') }}</a>
-                                        <div class="number" id="show_plus_minus<%= variant.check_if_in_cart.id %>">
-                                            <span class="minus qty-minus-product <% if(is_customizable){ %> remove-customize <% } %>"  data-parent_div_id="show_plus_minus<%= variant.check_if_in_cart.id %>" data-id="<%= variant.check_if_in_cart.id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" data-cart="<%= variant.check_if_in_cart.cart_id %>">
-                                                <i class="fa fa-minus" aria-hidden="true"></i>
-                                            </span>
-                                            <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="<%= variant.check_if_in_cart.quantity %>" class="input-number" step="0.01" id="quantity_ondemand_<%= variant.check_if_in_cart.id %>" readonly>
-                                            <span class="plus qty-plus-product <% if(is_customizable){ %> repeat-customize <% } %>"  data-id="<%= variant.check_if_in_cart.id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" data-cart="<%= variant.check_if_in_cart.cart_id %>">
-                                                <i class="fa fa-plus" aria-hidden="true"></i>
-                                            </span>
-                                        </div>
-                                    <% }else{ %>
-                                        {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
-                                        <a class="add-cart-btn add_vendor_product" id="aadd_button_href<%= variant.product_id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.product.vendor_id %>" data-product_id="<%= variant.product_id %>" data-addon="<%= variant.isAddonExist %>" href="javascript:void(0)">{{ __('Add') }}</a>
-                                        <div class="number" style="display:none;" id="ashow_plus_minus<%= variant.product_id %>">
-                                            <span class="minus qty-minus-product"  data-parent_div_id="show_plus_minus<%= variant.product_id %>" readonly data-id="<%= variant.product_id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
-                                                <i class="fa fa-minus" aria-hidden="true"></i>
-                                            </span>
-                                            <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d<%= variant.product_id %>" readonly placeholder="1" type="text" value="2" class="input-number input_qty" step="0.01">
-                                            <span class="plus qty-plus-product"  data-id="" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
-                                                <i class="fa fa-plus" aria-hidden="true"></i>
-                                            </span>spa_slider_custom
-                                        </div>
-                                    <% } %>
-                                    {{-- <% if(is_customizable){ %>
-                                        <div class="customizable-text">customizable</div>
-                                    <% } %> --}}
-                                <% }else{ %>
-                                    <span class="text-danger">Out of stock</span>
-                                <% } %>
-                            </script>
+            <% if(variant.quantity > 0){ %>
+            <%
+            var is_customizable = false;
+            if(variant.isAddonExist > 0){
+                is_customizable = true;
+            }
+            %>
+            <% if(variant.check_if_in_cart != '') { %>
+                {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
+                <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href<%= variant.check_if_in_cart.id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" href="javascript:void(0)">{{ __('Add') }}</a>
+                <div class="number" id="show_plus_minus<%= variant.check_if_in_cart.id %>">
+                    <span class="minus qty-minus-product <% if(is_customizable){ %> remove-customize <% } %>"  data-parent_div_id="show_plus_minus<%= variant.check_if_in_cart.id %>" data-id="<%= variant.check_if_in_cart.id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" data-cart="<%= variant.check_if_in_cart.cart_id %>">
+                        <i class="fa fa-minus" aria-hidden="true"></i>
+                    </span>
+                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="<%= variant.check_if_in_cart.quantity %>" class="input-number" step="0.01" id="quantity_ondemand_<%= variant.check_if_in_cart.id %>" readonly>
+                    <span class="plus qty-plus-product <% if(is_customizable){ %> repeat-customize <% } %>"  data-id="<%= variant.check_if_in_cart.id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" data-cart="<%= variant.check_if_in_cart.cart_id %>">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                    </span>
+                </div>
+            <% }else{ %>
+                {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
+                <a class="add-cart-btn add_vendor_product" id="aadd_button_href<%= variant.product_id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.product.vendor_id %>" data-product_id="<%= variant.product_id %>" data-addon="<%= variant.isAddonExist %>" href="javascript:void(0)">{{ __('Add') }}</a>
+                <div class="number" style="display:none;" id="ashow_plus_minus<%= variant.product_id %>">
+                    <span class="minus qty-minus-product"  data-parent_div_id="show_plus_minus<%= variant.product_id %>" readonly data-id="<%= variant.product_id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
+                        <i class="fa fa-minus" aria-hidden="true"></i>
+                    </span>
+                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d<%= variant.product_id %>" readonly placeholder="1" type="text" value="2" class="input-number input_qty" step="0.01">
+                    <span class="plus qty-plus-product"  data-id="" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                    </span>spa_slider_custom
+                </div>
+            <% } %>
+            {{-- <% if(is_customizable){ %>
+                <div class="customizable-text">customizable</div>
+            <% } %> --}}
+        <% }else{ %>
+            <span class="text-danger">Out of stock</span>
+        <% } %>
+    </script>
     <script type="text/template" id="addon_template">
         <% if(addOnData != ''){ %>
                                     <% if(addOnData.product_image){ %>
@@ -1457,6 +1458,8 @@ $checkSlot = findSlot('', $vendor->id, '');
         $(document).delegate(".product_tag_filter", "change", function() {
             vendorProductsSearchResults();
         });
+        
+
     </script>
     <script>
         var base_url = "{{ url('/') }}";

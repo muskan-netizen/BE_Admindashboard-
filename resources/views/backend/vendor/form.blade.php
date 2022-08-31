@@ -188,7 +188,7 @@
             <div class="col-md-6">
                 <div class="row">
                 @php
-                    $typeArray = getCategoryTypes();
+                $typeArray = getCategoryTypes();
                 @endphp
                    @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                         @php

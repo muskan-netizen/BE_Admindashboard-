@@ -1,3 +1,12 @@
+.vendor_products_tr .items-price span {
+    display: inline-block;
+    font-size: 12px;
+    font-style: italic;
+    color: #777;
+    border-left: 1px solid #000;
+    padding-left: 5px;
+}
+.alProductViewPriceMin {display: block;font-size: 14px;color: #777;border-top: 1px solid #777;font-weight: 100;}
 .alSpaCityBox {
     position: relative;
     padding-bottom: 86%;

@@ -152,10 +152,13 @@ class StoreController extends BaseController{
 					$luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
 					if($luxury_option->title == 'takeaway'){
 						$luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
-					}elseif($luxury_option->title == 'dine_in'){
-						$luxury_option_name = __('Dine-In');
-					}else{
-						$luxury_option_name = __('Delivery');
+					}elseif ($luxury_option->title == 'dine_in') {
+						$luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+					}elseif ($luxury_option->title == 'on_demand') {
+						$luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
+					} else {
+						//$luxury_option_name = 'Delivery';
+						$luxury_option_name = getNomenclatureName($luxury_option->title);
 					}
 				}
 				$order->luxury_option_name = $luxury_option_name;
@@ -356,10 +359,13 @@ class StoreController extends BaseController{
 					$luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
 					if($luxury_option->title == 'takeaway'){
 						$luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
-					}elseif($luxury_option->title == 'dine_in'){
-						$luxury_option_name = __('Dine-In');
-					}else{
-						$luxury_option_name = __('Delivery');
+					}elseif ($luxury_option->title == 'dine_in') {
+						$luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+					}elseif ($luxury_option->title == 'on_demand') {
+						$luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
+					} else {
+						//$luxury_option_name = 'Delivery';
+						$luxury_option_name = getNomenclatureName($luxury_option->title);
 					}
 				}
 				$order->luxury_option_name = $luxury_option_name;
@@ -491,10 +497,13 @@ class StoreController extends BaseController{
 					$luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
 					if($luxury_option->title == 'takeaway'){
 						$luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
-					}elseif($luxury_option->title == 'dine_in'){
-						$luxury_option_name = __('Dine-In');
-					}else{
-						$luxury_option_name = __('Delivery');
+					}elseif ($luxury_option->title == 'dine_in') {
+						$luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+					}elseif ($luxury_option->title == 'on_demand') {
+						$luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
+					} else {
+						//$luxury_option_name = 'Delivery';
+						$luxury_option_name = $this->getNomenclatureName($luxury_option->title, $user->language, false);
 					}
 				}
 				$order->luxury_option_name = $luxury_option_name;

@@ -237,7 +237,7 @@ class ProductController extends BaseController
             }
         }
         $otherProducts = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
-        $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode')->first();
+        $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
         $celebrities = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
 
         $agent_dispatcher_tags = [];
@@ -253,6 +253,12 @@ class ProductController extends BaseController
         {
             $vendor_id = $product->vendor_id;
             $agent_dispatcher_on_demand_tags = $this->getDispatcherOnDemandTags($vendor_id);
+
+        }
+        if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 12) # if type is on demand
+        {
+            $vendor_id = $product->vendor_id;
+            $agent_dispatcher_on_demand_tags = $this->getDispatcherAppointmentTags($vendor_id);
 
         }
 
@@ -976,6 +982,34 @@ class ProductController extends BaseController
                             $url = $dispatch_domain->dispacher_home_other_service_key_url;
                             $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
                             $response = json_decode($res->getBody(), true);
+                            if($response && $response['message'] == 'success'){
+                                return $response['tags'];
+                            }
+            //                Log::info($response);
+                }
+            }
+            catch(\Exception $e){
+                // Log::info($e->getMessage());
+            }
+    }
+    # get dispatcher Appointment tags from dispatcher panel
+    public function getDispatcherAppointmentTags($vendor_id){
+     
+        try {
+            $dispatch_domain = $this->checkIfAppointmentOnCommon();
+                if ($dispatch_domain && $dispatch_domain != false) {
+
+                    $unique = Auth::user()->code;
+                    $email =  $unique.$vendor_id."_royodispatch@dispatch.com";
+
+                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->appointment_service_key,
+                                                        'shortcode' => $dispatch_domain->appointment_service_key_code,
+                                                        'content-type' => 'application/json']
+                                                            ]);
+                            $url = $dispatch_domain->appointment_service_key_url;
+                            $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
+                            $response = json_decode($res->getBody(), true);
+                           
                             if($response && $response['message'] == 'success'){
                                 return $response['tags'];
                             }

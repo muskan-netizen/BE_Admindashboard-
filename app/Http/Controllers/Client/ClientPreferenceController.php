@@ -167,8 +167,7 @@ class ClientPreferenceController extends BaseController{
             $preference = new ClientPreference();
             $preference->client_code = $code;
         }
-        $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','need_inventory_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id', 'subscription_tab_taxi',"sos","sos_police_contact",'sos_ambulance_contact' ,'sos_enable','is_static_dropoff','is_vendor_tags', 'slotting_and_scheduling');
-     
+        $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','need_inventory_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id', 'subscription_tab_taxi',"sos","sos_police_contact",'sos_ambulance_contact' ,'sos_enable','is_static_dropoff','is_vendor_tags', 'slotting_and_scheduling','appointment_submit_btn','need_appointment_service','appointment_service_key_url','appointment_service_key_code','appointment_service_key');
 
         foreach ($request->all() as $key => $value) {
             if(!in_array($key, $keyShouldNot)){
@@ -267,13 +266,14 @@ class ClientPreferenceController extends BaseController{
         if($request->has('verify_vendor_type') && $request->verify_vendor_type == '1')
         {
             $roles = [
-                'dinein_check'   => 'required_without_all:takeaway_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check',
-                'takeaway_check' => 'required_without_all:dinein_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check',
-                'delivery_check' => 'required_without_all:dinein_check,takeaway_check,rental_check,pick_drop_check,on_demand_check,laundry_check',
-                'rental_check'   => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check',
-                'pick_drop_check'=> 'required_without_all:dinein_check,takeaway_check,delivery_check,rental_check,on_demand_check,laundry_check',
-                'on_demand_check'=> 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,rental_check,laundry_check',
-                'laundry_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,rental_check',
+                'dinein_check'   => 'required_without_all:takeaway_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check',
+                'takeaway_check' => 'required_without_all:dinein_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check',
+                'delivery_check' => 'required_without_all:dinein_check,takeaway_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check',
+                'rental_check'   => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check,appointment_check',
+                'pick_drop_check'=> 'required_without_all:dinein_check,takeaway_check,delivery_check,rental_check,on_demand_check,laundry_check,appointment_check',
+                'on_demand_check'=> 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,rental_check,laundry_check,appointment_check',
+                'laundry_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,rental_check,appointment_check',
+                'appointment_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check,rental_check',
         
             ];
             // atleast one is required
@@ -480,10 +480,19 @@ class ClientPreferenceController extends BaseController{
                     $res = $client->post($url.'/api/check-dispatcher-keys');
                     $response = json_decode($res->getBody(), true);
                     if($response && $response['status'] == 400){
-                        return redirect()->route('configure.index')->with('error', 'laundry Keys incorrect !');
+                        if($request->has('send_to') && $request->send_to == 'customize'){
+                            return redirect()->route('configure.customize')->with('error', 'laundry Keys incorrect !');
+                        }else{
+                            return redirect()->route('configure.customize')->with('error', 'laundry Keys incorrect !');
+                        }
                     }
                 }catch(\Exception $e){
-                    return redirect()->route('configure.index')->with('error', 'Invalid laundry Dispatcher URL !');
+                    if($request->has('send_to') && $request->send_to == 'customize'){
+                        return redirect()->route('configure.customize')->with('error', 'Invalid laundry Dispatcher URL !');
+                    }else{
+                        return redirect()->route('configure.customize')->with('error', 'Invalid laundry Dispatcher URL !');
+                    }
+                   
                 }
                 $preferenceset->need_laundry_service = ($request->has('need_laundry_service') && $request->need_laundry_service == 'on') ? 1 : 0;
                 $preferenceset->laundry_service_key_url = $request->laundry_service_key_url;
@@ -505,10 +514,19 @@ class ClientPreferenceController extends BaseController{
                     $res = $client->post($url.'/api/check-dispatcher-keys');
                     $response = json_decode($res->getBody(), true);
                     if ($response && $response['status'] == 400) {
-                        return redirect()->route('configure.index')->with('error', 'Pickup & Delivery Keys incorrect !');
+                        if($request->has('send_to') && $request->send_to == 'customize'){
+                            return redirect()->route('configure.customize')->with('error', 'Pickup & Delivery Keys incorrect !');
+                        }else{
+                            return redirect()->route('configure.customize')->with('error', 'Pickup & Delivery Keys incorrect !');
+                        }
                     }
                 } catch (\Exception $e) {
-                    return redirect()->route('configure.index')->with('error', 'Invalid Pickup & Delivery Dispatcher URL !');
+                    if($request->has('send_to') && $request->send_to == 'customize'){
+                        return redirect()->route('configure.customize')->with('error', 'Invalid Pickup & Delivery Dispatcher URL !');
+                    }else{
+                        return redirect()->route('configure.customize')->with('error', 'Invalid Pickup & Delivery Dispatcher URL !');
+                    }
+                 
                 }
                 $preferenceset->need_dispacher_ride = ($request->has('need_dispacher_ride') && $request->need_dispacher_ride == 'on') ? 1 : 0;
                 $preferenceset->pickup_delivery_service_key_url = $request->pickup_delivery_service_key_url;
@@ -533,10 +551,19 @@ class ClientPreferenceController extends BaseController{
                 $res = $client->post($url.'/api/check-dispatcher-keys');
                 $response = json_decode($res->getBody(), true);
                 if($response && $response['status'] == 400){
-                    return redirect()->route('configure.index')->with('error', 'On Demand Services Keys incorrect !');
+                    if($request->has('send_to') && $request->send_to == 'customize'){
+                        return redirect()->route('configure.customize')->with('error', 'On Demand Services Keys incorrect!');
+                    }else{
+                        return redirect()->route('configure.customize')->with('error', 'On Demand Services Keys incorrect!');
+                    }
+                    
                 }
             }catch(\Exception $e){
-                    return redirect()->route('configure.index')->with('error', 'Invalid On Demand Services Dispatcher URL !');
+                if($request->has('send_to') && $request->send_to == 'customize'){
+                    return redirect()->route('configure.customize')->with('error', 'Invalid On Demand Services Dispatcher URL !');
+                }else{
+                    return redirect()->route('configure.customize')->with('error', 'Invalid On Demand Services Dispatcher URL !');
+                }
             }
             $preferenceset->need_dispacher_home_other_service = ($request->has('need_dispacher_home_other_service') && $request->need_dispacher_home_other_service == 'on') ? 1 : 0;
             $preferenceset->dispacher_home_other_service_key_url = $request->dispacher_home_other_service_key_url;
@@ -576,6 +603,36 @@ class ClientPreferenceController extends BaseController{
             }
         }
         
+        if (isset($request->appointment_submit_btn) && !empty($request->appointment_submit_btn)) {
+            if (isset($request->need_appointment_service) && !empty($request->need_appointment_service)) {
+                try {
+                    $client = new GClient(['headers' => ['personaltoken' => $request->appointment_service_key,'shortcode' => $request->appointment_service_key_code,'content-type' => 'application/json']]);
+                    $url = $request->appointment_service_key_url;
+                    $res = $client->post($url.'/api/check-dispatcher-keys');
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['status'] == 400) {
+                        if($request->has('send_to') && $request->send_to == 'customize'){
+                            return redirect()->route('configure.customize')->with('error', 'Appointment Keys incorrect!');
+                        }else{
+                            return redirect()->route('configure.customize')->with('error', 'Appointment Keys incorrect!');
+                        }
+                    }
+                } catch (\Exception $e) {
+                    if($request->has('send_to') && $request->send_to == 'customize'){
+                        return redirect()->route('configure.customize')->with('error', 'Invalid Appointment Dispatcher URL !');
+                    }else{
+                        return redirect()->route('configure.customize')->with('error', 'Invalid Appointment Dispatcher URL !');
+                    }
+                    
+                }
+                $preferenceset->need_appointment_service = ($request->has('need_appointment_service') && $request->need_appointment_service == 'on') ? 1 : 0;
+                $preferenceset->appointment_service_key_url = $request->appointment_service_key_url;
+                $preferenceset->appointment_service_key_code = $request->appointment_service_key_code;
+                $preferenceset->appointment_service_key = $request->appointment_service_key;
+            } else {
+                $preferenceset->need_appointment_service = ($request->has('need_appointment_service') && $request->need_appointment_service == 'on') ? 1 : 0;
+            }
+        }
 
         $preferenceset->save();
 

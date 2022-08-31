@@ -1638,6 +1638,8 @@ class OrderController extends BaseController
                     $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
                 } elseif ($luxury_option->title == 'dine_in') {
                     $luxury_option_name = __('Dine-In');
+                }elseif ($luxury_option->title == 'on_demand') {
+                    $luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
                 } else {
                     //$luxury_option_name = __('Delivery');
                     $luxury_option_name = getNomenclatureName($luxury_option->title);
@@ -1898,8 +1900,10 @@ class OrderController extends BaseController
                     if ($luxury_option->title == 'takeaway') {
                         $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
                     } elseif ($luxury_option->title == 'dine_in') {
-                        $luxury_option_name = 'Dine-In';
-                    } else {
+                        $luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+                    }elseif ($luxury_option->title == 'on_demand') {
+                        $luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
+                    }  else {
                         //$luxury_option_name = 'Delivery';
                         $luxury_option_name = getNomenclatureName($luxury_option->title);
                     }
@@ -2885,7 +2889,9 @@ class OrderController extends BaseController
             if ($luxury_option->title == 'takeaway') {
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
             } elseif ($luxury_option->title == 'dine_in') {
-                $luxury_option_name = 'Dine-In';
+                $luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+            }elseif ($luxury_option->title == 'on_demand') {
+                $luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
             } else {
                 //$luxury_option_name = 'Delivery';
                 $luxury_option_name = getNomenclatureName($luxury_option->title);

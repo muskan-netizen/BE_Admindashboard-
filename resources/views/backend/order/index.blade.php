@@ -739,6 +739,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     if(response.data.laundry_orders !== undefined){
                         $("#laundry-orders").html("(" + response.data.laundry_orders + ")");
                     }
+                    if(response.data.appointment_orders !== undefined){
+                        $("#appointment-orders").html("(" + response.data.appointment_orders + ")");
+                    }
                  }
 
             },
