@@ -355,7 +355,8 @@ $timezone = Auth::user()->timezone;
                                             @endif
 
                                             <p class="p-0 m-0">
-                                                @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
+                                                @if(isset($product->scheduled_date_time)) {{ date('Y-m-d',strtotime(dateTimeInUserTimeZone($product->scheduled_date_time, $timezone))) }}  @endif
+                                                @if($product->schedule_slot!='') {{ __('slot') }} {{ $product->schedule_slot }}  @endif
                                             </p>
 
                                             @foreach($product->prescription as $pres)

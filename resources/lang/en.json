@@ -1070,5 +1070,7 @@
     "Select Slot" : "Select Slot",
     "Ooops, something wrong happended." : "Ooops, something wrong happended.",
     "Your order will arrive by" : "Your order will arrive by",
-    "We are not accepting orders less then" :"We are not accepting orders less then"
+    "We are not accepting orders less then" :"We are not accepting orders less then",
+    "Banner Size":"Banner Size", 
+    "Content Area":"Content Area"
  }

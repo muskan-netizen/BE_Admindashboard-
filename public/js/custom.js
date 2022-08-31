@@ -901,7 +901,23 @@ $(document).ready(function () {
         return date.getTime();
     }
 
-    $(document).on("click", "#order_placed_btn", function () {
+    async function checkSlotValidation(){
+      $returnVal = 1;
+      var product_schedule_slot = document.getElementsByClassName("vendor__product_schedule_slot");
+      await $.each(product_schedule_slot, function(index,value) {
+           
+            var sel_val = $(value).val();
+            if(sel_val == ''){
+                 $returnVal = 0;
+                return false;
+                
+            } 
+            
+        });
+        return $returnVal;
+
+    }
+    $(document).on("click", "#order_placed_btn", async function () {
 
         var delivery_type = 'D';
         var selected = document.querySelector(".delivery-fee.select");
@@ -913,12 +929,26 @@ $(document).ready(function () {
             success_error_alert('error', 'Product order form is required! kindly fill the details.', ".cart_response");
             return false;
         }
+        
+       
         //$("input[name='category_kyc_ids']").length > 0 ||
         if( ($("input[name='without_category_kyc']").val() !=1 ) ){
             success_error_alert('error', 'User Place Order is required! kindly fill the details.', ".cart_response");
             return false;
 
         }
+
+        var returnData = await checkSlotValidation(); 
+        if(returnData==0){
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'kindly select the scheduled slot!',
+                //footer: '<a href="">Why do I have this issue?</a>'
+            })
+            return false;
+        }
+
 
         var vendorScheduleDatetime = $('.vendor_schedule_datetime').length
         if(vendorScheduleDatetime > 0){
