@@ -251,7 +251,7 @@
                                   
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <div class="table-responsive mb-3" style="height: 330px; overflow-y: auto;">
+                                            <div class="table-responsive mb-3" style="max-height:350px; overflow-y: auto;">
                                                 <table class="table table-centered table-nowrap table-striped" id="products-datatable">
                                                     <thead>
                                                         <tr>

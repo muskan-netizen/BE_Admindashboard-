@@ -13,7 +13,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet};
+use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet,OrderProductDispatchRoute};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -448,7 +448,6 @@ class OrderController extends BaseController
             $query->whereIn('order_status_option_id', $order_status_optionsd);
         })->count();
 
-
         // // Delivery orders count
         // if(isset($delivery_orders)){
         //     $delivery_orders = $delivery_orders->where('luxury_option_id', 1)->count();
@@ -545,13 +544,16 @@ class OrderController extends BaseController
                     $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
                 } elseif ($luxury_option->title == 'dine_in') {
                     $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
+                }
+                elseif ($luxury_option->title == 'on_demand') {
+                    $luxury_option_name = $this->getNomenclatureName('Services', $langId, false);
                 } else {
                     $luxury_option_name = getNomenclatureName($luxury_option->title, $langId, false);
                     //$luxury_option_name = 'Delivery';
                 }
                 $luxury_option_name = ucwords(str_replace('_', ' ', $luxury_option_name));
             }
-            $order->luxury_option_name = __($luxury_option_name);
+            $order->luxury_option_name = $luxury_option_name;
             if ($order->vendors->count() == 0) {
                 $orders->forget($key);
             }
@@ -638,7 +640,7 @@ class OrderController extends BaseController
         if($order->paymentOption->code == 'stripe'){
             $order->paymentOption->title = __('Credit/Debit Card (Stripe)');
         }elseif($order->paymentOption->code == 'kongapay'){
-            $order->paymentOption->code->title = 'Pay Now';
+            $order->paymentOption->title = 'Pay Now';
         }elseif($order->paymentOption->code == 'mvodafone'){
             $order->paymentOption->title = 'Vodafone M-PAiSA';
         }
@@ -656,6 +658,10 @@ class OrderController extends BaseController
                 $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
+                $product->routes = []; // routes for single product $product->Routes; //
+                if(in_array($order->luxury_option_id, [6,8])){ // for on demand service and appointment service code by harbans :)
+                    $product->routes =  $product->Routes; // OrderProductDispatchRoute::with('DispatchStatus')->where(['order_vendor_product_id'=>$product->id])->get()->toArray();
+                }
                 foreach ($product->addon as $ck => $addons) {
                     $opt_price_in_currency = $addons->option->price??0;
                     $opt_price_in_doller_compare = $addons->option->price??0;
@@ -680,7 +686,7 @@ class OrderController extends BaseController
                 $vendor->dineInTableCategory = $vendor->dineInTable->category->title; //$vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
             }
         }
-        // dd($order->toArray());
+     
         $luxury_option_name = '';
         if ($order->luxury_option_id > 0) {
             $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
@@ -688,7 +694,9 @@ class OrderController extends BaseController
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
             } elseif ($luxury_option->title == 'dine_in') {
                 $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
-            } else {
+            }elseif ($luxury_option->title == 'on_demand') {
+                $luxury_option_name = $this->getNomenclatureName('Services', $langId, false);
+            }  else {
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
             }
         }
@@ -722,7 +730,7 @@ class OrderController extends BaseController
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
-        
+           //pr( $order->toArray());
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 
             'order' => $order,
@@ -1125,8 +1133,39 @@ class OrderController extends BaseController
 
     public function checkIfanyProductLastMileon($request)
     {
+       
         $order_dispatchs = 2;
-        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+       // pr( $checkdeliveryFeeAdded);
+        $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
+       
+        /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
+        if ($luxury_option_id == 8) { // only for appointment type 
+            $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
+            if($dispatch_domain_Appointment && $dispatch_domain_Appointment != false){
+                $Appointment = 0;
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                
+                
+                    if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 12) {
+                        $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
+                        //echo $Appointment . 'app';
+                        //echo $checkdeliveryFeeAdded->delivery_fee . '$checkdeliveryFeeAdded->delivery_fee';
+                       
+                        if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
+                          
+                            //pr($checkdeliveryFeeAdded);
+                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain_Appointment ,$request);
+                            if ($order_dispatchs && $order_dispatchs == 1) {
+                                $Appointment = 1;
+                                return 1;
+                            }
+                        }
+                    }
+                    //pr('ad');
+                }
+            }
+        }
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
             if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
@@ -2047,7 +2086,9 @@ class OrderController extends BaseController
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
             } elseif ($luxury_option->title == 'dine_in') {
                 $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
-            } else {
+            }elseif ($luxury_option->title == 'on_demand') {
+                $luxury_option_name = $this->getNomenclatureName('Services', $langId, false);
+            }  else {
                 //$luxury_option_name = 'Delivery';
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
             }

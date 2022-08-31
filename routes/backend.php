@@ -389,6 +389,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
             Route::post('updateCreateVendorInDispatch', 'Client\VendorController@updateCreateVendorInDispatch')->name('update.Create.Vendor.In.Dispatch');
             Route::post('updateCreateVendorInDispatchOnDemand', 'Client\VendorController@updateCreateVendorInDispatchOnDemand')->name('update.Create.Vendor.In.Dispatch.OnDemand');
             Route::post('updateCreateVendorInDispatchLaundry', 'Client\VendorController@updateCreateVendorInDispatchLaundry')->name('update.Create.Vendor.In.Dispatch.Laundry');
+            Route::post('updateCreateVendorInDispatchAppointment', 'Client\VendorController@updateCreateVendorInDispatchAppointment')->name('update.Create.Vendor.In.Dispatch.Appointment');
         });
 
         

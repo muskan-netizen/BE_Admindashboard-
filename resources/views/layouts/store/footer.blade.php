@@ -341,6 +341,8 @@ if($showSubscriptionPlanPopUp == 1){
 // is restricted
     var is_age_restricted ="{{$client_preference_detail->age_restriction}}";
     //user lat long
+    // check vendor slot urkl
+    var checkSlotOrdersUrl = "{{route('checkSlotOrders')}}";
 
     var userLatitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
     var userLongitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
