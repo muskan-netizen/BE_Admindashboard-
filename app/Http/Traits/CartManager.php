@@ -393,13 +393,17 @@ trait cartManager{
                     $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user->timezone);
                     $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
                 }
-                
-
-            $slots = (object)showSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
+                $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
+ 
+                $slots = (object)$slotsRes['slots'];
+                $slotsdate = $slotsRes['date'];
+               
                
                 if($cartData->count() > 1 || in_array($action,['appointment','on_demand']) ){
                     $vendorData->selected_slot = $vendorData->schedule_slot;
                 }
+                
+                $vendorData->slotsdate = $slotsdate;
                 $vendorData->slots = $slots;
                 $vendorData->slotsCnt = count((array)$slots);
                 $vendorData->delay_date = date('Y-m-d');
@@ -628,11 +632,14 @@ trait cartManager{
                     }
 
                     $select = '';
+                    
+                    $scheduled_date_time = $prod->scheduled_date_time !=''? $prod->scheduled_date_time : $slotsdate; 
+                   
                     if(!empty($user)){
-                        $scheduledDateTime = dateTimeInUserTimeZone($prod->scheduled_date_time, $user->timezone);
+                        $scheduledDateTime = dateTimeInUserTimeZone($scheduled_date_time, $user->timezone);
                         $prod->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
                     }else{
-                        $prod->scheduled_date_time = date('Y-m-d',strtotime($prod->scheduled_date_time)) ;
+                        $prod->scheduled_date_time = date('Y-m-d',strtotime($scheduled_date_time)) ;
                     }
                     if ($action == 'delivery' || $action == 'appointment') {
                         $delivery_fee_charges = 0;
@@ -1024,20 +1031,10 @@ trait cartManager{
                 }
                 if($preferences->scheduling_with_slots != 1 && $preferences->business_type != 'laundry'){
                     $myDate = $cartData[0]->scheduled_date_time;
-                    $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
-                    if(count((array)$slots) == 0){
-                        $myDate  = date('Y-m-d',strtotime('+1 day'));
-                        $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
-                    }
-                    if(count((array)$slots) == 0){
-                        $myDate  = date('Y-m-d',strtotime('+2 day'));
-                        $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
-                    }
-
-                    if(count((array)$slots) == 0){
-                        $myDate  = date('Y-m-d',strtotime('+3 day'));
-                        $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
-                    }
+                    $slotsRes = getShowSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
+                    $slots = (object)$slotsRes['slots'];
+                    $slotsdate = $slotsRes['date'];
+                    $cart->slotsdate = $slotsdate;
                     $cart->slots = $slots;
                     $cart->vendor_id =  $vendorId;
                 }else{
@@ -1051,37 +1048,22 @@ trait cartManager{
                 // get slots for laundry category
                 if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
                     // For Pickup
-                    $pickupSlots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
-                    if(count((array)$pickupSlots) == 0){
-                        $myDate  = date('Y-m-d',strtotime('+1 day'));
-                        $pickupSlots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
-                    }
-                    if(count((array)$pickupSlots) == 0){
-                        $myDate  = date('Y-m-d',strtotime('+2 day'));
-                        $pickupSlots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
-                    }
-                    if(count((array)$pickupSlots) == 0){
-                        $myDate  = date('Y-m-d',strtotime('+3 day'));
-                        $pickupSlots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
-                    }
+                    //$pickupSlots = (object)getShowSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
+                    $slotsRes = getShowSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
+                    $pickupSlots = (object)$slotsRes['slots'];
+                    $pickupslotsdate = $slotsRes['date'];
+                    $cart->slotsForPickupdate= $pickupslotsdate;
+                   
 
                     // For Dropoff
                     $myDropoffDate = date('Y-m-d');
-                    $dropoffSlots = (object)showSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
-                    if(count((array)$dropoffSlots) == 0){
-                        $myDropoffDate  = date('Y-m-d',strtotime('+1 day'));
-                        $dropoffSlots = (object)showSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
-                    }
-                    if(count((array)$dropoffSlots) == 0){
-                        $myDropoffDate  = date('Y-m-d',strtotime('+2 day'));
-                        $dropoffSlots = (object)showSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
-                    }
-                    if(count((array)$dropoffSlots) == 0){
-                        $myDropoffDate  = date('Y-m-d',strtotime('+3 day'));
-                        $dropoffSlots = (object)showSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
-                    }
+                    $slotsRes = getShowSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                    $dropoffSlots = (object)$slotsRes['slots'];
+                    $dropoffSlotsdate = $slotsRes['date'];
+                    $cart->slotsForDropoffDate = $dropoffSlotsdate;
 
                     $cart->slotsForPickup = $pickupSlots;
+                    
                     $cart->slotsForDropoff  = $dropoffSlots;
                     $cart->vendor_id = $vendorId;
                 }

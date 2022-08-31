@@ -213,6 +213,8 @@ $(document).ready( async function () {
         if($.hasAjaxRunning()){
             return false;
         }
+        
+      
         //$(".navigation-tab-item").removeClass("active");
         $('.vendor_mods').find('.nav-link').removeClass('active');
         $(this).addClass("active");
@@ -229,7 +231,7 @@ $(document).ready( async function () {
         let latitude = "";
         let longitude = "";
         let type = "";
-        var id = $(this).attr('id');
+        //var id = $(this).attr('id');
          type = $(this).attr('VendorType');
         if($("#address-latitude").length > 0){
             latitude = $("#address-latitude").val();
@@ -272,8 +274,8 @@ $(document).ready( async function () {
 
     async function vendorType(latitude, longitude, type = "delivery"){
 
-        await  getHomePageCategoryMenu(latitude, longitude, type);
-        await  getHomePage(latitude, longitude, type);
+        // await  getHomePageCategoryMenu(latitude, longitude, type);
+        // await  getHomePage(latitude, longitude, type);
         $.ajax({
             type: "get",
             dataType: 'json',
@@ -290,8 +292,8 @@ $(document).ready( async function () {
                         getHomePage(latitude, longitude, type);
                     }
                 } else {
-                    getHomePageCategoryMenu(latitude, longitude, type);
-                    getHomePage(latitude, longitude, type);
+                     getHomePageCategoryMenu(latitude, longitude, type);
+                     getHomePage(latitude, longitude, type);
                 }
             }
         });
@@ -414,11 +416,10 @@ $(document).ready( async function () {
 
                     }
                     else {
-                        location.reload();
-                        if ((latitude) && (longitude) && (selected_address)) {
-                           // window.location.href = home_page_url;
-                           // console.log(home_page_url);
-                        }
+                        //if ((latitude) && (longitude) && (selected_address)) {
+                           window.location.href = home_page_url;
+                           console.log(home_page_url);
+                        //}
                     }
                 }
             },
@@ -1053,9 +1054,9 @@ $(document).ready( async function () {
 
                 }
                 else {
-                    if ((latitude) && (longitude) && (selected_address)) {
-                        window.location.href = home_page_url;
-                    }
+                    // if ((latitude) && (longitude) && (selected_address)) {
+                    //     window.location.href = home_page_url;
+                    // }
                 }
             }
         },
