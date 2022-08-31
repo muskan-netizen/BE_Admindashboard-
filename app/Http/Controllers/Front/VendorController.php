@@ -185,7 +185,7 @@ class VendorController extends FrontController
         })->with('tags')->join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get(); 
         // dd(DB::getQueryLog());
         // dd($range_products->toArray());
-      
+     
         if($vendor->vendor_templete_id == 2){
             $page = 'categories';
         }elseif($vendor->vendor_templete_id == 5){
@@ -321,7 +321,7 @@ class VendorController extends FrontController
                 $is_vendor_closed = 0;
             }
         }
-       
+      // pr($Map_vendors->all());
         $product_tag_ids = Product::byProductCategoryServiceType($type)->where('vendor_id', $vendor->id)->where('is_live', 1)->pluck('id')->toArray();
         $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
         $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();

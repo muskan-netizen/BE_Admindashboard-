@@ -651,7 +651,7 @@ if(session()->has('applocale')){
                     </div>
                 </div>
             @elseif($homePageLabel->slug == 'cities')
-                <section class="suppliers-section ">
+                <section class="suppliers-section render_full_{{$homePageLabel->slug}} d-none ">
                     <div class="container mb-0"  >
                         <div class=" top-heading d-flex justify-content
                         -between align-self-center">

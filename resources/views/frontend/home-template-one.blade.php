@@ -646,7 +646,7 @@ $preference = $client_preference_detail;
          </div>
       </section>
       @elseif($homePageLabel->slug == 'cities')
-      <section class="suppliers-section container ">
+      <section class="suppliers-section container  render_full_{{$homePageLabel->slug}} d-none ">
          <div class=" top-heading d-flex justify-content-between align-self-center">
             <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
          </div>

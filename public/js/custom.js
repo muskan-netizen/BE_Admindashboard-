@@ -2215,7 +2215,6 @@ $(document).ready(function () {
                             }
 
                         } else {
-                            console.log('no product found');
                             if ($('#cart_main_page').length != 0) {
                                 $('#cart_main_page').html('');
                                 let empty_cart_template = _.template($('#empty_cart_template').html());

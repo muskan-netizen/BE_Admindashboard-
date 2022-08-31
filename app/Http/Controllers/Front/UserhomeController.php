@@ -1140,6 +1140,7 @@ class UserhomeController extends FrontController
             $longitude = Session::get('longitude');
 
         }
+        $preferences = Session::has('preferences') ? Session::get('preferences') : ClientPreference::first();
         $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
         $p_dim = '300/300';
         if (isset($set_template)  && $set_template->template_id == 3){
@@ -1152,7 +1153,7 @@ class UserhomeController extends FrontController
         }
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
-        $preferences = ClientPreference::first();
+        //$preferences = ClientPreference::first();
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
 
@@ -1529,7 +1530,7 @@ class UserhomeController extends FrontController
 
         $cities = [];
 
-        if (isset($slug) && $slug == 'cities'){    # if enable recent_orders section in
+        if ((isset($slug) && $slug == 'cities') && ($preferences->is_hyperlocal ==1) ){    # if enable cities section in
 
             $cities =  VendorCities::with(['translations'=> function ($q) use($language_id) {
                                 $q->where('language_id', $language_id);
