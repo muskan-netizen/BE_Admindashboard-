@@ -103,14 +103,24 @@ $(document).ready(function () {
                 // }
                 updateRevenue(response.data.monthwise_revenue);
                 updateRevenueLineChart(response.data.currentweek_revenue_daywise, response.data.previousweek_revenue_daywise);
+                if (response.data.locationwise_revenue != '') {
+                    $('#revenue_locations').html('');
+                    response.data.locationwise_revenue.forEach(el => {
+                        var sum = Math.round(el.sum);
+                        var orderCount = response.data.currentyear_ordercount;
+                        var percent = Math.round((el.addressCount / orderCount)*100);
+                        $('#revenue_locations').append('<h5 class="mb-1 mt-0 fw-normal">' + el.address.city + '</h5><div class="progress-w-percent"><span class="progress-value fw-bold">$'
+                            + sum + "</span><div class='progress progress-sm'><div class='progress-bar' role='progressbar' style='width:"+ percent +"%;' aria-valuenow='72' aria-valuemin='0' aria-valuemax='100'></div></div></div>");
+                    });
+                }
             }
         });
     }
     function Worldmap(markers) {
-        $('#world-map-markers').html("");
+        $('#world-map').html("");
         var a = ["#6658dd"],
-            e = $("#world-map-markers").data("colors");
-        $("#world-map-markers").vectorMap({
+            e = $("#world-map").data("colors");
+        $("#world-map").vectorMap({
             hoverColor: !1,
             hoverOpacity: 0.7,
             shape: 'square',

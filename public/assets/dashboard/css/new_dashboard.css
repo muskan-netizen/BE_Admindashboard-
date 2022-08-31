@@ -32,3 +32,14 @@
 .nav-user {
   padding: calc(31px * .5) 20px calc(31px * .5) !important;
 }
+.progress-w-percent .progress {
+  width: calc(100% - 80px);
+}
+.progress-w-percent .progress-value {
+  width: 50px;
+}
+#revenue_locations{
+max-height: 229px;
+overflow: auto;
+padding-right: 20px;
+}
