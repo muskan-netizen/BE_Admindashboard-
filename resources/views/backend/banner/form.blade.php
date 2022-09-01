@@ -12,7 +12,7 @@
                    
 
                     @endif
-                <label class="logo-size text-right w-100">{{ __("Logo Size") }} 1920x550</label>
+                    <label class="logo-size text-right w-100">{{ __("Banner Size") }} 1920x550<br>{{ __("Content Area") }} 1370x330</label>
 
                 <span class="invalid-feedback" role="alert">
                     <strong></strong>
