@@ -24,7 +24,7 @@ class DashBoardController extends BaseController
     use ApiResponser;
 
     public function index()
-    {     
+    {   
         return view('backend/dashboard');
     }
 
