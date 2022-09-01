@@ -340,6 +340,7 @@ use Illuminate\Support\Arr;
                                 <div id="step-2-ondemand">
                                    @php
                                    $lastKey = count($cartData) - 1;
+                                  
                                    @endphp
                                    {{ Arr::last($cartData)}}
                                     @foreach ($cartData as $cd => $cart_data)
@@ -352,7 +353,7 @@ use Illuminate\Support\Arr;
 
                                         <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif>
 
-                                            <h4 class="mb-2"><b>{{__('When would you like your service?')}}</b></h4>
+                                            <h4 class="mb-2" ><b>{{ __('When would you like your servi ce?')}}</b></h4>
                                             <div class="date-items radio-btns hide">
                                                 @foreach ($period as $key => $date)
                                                     <div>
@@ -366,7 +367,7 @@ use Illuminate\Support\Arr;
                                                         <div class="radios">
                                                             <p>{{date('D', strtotime($date))}}</p>
                                                             <div class="alCustomHomeServiceRadio">
-                                                                <input type="radio" class="check-time-slots ondemand-time-slots" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' @if($key == 0) checked @endif />
+                                                                <input type="radio" class="check-time-slots ondemand-time-slots" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' {{$checked }} @if(($key == 0 && $checked == "")) checked @endif />
                                                                 <label for='radio{{$cd}}{{$key}}'>
                                                                 <span class="customCheckbox" aria-hidden="true" >{{date('d', strtotime($date))}}</span>
                                                                 </label>
@@ -765,7 +766,6 @@ use Illuminate\Support\Arr;
     var update_addons_in_cart = "{{route('addToCartAddons')}}";
     var addonids = [];
     var addonoptids = [];
-
 
     $(document).on('click', '.showMapHeader', function(){
         var lats = document.getElementById('latitude').value;

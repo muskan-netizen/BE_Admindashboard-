@@ -2174,7 +2174,7 @@ class VendorController extends BaseController{
             })->withCount(['data' => function ($q)use($vid){
                 $q->where('is_live', 1)->where('vendor_id', $vid);
             }])->with(['translation' => function($q) use($langId){
-                    $q->where('category_translations.language_id', $langId);
+                    $q->where('category_translations.language_id', $langId)->groupBy('category_translations.language_id');
                 }])->with(['data' => function ($q)use($langId,$userid, $multipli,$vid){
                         $q->where('is_live', 1)->where('vendor_id', $vid)->with([
                          'inwishlist' => function($qry) use($userid){
@@ -2192,7 +2192,9 @@ class VendorController extends BaseController{
                             $q->where('language_id', $langId);
                         }
                     ])->join('product_translations', 'product_translations.product_id', '=', 'products.id')
-                    ->select('products.*',DB::raw("'$multipli' as variant_multiplier"))->withCount(['variantSet','addOn'])->orderBy('product_translations.title', 'asc');
+                    ->select('products.*',DB::raw("'$multipli' as variant_multiplier"))->withCount(['variantSet','addOn'])
+                    ->orderBy('product_translations.title', 'asc')
+                    ->groupBy('products.id');
                     }]);
                     
                     if(isset($request->category_id))
