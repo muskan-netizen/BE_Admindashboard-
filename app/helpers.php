@@ -564,6 +564,28 @@ if (!function_exists('showSlot')) {
         return $viewSlot;
     }
 }
+if (!function_exists('getShowSlot')) {
+    function getShowSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
+    {
+        $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        if(count((array)$slots) == 0){
+            $myDate  = date('Y-m-d',strtotime('+1 day'));
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        }
+        if(count((array)$slots) == 0){
+            $myDate  = date('Y-m-d',strtotime('+2 day'));
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        }
+
+        if(count((array)$slots) == 0){
+            $myDate  = date('Y-m-d',strtotime('+3 day'));
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        }
+        $response['slots']=$slots;
+        $response['date']=$myDate;
+        return  $response;
+    }
+}
 if (!function_exists('showSlotTemp')) {
     function showSlotTemp($myDate = null, $vid, $user_id, $type = 'delivery', $duration="60")
     {

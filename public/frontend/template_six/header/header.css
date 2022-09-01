@@ -30,7 +30,8 @@ body{margin: 0;background-color: #fff;font-family: 'MontserratRegular' !importan
 .logo a.navbar-brand img{height: 100%;}
 .vendor_mods_section{order: 2;}
 .rightHead{order: 3;}
-.al_body_template_six ul li{margin-bottom: 0;text-align: right;}
+.al_body_template_six .viewAllProductSec ul li{margin-bottom: 0;text-align: right;}
+body .footer-contant ul li{text-align: left;}
 .al_body_template_six .onhover-show-div  li{text-align: center;}}
 .alProductViewPriceMin span{display: block;font-size: 14px;color: #777;border-top: 1px solid #777;font-weight: 100;}
 
