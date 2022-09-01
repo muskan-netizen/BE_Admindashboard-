@@ -1,5 +1,7 @@
 @section('popup-id','scheduleTablePopup')
-
+<style>
+    #scheduleTablePopup .dt-buttons.btn-group.flex-wrap {right: inherit;}
+</style>
 @section('popup-header')
 Booking Schedule For:<p class="sku-name pl-1"></p>
 @endsection
