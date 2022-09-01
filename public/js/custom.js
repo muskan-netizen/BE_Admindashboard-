@@ -903,7 +903,7 @@ $(document).ready(function () {
 
     async function checkSlotValidation(){
       $returnVal = 1;
-      var product_schedule_slot = document.getElementsByClassName("vendor__product_schedule_slot");
+      var product_schedule_slot = document.getElementsByClassName("vendor_product_schedule_slot");
       await $.each(product_schedule_slot, function(index,value) {
            
             var sel_val = $(value).val();

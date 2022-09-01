@@ -1138,7 +1138,7 @@ class OrderController extends BaseController
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
        // pr( $checkdeliveryFeeAdded);
         $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
-       
+      
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
         if ($luxury_option_id == 8) { // only for appointment type 
             $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
@@ -1154,8 +1154,14 @@ class OrderController extends BaseController
                        
                         if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
                           
+                            $dispatch_domain=[
+                                'service_key'      => $dispatch_domain_Appointment->appointment_service_key,
+                                'service_key_code' => $dispatch_domain_Appointment->appointment_service_key_code,
+                                'service_key_url'  => $dispatch_domain_Appointment->appointment_service_key_url,
+                                'service_type'     => 'appointment'
+                            ];
                             //pr($checkdeliveryFeeAdded);
-                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain_Appointment ,$request);
+                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id,$dispatch_domain ,$request);
                             if ($order_dispatchs && $order_dispatchs == 1) {
                                 $Appointment = 1;
                                 return 1;
@@ -1163,6 +1169,41 @@ class OrderController extends BaseController
                         }
                     }
                     //pr('ad');
+                }
+            }
+        }
+        if ($luxury_option_id == 6) { // only for on_demand type 
+            $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
+        
+            if($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false){
+                $OnDemand = 0;
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                
+              
+                    if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
+                       
+                      //  $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
+                        //echo $Appointment . 'app';
+                       
+                        if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false && $OnDemand == 0  && $checkdeliveryFeeAdded->delivery_fee > 0) {
+                          
+                           
+                    
+                            $dispatch_domain=[
+                                'service_key'      => $dispatch_domain_OnDemand->dispacher_home_other_service_key,
+                                'service_key_code' => $dispatch_domain_OnDemand->dispacher_home_other_service_key_code,
+                                'service_key_url'  => $dispatch_domain_OnDemand->dispacher_home_other_service_key_url,
+                                'service_type'     => 'on_demand'
+                            ];
+                         
+
+                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain ,$request);
+                            if ($order_dispatchs && $order_dispatchs == 1) {
+                                $OnDemand = 1;
+                                return 1;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -1179,23 +1220,23 @@ class OrderController extends BaseController
         }
 
 
-        $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
-        if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
-            $ondemand = 0;
+        // $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
+        // if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
+        //     $ondemand = 0;
 
-            foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
-                if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
-                    $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
-                    if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false && $ondemand == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0.00) {
-                        $order_dispatchs = $this->placeRequestToDispatchOnDemand($request->order_id, $request->vendor_id, $dispatch_domain_ondemand);
-                        if ($order_dispatchs && $order_dispatchs == 1) {
-                            $ondemand = 1;
-                            return 1;
-                        }
-                    }
-                }
-            }
-        }
+        //     foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+        //         if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
+        //             $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
+        //             if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false && $ondemand == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0.00) {
+        //                 $order_dispatchs = $this->placeRequestToDispatchOnDemand($request->order_id, $request->vendor_id, $dispatch_domain_ondemand);
+        //                 if ($order_dispatchs && $order_dispatchs == 1) {
+        //                     $ondemand = 1;
+        //                     return 1;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
        // \Log::info('getDispatchLaundryDomain');
         /////////////// **************** for laundry accept order *************** ////////////////
         $dispatch_domain_laundry = $this->getDispatchLaundryDomain();

@@ -122,15 +122,17 @@ $timezone = Auth::user()->timezone;
                                     <p>#{{$order->order_number}}</p>
                                 </div>
                             </div>
-                             @if(isset($order->vendors) && empty($order->vendors->first()->dispatch_traking_url) && ($order->vendors->first()->delivery_fee > 0) && ($order->vendors->first()->order_status_option_id >= 2) && $order->vendors->first()->shipping_delivery_type=='D')
-                             <div class='inner-div d-inline-block' style="float: right;">
-                                <form method='POST' action='"+full.destroy_url+"'>
+                            @if(!in_array($order->luxury_option_id, [6,8]) )
+                                @if(isset($order->vendors) && empty($order->vendors->first()->dispatch_traking_url) && ($order->vendors->first()->delivery_fee > 0) && ($order->vendors->first()->order_status_option_id >= 2) && $order->vendors->first()->shipping_delivery_type=='D')
+                                <div class='inner-div d-inline-block' style="float: right;">
+                                    <form method='POST' action='"+full.destroy_url+"'>
 
-                                        <button type='button' class='btn btn-danger' id="create_dispatch_request"  data-order_vendor_id="{{$order->vendors->first()->id}}">{{__('Create Dispatch Request')}}</i>
-                                        </button>
+                                            <button type='button' class='btn btn-danger' id="create_dispatch_request"  data-order_vendor_id="{{$order->vendors->first()->id}}">{{__('Create Dispatch Request')}}</i>
+                                            </button>
 
-                                </form>
-                             </div>
+                                    </form>
+                                </div>
+                                @endif
                             @endif
 
                             @if(isset($order->vendors) && isset($order->vendors->first()->dispatch_traking_url) && $order->vendors->first()->dispatch_traking_url !=null && $order->vendors->first()->dispatch_traking_url !=0 )
@@ -397,7 +399,7 @@ $timezone = Auth::user()->timezone;
                                     <tr class="route">
                                         <th scope="row" colspan="4" class="text-end">
                                             <div class="outer_div p-2">
-                                                <h6>Disppatcher Routes</h6>
+                                                <h6>{{ __('Dispatcher Routes') }}</h6>
                                                 <table class="wp-table w-100">
                                                     <tr>
                                                         <th width="20%">#</th>
@@ -857,7 +859,7 @@ $timezone = Auth::user()->timezone;
                         that.addClass("completed");
                         if (status_option_id == 2) {
                             if(reload_page ==1 || reload_page == '1'){
-                                setTimeout(function(){location.reload();}, 2500);
+                               // setTimeout(function(){location.reload();}, 2500);
                             }
                             that.next('li').remove();
                         }

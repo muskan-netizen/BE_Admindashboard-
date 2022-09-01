@@ -640,7 +640,7 @@ class CategoryController extends FrontController{
                 $time_slots[$i++] = trim($newSlot[0]);
             }
         }else{
-        $time_slots = $this->SplitTime($start_time, $end_time, "60");
+        //$time_slots = $this->SplitTime($start_time, $end_time, "60"); // this is for static slots 
         }
 
         $cart_product_id = $request->cart_product_id??0;
