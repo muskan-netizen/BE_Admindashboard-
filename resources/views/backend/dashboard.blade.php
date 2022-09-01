@@ -31,7 +31,7 @@
                 <div class="page-title-right">
                     <form class="d-flex">
                         <div class="input-group">
-                            <input type="text" class="form-control form-control-light" id="dash-daterange">
+                            <input type="text" class="form-control form-control-light" id="range-datepicker" placeholder="2022-08-10 to 2022-08-22">
                             <span class="input-group-text bg-primary border-primary text-white">
                                 <i class="mdi mdi-calendar-range font-13"></i>
                             </span>
@@ -39,9 +39,9 @@
                         <a href="javascript: void(0);" class="btn btn-primary ms-2" id="dashboard_refresh_btn">
                             <i class="mdi mdi-autorenew"></i>
                         </a>
-                        <a href="javascript: void(0);" class="btn btn-primary ms-1">
+                        <!-- <a href="javascript: void(0);" class="btn btn-primary ms-1">
                             <i class="mdi mdi-filter-variant"></i>
-                        </a>
+                        </a> -->
                     </form>
                 </div><!-- page title right side here -->
                 <h4 class="page-title">Dashboard</h4>
@@ -95,7 +95,7 @@
                                 <i class="mdi mdi-currency-usd widget-icon"></i>
                             </div>
                             <h5 class="" title="Number of Revenue">Revenue</h5>
-                            <h3 class="mt-3 mb-3" id="total_revenue">$0</h3>
+                            <h3 class="mt-3 mb-3" id="total_revenue">0</h3>
                             <p class="mb-0" id="revenue_change">
                                 <!-- <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 5.27%</span> -->
                                 <!-- <span class="text-nowrap">Since last month</span> -->
@@ -141,7 +141,7 @@
                             </div> -->
                     </div>
                     <div dir="ltr">
-                        <div id="revenue-bar-chart" class="apex-charts" data-colors="#727cf5,#e3eaef"></div>
+                        <div id="revenue-bar-chart" class="apex-charts" data-colors="#43bee1,#e3eaef"></div>
                     </div>
                 </div><!-- month wise data shown end here  -->
             </div>
@@ -179,7 +179,7 @@
                                 <p class="text-muted mb-0 mt-3">Current Week</p>
                                 <h2 class="fw-normal mb-3">
                                     <small class="mdi mdi-checkbox-blank-circle text-primary align-middle me-1"></small>
-                                    <span id="revenueCurrentWeek">$0</span>
+                                    <span id="revenueCurrentWeek">0</span>
                                 </h2>
                             </div><!-- current week data end here -->
 
@@ -188,7 +188,7 @@
                                 <p class="text-muted mb-0 mt-3">Previous Week</p>
                                 <h2 class="fw-normal mb-3">
                                     <small class="mdi mdi-checkbox-blank-circle text-success align-middle me-1"></small>
-                                    <span id="revenueLastWeek">$0</span>
+                                    <span id="revenueLastWeek">0</span>
                                 </h2>
                             </div><!-- Previous week data end here -->
                         </div>
@@ -207,7 +207,7 @@
 
                     <!-- Total earning chat start here -->
                     <div dir="ltr">
-                        <div id="revenue-line-chart" class="apex-charts mt-3" data-colors="#727cf5,#0acf97" style="height: 364px"></div>
+                        <div id="revenue-line-chart" class="apex-charts mt-3" data-colors="#43bee1,#0acf97" style="height: 364px"></div>
                     </div><!-- Total earning chat end here -->
 
 
@@ -402,7 +402,7 @@
                             </div>
                         </div>
 
-                        <div id="average-sales" class="apex-charts mb-4 mt-3" data-colors="#727cf5,#0acf97,#fa5c7c,#ffbc00"></div>
+                        <div id="average-sales" class="apex-charts mb-4 mt-3" data-colors="#43bee1,#0acf97,#fa5c7c,#ffbc00"></div>
 
 
                         <div class="chart-widget-list">

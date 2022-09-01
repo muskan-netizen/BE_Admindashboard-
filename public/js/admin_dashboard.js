@@ -21,7 +21,7 @@ $(document).ready(function () {
         getDashboardData(dashboard_filter_url);
     });
     $("#dashboard_refresh_btn").click(function () {
-        // $flatpickr.clear();
+        $flatpickr.clear();
         getDashboardData(dashboard_filter_url);
     });
     getDashboardData(dashboard_filter_url);
@@ -58,18 +58,21 @@ $(document).ready(function () {
                 $('#total_active_order').html(response.data.total_active_order);
                 $('#total_rejected_order').html(response.data.total_rejected_order);
                 $('#total_delivered_order').html(response.data.total_delivered_order);
-                $('#total_revenue').html('$' + response.data.total_revenue);
+                $('#total_revenue').html(response.data.currencySymbol + response.data.total_revenue);
                 $('#total_customers').html(response.data.total_customers);
                 $('#total_orders').html(response.data.total_orders);
-                $('#revenueCurrentWeek').html('$' + response.data.revenueCurrentWeek);
-                $('#revenueLastWeek').html('$' + response.data.revenueLastWeek);
+                $('#revenueCurrentWeek').html(response.data.currencySymbol + response.data.revenueCurrentWeek);
+                $('#revenueLastWeek').html(response.data.currencySymbol + response.data.revenueLastWeek);
                 if (response.data.customers_increase != '') {
                     $('#customers_change').html('');
                     $('#customers_change').append('<span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i>' + response.data.customers_increase + '%</span><span class="text-nowrap">Since last month</span>');
                 }
-                if (response.data.customers_decrease != '') {
+                if (response.data.customers_decrease) {
                     $('#customers_change').html("");
                     $('#customers_change').append('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.customers_decrease + '%</span><span class="text-nowrap">Since last month</span>');
+                } else if (response.data.customers_decrease == 0) {
+                    $('#customers_change').html("");
+                    $('#customers_change').append('<span class="text-danger me-2">' + response.data.customers_decrease + '%</span><span class="text-nowrap">Since last month</span>');
                 }
                 if (response.data.orders_increase != '') {
                     $('#orders_change').html('');
@@ -78,6 +81,9 @@ $(document).ready(function () {
                 if (response.data.orders_decrease != '') {
                     $('#orders_change').html('');
                     $('#orders_change').append('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.orders_decrease + '%</span><span class="text-nowrap">Since last month</span>');
+                } else if (response.data.orders_decrease == 0) {
+                    $('#orders_change').html('');
+                    $('#orders_change').append('<span class="text-danger me-2">' + response.data.orders_decrease + '%</span><span class="text-nowrap">Since last month</span>');
                 }
                 if (response.data.revenue_increase != '') {
                     $('#revenue_change').html('');
@@ -86,6 +92,9 @@ $(document).ready(function () {
                 if (response.data.revenue_decrease != '') {
                     $('#revenue_change').html('');
                     $('#revenue_change').append('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.revenue_decrease + '%</span><span class="text-nowrap">Since last month</span>');
+                } else if (response.data.revenue_decrease == 0) {
+                    $('#revenue_change').html('');
+                    $('#revenue_change').append('<span class="text-danger me-2">' + response.data.revenue_decrease + '%</span><span class="text-nowrap">Since last month</span>');
                 }
                 if (response.data.products_increase != '') {
                     $('#products_change').html('');
@@ -94,6 +103,9 @@ $(document).ready(function () {
                 if (response.data.products_decrease != '') {
                     $('#products_change').html('');
                     $('#products_change').append('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.products_decrease + '%</span><span class="text-nowrap">Since last month</span>');
+                } else if (response.data.products_decrease == 0) {
+                    $('#products_change').html('');
+                    $('#products_change').append('<span class="text-danger me-2">' + response.data.products_decrease + '%</span><span class="text-nowrap">Since last month</span>');
                 }
                 Worldmap(response.data.markers);
                 // if (type == 'yearly') {
@@ -101,24 +113,27 @@ $(document).ready(function () {
                 // } else {
                 //     updateSales(response.data.revenue, response.data.sales, response.data.dates, "datetime")
                 // }
-                updateRevenue(response.data.monthwise_revenue);
-                updateRevenueLineChart(response.data.currentweek_revenue_daywise, response.data.previousweek_revenue_daywise);
-                if (response.data.locationwise_revenue != '') {
+                updateRevenue(response.data.monthwise_revenue, response.data.currencySymbol);
+                updateRevenueLineChart(response.data.currentweek_revenue_daywise, response.data.previousweek_revenue_daywise, response.data.currencySymbol);
+                if (response.data.locationwise_revenue) {
                     $('#revenue_locations').html('');
-                    response.data.locationwise_revenue.forEach(el => {
-                        var sum = Math.round(el.sum);
-                        var orderCount = response.data.currentyear_ordercount;
-                        var percent = Math.round((el.addressCount / orderCount)*100);
-                        $('#revenue_locations').append('<h5 class="mb-1 mt-0 fw-normal">' + el.address.city + '</h5><div class="progress-w-percent"><span class="progress-value fw-bold">$'
-                            + sum + "</span><div class='progress progress-sm'><div class='progress-bar' role='progressbar' style='width:"+ percent +"%;' aria-valuenow='72' aria-valuemin='0' aria-valuemax='100'></div></div></div>");
-                    });
+                    if (response.data.locationwise_revenue != '') {
+                        response.data.locationwise_revenue.forEach(el => {
+                            var sum = Math.round(el.sum);
+                            var orderCount = response.data.currentyear_ordercount;
+                            var percent = Math.round((el.addressCount / orderCount) * 100);
+                            $('#revenue_locations').append('<h5 class="mb-1 mt-0 fw-normal">' + el.address.city + '</h5><div class="progress-w-percent"><span class="progress-value fw-bold">' + response.data.currencySymbol + sum + "</span><div class='progress progress-sm'><div class='progress-bar' role='progressbar' style='width:" + percent + "%;' aria-valuenow='72' aria-valuemin='0' aria-valuemax='100'></div></div></div>");
+                        });
+                    } else {
+                        $('#revenue_locations').append('<h5 class="mb-1 mt-0 fw-normal text-center">No data found</h5>');
+                    }
                 }
             }
         });
     }
     function Worldmap(markers) {
         $('#world-map').html("");
-        var a = ["#6658dd"],
+        var a = ["#43bee1"],
             e = $("#world-map").data("colors");
         $("#world-map").vectorMap({
             hoverColor: !1,
@@ -269,9 +284,9 @@ $(document).ready(function () {
     }
 
     // New revenue bar chart monthly data show
-    function updateRevenue(newrevenue) {
+    function updateRevenue(newrevenue, currency) {
         $('#revenue-bar-chart').html("");
-        var colors = ['#727cf5', '#e3eaef'];
+        var colors = ['#43bee1', '#e3eaef'];
         var dataColors = $("#revenue-bar-chart").data('colors');
         if (dataColors) {
             colors = dataColors.split(",");
@@ -294,18 +309,18 @@ $(document).ready(function () {
             legend: { show: !1 },
             colors: colors,
             xaxis: { categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], axisBorder: { show: !1 } },
-            yaxis: { labels: { formatter: function (e) { return "$" + e }, offsetX: -15 } },
+            yaxis: { labels: { formatter: function (e) { return currency + e }, offsetX: -15 } },
             fill: { opacity: 1 },
-            tooltip: { y: { formatter: function (e) { return "$" + e } } },
+            tooltip: { y: { formatter: function (e) { return currency + e } } },
         };
         var chart = new ApexCharts(document.querySelector("#revenue-bar-chart"), options);
         chart.render();
     }
 
     // New line chart current and previous week data show
-    function updateRevenueLineChart(current_data, previous_data) {
+    function updateRevenueLineChart(current_data, previous_data, currency) {
         $('#revenue-line-chart').html("");
-        var colors = ["#727cf5", "#0acf97", "#fa5c7c", "#ffbc00"];
+        var colors = ["#43bee1", "#0acf97", "#fa5c7c", "#ffbc00"];
         var dataColors = $("#revenue-line-chart").data('colors');
         if (dataColors) {
             colors = dataColors.split(",");
@@ -323,7 +338,7 @@ $(document).ready(function () {
                 tooltip: { enabled: !1 },
                 axisBorder: { show: !1 }
             },
-            yaxis: { labels: { formatter: function (e) { return "$" + e }, offsetX: -15 } },
+            yaxis: { labels: { formatter: function (e) { return currency + e }, offsetX: -15 } },
         };
         var chart1 = new ApexCharts(document.querySelector("#revenue-line-chart"), options);
         chart1.render();

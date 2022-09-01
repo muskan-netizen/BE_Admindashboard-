@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, VendorOrderStatus, UserAddress, OrderVendor, OrderReturnRequest, User};
+use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, VendorOrderStatus, UserAddress, OrderVendor, OrderReturnRequest, User, ClientCurrency};
 
 class DashBoardController extends BaseController
 {
@@ -83,6 +83,9 @@ class DashBoardController extends BaseController
                 $total_revenue = $total_revenue->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 });
+            }
+            if ($date_filter) {
+                $total_revenue->whereBetween('created_at', [$from_date, $end_date]);
             }
             $total_revenue = $total_revenue->sum('payable_amount');
             $today_sales = Order::whereDay('created_at', now()->day);
@@ -335,9 +338,19 @@ class DashBoardController extends BaseController
             if ($date_filter) {
                 $return_requests->whereBetween('created_at', [$from_date, $end_date]);
             }
+            $return_requests = $return_requests->count();
 
-            $total_customers = User::all()->count();
-            $total_orders    = Order::all()->count();
+
+            $total_customers = User::where(['status' => 1, 'is_superadmin' => 0]);
+            if ($date_filter) {
+                $total_customers->whereBetween('created_at', [$from_date, $end_date]);
+            }
+            $total_customers = $total_customers->count();
+            $total_orders = Order::all()->count();
+            if($date_filter)
+            {
+                $total_orders = Order::whereBetween('created_at', [$from_date, $end_date])->count();
+            }
             $revenueCurrentWeek = Order::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('payable_amount');
             $revenueLastWeek = Order::whereBetween('created_at', [Carbon::now()->startOfWeek()->subWeek(), Carbon::now()->endOfWeek()->subWeek()])->sum('payable_amount');
 
@@ -475,8 +488,14 @@ class DashBoardController extends BaseController
             # Revenue location wise
             $locationwise_revenue = Order::with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount')->whereYear('created_at', date('Y'))->whereNotNull('address_id')->get()->toArray();
             $currentyear_ordercount = Order::whereYear('created_at', date('Y'))->count();
-            
-            $return_requests = $return_requests->count();
+            if($date_filter)
+            {
+                $locationwise_revenue = Order::with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount')->whereBetween('created_at', [$from_date, $end_date])->whereNotNull('address_id')->get()->toArray();
+                $currentyear_ordercount = Order::whereBetween('created_at', [$from_date, $end_date])->count();
+            }
+            $clientCurrency = ClientCurrency::with('currency')->where('is_primary', 1)->first();
+            $currencySymbol = $clientCurrency->currency->symbol;
+
             $response = [
                 'dates' => $dates,
                 'sales' => $sales,
@@ -513,6 +532,7 @@ class DashBoardController extends BaseController
                 'currentweek_revenue_daywise' => $currentweek_revenue_daywise,
                 'locationwise_revenue' => $locationwise_revenue,
                 'currentyear_ordercount' => $currentyear_ordercount,
+                'currencySymbol' => $currencySymbol,
             ];
             return $this->successResponse($response);
         } catch (Exception $e) {

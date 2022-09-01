@@ -3,7 +3,7 @@
   font-style: normal;
   src: url(https://example.com/material-symbols.woff) format('woff');
 }
-.border-primary {
+/* .border-primary {
   border-color: #727cf5 !important;
 }
 .bg-primary {
@@ -28,7 +28,7 @@
 }
 .menu-title+.nav-second-level>li>a:hover .cls-1, .menu-title+.nav-second-level>li>a:hover .cls-2 {
   fill: #727cf5;
-}
+} */
 .nav-user {
   padding: calc(31px * .5) 20px calc(31px * .5) !important;
 }
@@ -42,4 +42,8 @@
 max-height: 229px;
 overflow: auto;
 padding-right: 20px;
+}
+.widget-icon{
+  color: #43bee1;
+  background-color: #43bee161;
 }
