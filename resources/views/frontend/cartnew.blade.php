@@ -184,6 +184,19 @@ right: 20px;
 .product_title_add span {
     font-size: 12px;
 }
+
+}
+
+/*cart page responsive css */
+
+@media only screen and (max-width:1366px){
+.cart-design .alFourTemplateCartButtons a.shoping i{font-size:17px;vertical-align: middle;}
+.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;vertical-align: middle;text-align:left;}
+}
+
+@media (min-width:991px) and (max-width:1200px){
+.cart-design .alFourTemplateCartButtons a.btn.shoping {font-size:10px;display: block;width: 100%;text-align: left;}
+.cart-design .alFourTemplateCartButtons a.shoping i{font-size:10px;vertical-align: middle;}
 }
 </style>
 
