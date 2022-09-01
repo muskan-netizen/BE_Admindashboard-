@@ -1,3 +1,10 @@
+@section('customcss')
+<style>
+    .radio-btns input[type="radio"].ondemand_checked + label span{background: var(--theme-deafult);
+    color: #fff;}
+
+</style>
+@endsection
 <section class="home-serivces" id="alSixHomeServices">
     <div class="container">
         <div class="row mb-lg-5 mb-md-4 mb-3">
@@ -511,10 +518,10 @@
                                                             $checked = "checked";
                                                         }
                                                         @endphp
-                                                        <div class="radios">
+                                                        <div class="radios {{ $checked }}" >
                                                             <p>{{date('D', strtotime($date))}}</p>
                                                             <div class="alCustomHomeServiceRadio">
-                                                                <input type="radio" class="check-time-slots ondemand-time-slots" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' @if($key == 0) checked @endif />
+                                                                <input type="radio" class="check-time-slots ondemand-time-slots  ondemand_{{$checked }}" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' {{$checked }} @if(($key == 0 && $checked == "")) checked @endif />
                                                                 <label for='radio{{$cd}}{{$key}}'>
                                                                 <span class="customCheckbox" aria-hidden="true" >{{date('d', strtotime($date))}}</span>
                                                                 </label>
@@ -546,7 +553,7 @@
                                                     <div>
                                                         <div class="radios">
                                                             <div class="alCustomHomeServiceRadio">
-                                                                <input type="radio" value='{{$date}} - {{@$time_slots[$key+1]}}' name='booking_time' id='time{{$cart_data->id}}{{$key+1}}' @if($checked) {{$checked}} @endif/>
+                                                                <input type="radio" value='{{$date}} - {{@$time_slots[$key+1]}}' name='booking_time' id='time{{$cart_data->id}}{{$key+1}}' @if($checked) {{$checked}} @endif class="ondemand_{{$checked }}"/>
                                                                 <label for='time{{$cart_data->id}}{{$key+1}}'>
                                                                     <span class="customCheckbox selected-time" aria-hidden="true"  data-value='{{$date}} - {{@$time_slots[$key+1]}}' data-cart_product_id='{{$cart_data->id}}'>{{$date}} - {{@$time_slots[$key+1]}}</span>
                                                                 </label>
