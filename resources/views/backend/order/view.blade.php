@@ -344,7 +344,7 @@ $timezone = Auth::user()->timezone;
                                         $taxable_amount = $vendor->taxable_amount;
                                         $vendor_service_fee = $vendor->service_fee_percentage_amount;
                                         $container_charges = $vendor->total_container_charges;
-                                        $sub_total += $product->actual_price;
+                                        $sub_total += $product->total_amount;
                                         @endphp
 
                                     <tr>
