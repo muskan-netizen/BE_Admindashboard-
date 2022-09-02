@@ -6,6 +6,7 @@ $total_amount = $order->payable_amount;
 $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges;
 $additional_price=0;
 $serviceType =  Session::get('vendorType');
+    $timezone = Auth::user()->timezone;
 @endphp
 @section('customcss')
 <style>
@@ -190,9 +191,10 @@ $serviceType =  Session::get('vendorType');
                             <div class="col-sm-12">
                                 <ul class="order-detail row">
                                     <li class="col-4">{{__('Order ID')}}: <span> {{$order->order_number}}</span></li>
-                                    <li class="col-8">{{__('Order Date')}}:<span> {{ date('F d, Y', strtotime($order->created_at)) }} {{ $order->created_at->format('H:i:s')}}</span></li>
+                                    <li class="col-8">{{__('Order Date')}}:<span> {{ date('F d, Y', strtotime($order->created_at)) }} {{ convertDateTimeInTimeZone($order->created_at, $timezone, 'H:i')}}</span></li>
                                     @if (!empty($order->scheduled_date_time))
-                                    <li class="col-8">{{__('Scheduled Date')}}:<span> {{ date('F d, Y', strtotime($order->scheduled_date_time)) }} {{ $order->created_at->format('H:i:s')}}</span></li>
+                                    <li class="col-8">{{__('Scheduled Date')}}:<span> {{ date('F d, Y', strtotime($order->scheduled_date_time)) }} {{ convertDateTimeInTimeZone($order->scheduled_date_time, $timezone, 'H:i')}}</span></li>
+                                    {{-- <li class="col-8">{{__('Scheduled Date')}}:<span> {{ date('F d, Y', strtotime($order->scheduled_date_time)) }} {{ date("H:i",strtotime($order->scheduled_date_time ))}}</span></li> --}}
                                     @endif
                                 </ul>
                                 <ul class="order-detail row">
