@@ -1110,43 +1110,91 @@
 
     $(".openConfirmDispatcherLaundry").click(function(e) {
 
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
-    e.preventDefault();
-
-
-    var uri = "{{route('update.Create.Vendor.In.Dispatch.Laundry')}}";
-    var id = $(this).data('id');
-
-    $.ajax({
-        type: "post",
-        url: uri,
-        data: {
-            id: id
-        },
-        dataType: 'json',
-        success: function(data) {
-            var url = data.url;
-            window.open(url, '_blank');
-        },
-        error: function(data) {
-            alert(data.message);
-        },
-        beforeSend: function() {
-            $(".loader_box").show();
-            var token = $('meta[name="csrf_token"]').attr('content');
-            if (token) {
-                return xhr.setRequestHeader('X-CSRF-TOKEN', token);
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
             }
-        },
-        complete: function() {
-            $(".loader_box").hide();
-        }
+        });
+
+        e.preventDefault();
+
+
+        var uri = "{{route('update.Create.Vendor.In.Dispatch.Laundry')}}";
+        var id = $(this).data('id');
+
+        $.ajax({
+            type: "post",
+            url: uri,
+            data: {
+                id: id
+            },
+            dataType: 'json',
+            success: function(data) {
+                var url = data.url;
+                window.open(url, '_blank');
+            },
+            error: function(data) {
+                alert(data.message);
+            },
+            beforeSend: function() {
+                $(".loader_box").show();
+                var token = $('meta[name="csrf_token"]').attr('content');
+                if (token) {
+                    return xhr.setRequestHeader('X-CSRF-TOKEN', token);
+                }
+            },
+            complete: function() {
+                $(".loader_box").hide();
+            }
+        });
     });
-});
 /////////////// **************   end 1.3 *****************************///////////////
+ ///// **************** 1.4  check vendor exists in dispatcher or not for appointment********** //////////
+
+$(".openConfirmAppointmentDispatcher").click(function(e) {
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        e.preventDefault();
+
+
+        var uri = "{{route('update.Create.Vendor.In.Dispatch.Appointment')}}";
+        var id = $(this).data('id');
+
+        $.ajax({
+            type: "post",
+            url: uri,
+            data: {
+                id: id
+            },
+            dataType: 'json',
+            success: function(data) {
+                var url = data.url;
+                if(url != undefined && url !=''){
+                    window.open(url, '_blank');
+                }else{
+                    alert(data.message);
+                }
+               
+            },
+            error: function(data) {
+                alert(data.message);
+            },
+            beforeSend: function() {
+                $(".loader_box").show();
+                var token = $('meta[name="csrf_token"]').attr('content');
+                if (token) {
+                    return xhr.setRequestHeader('X-CSRF-TOKEN', token);
+                }
+            },
+            complete: function() {
+                $(".loader_box").hide();
+            }
+        });
+});
+/////////////// **************   end 1.4 *****************************///////////////
 </script>

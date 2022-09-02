@@ -152,10 +152,13 @@ class StoreController extends BaseController{
 					$luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
 					if($luxury_option->title == 'takeaway'){
 						$luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
-					}elseif($luxury_option->title == 'dine_in'){
-						$luxury_option_name = __('Dine-In');
-					}else{
-						$luxury_option_name = __('Delivery');
+					}elseif ($luxury_option->title == 'dine_in') {
+						$luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+					}elseif ($luxury_option->title == 'on_demand') {
+						$luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
+					} else {
+						//$luxury_option_name = 'Delivery';
+						$luxury_option_name = getNomenclatureName($luxury_option->title);
 					}
 				}
 				$order->luxury_option_name = $luxury_option_name;
@@ -300,7 +303,7 @@ class StoreController extends BaseController{
 				if($order->paymentOption->code == 'stripe'){
 					$order->paymentOption->title = __('Credit/Debit Card (Stripe)');
 				}elseif($order->paymentOption->code == 'kongapay'){
-					$order->paymentOption->code->title = 'Pay Now';
+					$order->paymentOption->title = 'Pay Now';
 				}elseif($order->paymentOption->code == 'mvodafone'){
 					$order->paymentOption->title = 'Vodafone M-PAiSA';
 				}
@@ -356,10 +359,13 @@ class StoreController extends BaseController{
 					$luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
 					if($luxury_option->title == 'takeaway'){
 						$luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
-					}elseif($luxury_option->title == 'dine_in'){
-						$luxury_option_name = __('Dine-In');
-					}else{
-						$luxury_option_name = __('Delivery');
+					}elseif ($luxury_option->title == 'dine_in') {
+						$luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+					}elseif ($luxury_option->title == 'on_demand') {
+						$luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
+					} else {
+						//$luxury_option_name = 'Delivery';
+						$luxury_option_name = getNomenclatureName($luxury_option->title);
 					}
 				}
 				$order->luxury_option_name = $luxury_option_name;
@@ -413,6 +419,7 @@ class StoreController extends BaseController{
 				});
 			})
 			->orderBy('id', 'DESC')->paginate($limit, $page);
+				
 			foreach ($order_list as $order) {
 				$order_status = [];
 				$product_details = [];
@@ -422,11 +429,12 @@ class StoreController extends BaseController{
 				$order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
 				$order->date_time = date("d-M-Y h:i A", strtotime($order->date_time));
 				// set payment option dynamic name
+			
 				if($order->paymentOption->code == 'stripe'){
 					$order->paymentOption->title = __('Credit/Debit Card (Stripe)');
 				}elseif($order->paymentOption->code == 'kongapay'){
-					$order->paymentOption->code->title = 'Pay Now';
-				}elseif($order->paymentOption->code == 'mvodafone'){
+					$order->paymentOption->title = 'Pay Now';
+				}elseif(@$order->paymentOption->code == 'mvodafone'){
 					$order->paymentOption->title = 'Vodafone M-PAiSA';
 				}
 				elseif($order->paymentOption->code == 'mobbex'){
@@ -489,10 +497,13 @@ class StoreController extends BaseController{
 					$luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
 					if($luxury_option->title == 'takeaway'){
 						$luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
-					}elseif($luxury_option->title == 'dine_in'){
-						$luxury_option_name = __('Dine-In');
-					}else{
-						$luxury_option_name = __('Delivery');
+					}elseif ($luxury_option->title == 'dine_in') {
+						$luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+					}elseif ($luxury_option->title == 'on_demand') {
+						$luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
+					} else {
+						//$luxury_option_name = 'Delivery';
+						$luxury_option_name = $this->getNomenclatureName($luxury_option->title, $user->language, false);
 					}
 				}
 				$order->luxury_option_name = $luxury_option_name;

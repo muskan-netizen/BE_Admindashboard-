@@ -4,7 +4,8 @@
     }elseif($action == 'dine_in'){
         $label = 'Dine-In';
     }else{
-        $label = getNomenclatureName($action, true);
+        $actioc_name = config('constants.VendorTypes.'.$action);
+        $label = getNomenclatureName($actioc_name, true);
         //$label = 'Delivery';
     }
 @endphp

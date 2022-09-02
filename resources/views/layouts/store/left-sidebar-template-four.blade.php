@@ -161,7 +161,7 @@ $pages = \App\Models\Page::with([
                     <div class="row d-flex align-items-center justify-content-between">
                         <div class="col-lg-2">
                             <div class="logo_area d-none d-lg-block">
-                                <a class="navbar-brand m-0" href="{{ route('userHome') }}"><img alt="" style="width:100%;" src="{{$urlImg}}"></a>
+                                <a class="navbar-brand m-0" href="{{ route('userHome') }}"><img alt="" style="width:100%;max-height:100px;" src="{{$urlImg}}"></a>
                             </div>
                             <div class="col-12 d-block d-lg-none p-0">
                                 <div class="row no-gutters">

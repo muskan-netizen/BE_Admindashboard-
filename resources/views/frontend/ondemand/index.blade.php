@@ -38,17 +38,20 @@ use Illuminate\Support\Arr;
                         @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && app('request')->input('addons') != 1)
 
                          <!-- Start Main Nav -->
-                        <nav id='main-nav'>
-                            <ul id='main-nav-list'>
-                               @if(!empty($category->childs) && count($category->childs) > 0)
-                                    @foreach ($category->childs as $key => $childs)
-                                        @if($childs->type_id == 8)
-                                        <li><a href="#section_set{{$key}}">{{ $childs['translation_name'] ?? ''}}</a></li>
-                                        @endif
-                                    @endforeach
-                                @endif
-                            </ul>
-                        </nav>
+                            @if(!empty($category->childs) && count($category->childs) > 0)
+                            <nav id='main-nav'>
+                                <ul id='main-nav-list'>
+                                @if(!empty($category->childs) && count($category->childs) > 0)
+                                        @foreach ($category->childs as $key => $childs)
+                                    
+                                            @if( in_array($childs->type_id , [8,12]))
+                                            <li><a href="#section_set{{$key}}">{{ $childs['translation_name'] ?? ''}}</a></li>
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                </ul>
+                            </nav>
+                            @endif
                         <!-- End Main Nav -->
 
                         @endif
@@ -62,7 +65,7 @@ use Illuminate\Support\Arr;
                                     <!-- Start Conent Wrapper -->
                                     <div id='main-wrapper'  class="@if(app('request')->input('addons') == 1) d-none @endif">
                                                 @foreach ($category->childs as $key => $childs)
-                                                @if($childs->type_id == 8)
+                                                @if( in_array($childs->type_id , [8,12]))
 
                                                 <h4><b>{{ $childs->translation_name }}</b></h4>
                                                     <div class='' id='section_set{{$key}}'>
@@ -91,8 +94,10 @@ use Illuminate\Support\Arr;
                                                                     <div class="d-flex align-items-center justify-content-between productBookingBtns">
                                                                         <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
                                                                             {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
-                                                                        @endif</h5>
-
+                                                                            @endif
+                                                                            <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
+                                                                        </h5>
+                                                                      
 
                                                                         @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
                                                                         @php
@@ -167,7 +172,7 @@ use Illuminate\Support\Arr;
                                         @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
                                         <div class="service-data-wrapper al @if(app('request')->input('addons') == 1) d-none @endif"  id="step-1-ondemand" >
                                             <div class="service-data">
-                                                <h4><b>{{ $category->translation_name }}</b></h4>
+                                                @if($category->translation_name !='')<h4><b>{{ $category->translation_name }}</b></h4>@endif
 
 
                                                 @if(!empty($category->image))
@@ -177,6 +182,7 @@ use Illuminate\Support\Arr;
                                                 @endif
                                                 @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
+                                               
                                                 {{-- new product design  --}}
                                                 <div class="row classes_wrapper no-gutters align-items-center" href="#">
                                                     <div class="col-md-9 col-sm-8 pr-md-2">
@@ -200,10 +206,12 @@ use Illuminate\Support\Arr;
                                                     </div>
                                                     <div class="col-12 ac-royo-btn">
                                                         <div class="d-flex align-items-center justify-content-between">
-                                                                <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
+                                                                <h5 class="my-sm-0 my-3 ">@if($data->inquiry_only == 0)
                                                                     {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
-                                                                @endif</h5>
-
+                                                                    @endif
+                                                                    <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
+                                                                </h5>
+                                                                
                                                                 @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
                                                                 @php
                                                                     $cartcount = 1;
@@ -332,6 +340,7 @@ use Illuminate\Support\Arr;
                                 <div id="step-2-ondemand">
                                    @php
                                    $lastKey = count($cartData) - 1;
+                                  
                                    @endphp
                                    {{ Arr::last($cartData)}}
                                     @foreach ($cartData as $cd => $cart_data)
@@ -344,7 +353,7 @@ use Illuminate\Support\Arr;
 
                                         <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif>
 
-                                            <h4 class="mb-2"><b>{{__('When would you like your service?')}}</b></h4>
+                                            <h4 class="mb-2" ><b>{{ __('When would you like your servi ce?')}}</b></h4>
                                             <div class="date-items radio-btns hide">
                                                 @foreach ($period as $key => $date)
                                                     <div>
@@ -358,7 +367,7 @@ use Illuminate\Support\Arr;
                                                         <div class="radios">
                                                             <p>{{date('D', strtotime($date))}}</p>
                                                             <div class="alCustomHomeServiceRadio">
-                                                                <input type="radio" class="check-time-slots ondemand-time-slots" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' @if($key == 0) checked @endif />
+                                                                <input type="radio" class="check-time-slots ondemand-time-slots" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' {{$checked }} @if(($key == 0 && $checked == "")) checked @endif />
                                                                 <label for='radio{{$cd}}{{$key}}'>
                                                                 <span class="customCheckbox" aria-hidden="true" >{{date('d', strtotime($date))}}</span>
                                                                 </label>
@@ -723,6 +732,14 @@ use Illuminate\Support\Arr;
         </div>
     </div>
 </div>
+<script type="text/template" id="empty_cart_template">
+    <div class="row">
+        <div class="col-12 text-center pb-3">
+            <img class="w-50 pt-3 pb-1" src="{{ asset('front-assets/images/ic_emptycart.svg') }}" alt="">
+            <h5>{{ __('Your cart is empty') }}<br/>{{ __('Add an item to begin') }}</h5>
+        </div>
+    </div>
+</script>
 <!----- end payment section ------------->
 @endsection
 
@@ -749,7 +766,6 @@ use Illuminate\Support\Arr;
     var update_addons_in_cart = "{{route('addToCartAddons')}}";
     var addonids = [];
     var addonoptids = [];
-
 
     $(document).on('click', '.showMapHeader', function(){
         var lats = document.getElementById('latitude').value;

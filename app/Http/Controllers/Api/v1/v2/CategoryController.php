@@ -291,9 +291,10 @@ class CategoryController extends BaseController
                 'tags.tag.translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }
-            ])->where('products.category_id', $category_id)->where('products.is_live', 1)
+            ])->join('product_translations', 'product_translations.product_id', '=', 'products.id')
+            ->where('products.category_id', $category_id)->where('products.is_live', 1)
                 ->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)
-                ->withCount(['variantSet','addOn'])->paginate($limit, $page);   
+                ->withCount(['variantSet','addOn'])->orderBy('product_translations.title', 'asc')->paginate($limit, $page);   
             if (!empty($products)) {
                 foreach ($products as $key => $product) {
                    

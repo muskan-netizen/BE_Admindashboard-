@@ -873,20 +873,41 @@ class CustomerAuthController extends FrontController
             }
             $vendor = new Vendor();
             $count = 0;
+            
+           
+            $single_vendor_type = "delivery";
             if($client_preference){
-                if($client_preference->dinein_check == 1){$count++;}
-                if($client_preference->takeaway_check == 1){$count++;}
-                if($client_preference->delivery_check == 1){$count++;}
+                foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                    $clientVendorTypes = $vendor_typ_key.'_check';
+                    if($client_preference->$clientVendorTypes == 1){
+                        if($count == 0){
+                          $single_vendor_type   = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
+                        }
+                        $count++;
+                    }
+                }
             }
+
+            // if($client_preference){
+            //     if($client_preference->dinein_check == 1){$count++;}
+            //     if($client_preference->takeaway_check == 1){$count++;}
+            //     if($client_preference->delivery_check == 1){$count++;}
+            // }
             if($count > 1){
-                $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
-                $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
-                $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
+                foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                    $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                    $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
+                    
+                }
+                // $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
+                // $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
+                // $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
             }
             else{
-                $vendor->dine_in = $client_preference->dinein_check == 1 ? 1 : 0;
-                $vendor->takeaway = $client_preference->takeaway_check == 1 ? 1 : 0;
-                $vendor->delivery = $client_preference->delivery_check == 1 ? 1 : 0;
+                $vendor->$single_vendor_type = 1;
+                // $vendor->dine_in = $client_preference->dinein_check == 1 ? 1 : 0;
+                // $vendor->takeaway = $client_preference->takeaway_check == 1 ? 1 : 0;
+                // $vendor->delivery = $client_preference->delivery_check == 1 ? 1 : 0;
             }
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
@@ -1030,6 +1051,11 @@ class CustomerAuthController extends FrontController
         $vendor->save();
         if($request->has('category_ids')){
             foreach($request->category_ids as $category_id){
+                VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
+            }
+        }
+        if($request->has('selectedCategories')){
+            foreach($request->selectedCategories as $category_id){
                 VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
             }
         }

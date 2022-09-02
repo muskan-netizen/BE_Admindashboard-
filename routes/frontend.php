@@ -29,7 +29,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('dispatch-order-status-update-details/{id?}', 'Front\DispatcherController@dispatchOrderDetails')->name('dispatch-order-update-details'); // Order Status update Dispatch details
 	Route::get('dispatch-order-cancel-request/{id?}', 'Front\DispatcherController@dispatchOrderCancelRequest')->name('dispatch-order-cancel-request'); // Order Status update Dispatch details
 	Route::post('dispatch/customer/distance/notification/{id?}', 'Front\DispatcherController@dispatchCustomerDetails')->name('dispatch-customer-details'); // send distance & co2 emission push notification from dispatch to customer
-    Route::get('testsms', 'Front\FrontController@testsms');
+    Route::get('dispatch-order-product-status-update/{id?}', 'Front\DispatcherController@dispatchOrderSingleProductStatusUpdate')->name('dispatch-order-product-status-update'); // Order Status update Dispatch
+	Route::get('testsms', 'Front\FrontController@testsms');
 
     Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
 	Route::get('cabbooking', 'Front\CustomerAuthController@getTestHtmlPage');
@@ -445,6 +446,10 @@ Route::group(['middleware' => ['domain']], function () {
 	//User Rider Routes
 	Route::post('rider/add','Front\RiderController@addRider')->name('rider.create');
 	Route::get('rider/delete','Front\RiderController@removeRider')->name('rider.remove');
+
+	//cities
+	Route::get('cities/{slug}','Front\VendorCitiesController@getCities')->name('city.getCities');
+
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 

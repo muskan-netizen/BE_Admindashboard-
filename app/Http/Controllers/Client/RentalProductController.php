@@ -6,6 +6,7 @@ use App\Http\Controllers\Client\BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
+use DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\{ ProductVariant,ProductBooking,Variant ,ProductVariantSet};
@@ -83,222 +84,22 @@ class RentalProductController extends BaseController
 
     public function getScheduleTableData(Request $request)
     {
-        $data  = [[
-                "name" => "Tiger Nixon", 
-                "hr" => [
-                "position" => "System Architect", 
-                "salary" => "$320,800", 
-                "start_date" => "2011/04/25" 
-                ], 
-                "contact" => [
-                    "Edinburgh", 
-                    "5421" 
-                ] 
-            ], 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ], 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ]
-            , 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ]
-            , 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ]
-            , 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ]
-            , 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ]
-            , 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ]
-            , 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ]
-            , 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ]
-            , 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ]
-            , 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ]
-            , 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ]
-            , 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ]
-            , 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ]
-            , 
-            [
-                "name" => "Donna Snider", 
-                "hr" => [
-                    "position" => "Customer Support", 
-                    "salary" => "$112,000", 
-                    "start_date" => "2011/01/25" 
-                ], 
-                "contact" => [
-                        "New York", 
-                        "4226" 
-                ] 
-            ]
-        
-        
-        ]; 
- 
-        return response()->json(array('success' => true, 'data' => $data));
-     
+        $booking =  ProductBooking::whereHas('user')->with('user')->where(['variant_id'=>$request->variant_id,'product_id'=>$request->product_id]);//->get();
+
+        return Datatables::of($booking)
+            ->addColumn('user_name', function($row){
+                $user_name = $row->user ? ( $row->user->name ?? $row->user->email  ) : 'Block by Admin';
+                return  $user_name;
+            })
+            ->addIndexColumn()
+            
+            ->rawColumns(['user_name'])
+            ->make(true);
      }
 
      public function getScheduleTableBlockedData(Request $request)
      {
-         $ProductBlockedBooking  = ProductBooking::where(['product_id'=>$request->product_id,'variant_id'=>$request->variant_id,'booking_type'=>'blocked'])->get();
+         $ProductBlockedBooking  = ProductBooking::where(['order_user_id'=>null ,'product_id'=>$request->product_id,'variant_id'=>$request->variant_id,'booking_type'=>'blocked'])->get();
          return response()->json(array('success' => true, 'data' => $ProductBlockedBooking));
       
       }
