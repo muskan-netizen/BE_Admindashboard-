@@ -652,9 +652,13 @@ class OrderController extends BaseController
             $order->paymentOption->title = $json->manule_payment_title;
         }
         $order->paymentOption->title = __($order->paymentOption->title);
-
+        $product_schedule_type = '';
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
+                // check vendor product for schedule
+                if($product->schedule_type == 'schedule'){
+                    $product_schedule_type = 'schedule';
+                }
                 $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
@@ -685,8 +689,10 @@ class OrderController extends BaseController
                 $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
                 $vendor->dineInTableCategory = $vendor->dineInTable->category->title; //$vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
             }
+
         }
-     
+        //pr($product_schedule_type);
+        $order->product_schedule_type = $product_schedule_type;
         $luxury_option_name = '';
         if ($order->luxury_option_id > 0) {
             $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
@@ -1138,7 +1144,7 @@ class OrderController extends BaseController
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
        // pr( $checkdeliveryFeeAdded);
         $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
-       
+      
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
         if ($luxury_option_id == 8) { // only for appointment type 
             $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
@@ -1154,8 +1160,14 @@ class OrderController extends BaseController
                        
                         if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
                           
+                            $dispatch_domain=[
+                                'service_key'      => $dispatch_domain_Appointment->appointment_service_key,
+                                'service_key_code' => $dispatch_domain_Appointment->appointment_service_key_code,
+                                'service_key_url'  => $dispatch_domain_Appointment->appointment_service_key_url,
+                                'service_type'     => 'appointment'
+                            ];
                             //pr($checkdeliveryFeeAdded);
-                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain_Appointment ,$request);
+                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id,$dispatch_domain ,$request);
                             if ($order_dispatchs && $order_dispatchs == 1) {
                                 $Appointment = 1;
                                 return 1;
@@ -1163,6 +1175,41 @@ class OrderController extends BaseController
                         }
                     }
                     //pr('ad');
+                }
+            }
+        }
+        if ($luxury_option_id == 6) { // only for on_demand type 
+            $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
+        
+            if($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false){
+                $OnDemand = 0;
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                
+              
+                    if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
+                       
+                      //  $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
+                        //echo $Appointment . 'app';
+                       
+                        if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false && $OnDemand == 0  && $checkdeliveryFeeAdded->delivery_fee > 0) {
+                          
+                           
+                    
+                            $dispatch_domain=[
+                                'service_key'      => $dispatch_domain_OnDemand->dispacher_home_other_service_key,
+                                'service_key_code' => $dispatch_domain_OnDemand->dispacher_home_other_service_key_code,
+                                'service_key_url'  => $dispatch_domain_OnDemand->dispacher_home_other_service_key_url,
+                                'service_type'     => 'on_demand'
+                            ];
+                         
+
+                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain ,$request);
+                            if ($order_dispatchs && $order_dispatchs == 1) {
+                                $OnDemand = 1;
+                                return 1;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -1179,23 +1226,23 @@ class OrderController extends BaseController
         }
 
 
-        $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
-        if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
-            $ondemand = 0;
+        // $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
+        // if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
+        //     $ondemand = 0;
 
-            foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
-                if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
-                    $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
-                    if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false && $ondemand == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0.00) {
-                        $order_dispatchs = $this->placeRequestToDispatchOnDemand($request->order_id, $request->vendor_id, $dispatch_domain_ondemand);
-                        if ($order_dispatchs && $order_dispatchs == 1) {
-                            $ondemand = 1;
-                            return 1;
-                        }
-                    }
-                }
-            }
-        }
+        //     foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+        //         if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
+        //             $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
+        //             if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false && $ondemand == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0.00) {
+        //                 $order_dispatchs = $this->placeRequestToDispatchOnDemand($request->order_id, $request->vendor_id, $dispatch_domain_ondemand);
+        //                 if ($order_dispatchs && $order_dispatchs == 1) {
+        //                     $ondemand = 1;
+        //                     return 1;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
        // \Log::info('getDispatchLaundryDomain');
         /////////////// **************** for laundry accept order *************** ////////////////
         $dispatch_domain_laundry = $this->getDispatchLaundryDomain();

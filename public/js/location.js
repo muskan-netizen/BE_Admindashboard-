@@ -417,8 +417,10 @@ $(document).ready( async function () {
                     }
                     else {
                         //if ((latitude) && (longitude) && (selected_address)) {
+                        if(!$.hasAjaxRunning()){
                            window.location.href = home_page_url;
-                           console.log(home_page_url);
+                           //console.log(home_page_url);
+                        }
                         //}
                     }
                 }

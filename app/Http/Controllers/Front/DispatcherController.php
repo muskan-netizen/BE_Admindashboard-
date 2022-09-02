@@ -159,34 +159,35 @@ class DispatcherController extends FrontController
                    }
   
   
-                  $update = VendorOrderProductDispatcherStatus::updateOrCreate([
-                      'dispatcher_id' => null,
-                      'order_id' =>  $checkiftokenExist->order_id,
-                      'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
-                      'vendor_id' =>  $checkiftokenExist->vendor_id,
-                      'order_product_route_id' =>  $checkiftokenExist->id,
-                      'type' =>  $request->task_type??1]);
-                      //$this->sendOrderNotification($update->id);
-                      $type = $request->task_type??1;
-                     $dispatch_status = $request->dispatcher_status_option_id;
-  
-                      switch ($dispatch_status) {
-                          case 2:
-                              $request->status_option_id = 2;
-                              break;
+                    $update = VendorOrderProductDispatcherStatus::updateOrCreate([
+                                                                                'dispatcher_id' => null,
+                                                                                'order_id' =>  $checkiftokenExist->order_id,
+                                                                                'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
+                                                                                'vendor_id' =>  $checkiftokenExist->vendor_id,
+                                                                                'order_product_route_id' =>  $checkiftokenExist->id,
+                                                                                'type' =>  $request->task_type??1
+                                                                                ]);
+                    $this->sendOrderProductNotification($update->id);
+                    $type = $request->task_type??1;
+                    $dispatch_status = $request->dispatcher_status_option_id;
+
+                    switch ($dispatch_status) {
+                        case 2:
+                            $request->status_option_id = 2;
+                            break;
                         case 3:
-                          $request->status_option_id = 4;
-                          break;
+                        $request->status_option_id = 4;
+                        break;
                         case 4:
-                          $request->status_option_id = 5;
-                          break;
+                        $request->status_option_id = 5;
+                        break;
                         case 5:
-                          $request->status_option_id = 6;
-                          break;
+                        $request->status_option_id = 6;
+                        break;
                         default:
-                         $request->status_option_id = null;
-                      }
-  
+                        $request->status_option_id = null;
+                    }
+    
                       # vendor status update
   
                     if(isset($request->status_option_id) && !empty($request->status_option_id) && $request->status_option_id == 6 && $type == 2){
@@ -588,6 +589,70 @@ class DispatcherController extends FrontController
 
     }
 
+     /******************    ---- send notification to user as par vendorProduct  by harbans :)-----   ******************/
+     public function sendOrderProductNotification( $vendor_order_product_status_id )
+     {
+         $OrderStatus = VendorOrderProductDispatcherStatus::select('*','dispatcher_status_option_id as status_data')->find($vendor_order_product_status_id);
+
+         if($OrderStatus){
+             $orderNumber = Order::where('id',$OrderStatus->order_id)->select('order_number','user_id')->first();
+             
+             $user_id = $orderNumber ? $orderNumber->user_id : '';
+             // $checkuservendor = UserVendor::where('user_id',$user_id)->first();
+             // $sound = ($checkuservendor)?"notification.wav":"default";
+             $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->pluck('device_token');
+     
+             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+            
+             if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+ 
+                 $from = $client_preferences->fcm_server_key;
+                     $title = __('Order Status : #').($orderNumber ?  $orderNumber->order_number : '');
+                     $body =  $OrderStatus ? ($OrderStatus->status_data ? $OrderStatus->status_data['driver_status'] : '') : '';
+                   
+                     $headers = [
+                         'Authorization: key=' . $from,
+                         'Content-Type: application/json',
+                     ];
+                     //pr($title);
+                     //pr($body);
+                     $data = [
+                         "registration_ids" => $devices,
+                         "notification" => [
+                             'title' => $title,
+                             'body'  => $body,
+                             'sound' => "default",
+                             "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                             'click_action' => route('order.index'),
+                             "android_channel_id" => "sound-channel-id"
+                         ],
+                         "data" => [
+                             'title' => $title,
+                             'body'  => $body,
+                             'data' => '',
+                             'type' => ""
+                         ],
+                         "priority" => "high"
+                     ];
+                     //    Log::info(json_encode($data));
+                     $dataString = $data;
+                     $ch = curl_init();
+                     curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+                     curl_setopt($ch, CURLOPT_POST, true);
+                     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
+                     $result = curl_exec($ch);
+                     //    Log::info($result);
+                     curl_close($ch);
+                     \Log::info($result);
+                     return $result;
+ 
+             }
+         }
+ 
+     }
     /******************    ---- create order cancel request from dispatch (Need to dispatcher_status_option_id ) -----   ******************/
     public function dispatchOrderCancelRequest(Request $request, $domain = '', $web_hook_code){
         try{

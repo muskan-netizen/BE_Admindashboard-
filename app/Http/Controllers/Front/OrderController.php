@@ -931,7 +931,7 @@ class OrderController extends FrontController
                     
                     $OrderVendor->schedule_slot = !empty($vendor_cart_product->schedule_slot)? $vendor_cart_product->schedule_slot : '';
                     $OrderVendor->scheduled_date_time = !empty($vendor_cart_product->scheduled_date_time)? $vendor_cart_product->scheduled_date_time : '';
-                    $deliver_Vendor_type = ['delivery','appointment']; // pass vendor type for delivery option
+                    $deliver_Vendor_type = ['delivery','appointment','on_demand']; // pass vendor type for delivery option
                     if ( in_array($action, $deliver_Vendor_type) ) {
                         $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                         if (((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) || isset($deliver_fee_data)) {
