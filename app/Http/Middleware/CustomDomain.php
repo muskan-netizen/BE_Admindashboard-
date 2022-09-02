@@ -23,7 +23,6 @@ class CustomDomain{
      * @return mixed
      */
     public function handle($request, Closure $next){
-
       $path = $request->path();
       $domain = $request->getHost();
       $domain = str_replace(array('http://', '.test.com/login'), '', $domain);
@@ -153,7 +152,7 @@ class CustomDomain{
                     }
               }
           }
-         
+
           if(empty(Session::get('vendorType'))){
               Session::put('vendorType', $single_vendor_type);
           }else{
@@ -164,12 +163,12 @@ class CustomDomain{
           if(empty(Session::get('selectedAddress'))){
             Session::put('selectedAddress', $clientPreference->Default_location_name);
           }
-         
+
           if($vendor_mode_count ==1){
               Session::forget('vendorType');
               Session::put('vendorType', $single_vendor_type);
           }
-       
+
           Session::put('default_country_code', $countryCode);
           Session::put('default_country_phonecode', $phoneCode);
 
