@@ -28,221 +28,166 @@ class DashBoardController extends BaseController
         return view('backend/dashboard');
     }
 
-    public function postFilterData(Request $request)
-    {
+    public function dashboard_old()
+    {   
+        return view('backend/dashboard_old');
+    }
+
+    public function postFilterData(Request $request){
         try {
-            $user = Auth::user();
             $type = $request->type;
             $date_filter = $request->date_filter;
-            if ($date_filter) {
+            if($date_filter){
                 $date_explode = explode('to', $date_filter);
-                $from_date = $date_explode[0] . ' 00:00:00';
-                $end_date = $date_explode[1] . ' 23:59:59';
+                $from_date = $date_explode[0].' 00:00:00';
+                $end_date = $date_explode[1].' 23:59:59';
             }
             $total_brands = Brand::where('status', 1);
-            if ($date_filter) {
+            if($date_filter){
                 $total_brands->whereBetween('created_at', [$from_date, $end_date]);
             }
             $total_brands = $total_brands->count();
             /// Vendors count 
-            $total_vendor = Vendor::orderBy('id', 'desc');
-            if ($user->is_superadmin == 0) {
-                $total_vendor = $total_vendor->whereHas('permissionToUser', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
+            $total_vendor = Vendor::orderBy('id','desc');
+            if (Auth::user()->is_superadmin == 0) {
+                $total_vendor = $total_vendor->whereHas('permissionToUser', function ($query) {
+                    $query->where('user_id', Auth::user()->id);
                 });
             }
-            if ($date_filter) {
+            if($date_filter){
                 $total_vendor->whereBetween('created_at', [$from_date, $end_date]);
             }
             $total_vendor = $total_vendor->where('status', 1)->count();
             $total_banners = Banner::where('status', 1);
-            if ($date_filter) {
+            if($date_filter){
                 $total_banners->whereBetween('created_at', [$from_date, $end_date]);
             }
             $total_banners = $total_banners->count();
-            $total_products = Product::orderBy('id', 'desc');
-            $total_products = $total_products->whereHas('vendor', function ($query) {
+            $total_products = Product::orderBy('id','desc');
+            $total_products = $total_products->whereHas('vendor', function ($query){
                 $query->where(['vendors.status' => 1]);
             });
-            if ($user->is_superadmin == 0) {
-                $total_products = $total_products->whereHas('vendor.permissionToUser', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
+            if (Auth::user()->is_superadmin == 0) {
+                $total_products = $total_products->whereHas('vendor.permissionToUser', function ($query) {
+                    $query->where('user_id', Auth::user()->id);
                 });
             }
-            if ($date_filter) {
+            if($date_filter){
                 $total_products->whereBetween('created_at', [$from_date, $end_date]);
             }
             $total_products = $total_products->where('deleted_at', NULL)->count();
             $total_categories = Category::whereHas('parent')->where('status', 1);
-            if ($date_filter) {
+            if($date_filter){
                 $total_categories->whereBetween('created_at', [$from_date, $end_date]);
             }
             $total_categories = $total_categories->where('id', '>', '1')->where('deleted_at', NULL)->count();
-            $total_revenue = Order::orderBy('id', 'desc');
-            if ($user->is_superadmin == 0) {
-                $total_revenue = $total_revenue->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
+            $total_revenue = Order::orderBy('id','desc');
+            if (Auth::user()->is_superadmin == 0) {
+                $total_revenue = $total_revenue->whereHas('vendors.vendor.permissionToUser', function ($query) {
+                    $query->where('user_id', Auth::user()->id);
                 });
-            }
-            if ($date_filter) {
-                $total_revenue->whereBetween('created_at', [$from_date, $end_date]);
             }
             $total_revenue = $total_revenue->sum('payable_amount');
             $today_sales = Order::whereDay('created_at', now()->day);
-            if ($user->is_superadmin == 0) {
-                $today_sales = $today_sales->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
+            if (Auth::user()->is_superadmin == 0) {
+                $today_sales = $today_sales->whereHas('vendors.vendor.permissionToUser', function ($query) {
+                    $query->where('user_id', Auth::user()->id);
                 });
             }
             $today_sales = $today_sales->sum('payable_amount');
-
             #all pending orders 
-            $total_pending_order = Order::whereHas('vendors', function ($query) use ($user) {
-                $query->where('order_status_option_id', 1);
-                if ($user->is_superadmin == 0) {
-                    $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
-                        $query1->where('user_id', $user->id);
-                    });
-                }
-            });
-            if ($user->is_superadmin == 0) {
-                $total_pending_order = $total_pending_order->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
+            $total_pending_order = OrderVendor::where('order_status_option_id',1);
+            if (Auth::user()->is_superadmin == 0) {
+                $total_pending_order = $total_pending_order->whereHas('vendor.permissionToUser', function ($query) {
+                    $query->where('user_id', Auth::user()->id);
                 });
             }
-            if ($date_filter) {
-                $total_pending_order = $total_pending_order->whereBetween('created_at', [$from_date, $end_date]);
+            if($date_filter){
+                $total_pending_order->whereBetween('created_at', [$from_date, $end_date]);
             }
-            $total_pending_order = $total_pending_order->where(function ($q1) {
-                $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]); // 1 for cod ,38 for offline manual by harbans 
-                $q1->orWhere(function ($q2) {
-                    $q2->whereIn('payment_option_id', [1, 38]); // 1 for cod ,38 for offline manual by harbans
-                });
-            })->count();
-
+            $total_pending_order = $total_pending_order->count();
             #total_rejected_order
-            $total_rejected_order = Order::whereHas('vendors', function ($query) use ($user) {
-                $query->where('order_status_option_id', 3);
-                if ($user->is_superadmin == 0) {
-                    $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
-                        $query1->where('user_id', $user->id);
-                    });
-                }
-            });
-            if ($user->is_superadmin == 0) {
-                $total_rejected_order = $total_rejected_order->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
+            $total_rejected_order = OrderVendor::where('order_status_option_id',3);
+            if (Auth::user()->is_superadmin == 0) {
+                 $total_rejected_order = $total_rejected_order->whereHas('vendor.permissionToUser', function ($query) {
+                     $query->where('user_id', Auth::user()->id);
+                 });
+            }
+            if($date_filter){
+                $total_rejected_order->whereBetween('created_at', [$from_date, $end_date]);
+            }
+            $total_rejected_order = $total_rejected_order->count();
+              #total_delivered_order
+            $total_delivered_order = OrderVendor::where('order_status_option_id',6);
+            if (Auth::user()->is_superadmin == 0) {
+                  $total_delivered_order = $total_delivered_order->whereHas('vendor.permissionToUser', function ($query) {
+                      $query->where('user_id', Auth::user()->id);
+                  });
+            }
+            if($date_filter){
+                $total_delivered_order->whereBetween('created_at', [$from_date, $end_date]);
+            }
+            $total_delivered_order = $total_delivered_order->count();
+            $dates = $sales = $labels = $series = $categories = $revenue = $address_ids = $markers =[];
+             #total_active_order
+            $total_active_order = OrderVendor::whereIn('order_status_option_id',[2,4,5]);
+            if (Auth::user()->is_superadmin == 0) {
+                $total_active_order = $total_active_order->whereHas('vendor.permissionToUser', function ($query) {
+                    $query->where('user_id', Auth::user()->id);
                 });
             }
-            if ($date_filter) {
-                $total_rejected_order = $total_rejected_order->whereBetween('created_at', [$from_date, $end_date]);
+            if($date_filter){
+                $total_active_order->whereBetween('created_at', [$from_date, $end_date]);
             }
-            $total_rejected_order = $total_rejected_order->where(function ($q1) {
-                $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]); // 1 for cod ,38 for offline manual by harbans
-                $q1->orWhere(function ($q2) {
-                    $q2->whereIn('payment_option_id', [1, 38]);
-                });
-            })->count();
+            $total_active_order = $total_active_order->count();
 
-            #total_delivered_order
-            $total_delivered_order = Order::whereHas('vendors', function ($query) use ($user) {
-                $query->where('order_status_option_id', 6);
-                if ($user->is_superadmin == 0) {
-                    $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
-                        $query1->where('user_id', $user->id);
-                    });
-                }
-            });
-            if ($user->is_superadmin == 0) {
-                $total_delivered_order = $total_delivered_order->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                });
-            }
-            if ($date_filter) {
-                $total_delivered_order = $total_delivered_order->whereBetween('created_at', [$from_date, $end_date]);
-            }
-            $total_delivered_order = $total_delivered_order->where(function ($q1) {
-                $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]); // 1 for cod ,38 for offline manual by harbans
-                $q1->orWhere(function ($q2) {
-                    $q2->whereIn('payment_option_id', [1, 38]);
-                });
-            })->count();
-
-            #total_active_order            
-            $total_active_order = Order::whereHas('vendors', function ($query) use ($user) {
-                $query->whereIn('order_status_option_id', [2, 4, 5]);
-                if ($user->is_superadmin == 0) {
-                    $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
-                        $query1->where('user_id', $user->id);
-                    });
-                }
-            });
-            if ($user->is_superadmin == 0) {
-                $total_active_order = $total_active_order->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                });
-            }
-            if ($date_filter) {
-                $total_active_order = $total_active_order->whereBetween('created_at', [$from_date, $end_date]);
-            }
-            $total_active_order = $total_active_order->where(function ($q1) {
-                $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]); // 1 for cod ,38 for offline manual by harbans
-                $q1->orWhere(function ($q2) {
-                    $q2->whereIn('payment_option_id', [1, 38]);
-                });
-            })->count();
-
-
-            $dates = $sales = $labels = $series = $categories = $revenue = $address_ids = $markers = [];
 
             // Graph Data
 
-            $orders_data = Order::where('id', '<>', 0);
+            $orders_data = Order::where('id','<>',0);
             if (Auth::user()->is_superadmin == 0) {
                 $orders_data = $orders_data->whereHas('vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
                 });
             }
-            $orders_query = clone $orders_data;
-            $monthly_sales_query = clone $orders_data;
-            $address_order_query = clone $orders_data;
+            $orders_query = clone $orders_data; $monthly_sales_query = clone $orders_data; $address_order_query = clone $orders_data;
 
             $orders_query = $orders_query->with(array('products' => function ($query) {
-                $query->select('order_id', 'category_id');
-            }));
-            $monthly_sales_query = $monthly_sales_query->select(\DB::raw('sum(payable_amount) as y'), \DB::raw('count(*) as z'), \DB::raw('date(created_at) as x'), \DB::raw("month(created_at) as month"), \DB::raw("day(created_at) as day"), 'address_id');
+                    $query->select('order_id', 'category_id');
+                }));
+            $monthly_sales_query = $monthly_sales_query->select(\DB::raw('sum(payable_amount) as y'), \DB::raw('count(*) as z'), \DB::raw('date(created_at) as x'), \DB::raw("month(created_at) as month"),\DB::raw("day(created_at) as day"),'address_id');
 
-            $address_order_query = $address_order_query->whereNotNull('address_id')->select('address_id', 'created_at');
+            $address_order_query = $address_order_query->whereNotNull('address_id')->select('address_id','created_at');
 
 
 
-            if ($date_filter) {
+            if($date_filter){
                 $monthly_sales_query->whereBetween('created_at', [$from_date, $end_date])->groupBy('x');
                 $orders = $orders_query->whereBetween('created_at', [$from_date, $end_date])->select('id')->get();
                 $address_ids = $address_order_query->whereBetween('created_at', [$from_date, $end_date])->groupBy('address_id')->pluck('address_id')->toArray();
-            } else {
+            }else{
                 switch ($type) {
                     case 'monthly':
                         $monthly_sales_query->whereRaw('MONTH(created_at) = ?', [date('m')])->groupBy('x');
                         $orders = $orders_query->whereRaw('MONTH(created_at) = ?', [date('m')])->select('id')->get();
                         $address_ids = $address_order_query->whereRaw('MONTH(created_at) = ?', [date('m')])->groupBy('address_id')->pluck('address_id')->toArray();
-                        break;
+                    break;
                     case 'weekly':
                         Carbon::setWeekStartsAt(Carbon::SUNDAY);
                         $monthly_sales_query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->groupBy('x');
-                        $orders = $orders_query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->select('id')->get();
+                        $orders = $orders_query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->select('id')->get(); 
                         $address_ids = $address_order_query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->groupBy('address_id')->pluck('address_id')->toArray();
-                        break;
+                    break;
                     case 'yearly':
                         $monthly_sales_query->whereRaw('YEAR(created_at) = ?', [date('Y')])->groupBy('month')->orderByRaw('month');
                         $orders = $orders_query->whereRaw('YEAR(created_at) = ?', [date('Y')])->select('id')->get();
-                        $address_ids = $address_order_query->whereRaw('YEAR(created_at) = ?', [date('Y')])->groupBy('address_id')->pluck('address_id')->toArray();
-                        break;
+                        $address_ids = $address_order_query->whereRaw('YEAR(created_at) = ?', [date('Y')])->groupBy('address_id')->pluck('address_id')->toArray(); 
+                    break;
                     default:
                         $monthly_sales_query->whereRaw('MONTH(created_at) = ?', [date('m')])->groupBy('x');
                         $orders = $orders_query->whereRaw('MONTH(created_at) = ?', [date('m')])->select('id')->get();
                         $address_ids = $address_order_query->whereRaw('MONTH(created_at) = ?', [date('m')])->groupBy('address_id')->pluck('address_id')->toArray();
-                        break;
+                    break;
                 }
             }
 
@@ -251,7 +196,7 @@ class DashBoardController extends BaseController
                 foreach ($order->products as $product) {
                     $category = Category::with('english')->where('id', $product->category_id)->first();
                     if ($category) {
-                        if ($category->english) {
+                        if($category->english){
                             if (in_array($category->slug, $temp_array)) {
                                 $categories[$category->english->name] += 1;
                                 $slugs[] = $category->slug;
@@ -270,63 +215,67 @@ class DashBoardController extends BaseController
 
 
             $monthlysales = $monthly_sales_query->get();
-            if ($type == 'yearly') {
+            if($type == 'yearly')
+            { 
                 foreach ($monthlysales as $monthly) {
-                    $dates[$monthly->month - 1] = config('constants.MONTHS')[$monthly->month];
-                    $sales[$monthly->month - 1] = $monthly->z;
-                    $revenue[$monthly->month - 1] = decimal_format($monthly->y);
+                    $dates[$monthly->month-1] = config('constants.MONTHS')[$monthly->month];
+                    $sales[$monthly->month-1] = $monthly->z;
+                    $revenue[$monthly->month-1] = decimal_format($monthly->y); 
                 }
 
-                foreach (config('constants.MONTHS') as $k => $mon) {
-                    if (!isset($dates[$k - 1])) {
-                        $dates[$k - 1] = $mon;
-                        $sales[$k - 1] = 0;
-                        $revenue[$k - 1] = decimal_format(0);
+                foreach(config('constants.MONTHS') as $k=>$mon){
+                    if(!isset($dates[$k-1]))
+                    {
+                        $dates[$k-1] = $mon;
+                        $sales[$k-1] = 0;
+                        $revenue[$k-1] = decimal_format(0); 
                     }
                 }
-            } elseif ($type == 'monthly') {
+            }elseif($type == 'monthly'){
                 $current_month = date('M');
                 foreach ($monthlysales as $monthly) {
-                    $dates[$monthly->day - 1] = $monthly->day . ' ' . $current_month;
-                    $sales[$monthly->day - 1] = $monthly->z;
-                    $revenue[$monthly->day - 1] = decimal_format($monthly->y);
+                    $dates[$monthly->day-1] = $monthly->day.' '.$current_month;
+                    $sales[$monthly->day-1] = $monthly->z;
+                    $revenue[$monthly->day-1] = decimal_format($monthly->y); 
                 }
-                for ($i = 0; $i < date('t'); $i++) {
-                    if (!isset($dates[$i])) {
-                        $dates[$i] = ($i + 1) . " " . $current_month;
+                for($i=0; $i<date('t'); $i++)
+                {
+                    if(!isset($dates[$i]))
+                    {
+                        $dates[$i] = ($i+1)." ".$current_month;
                         $sales[$i] = 0;
-                        $revenue[$i] = decimal_format(0);
+                        $revenue[$i] = decimal_format(0); 
                     }
                 }
-            } elseif ($type == 'weekly') {
+            }elseif($type == 'weekly'){
                 $first_date = Carbon::now()->startOfWeek()->format('d M');
                 $last_date = Carbon::now()->endOfWeek()->format('d M');
                 foreach ($monthlysales as $monthly) {
-                    $dates[date('w', strtotime($monthly->day . ' ' . config('constants.MONTHS')[$monthly->month]))] = $monthly->day . ' ' . config('constants.MONTHS')[$monthly->month];
-                    $sales[date('w', strtotime($monthly->day . ' ' . config('constants.MONTHS')[$monthly->month]))] = $monthly->z;
-                    $revenue[date('w', strtotime($monthly->day . ' ' . config('constants.MONTHS')[$monthly->month]))] = decimal_format($monthly->y);
+                    $dates[date('w', strtotime($monthly->day.' '.config('constants.MONTHS')[$monthly->month]))] = $monthly->day.' '.config('constants.MONTHS')[$monthly->month];
+                    $sales[date('w', strtotime($monthly->day.' '.config('constants.MONTHS')[$monthly->month]))] = $monthly->z;
+                    $revenue[date('w', strtotime($monthly->day.' '.config('constants.MONTHS')[$monthly->month]))] = decimal_format($monthly->y); 
                 }
-                for ($i = 0; $i < 7; $i++) {
-                    if (!isset($dates[$i])) {
-                        $dates[$i] = date('d M', strtotime("+" . $i . " day", strtotime($first_date)));
+                for($i=0; $i<7; $i++)
+                {
+                    if(!isset($dates[$i]))
+                    {
+                        $dates[$i] = date('d M', strtotime("+".$i." day", strtotime($first_date)));
                         $sales[$i] = 0;
-                        $revenue[$i] = decimal_format(0);
+                        $revenue[$i] = decimal_format(0); 
                     }
                 }
             }
-            ksort($dates);
-            ksort($sales);
-            ksort($revenue);
+            ksort($dates); ksort($sales); ksort($revenue);
 
 
             $address_details = UserAddress::whereIn('id', $address_ids)->get();
             foreach ($address_details as $address_detail) {
-                if (!$address_detail->latitude) {
+                if(!$address_detail->latitude){
                     continue;
                 }
-                $markers[] = array(
+                $markers[]= array(
                     'name' => $address_detail->city,
-                    'latLng' => [$address_detail->latitude, $address_detail->longitude],
+                    'latLng' => [$address_detail->latitude , $address_detail->longitude],
                 );
             }
             $return_requests = OrderReturnRequest::where('status', 'Pending');
@@ -335,23 +284,107 @@ class DashBoardController extends BaseController
                     $query->where('user_id', Auth::user()->id);
                 });
             }
-            if ($date_filter) {
+            if($date_filter){
                 $return_requests->whereBetween('created_at', [$from_date, $end_date]);
             }
             $return_requests = $return_requests->count();
+            $response = [
+                'dates' => $dates,
+                'sales' => $sales,
+                'labels' => $labels,
+                'series' => $series,
+                'markers' => $markers,
+                'revenue' => ($revenue),
+                'today_sales' => $today_sales, 
+                'total_vendor' => $total_vendor, 
+                'total_brands' => $total_brands, 
+                'total_banners' => $total_banners, 
+                'total_revenue' => $total_revenue, 
+                'total_products' => $total_products, 
+                'return_requests' => $return_requests,
+                'total_categories' => $total_categories,
+                'total_active_order' => $total_active_order, 
+                'total_pending_order' => $total_pending_order, 
+                'total_rejected_order' => $total_rejected_order, 
+                'total_delivered_order' => $total_delivered_order, 
+            ];
+            return $this->successResponse($response);
+        } catch (Exception $e) {
+            
+        }
+    }
 
+    public function thousandsCurrencyFormat($num)
+    {
+        if ($num > 1000) {
+            $x = round($num);
+            $x_number_format = number_format($x);
+            $x_array = explode(',', $x_number_format);
+            $x_parts = array('k', 'm', 'b', 't');
+            $x_count_parts = count($x_array) - 1;
+            $x_display = $x;
+            $x_display = $x_array[0] . ((int) $x_array[1][0] !== 0 ? '.' . $x_array[1][0] : '');
+            $x_display .= $x_parts[$x_count_parts - 1];
+            return $x_display;
+        }
+        return $num;
+    }
 
+    # Filter for new admin dashboard
+    public function postFilterDataNew(Request $request)
+    {
+        try {
+            $date_filter = $request->date_filter;
+            if($date_filter){
+                $date_explode = explode('to', $date_filter);
+                $from_date = $date_explode[0].' 00:00:00';
+                $end_date = $date_explode[1].' 23:59:59';
+            }
+            # Products count
+            $total_products = Product::orderBy('id','desc');
+            $total_products = $total_products->whereHas('vendor', function ($query){
+                $query->where(['vendors.status' => 1]);
+            });
+            if (Auth::user()->is_superadmin == 0) {
+                $total_products = $total_products->whereHas('vendor.permissionToUser', function ($query) {
+                    $query->where('user_id', Auth::user()->id);
+                });
+            }
+            if($date_filter){
+                $total_products->whereBetween('created_at', [$from_date, $end_date]);
+            }
+            $total_products = $total_products->where('deleted_at', NULL)->count();
+
+            # Revenue sum
+            $total_revenue = Order::orderBy('id','desc');
+            if (Auth::user()->is_superadmin == 0) {
+                $total_revenue = $total_revenue->whereHas('vendors.vendor.permissionToUser', function ($query) {
+                    $query->where('user_id', Auth::user()->id);
+                });
+            }
+            if($date_filter){
+                $total_revenue->whereBetween('created_at', [$from_date, $end_date]);
+            }
+            $total_revenue = $total_revenue->sum('payable_amount');
+
+            # Customers count
             $total_customers = User::where(['status' => 1, 'is_superadmin' => 0]);
             if ($date_filter) {
                 $total_customers->whereBetween('created_at', [$from_date, $end_date]);
             }
             $total_customers = $total_customers->count();
+
+            # Orders count
             $total_orders = Order::all()->count();
             if($date_filter)
             {
                 $total_orders = Order::whereBetween('created_at', [$from_date, $end_date])->count();
             }
+
+            # Current week revenue sum
             $revenueCurrentWeek = Order::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('payable_amount');
+
+            # Previous week revenue sum
             $revenueLastWeek = Order::whereBetween('created_at', [Carbon::now()->startOfWeek()->subWeek(), Carbon::now()->endOfWeek()->subWeek()])->sum('payable_amount');
 
             #Get customers percentage since last month
@@ -486,35 +519,38 @@ class DashBoardController extends BaseController
             }
 
             # Revenue location wise
-            $locationwise_revenue = Order::with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount')->whereYear('created_at', date('Y'))->whereNotNull('address_id')->get()->toArray();
+            $locationwise_revenue = Order::with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount')->whereYear('created_at', date('Y'))->whereNotNull('address_id')->get();
+            $address_ids = $locationwise_revenue->pluck('address_id')->toArray();
             $currentyear_ordercount = Order::whereYear('created_at', date('Y'))->count();
+
             if($date_filter)
             {
-                $locationwise_revenue = Order::with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount')->whereBetween('created_at', [$from_date, $end_date])->whereNotNull('address_id')->get()->toArray();
+                $locationwise_revenue = Order::with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount')->whereBetween('created_at', [$from_date, $end_date])->whereNotNull('address_id')->get();
+                $address_ids = $locationwise_revenue->pluck('address_id')->toArray();
                 $currentyear_ordercount = Order::whereBetween('created_at', [$from_date, $end_date])->count();
             }
+
+            $address_details = UserAddress::whereIn('id', $address_ids)->get();
+            # Locations latitude and longitude for map marking
+            $markers = [];
+            foreach ($address_details as $address_detail) {
+                if(!$address_detail->latitude){
+                    continue;
+                }
+                $markers[]= array(
+                    'name' => $address_detail->city,
+                    'latLng' => [$address_detail->latitude , $address_detail->longitude],
+                );
+            }
+
+            # Currency symbol
             $clientCurrency = ClientCurrency::with('currency')->where('is_primary', 1)->first();
             $currencySymbol = $clientCurrency->currency->symbol;
 
             $response = [
-                'dates' => $dates,
-                'sales' => $sales,
-                'labels' => $labels,
-                'series' => $series,
                 'markers' => $markers,
-                'revenue' => ($revenue),
-                'today_sales' => $today_sales,
-                'total_vendor' => $total_vendor,
-                'total_brands' => $total_brands,
-                'total_banners' => $total_banners,
                 'total_revenue' => round($total_revenue),
                 'total_products' => $total_products,
-                'return_requests' => $return_requests,
-                'total_categories' => $total_categories,
-                'total_active_order' => $total_active_order,
-                'total_pending_order' => $total_pending_order,
-                'total_rejected_order' => $total_rejected_order,
-                'total_delivered_order' => $total_delivered_order,
                 'total_customers' => $total_customers,
                 'total_orders' => $total_orders,
                 'revenueCurrentWeek' => round($revenueCurrentWeek),
@@ -537,21 +573,5 @@ class DashBoardController extends BaseController
             return $this->successResponse($response);
         } catch (Exception $e) {
         }
-    }
-
-    public function thousandsCurrencyFormat($num)
-    {
-        if ($num > 1000) {
-            $x = round($num);
-            $x_number_format = number_format($x);
-            $x_array = explode(',', $x_number_format);
-            $x_parts = array('k', 'm', 'b', 't');
-            $x_count_parts = count($x_array) - 1;
-            $x_display = $x;
-            $x_display = $x_array[0] . ((int) $x_array[1][0] !== 0 ? '.' . $x_array[1][0] : '');
-            $x_display .= $x_parts[$x_count_parts - 1];
-            return $x_display;
-        }
-        return $num;
     }
 }

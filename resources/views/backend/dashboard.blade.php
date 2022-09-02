@@ -574,9 +574,9 @@
     var yearlyInfo_url = "{{route('client.yearlySalesInfo')}}";
     var weeklyInfo_url = "{{route('client.weeklySalesInfo')}}";
     var monthlyInfo_url = "{{route('client.monthlySalesInfo')}}";
-    var dashboard_filter_url = "{{ route('client.dashboard.filter') }}";
+    var dashboard_filter_url = "{{ route('client.dashboard.filter_new') }}";
 </script>
-<script src="{{asset('js/admin_dashboard.js')}}"></script>
+<script src="{{asset('assets/dashboard/js/new_dashboard.js')}}"></script>
 <script src="{{asset('assets/dashboard/js/vendor.min.js')}}"></script>
 <script src="{{asset('assets/dashboard/js/app.min.js')}}"></script>
 <script src="{{asset('assets/dashboard/js/apexcharts.min.js')}}"></script>
