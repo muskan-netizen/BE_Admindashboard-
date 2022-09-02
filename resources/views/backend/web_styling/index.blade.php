@@ -47,6 +47,19 @@
                                         <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 32x32</label>
                                     </div>
                                 </div>
+                                @if($themeId==4 || $themeId==6)
+                                    <div class="col-md-4 mb-3">
+                                        <h4 class="header-title">{{ __("Sign In/Up Image") }}</h4>
+                                        <div class="mb-0">
+                                            <label>{{ __("Sign In/Up Image") }}</label>
+                                            <input type="file" accept="image/*" data-default-file="{{$client_preferences->signup_image ? $client_preferences->signup_image['proxy_url'].'600/400'.$client_preferences->signup_image['image_path'] : ''}}" data-plugins="dropify" name="sign_up_image" class="dropify ss_form_submit" id="image" />
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong></strong>
+                                            </span>
+                                            <label class="logo-size d-block text-center mt-1">{{ __("Image Size") }} 1920x768</label>
+                                        </div>
+                                    </div>
+                                @endif
 
                                 <div class="col-md-4  mb-3">
                                     <h4 class="header-title">{{ __("Color") }}</h4>

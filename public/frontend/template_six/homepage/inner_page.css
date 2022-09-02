@@ -316,14 +316,26 @@ section.home-serivces .card-box{background-color: transparent;padding: 0;box-sha
 
 
 /*===================== login page css start here ==================== */
+.login-section{position: relative;}
+img.LoginAreaBG {position: absolute;left: 0;right: 0;width: 100%;top: 0;object-fit: cover;height: 100%;z-index: 0;}
+
+article.bgFourPage img.LoginAreaBG {opacity: .7;}
+#login-section {background-color: #fff;height: 100%;width: 100%;background-position: center;background-size: cover;border-radius: 50px;position: relative;overflow: hidden;box-shadow: 0 0 10px rgb(0 0 0 / 20%);}
+#login-section .LoginLogoBG{position:relative;z-index: 2;text-align: center;}
+#login-section::before,#login-section::after{position: absolute;content:"";height:100%;width:50%;top:0;right:0;background-color:#fff;z-index: 0;}
+.bgFourPage{background-color: var(--theme-deafult);height: 100vh;position:fixed;width:100%;filter: blur(10px);}
+#login-section::before, #login-section::after {z-index: 1;}
+#login-section::after {
+    background-color: var(--theme-deafult);
+    right: auto;
+    left: 0;
+    opacity: 0.7;
+}
 .LogoInArea label,
 #register label{text-transform: capitalize;font-size: 12px;margin-top: 10px !important;}
-#login-section{background-image: url(../../../assets/images/bannerFour.jpg);background-color: var(--theme-deafult);height: 100%;width: 100%;background-position: center;background-size: cover;border-radius: 50px;position: relative;overflow: hidden;}
-#login-section .LoginLogoBG{position:relative;z-index: 1;text-align: center;}
-#login-section::before,#login-section::after{position: absolute;content:"";height:100%;width:50%;top:0;right:0;background-color:#fff;z-index: 0;}
-.bgFourPage{background-image: url(../../../assets/images/bannerFour.jpg);background-color: var(--theme-deafult);height: 100vh;position:fixed;width:100%;filter: blur(10px);}
+
 article.BGcenter{position: absolute;left: 50%;top: 50%;-webkit-transform: translate(-50%, -50%);transform: translate(-50%, -50%);width: 100%;}
-.LogoInArea{z-index: 1;}
+.LogoInArea{z-index: 2;}
 .LogoInArea h3{color: var(--theme-deafult);font-weight:700;}
 span.fa.fa-eye-slash.toggle-password.eye::before{content: "\f06e";}
 .fa-eye-slash:before{font-family: FontAwesome;}
