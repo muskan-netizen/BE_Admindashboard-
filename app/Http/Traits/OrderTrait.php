@@ -144,10 +144,10 @@ trait OrderTrait{
     }
 
 
-     // place Request To Dispatch for Appointment
+     // place Request To Dispatch for Appointment , OnDemand
     public function placeRequestToDispatchSingleProduct($order, $vendor, $dispatch_domain,$request)
     {
-     
+      
         try {
 
             $order = Order::find($order);
@@ -157,15 +157,17 @@ trait OrderTrait{
             $task_type = 'now';
             $schedule_time = '';
             $return_response = 2;
+            $paymentSentAlready = 0;
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
          
             $order_vendor = OrderVendor::with('products.product')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-        
+       
             foreach( $order_vendor->products as $product){
               
-                if ($order->payment_option_id == 1) {
+                if ($order->payment_option_id == 1 && $paymentSentAlready ==0) {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $product->price + $product->taxable_amount;
+                    $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                    $paymentSentAlready =1;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -187,21 +189,36 @@ trait OrderTrait{
                     $scheduleDateTime = $selectedDate.' '.$slotTime;
                     $schedule_time =  $scheduleDateTime?? null;
                 }
-    
-                $tasks[] = array(
-                    'task_type_id' => 3,
-                    'latitude' => $vendor_details->latitude ?? '',
-                    'longitude' => $vendor_details->longitude ?? '',
-                    'short_name' => '',
-                    'address' => $vendor_details->address ?? '',
-                    'post_code' => '',
-                    'barcode' => '',
-                    'flat_no'     => null,
-                    'email'       => $vendor_details->email ?? null,
-                    'phone_number' => $vendor_details->phone_no ?? null,
-                    'appointment_duration' => $product->product->first() ? $product->product->minimum_duration_min : 0,
-                );
-    
+                
+                    $tasks[] = array(
+                        'task_type_id' => $dispatch_domain['service_type'] == 'appointment' ?  3 : 1,
+                        'latitude' => $vendor_details->latitude ?? '',
+                        'longitude' => $vendor_details->longitude ?? '',
+                        'short_name' => '',
+                        'address' => $vendor_details->address ?? '',
+                        'post_code' => '',
+                        'barcode' => '',
+                        'flat_no'     => null,
+                        'email'       => $vendor_details->email ?? null,
+                        'phone_number' => $vendor_details->phone_no ?? null,
+                        'appointment_duration' =>  $dispatch_domain['service_type'] == 'appointment' ? ($product->product->first() ? $product->product->minimum_duration_min : 0) : null ,
+                    );
+                
+                    if($dispatch_domain['service_type'] == 'on_demand' ){
+                        $tasks[] = array(
+                            'task_type_id' => 2,
+                            'latitude' => $cus_address->latitude ?? '',
+                            'longitude' => $cus_address->longitude ?? '',
+                            'short_name' => '',
+                            'address' => $cus_address->address ?? '',
+                            'post_code' => $cus_address->pincode ?? '',
+                            'barcode' => '',
+                            'flat_no'     => $cus_address->house_number ?? null,
+                            'email'       => $customer->email ?? null,
+                            'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
+                        );
+                    }
+        
                 if ($customer->dial_code == "971") {
                     // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                     $customerno = "0" . $customer->phone_number;
@@ -251,13 +268,13 @@ trait OrderTrait{
         
                     $client = new Client([
                         'headers' => [
-                            'personaltoken' => $dispatch_domain->appointment_service_key,
-                            'shortcode' => $dispatch_domain->appointment_service_key_code,
-                            'content-type' => 'application/json'
+                            'personaltoken' => $dispatch_domain['service_key'],
+                            'shortcode'     => $dispatch_domain['service_key_code'],
+                            'content-type'  => 'application/json'
                         ]
                     ]);
                     
-                    $url = $dispatch_domain->appointment_service_key_url;
+                    $url = $dispatch_domain['service_key_url'];
                     $res = $client->post(
                         $url . '/api/task/create',
                         ['form_params' => ($postdata)]
@@ -288,8 +305,6 @@ trait OrderTrait{
                     }
               
                 }
-              
-          
             }
             return $return_response;
         } catch (\Exception $e) {

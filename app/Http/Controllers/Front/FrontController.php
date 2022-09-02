@@ -717,7 +717,9 @@ class FrontController extends Controller
 
             $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($timezone)->format('Y-m-d');
             $cartData[$key]->scheduled_date_time = $selectedDate;
-            $slots = showSlot($selectedDate,$data->vendor_id,'delivery');
+            $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
+            $slots = (object)$slotsRes['slots'];
+            //$slots = showSlot($selectedDate,$data->vendor_id,'delivery');
             $time_slots = [];
             $i = 0;
             foreach($slots as $slot){

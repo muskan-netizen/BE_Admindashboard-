@@ -641,7 +641,8 @@ trait cartManager{
                     }else{
                         $prod->scheduled_date_time = date('Y-m-d',strtotime($scheduled_date_time)) ;
                     }
-                    if ($action == 'delivery' || $action == 'appointment') {
+                    //if ($action == 'delivery' || $action == 'appointment') {
+                    if ( in_array($action,['delivery','appointment','on_demand'])) {
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
                         $deliveryCharges = 0;

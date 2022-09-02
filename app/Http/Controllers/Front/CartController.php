@@ -1088,7 +1088,9 @@ class CartController extends FrontController
 
                     $select = '';
 
-                    if ($action == 'delivery' || $action =='appointment' ) {
+                    //if ($action == 'delivery' || $action =='appointment' ) {
+                    if (in_array($action,['delivery','appointment','on_demand'])) {
+                        
                    
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
@@ -2165,7 +2167,7 @@ class CartController extends FrontController
       
         try {
             $dispatch_domain = $this->checkIfLastMileOn();
-            
+            //pr($dispatch_domain);
             if ($dispatch_domain && $dispatch_domain != false) {
                 $customer = User::find(Auth::id());
                 $cus_address = UserAddress::where('user_id', Auth::id())->where('status',1)->orderBy('is_primary', 'desc')->first();
@@ -2193,6 +2195,21 @@ class CartController extends FrontController
                         ]);
                         
                         $url = $dispatch_domain->appointment_service_key_url;
+                        $res = $client->post(
+                            $url . '/api/get-delivery-fee',
+                            ['form_params' => ($postdata)]
+                        );
+                        $response = json_decode($res->getBody(), true);
+                    } elseif($vendorType == 'on_demand'){
+                        $client = new GClient([
+                            'headers' => [
+                                'personaltoken' => $dispatch_domain->dispacher_home_other_service_key,
+                                'shortcode' => $dispatch_domain->dispacher_home_other_service_key_code,
+                                'content-type' => 'application/json'
+                            ]
+                        ]);
+                        
+                        $url = $dispatch_domain->dispacher_home_other_service_key_url;
                         $res = $client->post(
                             $url . '/api/get-delivery-fee',
                             ['form_params' => ($postdata)]
@@ -2229,14 +2246,30 @@ class CartController extends FrontController
     {
         $vendorType =  (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
         $preference = ClientPreference::first();
-       
-        if(( $vendorType == 'appointment') && ( ($preference->need_appointment_service == 1) && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_code) && !empty($preference->appointment_service_key_url)) ){
-            //return $preference;
-        }
-        elseif ( ( $vendorType != 'appointment') && $preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
-            return $preference;
-        else
-            return false;
+        switch($vendorType) {
+            case 'appointment':
+               if ( ($preference->need_appointment_service == 1) && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_code) && !empty($preference->appointment_service_key_url)) {
+                    return false;
+                }
+              break;
+            case 'on_demand':
+                    if ( ($preference->need_dispacher_home_other_service == 1) && !empty($preference->dispacher_home_other_service_key) && !empty($preference->dispacher_home_other_service_key_code) && !empty($preference->dispacher_home_other_service_key_url)) {
+                        return $preference;
+                    }
+              break;
+            default:
+                if ( $preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url)) {
+                    return $preference;
+                }
+              // code block
+          }
+        // if(( $vendorType == 'appointment') && ( ($preference->need_appointment_service == 1) && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_code) && !empty($preference->appointment_service_key_url)) ){
+        //     //
+        // }
+        // elseif ( ( $vendorType != 'appointment') && $preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+        //     return $preference;
+        // else
+        //     return false;
     }
 
     public function uploadPrescription(Request $request, $domain = '')
