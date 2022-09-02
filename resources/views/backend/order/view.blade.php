@@ -11,7 +11,13 @@
 }
 
 
-
+.product_appointment_spa h4.header-title {
+    display: inline-block;
+}
+.product_appointment_spa p {
+    display: inline-block;
+    float: right;
+}
 
 
 
@@ -289,7 +295,7 @@ $timezone = Auth::user()->timezone;
             </div>
             <div class="col-lg-8 mb-3">
                 <div class="card mb-0 h-100">
-                    <div class="card-body">
+                    <div class="card-body product_appointment_spa">
                         <h4 class="header-title mb-3">
                             <div class="form-ul mb-1">
 
@@ -306,6 +312,9 @@ $timezone = Auth::user()->timezone;
                             @foreach($order->vendors as $vendor)
                                 <p>{{ $vendor->dineInTableName }} | Category : {{ $vendor->dineInTableCategory }} | Capacity : {{ $vendor->dineInTableCapacity }}</p>
                             @endforeach
+                        @endif
+                        @if($order->product_schedule_type == 'schedule')
+                            <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('*Instant/Scheduled Product Wise') }}</span> </p>
                         @endif
 
                       
@@ -410,7 +419,7 @@ $timezone = Auth::user()->timezone;
                                                     <tr>
                                                         <td>{{ $key+1 }}</td>
                                                         <td><a href="{{ $route->dispatch_traking_url }}" target="_blank">{{ __('Track') }}</a></td>
-                                                        <td>{{ $route->DispatchStatus->first() ? $route->DispatchStatus[0]->status_data : 'na'  }}</td>
+                                                        <td>{{ $route->DispatchStatus->first() ? $route->DispatchStatus[0]->status_data['driver_status'] : 'na'  }}</td>
                                                     </tr>
                                                     @endforeach
                                                 </table>
@@ -656,6 +665,7 @@ $timezone = Auth::user()->timezone;
 
                     <div class="card-body">
                         <h4 class="header-title mb-3 ">{{ __('Comment/Schedule Information') }}</h4>
+                       
                         @if($order->comment_for_pickup_driver)
                           <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Comment for Pickup Driver') }} :</span> {{ $order->comment_for_pickup_driver ?? ''}}</p>
                         @endif
@@ -667,7 +677,7 @@ $timezone = Auth::user()->timezone;
                         @if($order->comment_for_vendor)
                           <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Comment for Vendor') }} :</span> {{ $order->comment_for_vendor ?? ''}}</p>
                         @endif
-
+                        
                         @if($order->schedule_pickup)
                           <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Schedule Pickup') }} :</span> {{dateTimeInUserTimeZone($order->schedule_pickup, $timezone) .' '.(($order->scheduled_slot)?', Slot : '.$order->scheduled_slot:'')}} </p>
                         @endif

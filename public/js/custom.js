@@ -3683,6 +3683,7 @@ $(document).ready(function () {
 
     // get time slots according to date
     $(document).on('click', '.check-time-slots', function () {
+        $('.check-time-slots').removeClass('ondemand_checked');
         let cur_date = $(this).val();
         let cart_product_id = $(this).data("cart_product_id");
         let product_vendor_id = $(this).data("product_vendor_id");

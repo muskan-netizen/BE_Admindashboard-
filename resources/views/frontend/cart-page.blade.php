@@ -362,7 +362,7 @@
                 <hr class="my-1">
 
                  {{-- Home Service Schedual code Start at down --}}
-                 @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ( in_array($serviceType ,['appointment','on_demand']) ))
+                 @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ( in_array($serviceType ,['appointment','on_demand']) && $vendor_product->product->mode_of_service == "schedule" ))
                  @if($client_preference_detail->business_type != 'laundry')
                  @if($product->slotsCnt != 0)
                  <div class="row mb-1 d-flex align-items-center vendor_product_schedule_datetime" style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">

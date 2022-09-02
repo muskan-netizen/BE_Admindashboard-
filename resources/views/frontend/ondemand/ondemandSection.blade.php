@@ -144,7 +144,12 @@
                                                                             $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                                         } ?>
                                                                     <div class="class_img">
+                                                                        @if($imagePath != '') 
                                                                         <img src="{{$imagePath}}" alt="">
+                                                                        @else
+                                                                       
+                                                                        @endif
+                                                                        
                                                                     </div>
                                                                 </div>
 
@@ -202,7 +207,11 @@
                                                                 $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                             } ?>
                                                         <div class="class_img">
+                                                            @if($imagePath != '') 
                                                             <img src="{{$imagePath}}" alt="">
+                                                            @else
+                                                            
+                                                            @endif
                                                         </div>
                                                     </div>
                                                     <div class="col-12 ac-royo-btn">

@@ -652,9 +652,13 @@ class OrderController extends BaseController
             $order->paymentOption->title = $json->manule_payment_title;
         }
         $order->paymentOption->title = __($order->paymentOption->title);
-
+        $product_schedule_type = '';
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
+                // check vendor product for schedule
+                if($product->schedule_type == 'schedule'){
+                    $product_schedule_type = 'schedule';
+                }
                 $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
@@ -685,8 +689,10 @@ class OrderController extends BaseController
                 $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
                 $vendor->dineInTableCategory = $vendor->dineInTable->category->title; //$vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
             }
+
         }
-     
+        //pr($product_schedule_type);
+        $order->product_schedule_type = $product_schedule_type;
         $luxury_option_name = '';
         if ($order->luxury_option_id > 0) {
             $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
