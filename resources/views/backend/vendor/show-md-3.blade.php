@@ -908,12 +908,13 @@ $( document ).ready(function() {
             data: {category_id: category_id, status:status, vendor_id:vendor_id},
             success: function(response) {
                 if (response.status == 'Success') {
-                    console.log(response.data);
-                    $('.cattxt').text('Updated successfully');
-                    $('.catalogupdate').css('display','');                    
+                    // console.log(response.data);
+                    // $('.cattxt').text('Updated successfully');
+                    $.NotificationApp.send("Success", 'Updated successfully', "top-right", "#5ba035", "success");
+                    // $('.catalogupdate').css('display','');                    
                     setTimeout(function() {
-                        $('.cattxt').text('');
-                        $('.catalogupdate').css('display','none');       
+                        // $('.cattxt').text('');
+                        // $('.catalogupdate').css('display','none');       
                     }, 1000);
 
 

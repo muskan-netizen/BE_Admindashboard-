@@ -24,46 +24,42 @@ $(document).ready(function () {
                 if (response.data.customers_increase != '') {
                     $('#customers_change').html('');
                     $('#customers_change').append('<span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i>' + response.data.customers_increase + '%</span><span class="text-nowrap">Since last month</span>');
-                }
-                if (response.data.customers_decrease) {
+                } else if (response.data.customers_decrease != '') {
                     $('#customers_change').html("");
                     $('#customers_change').append('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.customers_decrease + '%</span><span class="text-nowrap">Since last month</span>');
-                } else if (response.data.customers_decrease == 0) {
+                } else {
                     $('#customers_change').html("");
-                    $('#customers_change').append('<span class="text-danger me-2">' + response.data.customers_decrease + '%</span><span class="text-nowrap">Since last month</span>');
+                    $('#customers_change').append('<span class="text-danger me-2">0%</span><span class="text-nowrap">Since last month</span>');
                 }
                 if (response.data.orders_increase != '') {
                     $('#orders_change').html('');
                     $('#orders_change').append('<span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i>' + response.data.orders_increase + '%</span><span class="text-nowrap">Since last month</span>');
-                }
-                if (response.data.orders_decrease != '') {
+                } else if (response.data.orders_decrease != '') {
                     $('#orders_change').html('');
                     $('#orders_change').append('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.orders_decrease + '%</span><span class="text-nowrap">Since last month</span>');
-                } else if (response.data.orders_decrease == 0) {
+                } else {
                     $('#orders_change').html('');
-                    $('#orders_change').append('<span class="text-danger me-2">' + response.data.orders_decrease + '%</span><span class="text-nowrap">Since last month</span>');
+                    $('#orders_change').append('<span class="text-danger me-2">0%</span><span class="text-nowrap">Since last month</span>');
                 }
                 if (response.data.revenue_increase != '') {
                     $('#revenue_change').html('');
                     $('#revenue_change').append('<span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i>' + response.data.revenue_increase + '%</span><span class="text-nowrap">Since last month</span>');
-                }
-                if (response.data.revenue_decrease != '') {
+                } else if (response.data.revenue_decrease != '') {
                     $('#revenue_change').html('');
                     $('#revenue_change').append('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.revenue_decrease + '%</span><span class="text-nowrap">Since last month</span>');
-                } else if (response.data.revenue_decrease == 0) {
+                } else {
                     $('#revenue_change').html('');
-                    $('#revenue_change').append('<span class="text-danger me-2">' + response.data.revenue_decrease + '%</span><span class="text-nowrap">Since last month</span>');
+                    $('#revenue_change').append('<span class="text-danger me-2">0%</span><span class="text-nowrap">Since last month</span>');
                 }
                 if (response.data.products_increase != '') {
                     $('#products_change').html('');
                     $('#products_change').append('<span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i>' + response.data.products_increase + '%</span><span class="text-nowrap">Since last month</span>');
-                }
-                if (response.data.products_decrease != '') {
+                } else if (response.data.products_decrease != '') {
                     $('#products_change').html('');
                     $('#products_change').append('<span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i>' + response.data.products_decrease + '%</span><span class="text-nowrap">Since last month</span>');
-                } else if (response.data.products_decrease == 0) {
+                } else {
                     $('#products_change').html('');
-                    $('#products_change').append('<span class="text-danger me-2">' + response.data.products_decrease + '%</span><span class="text-nowrap">Since last month</span>');
+                    $('#products_change').append('<span class="text-danger me-2">0%</span><span class="text-nowrap">Since last month</span>');
                 }
                 Worldmap(response.data.markers);
                 updateRevenue(response.data.monthwise_revenue, response.data.currencySymbol);
