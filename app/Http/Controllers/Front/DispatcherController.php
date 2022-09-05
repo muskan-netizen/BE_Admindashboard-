@@ -216,14 +216,10 @@ class DispatcherController extends FrontController
                         $total_route_query = OrderProductDispatchRoute::where('order_vendor_id', $checkiftokenExist->order_vendor_id);
                         $total_route = $total_route_query->count();
                         $total_complet_route = $total_route_query->where('dispatcher_status_option_id', '5')->count(); // dispatch complet task
-                        \Log::info('total_route');
-                        \Log::info( $total_route);
-                        \Log::info('total_complet_route');
-                        \Log::info( ($total_complet_route +1 ));
+             
                         // update order status
                         if($total_route == ($total_complet_route +1 )){
-                           \Log::info('last tast from dispatch');
-                           \Log::info($request->status_option_id);
+                        
                             $OrderVendor = OrderVendor::where('id', $checkiftokenExist->order_vendor_id)->select('vendor_id','id','order_status_option_id')->first();
                         
                             if( $OrderVendor ){
@@ -233,7 +229,7 @@ class DispatcherController extends FrontController
                                     'vendor_id' =>  $OrderVendor->vendor_id,
                                     'order_vendor_id' =>  $OrderVendor->id
                                     ])->count();
-                                \Log::info($checkifVendor);
+                               
                                 if($checkifVendor == 0){
                                     $update_vendor = VendorOrderStatus::updateOrCreate([
                                         'order_id' =>  $checkiftokenExist->order_id,
