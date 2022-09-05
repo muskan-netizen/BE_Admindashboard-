@@ -419,7 +419,7 @@ $timezone = Auth::user()->timezone;
                                                     <tr>
                                                         <td>{{ $key+1 }}</td>
                                                         <td><a href="{{ $route->dispatch_traking_url }}" target="_blank">{{ __('Track') }}</a></td>
-                                                        <td>{{ $route->DispatchStatus->first() ? $route->DispatchStatus[0]->status_data['driver_status'] : 'na'  }}</td>
+                                                        <td>{{ $route->DispatchStatus->first() ? ( $route->DispatchStatus[0]->status_data['driver_status'] ?? '' ) : 'na'  }}</td>
                                                     </tr>
                                                     @endforeach
                                                 </table>
