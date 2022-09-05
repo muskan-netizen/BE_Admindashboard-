@@ -219,6 +219,8 @@ class DispatcherController extends FrontController
                       
                         // update order status
                         if($total_route == ($total_complet_route +1 )){
+                           \Log::info('last tast from dispatch');
+                           \Log::info($request['status_option_id']);
                             $OrderVendor = OrderVendor::where('id', $checkiftokenExist->order_vendor_id)->select('vendor_id','id','order_status_option_id')->first();
                         
                             if( $OrderVendor ){
@@ -228,7 +230,7 @@ class DispatcherController extends FrontController
                                     'vendor_id' =>  $OrderVendor->vendor_id,
                                     'order_vendor_id' =>  $OrderVendor->id
                                     ])->count();
-                             
+                                \Log::info($checkifVendor);
                                 if($checkifVendor == 0){
                                     $update_vendor = VendorOrderStatus::updateOrCreate([
                                         'order_id' =>  $checkiftokenExist->order_id,
@@ -236,7 +238,7 @@ class DispatcherController extends FrontController
                                         'vendor_id' =>  $OrderVendor->vendor_id,
                                         'order_vendor_id' =>  $OrderVendor->id
                                     ]);
-                                $res  =   OrderVendor::where('id', $checkiftokenExist->order_vendor_id)->update(['order_status_option_id' => $request['status_option_id']]);
+                                  $res  =   OrderVendor::where('id', $checkiftokenExist->order_vendor_id)->update(['order_status_option_id' => $request['status_option_id']]);
                                 //  $res =   OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['order_status_option_id' => $request->status_option_id]);
                               
                             }
