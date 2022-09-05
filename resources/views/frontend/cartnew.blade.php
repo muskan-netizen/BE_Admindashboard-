@@ -189,13 +189,17 @@ right: 20px;
 
 /*cart page responsive css */
 
+
+@media only screen and (min-width:1367px) and (max-width:1429px){
+.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;height:auto;}   
+}
 @media only screen and (max-width:1366px){
 .cart-design .alFourTemplateCartButtons a.shoping i{font-size:17px;vertical-align: middle;}
-.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;vertical-align: middle;text-align:left;}
+.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;vertical-align: middle;text-align:left;height:auto;}
 }
 
 @media (min-width:991px) and (max-width:1200px){
-.cart-design .alFourTemplateCartButtons a.btn.shoping {font-size:10px;display: block;width: 100%;text-align: left;}
+.cart-design .alFourTemplateCartButtons a.btn.shoping {font-size:10px;display: block;width: 100%;text-align: left;height:auto;}
 .cart-design .alFourTemplateCartButtons a.shoping i{font-size:10px;vertical-align: middle;}
 }
 </style>
