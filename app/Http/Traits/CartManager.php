@@ -463,7 +463,7 @@ trait cartManager{
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
 
                 if($prod->pvariant)   {
-
+                    
                     $cart_product_ids[] = $prod->product_id;    
                     /* Setting Out of Stock if requied quanitity is not available */
                     if($prod->product->sell_when_out_of_stock == 0 && $prod->product->has_inventory == 1){
@@ -638,10 +638,15 @@ trait cartManager{
                     if(!empty($user)){
                         $scheduledDateTime = dateTimeInUserTimeZone($scheduled_date_time, $user->timezone);
                         $prod->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
+                        $prod->manual_scheduled_date_time = convertDateTimeInTimeZone($prod->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
+
                     }else{
                         $prod->scheduled_date_time = date('Y-m-d',strtotime($scheduled_date_time)) ;
+                        $prod->manual_scheduled_date_time =  date('Y-m-d\TH:i',strtotime($scheduled_date_time)) ;
                     }
-                    if ($action == 'delivery' || $action == 'appointment') {
+
+                    //if ($action == 'delivery' || $action == 'appointment') {
+                    if ( in_array($action,['delivery','appointment','on_demand'])) {
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
                         $deliveryCharges = 0;

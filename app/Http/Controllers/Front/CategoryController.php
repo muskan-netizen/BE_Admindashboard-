@@ -155,7 +155,7 @@ class CategoryController extends FrontController{
 
                 return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders]);
             }
-        }elseif($page == 'on demand service'){
+        }elseif($page == 'on demand service' || $page == 'appointment'){
 
             $cartDataGet = $this->getCartOnDemand($request);
             if($request->step == 2 && empty($request->addons) && empty($request->dataset)){
@@ -640,7 +640,7 @@ class CategoryController extends FrontController{
                 $time_slots[$i++] = trim($newSlot[0]);
             }
         }else{
-        $time_slots = $this->SplitTime($start_time, $end_time, "60");
+        $time_slots = $this->SplitTime($start_time, $end_time, "60"); // this is for static slots 
         }
 
         $cart_product_id = $request->cart_product_id??0;
