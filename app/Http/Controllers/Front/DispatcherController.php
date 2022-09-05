@@ -94,7 +94,7 @@ class DispatcherController extends FrontController
                                 'order_vendor_id' =>  $checkiftokenExist->id ]);
 
                                 OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['order_status_option_id' => $request->status_option_id]);
-                            }
+                        }
 
 
                     }
@@ -208,7 +208,26 @@ class DispatcherController extends FrontController
                                                                 'vendor_id'          =>  $checkiftokenExist->vendor_id,
                                                                 'type'              =>  $request->task_type??1
                                                             ]);
+                            OrderProductDispatchRoute::where('id', $checkiftokenExist->id)->update(['order_status_option_id' => $request->status_option_id]);
+        
                         }
+                        // update order status
+                            $checkifVendor= VendorOrderStatus::where([
+                                'order_id' =>  $checkiftokenExist->order_id,
+                                'order_status_option_id' =>  $request->status_option_id,
+                                'vendor_id' =>  $checkiftokenExist->vendor_id
+                                ])->count();
+
+                            if($checkifVendor == 0){
+                                $update_vendor = VendorOrderStatus::updateOrCreate([
+                                    'order_id' =>  $checkiftokenExist->order_id,
+                                    'order_status_option_id' =>  $request->status_option_id,
+                                    'vendor_id' =>  $checkiftokenExist->vendor_id
+                                ]);
+
+                                OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['order_status_option_id' => $request->status_option_id]);
+                            }
+
                     }
                     if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
                     {
