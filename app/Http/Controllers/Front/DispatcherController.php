@@ -201,10 +201,13 @@ class DispatcherController extends FrontController
   
                         if($checkif == 0){
                             $update_vendor = VendorOrderProductDispatcherStatus::updateOrCreate([
-                                'order_id' =>  $checkiftokenExist->order_id,
-                                'order_product_route_id' =>$checkiftokenExist->id,
-                                'order_status_option_id' =>  $request->status_option_id,
-                                ]);
+                                                                'order_id' =>  $checkiftokenExist->order_id,
+                                                                'order_product_route_id' =>$checkiftokenExist->id,
+                                                                'order_status_option_id' =>  $request->status_option_id,
+                                                                'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
+                                                                'vendor_id'          =>  $checkiftokenExist->vendor_id,
+                                                                'type'              =>  $request->task_type??1
+                                                            ]);
                         }
                     }
                     if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
@@ -589,27 +592,28 @@ class DispatcherController extends FrontController
 
     }
 
-     /******************    ---- send notification to user as par vendorProduct  by harbans :)-----   ******************/
+     /******************    ---- send notification to user as par vendorProduct -----   ******************/
      public function sendOrderProductNotification( $vendor_order_product_status_id )
      {
+          //pr($vendor_order_status_id);
+ 
          $OrderStatus = VendorOrderProductDispatcherStatus::select('*','dispatcher_status_option_id as status_data')->find($vendor_order_product_status_id);
 
          if($OrderStatus){
              $orderNumber = Order::where('id',$OrderStatus->order_id)->select('order_number','user_id')->first();
-             
+ 
              $user_id = $orderNumber ? $orderNumber->user_id : '';
              // $checkuservendor = UserVendor::where('user_id',$user_id)->first();
              // $sound = ($checkuservendor)?"notification.wav":"default";
              $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->pluck('device_token');
-     
+ 
              $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
-            
+ 
              if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
  
                  $from = $client_preferences->fcm_server_key;
                      $title = __('Order Status : #').($orderNumber ?  $orderNumber->order_number : '');
                      $body =  $OrderStatus ? ($OrderStatus->status_data ? $OrderStatus->status_data['driver_status'] : '') : '';
-                   
                      $headers = [
                          'Authorization: key=' . $from,
                          'Content-Type: application/json',
