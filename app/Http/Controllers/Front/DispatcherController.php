@@ -216,7 +216,10 @@ class DispatcherController extends FrontController
                         $total_route_query = OrderProductDispatchRoute::where('order_vendor_id', $checkiftokenExist->order_vendor_id);
                         $total_route = $total_route_query->count();
                         $total_complet_route = $total_route_query->where('dispatcher_status_option_id', '5')->count(); // dispatch complet task
-                      
+                        \Log::info('total_route');
+                        \Log::info( $total_route);
+                        \Log::info('total_complet_route');
+                        \Log::info( ($total_complet_route +1 ));
                         // update order status
                         if($total_route == ($total_complet_route +1 )){
                            \Log::info('last tast from dispatch');
