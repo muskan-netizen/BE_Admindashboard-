@@ -961,7 +961,7 @@ $(document).ready(function () {
             });
         }
 
-        $('.alert-danger').html('');
+        //$('.alert-danger').html('');
         if ((typeof guest_cart != undefined) && (guest_cart == 1)) {
             // window.location.href = login_url;
             $("#login_modal").modal("show");
@@ -3699,40 +3699,41 @@ $(document).ready(function () {
         let cart_product_id = $(this).data("cart_product_id");
         let vendor_id = $(this).data("vendor_id");
 
+        if(schedule_type != 'ProductDateTime'){
+            if(schedule_type == 'date'){
+                var schedule_dt = $(this).val();
+                var schedule_time = $(this).closest('.vendor_slot_cart').find('select').find(':selected').val();
 
-        if(schedule_type == 'date'){
-            var schedule_dt = $(this).val();
-            var schedule_time = $(this).closest('.vendor_slot_cart').find('select').find(':selected').val();
-
-            $.ajax({
-                type: "POST",
-                dataType: 'json',
-                url: check_schedule_slots,
-                data: { date: schedule_dt, vendor_id: vendor_id },
-                success: function (response) {
-                   
-                    if (response.status == "Success") {
-                        $('#vendor_schedule_slot_'+vendor_id).html(response.data);
-                    } else {
+                $.ajax({
+                    type: "POST",
+                    dataType: 'json',
+                    url: check_schedule_slots,
+                    data: { date: schedule_dt, vendor_id: vendor_id },
+                    success: function (response) {
+                    
+                        if (response.status == "Success") {
+                            $('#vendor_schedule_slot_'+vendor_id).html(response.data);
+                        } else {
+                            success_error_alert('error', response.message, ".cart_response");
+                            $('#vendor_schedule_slot_'+vendor_id).html(response.data);
+                        }
+                    },
+                    error: function (error) {
+                        var response = $.parseJSON(error.responseText);
                         success_error_alert('error', response.message, ".cart_response");
-                        $('#vendor_schedule_slot_'+vendor_id).html(response.data);
+                        $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
                     }
-                },
-                error: function (error) {
-                    var response = $.parseJSON(error.responseText);
-                    success_error_alert('error', response.message, ".cart_response");
-                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-                }
 
-            });
-        }else{
-            var schedule_time = $(this).val();
-            var schedule_dt = $(this).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
-            $responst = await checkSlotAvailability(this);
-            if($responst == 0){
-                return false;
+                });
+            }else{
+                var schedule_time = $(this).val();
+                var schedule_dt = $(this).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
+                $responst = await checkSlotAvailability(this);
+                if($responst == 0){
+                    return false;
+                }
             }
-        }
+        }    
       
         $.ajax({
             type: "POST",
