@@ -89,7 +89,7 @@ class VendorController extends BaseController
                 $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
                 $clientVendorTypes = $vendor_typ_key.'_check';
                 $NomenclitureName =  $vendor_typ_key == "dinein" ? 'Dine-In' : $vendor_typ_value;
-                if($client_preference->$clientVendorTypes == 1){
+                if($client_preference->$clientVendorTypes == 1 && $vendor->$VendorTypesName){
                     $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
                     $offers[]=  $vendor->$VendorTypesName == 1 ? getNomenclatureName($NomenclitureName) : $NomenclitureName;
                 }
