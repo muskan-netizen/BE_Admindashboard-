@@ -263,7 +263,7 @@ class UserhomeController extends FrontController
                 return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
         }
     }
-    public function index(Request $request, $domain='')
+    public function indexTest(Request $request, $domain='')
     {
 
         try {
@@ -403,7 +403,7 @@ class UserhomeController extends FrontController
             die;
         }
     }
-    public function indexTest(Request $request, $domain='')
+    public function index(Request $request, $domain='')
     {
         try {
             $home = array();
