@@ -1,3 +1,12 @@
+.sm .nav-cate-img.activ_nav {
+    margin: 0 auto;
+}
+.sm li.al_main_category a {
+    text-transform: capitalize;
+}
+.sm li.al_main_category a.current_category {
+    color: var(--theme-deafult);
+}
 .vendor_products_tr .items-price span {
     display: inline-block;
     font-size: 12px;
