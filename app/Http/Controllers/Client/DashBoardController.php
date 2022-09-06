@@ -384,9 +384,7 @@ class DashBoardController extends BaseController
                     $query->where('user_id', Auth::user()->id);
                 });
             }
-            // if($date_filter){
-            //     $total_products->whereBetween('created_at', [$from_date, $end_date]);
-            // }
+            
             $total_products = $total_products->where('deleted_at', NULL)->count();
 
             # Revenue sum
@@ -397,25 +395,21 @@ class DashBoardController extends BaseController
                     $query->where('user_id', Auth::user()->id);
                 });
             }
-            // if($date_filter){
-            //     $total_revenue->whereBetween('created_at', [$from_date, $end_date]);
-            // }
+            
             $total_revenue = $total_revenue->sum('payable_amount');
 
             # Customers count
             $users = new User;
             $total_customers = $users->where(['status' => 1, 'is_superadmin' => 0])->count();
-            // if ($date_filter) {
-            //     $total_customers->whereBetween('created_at', [$from_date, $end_date]);
-            // }
-            // $total_customers = $total_customers->count();
 
             # Orders count
-            $total_orders = $orders->count();
-            // if($date_filter)
-            // {
-            //     $total_orders = Order::whereBetween('created_at', [$from_date, $end_date])->count();
-            // }
+            $vendor_orders = OrderVendor::with(['user','vendor']);
+            if (Auth::user()->is_superadmin == 0) {
+                 $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) {
+                 $query->where('user_id', Auth::user()->id);
+             });
+            }
+            $total_orders = $vendor_orders->count();
 
             # Current week revenue sum
             $revenueCurrentWeek = $orders->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('payable_amount');
