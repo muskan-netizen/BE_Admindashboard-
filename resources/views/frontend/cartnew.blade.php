@@ -96,7 +96,7 @@ width: 100%;
 .al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
 
 
-.grn_popop-total_amt label{  font-size: 12px !important;}
+.grn_popop-total_amt label{  font-size: 12px !important;text-align:left;}
 
 .vendor_cart-check label {display: inline-block;}
 
@@ -1764,7 +1764,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     // Check Slot Availability
     function checkSlotAvailability(obj)
     {
-       
+
         var url = "{{route('checkSlotOrders')}}"
         var schedule_datetime = $(obj).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
         var schedule_slot = $(obj).val();

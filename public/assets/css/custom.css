@@ -696,6 +696,20 @@ body[dir="rtl"] .dataTables_filter {
 }
 
 /*================= templa 5 hide====================== */
-.card-body.al_custom_control .col-sm-3.mb-3:nth-child(5) {
-  display: none;
+.card-body.al_custom_control .col-sm-3.mb-3:nth-child(5) {display: none;}
+.al_new_export_table.royo_customber_btn.table_customber_add .position-absolute.mb-2 {right: 0;margin: 0 !important;}
+.al_new_export_table.royo_customber_btn.table_customber_add .row.mt-1.sml_royo-responsive {margin-top: -40px !important;}
+.al_new_export_table.royo_customber_btn.table_customber_add .row.mt-1.sml_royo-responsive .tab-pane .card-body {padding: 10px 0;}
+.alCustomCheckBoxText input[type="radio"]:checked,
+.alCustomCheckBoxText input[type="radio"]:not(:checked) {position: absolute;left: -9999px;}
+.alCustomCheckBoxText input[type="radio"]:checked + label,
+.alCustomCheckBoxText input[type="radio"]:not(:checked) + label{position: relative;padding-left: 28px;cursor: pointer;line-height: 20px;display: inline-block;color: #666;}
+.alCustomCheckBoxText input[type="radio"]:checked + label:before,
+.alCustomCheckBoxText input[type="radio"]:not(:checked) + label:before {content: '';position: absolute;left: 0;top: 0;width: 18px;height: 18px;border: 1px solid #ddd;border-radius: 100%;background: #fff;}
+.alCustomCheckBoxText input[type="radio"]:checked + label:after,
+.alCustomCheckBoxText input[type="radio"]:not(:checked) + label:after {content: '';width: 12px;height: 12px;background: #43bee1;position: absolute;top: 3px;left: 3px;border-radius: 100%;-webkit-transition: all 0.2s ease;transition: all 0.2s ease;}
+.alCustomCheckBoxText input[type="radio"]:not(:checked) + label:after {opacity: 0;-webkit-transform: scale(0);transform: scale(0);}
+.alCustomCheckBoxText input[type="radio"]:checked + label:after {opacity: 1;-webkit-transform: scale(1);transform: scale(1);}
+@media(max-width:1400px){
+.banner_box {width: 170px;height: 90px;}
 }
