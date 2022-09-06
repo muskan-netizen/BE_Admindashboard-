@@ -443,6 +443,28 @@
 					</div>
 				</div>
 			</section> 
+		@elseif($homePageLabel->slug == 'cities' && (count($homePageData['vendors']) != 0))
+			<section class="suppliers-section container render_full_{{$homePageLabel->slug}}">
+				<div class=" top-heading d-flex justify-content-between align-self-center">
+					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
+				</div>
+				<div class="col-12 p-0">
+					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+						@foreach ($homePageData[$homePageLabel->slug] as $cities )
+                        <div class="alSpaListSlider">
+                           <div>
+                              <div class="alSpaListBox">
+                                 <div class="alSpaCityBox">
+                                    <a href="/cities/{{$cities['slug']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
+                                 </div>
+                                 <p>{{$cities["title"]}} </p>
+                              </div>            
+                           </div>
+                        </div>
+                        @endforeach
+					</div>
+				</div>
+			</section>
 		@elseif($homePageLabel->slug == 'vendors' && (count($homePageData['vendors']) != 0))
 			<section class="suppliers-section container ">
 				<div class=" top-heading d-flex justify-content-between align-self-center">

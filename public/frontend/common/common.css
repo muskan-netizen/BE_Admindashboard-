@@ -158,7 +158,7 @@ ul.social-links.d-flex.align-items-center.mx-auto.mb-4.mt-3 {text-align: center;
 .file--upload>label .plus_icon {height: 33px;width: 33px;line-height: 36px;color: #fff;text-align: center;font-family: "Nunito Sans";
 font-size: 13px;font-weight: 700;letter-spacing: 0;border-radius: 50%;background-color: var(--theme-deafult);box-shadow: 0 2px 4px 0 rgb(63 159 255 / 40%);
 display: block;position: absolute;right: 0;left: 0;margin: auto;bottom: 0;top: 0;}
-body.al_body_template_six .order_detail.order_detail_data { margin-left: 40px; }
+body .recent-orders .order_detail{ margin-left: 50px;}
 .breadcrumb-item+.breadcrumb-item::before {
 font-family: 'FontAwesome';
 content: "\f105";

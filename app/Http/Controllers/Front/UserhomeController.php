@@ -526,6 +526,7 @@ class UserhomeController extends FrontController
                 $view_page = "home-template-test-six";
             }
             //pr($set_template->toArray());exit();
+
             return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData]);
 
         } catch (Exception $e) {
@@ -869,7 +870,25 @@ $activeOrders = [];
             }
 
         // dd($home_page_labels);
+
+        $cities = [];
+
+            $cities =  VendorCities::with(['translations'=> function ($q) use($language_id) {
+                                $q->where('language_id', $language_id);
+                            }])->where(function ($q)  {
+                                $q->where('latitude','!=', null);
+                                $q->where('longitude','!=', null);
+                            })->get();
+          
+            $cities = $cities->map(function($da) {
+                $da->title = $da->translations->first() ? $da->translations->first()->name : $da->slug ;
+                unset($da->translations);
+                return $da;
+           
+            });
+            // dd($cities->toArray());
 // -----------------------------------------------------------------------------------------------------------------------
+
         $data = [
             'brands' => $brands,
             'vendors' => $vendors,
@@ -888,10 +907,12 @@ $activeOrders = [];
                 'homePageLabels' => $home_page_labels,
                 'featured_products' => $feature_products,
                 'on_sale' => $on_sale_products,
+                'cities' => $cities,
                 'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:[],
                 'best_sellers' => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
                 'recent_orders' => $activeOrders
             ];
+            // dd( $data);
             return $data ;
         }
 

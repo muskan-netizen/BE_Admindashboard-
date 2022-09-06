@@ -455,6 +455,21 @@ height: auto;
                         @include('frontend.home_page_2.brands')
                         @endforeach
                     </div>
+                    @elseif($homePageLabel->slug == 'cities' && count($homePageData[$homePageLabel->slug]) != 0)
+                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" >
+                        @foreach ($homePageData[$homePageLabel->slug] as $cities )
+                        <div class="alSpaListSlider">
+                           <div>
+                              <div class="alSpaListBox">
+                                 <div class="alSpaCityBox">
+                                    <a href="/cities/{{$cities['slug']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
+                                 </div>
+                                 <p>{{$cities["title"]}} </p>
+                              </div>            
+                           </div>
+                        </div>
+                        @endforeach
+                    </div>
                     @else
                     @if(count($homePageData[$homePageLabel->slug]) != 0)
                     <div class="product-4-{{$homePageLabel->slug}} product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}">

@@ -318,6 +318,30 @@
 					</div>
 				</div>
 			</section>
+		@elseif($homePageLabel->slug == 'cities'  && count($homePageData['cities']) != 0)
+			<section class="suppliers-section render_full_{{$homePageLabel->slug}}">
+				<div class="container mb-0"  >
+					<div class=" top-heading d-flex justify-content-between align-self-center">
+						<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
+					</div>
+					<div class="col-12 p-0">
+						<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+							@foreach ($homePageData[$homePageLabel->slug] as $cities )
+							<div class="alSpaListSlider">
+							   <div>
+								  <div class="alSpaListBox">
+									 <div class="alSpaCityBox">
+										<a href="/cities/{{$cities['slug']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
+									 </div>
+									 <p>{{$cities["title"]}} </p>
+								  </div>            
+							   </div>
+							</div>
+							@endforeach
+						</div>
+					</div>
+				</div>
+			</section>
 		@else
 			@if(count($homePageData[$homePageLabel->slug]) != 0)
 			<section class="container-fliud mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
@@ -370,7 +394,7 @@
 <!-- footer code in layouts.store/footercontent-template-two -->
 @endsection
 @section('home-page')
-{{-- <script type="text/javascript" src="{{asset('front-assets/js/homepage-four.js')}}"></script> --}}
+<script type="text/javascript" src="{{asset('front-assets/js/homepage-four.js')}}"></script>
 @endsection
 @section('js-script')
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
