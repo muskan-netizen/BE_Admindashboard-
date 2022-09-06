@@ -691,7 +691,7 @@ class OrderController extends BaseController
             }
 
         }
-        //pr($product_schedule_type);
+       // pr($order->vendors->toArray());
         $order->product_schedule_type = $product_schedule_type;
         $luxury_option_name = '';
         if ($order->luxury_option_id > 0) {

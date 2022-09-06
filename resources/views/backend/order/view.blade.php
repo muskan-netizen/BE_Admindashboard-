@@ -419,7 +419,7 @@ $timezone = Auth::user()->timezone;
                                                     <tr>
                                                         <td>{{ $key+1 }}</td>
                                                         <td><a href="{{ $route->dispatch_traking_url }}" target="_blank">{{ __('Track') }}</a></td>
-                                                        <td>{{ $route->DispatchStatus->first() ? $route->DispatchStatus[0]->status_data['driver_status'] : 'na'  }}</td>
+                                                        <td>{{ $route->DispatchStatus->first() ? ( $route->DispatchStatus[0]->status_data['driver_status'] ?? '' ) : 'na'  }}</td>
                                                     </tr>
                                                     @endforeach
                                                 </table>
@@ -869,7 +869,7 @@ $timezone = Auth::user()->timezone;
                         that.addClass("completed");
                         if (status_option_id == 2) {
                             if(reload_page ==1 || reload_page == '1'){
-                               // setTimeout(function(){location.reload();}, 2500);
+                                setTimeout(function(){location.reload();}, 2500);
                             }
                             that.next('li').remove();
                         }
