@@ -1702,13 +1702,16 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     function checkSlotOrders()
     {
         var url = "{{route('checkSlotOrders')}}"
+        var schedule_datetime = $('#schedule_datetime').val();
         var schedule_pickup_datetime = $('#pickup_schedule_datetime').val();
         var schedule_pickup_slot = $('#schedule_pickup_slot').val();
         var vendor_id = $('#vendor_id').val();
+
         $.ajax({
             type: "GET",
             data: {
                 "schedule_pickup_datetime": schedule_pickup_datetime,
+                "schedule_datetime": schedule_datetime,
                 "schedule_pickup_slot":     schedule_pickup_slot,
                 "vendor_id":                vendor_id,
             },
@@ -1717,6 +1720,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(output) {
+                console.log(output.orders_per_slot);
+                console.log(output.orderCount);
                 // Check if orderCount is greaten equal to orders_per_slot
                 if( (output.orderCount >= output.orders_per_slot) && (output.orders_per_slot != 0) ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
