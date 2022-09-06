@@ -164,10 +164,9 @@ trait OrderTrait{
        
             foreach( $order_vendor->products as $product){
               
-                if ($order->payment_option_id == 1 && $paymentSentAlready ==0) {
+                if ($order->payment_option_id == 1 ) {
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
-                    $paymentSentAlready =1;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -228,7 +227,13 @@ trait OrderTrait{
                 }
                 $client = CP::orderBy('id', 'asc')->first();
                 for ($x = 1; $x <= $product->quantity; $x++) {
-                 
+                    //  send all payment to fist order 
+                 if( $paymentSentAlready == 0){
+                    $paymentSentAlready =1;
+                 }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                 }
                     $dynamic = uniqid($order->id . $vendor . $product->product_id.$x);
                
                     $call_back_url = route('dispatch-order-product-status-update', $dynamic);
