@@ -694,3 +694,8 @@ body[dir="rtl"] .dataTables_filter {
   justify-content: center;
   max-width: 260px;
 }
+
+/*================= templa 5 hide====================== */
+.card-body.al_custom_control .col-sm-3.mb-3:nth-child(5) {
+  display: none;
+}
