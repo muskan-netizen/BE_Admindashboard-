@@ -30,14 +30,14 @@
 @elseif(isset($set_template)  && $set_template->template_id == 3)
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/header/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/footer/footer.css')}}">
-@if(Route::currentRouteName() == "userHome")
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/homepage.css')}}">
-@else
-@endif
-@if(Route::currentRouteName() == "homeTest")
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/homepage.css')}}">
-@else
-@endif
+	@if(Route::currentRouteName() == "userHome")
+	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/homepage.css')}}">
+	@else
+	@endif
+	@if(Route::currentRouteName() == "homeTest")
+	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/homepage.css')}}">
+	@else
+	@endif
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/inner_page.css')}}">
 <link defer type="text/css" rel="stylesheet" href="{{asset('assets/css/thiredtemplate.css')}}"   />
 @elseif(isset($set_template)  && $set_template->template_id == 4)
@@ -93,7 +93,7 @@ if(Auth::check()){
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/css/slick-theme.min.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/css/slick.min.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/header/header.css')}}">
-	@if(Route::currentRouteName() == "userHome")
+	@if(Route::currentRouteName() == "userHome" || Route::currentRouteName() == "homeTest")
 	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/homepage.css')}}">
 	@else
 	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/inner_page.css')}}">

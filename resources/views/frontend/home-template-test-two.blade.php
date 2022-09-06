@@ -433,36 +433,23 @@ height: auto;
                 @include('frontend.booking.cabbooking-single-module')
             @endif
         @elseif($homePageLabel->slug == 'dynamic_page')
-        
             @include('frontend.included_files.dynamic_page')
         @else
         <div class="container render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
             <div class="row">
                 <div class="col-12"   >
-                    @if($homePageLabel->slug == 'vendors')
-                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" >
-                        @foreach ($homePageData[$homePageLabel->slug] as $vendor )
-                        @include('frontend.home_page_2.vendor')
-                        @endforeach
-                    </div>
-                    @elseif($homePageLabel->slug == 'trending_vendors')
+                    @if($homePageLabel->slug == 'vendors' || $homePageLabel->slug == 'trending_vendors' || $homePageLabel->slug == 'best_sellers' && count($homePageData[$homePageLabel->slug]) != 0)
                     <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" >
                         @foreach ($homePageData[$homePageLabel->slug] as $vendor)
                         @include('frontend.home_page_2.vendor')
                         @endforeach
                     </div>
-                    @elseif($homePageLabel->slug == 'best_sellers')
-                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" >
-                        @foreach ($homePageData['best_sellers'] as $vendor)
-                        @include('frontend.home_page_2.vendor')
-                        @endforeach
-                    </div>
-                    @elseif($homePageLabel->slug == 'recent_orders')
+                    @elseif($homePageLabel->slug == 'recent_orders' && count($homePageData[$homePageLabel->slug]) != 0)
                         <div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
                         @foreach ($homePageData[$homePageLabel->slug] as $order )
                         @include('frontend.home_page_2.recent_order')
                         @endforeach</div>
-                    @elseif($homePageLabel->slug == 'brands')
+                    @elseif($homePageLabel->slug == 'brands' && count($homePageData[$homePageLabel->slug]) != 0)
                     <div class="brand-slider product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}" >
                         @foreach ($homePageData[$homePageLabel->slug] as $brand )
                         @include('frontend.home_page_2.brands')
