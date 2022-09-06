@@ -9,7 +9,7 @@ class VendorOrderProductDispatcherStatus extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'dispatcher_id', 'order_id', 'dispatcher_status_option_id', 'vendor_id','type','order_vendor_product_id','order_product_route_id'
+        'dispatcher_id', 'order_id', 'dispatcher_status_option_id', 'vendor_id','type','order_vendor_product_id','order_product_route_id','order_status_option_id'
     ];
 
     protected $appends = ['status_data'];
@@ -34,10 +34,8 @@ class VendorOrderProductDispatcherStatus extends Model
         case 1:
             if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_1_1.png');
-                if($productcategorytype == "On Demand Service"):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment" ):
                     $status_data['driver_status'] = __('Service Accepted');
-                elseif($productcategorytype == "Appointment"):
-                    $status_data['driver_status'] = __('Appointment Accepted');
                 else:
                     $status_data['driver_status'] = __('Order Accepted');
                 endif;
@@ -162,7 +160,7 @@ class VendorOrderProductDispatcherStatus extends Model
         $status_data['driver_status'] = '';
        }
 
-       return $status_data['driver_status'];
+       return $status_data;
 
     }
 }

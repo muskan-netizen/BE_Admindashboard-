@@ -94,7 +94,7 @@ class DispatcherController extends FrontController
                                 'order_vendor_id' =>  $checkiftokenExist->id ]);
 
                                 OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['order_status_option_id' => $request->status_option_id]);
-                            }
+                        }
 
 
                     }
@@ -128,6 +128,7 @@ class DispatcherController extends FrontController
       /******************    ---- order status update from dispatch for single product base (Need to dispatcher_status_option_id ) -----   ******************/
       public function dispatchOrderSingleProductStatusUpdate(DispatchOrderStatusUpdateRequest $request, $domain = '', $web_hook_code)
       {
+        
           try {
               DB::beginTransaction();
               $checkiftokenExist = OrderProductDispatchRoute::where('web_hook_code',$web_hook_code)->first();
@@ -159,38 +160,39 @@ class DispatcherController extends FrontController
                    }
   
   
-                  $update = VendorOrderProductDispatcherStatus::updateOrCreate([
-                      'dispatcher_id' => null,
-                      'order_id' =>  $checkiftokenExist->order_id,
-                      'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
-                      'vendor_id' =>  $checkiftokenExist->vendor_id,
-                      'order_product_route_id' =>  $checkiftokenExist->id,
-                      'type' =>  $request->task_type??1]);
-                      //$this->sendOrderNotification($update->id);
-                      $type = $request->task_type??1;
-                     $dispatch_status = $request->dispatcher_status_option_id;
-  
-                      switch ($dispatch_status) {
-                          case 2:
-                              $request->status_option_id = 2;
-                              break;
+                    $update = VendorOrderProductDispatcherStatus::updateOrCreate([
+                                                                                'dispatcher_id' => null,
+                                                                                'order_id' =>  $checkiftokenExist->order_id,
+                                                                                'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
+                                                                                'vendor_id' =>  $checkiftokenExist->vendor_id,
+                                                                                'order_product_route_id' =>  $checkiftokenExist->id,
+                                                                                'type' =>  $request->task_type??1
+                                                                                ]);
+                    //$this->sendOrderProductNotification($update->id);
+                    $type = $request->task_type??1;
+                    $dispatch_status = $request->dispatcher_status_option_id;
+
+                    switch ($dispatch_status) {
+                        case 2:
+                            $request->status_option_id = 2;
+                            break;
                         case 3:
-                          $request->status_option_id = 4;
-                          break;
+                        $request->status_option_id = 4;
+                        break;
                         case 4:
-                          $request->status_option_id = 5;
-                          break;
+                        $request->status_option_id = 5;
+                        break;
                         case 5:
-                          $request->status_option_id = 6;
-                          break;
+                        $request->status_option_id = 6;
+                        break;
                         default:
-                         $request->status_option_id = null;
-                      }
-  
+                        $request->status_option_id = null;
+                    }
+
                       # vendor status update
   
                     if(isset($request->status_option_id) && !empty($request->status_option_id) && $request->status_option_id == 6 && $type == 2){
-  
+                    
                           $checkif= VendorOrderProductDispatcherStatus::where([
                             'order_id' =>  $checkiftokenExist->order_id,
                             'order_status_option_id' =>  $request->status_option_id,
@@ -200,10 +202,49 @@ class DispatcherController extends FrontController
   
                         if($checkif == 0){
                             $update_vendor = VendorOrderProductDispatcherStatus::updateOrCreate([
-                                'order_id' =>  $checkiftokenExist->order_id,
-                                'order_product_route_id' =>$checkiftokenExist->id,
-                                'order_status_option_id' =>  $request->status_option_id,
-                                ]);
+                                                                'order_id' =>  $checkiftokenExist->order_id,
+                                                                'order_product_route_id' =>$checkiftokenExist->id,
+                                                                'order_status_option_id' => $request->status_option_id,
+                                                                'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
+                                                                'vendor_id'          =>  $checkiftokenExist->vendor_id,
+                                                                'type'              =>  $request->task_type??1
+                                                            ]);
+                            OrderProductDispatchRoute::where('id', $checkiftokenExist->id)->update(['order_status_option_id' => $request->status_option_id]);
+        
+                        }
+                        // get total rout count of order vendor
+                        $total_route_query = OrderProductDispatchRoute::where('order_vendor_id', $checkiftokenExist->order_vendor_id);
+                        $total_route = $total_route_query->count();
+                        $total_complet_route = $total_route_query->where('dispatcher_status_option_id', '5')->count(); // dispatch complet task
+             
+                        // update order status
+                        if($total_route == ($total_complet_route +1 )){
+                        
+                            $OrderVendor = OrderVendor::where('id', $checkiftokenExist->order_vendor_id)->select('vendor_id','id','order_status_option_id')->first();
+                        
+                            if( $OrderVendor ){
+                                $checkifVendor= VendorOrderStatus::where([
+                                    'order_id' =>  $checkiftokenExist->order_id,
+                                    'order_status_option_id' =>  $request->status_option_id,
+                                    'vendor_id' =>  $OrderVendor->vendor_id,
+                                    'order_vendor_id' =>  $OrderVendor->id
+                                    ])->count();
+                               
+                                if($checkifVendor == 0){
+                                    $update_vendor = VendorOrderStatus::updateOrCreate([
+                                        'order_id' =>  $checkiftokenExist->order_id,
+                                        'order_status_option_id' =>  $request->status_option_id,
+                                        'vendor_id' =>  $OrderVendor->vendor_id,
+                                        'order_vendor_id' =>  $OrderVendor->id
+                                    ]);
+                                  $res  =   OrderVendor::where('id', $checkiftokenExist->order_vendor_id)->update(['order_status_option_id' => $request->status_option_id]);
+                                //  $res =   OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['order_status_option_id' => $request->status_option_id]);
+                              
+                            }
+
+                            
+                           
+                            }
                         }
                     }
                     if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
@@ -588,6 +629,71 @@ class DispatcherController extends FrontController
 
     }
 
+     /******************    ---- send notification to user as par vendorProduct -----   ******************/
+     public function sendOrderProductNotification( $vendor_order_product_status_id )
+     {
+          //pr($vendor_order_status_id);
+ 
+         $OrderStatus = VendorOrderProductDispatcherStatus::select('*','dispatcher_status_option_id as status_data')->find($vendor_order_product_status_id);
+
+         if($OrderStatus){
+             $orderNumber = Order::where('id',$OrderStatus->order_id)->select('order_number','user_id')->first();
+ 
+             $user_id = $orderNumber ? $orderNumber->user_id : '';
+             // $checkuservendor = UserVendor::where('user_id',$user_id)->first();
+             // $sound = ($checkuservendor)?"notification.wav":"default";
+             $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->pluck('device_token');
+ 
+             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+ 
+             if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+ 
+                 $from = $client_preferences->fcm_server_key;
+                     $title = __('Order Status : #').($orderNumber ?  $orderNumber->order_number : '');
+                     $body =  $OrderStatus ? ($OrderStatus->status_data ? $OrderStatus->status_data['driver_status'] : '') : '';
+                     $headers = [
+                         'Authorization: key=' . $from,
+                         'Content-Type: application/json',
+                     ];
+                     //pr($title);
+                     //pr($body);
+                     $data = [
+                         "registration_ids" => $devices,
+                         "notification" => [
+                             'title' => $title,
+                             'body'  => $body,
+                             'sound' => "default",
+                             "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                             'click_action' => route('order.index'),
+                             "android_channel_id" => "sound-channel-id"
+                         ],
+                         "data" => [
+                             'title' => $title,
+                             'body'  => $body,
+                             'data' => '',
+                             'type' => ""
+                         ],
+                         "priority" => "high"
+                     ];
+                     //    Log::info(json_encode($data));
+                     $dataString = $data;
+                     $ch = curl_init();
+                     curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+                     curl_setopt($ch, CURLOPT_POST, true);
+                     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
+                     $result = curl_exec($ch);
+                     //    Log::info($result);
+                     curl_close($ch);
+                     \Log::info($result);
+                     return $result;
+ 
+             }
+         }
+ 
+     }
     /******************    ---- create order cancel request from dispatch (Need to dispatcher_status_option_id ) -----   ******************/
     public function dispatchOrderCancelRequest(Request $request, $domain = '', $web_hook_code){
         try{
