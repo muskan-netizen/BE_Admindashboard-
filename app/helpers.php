@@ -1006,6 +1006,38 @@ if (!function_exists('getCategoryTypes')) {
         return $typeArray;
     }
 }
+if (!function_exists('getCategoryTypesServices')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getCategoryTypesServices() {
+        $client_preference = ClientPreference::select('business_type')->first();
+        switch($client_preference->business_type){
+            case "taxi":
+                $typeArray =['pick_drop_service'];
+            break;
+            case "food_grocery_ecommerce":
+                $typeArray =['products_service'];
+            break;
+            case "home_service":
+                $typeArray =['on_demand_service','appointment_service'];
+            break;
+            case "laundry":
+                $typeArray =['laundry_service','pick_drop_service'];
+            break;
+            case "rental":
+                $typeArray =['rental_service'];
+            break;
+        
+            case "super_app":
+                $typeArray =['pick_drop_service','on_demand_service','appointment_service','rental_service','products_service'];
+            break;
+            default:
+            $typeArray =['products_service','pick_drop_service','on_demand_service','appointment_service'];
+        }
+        return $typeArray;
+    }
+}
 
 if (!function_exists('getHoursMinutes')) {
     /**
