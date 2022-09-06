@@ -6,238 +6,238 @@
 <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/dashboard/css/new_dashboard.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
-span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #FFC;color: #384F34;display: block;font-weight: bold;margin: 2px auto 14px;padding: 15px !important;text-align: left;}
+    span.nodatafound {
+        font-size: 120% !important;
+        border: 1px solid #FC0;
+        background: #FFC;
+        color: #384F34;
+        display: block;
+        font-weight: bold;
+        margin: 2px auto 14px;
+        padding: 15px !important;
+        text-align: left;
+    }
 </style>
 @endsection
 @section('content')
 
 <!-- Dashboard start here -->
 <div class="container-fluid">
-        <div class="row d-flex align-items-center">
-            <div class="col-12">
-                <!-- page title start here -->
-                <div class="page-title-box mb-2">
-                    <!-- page title right side here -->
-                    <div class="page-title-right">
-                        <form class="d-flex">
-                            <div class="input-group">
-                                <input type="text" class="form-control form-control-light" id="dash-daterange">
-                                <span class="input-group-text bg-primary border-primary text-white">
-                                    <i class="mdi mdi-calendar-range font-13"></i>
-                                </span>
+    <div class="row d-flex align-items-center">
+        <div class="col-12">
+            <!-- page title start here -->
+            <div class="page-title-box mb-2">
+                <!-- page title right side here -->
+                <div class="page-title-right">
+                    <form class="d-flex">
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-light" id="range-datepicker" placeholder="2022-08-10 to 2022-08-22">
+                            <span class="input-group-text bg-primary border-primary text-white">
+                                <i class="mdi mdi-calendar-range font-13"></i>
+                            </span>
+                        </div>
+                        <a href="javascript: void(0);" class="btn btn-primary ms-2" id="dashboard_refresh_btn">
+                            <i class="mdi mdi-autorenew"></i>
+                        </a>
+                        <!-- <a href="javascript: void(0);" class="btn btn-primary ms-1">
+                            <i class="mdi mdi-filter-variant"></i>
+                        </a> -->
+                    </form>
+                </div><!-- page title right side here -->
+                <h4 class="page-title">Dashboard</h4>
+            </div><!-- page title end here -->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-5 col-lg-6">
+            <div class="row">
+                <div class="col-sm-6">
+                    <!-- Customer box start here -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="float-right">
+                                <i class="mdi mdi-account-multiple widget-icon"></i>
                             </div>
-                            <a href="javascript: void(0);" class="btn btn-primary ms-2">
-                                <i class="mdi mdi-autorenew"></i>
-                            </a>
-                            <a href="javascript: void(0);" class="btn btn-primary ms-1">
-                                <i class="mdi mdi-filter-variant"></i>
-                            </a>
-                        </form>
-                    </div><!-- page title right side here -->
-                    <h4 class="page-title">Dashboard</h4>
-                </div><!-- page title end here -->
+                            <h5 class="" title="Number of Customer">Customer</h5>
+                            <h3 class="mt-3 mb-3" id="total_customers">0</h3>
+                            <p class="mb-0" id="customers_change">
+                                <!-- <span class="text-success me-2" id="customers_change"></span> -->
+                                <!-- <span class="text-nowrap">Since last month</span> -->
+                            </p>
+                        </div>
+                    </div><!-- Customer box end here -->
+                </div>
+                <div class="col-sm-6">
+                    <!-- Orders box start here -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="float-right">
+                                <i class="mdi mdi-cart-plus widget-icon"></i>
+                            </div>
+                            <h5 class="" title="Number of Orders">Orders</h5>
+                            <h3 class="mt-3 mb-3" id="total_orders">0</h3>
+                            <p class="mb-0" id="orders_change">
+                                <!-- <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 1.08%</span> -->
+                                <!-- <span class="text-nowrap">Since last month</span> -->
+                            </p>
+                        </div>
+                    </div><!-- Orders box end here -->
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <!-- Revenue box start here -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="float-right">
+                                <i class="mdi mdi-currency-usd widget-icon"></i>
+                            </div>
+                            <h5 class="" title="Number of Revenue">Revenue</h5>
+                            <h3 class="mt-3 mb-3" id="total_revenue">0</h3>
+                            <p class="mb-0" id="revenue_change">
+                                <!-- <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 5.27%</span> -->
+                                <!-- <span class="text-nowrap">Since last month</span> -->
+                            </p>
+                        </div>
+                    </div><!-- Revenue box end here -->
+                </div>
+                <div class="col-sm-6">
+                    <!-- Growth box start here -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="float-right">
+                                <i class="mdi mdi-pulse widget-icon"></i>
+                            </div>
+                            <h5 class="" title="Number of Growth">Products</h5>
+                            <h3 class="mt-3 mb-3" id="total_products">+ 0</h3>
+                            <p class="mb-0" id="products_change">
+                                <!-- <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> 4.08%</span> -->
+                                <!-- <span class="text-nowrap">Since last month</span> -->
+                            </p>
+                        </div>
+                    </div><!-- Growth box end here -->
+                </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-xl-5 col-lg-6">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <!-- Customer box start here -->
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="float-right">
-                                    <i class="mdi mdi-account-multiple widget-icon"></i>
-                                </div>
-                                <h5 class="" title="Number of Customer">Customer</h5>
-                                <h3 class="mt-3 mb-3">36,254</h3>
-                                <p class="mb-0">
-                                    <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> 5.27%</span>
-                                    <span class="text-nowrap">Since last month</span>
-                                </p>
-                            </div>
-                        </div><!-- Customer box end here -->
-                    </div>
-                    <div class="col-sm-6">
-                        <!-- Orders box start here -->
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="float-right">
-                                    <i class="mdi mdi-cart-plus widget-icon"></i>
-                                </div>
-                                <h5 class="" title="Number of Orders">Orders</h5>
-                                <h3 class="mt-3 mb-3">36,254</h3>
-                                <p class="mb-0">
-                                    <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 1.08%</span>
-                                    <span class="text-nowrap">Since last month</span>
-                                </p>
-                            </div>
-                        </div><!-- Orders box end here -->
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-sm-6">
-                        <!-- Revenue box start here -->
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="float-right">
-                                    <i class="mdi mdi-currency-usd widget-icon"></i>
-                                </div>
-                                <h5 class="" title="Number of Revenue">Revenue</h5>
-                                <h3 class="mt-3 mb-3">$6,254</h3>
-                                <p class="mb-0">
-                                    <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 5.27%</span>
-                                    <span class="text-nowrap">Since last month</span>
-                                </p>
-                            </div>
-                        </div><!-- Revenue box end here -->
-                    </div>
-                    <div class="col-sm-6">
-                        <!-- Growth box start here -->
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="float-right">
-                                    <i class="mdi mdi-pulse widget-icon"></i>
-                                </div>
-                                <h5 class="" title="Number of Growth">Products</h5>
-                                <h3 class="mt-3 mb-3">+ 3056</h3>
-                                <p class="mb-0">
-                                    <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> 4.08%</span>
-                                    <span class="text-nowrap">Since last month</span>
-                                </p>
-                            </div>
-                        </div><!-- Growth box end here -->
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xl-7 col-lg-6">
-                <div class="card card-h-100">
-                    <!-- month wise data shown start here  -->
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h4 class="header-title">Projections Vs Actuals</h4>
-                            <div class="dropdown">
+        <div class="col-xl-7 col-lg-6">
+            <div class="card card-h-100">
+                <!-- month wise data shown start here  -->
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h4 class="header-title">Revenue</h4>
+                        <!-- <div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 31px);">
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Action</a>
                                 </div>
-                            </div>
-                        </div>
-                        <div dir="ltr">
-                            <div id="high-performing-product" class="apex-charts" data-colors="#727cf5,#e3eaef"></div>
-                        </div>
-                    </div><!-- month wise data shown end here  -->
-                </div>
+                            </div> -->
+                    </div>
+                    <div dir="ltr">
+                        <div id="revenue-bar-chart" class="apex-charts" data-colors="#43bee1,#e3eaef"></div>
+                    </div>
+                </div><!-- month wise data shown end here  -->
             </div>
-
         </div>
 
-        <div class="row">
+    </div>
 
-            <div class="col-lg-8">
-                <!-- total revenue sec start here -->
-                <div class="card">
-                    <div class="card-body">
-                        <!-- total revenue title start here -->
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h4 class="header-title">REVENUE</h4>
-                            <div class="dropdown">
+    <div class="row">
+
+        <div class="col-lg-8">
+            <!-- total revenue sec start here -->
+            <div class="card">
+                <div class="card-body">
+                    <!-- total revenue title start here -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h4 class="header-title">REVENUE</h4>
+                        <!-- <div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop " data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end " data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 31px);">
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Action</a>
                                 </div>
-                            </div>
-                        </div><!-- total revenue title start here -->
+                            </div> -->
+                    </div><!-- total revenue title start here -->
 
 
-                        <div class="chart-content-bg">
-                            <div class="row text-center">
-                                <!-- current week data start here -->
-                                <div class="col-sm-6">
-                                    <p class="text-muted mb-0 mt-3">Current Week</p>
-                                    <h2 class="fw-normal mb-3">
-                                        <small class="mdi mdi-checkbox-blank-circle text-primary align-middle me-1"></small>
-                                        <span>$58,254</span>
-                                    </h2>
-                                </div><!-- current week data end here -->
+                    <div class="chart-content-bg">
+                        <div class="row text-center">
+                            <!-- current week data start here -->
+                            <div class="col-sm-6">
+                                <p class="text-muted mb-0 mt-3">Current Week</p>
+                                <h2 class="fw-normal mb-3">
+                                    <small class="mdi mdi-checkbox-blank-circle text-primary align-middle me-1"></small>
+                                    <span id="revenueCurrentWeek">0</span>
+                                </h2>
+                            </div><!-- current week data end here -->
 
-                                <!-- Previous week data start here -->
-                                <div class="col-sm-6">
-                                    <p class="text-muted mb-0 mt-3">Previous Week</p>
-                                    <h2 class="fw-normal mb-3">
-                                        <small class="mdi mdi-checkbox-blank-circle text-success align-middle me-1"></small>
-                                        <span>$69,524</span>
-                                    </h2>
-                                </div><!-- Previous week data end here -->
-                            </div>
+                            <!-- Previous week data start here -->
+                            <div class="col-sm-6">
+                                <p class="text-muted mb-0 mt-3">Previous Week</p>
+                                <h2 class="fw-normal mb-3">
+                                    <small class="mdi mdi-checkbox-blank-circle text-success align-middle me-1"></small>
+                                    <span id="revenueLastWeek">0</span>
+                                </h2>
+                            </div><!-- Previous week data end here -->
                         </div>
+                    </div>
 
-                        <!-- Total earning sec start here -->
-                        <div class="dash-item-overlay d-none d-md-block" dir="ltr">
+                    <!-- Total earning sec start here -->
+                    <!-- <div class="dash-item-overlay d-none d-md-block" dir="ltr">
                             <h5>Today's Earning: $2,562.30</h5>
                             <p class="text-muted font-13 mb-3 mt-2">Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui.
                                 Etiam rhoncus...</p>
                             <a href="javascript: void(0);" class="btn btn-outline-primary">View Statements
                                 <i class="mdi mdi-arrow-right ms-2"></i>
                             </a>
-                        </div><!-- Total earning sec end here -->
+                        </div> -->
+                    <!-- Total earning sec end here -->
 
-                        <!-- Total earning chat start here -->
-                        <div dir="ltr">
-                            <div id="revenue-chart" class="apex-charts mt-3" data-colors="#727cf5,#0acf97"></div>
-                        </div><!-- Total earning chat end here -->
+                    <!-- Total earning chat start here -->
+                    <div dir="ltr">
+                        <div id="revenue-line-chart" class="apex-charts mt-3" data-colors="#43bee1,#0acf97" style="height: 364px"></div>
+                    </div><!-- Total earning chat end here -->
 
 
-                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="col-lg-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="header-title">Revenue By Location</h4>
-                            <div class="dropdown">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="header-title">Revenue By Location</h4>
+                        <!-- <div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Action</a>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="mb-4 mt-3">
-                            <div id="world-map-markers" style="height: 224px"></div>
-                        </div>
+                            </div> -->
+                    </div>
+                    <div class="mb-4 mt-3">
+                        <div id="world-map" style="height: 224px"></div>
+                    </div>
 
-                        <h5 class="mb-1 mt-0 fw-normal">New York</h5>
+                    <div id="revenue_locations">
+                        <!-- <h5 class="mb-1 mt-0 fw-normal">New York</h5>
                         <div class="progress-w-percent">
                             <span class="progress-value fw-bold">72k </span>
                             <div class="progress progress-sm">
@@ -267,14 +267,15 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                             <div class="progress progress-sm">
                                 <div class="progress-bar" role="progressbar" style="width: 61%;" aria-valuenow="61" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
-
         </div>
 
-        <div class="row">
+    </div>
+
+    <!-- <div class="row d-none">
             <div class="col-xl-6 col-lg-12 order-lg-2 order-xl-1">
                 <div class="card">
                     <div class="card-body">
@@ -379,7 +380,7 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
 
                                 </tbody>
                             </table>
-                        </div> <!-- end table-responsive-->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -393,19 +394,15 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                     <i class="mdi mdi-dots-vertical"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Action</a>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="average-sales" class="apex-charts mb-4 mt-3" data-colors="#727cf5,#0acf97,#fa5c7c,#ffbc00"></div>
+                        <div id="average-sales" class="apex-charts mb-4 mt-3" data-colors="#43bee1,#0acf97,#fa5c7c,#ffbc00"></div>
 
 
                         <div class="chart-widget-list">
@@ -426,8 +423,8 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                 <span class="float-end">$154.02</span>
                             </p>
                         </div>
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
+                    </div>
+                </div>
             </div>
             <div class="col-xl-3 col-lg-6 order-lg-1">
                 <div class="card">
@@ -439,13 +436,9 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                     <i class="mdi mdi-dots-vertical"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                                    <!-- item-->
                                     <a href="javascript:void(0);" class="dropdown-item">Action</a>
                                 </div>
                             </div>
@@ -549,7 +542,6 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!-- end timeline -->
                                         </div>
                                     </div>
                                 </div>
@@ -562,19 +554,18 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                         <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
                             <div class="simplebar-scrollbar" style="height: 263px; transform: translate3d(0px, 0px, 0px); display: block;"></div>
                         </div>
-                    </div> <!-- end slimscroll -->
+                    </div>
                 </div>
-                <!-- end card-->
             </div>
-        </div>
+        </div> -->
 
-    </div><!-- Dashboard end here -->
+</div><!-- Dashboard end here -->
 
 
 
 <script>
-@section('script')
-@endsection
+    @section('script')
+    @endsection
     var Revenue_lng = "{{__('Revenue')}}";
     var Sales_lng = "{{__('Sales')}}";
     var Net_Revenue_lng = "{{__('Net Revenue')}}";
@@ -583,8 +574,9 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
     var yearlyInfo_url = "{{route('client.yearlySalesInfo')}}";
     var weeklyInfo_url = "{{route('client.weeklySalesInfo')}}";
     var monthlyInfo_url = "{{route('client.monthlySalesInfo')}}";
-    var dashboard_filter_url = "{{ route('client.dashboard.filter') }}";
+    var dashboard_filter_url = "{{ route('client.dashboard.filter_new') }}";
 </script>
+<script src="{{asset('assets/dashboard/js/new_dashboard.js')}}"></script>
 <script src="{{asset('assets/dashboard/js/vendor.min.js')}}"></script>
 <script src="{{asset('assets/dashboard/js/app.min.js')}}"></script>
 <script src="{{asset('assets/dashboard/js/apexcharts.min.js')}}"></script>
