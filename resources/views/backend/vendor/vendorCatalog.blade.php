@@ -119,10 +119,10 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-3 col-xl-3">
+            <div class="col-lg-4 col-xl-3">
                 @include('backend.vendor.show-md-3')
             </div>
-            <div class="col-lg-9 col-xl-9">
+            <div class="col-lg-8 col-xl-9">
                 <div class="">
                     <ul class="nav nav-pills navtab-bg nav-justified">
                         <li class="nav-item">
@@ -226,10 +226,10 @@
                         <div class="tab-pane {{ $tab == 'catalog' ? 'active show' : '' }}" id="catalog">
                             <div class="card-box">
                                 <div class="row">
-                                    <div class="col-4">
+                                    <div class="col-2">
                                         <h4 class="mb-0"> {{ __('Catalog') }}</h4>
                                     </div>
-                                    <div class="col-8 d-flex align-items-center justify-content-end mb-3">
+                                    <div class="col-10 d-flex align-items-center justify-content-end mb-3">
 
                                             <div class="vendor-search">
                                                 <input class="form-control" id="vendor_search" type="search" placeholder="Product Search" aria-controls="vendor_product_table">
@@ -1260,7 +1260,7 @@
                             paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },
                             searchPlaceholder: "{{__('Search Product')}}",
                             // 'loadingRecords': '&nbsp;',
-                            'processing': '<div class="spinner"></div>'
+                            // 'processing': '<div class="spinner"></div>'
                 },
                 drawCallback: function () {
                     $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
