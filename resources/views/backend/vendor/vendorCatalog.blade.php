@@ -253,7 +253,7 @@
                                                 {{ __('Action') }}
                                             </a>
 
-                                            <a class="btn btn-info waves-effect waves-light text-sm-right @if($vendor->status == 1) importProductBtn @endif mx-2 {{ $vendor->status == 1 ? '' : 'disabled' }}"
+                                            <a class="btn btn-info waves-effect waves-light text-sm-right @if($vendor->status == 1) importProductBtn @endif  {{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"
                                                 {{ $vendor->status == 1 ? '' : 'disabled' }}><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
@@ -323,9 +323,9 @@
                                                                 <td> {{ $product->variant->first() ? decimal_format($product->variant->first()->price) : 0 }}
                                                                 </td>
                                                             @endif
-                                                            <td> 
+                                                            <td>
                                                                 {{ $live_status[$product->is_live]  }}
-                                                                
+
                                                             </td>
                                                             @if ($client_preference_detail->business_type != 'taxi')
                                                                 <td> {{ $product->is_new == 0 ? __('No') : __('Yes') }}</td>
@@ -484,22 +484,22 @@
                                     <button class="btn btn-info button" id="csv_button"
                                         type="button">{{ __('Import form Woocommerce') }}</button>
                                 </div>
-                                
+
                                 @if($client_preference_detail->enable_inventory_service == 1)
                                 <a href="{{route('get.inventory.import',$vendor->slug)}}">
                                     <div class="col-12 text-right mb-2">
-                                        <button class="btn btn-info button" 
+                                        <button class="btn btn-info button"
                                             type="button">{{ __('Import form Inventory') }}</button>
                                     </div>
                                 </a>
                                 @endif
-                               
+
                             @if($client_preference_detail->business_type == 'laundry')
                                 <div class="col-md-4 text-right mb-2">
                                     <button class="btn btn-info button" id="import_global"
                                         type="button">{{ __('Import Global Product') }}</button>
                                 </div>
-                                
+
                                 {{-- <div class="col-md-4 text-right mb-2">
                                     <button class="btn btn-info button" id="import_bagqrcode"
                                         type="button">{{ __('Import Bag Qrcode') }}</button>
@@ -747,7 +747,7 @@
                     <div class="row ">
                         <div class="col-12">
                         <button type="submit" class="submitGlobalProductAction submit btn btn-primary float-right" >Submit</button>
-                        </div>    
+                        </div>
                         <div class="col-12">
                         <table class="table table-centered dataTable table-nowrap table-striped w-100" id="global_product_table">
                                 <thead>
@@ -791,7 +791,7 @@
                             </div>
 
                             <div id="import_csv" class="row align-items-center mb-3">
-                                
+
                                 <div class="col-md-12">
                                     <form method="post" enctype="multipart/form-data" id="save_imported_qrcode">
                                         @csrf
@@ -1243,7 +1243,7 @@
             setTimeout(function() {
                 $("#show_copy_msg_on_click_copy").hide();
             }, 1000);
-        })        
+        })
 
         $(document).on("click",".delete-product",function() {
             var destroy_url = $(this).data('destroy_url');
@@ -1275,7 +1275,7 @@
                 "lengthChange" : false,
                 "searching": false,
                 "ordering": true,
-               
+
                 language: {
                             search: "",
                             info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',
@@ -1287,7 +1287,7 @@
                 drawCallback: function () {
                     $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
                 },
-            
+
                 ajax: {
                     url: "{{url('client/vendor/product/list').'/'.$vendor->id}}",
                     data: function (d) {
@@ -1295,7 +1295,7 @@
                     }
                 },
                 columns: dataTableColumn(),
-            
+
             });
         }
         $(document).ready(function() {
@@ -1346,7 +1346,7 @@
                 "lengthChange" : false,
                 "searching": false,
                 "ordering": true,
-               
+
                 language: {
                             info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',
                             paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },
@@ -1355,14 +1355,14 @@
                 drawCallback: function () {
                     $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
                 },
-            
+
                 ajax: {
                     url: "{{url('client/global/product/list')}}"
                 },
                 columns: dataTableGlobalProducts(),
             });
         }
-       
+
 
         function dataTableGlobalProducts(){
                 return [
@@ -1421,7 +1421,7 @@
                 keyboard: false
             });
         });
- 
+
         function submitQrcodeImportForm() {
         var form = document.getElementById('save_imported_qrcode');
         var formData = new FormData(form);
@@ -1461,7 +1461,7 @@
                 setTimeout(function() {
                     location.reload();
                 }, 2000);
-               
+
             }
         });
     }
