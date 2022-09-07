@@ -1,6 +1,6 @@
 @extends('layouts.vertical', ['title' => 'Dashboard'])
 @section('css')
-<link href="{{asset('assets/dashboard/css/jquery-jvectormap-1.2.2.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/assets/dashboard/css/jquery-jvectormap-1.2.2.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/dashboard/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/dashboard/css/new_app.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
