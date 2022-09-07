@@ -1346,6 +1346,7 @@ class OrderController extends BaseController
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image
             ];
+            //pr($postdata);
             if($orderVendorDetails->is_restricted == 1)
             {
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
