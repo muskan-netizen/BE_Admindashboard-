@@ -154,7 +154,7 @@ padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .tip_radio:checked+.tip_label {background: var(--theme-deafult);box-shadow: 0 0 5px var(--theme-deafult);}
 .tip_radio:checked+.tip_label h5, .tip_radio:checked+.tip_label p {color: #fff;}
 
-.al_body_template_four .text-danger { font-size: 16px;}
+.al_body_template_four .text-danger {font-size: 16px;}
 .al_body_template_four .clproduct_cart_order_form.btn.btn-solid {padding: 8px 0px;font-size: 12px;}
 .al_body_template_two .shoping_cart .alFourTemplateCartPage #product_faq_dev_42 .btn-product-order-form-div button {
 font-size: 12px;padding: 6.7px 10px;}
@@ -184,6 +184,23 @@ right: 20px;
 .product_title_add span {
     font-size: 12px;
 }
+
+}
+
+/*cart page responsive css */
+
+
+@media only screen and (min-width:1367px) and (max-width:1429px){
+.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;height:auto;}   
+}
+@media only screen and (max-width:1366px){
+.cart-design .alFourTemplateCartButtons a.shoping i{font-size:17px;vertical-align: middle;}
+.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;vertical-align: middle;text-align:left;height:auto;}
+}
+
+@media (min-width:991px) and (max-width:1200px){
+.cart-design .alFourTemplateCartButtons a.btn.shoping {font-size:10px;display: block;width: 100%;text-align: left;height:auto;}
+.cart-design .alFourTemplateCartButtons a.shoping i{font-size:10px;vertical-align: middle;}
 }
 </style>
 
