@@ -1,11 +1,11 @@
 
-<div class="row ">    
+<div class="row ">
     <div class="col-md-12">
         <div class="row border-bottom">
             <div class="col-md-3">
                 @csrf
                 <div class="form-group" id="slugInputEdit">
-                    {!! Form::label('title', __('URL Slug'),['class' => 'control-label']) !!} 
+                    {!! Form::label('title', __('URL Slug'),['class' => 'control-label']) !!}
                     {!! Form::text('slug', null, ['class'=>'form-control', 'required' => 'required', 'onkeypress' => "return alphaNumeric(event)", 'id' => 'slug']) !!}
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
@@ -29,7 +29,7 @@
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    {!! Form::label('title', __('Visible In Menus'),['class' => 'control-label']) !!} 
+                    {!! Form::label('title', __('Visible In Menus'),['class' => 'control-label']) !!}
                     <div>
                         <input type="checkbox" data-plugin="switchery" name="is_visible" class="form-control switch_menu" data-color="#43bee1" checked='checked'>
                     </div>
@@ -37,7 +37,7 @@
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    {!! Form::label('title', __('Wishlist'),['class' => 'control-label']) !!} 
+                    {!! Form::label('title', __('Wishlist'),['class' => 'control-label']) !!}
                     <div>
                         <input type="checkbox" data-plugin="switchery" name="show_wishlist" class="form-control wishlist_switch" data-color="#43bee1" checked='checked'>
                     </div>
@@ -65,7 +65,7 @@
                 <label>Banner image</label>
                 <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="" />
                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
-            </div>            
+            </div>
         </div>
         <div class="row border-bottom pt-1">
             <div class="px-2 ">
@@ -120,7 +120,7 @@
                         </div>
                         <div class="form-check form-check-info modal-category-btm-title p-2">
                             <h6 for="customradio5">{{$type->title}}</h6>
-                            <p class="add-cat-text text-left">Lorem ipsum... </p>
+                            <!-- <p class="add-cat-text text-left">Lorem ipsum... </p> -->
                         </div>
                     </label>
                 </div>
@@ -134,7 +134,7 @@
                     <div class="col-md-12">
                         <div class="row w-100" id="addProductHide">
                             <div class="form-group">
-                                {!! Form::label('title', __('Can Add Products'),['class' => 'control-label']) !!} 
+                                {!! Form::label('title', __('Can Add Products'),['class' => 'control-label']) !!}
                                 <div>
                                     <input type="checkbox" data-plugin="switchery" name="can_add_products" class="form-control add_product_switch" data-color="#43bee1" checked='checked'>
                                 </div>
@@ -154,16 +154,16 @@
                                 <div class="col">
                                     <input type="file" accept="image/*" data-plugins="dropify" name="cat_banner[]" class="dropify" data-default-file="" />
                                     <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
-                                </div>            
-                                <div class="col">
-                                    <input type="file" accept="image/*" data-plugins="dropify" name="cat_banner[]" class="dropify" data-default-file="" />
-                                    <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
-                                </div> 
+                                </div>
                                 <div class="col">
                                     <input type="file" accept="image/*" data-plugins="dropify" name="cat_banner[]" class="dropify" data-default-file="" />
                                     <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
                                 </div>
-                            </div>       
+                                <div class="col">
+                                    <input type="file" accept="image/*" data-plugins="dropify" name="cat_banner[]" class="dropify" data-default-file="" />
+                                    <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

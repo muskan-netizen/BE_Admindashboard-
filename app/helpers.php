@@ -564,6 +564,28 @@ if (!function_exists('showSlot')) {
         return $viewSlot;
     }
 }
+if (!function_exists('getShowSlot')) {
+    function getShowSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
+    {
+        $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        if(count((array)$slots) == 0){
+            $myDate  = date('Y-m-d',strtotime('+1 day'));
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        }
+        if(count((array)$slots) == 0){
+            $myDate  = date('Y-m-d',strtotime('+2 day'));
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        }
+
+        if(count((array)$slots) == 0){
+            $myDate  = date('Y-m-d',strtotime('+3 day'));
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        }
+        $response['slots']=$slots;
+        $response['date']=$myDate;
+        return  $response;
+    }
+}
 if (!function_exists('showSlotTemp')) {
     function showSlotTemp($myDate = null, $vid, $user_id, $type = 'delivery', $duration="60")
     {
@@ -980,6 +1002,38 @@ if (!function_exists('getCategoryTypes')) {
             break;
             default:
             $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];
+        }
+        return $typeArray;
+    }
+}
+if (!function_exists('getCategoryTypesServices')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getCategoryTypesServices() {
+        $client_preference = ClientPreference::select('business_type')->first();
+        switch($client_preference->business_type){
+            case "taxi":
+                $typeArray =['pick_drop_service'];
+            break;
+            case "food_grocery_ecommerce":
+                $typeArray =['products_service'];
+            break;
+            case "home_service":
+                $typeArray =['on_demand_service','appointment_service'];
+            break;
+            case "laundry":
+                $typeArray =['laundry_service','pick_drop_service'];
+            break;
+            case "rental":
+                $typeArray =['rental_service'];
+            break;
+        
+            case "super_app":
+                $typeArray =['pick_drop_service','on_demand_service','appointment_service','rental_service','products_service'];
+            break;
+            default:
+            $typeArray =['products_service','pick_drop_service','on_demand_service','appointment_service'];
         }
         return $typeArray;
     }

@@ -1054,6 +1054,11 @@ class CustomerAuthController extends FrontController
                 VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
             }
         }
+        if($request->has('selectedCategories')){
+            foreach($request->selectedCategories as $category_id){
+                VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
+            }
+        }
         return response()->json([
             'status' => 'success',
             'message' => 'Vendor created Successfully!',

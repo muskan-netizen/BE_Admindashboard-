@@ -130,6 +130,9 @@ class WebStylingController extends BaseController{
             if($request->has('favicon')){
                 $client_preferences->favicon = Storage::disk('s3')->put('favicon', $request->favicon, 'public');
             }
+            if($request->has('sign_up_image')){
+                $client_preferences->signup_image = Storage::disk('s3')->put('favicon', $request->sign_up_image, 'public');
+            }
             // if($request->has('deliveryIcon')){
             //     $client_preferences->deliveryicon = Storage::disk('s3')->put('deliveryIcon', $request->deliveryIcon, 'public');
             // }
