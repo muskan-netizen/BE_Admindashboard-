@@ -1436,6 +1436,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </span>
                   </div>
                </div>
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                     <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Show map on search screen')}}<small class="d-block pr-5">{{__("Enable to show activate vendor's in map-view on search screen.")}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="map_on_search_screen" id="map_on_search_screen" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->map_on_search_screen == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
                </div>
             </div>
          </form>
