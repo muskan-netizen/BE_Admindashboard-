@@ -154,7 +154,7 @@ padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .tip_radio:checked+.tip_label {background: var(--theme-deafult);box-shadow: 0 0 5px var(--theme-deafult);}
 .tip_radio:checked+.tip_label h5, .tip_radio:checked+.tip_label p {color: #fff;}
 
-.al_body_template_four .text-danger { font-size: 16px;}
+.al_body_template_four .text-danger {font-size: 16px;}
 .al_body_template_four .clproduct_cart_order_form.btn.btn-solid {padding: 8px 0px;font-size: 12px;}
 .al_body_template_two .shoping_cart .alFourTemplateCartPage #product_faq_dev_42 .btn-product-order-form-div button {
 font-size: 12px;padding: 6.7px 10px;}
