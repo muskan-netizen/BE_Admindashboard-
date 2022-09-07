@@ -111,12 +111,14 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
                         <h4>Showing Results for "{{$keyword}}"</h4>
                         <div class="displayProducts">
                             <div class="product-wrapper-grid">
+                                @if($vendorMapView == 1)
                                 <div class="googleMapArea col-md-12 p-0">
                                     <!-- <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13720.904154980397!2d76.81441854999998!3d30.71204525!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1657101273720!5m2!1sen!2sin" width="100%" height="550" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> -->
                                     <div id="vendor-map-container">
                                         <div id="vendor-map" class="w-100" style="height:400px"></div>
                                     </div>
                                 </div>
+                                @endif
                                 <div class="row margin-res">
                                     @if(!empty($listData))
                                     @foreach($listData as $key => $data)

@@ -78,6 +78,18 @@
                 transform: rotate(1turn);
             }
         }
+        /* NO BORDER SPINNER */
+.nb-spinner {
+  width: 75px;
+  height: 75px;
+  margin: 0;
+  background: transparent;
+  border-top: 4px solid #009688;
+  border-right: 4px solid transparent;
+  border-radius: 50%;
+  -webkit-animation: 1s spin linear infinite;
+  animation: 1s spin linear infinite;
+}
 
     </style>
 @endsection
@@ -119,10 +131,10 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-3 col-xl-3">
+            <div class="col-lg-4 col-xl-3">
                 @include('backend.vendor.show-md-3')
             </div>
-            <div class="col-lg-9 col-xl-9">
+            <div class="col-lg-8 col-xl-9">
                 <div class="">
                     <ul class="nav nav-pills navtab-bg nav-justified">
                         <li class="nav-item">
@@ -226,10 +238,10 @@
                         <div class="tab-pane {{ $tab == 'catalog' ? 'active show' : '' }}" id="catalog">
                             <div class="card-box">
                                 <div class="row">
-                                    <div class="col-4">
+                                    <div class="col-2">
                                         <h4 class="mb-0"> {{ __('Catalog') }}</h4>
                                     </div>
-                                    <div class="col-8 d-flex align-items-center justify-content-end mb-3">
+                                    <div class="col-10 d-flex align-items-center justify-content-end mb-3">
 
                                             <div class="vendor-search">
                                                 <input class="form-control" id="vendor_search" type="search" placeholder="Product Search" aria-controls="vendor_product_table">
@@ -350,6 +362,9 @@
                                                     @endforeach
                                                 </tbody> -->
                                             </table>
+                                        </div>
+                                        <div style="display: flex;justify-content: center;">
+                                            <div class="nb-spinner"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -846,6 +861,13 @@
 
 
     <script type="text/javascript">
+     $( document ).ajaxStart(function() {
+            $( ".nb-spinner" ).show();
+        });
+
+        $( document ).ajaxComplete(function() {
+            $( ".nb-spinner" ).hide();
+        });
         $(".all-product_check").click(function() {
             if ($(this).is(':checked')) {
                 $("#action_product_button").css("display", "block");
@@ -1247,7 +1269,7 @@
                 "responsive": true,
                 "scrollX": true,
                 "destroy": true,
-                "processing": true,
+                // "processing": true,
                 "serverSide": true,
                 "iDisplayLength": 25,
                 "lengthChange" : false,
@@ -1260,7 +1282,7 @@
                             paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },
                             searchPlaceholder: "{{__('Search Product')}}",
                             // 'loadingRecords': '&nbsp;',
-                            'processing': '<div class="spinner"></div>'
+                            // 'processing': '<div class="spinner"></div>'
                 },
                 drawCallback: function () {
                     $(".dataTables_paginate > .pagination").addClass("pagination-rounded");

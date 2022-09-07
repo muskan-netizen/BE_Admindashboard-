@@ -1276,7 +1276,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div> --}}
                   <div class="col-md-4">
-                     <div class="form-group d-flex justify-content-between mb-3">
+                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                         <label for="product_order_form" class="mr-2 mb-0">{{$nomenclatureProductOrderForm}}<small class="d-block pr-5">{{__('Add a Product Order form. Create Dynamic questions per product.')}}</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="product_order_form" id="product_order_form" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->product_order_form == '1')) checked='checked' @endif>
                      </span>
@@ -1435,6 +1435,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                      <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Stop Order Acceptance')}}<small class="d-block pr-5">{{__('Activate to display a busy message to customers and stop accepting orders.')}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="stop_order_acceptance_for_users" id="stop_order_acceptance_for_users" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->stop_order_acceptance_for_users == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                     <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Show map on search screen')}}<small class="d-block pr-5">{{__("Enable to show activate vendor's in map-view on search screen.")}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="map_on_search_screen" id="map_on_search_screen" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->map_on_search_screen == '1')) checked='checked' @endif>
                      </span>
                   </div>
                </div>
