@@ -1045,12 +1045,8 @@ body .tagsinput .tag {
     max-width: 70%;
   }
 }
-
-@media (min-width: 1300px) (max-width: 1400px) {
-  #cardCollpase4 svg {
-    padding-left: 0;
-    margin-left: -36px;
-  }
+@media (min-width: 1300px) and (max-width: 1400px) {
+#cardCollpase4 svg {padding-left: 0;margin-left: -36px;}
 }
 
 @media (max-width: 1366px) {
@@ -4491,6 +4487,10 @@ body[dir="rtl"] .dataTables_filter {
   max-width: 260px;
 }
 
+.web-style .alSignUpImageControal .dropify-wrapper.has-preview {
+  width: 100%;
+  max-width: 100%;
+}
 @media(max-width: 1400px) {
   body .content-page .btn.btn-info {
     font-size: 12px;
