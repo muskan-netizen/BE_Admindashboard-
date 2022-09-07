@@ -1239,6 +1239,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   @endif
+                  
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                         <label for="subscription_tab_taxi" class="mr-2 mb-0">{{ __("Subscription Tab") }}<small class="d-block pr-5">Enable subscription tab for taxi/cab.</small></label>
@@ -1286,6 +1287,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                         <label for="gifting" class="mr-2 mb-0">{{__('Gifting')}}<small class="d-block pr-5">Enable option to mark an Order to be gift wrapped.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="gifting" id="gifting" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->gifting == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                        <label for="pickup_delivery_service_area" class="mr-2 mb-0">{{ __("Pickup Delivery Service Area") }}<small class="d-block pr-5">{{ __('Option to show Pickup Delivery Vendors based on First location restricted to Service Areas only') }}</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="pickup_delivery_service_area" id="pickup_delivery_service_area" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->pickup_delivery_service_area == '1')) checked='checked' @endif>
                      </span>
                      </div>
                   </div>
