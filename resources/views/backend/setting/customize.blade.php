@@ -231,7 +231,11 @@
     <div class="row">
         <div class="col-12">
         <div class="page-title-box">
+            @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
             <h4 class="page-title text-uppercase">{{ __("Vendor Type") }}</h4>
+            @else
+            <h4 class="page-title text-uppercase">{{ __("Configuration") }}</h4>
+            @endif
         </div>
         </div>
     </div>

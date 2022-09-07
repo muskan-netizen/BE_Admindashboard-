@@ -9,6 +9,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 @endphp
 
 <div class="container-fluid custom-toggle al">
+   @if($client_preference_detail->business_type != 'taxi')
    <div class="row">
       <div class="col-12">
          <!-- Configurations start -->
@@ -17,6 +18,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </div><!-- Configurations end -->
       </div>
    </div>
+   @endif
 
    <div class="row">
       <div class="col-12">
