@@ -27,7 +27,7 @@ class TypeSeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'service_type' => 'pick_drop_service',
+                'service_type' => 'pick_drop_parent_service',
                 'sequence' => 7,
                 'title' => 'Pickup/Parent',
                 'image' => 'pickup_delivery.png',

@@ -11,7 +11,13 @@
 }
 
 
-
+.product_appointment_spa h4.header-title {
+    display: inline-block;
+}
+.product_appointment_spa p {
+    display: inline-block;
+    float: right;
+}
 
 
 
@@ -122,15 +128,17 @@ $timezone = Auth::user()->timezone;
                                     <p>#{{$order->order_number}}</p>
                                 </div>
                             </div>
-                             @if(isset($order->vendors) && empty($order->vendors->first()->dispatch_traking_url) && ($order->vendors->first()->delivery_fee > 0) && ($order->vendors->first()->order_status_option_id >= 2) && $order->vendors->first()->shipping_delivery_type=='D')
-                             <div class='inner-div d-inline-block' style="float: right;">
-                                <form method='POST' action='"+full.destroy_url+"'>
+                            @if(!in_array($order->luxury_option_id, [6,8]) )
+                                @if(isset($order->vendors) && empty($order->vendors->first()->dispatch_traking_url) && ($order->vendors->first()->delivery_fee > 0) && ($order->vendors->first()->order_status_option_id >= 2) && $order->vendors->first()->shipping_delivery_type=='D')
+                                <div class='inner-div d-inline-block' style="float: right;">
+                                    <form method='POST' action='"+full.destroy_url+"'>
 
-                                        <button type='button' class='btn btn-danger' id="create_dispatch_request"  data-order_vendor_id="{{$order->vendors->first()->id}}">{{__('Create Dispatch Request')}}</i>
-                                        </button>
+                                            <button type='button' class='btn btn-danger' id="create_dispatch_request"  data-order_vendor_id="{{$order->vendors->first()->id}}">{{__('Create Dispatch Request')}}</i>
+                                            </button>
 
-                                </form>
-                             </div>
+                                    </form>
+                                </div>
+                                @endif
                             @endif
 
                             @if(isset($order->vendors) && isset($order->vendors->first()->dispatch_traking_url) && $order->vendors->first()->dispatch_traking_url !=null && $order->vendors->first()->dispatch_traking_url !=0 )
@@ -287,7 +295,7 @@ $timezone = Auth::user()->timezone;
             </div>
             <div class="col-lg-8 mb-3">
                 <div class="card mb-0 h-100">
-                    <div class="card-body">
+                    <div class="card-body product_appointment_spa">
                         <h4 class="header-title mb-3">
                             <div class="form-ul mb-1">
 
@@ -304,6 +312,9 @@ $timezone = Auth::user()->timezone;
                             @foreach($order->vendors as $vendor)
                                 <p>{{ $vendor->dineInTableName }} | Category : {{ $vendor->dineInTableCategory }} | Capacity : {{ $vendor->dineInTableCapacity }}</p>
                             @endforeach
+                        @endif
+                        @if($order->product_schedule_type == 'schedule')
+                            <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('*Instant/Scheduled Product Wise') }}</span> </p>
                         @endif
 
                       
@@ -333,7 +344,7 @@ $timezone = Auth::user()->timezone;
                                         $taxable_amount = $vendor->taxable_amount;
                                         $vendor_service_fee = $vendor->service_fee_percentage_amount;
                                         $container_charges = $vendor->total_container_charges;
-                                        $sub_total += $product->actual_price;
+                                        $sub_total += $product->total_amount;
                                         @endphp
 
                                     <tr>
@@ -397,7 +408,7 @@ $timezone = Auth::user()->timezone;
                                     <tr class="route">
                                         <th scope="row" colspan="4" class="text-end">
                                             <div class="outer_div p-2">
-                                                <h6>Disppatcher Routes</h6>
+                                                <h6>{{ __('Dispatcher Routes') }}</h6>
                                                 <table class="wp-table w-100">
                                                     <tr>
                                                         <th width="20%">#</th>
@@ -408,7 +419,7 @@ $timezone = Auth::user()->timezone;
                                                     <tr>
                                                         <td>{{ $key+1 }}</td>
                                                         <td><a href="{{ $route->dispatch_traking_url }}" target="_blank">{{ __('Track') }}</a></td>
-                                                        <td>{{ $route->DispatchStatus->first() ? $route->DispatchStatus[0]->status_data : 'na'  }}</td>
+                                                        <td>{{ $route->DispatchStatus->first() ? ( $route->DispatchStatus[0]->status_data['driver_status'] ?? '' ) : 'na'  }}</td>
                                                     </tr>
                                                     @endforeach
                                                 </table>
@@ -654,6 +665,7 @@ $timezone = Auth::user()->timezone;
 
                     <div class="card-body">
                         <h4 class="header-title mb-3 ">{{ __('Comment/Schedule Information') }}</h4>
+                       
                         @if($order->comment_for_pickup_driver)
                           <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Comment for Pickup Driver') }} :</span> {{ $order->comment_for_pickup_driver ?? ''}}</p>
                         @endif
@@ -665,7 +677,7 @@ $timezone = Auth::user()->timezone;
                         @if($order->comment_for_vendor)
                           <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Comment for Vendor') }} :</span> {{ $order->comment_for_vendor ?? ''}}</p>
                         @endif
-
+                        
                         @if($order->schedule_pickup)
                           <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Schedule Pickup') }} :</span> {{dateTimeInUserTimeZone($order->schedule_pickup, $timezone) .' '.(($order->scheduled_slot)?', Slot : '.$order->scheduled_slot:'')}} </p>
                         @endif

@@ -136,6 +136,7 @@ class SearchController extends FrontController{
         $language_id = Session::get('customerLanguage');
         $preferences = Session::get('preferences');
         $vendorType = Session::get('vendorType');
+        $vendorMapView = '';
         $vendors = Vendor::select('id', 'name', 'logo','slug','latitude','longitude','address','dial_code','phone_no')->where($vendorType,1);
         if($preferences){
             if( (empty($latitude)) && (empty($longitude)) && (empty($selectedAddress)) ){
@@ -155,6 +156,10 @@ class SearchController extends FrontController{
                     });
                 }
             }
+            if(($preferences->map_on_search_screen == 1)){
+                $vendorMapView = 1;
+            }
+            
         }
         $vendors = $vendors->where(function ($q) use ($keyword) {
                         $q->where('name', 'LIKE', "%$keyword%");
@@ -222,6 +227,6 @@ class SearchController extends FrontController{
                 }
             }
         }
-        return view('frontend.searchResults')->with(['listData'=>$response, 'vendorLatLong'=>$vendorLatLong, 'navCategories'=>$navCategories, 'keyword'=>$keyword]);
+        return view('frontend.searchResults')->with(['listData'=>$response, 'vendorMapView'=>$vendorMapView, 'vendorLatLong'=>$vendorLatLong, 'navCategories'=>$navCategories, 'keyword'=>$keyword]);
     }
 }

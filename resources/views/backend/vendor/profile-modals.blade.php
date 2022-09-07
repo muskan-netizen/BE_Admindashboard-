@@ -42,7 +42,19 @@
                             <div class="">
                                 {!! Form::label('title', __('Slot Type'),['class' => 'control-label']) !!}
                             </div>
-                            @if($vendor->dine_in == 1)
+                            @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                                @php
+                                    $clientVendorTypes = $vendor_typ_key.'_check';
+                                    $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                                @endphp
+                                @if(($client_preferences->$clientVendorTypes == 1) && ($vendor->$VendorTypesName == 1) )
+                                    <div class="checkbox checkbox-success form-check pl-1 mb-1">
+                                        <input name="slot_type[]" type="checkbox" id="{{ $VendorTypesName }}" checked value="{{ $VendorTypesName }}">
+                                        <label for="{{ $VendorTypesName }}">{{getDynamicTypeName($vendor_typ_value)}} </label>
+                                    </div>
+                                @endif
+                            @endforeach
+                            {{-- @if($vendor->dine_in == 1)
                                 <div class="checkbox checkbox-success form-check pl-0 mb-1"  @if($client_preferences->dinein_check == 0) style="display: none;" @endif>
                                     <input name="slot_type[]" type="checkbox" id="dine_in" checked value="dine_in">
                                     <label for="dine_in"> {{ __("Dine in") }}</label>
@@ -59,7 +71,7 @@
                                     <input name="slot_type[]" type="checkbox" id="delivery" checked value="delivery">
                                     <label for="delivery"> {{ __("Delivery") }} </label>
                                 </div>
-                            @endif
+                            @endif --}}
                         </div>
                     </div>
                     <div class="row mb-2 weekDays">
@@ -204,9 +216,6 @@
                             {!! Form::label('title', __('Slot Type'),['class' => 'control-label']) !!}
                             </div>
                          
-                            @php
-                            $typeArray = getCategoryTypes();
-                            @endphp
                             @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                                 @php
                                     $clientVendorTypes = $vendor_typ_key.'_check';
