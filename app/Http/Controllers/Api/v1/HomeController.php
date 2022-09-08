@@ -397,6 +397,7 @@ class HomeController extends BaseController
                 $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
                 $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
                 $image_url = $new_product_detail->media->first() && !is_null($new_product_detail->media->first()->image) ? $new_product_detail->media->first()->image->path['image_fit'] . '600/600' . $new_product_detail->media->first()->image->path['image_path'] : '';
+                $vprice1 = (isset($new_product_detail->variant->first()->price)?$new_product_detail->variant->first()->price * $multiply:0);
                 $new_products[] = array(
                     'image_url' => $image_url,
                     'sku' => $new_product_detail->sku,
@@ -405,7 +406,7 @@ class HomeController extends BaseController
                     'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
                     'inquiry_only' => $new_product_detail->inquiry_only,
                     'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
-                    'price' => decimal_format($new_product_detail->variant->first()->price * $multiply),
+                    'price' => decimal_format($vprice1),
                     'category' => ($new_product_detail->category->categoryDetail->translation->first()) ? $new_product_detail->category->categoryDetail->translation->first()->name : $new_product_detail->category->categoryDetail->slug
                 );
             }
@@ -413,6 +414,7 @@ class HomeController extends BaseController
                 $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
                 $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
                 $image_url = $feature_product_detail->media->first() &&  !is_null($feature_product_detail->media->first()->image)? $feature_product_detail->media->first()->image->path['image_fit'] . '600/600' . $feature_product_detail->media->first()->image->path['image_path'] : '';
+                $vprice = (isset($feature_product_detail->variant->first()->price)?$feature_product_detail->variant->first()->price * $multiply:0);
                 $feature_products[] = array(
                     'image_url' => $image_url,
                     'sku' => $feature_product_detail->sku,
@@ -421,7 +423,7 @@ class HomeController extends BaseController
                     'averageRating' => number_format($feature_product_detail->averageRating, 1, '.', ''),
                     'inquiry_only' => $feature_product_detail->inquiry_only,
                     'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
-                    'price' => decimal_format($feature_product_detail->variant->first()->price * $multiply),
+                    'price' => decimal_format($vprice),
                     'category' => ($feature_product_detail->category->categoryDetail->translation->first()) ? $feature_product_detail->category->categoryDetail->translation->first()->name : $feature_product_detail->category->categoryDetail->slug
                 );
             }
