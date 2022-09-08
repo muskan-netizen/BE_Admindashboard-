@@ -98,4 +98,16 @@ body[dir=rtl] .slick-prev{
 
 
 
+.al_body_template_four .al_addCart li.onhover-div a span#cart_qty_span {
+    background-color: #ab180c;
+    display: inline-block;
+    width: 20px;
+    border-radius: 50%;
+    height: 20px;
+    margin: 0px;
+    padding: 0px;
+    color: #fff;
+}
+
+
 

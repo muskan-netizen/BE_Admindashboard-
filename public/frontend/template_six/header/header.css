@@ -123,7 +123,7 @@ scrollbar-width: none;-ms-overflow-style: none}
 a.view-cart{font-size: 14px;}
 .ellips{text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 .supplier-rating{width: 100%;padding: 0 15px;min-height: 120px;}
-.suppliers-slider-vendors .supplier-rating{min-height: auto;}
+.product-m .supplier-rating{min-height: auto;}
 div#dark-light-btn-toggle{display: none;}
 .al_body_template_six span.rating-number{position: absolute;top: 5px;right: 10px;padding: 3px 10px;background-color: var(--theme-deafult);color: var(--top-header-color); border-radius: 30px;}
 .al_body_template_six .suppliers-box{position: relative;}

@@ -124,41 +124,24 @@
                                                 </div>
                                                 @endif    
                                         @endforeach
-                                       
-                                        {{-- <div class="col-md-4 mb-3">
-                                            <div class="mb-0">
-                                                <label>{{ __("Delivery Icon") }}</label>
-                                                <input type="file" accept="image/*"  data-default-file="{{$client_preferences->deliveryicon ? $client_preferences->deliveryicon['proxy_url'].'600/400'.$client_preferences->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="deliveryIcon" class="dropify ss_form_submit" id="image" />
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong></strong>
-                                                </span>
-                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-4 mb-3">
-                                            <div class="mb-0">
-                                                <label>{{ __("Dine-In Icon") }}</label>
-                                                <input type="file" accept="image/*" data-default-file="{{$client_preferences->dineinicon ? $client_preferences->dineinicon['proxy_url'].'600/400'.$client_preferences->dineinicon['image_path'] : asset('images/al_custom1.png')}}" data-plugins="dropify" name="dineinIcon" class="dropify ss_form_submit" id="image" />
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong></strong>
-                                                </span>
-                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-4 mb-3">
-                                            <div class="mb-0">
-                                                <label>{{ __("Takeway Icon") }}</label>
-                                                <input type="file" accept="image/*" data-default-file="{{$client_preferences->takewayicon ? $client_preferences->takewayicon['proxy_url'].'600/400'.$client_preferences->takewayicon['image_path'] : asset('images/al_custom2.png')}}" data-plugins="dropify" name="takewayIcon" class="dropify ss_form_submit" id="image" />
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong></strong>
-                                                </span>
-                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
-                                            </div>
-                                        </div> --}}
-
                                     </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div  style="display:{{(($themeId==4 || $themeId==6)?'block':'none')}}" class="card changeIconOnTheme4">
+                            <div class="card-body alSignUpImageControal">
+                                {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <div class="mb-0">
+                                            <label>Signup Image</label>
+                                            <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$VendorTypesName ? $client_preferences->$VendorTypesName['proxy_url'].'600/400'.$client_preferences->$VendorTypesName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{ $VendorTypesName }}" class="dropify ss_form_submit" id="image" />
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong></strong>
+                                            </span>
+                                            <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 1920x768</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -966,9 +949,17 @@ $(document).on('click', '.deletePickupSection', function() {
             success: function(response) {
                 if (response.status == 'success') {
                    if(response.theme == 3){
+                        $('.changeIconOnTheme4').hide();
                        $('.changeIcon').show();
+                   } else if(response.theme == 4){
+                       $('.changeIcon').hide();
+                       $('.changeIconOnTheme4').show();
+                   } else if(response.theme == 6){
+                       $('.changeIcon').hide();
+                       $('.changeIconOnTheme4').show();
                    }else{
-                    $('.changeIcon').hide();
+                        $('.changeIcon').hide();
+                        $('.changeIconOnTheme4').hide();
                    }
                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                 }

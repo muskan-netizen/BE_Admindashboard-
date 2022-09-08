@@ -81,6 +81,7 @@ class VendorController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function vendorProducts(Request $request, $domain = '', $slug = 0){
+       
         if($request->ajax())
         {
             $returnHTML = $this->vendorFilters($request,'',$slug);
@@ -383,22 +384,28 @@ class VendorController extends FrontController
         $navCategories = $this->categoryNav($langId);
         $vendorIds[] = $vendor->id;
         $np = $this->productList($vendorIds, $langId, $curId, 'is_new');
+
+        
         foreach($np as $new){
             $new->translation_title = (!empty($new->translation->first())) ? $new->translation->first()->title : $new->sku;
             $new->variant_multiplier = (!empty($new->variant->first())) ? $new->variant->first()->multiplier : 1;
             $new->variant_price = (!empty($new->variant->first())) ? $new->variant->first()->price : 0;
         }
+
         $newProducts = ($np->count() > 0) ? array_chunk($np->toArray(), ceil(count($np) / 2)) : $np;
         if(!empty($slug2) && ($vendor->vendor_templete_id == 2)){
             $vendor->vendor_templete_id = '';
         }
+        
         $listData = $this->listData($langId, $vendor->id, $vendor->vendor_templete_id, $slug2,$tag_id);
         $inqury_count = 0;
+
         foreach($listData as $ld){
             if($ld->inquiry_only == 1){
                 $inqury_count++;
             }
         }
+        
         if($listData->count() == $inqury_count){
             $show_range = 0;
         }
@@ -414,9 +421,9 @@ class VendorController extends FrontController
         }else{
             $page = 'products';
         }
+
         // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
         $range_products = Product::join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
-
 
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             if(Session::has('vendors')){

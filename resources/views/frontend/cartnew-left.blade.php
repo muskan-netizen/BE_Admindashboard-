@@ -10,15 +10,16 @@
     }
 @endphp
 <div class="row  mb-sm-2 mb-1">
-    @if($action != 'dine_in' && $action != 'takeaway')
+  
     <div class="col-lg-12 d-flex justify-content-between align-items-center" id="add_new_address_btn">
         <h4 class="page-title m-0">{{ __($label)  }} {{ ($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</h4>
-        <a class="add-address ml-auto" href="#add_new_address_form" data-toggle="modal" data-target="#add_new_address_form_modal">
-            <i class="fa fa-plus mr-1" aria-hidden="true"></i>
-            <!-- {{__('Add New') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address')}} -->
-        </a>
+        @if(!in_array($action , ['dine_in','takeaway','on_demand','appointment']))
+            <a class="add-address ml-auto" href="#add_new_address_form" data-toggle="modal" data-target="#add_new_address_form_modal">
+                <i class="fa fa-plus mr-1" aria-hidden="true"></i>
+                <!-- {{__('Add New') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address')}} -->
+            </a>
+        @endif
     </div>
-    @endif
 </div>
 @if($action != 'delivery' && $action != 'on_demand' )
     @if(isset($vendor_details['vendor_address']))

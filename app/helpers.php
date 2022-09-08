@@ -731,87 +731,89 @@ if (!function_exists('findSlot')) {
         }
     }
 }
+if (!function_exists('findSlotNew')) {
+    function findSlotNew($myDate,$vid,$type=0)
+    {
+            $slots = showSlot($myDate,$vid,'delivery', $type);
+                if(count((array)$slots) == 0){
+                    $myDate  = date('Y-m-d',strtotime('+1 day')); 
+                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                }
+            
+                if(count((array)$slots) == 0){
+                    $myDate  = date('Y-m-d',strtotime('+2 day')); 
+                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                }
 
-function findSlotNew($myDate,$vid,$type=0)
-{
-        $slots = showSlot($myDate,$vid,'delivery', $type);
-            if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+1 day')); 
-                $slots = showSlot($myDate,$vid,'delivery', $type);
-            }
-           
-            if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+2 day')); 
-                $slots = showSlot($myDate,$vid,'delivery', $type);
-            }
-
-            if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+3 day')); 
-                $slots = showSlot($myDate,$vid,'delivery', $type);
-            }
-            if(isset($slots)){
-                $slots = $slots;
-                return array('mydate'=>$myDate,'slots'=>$slots);
-            }else{
-                return array('mydate'=>'','slots'=>[]);
-            }
+                if(count((array)$slots) == 0){
+                    $myDate  = date('Y-m-d',strtotime('+3 day')); 
+                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                }
+                if(isset($slots)){
+                    $slots = $slots;
+                    return array('mydate'=>$myDate,'slots'=>$slots);
+                }else{
+                    return array('mydate'=>'','slots'=>[]);
+                }
+    }
 }
-
-function GoogleDistanceMatrix($latitude, $longitude)
-{
-    $send   = [];
-    $client = ClientPreference::where('id', 1)->first();
-    $lengths = count($latitude) - 1;
-    $value = [];
+if (!function_exists('GoogleDistanceMatrix')) {
+    function GoogleDistanceMatrix($latitude, $longitude)
+    {
+        $send   = [];
+        $client = ClientPreference::where('id', 1)->first();
+        $lengths = count($latitude) - 1;
+        $value = [];
+        
+        for ($i = 1; $i<=$lengths; $i++) {
+            $count  = 0;
+            $count1 = 1;
+            $ch = curl_init();
+            $headers = array('Accept: application/json',
+                    'Content-Type: application/json',
+                    );
+            $url =  'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='.$latitude[$count].','.$longitude[$count].'&destinations='.$latitude[$count1].','.$longitude[$count1].'&key='.$client->map_key.'';
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $response = curl_exec($ch);
+            $result = json_decode($response);
+            curl_close($ch); // Close the connection
+            $new =   $result;
+        // dd($result);
+            array_push($value, $result->rows[0]->elements);
+            $count++;
+            $count1++;
+        }
     
-    for ($i = 1; $i<=$lengths; $i++) {
-        $count  = 0;
-        $count1 = 1;
-        $ch = curl_init();
-        $headers = array('Accept: application/json',
-                'Content-Type: application/json',
-                );
-         $url =  'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='.$latitude[$count].','.$longitude[$count].'&destinations='.$latitude[$count1].','.$longitude[$count1].'&key='.$client->map_key.'';
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $response = curl_exec($ch);
-        $result = json_decode($response);
-        curl_close($ch); // Close the connection
-        $new =   $result;
-       // dd($result);
-        array_push($value, $result->rows[0]->elements);
-        $count++;
-        $count1++;
-    }
-  
-    if (isset($value)) {
-        $totalDistance = 0;
-        $totalDuration = 0;
-        foreach ($value as $item) {
-            //dd($item);
-            $totalDistance = $totalDistance + $item[0]->distance->value;
-            $totalDuration = $totalDuration + $item[0]->duration->value;
-        }
-       
-       
-        if ($client->distance_unit == 'metric') {
-            $send['distance'] = round($totalDistance/1000, 2);      //km
-        } else {
-            $send['distance'] = round($totalDistance/1609.34, 2);  //mile
-        }
-        //
-        $newvalue = round($totalDuration/60, 2);
-        $whole = floor($newvalue);
-        $fraction = $newvalue - $whole;
+        if (isset($value)) {
+            $totalDistance = 0;
+            $totalDuration = 0;
+            foreach ($value as $item) {
+                //dd($item);
+                $totalDistance = $totalDistance + $item[0]->distance->value;
+                $totalDuration = $totalDuration + $item[0]->duration->value;
+            }
+        
+        
+            if ($client->distance_unit == 'metric') {
+                $send['distance'] = round($totalDistance/1000, 2);      //km
+            } else {
+                $send['distance'] = round($totalDistance/1609.34, 2);  //mile
+            }
+            //
+            $newvalue = round($totalDuration/60, 2);
+            $whole = floor($newvalue);
+            $fraction = $newvalue - $whole;
 
-        if ($fraction >= 0.60) {
-            $send['duration'] = $whole + 1;
-        } else {
-            $send['duration'] = $whole;
+            if ($fraction >= 0.60) {
+                $send['duration'] = $whole + 1;
+            } else {
+                $send['duration'] = $whole;
+            }
         }
+        return $send;
     }
-    return $send;
 }
 function getDynamicMail(){
     $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
@@ -1002,6 +1004,38 @@ if (!function_exists('getCategoryTypes')) {
             break;
             default:
             $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];
+        }
+        return $typeArray;
+    }
+}
+if (!function_exists('getCategoryTypesServices')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getCategoryTypesServices() {
+        $client_preference = ClientPreference::select('business_type')->first();
+        switch($client_preference->business_type){
+            case "taxi":
+                $typeArray =['pick_drop_service'];
+            break;
+            case "food_grocery_ecommerce":
+                $typeArray =['products_service'];
+            break;
+            case "home_service":
+                $typeArray =['on_demand_service','appointment_service'];
+            break;
+            case "laundry":
+                $typeArray =['laundry_service','pick_drop_service'];
+            break;
+            case "rental":
+                $typeArray =['rental_service'];
+            break;
+        
+            case "super_app":
+                $typeArray =['pick_drop_service','on_demand_service','appointment_service','rental_service','products_service'];
+            break;
+            default:
+            $typeArray =['products_service','pick_drop_service','on_demand_service','appointment_service'];
         }
         return $typeArray;
     }

@@ -279,9 +279,10 @@ class OrderController extends FrontController
         $currency_id = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
-        $order = Order::with(['products.pvariant.vset', 'products.pvariant.translation_one', 'address'])->findOrfail($request->order_id);
-        
-        $langId = Session::get('customerLanguage');
+        $order = Order::with(['products.vendor','products.pvariant.vset', 'products.pvariant.translation' => function ($q) use ($langId) {
+            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+            $q->where('language_id', $langId);}, 'address'])->findOrfail($request->order_id);
+
         $fixedFeeNomenclatures = $this->fixedFee($langId);
         $order_vendors =  OrderVendor::where('order_id', $request->order_id)->whereNotNull('dispatch_traking_url')->get();
         if (count($order_vendors)) {
@@ -295,8 +296,7 @@ class OrderController extends FrontController
             $total_other_taxes+=(float)$row;
         }
         $order->total_other_taxes_amount=$total_other_taxes;
-        //pr($order->toArray());
-
+        // dd($order);
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFeeNomenclatures'));
     }
@@ -931,7 +931,7 @@ class OrderController extends FrontController
                     
                     $OrderVendor->schedule_slot = !empty($vendor_cart_product->schedule_slot)? $vendor_cart_product->schedule_slot : '';
                     $OrderVendor->scheduled_date_time = !empty($vendor_cart_product->scheduled_date_time)? $vendor_cart_product->scheduled_date_time : '';
-                    $deliver_Vendor_type = ['delivery','appointment']; // pass vendor type for delivery option
+                    $deliver_Vendor_type = ['delivery','appointment','on_demand']; // pass vendor type for delivery option
                     if ( in_array($action, $deliver_Vendor_type) ) {
                         $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                         if (((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) || isset($deliver_fee_data)) {

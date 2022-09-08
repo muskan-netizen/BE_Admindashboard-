@@ -96,7 +96,7 @@ width: 100%;
 .al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
 
 
-.grn_popop-total_amt label{  font-size: 12px !important;}
+.grn_popop-total_amt label{  font-size: 12px !important;text-align:left;}
 
 .vendor_cart-check label {display: inline-block;}
 
@@ -154,7 +154,7 @@ padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .tip_radio:checked+.tip_label {background: var(--theme-deafult);box-shadow: 0 0 5px var(--theme-deafult);}
 .tip_radio:checked+.tip_label h5, .tip_radio:checked+.tip_label p {color: #fff;}
 
-.al_body_template_four .text-danger { font-size: 16px;}
+.al_body_template_four .text-danger {font-size: 16px;}
 .al_body_template_four .clproduct_cart_order_form.btn.btn-solid {padding: 8px 0px;font-size: 12px;}
 .al_body_template_two .shoping_cart .alFourTemplateCartPage #product_faq_dev_42 .btn-product-order-form-div button {
 font-size: 12px;padding: 6.7px 10px;}
@@ -184,6 +184,23 @@ right: 20px;
 .product_title_add span {
     font-size: 12px;
 }
+
+}
+
+/*cart page responsive css */
+
+
+@media only screen and (min-width:1367px) and (max-width:1429px){
+.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;height:auto;}   
+}
+@media only screen and (max-width:1366px){
+.cart-design .alFourTemplateCartButtons a.shoping i{font-size:17px;vertical-align: middle;}
+.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;vertical-align: middle;text-align:left;height:auto;}
+}
+
+@media (min-width:991px) and (max-width:1200px){
+.cart-design .alFourTemplateCartButtons a.btn.shoping {font-size:10px;display: block;width: 100%;text-align: left;height:auto;}
+.cart-design .alFourTemplateCartButtons a.shoping i{font-size:10px;vertical-align: middle;}
 }
 </style>
 
@@ -1702,13 +1719,16 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     function checkSlotOrders()
     {
         var url = "{{route('checkSlotOrders')}}"
+        var schedule_datetime = $('#schedule_datetime').val();
         var schedule_pickup_datetime = $('#pickup_schedule_datetime').val();
         var schedule_pickup_slot = $('#schedule_pickup_slot').val();
         var vendor_id = $('#vendor_id').val();
+
         $.ajax({
             type: "GET",
             data: {
                 "schedule_pickup_datetime": schedule_pickup_datetime,
+                "schedule_datetime": schedule_datetime,
                 "schedule_pickup_slot":     schedule_pickup_slot,
                 "vendor_id":                vendor_id,
             },
@@ -1717,6 +1737,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(output) {
+                console.log(output.orders_per_slot);
+                console.log(output.orderCount);
                 // Check if orderCount is greaten equal to orders_per_slot
                 if( (output.orderCount >= output.orders_per_slot) && (output.orders_per_slot != 0) ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
@@ -1764,7 +1786,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     // Check Slot Availability
     function checkSlotAvailability(obj)
     {
-       
+
         var url = "{{route('checkSlotOrders')}}"
         var schedule_datetime = $(obj).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
         var schedule_slot = $(obj).val();

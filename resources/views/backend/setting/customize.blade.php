@@ -238,7 +238,7 @@
     <div class="row col-spacing">
         <!--Vendor Type &  Distance to Time Calculator start -->
         <div class="col-lg-4 col-xl-3 mb-3">
-            @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
+            {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' ) --}}
             @php
                 $typeArray = getCategoryTypes();
             @endphp
@@ -269,7 +269,7 @@
                     </div>
                 </div>
             </form>
-            @endif
+            {{-- @endif --}}
         </div>
         <!--Vendor Type &  Distance to Time Calculator end -->
         
