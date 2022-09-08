@@ -402,10 +402,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     <% } %>
 </script>
 <div class="container-fluid order-page">
-    <div class="row d-flex align-items-center justify-content-between">
+    <div class="row ">
         <div class="col-md-12">
-            <div class="page-title-box dashboard_order_title mt-2">
-                <h4 class="page-title mr-3">{{ __('Orders') }}</h4>
+            <div class="page-title-box dashboard_order_title mt-2 d-flex align-items-center justify-content-between">
+                <h4 class="page-title">{{ __('Orders') }}</h4>
                 <div class="float-right">
                     <div class="row d-flex justify-content-between">
                         <div class="col-sm-4 mb-1">
