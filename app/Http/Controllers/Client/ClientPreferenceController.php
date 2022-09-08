@@ -90,6 +90,7 @@ class ClientPreferenceController extends BaseController{
         $reffer_by = "";
         $reffer_to = "";
         $cli_currs = [];
+        $laundry_teams = [];
         $client = Auth::user();
         $social_media_details = SocialMedia::get();
         $webTemplates = Template::where('for', '1')->get();
@@ -103,6 +104,11 @@ class ClientPreferenceController extends BaseController{
         $ClientPreference = ClientPreference::where('client_code', $client->code)
         // ->with('language', 'primarylang', 'domain', 'currency.currency', 'primary.currency')->select('client_code', 'theme_admin', 'distance_unit', 'date_format', 'time_format', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'verify_email', 'verify_phone', 'web_template_id', 'app_template_id', 'primary_color', 'secondary_color', 'reffered_by_amount', 'reffered_to_amount')
         ->first();
+        if(isset($ClientPreference) && $ClientPreference->need_laundry_service == '1') {
+            $laundry_teams = $this->getLaundryTeams();
+
+        }
+
         $preference = $ClientPreference ? $ClientPreference : new ClientPreference();
         $nomenclature_value = Nomenclature::first();
         foreach ($preference->currency as $value) {
@@ -138,7 +144,7 @@ class ClientPreferenceController extends BaseController{
                     ->where('client_languages.client_code', Auth::user()->code)
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
-        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting','staticDropoff'));
+        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting','staticDropoff','laundry_teams'));
     }
 
     public function referandearnUpdate(Request $request, $code){

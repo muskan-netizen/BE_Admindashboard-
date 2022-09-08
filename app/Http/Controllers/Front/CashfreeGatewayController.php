@@ -316,13 +316,13 @@ class CashfreeGatewayController extends FrontController
         // Notify cashfree that information has been received
         //dd('sad');
         
-        // \Log::info($request->all());
+         \Log::info($request->all());
 
         try{
             
             // \Log::info($request->txStatus);
             $response = $request->has('data') ? $request->data : [];
-            // \Log::info($response);
+             \Log::info($response);
             // \Log::info($response['payment']);
             
             if(!empty($response) && ($response['payment']['payment_status'] == 'SUCCESS')) {
@@ -454,8 +454,9 @@ class CashfreeGatewayController extends FrontController
         }
         catch(Exception $ex){
             \Log::info($ex->getMessage());
+            return response([],200);
         }
-        http_response_code(200);
+        return response([],200);
     }
 
     public function getPaymentURL(){
