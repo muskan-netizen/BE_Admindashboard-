@@ -6,7 +6,7 @@
 </style>
 @endsection
 @section('content')
-<div class="container-fluid" id="alRowBGColor">
+<div class="container-fluid" id="alCustomizePage">
     {{--<div class="row">
         <div class="col-12">
             <div class="page-title-box">
@@ -127,11 +127,11 @@
         </div>
         <!-- Date & Time sec end -->
         <div class="col-lg-4 col-xl-3 mb-3">
-            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
                 <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
                 @csrf
                 <input type="hidden" name="send_to" id="send_to" value="customize">
-                <div class="card-box mb-2">
+                <div class="card-box mb-2 h-100">
                     <div class="d-flex align-items-center justify-content-between">
                     <h4 class="header-title mb-0">{{__('Delivery Time Estimator')}}</h4>
                     <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
@@ -155,7 +155,7 @@
 
         </div>
         <!-- Localization start -->
-        <div class="col-lg-5 col-xl-6 mb-3">
+        <div class="col-lg-4 col-xl-6 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
                 <div class="card-box mb-0 h-100 pb-0">
@@ -237,16 +237,16 @@
     </div>
     <div class="row col-spacing">
         <!--Vendor Type &  Distance to Time Calculator start -->
-        <div class="col-lg-4 col-xl-3 mb-3">
+        <div class="col-lg-4 mb-3">
             @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
             @php
                 $typeArray = getCategoryTypes();
             @endphp
-            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}">
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
                 <input type="hidden" name="send_to" id="send_to" value="customize">
                 <input type="hidden" name="verify_vendor_type" id="verify_vendor_type" value="1">
-                <div class="card-box mb-2">
+                <div class="card-box mb-2 h-100">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
@@ -274,119 +274,119 @@
         <!--Vendor Type &  Distance to Time Calculator end -->
 
         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry' && $client_preference_detail->on_demand_check == 1)
-            <div class="col-lg-3 col-md-6 mb-3">
-               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
-                  @csrf
-               <!-- On Demand Services section start -->
-               <input type="hidden" name="send_to" id="send_to" value="customize">
-               <div class="card-box h-100">
-                  <div class="d-flex align-items-center justify-content-between mb-2">
-                     <h4 class="header-title mb-0">{{ __('On Demand Services') }}</h4>
-                     <button class="btn btn-info d-block" type="submit"  name="need_dispacher_home_other_service_submit_btn" value ="1"> {{ __("Save") }} </button>
-                  </div>
-                  <p class="sub-header">{{ __('Offer On Demand Services with Dispatcher.') }}</p>
-                  <div class="row">
-                     <div class="col-12">
-                        <div class="form-group mb-0">
-                           <div class="form-group mb-0 switchery-demo">
-                              <label for="need_dispacher_home_other_service" class="mr-3">{{ __('Enable') }}</label>
-                              <input type="checkbox" data-plugin="switchery" name="need_dispacher_home_other_service" id="need_dispacher_home_other_service" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_home_other_service == '1')) checked='checked' @endif>
-                           </div>
+        <div class="col-lg-4 mb-3">
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
+                @csrf
+            <!-- On Demand Services section start -->
+            <input type="hidden" name="send_to" id="send_to" value="customize">
+            <div class="card-box h-100">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h4 class="header-title mb-0">{{ __('On Demand Services') }}</h4>
+                    <button class="btn btn-info d-block" type="submit"  name="need_dispacher_home_other_service_submit_btn" value ="1"> {{ __("Save") }} </button>
+                </div>
+                <p class="sub-header">{{ __('Offer On Demand Services with Dispatcher.') }}</p>
+                <div class="row">
+                    <div class="col-12">
+                    <div class="form-group mb-0">
+                        <div class="form-group mb-0 switchery-demo">
+                            <label for="need_dispacher_home_other_service" class="mr-3">{{ __('Enable') }}</label>
+                            <input type="checkbox" data-plugin="switchery" name="need_dispacher_home_other_service" id="need_dispacher_home_other_service" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_home_other_service == '1')) checked='checked' @endif>
                         </div>
+                    </div>
 
-                        <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
-                           <label for="dispacher_home_other_service_key_url">{{ __('Dispatcher URL') }} *(https://www.abc.com)</label>
-                           <input type="text" name="dispacher_home_other_service_key_url" id="dispacher_home_other_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('dispacher_home_other_service_key_url', $preference->dispacher_home_other_service_key_url ?? '')}}">
-                           @if($errors->has('dispacher_home_other_service_key_url'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('dispacher_home_other_service_key_url') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+                    <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="dispacher_home_other_service_key_url">{{ __('Dispatcher URL') }} *(https://www.abc.com)</label>
+                        <input type="text" name="dispacher_home_other_service_key_url" id="dispacher_home_other_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('dispacher_home_other_service_key_url', $preference->dispacher_home_other_service_key_url ?? '')}}">
+                        @if($errors->has('dispacher_home_other_service_key_url'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('dispacher_home_other_service_key_url') }}</strong>
+                        </span>
+                        @endif
+                    </div>
 
-                        <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
-                           <label for="dispacher_home_other_service_key_code">{{ __('Dispatcher Short code') }}</label>
-                           <input type="text" name="dispacher_home_other_service_key_code" id="dispacher_home_other_service_key_code" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key_code', $preference->dispacher_home_other_service_key_code ?? '')}}">
-                           @if($errors->has('dispacher_home_other_service_key_code'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('dispacher_home_other_service_key_code') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+                    <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="dispacher_home_other_service_key_code">{{ __('Dispatcher Short code') }}</label>
+                        <input type="text" name="dispacher_home_other_service_key_code" id="dispacher_home_other_service_key_code" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key_code', $preference->dispacher_home_other_service_key_code ?? '')}}">
+                        @if($errors->has('dispacher_home_other_service_key_code'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('dispacher_home_other_service_key_code') }}</strong>
+                        </span>
+                        @endif
+                    </div>
 
-                        <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
-                           <label for="dispacher_home_other_service_key">{{ __('Dispatcher API key') }}</label>
-                           <input type="text" name="dispacher_home_other_service_key" id="dispacher_home_other_service_key" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key', $preference->dispacher_home_other_service_key ?? '')}}">
-                           @if($errors->has('dispacher_home_other_service_key'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('dispacher_home_other_service_key') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+                    <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="dispacher_home_other_service_key">{{ __('Dispatcher API key') }}</label>
+                        <input type="text" name="dispacher_home_other_service_key" id="dispacher_home_other_service_key" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key', $preference->dispacher_home_other_service_key ?? '')}}">
+                        @if($errors->has('dispacher_home_other_service_key'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('dispacher_home_other_service_key') }}</strong>
+                        </span>
+                        @endif
+                    </div>
 
-                     </div>
-                  </div>
-               </div><!-- On Demand Services section end -->
+                    </div>
+                </div>
+            </div><!-- On Demand Services section end -->
             </form>
-            </div>
+        </div>
         @endif
 
         @if($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app' && $client_preference_detail->pick_drop_check == 1 )
 
-            <div class="col-lg-3 col-md-6 mb-3">
-               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
-                  @csrf
-               <!-- Pickup & Delivery section start -->
-               <div class="card-box h-100">
-                  <div class="d-flex align-items-center justify-content-between mb-2">
-                     <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
-                     <button class="btn btn-info d-block" type="submit"  name="need_dispacher_ride_submit_btn" value ="1"> {{ __("Save") }} </button>
-                  </div>
-                  <p class="sub-header">{{ __("Offer Pickup & Delivery with Dispatcher.") }}</p>
-                  <div class="row">
-                     <div class="col-12">
-                        <div class="form-group mb-0">
-                           <div class="form-group mb-0 switchery-demo">
-                              <label for="need_dispacher_ride" class="mr-3">{{ __("Enable") }}</label>
-                              <input type="checkbox" data-plugin="switchery" name="need_dispacher_ride" id="need_dispacher_ride" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_ride == '1')) checked='checked' @endif>
-                           </div>
+        <div class="col-lg-4 mb-3">
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
+                @csrf
+            <!-- Pickup & Delivery section start -->
+            <div class="card-box h-100">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
+                    <button class="btn btn-info d-block" type="submit"  name="need_dispacher_ride_submit_btn" value ="1"> {{ __("Save") }} </button>
+                </div>
+                <p class="sub-header">{{ __("Offer Pickup & Delivery with Dispatcher.") }}</p>
+                <div class="row">
+                    <div class="col-12">
+                    <div class="form-group mb-0">
+                        <div class="form-group mb-0 switchery-demo">
+                            <label for="need_dispacher_ride" class="mr-3">{{ __("Enable") }}</label>
+                            <input type="checkbox" data-plugin="switchery" name="need_dispacher_ride" id="need_dispacher_ride" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_ride == '1')) checked='checked' @endif>
                         </div>
+                    </div>
 
-                        <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-                           <label for="pickup_delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
-                           <input type="text" name="pickup_delivery_service_key_url" id="pickup_delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('pickup_delivery_service_key_url', $preference->pickup_delivery_service_key_url ?? '')}}">
-                           @if($errors->has('pickup_delivery_service_key_url'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('pickup_delivery_service_key_url') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+                    <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                        <label for="pickup_delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
+                        <input type="text" name="pickup_delivery_service_key_url" id="pickup_delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('pickup_delivery_service_key_url', $preference->pickup_delivery_service_key_url ?? '')}}">
+                        @if($errors->has('pickup_delivery_service_key_url'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('pickup_delivery_service_key_url') }}</strong>
+                        </span>
+                        @endif
+                    </div>
 
-                        <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-                           <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
-                           <input type="text" name="pickup_delivery_service_key_code" id="pickup_delivery_service_key_code" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key_code', $preference->pickup_delivery_service_key_code ?? '')}}">
-                           @if($errors->has('pickup_delivery_service_key_code'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('pickup_delivery_service_key_code') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+                    <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                        <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
+                        <input type="text" name="pickup_delivery_service_key_code" id="pickup_delivery_service_key_code" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key_code', $preference->pickup_delivery_service_key_code ?? '')}}">
+                        @if($errors->has('pickup_delivery_service_key_code'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('pickup_delivery_service_key_code') }}</strong>
+                        </span>
+                        @endif
+                    </div>
 
-                        <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-                           <label for="pickup_delivery_service_key">{{ __("Dispatcher API key") }}</label>
-                           <input type="text" name="pickup_delivery_service_key" id="pickup_delivery_service_key" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key', $preference->pickup_delivery_service_key ?? '')}}">
-                           @if($errors->has('pickup_delivery_service_key'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('pickup_delivery_service_key') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+                    <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                        <label for="pickup_delivery_service_key">{{ __("Dispatcher API key") }}</label>
+                        <input type="text" name="pickup_delivery_service_key" id="pickup_delivery_service_key" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key', $preference->pickup_delivery_service_key ?? '')}}">
+                        @if($errors->has('pickup_delivery_service_key'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('pickup_delivery_service_key') }}</strong>
+                        </span>
+                        @endif
+                    </div>
 
-                     </div>
-                  </div>
-               </div><!-- Pickup & Delivery section end -->
-               </form>
-            </div>
+                    </div>
+                </div>
+            </div><!-- Pickup & Delivery section end -->
+            </form>
+        </div>
         @endif
 
         @if($client_preference_detail->business_type == 'laundry' && $client_preference_detail->laundry_check == 1 )
@@ -545,7 +545,7 @@
     </div>
     <div class="row col-spacing">
         <!-- Start custom domain  -->
-        <div class="col-lg-3 col-lg-3 mb-3">
+        <div class="col-lg-4 col-xl-3 mb-3">
             <form method="POST" class="h-100" action="{{route('client.updateDomain', Auth::user()->code)}}">
                 @csrf
                 <div class="card-box mb-0 h-100">
@@ -577,13 +577,13 @@
         </div>
         <!-- End custom domain  -->
         <!-- app link start  -->
-        <div class="col-lg-3 col-lg-3 mb-3">
+        <div class="col-lg-4 col-xl-3 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 <div class="card-box mb-0 h-100">
                     <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
                     @csrf
                     <input type="hidden" name="send_to" id="send_to" value="customize">
-                    <div class="mb-0 py-0 px-2">
+                    <div class="mb-0 py-0">
                        <div class="d-flex align-items-center justify-content-between">
                           <h4 class="header-title mb-0">{{ __("Android/IOS Link") }}</h4>
                           <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
@@ -604,7 +604,7 @@
         </div>
         <!-- app link end  -->
         <!-- Start Social Link -->
-        <div class="col-lg-3 mb-3">
+        <div class="col-lg-4 col-xl-3 mb-3">
             <div class="card-box mb-0 h-100 pb-1">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <h4 class="header-title mb-0">{{ __("Social Media") }}</h4>
@@ -1161,7 +1161,7 @@
     </div>
     <div class="row col-spacing">
        <!-- User Authentication start-->
-        <div class="col-md-3 mb-3">
+        <div class="col-md-4 mb-3">
             <div class="card-box pb-2 h-100">
                 <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 <input type="hidden" name="verify_config" id="verify_config" value="1">
@@ -1424,48 +1424,51 @@
       </div>
     </div>
     <div class="row col-spacing">
-        <!-- Order Email Notification start -->
-        <div class="col-lg-3 col-lg-3 mb-3">
-            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
-                @csrf
-                <input type="hidden" name="send_to" id="send_to" value="customize">
-                <div class="card-box pb-1 h-100">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h4 class="header-title ">{{ __('Order Email Notification') }}</h4>
-                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                    </div>
-                    <div class="col-xl-12 my-2 p-0" id="addCur-160">
-                        <label class="primaryCurText">{{ __('Email') }}</label>
-                        <input class="form-control" type="email" id="admin_email" name="admin_email" value="{{ old('admin_email', $preference->admin_email)}}">
-                    </div>
+        <div class="col-lg-4">
+            <div class="row">
+                <!-- Order Email Notification start -->
+                <div class="col-xl-6 mb-3">
+                    <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                        @csrf
+                        <input type="hidden" name="send_to" id="send_to" value="customize">
+                        <div class="card-box pb-1 h-100">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h4 class="header-title ">{{ __('Order Email Notification') }}</h4>
+                                <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                            </div>
+                            <div class="col-xl-12 my-2 p-0" id="addCur-160">
+                                <label class="primaryCurText">{{ __('Email') }}</label>
+                                <input class="form-control" type="email" id="admin_email" name="admin_email" value="{{ old('admin_email', $preference->admin_email)}}">
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
-        </div>
-        <!-- Order Email Notification end -->
-        <!-- Start Refer and earn -->
-        <div class="col-lg-3 mb-3">
-            <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
-                @csrf
-                <input type="hidden" name="send_to" id="send_to" value="customize">
-                <div class="card-box mb-0 pb-1 h-100">
-                    <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="header-title">Refer and Earn</h4>
-                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                    </div>
-                    <div class="col-xl-12 my-2" id="addCur-160">
-                    <label class="primaryCurText">{{ __("Referred To Amount") }} = </label>
-                    <input class="form-control" type="number" id="reffered_to_amount" name="reffered_to_amount" value="{{ old('reffered_to_amount', decimal_format($reffer_to) ?? '')}}" min="0" step="any">
-                    </div>
-                    <div class="col-xl-12 mb-2 mt-3" id="addCur-160">
-                    <label class="primaryCurText">{{ __("Referred By Amount") }} = </label>
-                    <input class="form-control" type="number" name="reffered_by_amount" id="reffered_by_amount" value="{{ old('reffered_by_amount', decimal_format($reffer_by) ?? '')}}" min="0" step="any">
-                    </div>
+                <!-- Order Email Notification end -->
+                <!-- Start Refer and earn -->
+                <div class="col-xl-6 mb-3">
+                    <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
+                        @csrf
+                        <input type="hidden" name="send_to" id="send_to" value="customize">
+                        <div class="card-box mb-0 pb-1 h-100">
+                            <div class="d-flex align-items-center justify-content-between">
+                            <h4 class="header-title">Refer and Earn</h4>
+                            <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                            </div>
+                            <div class="col-xl-12 my-2" id="addCur-160">
+                            <label class="primaryCurText">{{ __("Referred To Amount") }} = </label>
+                            <input class="form-control" type="number" id="reffered_to_amount" name="reffered_to_amount" value="{{ old('reffered_to_amount', decimal_format($reffer_to) ?? '')}}" min="0" step="any">
+                            </div>
+                            <div class="col-xl-12 mb-2 mt-3" id="addCur-160">
+                            <label class="primaryCurText">{{ __("Referred By Amount") }} = </label>
+                            <input class="form-control" type="number" name="reffered_by_amount" id="reffered_by_amount" value="{{ old('reffered_by_amount', decimal_format($reffer_by) ?? '')}}" min="0" step="any">
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
-
         {{-- Added By Ovi --}}
-        <div class="col-lg-6 mb-3">
+        <div class="col-lg-8 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
                 <input type="hidden" name="slotting_and_scheduling" id="slotting_and_scheduling" value="1">
@@ -1524,6 +1527,8 @@
         </div>
         {{-- Added By Ovi --}}
         <!-- End refer and earn -->
+
+
          <!-- Xero Accounting API Credentials -->
          @if($preference->third_party_accounting == '1' && !is_null($accounting))
             <div class="col-lg-3 col-md-6 mb-3">
@@ -1636,8 +1641,6 @@
 
 
 <!-- End New Customize page -->
-
-</div>
 <div class="row">
     <div class="col-12">
         <div class="page-title-box">
@@ -1647,7 +1650,7 @@
 </div>
 <div class="row col-spacing">
         <!-- Order Email Notification start -->
-        <div class="col-lg-3 col-lg-3 mb-3">
+        <div class="col-lg-4 col-xl-3 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
                 <input type="hidden" name="send_to" id="send_to" value="customize">
@@ -1683,6 +1686,8 @@
         </div>
     </div>
 </div>
+</div>
+
 <div id="add_or_edit_social_media_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

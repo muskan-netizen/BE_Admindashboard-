@@ -54,10 +54,10 @@
                         <div class="row">
                             <div class="col-md-9">
                                 <div class="row">
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <input type="text" id="range-datepicker" class="form-control al_box_height flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
                                     </div>
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <select class="form-control al_box_height" id="tax_type_select_box">
                                             <option value="">{{ __("Select Tax Type") }}</option>
                                             @foreach($tax_category_options as $tax_category_option)
@@ -65,7 +65,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <select class="form-control al_box_height" id="payment_option_select_box">
                                             <option value="">{{ __("Select Payment Method") }}</option>
                                             @foreach($payment_options as $payment_option)
@@ -73,7 +73,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <button type="button" class="btn btn-danger al_box_height waves-effect waves-light" id="clear_filter_btn_icon">
                                             <i class="mdi mdi-close"></i>
                                         </button>

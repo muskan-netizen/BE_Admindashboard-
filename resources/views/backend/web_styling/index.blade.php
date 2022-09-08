@@ -30,7 +30,7 @@
 
 
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-9">
             <form id="favicon-form" method="post" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-md-8 h-100">
@@ -99,66 +99,67 @@
                             </div>
 
 
-                        <div  style="display:{{(($themeId==3)?'block':'none')}}" class="card changeIcon">
-                            <div class="card-body al_custom_control">
-                                {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
-                                <div class="row">
-                                    <form id="themeIcon-form" method="post" enctype="multipart/form-data">
-                                   
-                                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-                                            @php
-                                                $VendorTypesName   = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+                            <div  style="display:{{(($themeId==3)?'block':'none')}}" class="card changeIcon">
+                                <div class="card-body al_custom_control">
+                                    {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
+                                    <div class="row">
+                                        <form id="themeIcon-form" method="post" enctype="multipart/form-data">
 
-                                                $clientVendorTypes = $vendor_typ_key.'_check';
-                                            @endphp
-                                            @if($client_preference_detail->$clientVendorTypes == 1)
-                                                <div class="col-md-4 mb-3">
-                                                    <div class="mb-0">
-                                                        <label>{{getDynamicTypeName($vendor_typ_value)}}{{ __(" Icon") }}</label>
-                                                        <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$VendorTypesName ? $client_preferences->$VendorTypesName['proxy_url'].'600/400'.$client_preferences->$VendorTypesName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{ $VendorTypesName }}" class="dropify ss_form_submit" id="image" />
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong></strong>
-                                                        </span>
-                                                        <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                            @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                                                @php
+                                                    $VendorTypesName   = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+
+                                                    $clientVendorTypes = $vendor_typ_key.'_check';
+                                                @endphp
+                                                @if($client_preference_detail->$clientVendorTypes == 1)
+                                                    <div class="col-md-4 mb-3">
+                                                        <div class="mb-0">
+                                                            <label>{{getDynamicTypeName($vendor_typ_value)}}{{ __(" Icon") }}</label>
+                                                            <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$VendorTypesName ? $client_preferences->$VendorTypesName['proxy_url'].'600/400'.$client_preferences->$VendorTypesName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{ $VendorTypesName }}" class="dropify ss_form_submit" id="image" />
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong></strong>
+                                                            </span>
+                                                            <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                @endif    
-                                        @endforeach
-                                    </form>
+                                                    @endif
+                                            @endforeach
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div  style="display:{{(($themeId==4 || $themeId==6)?'block':'none')}}" class="card changeIconOnTheme4">
-                            <div class="card-body alSignUpImageControal">
-                                {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
-                                <div class="row">
-                                    <div class="col-md-12 mb-3">
-                                        <div class="mb-0">
-                                            <label>Signup Image</label>
-                                            <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$VendorTypesName ? $client_preferences->$VendorTypesName['proxy_url'].'600/400'.$client_preferences->$VendorTypesName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{ $VendorTypesName }}" class="dropify ss_form_submit" id="image" />
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong></strong>
-                                            </span>
-                                            <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 1920x768</label>
+                            <div  style="display:{{(($themeId==4 || $themeId==6)?'block':'none')}}" class="card changeIconOnTheme4">
+                                <div class="card-body alSignUpImageControal">
+                                    {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <div class="mb-0">
+                                                <label>Signup Image</label>
+                                                <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$VendorTypesName ? $client_preferences->$VendorTypesName['proxy_url'].'600/400'.$client_preferences->$VendorTypesName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{ $VendorTypesName }}" class="dropify ss_form_submit" id="image" />
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong></strong>
+                                                </span>
+                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 1920x768</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
                         <div class="card">
                             <div class="card-body al_custom_control">
                                 <h4 class="header-title">{{ __("Home Page Style") }}</h4>
-                                <div class="row">
+                                <div class="row mt-3">
                                     @foreach($homepage_style_options as $homepage_style)
-                                    <div class="col-sm-3 mb-3">
+                                    <div class="col-xl-4 col-md-4 mb-3 alThemeDemoSec">
                                         <div class="card mb-0">
                                             <div class="card-body p-0">
                                                 <div class="col-sm-12 custom-control custom-radio radio_new p-0">
                                                     <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
                                                     <label class="custom-control-label" for="{{$homepage_style->id}}">
-                                                        <img class="card-img-top img-fluid" src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap">
+                                                        <span class="card-img-top img-fluid" style="background-image: url( {{('../images/'.$homepage_style->image)}})"></span>
+                                                        <!-- <img  src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap"> -->
 
                                                     </label>
                                                 </div>
@@ -171,7 +172,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                     </div>
 
                     <div class="col-md-4 h-100">
@@ -241,20 +242,15 @@
                             </ul>
                         </div>
                     </div>
-                    
+
                 </div>
             </form>
-          
-       
-
-              
-           
         </div>
-        <div class="col-md-4 h-100">
+        <div class="col-md-3 h-100">
             <form method="POST" action="{{route('web.styling.update_contact_up')}}">
                 @csrf
                 <div class="row h-100">
-                    <div class="col-9">
+                    <div class="col-12">
                         <div class="card-box">
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <h4 class="header-title mb-0">{{ __("Contact Us") }}</h4>
@@ -309,7 +305,7 @@
             </form>
             @if($client_preference_detail->business_type != 'taxi')
             <div class="row h-100">
-                <div class="col-9">
+                <div class="col-12">
                     <div class="card card-box">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <h4 class="header-title mb-0">{{ __("Age Restriction Popup") }}</h4>
@@ -327,11 +323,11 @@
     </div>
     <div class="row">
              <!--Payment Method Icons start -->
-             <div class="col-md-6 mb-3">
+        <div class="col-md-6 mb-3">
             <div class="card-box pb-2 h-100">
                 <div class="d-flex align-items-center justify-content-between">
                    <h4 class="header-title m-0">{{ __("Payment Method Icons") }}</h4>
-                   
+
                       <!-- <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }} -->
                       <form id="show_payment_icons_form" action="{{route('styling.updatePaymentIcons')}}" method="post" enctype="multipart/form-data">
                         @csrf
@@ -463,7 +459,7 @@
                                 <a class="action-icon edit_cities_page" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
-                            
+
                                 @endif
                                 @if($home_page_label->slug == 'dynamic_page')
                                 <input type="checkbox" name="for_no_product_found_html[{{$key}}]" {{$home_page_label->for_no_product_found_html == 1 ? 'checked' : ''}} >{{__('For No Records')}}
@@ -709,7 +705,7 @@ $(document).on('click', '.deletePickupSection', function() {
     //     submitData();
     // });
     $("#show_payment_icons_id").change(function() {
-       
+
        $('#show_payment_icons_form').submit();
     });
     // $("#hide_nav_bar").change(function() {
@@ -760,7 +756,7 @@ $(document).on('click', '.deletePickupSection', function() {
             }
         });
     });
-   
+
 
 
     function submitDataNewPickup() {

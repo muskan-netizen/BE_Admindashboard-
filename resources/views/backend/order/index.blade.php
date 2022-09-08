@@ -1,9 +1,9 @@
 @extends('layouts.vertical', ['title' => 'Orders'])
 @section('content')
 @php
-   
+
     $clientData = \App\Models\Client::select('socket_url')->first();
-   
+
 @endphp
 <style type="text/css">
 .ellipsis {white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}body {font-size: 0.75rem;}.order_data>div,.order_head h4 {padding: 0 !important;
@@ -75,7 +75,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 <div class="row  <%= ve ==0 ? 'mt-0' : 'mt-2'%>" id="single-order-div<%= k %><%= ve %>">
                                     <div class="col-12 order-hover-btn">
 
-                                        
+
 
                                        <div class="order_detail order_detail_data align-items-top pb-1 mb-0 card-box no-gutters h-100">
                                         <ul class="alBtnsOnOrders d-flex justify-content-end">
@@ -87,7 +87,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                             </li>
                                             @endif
                                         </ul>
-                                        
+
                                         <a href="<%= vendor.vendor_detail_url %>" class="row">
                                             <% if(order.scheduled_date_time || (order.luxury_option_name != '')) { %>
                                             <div class="col-sm-12">
@@ -113,7 +113,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                                     <% if(((vendor.delivery_fee > 0) || (order.scheduled_date_time) || order.schedule_pickup)){ %>
                                                         <% if(vendor.order_status != 'Rejected'){%>
-                                                            @if($client_preferences->scheduling_with_slots == 1 && $client_preferences->business_type == 'laundry') 
+                                                            @if($client_preferences->scheduling_with_slots == 1 && $client_preferences->business_type == 'laundry')
                                                             <span class="ml-2 text-right">Slots: Pickup:  <%= order.scheduled_slot %> | Dropoff: <%= order.dropoff_scheduled_slot %>
                                                             </span>
                                                         @else
@@ -180,7 +180,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                         <li class="d-flex align-items-center justify-content-between">
                                                             <label class="m-0">{{ __('Additional Price') }}</label>
                                                             <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.additional_price) %></span>
-                                                            
+
                                                         </li>
                                                         <% } %>
                                                     <% if(vendor.discount_amount > 0 || vendor.discount_amount < 0) { %>
@@ -189,7 +189,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.discount_amount) %></span>
                                                     </li>
                                                     <% } %>
-                                                   
+
                                                     <% if(vendor.total_container_charges > 0 || vendor.total_container_charges < 0) { %>
                                                         <li class="d-flex align-items-center justify-content-between">
                                                             <label class="m-0">{{ __('Container Charges') }}</label>
@@ -249,7 +249,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                             vendor.delivery_fee = 0;
                                                         }
                                                         %>
-                                                        
+
 
                                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(vendor.subtotal_amount) - parseFloat(vendor.discount_amount) ) + parseFloat(vendor.total_container_charges) + parseFloat(vendor.taxable_amount) + parseFloat(vendor.service_fee_percentage_amount) + parseFloat(order.fixed_fee_amount) + parseFloat(vendor.delivery_fee ) +parseFloat(vendor.additional_price)) %></span>
                                                     </li>
@@ -282,7 +282,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                 <% if((vendor.order_status_option_id == 1) || ((vendor.order_status_option_id != 6) && (vendor.order_status_option_id != 3))) { %>
                                                     <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>
                                                 <% } %>
-                                                
+
                                             </div>
                                     </div>
                                     </div>
@@ -379,7 +379,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                         {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(order.total_amount) - parseFloat(order.total_discount_calculate) ) + parseFloat(order.total_container_charges) + parseFloat(order.taxable_amount) + parseFloat(order.total_service_fee) + parseFloat(order.fixed_fee_amount) + parseFloat(order.total_delivery_fee ) + parseFloat(order.additional_price )) %></span> --}}
 
-                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount))%></span>  
+                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount))%></span>
                                     </li>
                                 </ul>
                             </div>
@@ -403,16 +403,49 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 </script>
 <div class="container-fluid order-page">
     <div class="row d-flex align-items-center justify-content-between">
-        <div class="col-md-6">
-            <div class="page-title-box d-flex justify-content-between dashboard_order_title mt-2">
+        <div class="col-md-12">
+            <div class="page-title-box dashboard_order_title mt-2">
                 <h4 class="page-title mr-3">{{ __('Orders') }}</h4>
+                <div class="float-right">
+                    <div class="row d-flex justify-content-between">
+                        <div class="col-sm-4 mb-1">
+                            <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
+                        </div>
+                        <div class="col-sm-4 mb-1">
+                            <select class="form-control" id="vendor_select_box">
+                                <option value="">{{ __('Select Vendor') }}</option>
+                                @forelse($vendors as $vendor)
+                                    <option value="{{$vendor->id}}">{{$vendor->name}}</option>
+                                @empty
+                                @endforelse
+                            </select>
+                        </div>
+
+                        {{-- <div class="col">
+                            <select class="form-control" id="sort_order">
+                                <option value="">{{ __('Change Sort') }}</option>
+                                <option value="distance">{{ __('Distance') }}</option>
+                                <option value="newest_slot">{{ __('Latest Slot') }}</option>
+                            </select>
+                        </div> --}}
+                        <div class="col-sm-4 mb-1">
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                                <input type="search" class="form-control" placeholder="{{ __('Search...') }}" id="search_via_keyword">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
-       
+
         @if($client_preference_detail->third_party_accounting)
         @foreach($accounting as $accounting)
         <div class="pull-right accounting_upload">
-        @if($accounting->code == 'xero') 
+        @if($accounting->code == 'xero')
         <a class="btn btn-info" href="{{route('xero_auth')}}">Upload to Xero ({{$del_order_count}})</a>
         @endif
         </div>
@@ -443,34 +476,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         @endif
                     </div>
                 </div>
-                <div class="col">
-                    <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
-                </div>
-                <div class="col">
-                    <select class="form-control" id="vendor_select_box">
-                        <option value="">{{ __('Select Vendor') }}</option>
-                        @forelse($vendors as $vendor)
-                            <option value="{{$vendor->id}}">{{$vendor->name}}</option>
-                        @empty
-                        @endforelse
-                    </select>
-                </div>
-             
-                {{-- <div class="col">
-                    <select class="form-control" id="sort_order">
-                        <option value="">{{ __('Change Sort') }}</option>
-                        <option value="distance">{{ __('Distance') }}</option>
-                        <option value="newest_slot">{{ __('Latest Slot') }}</option>
-                    </select>
-                </div> --}}
-                <div class="col">
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
-                            <i class="mdi mdi-close"></i>
-                        </button>
-                        <input type="search" class="form-control" placeholder="{{ __('Search...') }}" id="search_via_keyword">
-                    </div>
-                </div>
+
             </div>
         </div>
         <!-- <div class="col-md-3 col-lg-2 mb-3">
@@ -527,7 +533,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
                         $vendorTypeOrders = $VendorTypesName.'_orders';
                     @endphp
-                    
+
                     @if($client_preference_detail->$clientVendorTypes == 1)
                         <input type="radio" class="tabs_radio" id="{{$VendorTypesName}}_tab" name="select" value="{{$VendorTypesName}}">
                         <label class="tabs_label" for="{{$VendorTypesName}}_tab">
@@ -552,18 +558,18 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
                         $vendorTypeOrders = $VendorTypesName.'_orders';
                     @endphp
-                    
+
                     @if($client_preference_detail->$clientVendorTypes == 1)
                     <li class="nav-item">
-                        <a class="nav-link" id="{{$VendorTypesName}}_tab" data-toggle="tab" href="#{{$VendorTypesName}}_orders" role="tab" aria-selected="false" data-rel="{{$VendorTypesName}}_orders">{{$NomenclatureName}} 
-                            
-                        </a> 
+                        <a class="nav-link" id="{{$VendorTypesName}}_tab" data-toggle="tab" href="#{{$VendorTypesName}}_orders" role="tab" aria-selected="false" data-rel="{{$VendorTypesName}}_orders">{{$NomenclatureName}}
+
+                        </a>
                     </li>
                     @endif
                 @endforeach
                 <div class="navigation-tab-overlay_alnew_design"></div>
             </ul> --}}
-            
+
     </div>
     <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
         <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
@@ -580,7 +586,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
                 $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
             @endphp
-            
+
             @if($client_preference_detail->$clientVendorTypes == 1)
                 <div class="tab-pane fade past-order position-relative h-100" id="{{$VendorTypesName}}_orders" role="tabpanel" aria-labelledby="{{$VendorTypesName}}_tab">
                     <div class="error-msg mt-3">
@@ -663,7 +669,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         //console.log('dasd');
         var type =  $("a.nav-link.active").data('rel');
         var search = $("#search_via_keyword").val();
-        
+
         init(type, "{{ route('orders.filter') }}", search, false);
     }
 

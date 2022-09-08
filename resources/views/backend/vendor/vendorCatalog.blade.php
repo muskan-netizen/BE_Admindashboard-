@@ -238,12 +238,12 @@
                         <div class="tab-pane {{ $tab == 'catalog' ? 'active show' : '' }}" id="catalog">
                             <div class="card-box">
                                 <div class="row">
-                                    <div class="col-2">
+                                    <div class="col-md-2">
                                         <h4 class="mb-0"> {{ __('Catalog') }}</h4>
                                     </div>
-                                    <div class="col-10 d-flex align-items-center justify-content-end mb-3">
+                                    <div class="col-md-10 d-md-flex align-items-center justify-content-end mb-3">
 
-                                            <div class="vendor-search">
+                                            <div class="vendor-search mb-sm-0 mb-2">
                                                 <input class="form-control" id="vendor_search" type="search" placeholder="Product Search" aria-controls="vendor_product_table">
                                             </div>
 
@@ -253,13 +253,13 @@
                                                 {{ __('Action') }}
                                             </a>
 
-                                            <a class="btn btn-info waves-effect waves-light text-sm-right @if($vendor->status == 1) importProductBtn @endif  {{ $vendor->status == 1 ? '' : 'disabled' }}"
+                                            <a class="btn btn-info waves-effect waves-light ml-1 text-sm-right @if($vendor->status == 1) importProductBtn @endif  {{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"
                                                 {{ $vendor->status == 1 ? '' : 'disabled' }}><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                                             </a>
 
-                                            <a class="btn btn-info waves-effect waves-light text-sm-right mx-2" dataid="0" href="{{ route('vendor.product.export', $vendor->id) }}"><i
+                                            <a class="btn btn-info waves-effect waves-light text-sm-right mx-1" dataid="0" href="{{ route('vendor.product.export', $vendor->id) }}"><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Export') }}
                                             </a>
 

@@ -3,49 +3,49 @@
   font-style: normal;
   src: url(https://example.com/material-symbols.woff) format('woff');
 }
-/* .border-primary {
-  border-color: #727cf5 !important;
+.widget-icon {
+
+  font-size: 20px;
+  height: 40px;
+  width: 40px;
+  text-align: center;
+  line-height: 40px;
+  border-radius: 3px;
+  display: inline-block;
 }
-.bg-primary {
-  background-color: #727cf5 !important;
-}
-.btn-primary {
-  color: #fff;
-  background-color: #727cf5;
-  border-color: #727cf5;
-}
-#sidebar-menu .menuitem-active .active {
-  background-color: #727cf5;
-}
-.menu-title+.nav-second-level>li>a:hover {
-  background-color: rgba(114,124,245,.25);
-}
-.nav-second-level li a:focus, .nav-second-level li a:hover{
-  color: #727cf5;
-}
-.menu-title+.nav-second-level>li>a:hover span svg {
-  fill: #727cf5;
-}
-.menu-title+.nav-second-level>li>a:hover .cls-1, .menu-title+.nav-second-level>li>a:hover .cls-2 {
-  fill: #727cf5;
-} */
-.nav-user {
-  padding: calc(31px * .5) 20px calc(31px * .5) !important;
-}
+
+
 .progress-w-percent .progress {
   width: calc(100% - 80px);
 }
 .progress-w-percent .progress-value {
   width: 50px;
+  float: right;
+  text-align: right;
+  line-height: 0;
+}
+.dark span.input-group-text.bg-primary.border-primary.text-white {
+  background-color: #d3a14a !important;
+  border-color: #d3a14a !important;
+}
+body.dark .btn {
+  border-radius: 2px;
 }
 #revenue_locations{
 max-height: 229px;
 overflow: auto;
-padding-right: 20px;
+padding-right: 0;
 }
 .widget-icon{
   color: #43bee1;
   background-color: #43bee161;
+}
+.dark .widget-icon{
+  color: #d3a14a;
+  background-color: #d3a14a61;
+}
+.progress-w-percent {
+  margin-bottom: 20px;
 }
 .btn-primary:hover {
   color: #fff;
