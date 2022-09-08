@@ -431,6 +431,7 @@ class HomeController extends BaseController
                 $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
                 $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
                 $image_url = $on_sale_product_detail->media->first() && !is_null($on_sale_product_detail->media->first()->image) ? $on_sale_product_detail->media->first()->image->path['image_fit'] . '600/600' . $on_sale_product_detail->media->first()->image->path['image_path'] : '';
+                $vprice2 = (isset($on_sale_product_detail->variant->first()->price)?$on_sale_product_detail->variant->first()->price * $multiply:0);
                 $on_sale_products[] = array(
                     'image_url' => $image_url,
                     'sku' => $on_sale_product_detail->sku,
@@ -439,7 +440,7 @@ class HomeController extends BaseController
                     'averageRating' => number_format($on_sale_product_detail->averageRating, 1, '.', ''),
                     'inquiry_only' => $on_sale_product_detail->inquiry_only,
                     'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
-                    'price' => decimal_format($on_sale_product_detail->variant->first()->price * $multiply),
+                    'price' => decimal_format($vprice2),
                     'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
                 );
             }
