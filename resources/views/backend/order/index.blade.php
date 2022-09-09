@@ -43,16 +43,30 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         <% _.each(orders, function(order, k){%>
             <% if(order.vendors.length !== 0) { %>
                 <div class="col-xl-6 al_order_sec"  id="full-order-div<%= k %>">
-                    <div class="row no-gutters order_head">
-                        <div class="col-md-3"><h4>{{ __("Order ID") }}</h4></div>
-                        <div class="col-md-3"><h4>{{ __("Date & Time") }}</h4></div>
-                        <div class="col-md-3"><h4>{{ __("Customer") }}</h4></div>
+                    <div class="row no-gutters order_head mb-2">
+                        <div class="col-md-3 alOrderStatus"><h4>{{ __("Order ID") }}</h4>
+                        <span>#<%= order.order_number %></span>
+                        </div>
+                        <div class="col-md-3 alOrderStatus"><h4>{{ __("Date & Time") }}</h4>
+                        <span><%= order.created_date %></span>
+                        </div>
+                        <div class="col-md-3 alOrderStatus"><h4>{{ __("Customer") }}</h4>
+                        <span><%= order.user.name %></span>
+                        </div>
                         @if( (Auth::user()->is_superadmin) ||  ($client_preference_detail->hide_order_address ==0) )
-                        <div class="col-md-3"><h4>{{ __("Address") }}</h4></div>
+                        <div class="col-md-3"><h4>{{ __("Address") }}</h4>
+                        <% if(order.address !== null) { %>
+                            <div class="col-md-3">
+                                <span class="mb-0" data-toggle="tooltip" data-placement="top" title="<%= order.address.address %>">
+                                    <%= order.address.house_number?order.address.house_number+',' : ''  %> <%= order.address.address %>
+                                </p>
+                            </div>
+                            <% } %>
+                        </div>
                         @endif
                     </div>
 
-                    <div class="row no-gutters order_data mb-lg-2">
+                    <!-- <div class="row no-gutters order_data mb-lg-2">
                         <div class="col-md-3"><h6 class="m-0">#<%= order.order_number %> </h6></div>
 
                         <div class="col-md-3"><%= order.created_date %></div>
@@ -68,7 +82,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                             </div>
                             <% } %>
                         @endif
-                    </div>
+                    </div> -->
                     <div class="row">
                         <div class="col-md-9">
                             <% _.each(order.vendors, function(vendor, ve){%>
@@ -404,7 +418,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 <div class="container-fluid order-page">
     <div class="row ">
         <div class="col-md-12">
-            <div class="page-title-box dashboard_order_title mt-2 d-flex align-items-center justify-content-between">
+            <div class="page-title-box dashboard_order_title mt-2 d-md-flex align-items-center justify-content-between">
                 <h4 class="page-title">{{ __('Orders') }}</h4>
                 <div class="float-right">
                     <div class="row d-flex justify-content-between">

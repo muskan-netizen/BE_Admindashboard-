@@ -2492,8 +2492,7 @@ a:-webkit-any-link:focus-visible {
 
 .delete-user {
   right: 0;
-  top: 50%;
-  transform: translateY(-50%)
+  top: 0;
 }
 
 #add_user_permission_vendor .dropdown-menu {
@@ -4524,6 +4523,10 @@ body[dir="rtl"] .dataTables_filter {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.tab-product .nav-material.nav-tabs .nav-item .nav-link {
+  font-size: 12px;
+  padding: 0 5px;
 }
 .tab-content.nav-material.al .order_head h4 {
   color: #000;
