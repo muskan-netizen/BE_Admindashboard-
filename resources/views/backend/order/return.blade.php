@@ -15,7 +15,7 @@ $timezone = Auth::user()->timezone;
       <!-- Return Page Tabbar start from here -->
         <div class="row">
             <div class="col-12">
-                <div class="page-title-box mt-2 alReturnRequestsTitle d-flex align-items-center justify-content-between">
+                <div class="page-title-box mt-2 alReturnRequestsTitle d-md-flex align-items-center justify-content-between">
                     <h4 class="page-title">{{__('Return Requests')}}</h4>
                     <div class="float-right">
                         <div class="row ">

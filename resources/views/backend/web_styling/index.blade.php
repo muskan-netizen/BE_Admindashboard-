@@ -36,7 +36,7 @@
                     <div class="col-md-8 h-100">
                         <div class="card card-box ">
                             <div class="row">
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-4 col-6 mb-3">
                                     <h4 class="header-title">{{ __("Favicon") }}</h4>
                                     <div class="mb-0">
                                         <label>{{ __("Upload Favicon") }}</label>
@@ -48,20 +48,20 @@
                                     </div>
                                 </div>
                                 @if($themeId==4 || $themeId==6)
-                                    <div class="col-md-4 mb-3">
-                                        <h4 class="header-title">{{ __("Sign In/Up Image") }}</h4>
-                                        <div class="mb-0">
-                                            <label>{{ __("Sign In/Up Image") }}</label>
-                                            <input type="file" accept="image/*" data-default-file="{{$client_preferences->signup_image ? $client_preferences->signup_image['proxy_url'].'600/400'.$client_preferences->signup_image['image_path'] : ''}}" data-plugins="dropify" name="sign_up_image" class="dropify ss_form_submit" id="image" />
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong></strong>
-                                            </span>
-                                            <label class="logo-size d-block text-center mt-1">{{ __("Image Size") }} 1920x768</label>
-                                        </div>
+                                <div class="col-md-4 col-6 mb-3">
+                                    <h4 class="header-title">{{ __("Sign In/Up Image") }}</h4>
+                                    <div class="mb-0">
+                                        <label>{{ __("Sign In/Up Image") }}</label>
+                                        <input type="file" accept="image/*" data-default-file="{{$client_preferences->signup_image ? $client_preferences->signup_image['proxy_url'].'600/400'.$client_preferences->signup_image['image_path'] : ''}}" data-plugins="dropify" name="sign_up_image" class="dropify ss_form_submit" id="image" />
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                        <label class="logo-size d-block text-center mt-1">{{ __("Image Size") }} 1920x768</label>
                                     </div>
+                                </div>
                                 @endif
 
-                                <div class="col-md-4  mb-3">
+                                <div class="col-md-4 col-6  mb-3">
                                     <h4 class="header-title">{{ __("Color") }}</h4>
                                     <div class="form-group">
                                         <label for="primary_color">{{ __("Primary Color") }}</label>
@@ -73,7 +73,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-4 mb-0">
+                                <div class="col-md-4 col-6 mb-0">
                                     <h4 class="header-title">{{ __("Show Dark Mode") }}</h4>
                                     <ul class="pl-0 mb-0">
                                         <li class="d-flex flex-column justify-content-start mt-2">

@@ -97,11 +97,11 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 d-flex align-items-center">
+            <div class="col-12 d-md-flex align-items-center">
                 <div class="page-title-box">
                     <h4 class="page-title">{{ ucfirst($vendor->name) }} {{ __('profile') }}</h4>
                 </div>
-                <div class="form-group mb-0 ml-3">
+                <div class="form-group mb-0 ml-sm-3">
                     <div class="site_link position-relative">
                         <a href="{{ route('vendorDetail', $vendor->slug) }}" target="_blank"><span id="pwd_spn"
                                 class="password-span">{{ route('vendorDetail', $vendor->slug) }}</span></a>
@@ -263,7 +263,7 @@
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Export') }}
                                             </a>
 
-                                            <a class="btn btn-info waves-effect waves-light text-sm-right @if($vendor->status == 1) addProductBtn @endif{{ $vendor->status == 1 ? '' : 'disabled' }}"
+                                            <a class="btn btn-info waves-effect waves-light text-sm-right alAddProductBtn  @if($vendor->status == 1) addProductBtn @endif {{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Product') }}
                                             </a>

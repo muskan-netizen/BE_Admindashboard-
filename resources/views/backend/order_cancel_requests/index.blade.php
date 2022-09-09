@@ -20,7 +20,7 @@
 <div class="container-fluid alCancelOrderRequestsPage">
     <div class="row align-items-center">
         <div class="col-sm-12">
-            <div class="page-title-box alCancelOrderRequestsPageDashboard align-items-center  d-flex justify-content-between my-2">
+            <div class="page-title-box alCancelOrderRequestsPageDashboard align-items-center d-md-flex justify-content-between my-2">
                 <h4 class="page-title">{{ __('Cancel Order Requests') }}</h4>
                 <div class="float-right">
                     <div class="row align-items-center ">
