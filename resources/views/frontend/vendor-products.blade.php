@@ -76,7 +76,7 @@
                     </div>
                 </div>
             </div>
-            @if(count($brands) > 0 ||  count($variantSets) > 0))
+            @if(1)
             <div class="row mb-3 homepageSix">
                 <div class="collection-filter col-md-3">
                     <div class="collection-filter-block mb-3 bg-transparent p-0">

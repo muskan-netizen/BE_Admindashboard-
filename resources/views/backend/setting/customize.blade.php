@@ -193,7 +193,7 @@
                             <label for="primary_currency">{{ __("Primary Currency") }}</label>
                             <select class="form-control al_box_height" id="primary_currency" name="primary_currency">
                                 @foreach($currencies as $currency)
-                                <option iso="{{$currency->iso_code.' '.$currency->symbol}}" {{ (isset($preference) && $preference->currency_id == $currency->id) ? "selected" : ""}} value="{{$currency->id}}"> {{$currency->iso_code.' '.$currency->symbol}} </option>
+                                <option iso="{{$currency->iso_code.' '.$currency->symbol}}" {{ (isset($preference) && $preference->primary->currency->id == $currency->id) ? "selected" : ""}} value="{{$currency->id}}"> {{$currency->iso_code.' '.$currency->symbol}} </option>
                                 @endforeach
                             </select>
                         </div>
@@ -201,7 +201,7 @@
                             <label for="currency">{{ __("Additional Currency") }}</label>
                             <select class="form-control al_box_height select2-multiple" id="currency" name="currency_data[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
                                 @foreach($currencies as $currency)
-                                @if($preference->currency_id != $currency->id)
+                                @if($preference->primary->currency->id != $currency->id)
                                 <option value="{{$currency->id}}" iso="{{$currency->iso_code}}" {{ (isset($preference) && in_array($currency->id, $cli_currs))? "selected" : "" }}> {{$currency->iso_code}} {{!empty($currency->symbol) ? $currency->symbol : ''}} </option>
                                 @endif
                                 @endforeach
@@ -238,7 +238,7 @@
     <div class="row col-spacing">
         <!--Vendor Type &  Distance to Time Calculator start -->
         <div class="col-lg-4 mb-3">
-            @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
+            {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' ) --}}
             @php
                 $typeArray = getCategoryTypes();
             @endphp
@@ -269,7 +269,7 @@
                     </div>
                 </div>
             </form>
-            @endif
+            {{-- @endif --}}
         </div>
         <!--Vendor Type &  Distance to Time Calculator end -->
 
@@ -1424,49 +1424,46 @@
       </div>
     </div>
     <div class="row col-spacing">
-        <div class="col-lg-4">
-            <div class="row">
-                <!-- Order Email Notification start -->
-                <div class="col-xl-6 mb-3">
-                    <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
-                        @csrf
-                        <input type="hidden" name="send_to" id="send_to" value="customize">
-                        <div class="card-box pb-1 h-100">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <h4 class="header-title ">{{ __('Order Email Notification') }}</h4>
-                                <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                            </div>
-                            <div class="col-xl-12 my-2 p-0" id="addCur-160">
-                                <label class="primaryCurText">{{ __('Email') }}</label>
-                                <input class="form-control" type="email" id="admin_email" name="admin_email" value="{{ old('admin_email', $preference->admin_email)}}">
-                            </div>
-                        </div>
-                    </form>
+        <!-- Order Email Notification start -->
+        <div class="col-lg-3 col-lg-3 mb-3">
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box pb-1 h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title ">{{ __('Order Email Notification') }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="col-xl-12 my-2 p-0" id="addCur-160">
+                        <label class="primaryCurText">{{ __('Email') }}</label>
+                        <input class="form-control" type="email" id="admin_email" name="admin_email" value="{{ old('admin_email', $preference->admin_email)}}">
+                    </div>
                 </div>
-                <!-- Order Email Notification end -->
-                <!-- Start Refer and earn -->
-                <div class="col-xl-6 mb-3">
-                    <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
-                        @csrf
-                        <input type="hidden" name="send_to" id="send_to" value="customize">
-                        <div class="card-box mb-0 pb-1 h-100">
-                            <div class="d-flex align-items-center justify-content-between">
-                            <h4 class="header-title">Refer and Earn</h4>
-                            <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                            </div>
-                            <div class="col-xl-12 my-2" id="addCur-160">
-                            <label class="primaryCurText">{{ __("Referred To Amount") }} = </label>
-                            <input class="form-control" type="number" id="reffered_to_amount" name="reffered_to_amount" value="{{ old('reffered_to_amount', decimal_format($reffer_to) ?? '')}}" min="0" step="any">
-                            </div>
-                            <div class="col-xl-12 mb-2 mt-3" id="addCur-160">
-                            <label class="primaryCurText">{{ __("Referred By Amount") }} = </label>
-                            <input class="form-control" type="number" name="reffered_by_amount" id="reffered_by_amount" value="{{ old('reffered_by_amount', decimal_format($reffer_by) ?? '')}}" min="0" step="any">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            </form>
         </div>
+        <!-- Order Email Notification end -->
+        <!-- Start Refer and earn -->
+        <div class="col-lg-3 mb-3">
+            <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box mb-0 pb-1 h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="header-title">Refer and Earn</h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="col-xl-12 my-2" id="addCur-160">
+                    <label class="primaryCurText">{{ __("Referred To Amount") }} = </label>
+                    <input class="form-control" type="number" id="reffered_to_amount" name="reffered_to_amount" value="{{ old('reffered_to_amount', decimal_format($reffer_to) ?? '')}}" min="0" step="any">
+                    </div>
+                    <div class="col-xl-12 mb-2 mt-3" id="addCur-160">
+                    <label class="primaryCurText">{{ __("Referred By Amount") }} = </label>
+                    <input class="form-control" type="number" name="reffered_by_amount" id="reffered_by_amount" value="{{ old('reffered_by_amount', decimal_format($reffer_by) ?? '')}}" min="0" step="any">
+                    </div>
+                </div>
+            </form>
+        </div>
+
         {{-- Added By Ovi --}}
         <div class="col-lg-8 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
@@ -1480,42 +1477,42 @@
                     </div>
                     <div class="row">
                         <div class="col-lg-6 my-2">
-                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                            <div class="form-group d-flex justify-content-between mb-3">
                                 <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="off_scheduling_at_cart" id="off_scheduling_at_cart" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->off_scheduling_at_cart == '1')) checked='checked' @endif>
                             </span>
                             </div>
                         </div>
                         <div class="col-lg-6 my-2">
-                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                            <div class="form-group d-flex justify-content-between mb-3">
                                 <label for="delay_order" class="mr-2 mb-0">{{__('Delay Order')}}<small class="d-block pr-5">Option to add delay time per product separately for Dine In/ Delivery/ Takeaway to restrict order to scheduling only with added Delay.</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="delay_order" id="delay_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delay_order == '1')) checked='checked' @endif>
                             </span>
                             </div>
                         </div>
                         <div class="col-lg-6 my-2" id="scheduling_with_slots_div" style="display:none;">
-                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                            <div class="form-group d-flex justify-content-between mb-3">
                                 <label for="scheduling_with_slots" class="mr-2 mb-0">{{__('Schedule Pickup & Dropoff With Slots')}}<small class="d-block pr-5">Enable or disable schedule pickup & dropoff with slots for laundry.</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="scheduling_with_slots" id="scheduling_with_slots" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->scheduling_with_slots == '1')) checked='checked' @endif>
                                 </span>
                             </div>
                         </div>
                         <div class="col-lg-6 my-2" id="same_day_delivery_for_schedule_div" style="display:none;">
-                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                            <div class="form-group d-flex justify-content-between mb-3">
                                 <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Scheduling')}}<small class="d-block pr-5">Enable or disable same day pickup & delivery for scheduling.</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="same_day_delivery_for_schedule" id="same_day_delivery_for_schedule" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->same_day_delivery_for_schedule == '1')) checked='checked' @endif>
                                 </span>
                             </div>
                         </div>
                         <div class="col-lg-6 my-2" id="same_day_orders_for_rescheduing_div" style="display:none;">
-                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                            <div class="form-group d-flex justify-content-between mb-3">
                                 <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Rescheduling')}}<small class="d-block pr-5">Enable or disable same day pickup & delivery for rescheduling.</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="same_day_orders_for_rescheduing" id="same_day_orders_for_rescheduing" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->same_day_orders_for_rescheduing == '1')) checked='checked' @endif>
                                 </span>
                             </div>
                         </div>
                         <div class="col-lg-6 my-2" id="slots_with_service_area_div">
-                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                            <div class="form-group d-flex justify-content-between mb-3">
                                 <label for="slots_with_service_area" class="mr-2 mb-0">{{__('Food Truck Service')}}<small class="d-block pr-5">{{__('Enable or disable multiple service area for trucks')}}</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="slots_with_service_area" id="slots_with_service_area" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->slots_with_service_area == '1')) checked='checked' @endif>
                                 </span>
