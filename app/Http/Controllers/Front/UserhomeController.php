@@ -567,7 +567,7 @@ class UserhomeController extends FrontController
         }
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
-        $preferences = (object)Session::get('preferences');
+        $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'): ClientPreference::first();
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
 
@@ -661,11 +661,17 @@ class UserhomeController extends FrontController
                 }else{
                     $value->is_vendor_closed = 0;
                     if($value->slotDate->isNotEmpty()){
-                        $value->opening_time = Carbon::parse($value->slotDate->first()->start_time)->format('g:i A');
-                        $value->closing_time = Carbon::parse($value->slotDate->first()->end_time)->format('g:i A');
+                        if($value->slotDate->first()->start_time!='' && $value->slotDate->first()->end_time!=''){
+                            $value->opening_time  = date('g:i A',strtotime($value->slotDate->first()->start_time));
+                            $value->closing_time = date('g:i A',strtotime($value->slotDate->first()->end_time));
+                        }
+                     
                     }elseif($value->slot->isNotEmpty()){
-                        $value->opening_time = Carbon::parse($value->slot->first()->start_time)->format('g:i A');
-                        $value->closing_time = Carbon::parse($value->slot->first()->end_time)->format('g:i A');
+                        \Log::info( date('g:i A',strtotime($value->slot->first()->end_time)));
+                        if($value->slot->first()->start_time && $value->slot->first()->end_time){
+                            $value->opening_time = date('g:i A',strtotime($value->slot->first()->start_time));
+                            $value->closing_time = date('g:i A',strtotime($value->slot->first()->end_time));
+                        }
                     }
                 }
             }
