@@ -18,6 +18,7 @@ use Redirect;
 use Log;
 class CategoryController extends FrontController{
     private $field_status = 2;
+    use \App\Http\Traits\DispatcherSlot;
 
     /**
      * Display product and vendor list By Category id
@@ -200,9 +201,6 @@ class CategoryController extends FrontController{
                     abort(404);
                 }
         }
-    }
-    public function getTimeSlotsForOndemand_step2(Request $request){
-        pr($request->all());
     }
 
     public function listData($langId, $category_id, $type = ''){
@@ -604,9 +602,31 @@ class CategoryController extends FrontController{
     // ***********   getTimeSlotsForOndemand ************** /////////////////
     public function getTimeSlotsForOndemand(Request $request){
 
-        
-       // pr($request->all());
-      
+        // get slot from dispatcher by harbans :)
+        if($request->has('product_category_type')){
+            if($request->product_category_type ==  12){ 
+              $Dispatch =  $this->getDispatchAppointmentDomain();
+              if($Dispatch){
+                $vendor = Vendor::select('latitude','longitude')->find($request->product_vendor_id);
+                $location[] = array(
+                    'latitude' =>  $vendor ? $vendor->latitude : 30.71728880,
+                    'longitude' => $vendor ? $vendor->longitude : 76.80350870
+                );
+                $dispatchData=[
+                    'service_key'      => $Dispatch->appointment_service_key,
+                    'service_key_code' => $Dispatch->appointment_service_key_code,
+                    'service_key_url'  => $Dispatch->appointment_service_key_url,
+                    'service_type'     => 'appointment',
+                    'tags'             => $request->product_tag,
+                    'latitude'         =>  $vendor ? $vendor->latitude : 30.71728880,
+                    'longitude'        => $vendor ? $vendor->longitude : 76.80350870,
+                    'schedule_date'    => $request->cur_date
+                ];
+                $res = $this->getSlotFeeDispatcher($dispatchData);
+                pr($res);
+              }
+            }
+        }
         $user = Auth::user();
         $timezone = $user->timezone ?? 'Asia/Kolkata';
 

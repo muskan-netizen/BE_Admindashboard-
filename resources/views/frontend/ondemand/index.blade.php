@@ -174,7 +174,7 @@ use Illuminate\Support\Arr;
         });
 
         // Sticky Header - http://jqueryfordesigners.com/fixed-floating-elements/
-        var top = $('#main-nav').offset().top - parseFloat($('#main-nav').css('margin-top').replace(/auto/, 0));
+        var top = $('#main-nav').length ? $('#main-nav').offset().top - parseFloat($('#main-nav').css('margin-top').replace(/auto/, 0)) : 0;
 
         $(window).scroll(function (event) {
           // what the y position of the scroll is

@@ -3687,7 +3687,11 @@ $(document).ready(function () {
         let cur_date = $(this).val();
         let cart_product_id = $(this).data("cart_product_id");
         let product_vendor_id = $(this).data("product_vendor_id");
-        getTimeSlots(cur_date, cart_product_id , product_vendor_id);
+        let product_id = $(this).data("product_id");
+        let product_tag = $(this).data("product_tag");
+        let product_category_type = $(this).data("product_category_type");
+
+        getTimeSlots(cur_date, cart_product_id , product_vendor_id,product_id,product_tag,product_category_type);
 
     });
 
@@ -3857,7 +3861,7 @@ $(document).ready(function () {
     });
 
     // on demand add to cart
-    function getTimeSlots(cur_date, cart_product_id,product_vendor_id) {
+    function getTimeSlots(cur_date, cart_product_id,product_vendor_id,product_id,product_tag,product_category_type) {
         $("#show_date" + cart_product_id).html(cur_date);
         $.ajax({
             type: "post",
@@ -3866,7 +3870,11 @@ $(document).ready(function () {
             data: {
                 "cur_date": cur_date,
                 "cart_product_id": cart_product_id,
-                "product_vendor_id": product_vendor_id
+                "vendor_type": vendor_type,
+                "product_vendor_id": product_vendor_id,
+                "product_category_type": product_category_type,
+                "product_id": product_id,
+                "product_tag": product_tag
             },
             success: function (response) {
                 var booking_time_slick = $("#show-all-time-slots" + cart_product_id).find('.booking-time');
