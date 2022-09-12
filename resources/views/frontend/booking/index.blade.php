@@ -15,9 +15,6 @@
     <div class="booking-experience ds bc">
         <div class="address-form">
 
-            <div class="loader-outer d-none">
-                <div class="spinner-border avatar-lg text-primary m-2" role="status"></div> 
-            </div>
                 @if(isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
                 <div class="tip_radio_controls_book_friend text-center mt-2">
                     <input type="radio" class="tip_radio is_for_friend" id="for_me" name="is_for_friend" value="0">
