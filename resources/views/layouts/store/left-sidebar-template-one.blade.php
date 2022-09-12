@@ -149,6 +149,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
             <div class="container p-0 align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
                     <div class="row mobile-header align-items-center justify-content-between my-sm-2">
+                        {{-- @include('frontend.home_page_1.main_menu') --}}
                         <div class="logo">
                             <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" style="height:60px" href="{{route('userHome')}}"><img alt="" src="{{$urlImg}}"></a>
                         </div>
@@ -162,7 +163,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                     $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
                                     $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
                                     @endphp
-
+                        
                                     @if($client_preference_detail->$clientVendorTypes == 1)
                                     <li class="navigation-tab-item" role="presentation"> <a
                                     class="nav-link {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
@@ -198,7 +199,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                             </ul>
                             @endif
                         </div>
-
+                        
                         <div class=" ipad-view">
                             <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
                                @if(Session::get('preferences') && (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
@@ -230,7 +231,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                     <div class="row mx-0">
                                         <% _.each(results, function(result, k){%>
                                         <a class="col-12 text-center al_search_results list-items pt-2" href="<%=result.redirect_url %>">
-
+                        
                                             <img class="blur-up lazyload" data-src="<%=result.image_url%>" alt="">
                                             <div class="result-item-name">
                                                 <b><%=result.name %></b>
@@ -322,7 +323,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                 </ul>
                                                 @endif
                                             </div>
-
+                        
                                             <div class=" ipad-view order-lg-3">
                                                 <div
                                                     class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
@@ -477,11 +478,13 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                             </div>
                                         </li>
                                     </ul>
-
+                        
                                 </div>
                             </div>
                             <div class="col-lg-5 col-9 order-lg-2 order-1 position-initial"> </div>
                         </div>
+                        
+                    
                     </div>
                 </div>
             </div>
@@ -489,26 +492,26 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12">
-
+                                {{-- @include('frontend.home_page_1.sub_menu') --}}
                                 <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
                                     @foreach($navCategories as $cate)
                                     @if($cate['name'])
                                     <li class="al_main_category">
-
+                                
                                         @if ($client_preference_detail->view_get_estimation_in_category == 1 && $client_preference_detail->business_type == "laundry")
                                             <a href="/get-estimation#{{$cate['slug']}}">
-                                                @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
+                                                @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='homeTest'))
                                                 <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
                                                 @endif{{$cate['name']}}
                                             </a>
                                         @else
                                             <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
+                                                @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='homeTest'))
                                                 <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
                                                 @endif{{$cate['name']}}
                                             </a>
                                         @endif
-
+                                
                                         @if(!empty($cate['children']))
                                         <ul class="al_main_category_list">
                                             @foreach($cate['children'] as $childs)

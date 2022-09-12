@@ -539,6 +539,7 @@
 						</div>
 					</div>
 			</div>
+		</section>
 		@elseif($homePageLabel->slug == 'cities')
 		<section class="suppliers-section render_full_{{$homePageLabel->slug}} d-none ">
 			<div class="container mb-0"  >
@@ -551,7 +552,7 @@
 				</div>
 			</div>
 		</section>
-		</section> @elseif($homePageLabel->slug == 'trending_vendors')
+ 		@elseif($homePageLabel->slug == 'trending_vendors')
 		<section class="suppliers-section" id="homepage_trending_vendors_div">
 			<div class="container"  >
 

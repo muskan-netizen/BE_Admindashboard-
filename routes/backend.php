@@ -43,7 +43,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::any('/logout', 'Auth\LoginController@logout')->name('client.logout');
         Route::get('profile', 'Client\UserController@profile')->name('client.profile');
         Route::get('dashboard', 'Client\DashBoardController@index')->name('client.dashboard');
+        Route::get('dashboard_old', 'Client\DashBoardController@dashboard_old')->name('client.dashboard_old');
         Route::get('dashboard/filter', 'Client\DashBoardController@postFilterData')->name('client.dashboard.filter');
+        Route::get('dashboard_new/filter', 'Client\DashBoardController@postFilterDataNew')->name('client.dashboard.filter_new');
         Route::get('salesInfo/monthly', 'Client\DashBoardController@monthlySalesInfo')->name('client.monthlySalesInfo');
         Route::get('salesInfo/yearly', 'Client\DashBoardController@yearlySalesInfo')->name('client.yearlySalesInfo');
         Route::get('salesInfo/weekly', 'Client\DashBoardController@weeklySalesInfo')->name('client.weeklySalesInfo');

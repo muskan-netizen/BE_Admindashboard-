@@ -5,6 +5,8 @@
 .dataTables_filter,.toolbar,.dt-buttons.btn-group.flex-wrap {position: absolute;height:40px;}.dataTables_filter{right:0;top: -50px;}
 .dataTables_filter label{margin:0;height:40px;}.dataTables_filter label input{margin:0;height:40px;}.dt-buttons.btn-group.flex-wrap{right: 200px;top: -50px;}
 .table-responsive{position: relative;overflow:visible;margin-top:10px;}table.dataTable{margin-top:0 !important;}
+div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
+.dt-buttons.btn-group.flex-wrap {right: 310px;top: -50px;}
 </style>
 @endsection
 @section('content')
@@ -72,7 +74,7 @@
                 <div class="card-body position-relative al">
                     <div class="top-input position-absoluteal">
                         <div class="row">
-                            <div class="col-md-9">
+                            <div class="col-md-12">
                                 <form  action="{{route('account.order.export')}}" id="export-form" method="GET" >
                                 <div class="row">
                                     <div class="col">
