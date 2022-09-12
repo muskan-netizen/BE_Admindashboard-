@@ -2633,7 +2633,7 @@ button.update-status {
 }
 
 .order_data_box {
-  height: calc(100vh - 199px);
+  height: 100%;
   overflow-y: auto;
   padding: 0 12px 0 20px
 }
@@ -4464,6 +4464,7 @@ body[dir="rtl"] .dataTables_filter {
 .apexcharts-canvas .apexcharts-legend.position-bottom.apexcharts-align-center {
   justify-content: center;
   max-width: 260px;
+  margin: 0 auto;
 }
 
 .web-style .alSignUpImageControal .dropify-wrapper.has-preview {
@@ -4507,98 +4508,35 @@ body[dir="rtl"] .dataTables_filter {
   body .dataTables_wrapper .dataTables_paginate .paginate_button {min-width: auto;padding: .5em 0em;}
 
   }
-@media(max-width:767px){.al_order_sec .order_head h4 {opacity: 1}
-h1.control-label {
-  font-size: 36px;
-}
-.custom-control.custom-radio.radio_new label.custom-control-label {
-  width: 100%;
-}
-.col-md-3.alOrderStatus {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.tab-product .nav-material.nav-tabs .nav-item .nav-link {
-  font-size: 12px;
-  padding: 0 5px;
-}
-.tab-content.nav-material.al .order_head h4 {
-  color: #000;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-.vendor-products .card {
-  margin-top: 0;
-}
-.vendor-page .card-body {
-  padding: 0;
-}
-.vendor-page .tab-content {
-  padding: 0 !important;
-  margin-top: 0;
-}
-.vendor-products .nav-tabs .nav-item {
-  z-index: 0;
-}
-.content-page {
-  min-height: calc(100vh - 129px);
-  padding: 0 0 25px;
-}
-.top-input {
-  width: 100%;
-}
-body .dataTables_filter {
-  right: 0;
-  top: -8px;
-  position: relative;
-  width: 100%;
-}
-body button.btn.btn-secondary.btn-success.waves-effect.waves-light {
-  width: 100%;text-align: left;
-}
-body .dt-buttons.btn-group.flex-wrap {
-  right: auto;
-  top: 0;
-  position: relative;
-  left: 0;
-}
-.al_new_export_table.royo_customber_btn.table_customber_add .row.mt-1.sml_royo-responsive {
-  margin-top: 0px !important;
-}
-body div.dataTables_wrapper div.dataTables_filter label {
-  width: 100%;
-}
-.main-customer-page .al_new_export_table.royo_customber_btn div.dataTables_wrapper div.dataTables_filter label input {
-  width: 100% !important;
-}
-.al_new_export_table.royo_customber_btn div.dataTables_wrapper div.dataTables_filter {
-  left: 0;
-}
-.order_data_box {
-  padding: 0 00 20px;
-}
-body div.dataTables_wrapper div.dataTables_filter input {
-  width: 100%;
-  margin: 0;
-}
-.chat-body.row.overflow-hidden.shadow.bg-light.rounded .col-4.px-0 {
-  max-width: 100%;
-  flex: 100%;
-}
-.chat-body.row.overflow-hidden.shadow.bg-light.rounded .col-8 {
-  max-width: 100%;
-  flex: 100%;
-}
-.navbar-custom .topnav-menu>li {
-  margin-top: 24px;
-}
-.sidebar-enable .left-side-menu {
-  display: block;
-  z-index: 9999 !important;
-}
-
-}
+@media(max-width:767px){
+.al_order_sec .order_head h4 {opacity: 1}
+h1.control-label {font-size: 36px;}
+.custom-control.custom-radio.radio_new label.custom-control-label {width: 100%;}
+.col-md-3.alOrderStatus {  display: flex;  justify-content: space-between;  align-items: center;}
+.tab-product .nav-material.nav-tabs .nav-item .nav-link {  font-size: 12px;  padding: 0 5px;}
+.tab-content.nav-material.al .order_head h4 {  color: #000;  font-size: 14px;  font-weight: 600;  margin-bottom: 10px;}
+.vendor-products .card {margin-top: 0;}
+.vendor-page .card-body {padding: 0;}
+.vendor-page .tab-content {padding: 0 !important;margin-top: 0;}
+.vendor-products .nav-tabs .nav-item {z-index: 0;}
+.content-page {min-height: calc(100vh - 129px);padding: 0 0 25px;}
+.top-input {width: 100%;}
+body .dataTables_filter {right: 0;top: -8px;position: relative;width: 100%;}
+body button.btn.btn-secondary.btn-success.waves-effect.waves-light {width: 100%;text-align: left;}
+body .dt-buttons.btn-group.flex-wrap {right: auto;top: 0;position: relative;left: 0;}
+.al_new_export_table.royo_customber_btn.table_customber_add .row.mt-1.sml_royo-responsive {margin-top: 0px !important;}
+body div.dataTables_wrapper div.dataTables_filter label {width: 100%;}
+.main-customer-page .al_new_export_table.royo_customber_btn div.dataTables_wrapper div.dataTables_filter label input {width: 100% !important;}
+.al_new_export_table.royo_customber_btn div.dataTables_wrapper div.dataTables_filter {left: 0;}
+.order_data_box {padding: 0 00 20px;}
+body div.dataTables_wrapper div.dataTables_filter input {width: 100%;margin: 0;}
+.chat-body.row.overflow-hidden.shadow.bg-light.rounded .col-4.px-0 {max-width: 100%;flex: 100%;}
+.chat-body.row.overflow-hidden.shadow.bg-light.rounded .col-8 {max-width: 100%;flex: 100%;}
+.navbar-custom .topnav-menu>li {margin-top: 24px;}
+.sidebar-enable .left-side-menu {display: block;z-index: 9999 !important;}
+#ProductPerformanceReport .table-responsive.mt-2{height: 200px;margin-bottom: 20px;}
+.apexcharts-inner {display: none;}
+.order-list-view .ellips {max-width: calc(100% - 100px);}
 
 
+}

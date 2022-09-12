@@ -540,41 +540,34 @@
                                 <label for="" class="mr-3">{{ __("Set Base Price Fare") }}</label>
                                 <input type="checkbox"  data-title="{{$optDunzo->code}}" data-plugin="switchery" name="base_active" class="chk_box base_select" data-color="#43bee1" @if($base_price > 0) checked @endif>
                             </div>
-                        <hr/>
+                            <hr/>
                         </div>
+                        <div class="row mt-3" id="dunzo_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
 
+                            <div class="col-md-4">
+                                <div class="form-group mb-0">
+                                    <label for="dunzo_base_price" class="mr-3">{{ __("Base Price") }}</label>
+                                    <input type="text" name="base_price" id="dunzo_base_price" class="form-control" value="{{@$base_price}}" >
+                                </div>
+                            </div>
 
-                    <div class="row mt-3" id="dunzo_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
+                            <div class="col-md-4">
+                                <div class="form-group mb-0">
+                                    <label for="dunzo_distance" class="mr-3">{{ __("Distance") }}</label>
+                                    <input type="text" name="distance" id="dunzo_distance" class="form-control" value="{{@$distance}}" >
+                                </div>
+                            </div>
 
-                        <div class="col-md-4">
-                            <div class="form-group mb-0">
-                                <label for="dunzo_base_price" class="mr-3">{{ __("Base Price") }}</label>
-                                <input type="text" name="base_price" id="dunzo_base_price" class="form-control" value="{{@$base_price}}" >
+                            <div class="col-md-4">
+                                <div class="form-group mb-0">
+                                    <label for="dunzo_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
+                                    <input type="text" name="amount_per_km" id="dunzo_amount_per_km" class="form-control" value="{{@$amount_per_km}}" >
+                                </div>
                             </div>
                         </div>
-
-                        <div class="col-md-4">
-                            <div class="form-group mb-0">
-                                <label for="dunzo_distance" class="mr-3">{{ __("Distance") }}</label>
-                                <input type="text" name="distance" id="dunzo_distance" class="form-control" value="{{@$distance}}" >
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="form-group mb-0">
-                                <label for="dunzo_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
-                                <input type="text" name="amount_per_km" id="dunzo_amount_per_km" class="form-control" value="{{@$amount_per_km}}" >
-                            </div>
-                        </div>
-                    </div>
-
                     </div>
                     @endif
-
-
-
                 </div>
-
             </form>
         </div>
         @endif
