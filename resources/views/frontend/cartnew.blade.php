@@ -66,6 +66,33 @@
     color: #FFF !important;
 }
 
+#save_prescription_form .modal-footer {
+display: block;
+}
+.al_body_template_two .show-prescription-doc {
+overflow: auto;
+white-space: nowrap;
+overflow-y: hidden;
+width: 100%;
+}
+.show-prescription-close {
+    position: relative;
+    display: inline-block;
+}
+.show-prescription-close i {
+    position: absolute;
+    right: -2px;
+    top: 0px;
+    font-size: 11px;
+    background: #eee;
+    padding: 1px 2px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.al_body_template_two .show-prescription-doc img{
+    margin:2px;
+}
 .al_body_template_one .vendor_slot_cart input {display: inline-block;width: 52%;}
 .al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
 
@@ -73,6 +100,14 @@
 .grn_popop-total_amt label{  font-size: 12px !important;}
 
 .vendor_cart-check label {display: inline-block;}
+
+
+
+@media (max-width:576px){
+    .al_body_template_two .show-prescription-doc {
+   width:100%;
+}  
+}
 </style>
 
 @endsection
@@ -270,7 +305,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                 <% if( (product.isDeliverable != undefined) && (product.isDeliverable == 0) ) { %>
                     <div class="col-12">
                         <div class="text-danger">
-                            <i class="fa fa-exclamation-circle"></i> Products for this vendor are not deliverable at your area. Please change address or remove product.
+                            <i class="fa fa-exclamation-circle"></i> {{ __('Products for this vendor are not deliverable at your area. Please change address or remove product.')}}
                         </div>
                     </div>
                 <% } %>
@@ -293,7 +328,8 @@ $client_preferences = \App\Models\ClientPreference::first();
                     <div class="col-9 col-md-10">
                         <div class="row align-items-md-center">
                             <div class="col-md-3 order-md-1">
-                                <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
+                                <h4><%= vendor_product.product.category_name.name %></h4>
+                                <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></strong></h4>
                                 <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "<%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %>" />
                                 <% _.each(vendor_product.pvariant.vset, function(vset, vs){%>
                                     <% if(vset.variant_detail.trans) { %>
@@ -302,11 +338,11 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 <% }); %>
                             </div>
                             <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2">
-                                <span class="alFourTempTitle">Price</span>
+                                <span class="alFourTempTitle">{{ __('Price')}}</span>
                                 <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></div>
                             </div>
                             <div class="col-6 col-md-2 text-left order-md-4">
-                                <span class="alFourTempTitle">Total</span>
+                                <span class="alFourTempTitle">{{ __('Total')}}</span>
                                 <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_price) %></div>
                             </div>
                             <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -326,7 +362,10 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 </div>
                                 <% if(cart_details.pharmacy_check == 1){ %>
                                     <% if(vendor_product.product.pharmacy_check == 1){ %>
-                                        <button type="button" class="btn btn-solid prescription_btn mt-2" data-product="<%= vendor_product.product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">Add Prescription</button>
+                                        <button type="button" class="btn btn-solid prescription_btn mt-2" data-cart="<%= vendor_product.cart_id %>" data-product="<%= vendor_product.product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">Add Prescription</button>
+                                        <% if(vendor_product.cart_product_prescription > 0){ %>
+                                            <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong><%= vendor_product.cart_product_prescription %> Prescription Added</strong></h4>
+                                        <% } %>
                                     <% } %>
                                 <% } %>
                             </div>
@@ -444,7 +483,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                 @endif
                 <div class="col-lg-6">
                     <% if(product.delOptions) { %>
-                        <div class="row mb-1 d-flex align-items-center">
+                        <div class="row mb-1 d-flex align-items-center   <% if( product.promo_free_deliver == 1  ) { %> <%= product.promo_free_deliver %> org_price <%}%> ">
                             <div class="col-5 text-lg-right">
                                 <label class="m-0 radio">
                                     {{__('Delivery Fee')}} :</label>
@@ -1167,6 +1206,21 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 <span class="error text-danger" id="stripe_fpx_error"></span>
                             </div>
                         <% } %>
+
+                        <% if(payment_option.slug == 'stripe_ideal' ) { %>
+                            <div class="col-md-12 mt-3 mb-3 stripe_ideal_element_wrapper option-wrapper d-none">
+                                <label for="ideal-bank-element">
+                                    iDEAL Bank
+                                </label>
+                                <div class="form-control">
+                                    <div id="ideal-bank-element">
+                                      <!-- A Stripe Element will be inserted here. -->
+                                    </div>
+                                </div>
+                               
+                                <span class="error text-danger"id="error-message"></span>
+                            </div>
+                        <% } %>
                         <% if(payment_option.slug == 'yoco') { %>
                             <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper option-wrapper d-none">
                                 <div class="form-control">
@@ -1440,7 +1494,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 </div>
 
 <div id="prescription_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{__('Add Prescription')}}</h4>
@@ -1450,22 +1504,29 @@ $client_preferences = \App\Models\ClientPreference::first();
                 @csrf
                 <div class="modal-body" id="AddCardBox">
                     <div class="row">
-                        <div class="col-sm-6" id="imageInput">
+                        <div class="col-sm-6 position-relative" id="imageInput">
                             <input type="hidden" id="vendor_idd" name="vendor_idd" value="" />
                             <input type="hidden" id="product_id" name="product_id" value="" />
-                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="prescriptions[]" class="dropify" multiple />
-                            <p class="text-muted text-center mt-2 mb-0">{{__('Upload Prescription')}}</p>
+                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="prescriptions[]" class="dropify uploaded-prescription-img" multiple />
+                            <!-- <img id="uploaded-prescription" style="margin-top: 9px;display:none;" src="#"/> -->
+                            <div class="uploaded-prescription"></div>
+                            <p class="text-muted text-center mt-2 mb-0">{{__('Uploaded Prescription(s)')}}</p>
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
+                            
                         </div>
+                       
                     </div>
+                        <div class="show-prescription-doc">     
+                             </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light submitPrescriptionForm">{{__('Submit')}}</button>
                 </div>
             </form>
         </div>
+        
     </div>
 </div>
 <div class="modal fade pick-address" id="pick_address" tabindex="-1" aria-labelledby="pick-addressLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -1635,12 +1696,17 @@ $client_preferences = \App\Models\ClientPreference::first();
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
-@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
+@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options) || in_array('stripe_ideal',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
 @endif
 @if(in_array('stripe_oxxo',$client_payment_options))
 <script>
 var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
+</script>
+@endif
+@if(in_array('stripe_ideal',$client_payment_options))
+<script>
+var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 </script>
 @endif
 @if(in_array('yoco',$client_payment_options))
@@ -1673,6 +1739,7 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
 <script type="text/javascript">
     var stripe_fpx = '';
     var fpxBank = '';
+    var idealBank = {};
     var guest_cart = {{ $guest_user ? 1 : 0 }};
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
@@ -1680,6 +1747,7 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
     var create_payphone_url = "{{route('payphone.createHash')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_windcave_hash_url = "{{route('windcave.createHash')}}";
+    var create_dpo_tocken_url = "{{route('dpo.createTocken')}}";
     var create_paytech_hash_url = "{{route('paytech.createHash')}}";
     var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
@@ -1690,6 +1758,9 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
+    var payment_create_stripe_ideal_url = "{{url('payment/create/stripe_ideal')}}";
+    var payment_retrive_stripe_ideal_url = "{{url('payment/retrieve/stripe_ideal')}}";
+    var get_product_prescription = "{{url('get/product/prescription')}}";
     var cart_clear_stripe_oxxo_url = "{{url('payment/stripe_oxxo/clear')}}";
     var user_store_address_url = "{{route('address.store')}}";
     var product_faq_update_url = "{{ route('cart.productfaq') }}";
@@ -2058,6 +2129,43 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
         $("#error-msg").hide();
     });
 
+    // function readPrescriptionURL(input) {
+    //     if (input.files && input.files[0]) {
+    //         var reader = new FileReader();
+    //         $("#uploaded-prescription").css("display", "block");
+    //         reader.onload = function (e) {
+    //             $('#uploaded-prescription').attr('src', e.target.result).width(120).height(87);
+    //         };
+
+    //         reader.readAsDataURL(input.files[0]);
+    //     }
+    // }
+
+    $(function() {
+        // Multiple images preview in browser
+        var imagesPreview = function(input, placeToInsertImagePreview) {
+
+            if (input.files) {
+                var filesAmount = input.files.length;
+
+                for (i = 0; i < filesAmount; i++) {
+                    var reader = new FileReader();
+
+                    reader.onload = function(event) {
+                        $($.parseHTML('<img>')).attr('src', event.target.result).width(120).height(87).css("margin", '2px').appendTo(placeToInsertImagePreview);
+                    }
+
+                    reader.readAsDataURL(input.files[i]);
+                }
+            }
+
+        };
+
+        $('.uploaded-prescription-img').on('change', function() {
+            imagesPreview(this, 'div.uploaded-prescription');
+        });
+    });
+
     function assignPhoneInput() {
         var input = document.querySelector("#username");
         var country = $('#countryData').val();
@@ -2290,7 +2398,7 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
             },
             success: function(output) {
                 // Check if orderCount is greaten equal to orders_per_slot
-                if(output.orderCount >= output.orders_per_slot){
+                if( (output.orderCount >= output.orders_per_slot) && (output.orders_per_slot != 0) ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
                     // Disable the place order button
                     $('#order_placed_btn').attr("disabled", true);
@@ -2380,6 +2488,7 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
         // $('#plus_icon_'+rel).hide();
         readURL(this, '#upload_logo_preview_'+rel);
     });
+
 </script>
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>

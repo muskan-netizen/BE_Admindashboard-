@@ -25,6 +25,31 @@
     \Session::forget('success');
 @endphp
 
+<div class="modal age-restriction fade show-subscription-mdl" id="show-subscription-plan-mdl" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content p-2">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            <div class="modal-body pb-0 text-center">
+                <p class="mb-0">{{__('Avail some more offers !')}}</p>
+            </div>
+            <div class="modal-footer">
+                <a href="{{route('user.subscription.plans')}}" class="btn btn-solid w-100">{{__('Subscribe Now')}}</a>
+            </div>
+        </div>
+    </div>
+</div>
+@php
+$showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
+@endphp
+<script>
+    var setShowSubscriptionPlan = '';
+    @if($showSubscriptionPlanPopUp == 1)
+        setShowSubscriptionPlan = "showed";
+    @endif
+    
+</script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.cookie.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
@@ -55,10 +80,12 @@
 <script type="text/javascript" src="{{asset('assets/libs/clockpicker/clockpicker.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 
+
+--}}
+
 <!-- Waitme loader script -->
 <script type="text/javascript" src="{{asset('js/waitMe.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
---}}
 
 <script defer type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 @if(isset($set_template)  && $set_template->template_id == 1)
@@ -139,8 +166,18 @@ window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-5LPF1QP3Y3');
+$(document).ready(function() {
+    @if(!isset($_COOKIE['show-subscription-plan']) && ($showSubscriptionPlanPopUp == 1) && (Route::current()->getName() != 'userHome'))
+        $("#show-subscription-plan-mdl").modal("show");
+    @endif
+});
 </script>
 <!-- End googletagmanager -->
+@php
+if($showSubscriptionPlanPopUp == 1){
+    setcookie('show-subscription-plan','showed',0); 
+}
+@endphp
 
 <script type="text/javascript">
     var is_hyperlocal = 0;
@@ -202,7 +239,13 @@ gtag('config', 'G-5LPF1QP3Y3');
 
 //////////////Braintree payment Routes
     var braintree_before_payment = "{{route('payment.braintree.beforePayment')}}";
-    var braintree_create_payment = "{{route('payment.braintree.createPayment')}}"; 
+    var braintree_create_payment = "{{route('payment.braintree.createPayment')}}";
+//////////////UPay payment Routes
+    var upay_before_payment = "{{route('payment.upay.beforePayment')}}";
+//////////////Conekta payment Routes
+    var conekta_before_payment = "{{route('payment.conekta.beforePayment')}}";
+//////////////Telr payment Routes
+    var telr_before_payment = "{{route('payment.telr.beforePayment')}}";  
 
 //////////////Ozow payment Routes
     var ozow_before_payment = "{{route('payment.ozow.beforePayment')}}";
@@ -218,6 +261,16 @@ gtag('config', 'G-5LPF1QP3Y3');
 /////////////Authorize Payment Routes
     var authorize_before_payment = "{{route('payment.authorize.beforePayment')}}";
     var authorize_create_payment = "{{route('payment.authorize.createPayment')}}";
+/////////////Pagarme Payment Routes
+    var userede_before_payment = "{{route('payment.userede.beforePayment')}}";
+    var userede_create_payment = "{{route('payment.userede.createPayment')}}";
+
+    /////////////openpay Payment Routes
+    var openpay_before_payment = "{{route('payment.opnepay.beforePayment')}}";
+    var opnepay_create_payment = "{{route('payment.opnepay.createPayment')}}";
+
+    var client_primary_currency = "{{ session()->get('client_primary_currency') }}";
+    var default_country_code = "{{ session()->get('default_country_code') }}";
 
 // Logged In User Detail
     var logged_in_user_name = "{{Auth::user()->name??''}}";

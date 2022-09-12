@@ -394,11 +394,11 @@ $timezone = Auth::user()->timezone;
                                     </tr>
                                     <tr>
                                         <?php
-                                            $checkOffer = \App\Models\Promocode::where('name', $vendor->coupon_code )->first();
+                                        //    $checkOffer = \App\Models\Promocode::where('name', $vendor->coupon_code )->first();
                                             $vendorDiscount = 0;
                                             $adminDiscount = 0;
-                                            if($checkOffer){
-                                                if($checkOffer->paid_by_vendor_admin == 1){
+                                            if($vendor->coupon_code){
+                                                if($vendor->paid_by_vendor_admin == 1){
                                                     $couponFrom = 'From Admin';
                                                     $adminDiscount = $vendor->discount_amount;
                                                 }else{
@@ -439,7 +439,7 @@ $timezone = Auth::user()->timezone;
                                         </tr>
                                     @endif
 
-                                    @if(Auth::user()->is_superadmin)
+                                    {{-- @if(Auth::user()->is_superadmin) --}}
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{$client_head->name}} {{ __("Revenue") }} :</th>
                                         @php
@@ -455,7 +455,7 @@ $timezone = Auth::user()->timezone;
                                         {{-- <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->sub_total * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)}}</td> --}}
                                         <td>{{$clientCurrency->currency->symbol}}{{decimal_format($storeRevenue)}}</td>
                                     </tr>
-                                    @endif
+                                    {{-- @endif --}}
                                     @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Redeemed Loyality Points") }} :</th>
@@ -817,7 +817,7 @@ $timezone = Auth::user()->timezone;
                         $('#text_muted_' + status_option_id).html('<small class="text-muted">' + response.created_date + '</small>');
                         if (status_option_id == 2 || status_option_id == 4)
                             $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                        location.reload();
+                        //location.reload();
                     },
                 });
             }else{

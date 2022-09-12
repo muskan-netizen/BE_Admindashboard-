@@ -27,6 +27,19 @@
         </div>
     </div>
     @endif
+    @if (\Session::has('error'))
+    <div class="row mb-2 mt-2">
+        <div class="col-sm-12">
+            <div class="text-sm-left">
+                
+                <div class="alert alert-danger">
+                    <span>{!! \Session::get('error') !!}</span>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    @endif
 
 <!-- New Customize Page -->
 
@@ -151,13 +164,18 @@
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
                     <div class="row align-items-start">
-                        <div class="col-md-12">
-                            <div class="form-group d-flex justify-content-between">
-                                <label for="dinein_check" class="mr-3 mb-0">{{getDynamicTypeName('Dine-In')}}</label>
-                                <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
+                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                            @php
+                                $VendorTypesName = $vendor_typ_key.'_check';
+                            @endphp
+                            <div class="col-md-12">
+                                <div class="form-group d-flex justify-content-between">
+                                    <label for="{{$VendorTypesName}}" class="mr-3 mb-0">{{getDynamicTypeName($vendor_typ_value)}}</label>
+                                    <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" @if((isset($preference) && $preference->$VendorTypesName == '1')) checked='checked' @endif>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-12">
+                        @endforeach
+                        <!-- <div class="col-md-12">
                             <div class="form-group d-flex justify-content-between">
                                 <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
                                 <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
@@ -168,7 +186,7 @@
                                 <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
                                 <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </form>
@@ -405,6 +423,166 @@
                         <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Delivery") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="delivery_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="delivery_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Delivery'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('delivery_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Dine-In") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="dinein_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="dinein_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Dine-In'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('dinein_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                       
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Takeaway") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="takeaway_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="takeaway_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Takeaway'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('takeaway_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                         <!-- add extra vendor types  add by harbans-->
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Rentals") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="rentals_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="rentals_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Rentals'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('rentals_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Pick & Drop") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="pick_drop_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="pick_drop_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Pick & Drop'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('pick_drop_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("On Demand Services") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="on_demand_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="on_demand_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('On Demand Services'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('on_demand_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Laundry") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="laundry_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="laundry_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Laundry'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('laundry_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <!-- end vendor types  add by harbans-->
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Vendors") }}</label>
                                 </div>
                             </div>
@@ -449,28 +627,6 @@
                         <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
-                                    <label for="custom_domain">{{ __("Takeaway") }}</label>
-                                </div>
-                            </div>
-                            @foreach($client_languages as $k => $client_language)
-                            <div class="col-sm-2">
-                                <div class="form-group mb-0">
-                                    <input type="hidden" name="takeaway_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="takeaway_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Takeaway'))}}">
-                                    @if($k == 0)
-                                        @if($errors->has('takeaway_names.0'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ __("The primary language name field is required.") }}</strong>
-                                            </span>
-                                        @endif
-                                    @endif
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
-                            <div class="col-sm-2">
-                                <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Search") }}</label>
                                 </div>
                             </div>
@@ -503,50 +659,6 @@
                                     <input type="text" name="wishlist_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Wishlist'))}}">
                                     @if($k == 0)
                                         @if($errors->has('wishlist_names.0'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ __("The primary language name field is required.") }}</strong>
-                                            </span>
-                                        @endif
-                                    @endif
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
-                            <div class="col-sm-2">
-                                <div class="form-group mb-0">
-                                    <label for="custom_domain">{{ __("Dine-In") }}</label>
-                                </div>
-                            </div>
-                            @foreach($client_languages as $k => $client_language)
-                            <div class="col-sm-2">
-                                <div class="form-group mb-0">
-                                    <input type="hidden" name="dinein_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="dinein_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Dine-In'))}}">
-                                    @if($k == 0)
-                                        @if($errors->has('dinein_names.0'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ __("The primary language name field is required.") }}</strong>
-                                            </span>
-                                        @endif
-                                    @endif
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
-                            <div class="col-sm-2">
-                                <div class="form-group mb-0">
-                                    <label for="custom_domain">{{ __("Delivery") }}</label>
-                                </div>
-                            </div>
-                            @foreach($client_languages as $k => $client_language)
-                            <div class="col-sm-2">
-                                <div class="form-group mb-0">
-                                    <input type="hidden" name="delivery_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="delivery_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Delivery'))}}">
-                                    @if($k == 0)
-                                        @if($errors->has('delivery_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -672,6 +784,50 @@
                             </div>
                             @endforeach
                         </div>
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center" style="display: {{$client_preference_detail->business_type == 'taxi' ? '' : 'none'}} !important;"> 
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Rides")}}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="rides_language_ids[]" value="{{$client_language->langId}}">                                    
+                                    <input type="text" name="rides_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Rides'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('rides_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center" style="display: {{$client_preference_detail->business_type == 'taxi' ? 'none' : ''}} !important;"> 
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Orders") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="orders_language_ids[]" value="{{$client_language->langId}}">                                    
+                                    <input type="text" name="orders_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Orders'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('orders_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
 
                     </div>
                 </div>
@@ -713,6 +869,12 @@
                             <div class="form-group d-flex justify-content-between">
                                 <label for="verify_phone" class="mr-3 mb-0">{{ __("Verify Phone") }}</label>
                                 <input type="checkbox" data-plugin="switchery" name="verify_phone" id="verify_phone" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_phone == '1')) checked='checked' @endif> 
+                            </div>
+                        </div> 
+                        <div class="col-sm-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="verify_phone" class="mr-3 mb-0">{{ __("Concise SignUp") }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="concise_signup" id="concise_signup" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->concise_signup == '1')) checked='checked' @endif> 
                             </div>
                         </div> 
                         @foreach($verify_options as $key => $opt)
@@ -1039,6 +1201,111 @@
         </div>
         {{-- Added By Ovi --}}
         <!-- End refer and earn -->
+         <!-- Xero Accounting API Credentials -->
+         @if($preference->third_party_accounting == '1' && !is_null($accounting)) 
+            <div class="col-lg-3 col-md-6 mb-3">
+               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+                  @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+               <div class="card-box h-100 h-100"> 
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                     <h4 class="header-title text-uppercase mb-0">{{__('Xero Configuration')}}</h4>
+                     <button class="btn btn-info d-block" type="submit" name="xero_submit"> {{ __("Save") }} </button>
+                  </div>
+                  <p class="sub-header">{{__('View and update your Xero Keys')}}</p>
+                  <div class="row">
+                     <div class="col-12">
+                        <div class="form-group mb-0">
+                           <div class="form-group mb-0 switchery-demo">
+                              <label for="xero_enable_switch" class="mr-3">{{ __("Enable") }}</label>
+                              <input type="checkbox" data-plugin="switchery" name="xero_status" id="xero_enable_switch" class="form-control" data-color="#43bee1" @if((isset($accounting) && $accounting->status == '1')) checked='checked' @endif>
+                           </div>
+                        </div>
+                        @php
+                        $creds = json_decode($accounting->credentials); 
+                        @endphp
+                        <div class="mt-2 xeroFields" @if($accounting->status != 1) style="display:none" @endif>
+                           <div class="row">
+                              <div class="col-12">
+                                 <div class="form-group mb-2">
+                                    <label for="xero_client_id">{{ __("Client ID") }}</label>
+                                    <input type="text" name="xero_client_id" id="xero_client_id" placeholder="" class="form-control" value="{{ old('xero_client_id', $creds->client_id ?? '')}}">
+                                 </div>
+                              </div>
+                              <div class="col-12">
+                                 <div class="form-group mb-2">
+                                    <label for="xero_secret_id">{{ __("Secret ID") }}</label>
+                                    <input type="text" name="xero_secret_id" id="xero_secret_id" placeholder="" class="form-control" value="{{ old('xero_secret_id', $creds->secret_id ?? '')}}">
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               </form>
+            </div>
+         @endif
+         <!-- Xero Accounting API Credentials Ends -->
+         
+         {{-- Added By harbans --}}
+         <!-- static_dropoff List -->
+         @if($preference->is_static_dropoff == '1') 
+          <!-- static dropoff Location start -->
+        <div class="col-md-6 mb-3">
+            <div class="card-box pb-2 h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                   <h4 class="header-title m-0">{{ __("Static Dropoff Locations") }}</h4>
+                   <a class="btn btn-info d-block" id="add_static_dropoff_modal_btn">
+                      <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+                   </a>
+                </div>
+                <div class="table-responsive mt-3 mb-1">
+                   <table class="table table-centered  nowrap table-striped  w-100" id="static_dropoff_datatable">
+                      <thead>
+                         <tr>
+                            <th width="20%">{{ __("Name") }}</th>
+                            <th class="text-wrap" width="60%">{{ __("Address") }}</th>
+                            <th width="20%">{{ __("Action") }}</th>
+                         </tr>
+                      </thead>
+                      <!-- <tbody id="post_list">
+                         @forelse($staticDropoff as $static_dropoff)
+                         <tr>
+                            <td>
+                               <a class="edit_static_dropoff_btn" data-static_dropoff_id="{{$static_dropoff->id}}" href="javascript:void(0)">
+                                  {{$static_dropoff->title }}
+                               </a>
+                            </td>
+                            <td>{{$static_dropoff->address}}</td>
+                            <td>
+                               <div>
+                                  <div class="inner-div" style="float: left;">
+                                     <a class="action-icon edit_static_dropoff_btn" data-static_dropoff_id="{{$static_dropoff->id}}" href="javascript:void(0)">
+                                        <i class="mdi mdi-square-edit-outline"></i>
+                                     </a>
+                                  </div>
+                                  <div class="inner-div">
+                                     <button type="button" class="btn btn-primary-outline action-icon delete_static_dropoff_btn" data-static_dropoff_id="{{$static_dropoff->id}}">
+                                        <i class="mdi mdi-delete"></i>
+                                     </button>
+                                  </div>
+                               </div>
+                            </td>
+                         </tr>
+                         @empty
+                         <tr align="center">
+                            <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                         </tr>
+                         @endforelse
+                      </tbody> -->
+                   </table>
+                </div>
+            </div>
+        </div>
+        <!-- Vendor Registration Documents end -->
+         @endif
+         <!-- static_dropoff Ends -->
     </div>
     <!-- Miscellaneous End  -->
 
@@ -1341,6 +1608,117 @@
    </div>
 <!--End Add Vendor Registration Document Modal -->
 
+<!-- Add Vendor Registration Document Modal -->
+<div id="add_static_dropoff_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  standard-modalLabel aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header border-bottom al">
+               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Vendor Registration Document") }}</h4>
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+               <form id="staticDropoffForm" method="POST" action="javascript:void(0)">
+                  @csrf
+                  <div id="save_social_media">
+                     <input type="hidden" name="static_address_id" id="static_address_id" value="">
+                     <div class="row">
+                        <div class="col-md-12">
+                           <div class="form-group position-relative">
+                              {!! Form::label('title', __('Title'),['class' => 'control-label']) !!}
+                              <input type="text" name="location_title" id="location_title" placeholder="" class="form-control" >
+                           </div>
+                        </div>
+                        <div class="col-md-12">
+                           <div class="form-group position-relative">
+                           {!! Form::label('title', __('Address'),['class' => 'control-label']) !!}
+                           <div class="input-group">
+                                <input type="text" name="static_address" id="static-address" onkeyup="checkAddressString(this,'static')" placeholder="" class="form-control">
+                                <div class="input-group-append">
+                                    <button class="btn btn-xs btn-dark waves-effect waves-light showMap" type="button" num="add"> <i class="mdi mdi-map-marker-radius"></i></button>
+                                </div> 
+                            </div>
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                             
+                           </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group mb-3" id="latitudeInput">
+                                {!! Form::label('title', __('Latitude'),['class' => 'control-label']) !!}
+                                <input type="text" name="static_latitude" id="static_latitude" placeholder="" class="form-control" value="">
+                                @if($errors->has('static_latitude'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('static_latitude') }}</strong>
+                                </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group mb-3" id="longitudeInput">
+                                {!! Form::label('title', __('Longitude'),['class' => 'control-label']) !!}
+                                <input type="text" name="static_longitude" id="static_longitude" placeholder="" class="form-control" value="">
+                                @if($errors->has('static_longitude'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('static_longitude') }}</strong>
+                                </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group mb-3" id="longitudeInput">
+                                {!! Form::label('title', __('Place id'),['class' => 'control-label']) !!}
+                                <input type="text" name="static_place_id" id="static_place_id" placeholder="" class="form-control" value="">
+                                @if($errors->has('static_place_id'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('static_place_id') }}</strong>
+                                </span>
+                                @endif
+                            </div>
+                        </div>
+                        
+                     </div>
+                  </div>
+               </form>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-primary submitSaveStaticDropoff">{{ __("Save") }}</button>
+            </div>
+         </div>
+      </div>
+   </div>
+<!--End Add Vendor Registration Document Modal -->
+<div id="show-map-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-full-width">
+        <div class="modal-content">
+
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __("Select Location") }}</h4>
+                <button type="button" class="close remove-modal-open" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body p-4">
+
+                <div class="row">
+                    <form id="task_form" action="#" method="POST" style="width: 100%">
+                        <div class="col-md-12">
+                            <div id="googleMap" style="height: 500px; min-width: 500px; width:100%"></div>
+                            <input type="hidden" name="lat_input" id="lat_map" value="0" />
+                            <input type="hidden" name="lng_input" id="lng_map" value="0" />
+                            <input type="hidden" name="address_map" id="address_map" value="" />
+                            <input type="hidden" name="place_id" id="place_id" value="" />
+                            <input type="hidden" name="for" id="map_for" value="" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-info waves-effect waves-light remove-modal-open selectMapLocation">Ok</button>
+                <!--<button type="Cancel" class="btn btn-info waves-effect waves-light cancelMapLocation">cancel</button>-->
+            </div>
+        </div>
+    </div>
+</div>
 
 
    <!-- Add category kyc Document Modal -->
@@ -1476,6 +1854,17 @@ $(document).ready(function(){
             $('#same_day_orders_for_rescheduing_div').show();
         }
     });
+    var xero_enable_switch = $('#xero_enable_switch');
+    if(xero_enable_switch.length > 0){
+         xero_enable_switch[0].onchange = function() {
+
+         if ($('#xero_enable_switch:checked').length != 1) {
+            $('.xeroFields').hide();
+         } else {
+            $('.xeroFields').show();
+         }
+         }
+    }
 });
 
     $('#social_icons').on('change', function() {
@@ -1539,9 +1928,6 @@ $(document).ready(function(){
         $('#add_user_registration_document_modal').modal('show');
         $('#add_user_registration_document_modal #standard-modalLabel').html('Add User Registration Document');
     });
-
-    
-    
 
     $(document).on('click', '.submitSaveUserRegistrationDocument', function(e) {
         // alert('af');
@@ -1669,7 +2055,7 @@ $(document).ready(function(){
     });
 
      //category kyc form submit document
-     $(document).on('click', '.submitcategoryKycDocument', function(e) {
+    $(document).on('click', '.submitcategoryKycDocument', function(e) {
         var category_kyc_document_id = $("#add_category_kyc_document_modal input[name=category_kyc_document_id]").val();
         if (category_kyc_document_id) {
             var post_url = "{{ route('categorykyc.document.update') }}";
@@ -1895,15 +2281,7 @@ $(document).ready(function(){
             }
         });
     });
-
-    
     //End Vendor Registration Document Script
-
-
-
-
-
-
     $(document).ready(function() {
         $.ajaxSetup({
             headers: {
@@ -2004,14 +2382,22 @@ $(document).ready(function(){
     });
 </script>
 <script type="text/javascript">
-    var options = {
-        zIndex: 9999
+    // var options = {
+    //     zIndex: 9999
+    // }
+    // $(document).ready(function() {
+        // var color1 = new jscolor('#primary_color', options);
+        // var color2 = new jscolor('#secondary_color', options);
+    // });
+    function checkAddressString(obj,name)
+    {
+        if($(obj).val() == "")
+        {
+            document.getElementById(name + '_latitude').value = '';
+            document.getElementById(name + '_longitude').value = '';
+            document.getElementById(name + '_place_id').value = '';
+        }
     }
-    $(document).ready(function() {
-        var color1 = new jscolor('#primary_color', options);
-        var color2 = new jscolor('#secondary_color', options);
-    });
-
     function generateRandomString(length) {
         var text = "";
         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -2077,4 +2463,9 @@ $(document).ready(function(){
         }
     });
 </script>
+
+@if($preference->is_static_dropoff == '1') 
+    @include('backend.setting.customizeDatatablescript')
+@endif
+
 @endsection

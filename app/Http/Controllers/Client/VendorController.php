@@ -22,11 +22,12 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\AhoyController;
-use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate};
+use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
-use DB;
+use DB,Log;
 use App\Models\VendorRegistrationDocument;
+use Exception;
 
 class VendorController extends BaseController
 {
@@ -107,6 +108,9 @@ class VendorController extends BaseController
             ->rawColumns(['checkbox'])
             ->make(true);
     }
+
+
+
     public function index(){
         $user = Auth::user();
         $csvVendors = CsvVendorImport::orderBy('id','desc')->get();
@@ -141,8 +145,12 @@ class VendorController extends BaseController
         $total_vendor_count = $vendors->count();
         $vendor_registration_documents = VendorRegistrationDocument::get();
 
-        $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$vendors->first()->id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
-        $vendor_for_ondemand = VendorCategory::where('vendor_id',$vendors->first()->id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
+        $vendor_for_pickup_delivery = null;
+        $vendor_for_ondemand = null;
+        if($vendors->isNotEmpty()){
+            $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$vendors->first()->id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
+            $vendor_for_ondemand = VendorCategory::where('vendor_id',$vendors->first()->id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
+        }
 
         if(count($vendors) == 1 && $user->is_superadmin == 0){
             return Redirect::route('vendor.catalogs', $vendors->first()->id);
@@ -240,9 +248,13 @@ class VendorController extends BaseController
         foreach ($request->only('name', 'address', 'latitude', 'longitude', 'desc','short_desc') as $key => $value) {
             $vendor->{$key} = $value;
         }
-        $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
-        $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
-        $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
+        foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+            $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+            $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
+        }
+        // $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
+        // $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
+        // $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
         if ($update == 'false') {
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
@@ -356,12 +368,13 @@ class VendorController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $domain = '', $id)
-    {
+    {   
+      
         $rules = array(
             'address' => 'required',
         //    'name' => 'required|string|max:150|unique:vendors,name,' . $id,
             'name' => 'required|string|max:150',
-            'phone_no' => 'nullable|digits_between:7,12',
+            'phone_no' => 'nullable|min:7|max:14',
             'email' => 'nullable|email',
         );
         //dd($request->all());
@@ -598,8 +611,8 @@ class VendorController extends BaseController
                         ->orderBy('parent_id', 'asc')->get();
         $products = Product::with(['media.image', 'primary', 'category.cat', 'brand', 'variant' => function ($v) {
             $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
-        }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count')
-            ->where('vendor_id', $id)->orderBy('title', 'asc')->get();
+        }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count', 'title')
+            ->where('vendor_id', $id)->get()->sortBy('primary.title', SORT_REGULAR, false);
         $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
             ->where('id', '>', '1')
             // ->where('is_core', 1)
@@ -679,6 +692,136 @@ class VendorController extends BaseController
         $taxRates=TaxRate::all();
         return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'taxRates'=>$taxRates]);
     }
+    // vendor product datatable
+    public function VendorProductFilter(Request $request,$domain='',$vendor_id)
+    {
+        $ordring = 'asc';
+        if(!empty($request->order)){
+            $ordring = $request->order[0]['dir'] ?? 'asc';
+        }
+        $client_preference_detail =ClientPreference::select('id','business_type')->first();
+        $product = Product::with(['media.image', 'primary', 'category.cat', 'brand', 'variant' => function ($v) {
+            $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
+        }])->select('products.id', 'products.sku', 'products.vendor_id', 'products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title','products.global_product_id')
+        ->join('product_translations', 'product_translations.product_id', '=', 'products.id') 
+        ->orderBy('product_translations.title', $ordring)  
+        ->groupBy('products.id')
+        ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
+
+            // pr($product->get()->toArray());
+        $datatable = Datatables::of($product)
+            ->addIndexColumn()
+            ->addColumn('single_product_check', function ($product) use ($request) {
+                $action = '<input type="checkbox" class="single_product_check"
+                                name="product_id[]" id="single_product"
+                                value="'.$product->id.'">';
+                return $action;
+            })
+            ->addColumn('product_image', function ($product) use ($request) {
+                $image = '';
+                if($product->media->first() && !empty($product->media->first()->image) ){
+                    $image_path = $product->media->first()->image->path['proxy_url'] . '30/30' . $product->media[0]->image->path['image_path'];
+                    $image = '<img  class="rounded-circle" src="'. $image_path.'">';
+                }
+                
+                return $image;
+            })->addColumn('product_is_live', function ($product) use ($request) {
+                if($product->is_live == 0 ){
+                    $live_status = __('Draft');
+                }elseif($product->is_live == 1 ){
+                    $live_status = __('Published');
+                }else{
+                    $live_status = __('Blocked');  
+                }
+                return $live_status;
+            })
+            ->addColumn('action', function ($product) use ($request) {
+                $edit_url = route('product.edit', $product->id);
+                $delete_url = route('product.destroy', $product->id);
+                $action = '<div class="form-ul" style="width: 60px;">
+                <div class="inner-div" style="float: left;">
+                    <a class="action-icon"
+                        href="'.$edit_url.'"
+                        userId="'.$product->id.'"><i
+                            class="mdi mdi-square-edit-outline"></i></a>
+                </div>
+                <div class="inner-div">
+                    <form id="deleteproduct_'.$product->id.'" method="POST"
+                        action="'. $delete_url.'">
+                        <input type="hidden" name="_token" value="' . csrf_token() . '" />
+                        <input type="hidden" name="_method" value="DELETE">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary-outline action-icon delete-product" data-destroy_url="'. $delete_url.'" data-rel="'.$product->id.'"><i class="mdi mdi-delete"></i></button>
+                            
+                        </div>
+                    </form>
+                </div>
+            </div>';
+                
+                
+                return $action;
+            });
+
+
+            $datatable->addColumn('product_name', function ($product) use ($request) {
+                $edit_url = route('product.edit', $product->id);
+                $action =  '<a href="'.$edit_url .'"
+                target="_blank" title="'.(($product->global_product_id)?' Global Item':'').'">'.($product->primary->title??'N/A').(($product->global_product_id)?' (Global)':'').'</a>';
+                // Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30)
+                return $action;
+            })
+            ->addColumn('product_category', function ($product) use ($request) {
+                return $product->category ? $product->category->cat->name : 'N/A';
+            });
+
+            if ($client_preference_detail->business_type != 'taxi'){
+
+                $datatable->addColumn('product_brand', function ($product) use ($request) {
+                    return !empty($product->brand) ? $product->brand->title : 'N/A';
+                })
+                ->addColumn('product_quantity', function ($product) use ($request) {
+                    return $product->variant->first() ? $product->variant->first()->quantity : 0;
+                })
+                ->addColumn('product_price', function ($product) use ($request) {
+                    return $product->variant->first() ? decimal_format($product->variant->first()->price) : 0;
+                })->addColumn('product_is_new', function ($product) use ($request) {
+                
+                    return $product->is_new == 0 ? __('No') : __('Yes');
+                })
+                ->addColumn('product_is_featured', function ($product) use ($request) {
+                    return $product->is_featured == 0 ? __('No')  : __('Yes');
+                })
+                ->addColumn('product_last_mile', function ($product) use ($request) {
+                    return $product->Requires_last_mile == 0 ? __('No')  : __('Yes');
+                });
+            }
+            $datatable->filter(function ($instance) use ($request) {
+                if (!empty($request->get('search'))) {
+                    $search = $request->get('search');
+                    $instance->where(function($query) use($search) {
+                        $query->whereHas('primary', function($q) use($search){
+                            $q->join('client_languages as cl', 'cl.language_id', 'product_translations.language_id')->select('product_translations.product_id', 'product_translations.title', 'product_translations.language_id', 'product_translations.body_html', 'product_translations.meta_title', 'product_translations.meta_keyword', 'product_translations.meta_description')->where('cl.is_primary', 1)->where('title', 'LIKE', '%'.$search.'%');
+                        })
+                        ->orWhereHas('category.cat', function($q) use($search){
+                            $q->where('name', 'LIKE', '%'.$search.'%');
+                        });
+                       
+                    });
+                }
+                $instance->where(function($query) use($request) {
+                    $ordring = 'asc';
+                    if(!empty($request->order)){
+                        $ordring = $request->order[0]['dir'];
+                    }
+                    $query->orderBy('title',$ordring);
+                });
+                
+            });
+            
+            
+            return $datatable->rawColumns(['single_product_check', 'product_image', 'product_name', 'action' ])->make(true);
+    }
+
 
     /**   show vendor page - payout tab      */
     public function vendorPayout($domain = '', $id){
@@ -1595,6 +1738,8 @@ class VendorController extends BaseController
                     }
 
         }
+
+        
         // this vendio export ony for get simel vendor ewport
         public function export() {
             return Excel::download(new VendorSimpelExport, 'vendor_simpel.xlsx');
@@ -1611,4 +1756,397 @@ class VendorController extends BaseController
             'message' => __('Vendor action Submitted successfully!')
         ]);
     }
+
+    # get listing of inventory vendor 
+    public function getInventoryImport($domain = '', $slug){
+        
+        $store_list_data = [];
+        $client_preferences = [];
+        $store_list = $this->getAllStoreListFromInventory();
+        if($store_list['status'] == 200){
+            $store_list_data = $store_list['data'];
+            $client_preferences = $store_list['client_preferences'];
+        }
+      
+
+        $vendor = Vendor::where('slug',$slug)->first();
+        
+        
+        return view('backend.vendor.inventory-import')->with([
+            'store_list_data' => $store_list_data,'vendor' => $vendor,'client_preferences' => $client_preferences]);
+    }
+
+    
+    # get Inventory Store Products
+    public function getInventoryStoreProducts(Request $request) {
+        
+        $store_product = [];
+        
+        $store_product_list = $this->getAllProductListFromInventory($request);
+        if($store_product_list['status'] == 200){
+           $store_product = $store_product_list['data'];
+           
+        }
+        
+        $returnHTML = view('backend.vendor.inventory-product-list')->with(['store_product' => $store_product,'vendor_slug' => $request->vendor_slug,'vendor_id' => $request->vendor_id])->render();
+        return response()->json(array('success' => true, 'html' => $returnHTML));
+    }
+
+
+    # get Inventory Store Products
+    public function postInventoryStoreProducts(Request $request) {   
+        $store_product = [];
+        $client_lang = [];
+        $productids = $request->productids;
+        $store_product_list = $this->getAllProductListFromInventoryByIds($productids);
+        
+        if($store_product_list['status'] == 200){
+           $store_product = $store_product_list['data'];
+        }
+
+        if($store_product_list['status'] == 200){
+            $client_lang = $store_product_list['client_lang'];
+         }
+         
+         try {
+                DB::beginTransaction();
+
+                # update or insert all selected products from inventory 
+                foreach($store_product as $key => $product)
+                {    
+                    $product_translation = $product['translation'];
+                    $variant_data = $product['variant_data'];
+                    $variant_set_data = $product['variant_set_data'];
+                    unset($product['category']);
+                    unset($product['primary']);
+                    unset($product['translation']);
+                    unset($product['variant_data']);
+                    unset($product['variant_set_data']);
+                    
+                    foreach($request->order_category as $key => $cat_ids){
+                        
+                        $cat = explode('_',$cat_ids);
+
+                        if($product['category_id'] == $cat[0])
+                        $product['category_id'] = $cat[1];
+                    }
+
+                    $product['vendor_id'] = $request->vendor_id;
+                    $product['import_from_inventory'] = 1;
+                    
+                    $product_import = Product::updateOrCreate(['sku' => $product['sku']],$product);
+                    
+                    foreach($product_translation as  $key => $pro_translation) {     # import product translation 
+                        unset($pro_translation['id']);
+                        unset($pro_translation['product_id']);
+                        unset($pro_translation['created_at']);
+                        unset($pro_translation['updated_at']);
+                        
+                        $product_translation_import = ProductTranslation::updateOrCreate(['product_id' => $product_import->id],$pro_translation);
+                    }
+
+                    foreach($variant_data as $key => $variant) {     # import product variant 
+                        
+                        unset($variant['id']);
+                        unset($variant['product_id']);
+                        unset($variant['created_at']);
+                        unset($variant['updated_at']);
+                        
+                        $variant['product_id'] = $product_import->id;
+                        $variant['barcode'] = $this->generateBarcodeNumber();
+                      
+                        $product_variant_import = ProductVariant::updateOrCreate(['sku' => $variant['sku']],$variant);
+                    }
+
+
+                    
+
+                //    ProductCategory::updateOrCreate(['product_id' => $product_import->id],['category_id' => $product['category_id']]);
+                    
+                    
+                }
+       
+                    # update or insert client languages from inventory 
+                foreach($client_lang as $key => $lang)
+                {    
+                        $code = Auth::user()->code;
+                        $already_lang = ClientLanguage::updateOrCreate(['language_id' => $lang],['client_code' => $code,'is_active' => 1]);
+                    
+                }
+
+                DB::commit();
+
+            } catch (\PDOException $e) {
+                Log::info($e->getMessage());
+                DB::rollBack();
+               
+            }    
+
+      
+       return Redirect::route('vendor.catalogs',$request->vendor_slug);
+           
+    }
+
+    private function generateBarcodeNumber()
+    {
+        $random_string = substr(md5(microtime()), 0, 14);
+        while (ProductVariant::where('barcode', $random_string)->exists()) {
+            $random_string = substr(md5(microtime()), 0, 14);
+        }
+        return $random_string;
+    }
+
+
+
+
+    # get category list of selected products 
+    public function getInventoryCategoryListProducts(Request $request) {
+          
+            $inventory_category = [];
+            $productids = $request->productids;
+            $inventory_category_list = $this->getAllCategoryListFromInventoryByIds($productids);
+            if($inventory_category_list['status'] == 200){
+               $inventory_category = $inventory_category_list['data'];
+            }
+
+            $order_category = Category::select('id')->where('slug','!=','Root')->whereHas('translation_one',function ($q){
+                $q->where('name','!=',null);
+            })->with('translation_one')->get();     
+         
+        $returnHTML = view('backend.vendor.inventory-category-list')->with(['inventory_category' => $inventory_category,'order_category' => $order_category])->render();
+        return response()->json(array('success' => true, 'html' => $returnHTML));
+    }
+
+
+    
+
+    public function VendorGlobalProductFilter(Request $request,$domain='')
+    {
+        $ordring = 'asc';
+        if(!empty($request->order)){
+            $ordring = $request->order[0]['dir'] ?? 'asc';
+        }
+        $product = EstimateProduct::with(['primary' => function ($q)use($ordring){
+            $q->orderBy('name', $ordring);
+        }])->orderBy('id',$ordring);
+        $client_preference_detail =ClientPreference::select('id','business_type')->first();
+        $datatable = Datatables::of($product)
+            ->addIndexColumn()
+            ->addColumn('global_product_check', function ($product) use ($request) {
+                $action = '<input type="checkbox" class="global_product_check"
+                                name="product_id[]" id="global_product"
+                                value="'.$product->id.'">';
+                return $action;
+            })
+            ->addColumn('product_image', function ($product) use ($request) {
+                $image = '';
+                if($product->icon){
+                    $image_path = $product->icon['proxy_url'] . '30/30' . $product->icon['image_path'];
+                    $image = '<img  class="rounded-circle" src="'. $image_path.'">';
+                }
+                return $image;
+            });
+            $datatable->addColumn('product_name', function ($product) use ($request) {
+                $action =  Str::limit(isset($product->primary) && !empty($product->primary) ? $product->primary->name : '', 30);
+                return $action;
+            })
+            ->addColumn('product_category', function ($product) use ($request) {
+                return $product->category->translation ? $product->category->translation[0]->name : 'N/A';
+            });
+            
+            return $datatable->rawColumns(['global_product_check','product_image', 'product_name','product_category'])->make(true);
+    }
+
+
+     # import get estimation Global Products
+     public function importGlobalProducts(Request $request){   
+        
+       if(!isset($request->product_id)){
+        return response()->json(array('success' => true,'message'=>'Try again somthing went wrong.'));
+       }
+
+       try{
+        DB::beginTransaction();
+         $estimate_products = EstimateProduct::with(['primary','category','estimate_product_addons'])->whereIn('id',$request->product_id)->get();
+
+            foreach($estimate_products as $k => $product)
+            {
+                \Log::info($product->primary);
+                    //Product added
+                    $productId = Product::updateOrCreate(
+                    [
+                        'title'=>$product->primary->name,
+                        'global_product_id'=>$product->id,
+                        'vendor_id'=>$request->vid
+                    ],
+                    [
+                        'title'=>$product->primary->name,
+                        'global_product_id'=>$product->id,
+                        'sku'=>str_replace(' ','.',$product->primary->name).'.'.time().'.'.str_replace(' ','.',$product->category->slug),
+                        'url_slug'=>str_replace(' ','.',$product->primary->name).'.'.rand(9,100),
+                        'vendor_id'=>$request->vid,
+                        'category_id'=>$product->category_id,
+                        'type_id'=>'1'
+                    ]);
+                  
+                     //Product added
+                     $productVar = ProductVariant::updateOrCreate(
+                        [
+                            'title'=>$product->primary->name,
+                            'product_id'=>$productId->id,
+                            'sku'=>str_replace(' ','.',$product->primary->name).'.'.time().'.'.str_replace(' ','.',$product->category->slug),
+                        ],
+                        [
+                            'title'=>$product->primary->name,
+                            'product_id'=>$productId->id,
+                            'sku'=>str_replace(' ','.',$product->primary->name).'.'.time().'.'.str_replace(' ','.',$product->category->slug),
+                            'price'=>$product->primary->price,
+                            'barcode'=>time().$productId->id
+                        ]);
+                 
+                    //Product media image added
+                    $mediaId = VendorMedia::updateOrCreate(
+                    [
+                        'path'=>$product->icon['original'],
+                        'vendor_id'=>$request->vid,
+                    ],
+                    [
+                        'path'=>$product->icon['original'],
+                        'media'=>'1',
+                        'vendor_id'=>$request->vid
+                    ]);
+                    
+                    
+                     //Product image added
+                     $imageId = ProductImage::updateOrCreate(
+                        [
+                            'product_id'=>$productId->id,
+                            'media_id'=>$mediaId->id,
+                        ],
+                        [
+                            'product_id'=>$productId->id,
+                            'media_id'=>$mediaId->id
+                        ]);
+
+                  
+
+                    //Product Translation added
+                $productTrans = ProductTranslation::updateOrCreate(
+                    [
+                        'title'=>$product->primary->name,
+                        'product_id'=>$productId->id,
+                    ],
+                    [
+                        'title'=>$product->primary->name,
+                        'product_id'=>$productId->id,
+                        'language_id'=>'1'
+                    ]);
+
+
+                    //Product Category added
+                    ProductCategory::updateOrCreate([
+                        'product_id'=>$productId->id,
+                        'category_id'=>$product->category_id
+                    ],
+                    [
+                        'product_id'=>$productId->id,
+                        'category_id'=>$product->category_id
+                    ]);
+
+
+
+                    foreach($product->estimate_product_addons as $addon)
+                    {
+                        $set = $addon->estimate_addon_set;
+
+                         //Product Addon set added
+                        $addonID = AddonSet::updateOrCreate([
+                            'title'=>$set->title,
+                            'vendor_id'=>$request->vid
+                        ],
+                        [
+                            'title'=>$set->title,
+                            'vendor_id'=>$request->vid,
+                            'min_select'=>$set->min_select,
+                            'max_select'=>$set->max_select,
+                            'position'=>$set->position,
+                            'status'=>$set->status
+                        ]);
+
+
+                          //ProductAddon added
+                          AddonSetTranslation::updateOrCreate([
+                            'title'=>$set->title,
+                            'addon_id'=>$addonID->id
+                        ],
+                        [
+                            'title'=>$set->title,
+                            'addon_id'=>$addonID->id,
+                            'language_id'=>'1'
+                        ]);
+
+
+
+                         //ProductAddon added
+                         ProductAddon::updateOrCreate([
+                            'product_id'=>$productId->id,
+                            'addon_id'=>$addonID->id
+                        ],
+                        [
+                            'product_id'=>$productId->id,
+                            'addon_id'=>$addonID->id
+                        ]);
+
+
+                        $estimate_addon_id = $addon->estimate_addon_id;
+                        $optionAddon = EstimateAddonOption::where('estimate_addon_id',$estimate_addon_id)->get();
+                        foreach($optionAddon as $addonOpt)
+                        {
+                            //ProductAddon set added
+                              $optId =  AddonOption::updateOrCreate([
+                                    'title'=>$addonOpt->title,
+                                    'addon_id'=>$addonID->id
+                                ],
+                                [
+                                    'title'=>$addonOpt->title,
+                                    'addon_id'=>$addonID->id,
+                                    'position'=>$addonOpt->position,
+                                    'price'=>$addonOpt->price
+                                ]);
+
+
+                                //Addon option Translation added
+                                $addonTrans = AddonOptionTranslation::updateOrCreate(
+                                    [
+                                        'title'=>$addonOpt->title,
+                                        'addon_opt_id'=>$optId->id,
+                                    ],
+                                    [
+                                        'title'=>$addonOpt->title,
+                                        'addon_opt_id'=>$optId->id,
+                                        'language_id'=>'1'
+                                    ]);
+
+                        }
+
+                    }
+                    
+            }
+            DB::commit();
+            return response()->json(array('success' => true,'message'=>'Global Product import successfuly.'));
+
+        }catch (Exception $e) {
+            DB::rollback();
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+           
+    }
+
+
+  
+    
+
+
+
+    
 }

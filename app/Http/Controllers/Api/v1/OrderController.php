@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct,UserDocs, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments};
+use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption};
 use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\OrderTrait;
 
@@ -171,6 +171,7 @@ class OrderController extends BaseController
                     $order->user_id = $user->id;
                     $order->order_number = generateOrderNo();
                     $order->address_id = $request->address_id;
+                    $order->total_other_taxes = $cart->total_other_taxes;
                     $order->payment_option_id = $request->payment_option_id;
                     $order->specific_instructions = $request->specific_instructions;
                     $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
@@ -210,6 +211,8 @@ class OrderController extends BaseController
                         $vendor_products_total_amount = 0;
                         $vendor_payable_amount = 0;
                         $vendor_discount_amount = 0;
+                        $is_restricted = 0;
+                        $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
                         $order_vendor = new OrderVendor;
                         $order_vendor->status = 0;
                         $order_vendor->user_id = $user->id;
@@ -218,6 +221,10 @@ class OrderController extends BaseController
                         $order_vendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                         $order_vendor->save();
                         foreach ($vendor_cart_products as $vendor_cart_product) {
+                            if($is_restricted == 0 && $passbase_check && isset($vendor_cart_product->product) && $vendor_cart_product->product->age_restriction == 1)
+                            {
+                                $is_restricted = 1;
+                            }
                             $variant = $vendor_cart_product->product->variants->where('id', $vendor_cart_product->variant_id)->first();
                             $quantity_price = 0;
                             $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
@@ -361,6 +368,11 @@ class OrderController extends BaseController
                         $actual_amount = $vendor_payable_amount;
                         if ($vendor_cart_product->coupon && !empty($vendor_cart_product->coupon->promo)) {
                             $coupon_id = $vendor_cart_product->coupon->promo->id;
+
+                            if($vendor_cart_product->coupon->promo->paid_by_vendor_admin == 0){
+                                $coupon_paid_by = 0;
+                            }
+        
                             $coupon_name = $vendor_cart_product->coupon->promo->name;
                             if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
                                 $coupon_discount_amount = $vendor_cart_product->coupon->promo->amount;
@@ -373,6 +385,13 @@ class OrderController extends BaseController
                                 $total_discount += $final_coupon_discount_amount;
                                 $vendor_payable_amount -= $final_coupon_discount_amount;
                                 $vendor_discount_amount += $final_coupon_discount_amount;
+                            }
+                             // add delivery fee in coupon if coupon has free delicery
+                            if($vendor_cart_product->coupon->promo->allow_free_delivery == 1){
+
+                                $vendor_discount_amount = $vendor_discount_amount +  $delivery_fee;
+                                $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
+                                $total_discount += $delivery_fee;
                             }
                         }
                         //Start applying service fee on vendor products total
@@ -393,6 +412,7 @@ class OrderController extends BaseController
                         $vendor_payable_amount += $vendor_taxable_amount;
 
                         $order_vendor->coupon_id = $coupon_id;
+                        $order_vendor->coupon_paid_by = $coupon_paid_by??1;
                         $order_vendor->coupon_code = $coupon_name;
                         $order_vendor->order_status_option_id = 1;
                         $order_vendor->delivery_fee = $delivery_fee;
@@ -402,6 +422,7 @@ class OrderController extends BaseController
                         $order_vendor->discount_amount = $vendor_discount_amount;
                         $order_vendor->payment_option_id = $request->payment_option_id;
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
+                        $order_vendor->is_restricted = $is_restricted;
                         $vendor_info = Vendor::where('id', $vendor_id)->first();
                         if ($vendor_info) {
                             if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
@@ -450,7 +471,7 @@ class OrderController extends BaseController
                     }
                     $payable_amount = $payable_amount - $loyalty_amount_saved;
 
-                    $ex_gateways_wallet = [4,36]; // stripe,mycash
+                    $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
                     $wallet_amount_used = 0;
                     if ($user->balanceFloat > 0) {
                         $wallet = $user->wallet;
@@ -494,8 +515,8 @@ class OrderController extends BaseController
                     // pr($res);
                     // exit();
                     // $ex_gateways = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24,25,28]; // if Stripe, paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree,easebuzz,vnpay
-                    
-                    $ex_gateways = [1,2,3,14,15,16,20,21,22,23,26,38];
+                    // need to add weebhook for razorpay (10) and remove from ex_gateways
+                    $ex_gateways = [1,2,3,14,15,16,10,20,21,22,23,26,38,42];
                     //Delete cart if payment is done from these gateways
                     if (in_array($request->payment_option_id, $ex_gateways)) {
 
@@ -837,7 +858,7 @@ class OrderController extends BaseController
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
-            if ($order->payment_method == 1) {
+            if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
@@ -852,6 +873,7 @@ class OrderController extends BaseController
                 $call_back_url = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/dispatch-order-status-update/" . $dynamic;
             //   $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -893,14 +915,17 @@ class OrderController extends BaseController
             );
             
             if ($customer->dial_code == "971") {
-                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                $customerno = "0" . $customer->phone_number;
             } else {                
-                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' =>$customerno ?? rand(111111, 11111),
+                'customer_dial_code' => $customer->dial_code ?? null,
                 'customer_email' => $customer->email ?? null,
                 'recipient_phone' => $customerno ?? rand(111111, 11111),
                 'recipient_email' => $customer->email ?? null,
@@ -912,8 +937,14 @@ class OrderController extends BaseController
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks
+                'task' => $tasks,
+                'is_restricted' => $order_vendor->is_restricted
             ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
 
            // Log::info($postdata);
             $client = new GCLIENT([
@@ -958,7 +989,7 @@ class OrderController extends BaseController
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
-            if ($order->payment_method == 1) {
+            if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
@@ -974,6 +1005,7 @@ class OrderController extends BaseController
             // $call_back_url = route('dispatch-order-update', $dynamic);
 
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -1007,15 +1039,18 @@ class OrderController extends BaseController
             );
             
             if ($customer->dial_code == "971") {
-                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                $customerno = "0" . $customer->phone_number;
             } else {                
-                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
 
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                'customer_dial_code' => $customer->dial_code ?? null,
                 'customer_email' => $customer->email ?? null,
                 'recipient_phone' => $customerno ?? rand(111111, 11111),
                 'recipient_email' => $customer->email ?? null,
@@ -1026,8 +1061,14 @@ class OrderController extends BaseController
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks
+                'task' => $tasks,
+                'is_restricted' => $order_vendor->is_restricted
             ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
 
 
             $client = new GClient([
@@ -1070,7 +1111,7 @@ class OrderController extends BaseController
              $customer = User::find($order->user_id);
              $cus_address = UserAddress::find($order->address_id);
              $tasks = array();
-             if ($order->payment_method == 1) {
+             if ($order->payment_option_id == 1) {
                  $cash_to_be_collected = 'Yes';
                  $payable_amount = $order->payable_amount;
              } else {
@@ -1082,6 +1123,7 @@ class OrderController extends BaseController
              $dynamic = uniqid($order->id . $vendor);
              $call_back_url = route('dispatch-order-update', $dynamic);
              $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'phone_no', 'email', 'longitude', 'address')->first();
+             $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
              $tasks = array();
              $meta_data = '';
              $rtype = 'P';
@@ -1164,9 +1206,11 @@ class OrderController extends BaseController
              }
              
              if ($customer->dial_code == "971") {
-                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                $customerno = "0" . $customer->phone_number;
             } else {                
-                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
  
  
@@ -1174,6 +1218,7 @@ class OrderController extends BaseController
                 'order_number' =>  $order->order_number,
                  'customer_name' => $customer->name ?? 'Dummy Customer',
                  'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                 'customer_dial_code' => $customer->dial_code ?? null,
                  'customer_email' => $customer->email ?? null,
                  'recipient_phone' => $customerno ?? rand(111111, 11111),
                  'recipient_email' => $customer->email ?? null,
@@ -1186,8 +1231,14 @@ class OrderController extends BaseController
                  'order_team_tag' => $team_tag,
                  'call_back_url' => $call_back_url ?? null,
                  'task' => $tasks,
-                 'request_type'=> $rtype
+                 'request_type'=> $rtype,
+                 'is_restricted' => $order_vendor->is_restricted
              ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
  
  
              $client = new GCLIENT([
@@ -1373,9 +1424,22 @@ class OrderController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
+                $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
+                if(!empty($smsTemplates)){
+                    $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
+                    $smsTemplates = str_replace("{amount}", $currSymbol . decimal_format($order->payable_amount), $smsTemplates);
+                    $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
+                    \Log::info('sms:');
+                    \Log::info($body);
+                    \Log::info('sms:');
+                }else{
+                    $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
+                }
                 if (!empty($prefer->sms_provider)) {
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    \Log::info('sms:rs');
+                    \Log::info($send);
+                    \Log::info('sms:rs');
                 }
             }
         } catch (\Exception $ex) {
@@ -1753,6 +1817,18 @@ class OrderController extends BaseController
             // })->get();
 
            // $order['user_document_value'] =  $user_docs;
+           /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
+           $total_other_taxes = 0;
+           if($order->total_other_taxes!=''){
+               foreach(explode(",",$order->total_other_taxes) as $row){
+               $row1 = explode(":",$row);
+                   $total_other_taxes+=(float)$row1[1];
+               }
+           }
+
+            // $order['user_document_value'] =  $user_docs;
+            $order->taxable_amount =  $total_other_taxes??0;
+            $order->total_other_taxes =  $total_other_taxes??0;
             $order['user_document_list'] =  $user_registration_documents;
 
             $order['category_KYC_document'] = $category_KYC_document??null;
@@ -2036,6 +2112,11 @@ class OrderController extends BaseController
                             $actual_amount = $vendor_payable_amount;
                             if ($vendor_cart_product->coupon && !empty($vendor_cart_product->coupon->promo)) {
                                 $coupon_id = $vendor_cart_product->coupon->promo->id;
+
+                                if($vendor_cart_product->coupon->promo->paid_by_vendor_admin == 0){
+                                    $coupon_paid_by = 0;
+                                }
+
                                 $coupon_name = $vendor_cart_product->coupon->promo->name;
                                 if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
                                     $coupon_discount_amount = $vendor_cart_product->coupon->promo->amount;
@@ -2066,6 +2147,7 @@ class OrderController extends BaseController
                             $vendor_payable_amount += $vendor_taxable_amount;
 
                             $order_vendor->coupon_id = $coupon_id;
+                            $OrderVendor->coupon_paid_by = $coupon_paid_by??1;
                             $order_vendor->coupon_code = $coupon_name;
                             $order_vendor->order_status_option_id = 1;
                             $order_vendor->delivery_fee = $delivery_fee;
@@ -2494,12 +2576,15 @@ class OrderController extends BaseController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData, $header_code='')
     {
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+
+        $vendorAppDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
             $notification_content = NotificationTemplate::where('id', 4)->first();
+            $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
             if ($notification_content) {
                 if($header_code == ''){
                     $header_code = Client::orderBy('id', 'asc')->first()->code;
@@ -2515,7 +2600,7 @@ class OrderController extends BaseController
                     "registration_ids" => $devices,
                     "notification" => [
                         'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
+                        'body'  => $body_content,
                         'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                         'click_action' => $redirect_URL,
@@ -2545,8 +2630,9 @@ class OrderController extends BaseController
 
     public function sendStatusChangePushNotificationCustomer($user_ids, $orderData, $order_status_id, $header_code)
     {
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-
+        $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        $vendorAppDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;

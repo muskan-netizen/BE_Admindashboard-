@@ -149,13 +149,13 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                                         </div>
                                     </div>
                                     <div class="p-2">
-                                        <h3 class="heading mt-0 mb-2"><b>{{ $plan->title }}</b></h3>
+                                        <h3 class="heading mt-0 mb-2"><b>{{ __($plan->title) }}</b></h3>
                                         <div class="pricing-content">
-                                            <p>{{ $plan->description }}</p>
+                                            <p>{{ __($plan->description) }}</p>
                                         </div>
                                         <ul class="mb-3">
                                             @foreach($plan->features as $feature)
-                                                <li><i class="fa fa-check"></i> {{ $feature }}</li>
+                                                <li><i class="fa fa-check"></i> {{ __($feature) }}</li>
                                             @endforeach
                                         </ul>
                                     </div>
@@ -304,6 +304,20 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                         <span class="error text-danger" id="stripe_fpx_error"></span>
                     </div>
                 <% } %>
+                <% if(payment_option.slug == 'stripe_ideal' ) { %>
+                    <div class="col-md-12 mt-3 mb-3 stripe_ideal_element_wrapper option-wrapper d-none">
+                        <label for="ideal-bank-element">
+                            iDEAL Bank
+                        </label>
+                        <div class="form-control">
+                            <div id="ideal-bank-element">
+                              <!-- A Stripe Element will be inserted here. -->
+                            </div>
+                        </div>
+                       
+                        <span class="error text-danger"id="error-message"></span>
+                    </div>
+                <% } %>
                 <% if(payment_option.slug == 'yoco') { %>
                     <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper option-wrapper d-none">
                         <div class="form-control">
@@ -336,12 +350,17 @@ ul li {margin: 0 0 10px;color: #6c757d;}
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
-@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
+@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options)  || in_array('stripe_ideal',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
 @endif
 @if(in_array('stripe_oxxo',$client_payment_options))
 <script>
 var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
+</script>
+@endif
+@if(in_array('stripe_ideal',$client_payment_options))
+<script>
+var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 </script>
 @endif
 @if(in_array('yoco',$client_payment_options))
@@ -362,9 +381,11 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
 <script type="text/javascript">
     var stripe_fpx = '';
     var fpxBank = '';
+    var idealBank = {};
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_dpo_subscription = "{{route('dpo.subscription')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_windcave_hash_url = "{{route('windcave.createHash')}}";
@@ -379,12 +400,14 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
+    var payment_retrive_stripe_ideal_url = "{{url('payment/retrieve/stripe_ideal')}}";
+    var payment_create_stripe_ideal_url = "{{url('payment/create/stripe_ideal')}}";
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
-
+    var stripe_ideal_publishable_key ='{{ $stripe_ideal_publishable_key }}';
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();

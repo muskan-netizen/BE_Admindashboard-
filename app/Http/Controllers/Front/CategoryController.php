@@ -147,7 +147,7 @@ class CategoryController extends FrontController{
             if(!Auth::user()){
                 return redirect()->route('customer.login');
             }else{
-                $user_addresses = UserAddress::get();
+                $user_addresses = UserAddress::whereNotNull('latitude')->whereNotNull('longitude')->get();
                 $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
                 $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
                 $riders = Rider::where('user_id',Auth::user()->id)->orderBy('id','DESC')->get();
@@ -212,8 +212,8 @@ class CategoryController extends FrontController{
             $preferences= ClientPreference::first();
             $vendorData = Vendor::with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $latitude = Session::get('latitude') ?? '';
-                $longitude = Session::get('longitude') ?? '';
+                $latitude = Session::get('latitude') ?? $preferences->Default_latitude;
+                $longitude = Session::get('longitude') ?? $preferences->Default_longitude;
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 //3961 for miles and 6371 for kilometers
                 $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;

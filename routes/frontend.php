@@ -8,7 +8,8 @@
 	Route::any('payment/paytab/callback','Front\PaytabController@callback')->name('payment.paytab.callback'); 
 	Route::match(['get','post'],'payment/paytab/return','Front\PaytabController@returnBack')->name('payment.paytab.return'); 
 	Route::get('/debug-sentry', function () {
-		throw new Exception('My first Sentry error!');
+		echo \Hash::make('dispatcher@765');
+		//throw new Exception('My first Sentry error!');
 	});
 
 
@@ -94,14 +95,22 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('payment/webview/response/stripe_fpx', 'Front\StripeGatewayController@webViewResponseStripeFPX')->name('payment.webview.response.stripe_fpx');
 
 
-		// Stripe OXXO
-		Route::post('payment/create/stripe_oxxo', 'Front\StripeGatewayController@createStripeOXXOPaymentIntent')->name('payment.create.stripe_oxxo');
-		 Route::get('payment/stripe_oxxo/clear', 'Front\StripeGatewayController@cartStripeOXXOClear')->name('payment.stripe_oxxo_clear');
-		Route::post('payment/webhook/stripe_oxxo', 'Front\StripeGatewayController@stripeOXXOWebhook')->name('payment.webhook.stripe_oxxo');
-		Route::get('payment/webview/stripe_oxxo', 'Front\StripeGatewayController@paymentWebViewStripeOXXO')->name('payment.webview.stripe_oxxo');
-		Route::get('payment/webview/response/stripe_oxxo', 'Front\StripeGatewayController@webViewResponseStripeOXXO')->name('payment.webview.response.stripe_oxxo');
+	// Stripe OXXO
+	Route::post('payment/create/stripe_oxxo', 'Front\StripeGatewayController@createStripeOXXOPaymentIntent')->name('payment.create.stripe_oxxo');
+	Route::get('payment/stripe_oxxo/clear', 'Front\StripeGatewayController@cartStripeOXXOClear')->name('payment.stripe_oxxo_clear');
+	Route::post('payment/webhook/stripe_oxxo', 'Front\StripeGatewayController@stripeOXXOWebhook')->name('payment.webhook.stripe_oxxo');
+	Route::get('payment/webview/stripe_oxxo', 'Front\StripeGatewayController@paymentWebViewStripeOXXO')->name('payment.webview.stripe_oxxo');
+	Route::get('payment/webview/response/stripe_oxxo', 'Front\StripeGatewayController@webViewResponseStripeOXXO')->name('payment.webview.response.stripe_oxxo');
 
 
+	// Stripe OXXO
+	Route::post('payment/create/stripe_ideal', 'Front\StripeGatewayController@createStripeIdealPaymentIntent')->name('payment.create.stripe_ideal');
+	Route::get('payment/retrieve/stripe_ideal', 'Front\StripeGatewayController@retrieveStripeIdealPaymentIntent')->name('payment.retrieve.stripe_ideal');
+	Route::post('payment/webhook/stripe_ideal', 'Front\StripeGatewayController@stripeIdealWebhook')->name('payment.webhook.stripe_ideal');
+	Route::get('payment/webview/stripe_ideal', 'Front\StripeGatewayController@paymentWebViewStripeIdeal')->name('payment.webview.stripe_ideal');
+	Route::get('payment/webview/response/stripe_ideal', 'Front\StripeGatewayController@webViewResponseStripeIdeal')->name('payment.webview.response.stripe_ideal');
+
+		   
 	// Paypal
 	Route::post('payment/paypal', 'Front\PaypalGatewayController@paypalPurchase')->name('payment.paypalPurchase');
 	Route::get('payment/paypal/CompletePurchase', 'Front\PaypalGatewayController@paypalCompletePurchase')->name('payment.paypalCompletePurchase');
@@ -163,6 +172,16 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/paytab/page','Front\PaytabController@beforePayment')->name('payment.paytab.beforePayment');
 	Route::post('payment/paytab','Front\PaytabController@createPayment')->name('payment.paytab.createPayment');
 
+	//UPay
+	Route::match(['get','post'],'payment/upay/page','Front\UPayController@beforePayment')->name('payment.upay.beforePayment');
+	Route::match(['get','post'],'payment/upay','Front\ConektaController@afterPayment')->name('payment.upay.afterPayment');
+	//Conekta
+	Route::match(['get','post'],'payment/conekta/page','Front\ConektaController@beforePayment')->name('payment.conekta.beforePayment');
+	Route::match(['get','post'],'payment/conekta','Front\ConektaController@afterPayment')->name('payment.conekta.afterPayment');
+	//Telr
+	Route::match(['get','post'],'payment/telr/page','Front\TelrController@beforePayment')->name('payment.telr.beforePayment');
+	Route::match(['get','post'],'payment/telr/{status}/{payment_from}/{come_from}/{amount}/{order_number?}','Front\TelrController@afterPayment')->name('payment.telr.afterPayment');
+
 	//Coinbase
 	Route::match(['get','post'],'payment/coinbase/page','Front\CoinbaseController@beforePayment')->name('payment.coinbase.beforePayment');
 	Route::post('payment/coinbase','Front\CoinbaseController@createPayment')->name('payment.coinbase.createPayment');
@@ -221,11 +240,20 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/windcave', 'Front\WindcaveController@createHash')->name('windcave.createHash');
 	Route::get('payment/windcave/success', 'Front\WindcaveController@successPage')->name('windcave.success');
 	Route::get('payment/windcave/fail', 'Front\WindcaveController@failPage')->name('windcave.fail');
+	
+	//DPO routes 
+	Route::post('payment/dpo', 'Front\DpoController@createTocken')->name('dpo.createTocken');
+	Route::get('payment/dpo/redirect', 'Front\DpoController@successPage')->name('dpo.redirect');
+	Route::get('payment/dpo/success', 'Front\DpoController@successPage')->name('dpo.success');
+	Route::get('payment/dpo/fail', 'Front\DpoController@failPage')->name('dpo.fail');
 
 	//Paytech routes 
 	Route::post('payment/paytech', 'Front\PaytechController@createHash')->name('paytech.createHash');
 	Route::get('payment/paytech/success', 'Front\PaytechController@successPage')->name('paytech.success');
 	Route::get('payment/paytech/fail', 'Front\PaytechController@failPage')->name('paytech.fail');
+
+	Route::post('payment/dpo/wallet', 'Front\DpoController@createTocken')->name('dpo.createTocken');
+	Route::post('payment/dpo/subscription', 'Front\DpoController@createTocken')->name('dpo.subscription');
 	
 	//payPhone routes
 	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
@@ -271,6 +299,17 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('payment/easebuzz/notify', 'Front\EasebuzzController@easybuzzNotify')->name('payment.easebuzz.easybuzzNotify');
 	Route::any('payment/easebuzz/api', 'Front\EasebuzzController@easebuzz_respontAPP')->name('easebuzz.webview');
 
+	// UseRedePaymentController payment test
+	Route::match(['get','post'],'payment/userede/page','Front\UseRedePaymentController@beforePayment')->name('payment.userede.beforePayment');
+	Route::match(['get','post'],'/payment/userede/respons', 'Front\UseRedePaymentController@responsUs')->name('payment.userede.responsUs');
+	Route::post('/payment/userede/payment_init', 'Front\UseRedePaymentController@paymentInit')->name('payment.userede.createPayment');
+	Route::post('/payment/userede/payment_init_app', 'Front\UseRedePaymentController@paymentInitApp')->name('payment.userede.createPaymentApp');
+
+	// OpenpayPaymentController payment test
+	Route::match(['get','post'],'payment/opnepay/page','Front\OpenpayPaymentController@beforePayment')->name('payment.opnepay.beforePayment');
+	Route::post('/payment/opnepay/payment_init', 'Front\OpenpayPaymentController@paymentInit')->name('payment.opnepay.createPayment');
+	Route::post('/payment/opnepay/payment_init_app', 'Front\OpenpayPaymentController@paymentInitApp')->name('payment.opnepay.createPaymentApp');
+	Route::match(['get','post'],'payment/webhook/opnepay', 'Front\OpenpayPaymentController@opnepayWebhook')->name('payment.webhook.opnepay');
 	// test VNPAY payment gateway
 	Route::get('/vnpay-gateway', 'Front\VnpayController@VnPay_gateway')->name('vnpay-gateway');
 	Route::post('payment/vnpay/request', 'Front\VnpayController@order')->name('vnpay.order');
@@ -332,6 +371,9 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('cart/product/lastAdded', 'Front\CartController@getLastAddedProductVariant')->name('getLastAddedProductVariant');
 	Route::post('cart/product/variant/different-addons', 'Front\CartController@getProductVariantWithDifferentAddons')->name('getProductVariantWithDifferentAddons');
 	Route::post('add/product/cart', 'Front\CartController@postAddToCart')->name('addToCart');
+	Route::post('post/estimate/cart/request', 'Front\CartController@postCartRequestFromEstimation')->name('postCartRequestFromEstimation');
+	Route::post('add/estimate/product/cart', 'Front\EstimationController@addToEstimateCart')->name('addToEstimateCart');
+	Route::post('remove/estimate/product/cart', 'Front\EstimationController@destroy')->name('removeEstimateCartProduct');
 	Route::post('add/product/cart-addons', 'Front\CartController@postAddToCartAddons')->name('addToCartAddons');
 	Route::post('add/wishlist/cart', 'Front\CartController@addWishlistToCart')->name('addWishlistToCart');
 	Route::post('add/vendorTable/cart', 'Front\CartController@addVendorTableToCart')->name('addVendorTableToCart');
@@ -346,6 +388,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('cart/product-schedule/update', 'Front\CartController@updateProductSchedule')->name('cart.updateProductSchedule');
 	Route::get('cartProducts', 'Front\CartController@getCartData')->name('getCartProducts');
 	Route::get('cartDetails', 'Front\CartController@getCartProducts')->name('cartDetails');
+	Route::post('get/product/prescription', 'Front\CartController@getProductPrescription')->name('getProductPrescription');
 	Route::post('cartDelete', 'Front\CartController@emptyCartData')->name('emptyCartData');
 	Route::post('repeatOrder', 'Front\CartController@repeatOrder')->name('web.repeatOrder');
 	Route::post('/product/updateCartQuantity', 'Front\CartController@updateQuantity')->name('updateQuantity');
@@ -360,7 +403,11 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('vendor/{slug1}/{slug2}', 'Front\VendorController@vendorCategoryProducts')->name('vendorCategoryProducts');
 	Route::post('vendor/filters/{id}', 'Front\VendorController@vendorFilters')->name('vendorProductFilters');
 	Route::post('vendor/products/searchResults', 'Front\VendorController@vendorProductsSearchResults')->name('vendorProductsSearchResults');
+	Route::post('search/estimated/products', 'Front\EstimationController@searchEstimatedProducts')->name('searchEstimatedProducts'); // Added By Ovi
 	Route::post('vendor/product/addons', 'Front\VendorController@vendorProductAddons')->name('vendorProductAddons');
+	Route::post('estimate/product/addons', 'Front\EstimationController@estimateProductAddons')->name('estimateProductAddons');
+	Route::get('get-estimation', 'Front\EstimationController@index'); // Added by Ovi
+	Route::get('estimation-list', 'Front\EstimationController@estimationList')->name('estimationList'); // Added by Ovi
 	Route::get('brand/{id?}', 'Front\BrandController@brandProducts')->name('brandDetail');
 	Route::post('brand/filters/{id}', 'Front\BrandController@brandFilters')->name('brandProductFilters');
 	Route::get('celebrity/{slug?}', 'Front\CelebrityController@celebrityProducts')->name('celebrityProducts');

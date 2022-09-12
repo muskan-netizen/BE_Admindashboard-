@@ -5,7 +5,27 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('vendor-sync-inventory', 'Api\v1\VendorController@vendorSyncInventory')->middleware('ConnectDbFromInventory');
 
-    Route::group(['middleware' => ['dbCheck', 'checkAuth', 'apilogger']], function() {
+
+  
+   Route::group(['middleware' => ['dbCheck', 'checkAuth']], function() { //apilogger
+
+
+        Route::group(['prefix' => 'estimation'], function () {
+    
+            Route::get('get-product-estimation-with-addons', 'Api\v1\ProductEstimationController@getProductEstimationWithAddons');
+            
+            Route::post('add-estimated-products-in-cart', 'Api\v1\ProductEstimationController@addEstimatedProductInCart');
+            
+            Route::post('remove-products-from-estimated-cart', 'Api\v1\ProductEstimationController@removeProductFromEstimatedCart');
+            Route::post('remove-addons-from-estimated-cart', 'Api\v1\ProductEstimationController@removeAddonsFromEstimatedCart');
+            
+            Route::post('get-estimation', 'Api\v1\ProductEstimationController@getEstimation');
+            Route::post('assign-order-qrcode', 'Api\v1\ProductEstimationController@assingQrcode');
+            
+            Route::post('transfer-estimated-cart-products-to-real-cart', 'Api\v1\ProductEstimationController@transferEstimatedCartProductsToRealCart');
+        
+        });
+
 
         Route::post('sendTestMail', 'Api\v1\BaseController@sendTestMail');
 
@@ -66,7 +86,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
 
     });
-    Route::group(['middleware' => ['dbCheck','systemAuth', 'apilogger']], function() {
+
+    Route::group(['middleware' => ['dbCheck','systemAuth']], function() { //apilogger
         Route::get('cart/empty', 'Api\v1\CartController@emptyCart');
         Route::get('coupons/{id?}', 'Api\v1\CouponController@list');
         Route::post('cart/remove', 'Api\v1\CartController@removeItem');
@@ -79,5 +100,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('promo-code/vendor_promo_code', 'Api\v1\PromoCodeController@vendorPromoCodeList');
         Route::post('cart/product-schedule/update', 'Api\v1\CartController@updateProductSchedule');
         Route::post('cart/productfaq/update', 'Api\v1\CartController@updateCartProductFaq');
+        Route::post('dropoff-location', 'Api\v1\StaticDropoffController@getStaticLocation');
     });
 });

@@ -277,7 +277,7 @@
                             @endif
 
                             <p class="mb-1 product_price">
-                                {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,2,".",",") }}
+                                {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier) }}
                                 @if ($prod->variant[0]->compare_at_price > 0)
                                     <span
                                         class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
@@ -335,11 +335,11 @@
         @empty
         @endforelse
     @else
-        <h4 class="mt-3 mb-3 text-center">No product found</h4>
+        <h4 class="mt-3 mb-3 text-center">{{__('No product found')}}</h4>
     @endif
 </section>
 @empty
-    <h4 class="mt-3 mb-3 text-center">No product found</h4>
+    <h4 class="mt-3 mb-3 text-center">{{__('No product found')}}</h4>
 @endforelse
 
 

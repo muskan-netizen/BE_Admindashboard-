@@ -14,6 +14,10 @@
 .container_al{width: 100%;}
 .al_body_template_two section.section-b-space_.p-0.ratio_asos .container_al.shimmer_effect{width:100%; max-width: 100%;}
 @media(max-width:767px){.cardbanner {border-radius:0;height:250px;}}
+@media (max-width: 991px){
+.al_body_template_two #alTaxiBookingWrapper .cab-booking {
+height: auto;
+}}
 </style>
 
 @endsection
@@ -595,7 +599,7 @@
         <div class="modal-content">
             <div class="modal-body text-center">
                 <img style="height:150px" class="img-fluid blur-up lazyload" data-src="{{asset('assets/images/18.png')}}" alt="">
-                <p class="mb-0 mt-3">{{ $client_preference_detail ? $client_preference_detail->age_restriction_title : 'Are you 18 or older?' }}</p>
+                <p class="mb-0 mt-3">{{ $client_preference_detail ? $client_preference_detail->age_restriction_title : __('Are you 18 or older?') }}</p>
                 <p class="mb-0">{{__('Are you sure you want to continue?')}}</p>
             </div>
             <div class="modal-footer d-block">

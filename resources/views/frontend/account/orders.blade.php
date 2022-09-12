@@ -7,7 +7,7 @@
         <?php $ordertitle = 'Orders'; ?>
          <?php $hidereturn = 0; ?>
 @endswitch
-@extends('layouts.store', ['title' => __('My '.$ordertitle)])
+@extends('layouts.store', ['title' => __('My '.getNomenclatureName($ordertitle, true))])
 @section('css')
     <style type="text/css">
         .main-menu .brand-logo {
@@ -71,6 +71,33 @@
         .invalid-feedback {
             display: block;
         }
+        .al_body_template_one .order_popop .modal-body {
+            padding: 5px 15px 15px 15px;
+            background: #89898905;
+            box-shadow: 4px 10px 6px #838282;
+        }
+        .al_body_template_one .order_popop p {
+            font-size: 13px;
+            line-height: 19px;
+        }
+        .al_body_template_one .order_popop .modal-body textarea {
+            border: 1px solid#d9d3d3;
+        }
+        .al_body_template_one .order_popop .modal-body textarea::placeholder{
+            padding:5px 10px;
+        }
+        .al_body_template_one .order_popop .modal-body button.close {
+            position: absolute;
+            right: 5px;
+            top: 0px;
+            padding: 0px;
+            margin: 0px;
+        }
+        .al_body_template_one .order_popop .modal-body label {
+            display: inline-block;
+            font-size: 18px !important;
+            font-weight: 400;
+        }
 
     </style>
     <section class="section-b-space order-page">
@@ -113,10 +140,10 @@
                     <div class="dashboard-right">
                         <div class="dashboard">
                             <div class="page-title">
-                                <h2>{{ __($ordertitle) }}</h2>
+                                <h2>{{ __(getNomenclatureName($ordertitle, true)) }}</h2>
                             </div>
                             <div class="welcome-msg">
-                                <h5>{{ __('Here Are All Your Previous ' . $ordertitle) }}</h5>
+                                <h5>{{ __('Here Are All Your Previous ' . getNomenclatureName($ordertitle, true)) }}</h5>
                             </div>
                             <div class="col-md-12">
                                 <div class="row" id="orders_wrapper">
@@ -126,14 +153,14 @@
                                                 <a class="nav-link {{ Request::query('pageType') === null || Request::query('pageType') == 'activeOrders' ? 'active show' : '' }}"
                                                     id="active-orders-tab" data-toggle="tab" href="#active-orders" role="tab"
                                                     aria-selected="true"><i
-                                                        class="icofont icofont-ui-home"></i>{{ __('Active ' . $ordertitle) }}</a>
+                                                        class="icofont icofont-ui-home"></i>{{ __('Active ' . getNomenclatureName($ordertitle, true)) }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             <li class="nav-item">
                                                 <a class="nav-link {{ Request::query('pageType') == 'pastOrders' ? 'active show' : '' }}"
                                                     id="past_order-tab" data-toggle="tab" href="#past_order" role="tab"
                                                     aria-selected="false"><i
-                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Past ' . $ordertitle) }}</a>
+                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Past ' . getNomenclatureName($ordertitle, true)) }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             @if (isset($hidereturn) && $hidereturn != 1)
@@ -149,7 +176,7 @@
                                                 <a class="nav-link {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}"
                                                     id="return_order-tab" data-toggle="tab" href="#rejected_order" role="tab"
                                                     aria-selected="false"><i
-                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Rejected/Cancel ' . $ordertitle) }}</a>
+                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Rejected/Cancel ' . getNomenclatureName($ordertitle, true)) }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                         </ul>
@@ -1873,7 +1900,7 @@
     </div>
 
 <!-- start cancel order -->
-<div class="modal fade vendor-order-cancel" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
+<div class="modal fade vendor-order-cancel order_popop" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-body">
@@ -1921,7 +1948,7 @@
     @if(in_array('razorpay',$client_payment_options))
     <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
     @endif
-    @if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
+    @if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options) || in_array('stripe_ideal',$client_payment_options))
     <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
     @endif
     @if(in_array('stripe_oxxo',$client_payment_options))
@@ -1929,6 +1956,13 @@
     var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
     </script>
     @endif
+
+    @if(in_array('stripe_ideal',$client_payment_options))
+    <script>
+    var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
+    </script>
+    @endif
+
     @if(in_array('yoco',$client_payment_options))
     <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
     <script>
@@ -1987,6 +2021,7 @@
         var create_konga_hash_url = "{{route('kongapay.createHash')}}";
         var create_payphone_url = "{{route('payphone.createHash')}}";
         var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
+        var create_dpo_tocken = "{{route('dpo.createTocken')}}";
         var create_windcave_hash_url = "{{route('windcave.createHash')}}";
         var create_paytech_hash_url = "{{route('paytech.createHash')}}";
         var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
@@ -1997,6 +2032,8 @@
         var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
         var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
         var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
+        var payment_create_stripe_ideal_url = "{{url('payment/create/stripe_ideal')}}";
+        var payment_retrive_stripe_ideal_url = "{{url('payment/retrieve/stripe_ideal')}}";
         var payment_paypal_url = "{{ route('payment.paypalPurchase') }}";
         var payment_yoco_url = "{{ route('payment.yocoPurchase') }}";
         var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";

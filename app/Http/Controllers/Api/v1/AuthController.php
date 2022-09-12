@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
-use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate,UserRegistrationDocuments,UserDocs};
+use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate,UserRegistrationDocuments,UserDocs};
 use Log;
 
 class AuthController extends BaseController
@@ -91,13 +91,20 @@ class AuthController extends BaseController
         // $device->access_token = $token;
         // $device->save();
 
+        //check login from individual vendor app
+        $fromVendorAppLogin = 0;
+        if(!empty($loginReq->is_vendor_app)){
+            $fromVendorAppLogin = 1;
+        }
+        
         if (!empty($loginReq->fcm_token)) {
             $device = UserDevice::updateOrCreate(
                 ['device_token' => $loginReq->fcm_token],
                 [
                     'user_id' => $user->id,
                     'device_type' => $loginReq->device_type,
-                    'access_token' => $token
+                    'access_token' => $token,
+                    'is_vendor_app' => $fromVendorAppLogin
                 ]
             );
         } else {
@@ -106,7 +113,8 @@ class AuthController extends BaseController
                 [
                     'user_id' => $user->id,
                     'device_type' => $loginReq->device_type,
-                    'access_token' => $token
+                    'access_token' => $token,
+                    'is_vendor_app' => $fromVendorAppLogin
                 ]
             );
         }
@@ -495,6 +503,12 @@ class AuthController extends BaseController
             $preferData['distance_unit'] = $prefer->distance_unit;
             $preferData['app_template_id'] = $prefer->app_template_id;
             $preferData['web_template_id'] = $prefer->web_template_id;
+
+            $preferData['show_subscription_plan_popup_signup'] = 0;
+            $showSubscriptionPlan = ShowSubscriptionPlanOnSignup::find(1);
+            if(@$showSubscriptionPlan->show_plan_customer == 1 && @$showSubscriptionPlan->every_sign_up == 1){
+                $preferData['show_subscription_plan_popup_signup'] = 1;
+            }
             $response['client_preference'] = $preferData;
             $response['refferal_code'] = $userRefferal ? $userRefferal->refferal_code : '';
 
@@ -506,13 +520,20 @@ class AuthController extends BaseController
             // ];
             // UserDevice::insert($user_device);
 
+            //check login from individual vendor app
+            $fromVendorAppLogin = 0;
+            if(!empty($signReq->is_vendor_app)){
+                $fromVendorAppLogin = 1;
+            }
+
             if (!empty($signReq->fcm_token)) {
                 $user_device = UserDevice::updateOrCreate(
                     ['device_token' => $signReq->fcm_token],
                     [
                         'user_id' => $user->id,
                         'device_type' => $signReq->device_type,
-                        'access_token' => $token
+                        'access_token' => $token,
+                        'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
             } else {
@@ -521,7 +542,8 @@ class AuthController extends BaseController
                     [
                         'user_id' => $user->id,
                         'device_type' => $signReq->device_type,
-                        'access_token' => $token
+                        'access_token' => $token,
+                        'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
             }
@@ -534,57 +556,41 @@ class AuthController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');
+                $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
                 $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
             }
-            if (!empty($prefer->mail_driver) && !empty($prefer->mail_host) && !empty($prefer->mail_port) && !empty($prefer->mail_port) && !empty($prefer->mail_password) && !empty($prefer->mail_encryption)) {
-                $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
-                $confirured = $this->setMailDetail($prefer->mail_driver, $prefer->mail_host, $prefer->mail_port, $prefer->mail_username, $prefer->mail_password, $prefer->mail_encryption);
-                $client_name = $client->name;
-                $mail_from = $prefer->mail_from;
-                $sendto = $signReq->email;
-                try {
-                    $email_template_content = '';
-                    $email_template = EmailTemplate::where('id', 2)->first();
-                    if ($email_template) {
-                        $email_template_content = $email_template->content;
-                        $email_template_content = str_ireplace("{code}", $emailCode, $email_template_content);
-                        $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
-                    }
-                    $data = [
-                        'code' => $emailCode,
-                        'link' => "link",
-                        'email' => $sendto,
-                        'mail_from' => $mail_from,
-                        'client_name' => $client_name,
-                        'logo' => $client->logo['original'],
-                        'subject' => $email_template->subject,
-                        'customer_name' => ucwords($user->name),
-                        'email_template_content' => $email_template_content,
-                    ];
-                    dispatch(new \App\Jobs\SendVerifyEmailJob($data))->onQueue('verify_email');
-                    $notified = 1;
-                } catch (\Exception $e) {
-                    $user->save();
-                }
-                // try{
-                //     Mail::send('email.verify',[
-                //             'customer_name' => ucwords($signReq->name),
-                //             'code_text' => 'Enter below code to verify yoour account',
-                //             'code' => 'qweqwewqe',
-                //             'logo' => $client->logo['original'],
-                //             'link'=>"link"
-                //     ],
-                //     function ($message) use($sendto, $client_name, $mail_from) {
-                //         $message->from($mail_from, $client_name);
-                //         $message->to($sendto)->subject('OTP to verify account');
-                //     });
-                //     $response['send_email'] = 1;
-                // }
-                // catch(\Exception $e){
-                //     return response()->json(['data' => $response]);
-                // }
-            }
+            // if (!empty($prefer->mail_driver) && !empty($prefer->mail_host) && !empty($prefer->mail_port) && !empty($prefer->mail_port) && !empty($prefer->mail_password) && !empty($prefer->mail_encryption)) {
+            //     $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+            //     $confirured = $this->setMailDetail($prefer->mail_driver, $prefer->mail_host, $prefer->mail_port, $prefer->mail_username, $prefer->mail_password, $prefer->mail_encryption);
+            //     $client_name = $client->name;
+            //     $mail_from = $prefer->mail_from;
+            //     $sendto = $signReq->email;
+            //     try {
+            //         $email_template_content = '';
+            //         $email_template = EmailTemplate::where('id', 2)->first();
+            //         if ($email_template) {
+            //             $email_template_content = $email_template->content;
+            //             $email_template_content = str_ireplace("{code}", $emailCode, $email_template_content);
+            //             $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
+            //         }
+            //         $data = [
+            //             'code' => $emailCode,
+            //             'link' => "link",
+            //             'email' => $sendto,
+            //             'mail_from' => $mail_from,
+            //             'client_name' => $client_name,
+            //             'logo' => $client->logo['original'],
+            //             'subject' => $email_template->subject,
+            //             'customer_name' => ucwords($user->name),
+            //             'email_template_content' => $email_template_content,
+            //         ];
+            //         dispatch(new \App\Jobs\SendVerifyEmailJob($data))->onQueue('verify_email');
+            //         $notified = 1;
+            //     } catch (\Exception $e) {
+            //         $user->save();
+            //     }
+            // }
             return response()->json(['data' => $response]);
         } else {
             $errors['errors']['user'] = 'Something went wrong. Please try again.';
@@ -910,13 +916,20 @@ class AuthController extends BaseController
             }
             $user_refferal = UserRefferal::where('user_id', $user->id)->first();
 
+            //check login from individual vendor app
+            $fromVendorAppLogin = 0;
+            if(!empty($req->is_vendor_app)){
+                $fromVendorAppLogin = 1;
+            }
+
             if (!empty($req->fcm_token)) {
                 $device = UserDevice::updateOrCreate(
                     ['device_token' => $req->fcm_token],
                     [
                         'user_id' => $user->id,
                         'device_type' => $req->device_type,
-                        'access_token' => $token
+                        'access_token' => $token,
+                        'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
             } else {
@@ -925,7 +938,8 @@ class AuthController extends BaseController
                     [
                         'user_id' => $user->id,
                         'device_type' => $req->device_type,
-                        'access_token' => $token
+                        'access_token' => $token,
+                        'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
             }
@@ -1129,13 +1143,21 @@ class AuthController extends BaseController
                 } catch (\Exception $e) {
                 }
                 $user_refferal = UserRefferal::where('user_id', $user->id)->first();
+
+                //check login from individual vendor app
+                $fromVendorAppLogin = 0;
+                if(!empty($request->is_vendor_app)){
+                    $fromVendorAppLogin = 1;
+                }
+                
                 if (!empty($request->fcm_token)) {
                     $device = UserDevice::updateOrCreate(
                         ['device_token' => $request->fcm_token],
                         [
                             'user_id' => $user->id,
                             'device_type' => $request->device_type,
-                            'access_token' => $token
+                            'access_token' => $token,
+                            'is_vendor_app' => $fromVendorAppLogin
                         ]
                     );
                 } else {
@@ -1144,7 +1166,8 @@ class AuthController extends BaseController
                         [
                             'user_id' => $user->id,
                             'device_type' => $request->device_type,
-                            'access_token' => $token
+                            'access_token' => $token,
+                            'is_vendor_app' => $fromVendorAppLogin
                         ]
                     );
                 }
@@ -1592,10 +1615,12 @@ class AuthController extends BaseController
                 DB::commit(); //Commit transaction after all the operations
                 return response()->json(['massage' => __('User Deleted Successfully')], 200);
                 //code...
+
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['massage' => __('Something went wrong!')], 400);
             
         }
+
     }
 }

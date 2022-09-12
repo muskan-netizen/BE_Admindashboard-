@@ -195,7 +195,7 @@ return [
         Intervention\Image\ImageServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
         SocialiteProviders\Manager\ServiceProvider::class,
-        AWT\Providers\ApiLogServiceProvider::class,
+       // AWT\Providers\ApiLogServiceProvider::class,
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
         Spatie\Geocoder\GeocoderServiceProvider::class,
         Jackiedo\Timezonelist\TimezonelistServiceProvider::class,
@@ -204,6 +204,7 @@ return [
         // OwenIt\Auditing\AuditingServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         Paytabscom\Laravel_paytabs\PaypageServiceProvider::class,
+        // TelrGateway\TelrServiceProvider::class,
     ],
 
     /*

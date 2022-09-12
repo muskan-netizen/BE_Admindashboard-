@@ -94,9 +94,9 @@
                                                         <i class="icon-time"></i>
                                                         @if ($vendor->is_vendor_closed == 0 && $vendor->show_slot == 0)
                                                             {{ $vendor->opening_time }} – {{ $vendor->closing_time }}
-                                                            <span class="badge badge-success">Open</span>
+                                                            <span class="badge badge-success">{{ __('Open') }}</span>
                                                         @elseif($vendor->is_vendor_closed == 0 && $vendor->show_slot == 1)
-                                                            24 x 7 <span class="badge badge-success">Open</span>
+                                                            24 x 7 <span class="badge badge-success">{{ __('Open') }}</span>
                                                         @elseif($vendor->closed_store_order_scheduled == 1 && $checkSlot != 0)
                                                             <span class="badge badge-danger">{{ __('Closed') }}</span>
                                                             {{ __('We are not accepting orders right now. You can schedule this for ') . $checkSlot }}.
@@ -324,7 +324,6 @@
                                                                                             placeholder="1" type="text"
                                                                                             value="{{ $variant_quantity }}"
                                                                                             class="input-number"
-                                                                                            step="0.01"
                                                                                             id="quantity_ondemand_{{ $cartProductId }}"
                                                                                             readonly>
                                                                                         <span
@@ -420,6 +419,7 @@
                                                                     @endif
 
                                                                     <p class="mb-1 product_price">
+
                                                                         {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,',') }}
                                                                         @if ($prod->variant[0]->compare_at_price > 0)
                                                                             <span
@@ -596,8 +596,8 @@
                                  <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Subscription Discount') }}</span>
-                                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
+                                            <span class="ellips">- {{ __('Subscription Discount') }}</span>
+                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
                                         </h6>
                                     </div>
                                 </li>
@@ -607,8 +607,8 @@
                                 <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Loyalty Amount') }} </span>
-                                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
+                                            <span class="ellips">- {{ __('Loyalty Amount') }} </span>
+                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
                                         </h6>
                                     </div>
                                 </li>
@@ -618,8 +618,8 @@
                                 <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Wallet Amount') }} </span>
-                                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
+                                            <span class="ellips">- {{ __('Wallet Amount') }} </span>
+                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
                                         </h6>
                                     </div>
                                 </li>
@@ -886,16 +886,21 @@
         jQuery(window).scroll(function() {
 
             var scroll = jQuery(window).scrollTop();
+            var categories_list_height = $('.vendor-products-wrapper').height() +400;
+            
             if (scroll >= 400) {
                 jQuery(".categories-product-list").addClass("fixed-bar");
             } else {
+                jQuery(".categories-product-list").removeClass("fixed-bar");
+            }
+            if(scroll >= categories_list_height){
                 jQuery(".categories-product-list").removeClass("fixed-bar");
             }
         });
 
         var addonids = [];
         var addonoptids = [];
-        var showChar = 140;
+        var showChar = 136;
         var ellipsestext = "...";
         var moretext = "Read more";
         var lesstext = "Read less";
@@ -910,7 +915,7 @@
 
                     var html = firstContent + '<span class="moreellipses">' + ellipsestext +
                         '&nbsp;</span><span class="morecontent"><span style="display:none;">' + lastContent +
-                        '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+                        '</span><a href="" class="morelink">' + moretext + '</a></span>';
 
                     $(this).html(html);
                 }

@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor, VendorCategory, ClientLanguage, LoyaltyCard, Nomenclature, NomenclatureTranslation, Order};
+use App\Models\{Client, Category, Product, SmsTemplate, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor, VendorCategory, ClientLanguage, LoyaltyCard, Nomenclature, NomenclatureTranslation, Order};
 
 class FrontController extends Controller
 {
@@ -82,9 +82,9 @@ class FrontController extends Controller
     {
         $prefer = ClientPreference::select('sms_credentials', 
                         'sms_provider', 'sms_key', 'sms_secret', 'sms_from' )->first();
-        $to = $request->to ? $request->to :'+917508983302';
+        $to = $request->to ? '+91'.$request->to :'+917508983302';
         $provider = $prefer->sms_provider;
-        $body = "Dear ".ucwords('Harbans').", Please enter OTP 12345 to verify your account.";
+        $body = "Dear ".ucwords('Harbans').", Please enter OTP (12345) to verify your account.";
        // $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
         // $to = '+917508983302';
         // $body = "this is test sms from codebrew";
@@ -92,8 +92,7 @@ class FrontController extends Controller
         //     'api_key' =>'Om15akt3STZwNXNzMEFjRzY=',
         //     'sender_id' => 'Arkesel',
         // ];
-        $crendentials = json_decode($prefer->sms_credentials);
-        $send = $this->arkesel_sms($to,$body,$crendentials);
+        $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
         pr($send);
     }
     public function categoryNav($lang_id)
@@ -826,10 +825,8 @@ class FrontController extends Controller
 
         if($scheduleTime != ''){
             $datetime = Carbon::parse($scheduleTime)->addMinutes($minutes);
-            $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         }else{
             $datetime = Carbon::parse($order_vendor_created_at)->addMinutes($minutes);
-            $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         }
         if(Carbon::parse($datetime)->isToday()){
             if($time_format == '12'){
@@ -837,8 +834,8 @@ class FrontController extends Controller
             }else{
                 $time_format = 'HH:mm';
             }
-            $datetime = Carbon::parse($datetime)->isoFormat($time_format);
         }
+        $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         return $datetime;
     }
 
@@ -913,7 +910,21 @@ class FrontController extends Controller
                 
                 $provider = $prefer->sms_provider;
                 $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
-                $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . $order->payable_amount . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
+
+                $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
+                \Log::info('sms:--//');
+                \Log::info($smsTemplates);
+                \Log::info('sms:--//');
+                if(!empty($smsTemplates)){
+                    $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
+                    $smsTemplates = str_replace("{amount}", $currSymbol . $order->payable_amount, $smsTemplates);
+                    $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
+                    \Log::info('sms:--');
+                    \Log::info($body);
+                    \Log::info('sms:--');
+                }else{
+                    $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . $order->payable_amount . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
+                }
             //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
                 if (!empty($prefer->sms_provider)) {
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);

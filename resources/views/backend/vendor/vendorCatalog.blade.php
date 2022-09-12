@@ -231,9 +231,9 @@
                                     </div>
                                     <div class="col-6 d-flex align-items-center justify-content-end mb-3">
 
-                                            <!-- <div class="vendor-search">
-                                                <input class="form-control" type="search" placeholder="Product Search">
-                                            </div> -->
+                                            <div class="vendor-search">
+                                                <input class="form-control" id="vendor_search" type="search" placeholder="Product Search" aria-controls="vendor_product_table">
+                                            </div>
 
                                             <a class="btn btn-info  waves-effect waves-light text-sm-right action_product_button" dataid="0"
                                                 id="action_product_button" href="javascript:void(0);"
@@ -241,12 +241,12 @@
                                                 {{ __('Action') }}
                                             </a>
 
-                                            <a class="btn btn-info waves-effect waves-light text-sm-right importProductBtn mx-2 {{ $vendor->status == 1 ? '' : 'disabled' }}"
+                                            <a class="btn btn-info waves-effect waves-light text-sm-right @if($vendor->status == 1) importProductBtn @endif mx-2 {{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"
                                                 {{ $vendor->status == 1 ? '' : 'disabled' }}><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                                             </a>
-                                            <a class="btn btn-info waves-effect waves-light text-sm-right addProductBtn {{ $vendor->status == 1 ? '' : 'disabled' }}"
+                                            <a class="btn btn-info waves-effect waves-light text-sm-right @if($vendor->status == 1) addProductBtn @endif{{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Product') }}
                                             </a>
@@ -254,7 +254,7 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="table-responsive">
-                                            <table class="table table-centered table-nowrap table-striped" id="">
+                                            <table class="table table-centered dataTable table-nowrap table-striped w-100" id="vendor_product_table">
                                                 <thead>
                                                     <tr>
                                                         <th><input type="checkbox" class="all-product_check"
@@ -278,7 +278,7 @@
                                                         <th>{{ __('Action') }}</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody id="post_list">
+                                                <!-- <tbody id="post_list">
                                                     @foreach ($products as $product)
                                                         <tr data-row-id="{{ $product->id }}">
 
@@ -343,7 +343,7 @@
                                                             </td>
                                                         </tr>
                                                     @endforeach
-                                                </tbody>
+                                                </tbody> -->
                                             </table>
                                         </div>
                                     </div>
@@ -460,15 +460,29 @@
                         <div class="col-md-12 text-center">
 
                             <div id="import_csv" class="row align-items-center mb-3">
-                                <div class="col-12 text-right mb-2">
+                                <div class="col-md-4 text-right mb-2">
                                     <button class="btn btn-info button" id="csv_button"
                                         type="button">{{ __('Import form Woocommerce') }}</button>
                                 </div>
+                                
+                                @if($client_preference_detail->enable_inventory_service == 1)
+                                <a href="{{route('get.inventory.import',$vendor->slug)}}">
+                                    <div class="col-12 text-right mb-2">
+                                        <button class="btn btn-info button" 
+                                            type="button">{{ __('Import form Inventory') }}</button>
+                                    </div>
+                                </a>
+                                @endif
+                               
+
+                                <div class="col-md-4 text-right mb-2">
+                                    <button class="btn btn-info button" id="import_global"
+                                        type="button">{{ __('Import Global Product') }}</button>
+                                </div>
+                                
                                 <div class="col-md-12">
                                     <form method="post" enctype="multipart/form-data" id="save_imported_products">
                                         @csrf
-
-
                                         @if(session()->get("applocale_admin") == "ta")
                                         <a
                                             href="{{ url('file-download' . '/tamil_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>
@@ -581,11 +595,115 @@
             </div>
         </div>
     </div>
+ <!-- start product action popup -->
+ <div id="action-product-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+ aria-hidden="true" style="display: none;">
+ <div class="modal-dialog modal-dialog-centered">
+     <div class="modal-content">
+         <div class="modal-header border-bottom">
+             <h4 class="modal-title">{{ __('Product Action') }}</h4>
+             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+         </div>
 
-    <!-- start product action popup -->
-    <div id="action-product-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         <div class="modal-body">
+
+                 <div class="card-box">
+                     <form id="save_product_action_modal" method="post" enctype="multipart/form-data"
+                     action="#">
+                     @csrf
+
+                     <div class="row mb-2">
+                         <div class="col-md-6 mb-2">
+                             {!! Form::label('title', __('Action For '), ['class' => 'control-label']) !!}
+                             <select class="form-control" id="action_for" name="action_for" required>
+                                 <option value="0">{{__('Select')}}</option>
+                                 @if ($client_preferences->business_type != 'taxi')
+                                  <option value="for_new">{{__('For  New')}}</option>
+                                  <option value="for_featured">{{__('For Featured')}}</option>
+                                  @endif
+                                  @if ($client_preferences->need_delivery_service == 1 || OnLAstMileDelivery()>0)
+                                  <option value="for_last_mile">{{__('For Requires Last Mile Delivery')}}</option>
+                                  @endif
+                                  <option value="for_live">{{__('Draft/Published')}}</option>
+                                  <option value="for_tax">{{__('Tax Category')}}</option>
+                                  <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock ')}}</option>
+                                  <option value="delete">{{__('Delete')}}</option>
+                             </select>
+                         </div>
+
+
+
+                     </div>
+
+                     <div class="row mb-2">
+                         @if ($client_preferences->business_type != 'taxi')
+                             <div class="col-md-6 justify-content-between mb-2" id="for_new" style="display:none;">
+                                 {!! Form::label('title', __('New'), ['class' => 'control-label']) !!}
+                                 <input type="checkbox" id="is_new" data-plugin="switchery" name="is_new"
+                                     class="chk_box" data-color="#43bee1">
+                             </div>
+                               <div class="col-md-6 justify-content-between mb-2"   id="for_featured" style="display:none;">
+                                 {!! Form::label('title', __('Featured'), ['class' => 'control-label']) !!}
+                                 <input type="checkbox" id="is_featured" data-plugin="switchery" name="is_featured"
+                                     class="chk_box" data-color="#43bee1">
+                             </div>
+                         @endif
+                         @if ($client_preferences->need_delivery_service == 1 || OnLAstMileDelivery()>0)
+                              <div class="col-md-6  justify-content-between mb-2"    id="for_last_mile"  style="display:none;">
+                                 {!! Form::label('title', __('Requires Last Mile Delivery'), ['class' => 'control-label']) !!}
+                                 <input type="checkbox" id="last_mile" data-plugin="switchery" name="last_mile"
+                                     class="chk_box" data-color="#43bee1">
+                             </div>
+                         @endif
+
+                     </div>
+                     <div class="row">
+                           <div class="col-md-6 mb-2"  id="for_live"  style="display: none;">
+                             {!! Form::label('title', __('Live'), ['class' => 'control-label']) !!}
+                             <select class="selectizeInput form-control" id="is_live" name="is_live">
+                                 <option value="0">Draft</option>
+                                 <option value="1">Published</option>
+                             </select>
+                           </div>
+
+
+                         <div class="col-md-6 mb-2"  id="for_tax"  style="display: none;">
+                             {!! Form::label('title', __('Tax Category'), ['class' => 'control-label']) !!}
+                             <select class="form-control " id="tax_category_for" name="tax_category">
+                                 <option value="">Select</option>
+                                 @foreach ($taxCate as $cate)
+                                     <option value="{{ $cate->id }}">{{ $cate->title }}</option>
+                                 @endforeach
+                             </select>
+                         </div>
+                         <div class="col-md-6 justify-content-between mb-2"   id="for_sell_when_out_of_stock" style="display:none;">
+                             {!! Form::label('title', __('Sell when out of stock'), ['class' => 'control-label']) !!}
+                             <input type="checkbox" id="sell_when_out_of_stock" data-plugin="switchery" name="sell_when_out_of_stock"
+                                 class="chk_box" data-color="#43bee1">
+                         </div>
+                     </div>
+
+                     <div class="modal-footer">
+                         <button type="button"
+                             class="btn btn-info waves-effect waves-light submitProductAction">{{ __('Submit') }}</button>
+                     </div>
+
+                     </form>
+
+
+                 </div>
+
+         </div>
+
+     </div>
+ </div>
+</div>
+<!-- end product popup -->
+
+    <!-- Global product import popup -->
+    <div id="global-product-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true" style="display: none;">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg ">
             <div class="modal-content">
                 <div class="modal-header border-bottom">
                     <h4 class="modal-title">{{ __('Product Action') }}</h4>
@@ -593,99 +711,29 @@
                 </div>
 
                 <div class="modal-body">
-
-                        <div class="card-box">
-                            <form id="save_product_action_modal" method="post" enctype="multipart/form-data"
-                            action="#">
-                            @csrf
-
-                            <div class="row mb-2">
-                                <div class="col-md-6 mb-2">
-                                    {!! Form::label('title', __('Action For '), ['class' => 'control-label']) !!}
-                                    <select class="form-control" id="action_for" name="action_for" required>
-                                        <option value="0">{{__('Select')}}</option>
-                                        @if ($client_preferences->business_type != 'taxi')
-                                         <option value="for_new">{{__('For  New')}}</option>
-                                         <option value="for_featured">{{__('For Featured')}}</option>
-                                         @endif
-                                         @if ($client_preferences->need_delivery_service == 1 || OnLAstMileDelivery()>0)
-                                         <option value="for_last_mile">{{__('For Requires Last Mile Delivery')}}</option>
-                                         @endif
-                                         <option value="for_live">{{__('Draft/Published')}}</option>
-                                         <option value="for_tax">{{__('Tax Category')}}</option>
-                                         <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock ')}}</option>
-                                         <option value="delete">{{__('Delete')}}</option>
-                                    </select>
-                                </div>
-
-
-
-                            </div>
-
-                            <div class="row mb-2">
-                                @if ($client_preferences->business_type != 'taxi')
-                                    <div class="col-md-6 justify-content-between mb-2" id="for_new" style="display:none;">
-                                        {!! Form::label('title', __('New'), ['class' => 'control-label']) !!}
-                                        <input type="checkbox" id="is_new" data-plugin="switchery" name="is_new"
-                                            class="chk_box" data-color="#43bee1">
-                                    </div>
-                                      <div class="col-md-6 justify-content-between mb-2"   id="for_featured" style="display:none;">
-                                        {!! Form::label('title', __('Featured'), ['class' => 'control-label']) !!}
-                                        <input type="checkbox" id="is_featured" data-plugin="switchery" name="is_featured"
-                                            class="chk_box" data-color="#43bee1">
-                                    </div>
-                                @endif
-                                @if ($client_preferences->need_delivery_service == 1 || OnLAstMileDelivery()>0)
-                                     <div class="col-md-6  justify-content-between mb-2"    id="for_last_mile"  style="display:none;">
-                                        {!! Form::label('title', __('Requires Last Mile Delivery'), ['class' => 'control-label']) !!}
-                                        <input type="checkbox" id="last_mile" data-plugin="switchery" name="last_mile"
-                                            class="chk_box" data-color="#43bee1">
-                                    </div>
-                                @endif
-
-                            </div>
-                            <div class="row">
-                                  <div class="col-md-6 mb-2"  id="for_live"  style="display: none;">
-                                    {!! Form::label('title', __('Live'), ['class' => 'control-label']) !!}
-                                    <select class="selectizeInput form-control" id="is_live" name="is_live">
-                                        <option value="0">Draft</option>
-                                        <option value="1">Published</option>
-                                    </select>
-                                  </div>
-
-
-                                <div class="col-md-6 mb-2"  id="for_tax"  style="display: none;">
-                                    {!! Form::label('title', __('Tax Category'), ['class' => 'control-label']) !!}
-                                    <select class="form-control " id="tax_category_for" name="tax_category">
-                                        <option value="">Select</option>
-                                        @foreach ($taxCate as $cate)
-                                            <option value="{{ $cate->id }}">{{ $cate->title }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-6 justify-content-between mb-2"   id="for_sell_when_out_of_stock" style="display:none;">
-                                    {!! Form::label('title', __('Sell when out of stock'), ['class' => 'control-label']) !!}
-                                    <input type="checkbox" id="sell_when_out_of_stock" data-plugin="switchery" name="sell_when_out_of_stock"
-                                        class="chk_box" data-color="#43bee1">
-                                </div>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button"
-                                    class="btn btn-info waves-effect waves-light submitProductAction">{{ __('Submit') }}</button>
-                            </div>
-
-                            </form>
-
-
+                    <div class="row ">
+                        <div class="col-12">
+                        <button type="submit" class="submitGlobalProductAction submit btn btn-primary float-right" >Submit</button>
+                        </div>    
+                        <div class="col-12">
+                        <table class="table table-centered dataTable table-nowrap table-striped w-100" id="global_product_table">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" class="all-global-product_check"
+                                                name="all_global_product_id" id="all-global-product_check"></th>
+                                        <th>{{__('Image')}}</th>
+                                        <th>{{ __('Name') }}</th>
+                                        <th>{{ __('Category') }}</th>
+                                    </tr>
+                                </thead>
+                            </table>
                         </div>
-
+                    </div>
                 </div>
-
             </div>
         </div>
     </div>
-    <!-- end product popup -->
+    <!-- End Global product import popup -->
     <script type="text/javascript">
         $(".all-product_check").click(function() {
             if ($(this).is(':checked')) {
@@ -694,6 +742,14 @@
             } else {
                 $("#action_product_button").css("display", "none");
                 $('.single_product_check').prop('checked', false);
+            }
+        });
+
+        $(".all-global-product_check").click(function() {
+            if ($(this).is(':checked')) {
+                $('.global_product_check').prop('checked', true);
+            } else {
+                $('.global_product_check').prop('checked', false);
             }
         });
 
@@ -814,7 +870,6 @@
                     }
                 },
                 error:function(error){
-
                 }
             });
             $('#add-product').modal({
@@ -830,6 +885,11 @@
         $("#csv_button").click(function() {
             $("#import_woocommerce").show();
             $("#import_csv").hide();
+        });
+
+        $("#import_global").click(function() {
+            $("#import-product").modal('hide');
+            $("#global-product-modal").modal('show');
         });
 
         $("#import_woocommerce").hide();
@@ -1060,6 +1120,160 @@
                 }
             });
         });
-        
+        $(document).on("input","#vendor_search",function() {
+           let search = $('#vendor_search').val();
+           datatable_intent(search);
+        });
+        function datatable_intent(search =''){
+            $('#vendor_product_table').DataTable({
+                "responsive": true,
+                "scrollX": true,
+                "destroy": true,
+                "processing": true,
+                "serverSide": true,
+                "iDisplayLength": 25,
+                "lengthChange" : false,
+                "searching": false,
+                "ordering": true,
+               
+                language: {
+                            search: "",
+                            info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',
+                            paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },
+                            searchPlaceholder: "{{__('Search Product')}}",
+                            // 'loadingRecords': '&nbsp;',
+                            'processing': '<div class="spinner"></div>'
+                },
+                drawCallback: function () {
+                    $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
+                },
+            
+                ajax: {
+                    url: "{{url('client/vendor/product/list').'/'.$vendor->id}}",
+                    data: function (d) {
+                        d.search = $('input[type="search"]').val();
+                    }
+                },
+                columns: dataTableColumn(),
+            
+            });
+        }
+        $(document).ready(function() {
+            datatable_intent();
+        });
+
+    function dataTableColumn(){
+       var business_type =  "{{$client_preference_detail->business_type}}";
+            if(business_type == 'taxi'){
+                return [
+                    {data: 'single_product_check', name: 'single_product_check', orderable: false, searchable: false},
+                    {data: 'product_image', name: 'product_image', orderable: false, searchable: false},
+                    {data: 'product_name', name: 'product_name', orderable: true, searchable: false},
+                    {data: 'product_category', name: 'phone_number', orderable: false, searchable: false},
+                    {data: 'product_is_live', name: 'product_is_live', orderable: false, searchable: false},
+                    {data: 'action', name: 'action', orderable: false, searchable: false}
+                ];
+            }else{
+                return [
+                    {data: 'single_product_check', name: 'single_product_check', orderable: false, searchable: false},
+                    {data: 'product_image', name: 'product_image', orderable: false, searchable: false},
+                    {data: 'product_name', name: 'product_name', orderable: true, searchable: false},
+                    {data: 'product_category', name: 'phone_number', orderable: false, searchable: false},
+                    {data: 'product_brand', name: 'product_brand', orderable: false, searchable: false},
+                    {data: 'product_quantity', name: 'product_quantity', orderable: false, searchable: false},
+                    {data: 'product_price', name: 'product_price', orderable: false, searchable: false},
+                    {data: 'product_is_live', name: 'product_is_live', orderable: false, searchable: false},
+                    {data: 'product_is_new', name: 'product_is_new', orderable: false, searchable: false},
+                    {data: 'product_is_featured', name: 'product_is_featured', orderable: false, searchable: false},
+                    {data: 'product_last_mile', name: 'product_last_mile', orderable: false, searchable: false},
+                    {data: 'action', name: 'action', orderable: false, searchable: false}
+                ]
+            }
+        }
+
+        $(document).ready(function() {
+            datatable_global_product();
+        });
+
+        function datatable_global_product(){
+            $('#global_product_table').DataTable({
+                "responsive": true,
+                "scrollX": true,
+                "destroy": true,
+                "processing": true,
+                "serverSide": true,
+                "iDisplayLength": 25,
+                "lengthChange" : false,
+                "searching": false,
+                "ordering": true,
+               
+                language: {
+                            info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',
+                            paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },
+                            'processing': '<div class="spinner"></div>'
+                },
+                drawCallback: function () {
+                    $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
+                },
+            
+                ajax: {
+                    url: "{{url('client/global/product/list')}}"
+                },
+                columns: dataTableGlobalProducts(),
+            });
+        }
+       
+
+        function dataTableGlobalProducts(){
+                return [
+                    {data: 'global_product_check', name: 'global_product_check', orderable: false, searchable: false},
+                    {data: 'product_image', name: 'product_image', orderable: false, searchable: false},
+                    {data: 'product_name', name: 'product_name', orderable: true, searchable: false},
+                    {data: 'product_category', name: 'product_category', orderable: false, searchable: false}
+                ];
+        }
+
+
+        $(document).on('click', '.submitGlobalProductAction', function(e) {
+            var CSRF_TOKEN = $("input[name=_token]").val();
+            var product_id = [];
+             $('.global_product_check:checked').each(function(i){
+                product_id[i] = $(this).val();
+            });
+            if (product_id.length == 0) {
+                $("#global-product-modal .close").click();
+                return;
+            }
+
+            $.ajax({
+                type: "post",
+                url: '{{route("import.global.product")}}',
+                data: {_token: CSRF_TOKEN, product_id: product_id,vid:"{{$vendor->id}}"},
+                 success: function(resp) {
+                     console.log(resp);
+                    if (resp.success == true) {
+                        $.NotificationApp.send("Success", resp.message, "top-right", "#5ba035",
+                            "success");
+                        location.reload();
+                    }
+                },
+                beforeSend: function() {
+                    $(".loader_box").show();
+                },
+                complete: function() {
+                    $(".loader_box").hide();
+                },
+                error: function(response) {
+
+                        $(".show_all_error.invalid-feedback").show();
+                        $(".show_all_error.invalid-feedback").text(
+                            'Something went wrong, Please try Again.');
+
+                    return response;
+                }
+            });
+        });
+
+
     </script>
 @endsection

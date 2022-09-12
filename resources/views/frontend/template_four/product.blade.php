@@ -317,7 +317,7 @@
                                                             }
                                                         @endphp
                                                         @if( ($min_select != '') || ($max_select != '') )
-                                                            <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
+                                                            <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
                                                         @endif
                                                     </h4>
 
@@ -358,7 +358,7 @@
                                                                 }
                                                             @endphp
                                                             @if( ($min_select != '') || ($max_select != '') )
-                                                                <small>({{$min_select.$max_select}} Selections allowed)</small>
+                                                                <small>({{__($min_select).__($$max_select)}} {{ __('Selections Allowed')}})</small>
                                                             @endif
                                                         </h4>
                                                     </td>
@@ -401,7 +401,7 @@
 
 
                                         @endphp
-                                        @if($is_available == 1)
+                                        @if($is_available == 1 && $product->variant[0]->quantity >= $product->minimum_order_count)
                                             <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}"><i class="ti-shopping-cart"></i> {{__('Add To Cart')}}</a>
                                         @endif
 

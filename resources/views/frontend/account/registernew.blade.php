@@ -86,10 +86,15 @@
                         @endif
                     @endif
                     <div class="row mt-3">
-                        <div class="offset-xl-2 col-xl-8 text-left">
+                        <div class="{{ (session('preferences')->concise_signup == 1)? 'mx-auto':'offset-xl-2 col-xl-8 text-left' }}">
                             <form name="register" id="register" enctype="multipart/form-data" action="{{ route('customer.register') }}"
                                 class="px-lg-4" method="post"> @csrf
-                                <div class="row form-group mb-0">
+                                @if(session('preferences')->concise_signup == 1)
+                                <input type="hidden" name="name" value="guest">
+                                <input type="hidden" name="email" id="guest-email" value="">
+                                @endif
+                                <div class="row form-group mb-0 {{ (session('preferences')->concise_signup == 1)? 'mx-auto':'' }}">
+                                    @if(session('preferences')->concise_signup == 0)
                                     <div class="col-md-6 mb-3">
                                         <label for="">{{ __('Full Name') }}</label>
                                         <input type="text" class="form-control @error('name') is-invalid @enderror"
@@ -100,7 +105,8 @@
                                             </span>
                                         @enderror
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    @endif
+                                    <div class="col-md-{{ (session('preferences')->concise_signup == 1)? '12 text-left':'6' }} mb-3">
                                         <label for="">{{ __('Phone No.') }}</label>
                                         <input type="tel"
                                             class="form-control @error('phone_number') is-invalid @enderror"
@@ -113,23 +119,25 @@
                                             value="{{ old('countryData') ? old('countryData') : Session::get('default_country_code', 'US') }}">
                                             @error('phone_number')
                                             <span class="invalid-feedback" role="alert" style="display:block">
-                                                <strong>{{ $message }}</strong>
+                                                <strong>{{ __($message) }}</strong>
                                             </span>
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="row form-group mb-0">
+                                <div class="row form-group mb-0 {{ (session('preferences')->concise_signup == 1)? 'mx-auto':'' }}">
+                                    @if(session('preferences')->concise_signup == 0)
                                     <div class="col-md-6 mb-3">
                                         <label for="">{{ __('Email') }}</label>
                                         <input type="email" class="form-control @error('email') is-invalid @enderror"
                                             placeholder="{{ __('Email') }}" name="email" value="{{ old('email') }}">
                                         @error('email')
                                             <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
+                                                <strong>{{ __($message) }}</strong>
                                             </span>
                                         @enderror
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    @endif
+                                    <div class="col-md-{{ (session('preferences')->concise_signup == 1)? '12 text-left':'6' }} mb-3">
                                         <label for="">{{ __('Password') }}</label>
                                         <div class="position-relative">
                                             <input type="password" id="password-field"
@@ -140,7 +148,7 @@
                                                 style="right:20px"></span>
                                             @error('password')
                                                 <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $errors->first('password') }}</strong>
+                                                    <strong>{{ __($errors->first('password')) }}</strong>
                                                 </span>
                                             @enderror
                                         </div>
@@ -235,8 +243,25 @@
                                         @endif
                                     @endforeach
                                 </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="term_and_condition" class="form-check-input @error('term_and_condition') is-invalid @enderror" id="html">
+                                    <label for="html" class="mr-3">{{ __('I accept the') }}
+                                        <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
+                                            target="_blank">{{ __('Terms And Conditions') }} </a>
+                                        {{ __('and have read the') }}
+                                        <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
+                                            target="_blank">
+                                            {{ __('Privacy Policy') }}.
+                                        </a>
+                                    </label>
+                                    @if($errors->first('term_and_condition'))
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('term_and_condition') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
                                 <div class="row form-group mb-0 align-items-center">
-                                    <div class="col-12 checkbox-input">
+                                    <!-- <div class="col-12 checkbox-input">
                                         <input type="checkbox" id="html" name="term_and_condition"
                                             class="form-control @error('term_and_condition') is-invalid @enderror">
 
@@ -259,7 +284,7 @@
 
 
 
-                                    </div>
+                                    </div> -->
                                     <div class="col-md-6 hide position-absolute">
                                         <label for="">Referral Code</label>
                                         <input type="text" class="form-control" id="refferal_code"
@@ -293,6 +318,13 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
     <script>
         $(document).ready(function() {
+            @if(session('preferences')->concise_signup == 1)
+                $('#phone').change(function() {
+                    var custPhone = $(this).val();
+                    $('#guest-email').val(custPhone+'@gmail.com');
+                });
+            @endif
+
             $("#register").validate({
                 errorClass: 'errors',
                 rules: {
@@ -318,13 +350,13 @@
                     this.element(element); // triggers validation
                 },
                 messages : {
-                    name: 'Please enter your name',
+                    name: "{{ __('Please enter your name')}}",
                     phone_number: {
-                        required: "Please enter your phone",
-                        number: "Please enter a numerical value"
+                        required: "{{ __('Please enter your phone')}}",
+                        number: "{{ __('Please enter a numerical value')}}"
                     },
-                    email: "The email should be in the format: abc@domain.tld",
-                    password: 'Please enter your password',
+                    email: "{{ __('The email should be in the format:')}} abc@domain.tld",
+                    password: "{{ __('Please enter your password')}}",
                 }
             });
         });
@@ -337,6 +369,9 @@
                 console.log(footer_height);
                 $('article#content-wrap').css('padding-bottom',footer_height);
             }, 500);
+            setTimeout(function(){
+                $("#phone").val({{ old('phone_number') }});
+            }, 2500);
         });
         var input = document.querySelector("#phone");
         window.intlTelInput(input, {
@@ -345,6 +380,7 @@
             utilsScript: "{{ asset('assets/js/utils.js') }}",
             initialCountry: "{{ Session::get('default_country_code', 'US') }}",
         });
+
         $(document).ready(function() {
             $("#phone").keypress(function(e) {
                 if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {

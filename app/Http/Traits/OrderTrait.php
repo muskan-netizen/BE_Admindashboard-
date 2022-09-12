@@ -86,14 +86,37 @@ trait OrderTrait{
 
         $vendor_return_amount = $vendor_wallet_amount + $vendor_online_payment_amount;
 
-        // // get what time order placed according to current time
-        // $orderPlacedTime = (strtotime(now()) - strtotime($order->created_at)) / 60; // in minutes
+        // get what time order placed according to current time
+        $orderPlacedTime = (strtotime(now()) - strtotime($order->created_at)) / 60; // in minutes
 
-        // // check admin cancellation chargies
-        // $client_preference_detail = ClientPreference::first();
-        // if(($client_preference_detail->order_cancellation_time > 0) && ($orderPlacedTime >= $client_preference_detail->order_cancellation_time)){
-        //     $vendor_return_amount = $vendor_return_amount - ($client_preference_detail->cancellation_percentage * $vendor_return_amount / 100);
-        // }
+        // check admin cancellation charges
+        $client_preference_detail = ClientPreference::first();
+        if(($client_preference_detail->order_cancellation_time > 0) && ($orderPlacedTime > $client_preference_detail->order_cancellation_time)){
+
+            //online payment
+            if($vendor_return_amount > 0){
+                $vendor_return_amount = $vendor_return_amount - ($client_preference_detail->cancellation_percentage * $vendor_return_amount / 100);
+            }
+            //COD cancellation charges deduct from user wallet
+            else{
+                $order_total_payable_amount =  $order->payable_amount;
+ 
+                // deduction canceld order online payment  amount
+                $order_total_payable_amount = $order_total_payable_amount - $canceld_order_payments->sum_of_online_payment_amount;
+
+                //vendo online payment contributuin in order
+                $vendor_payment_amount = ($order_total_payable_amount * $vendor_contribution_percentage ) / 100;
+
+                $cancellation_charges = $client_preference_detail->cancellation_percentage * $vendor_payment_amount / 100;
+
+                // Debite order cancellation charges
+                if($cancellation_charges > 0){
+                    $user   = auth()->user();
+                    $wallet = $user->wallet;
+                    $wallet->forceWithdrawFloat($cancellation_charges, ['Wallet has been <b>debited</b> cancellation charges for order number '.$order->order_number]);
+                }
+            }
+        }
 
         $data['vendor_return_amount']           = $vendor_return_amount;
         $data['vendor_loyalty_amount']          = $vendor_loyalty_amount;

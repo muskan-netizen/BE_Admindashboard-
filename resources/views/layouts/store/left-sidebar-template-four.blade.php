@@ -388,7 +388,7 @@ $pages = \App\Models\Page::with([
                                             </ul>
                                         </li>
                                         @endif
-                                        @if(count($languageList) > 1)
+                                        <!-- @if(count($languageList) > 1)
                                         <li class="onhover-dropdown change-language pr-2 mr-2">
                                             <div class="input-group">
                                                 <div class="input-group-prepend al_BGcolor">
@@ -403,6 +403,7 @@ $pages = \App\Models\Page::with([
                                                 </select>
                                             </div>
                                         </li>
+                                        @endif -->
 
                                    <!--      @foreach ($languageList as $key => $listl)
                                     <li
@@ -411,9 +412,21 @@ $pages = \App\Models\Page::with([
                                             langId="{{ $listl->language_id }}">{{ $listl->language->name }}</a>
                                     </li>
                                 @endforeach -->
+                                        
+
+                                        @if(count($languageList) > 1)
+                                        <li class="onhover-dropdown mobile-account pr-2">
+                                            <span class="al_BGcolor"><i class="fa fa-globe" aria-hidden="true"></i></span>
+                                            {{__('Language')}}
+                                            
+                                            <ul class="onhover-show-div">
+                                                <li class="{{ session()->get('locale') == $listl->language->sort_code ? 'active' : '' }}">
+                                                    <a href="javascript:void(0)" class="customerLang" langId="{{ $listl->language_id }}">{{ $listl->language->name }}</a>
+                                                </li>                                                
+                                            </ul>
+                                            
+                                        </li>
                                         @endif
-
-
 
                                         <li class="onhover-dropdown mobile-account pr-2">
                                             <span class="al_BGcolor"><i class="fa fa-user" aria-hidden="true"></i></span>

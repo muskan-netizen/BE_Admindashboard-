@@ -96,7 +96,7 @@
                                                             <th width="10%">{{ __("S.No.") }}</th>
                                                             <th width="30%">{{ __("Product") }}</th>
                                                             <th width="30%">{{ __("Vendor") }}</th>
-                                                            <th width="30%">{{ __("No. Of Orders") }}</th>
+                                                            <th width="30%">{{ __("No. Of Products") }}</th>
                                                         </tr>
                                                         </thead>
                                                         <tbody id="tbody_tab1">
@@ -304,18 +304,20 @@ $(document).ready(function() {
                             }
                             series.push(order_count);
                             labels.push(product_name);
-                            $('#'+tableid).append('<tr><td>'+i+'</td><td>'+product_name+'</td><td>'+value.vendor.name+'</td><td><span class="badge bg-success" style="color:#fff;">'+order_count+'</span></td></tr>');
+                            $('#'+tableid).append('<tr><td>'+i+'</td><td><a href="{{url("/client/product")}}/'+value.id+'/edit" target="_blank">'+product_name+'</a></td><td><a href="{{url("/client/vendor/catalogs")}}/'+value.vendor.id+'" target="_blank">'+value.vendor.name+'</a></td><td><span class="badge bg-success" style="color:#fff;font-size:14px;">'+order_count+'</span></td></tr>');
                         });
-                        $('#'+chartparent).html('<div id="'+chartdivid+'"></div>');
+                        $('#'+chartparent).html('<div id="'+chartdivid+'" ></div>');
+                        var xhartdivwidth = $('#'+chartparent).width();
                         if(limit_filter != 10)
                         {
-                            var height = 640 + parseInt(res.procount)*3;
+                            var height = parseInt(xhartdivwidth) - 100 + parseInt(res.procount)*3;
                         }else{
-                            var height = 640;
+                            var height = parseInt(xhartdivwidth) - 100;
                         }
                         $("#totalitem_sup"+tabid).text(parseInt(res.procount));
                         var options = {
                             series: series,
+                            responsive:true,
                             chart: {
                             height:height,
                             type: 'pie',
@@ -323,7 +325,7 @@ $(document).ready(function() {
                             labels: labels,
                             legend:{show:!0,position:"bottom",horizontalAlign:"center",verticalAlign:"middle",floating:!1,fontSize:"14px",offsetX:0,offsetY:7},
                             responsive: [{
-                            breakpoint: 600,
+                            breakpoint: parseInt(xhartdivwidth) - 100,
                             options: {
                                 chart: {
                                 height:height
@@ -337,6 +339,7 @@ $(document).ready(function() {
 
                         var chart = new ApexCharts(document.querySelector("#"+chartdivid), options);
                         chart.render();
+                        
                     }
                     else{
                         $('#'+tableid).empty('');

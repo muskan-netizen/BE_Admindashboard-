@@ -91,10 +91,26 @@
                                 {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
                                 <div class="row">
                                     <form id="themeIcon-form" method="post" enctype="multipart/form-data">
+                                    @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                                        @php
+                                            $NomenclatureName  = getNomenclatureName($vendor_typ_value, true);
+                                            $iconFiledName     = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+                                        @endphp
                                         <div class="col-md-4 mb-3">
                                             <div class="mb-0">
+                                                <label> {{$NomenclatureName. __(" Icon") }} </label>
+                                                <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$iconFiledName ? $client_preferences->$iconFiledName['proxy_url'].'600/400'.$client_preferences->$iconFiledName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{$iconFiledName }}" class="dropify ss_form_submit" id="image" />
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong></strong>
+                                                </span>
+                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                        <!-- <div class="col-md-4 mb-3">
+                                            <div class="mb-0">
                                                 <label>{{ __("Delivery Icon") }}</label>
-                                                <input type="file" accept="image/*" data-default-file="{{$client_preferences->deliveryicon ? $client_preferences->deliveryicon['proxy_url'].'600/400'.$client_preferences->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="deliveryIcon" class="dropify ss_form_submit" id="image" />
+                                                <input type="file" accept="image/*"  data-default-file="{{$client_preferences->deliveryicon ? $client_preferences->deliveryicon['proxy_url'].'600/400'.$client_preferences->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="deliveryIcon" class="dropify ss_form_submit" id="image" />
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong></strong>
                                                 </span>
@@ -122,7 +138,7 @@
                                                 </span>
                                                 <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
                                             </div>
-                                        </div>
+                                        </div> -->
 
                                     </form>
                                 </div>
@@ -154,7 +170,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        
                     </div>
 
                     <div class="col-md-4 h-100">
@@ -224,8 +240,14 @@
                             </ul>
                         </div>
                     </div>
+                    
                 </div>
             </form>
+          
+       
+
+              
+           
         </div>
         <div class="col-md-4 h-100">
             <form method="POST" action="{{route('web.styling.update_contact_up')}}">
@@ -301,6 +323,56 @@
             </div>
             @endif
         </div>
+    </div>
+    <div class="row">
+             <!--Payment Method Icons start -->
+             <div class="col-md-6 mb-3">
+            <div class="card-box pb-2 h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                   <h4 class="header-title m-0">{{ __("Payment Method Icons") }}</h4>
+                   
+                      <!-- <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }} -->
+                      <form id="show_payment_icons_form" action="{{route('styling.updatePaymentIcons')}}" method="post" enctype="multipart/form-data">
+                        @csrf
+                      <input type="checkbox" id="show_payment_icons_id" data-plugin="switchery" name="show_payment_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_payment_icons == 1 ? 'checked' : ''}}>
+                      </form>
+                </div>
+                @if($client_preferences->show_payment_icons == 1)
+                <div class="table-responsive mt-3 mb-1">
+                   <table class="table table-centered table-nowrap table-striped" id="payment-datatable">
+                      <thead>
+                         <tr>
+                            <th>{{ __("Name") }}</th>
+                            <th>{{ __("Image") }}</th>
+                            <th>{{ __("Is show") }}</th>
+                            <!-- <th>{{ __("Action") }}</th> -->
+                         </tr>
+                      </thead>
+                      <tbody id="post_list">
+                         @forelse($payment_methods as $payment_method)
+                         <tr>
+                            <td>
+                               <a class="edit_payment_method_btn" data-payment_method_id="{{$payment_method->id}}" href="javascript:void(0)">
+                                  {{$payment_method->name }}
+                               </a>
+                            </td>
+                            <td><img src="{{$payment_method->image_url}}" class="" alt="170"></td>
+                            <td>
+                                <input type="checkbox"  data-plugin="switchery" name="{{$payment_method->slug}}" data-id='{{$payment_method->id}}' class="chk_box2 payment_method_show" data-color="#43bee1" {{$payment_method->is_show == 1 ? 'checked' : ''}}>
+                            <td>
+                         </tr>
+                         @empty
+                         <tr align="center">
+                            <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                         </tr>
+                         @endforelse
+                      </tbody>
+                   </table>
+                </div>
+                @endif
+            </div>
+        </div>
+        <!-- Payment Method Icons end -->
     </div>
 
 
@@ -619,9 +691,10 @@ $(document).on('click', '.deletePickupSection', function() {
     // $("#show_wishlist").change(function() {
     //     submitData();
     // });
-    // $("#show_payment_icons").change(function() {
-    //     submitData();
-    // });
+    $("#show_payment_icons_id").change(function() {
+       
+       $('#show_payment_icons_form').submit();
+    });
     // $("#hide_nav_bar").change(function() {
     //     submitData();
     // });
@@ -643,6 +716,34 @@ $(document).on('click', '.deletePickupSection', function() {
     $('.ss_form_submit').change(function() {
         submitData();
     });
+    $('.payment_method_show').change(function() {
+        let id = $(this).data('id');
+        let state = $(this).prop('checked');
+        var data_uri = "{{route('styling.updatePaymentMethods')}}";
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        $.ajax({
+            type: "post",
+            url: data_uri,
+            data: {'id':id,'state':state},
+            dataType:"json",
+            headers: {
+                Accept: "application/json"
+            },
+            success: function(response) {
+                if (response.status == 'success') {
+                    console.log(response.message);
+                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                    var r = document.querySelector(':root');
+                    r.style.setProperty('--theme-deafult', 'lightblue');
+                }
+            }
+        });
+    });
+   
 
 
     function submitDataNewPickup() {

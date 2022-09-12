@@ -394,7 +394,8 @@
                                                                 </div>
 
                                                                     <div class="form-group" id="order_min_amountInput">
-                                                                        {!! Form::label('title', 'Absolute Min Order Value [AMOV]',['class' => 'control-label']) !!}
+                                                                        <label for="title" class="control-label">{{__('Absolute Min Order Value [AMOV]')}}  @include('backend.primary_currency')
+                                                                        </label>
                                                                         <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{@$vendor->order_min_amount}}" {{(isset($vendor)) ? (($vendor->status ?? 0) == 1 ? '' : 'disabled') : ''}}>
                                                                     </div>
 

@@ -11,6 +11,7 @@ use App\Models\ClientPreference;
 use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
+use App\Models\ShowSubscriptionPlanOnSignup;
 use App\Models\{VendorSlot, ClientCurrency, Order};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,37 @@ use Illuminate\Support\Facades\Auth;
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date,$date_format){
         return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
+    }
+}
+
+if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
+    function checkShowSubscriptionPlanOnSignup(){
+        $showSubscriptionPlanPopUp = 0;
+        $user = Auth::user();
+        $showSubscriptionPlan = ShowSubscriptionPlanOnSignup::find(1);
+        if(@$showSubscriptionPlan->show_plan_customer == 1 && @$showSubscriptionPlan->every_sign_up == 1 && !empty($user)){
+            $showSubscriptionPlanPopUp = 1;
+        }
+        return $showSubscriptionPlanPopUp;
+    }
+}
+
+if (!function_exists('curlJsonRequest')) {
+    function curlJsonRequest($from, $data){
+        $headers = [
+            'Authorization: key=' . $from,
+            'Content-Type: application/json',
+        ];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
     }
 }
 
@@ -55,7 +87,7 @@ if (!function_exists('pr')) {
         echo '<pre>';
         print_r($var);
         echo '</pre>';
-        exit();
+        // exit();
     }
 }
 if (!function_exists('http_check')) {
@@ -165,6 +197,15 @@ if (!function_exists('convertDateTimeInTimeZone')) {
     {
         $date = Carbon::parse($date, 'UTC');
         $date->setTimezone($timezone);
+        return $date->format($format);
+    }
+}
+
+if (!function_exists('convertDateTimeInClientTimeZone')) {
+    function convertDateTimeInClientTimeZone($date,$format = 'Y-m-d H:i:s'){
+        $date = Carbon::parse($date, 'UTC');
+        $clientTimezone = ClientData::find(1);
+        $date->setTimezone($clientTimezone->timezone);
         return $date->format($format);
     }
 }
@@ -781,6 +822,15 @@ function stripeFPXPaymentCredentials(){
 
 function stripeOXXOPaymentCredentials(){
     $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_oxxo')->where('status', 1)->first();
+    $creds_arr = json_decode($stripe_creds->credentials);
+    $response = collect();
+    $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
+    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+    return $response;
+}
+
+function stripeDynamicPaymentCredentials($name){
+    $stripe_creds = PaymentOption::select('credentials')->where('code', $name)->where('status', 1)->first();
     $creds_arr = json_decode($stripe_creds->credentials);
     $response = collect();
     $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';

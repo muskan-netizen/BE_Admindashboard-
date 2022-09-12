@@ -95,7 +95,6 @@ class EasebuzzController  extends BaseController
         $sub_merchnt_id = '';
         if($request->vendor_id){
             $vendor = Vendor::select('id','easebuzz_sub_merchent_id')->where('id', $request->vendor_id)->first();
-            
             $sub_merchnt_id = $vendor->easebuzz_sub_merchent_id ?? '';
           
         }

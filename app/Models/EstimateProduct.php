@@ -34,10 +34,24 @@ class EstimateProduct extends Model
                 $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
             }
             $values['image_fit'] = \Config::get('app.FIT_URl');
+            $values['original'] = $img;
         return $values;
       }
       return $value;
 
+    }
+
+
+    public function estimate_product_addons(){
+      return $this->hasMany('App\Models\EstimateProductAddon', 'estimate_product_id' );
+    }
+
+    public function category(){
+      return $this->belongsTo('App\Models\Category', 'category_id' );
+    }
+
+    public function estimate_product_translation(){
+        return $this->belongsTo('App\Models\EstimateProductTranslation', 'id', 'estimate_product_id' );
     }
 
 

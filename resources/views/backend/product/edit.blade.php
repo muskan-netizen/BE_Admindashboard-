@@ -95,7 +95,7 @@
             </div>
         </div>
         <div class="col-4 text-right" style="margin: auto;">
-            <button type="button" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> {{ __("Submit") }}</button>
+            <button type="submit" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> {{ __("Submit") }}</button>
         </div>
     </div>
     <a href="{{route('vendor.catalogs',$product->vendor_id)}}">{{ $product->vendor->name}} </a>
@@ -137,7 +137,7 @@
             <div class="col-lg-7">
                 @csrf
                 @method('PUT')
-                <div class="card-box">
+                <div class="card-box" style="display:{{(($product->global_product_id!='')?'none':'block')}}">
                     <h5 class="text-uppercase bg-light p-2 mt-0 mb-3">{{ __("General") }}</h5>
                     <div class="row mb-2 row-spacing">
                         <div class="col-md-5 mb-2" style="cursor: not-allowed;">
@@ -176,7 +176,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-box ">
+                <div class="card-box " style="display:{{(($product->global_product_id!='')?'none':'block')}}">
                     <div class="row mb-2 bg-light">
                         <div class="col-8" style="margin:auto; padding: 8px !important;">
                             <h5 class="text-uppercase  mt-0 mb-0">{{ __("Product Information") }}</h5>
@@ -220,16 +220,19 @@
                     <div class="row mb-2">
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
+                            @include('backend.primary_currency')
                             {!! Form::text('price', decimal_format($product->variant[0]->price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
+                            @include('backend.primary_currency')
                             {!! Form::text('compare_at_price', decimal_format($product->variant[0]->compare_at_price), ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                       
                         @if($product->vendor->need_container_charges == 1)
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Container Charges (Optional)'), ['class' => 'control-label']) !!}
+                            @include('backend.primary_currency')
                             {!! Form::text('container_charges', $product->variant[0]->container_charges, ['class'=>'form-control', 'id' => 'container_charges', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         @endif
@@ -278,7 +281,7 @@
                 @endif
 
                 @if($productVariants->count() > 0)
-                <div class="card-box">
+                <div class="card-box" >
                     <div class="row mb-2 bg-light">
                         <div class="col-8" style="margin:auto;">
                             <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
@@ -519,18 +522,18 @@
                         </div>
                     </div>
 
-                    @if($configData->minimum_order_batch == 1 || $product->minimum_order_count > 0)
+                    {{--@if($configData->minimum_order_batch == 1 || $product->minimum_order_count > 0)--}}
                     <div class="row">
                                 <div class="col-md-6 mb-2">
                                     {!! Form::label('title', __('Minimum Order Count'),['class' => 'control-label']) !!}
-                                    {!! Form::number('minimum_order_count', $product->minimum_order_count, ['class'=>'form-control', 'id' => 'minimum_order_count', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                    {!! Form::number('minimum_order_count', $product->minimum_order_count, ['class'=>'form-control', 'id' => 'minimum_order_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     {!! Form::label('title', __('Minimum Increment'),['class' => 'control-label']) !!}
-                                    {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                    {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                 </div>
                     </div>            
-                    @endif
+                    {{--@endif--}}
 
                     
 
@@ -755,7 +758,7 @@
                 </div>
 
                 @if($client_preference_detail->business_type != 'taxi')
-                <div class="card-box">
+                <div class="card-box" style="display:{{(($product->global_product_id!='')?'none':'block')}}">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Relate with other products") }}</h5>
                     <div class="row">
                         @if($configData->celebrity_check == 1)

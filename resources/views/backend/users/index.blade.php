@@ -191,6 +191,7 @@
                                                                     <th>#</th>
                                                                     <th>{{ __('Image')}}</th>
                                                                     <th>{{ __('Name')}}</th>
+                                                                    <th>{{ __('User Type')}}</th>
                                                                     <th>{{ __('Login Type') }}</th>
                                                                     <th>{{ __('Signup Date')}}</th>
                                                                     <th>{{ __('Last Login') }}</th>
@@ -234,6 +235,7 @@
                                                                     <th>#</th>
                                                                     <th>{{ __('Image')}}</th>
                                                                     <th>{{ __('Name')}}</th>
+                                                                    <th>{{ __('User Type')}}</th>
                                                                     <th>{{ __('Login Type') }}</th>
                                                                     <th>{{ __('Signup Date')}}</th>
                                                                     <th>{{ __('Last Login') }}</th>
@@ -396,6 +398,12 @@
                             }
                         },
                         {
+                            data: 'user_type',
+                            name: 'user_type',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
                             data: 'login_type',
                             name: 'login_type',
                             orderable: false,
@@ -472,7 +480,7 @@
                             orderable: false,
                             searchable: false,
                             "mRender": function(data, type, full) {
-                                return "<a href='javascript:void(0)' class='customer_wallet_link' data-id='" + full.wallet.id + "'>" + data + "</a>";
+                                return "<a href='javascript:void(0)' class='customer_wallet_link' data-id='" + full.wallet_id + "'>" + data + "</a>";
                             }
                         },
                         {

@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\{Order, User, Cart, ClientCurrency, CartProduct};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController,EasebuzzController,VnpayController, PayUGatewayController, MyCashGatewayController};
+use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController,EasebuzzController,VnpayController, PayUGatewayController, MyCashGatewayController,UseRedePaymentController,OpenpayPaymentController};
 
 class PaymentController extends FrontController{
 
@@ -87,6 +87,10 @@ class PaymentController extends FrontController{
                 elseif($payment_option->code == 'offline_manual'){
                     $json = json_decode($payment_option->credentials);
                     $payment_option->title = $json->manule_payment_title;
+                }elseif($payment_option->code == 'mycash'){
+                    $payment_option->title = __('Digicel MyCash');
+                }elseif($payment_option->code == 'windcave'){
+                    $payment_option->title = __('Windcave (Debit/Credit card)');
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
@@ -220,5 +224,13 @@ class PaymentController extends FrontController{
     public function postPaymentVia_mycash(Request $request){
         $gateway = new MyCashGatewayController();
         return $gateway->purchase($request);
+    }
+    public function postPaymentVia_userede(Request $request){
+        $gateway = new UseRedePaymentController();
+        return $gateway->beforePayment($request);
+    }
+    public function postPaymentVia_openpay(Request $request){
+        $gateway = new OpenpayPaymentController();
+        return $gateway->beforePayment($request);
     }
 }

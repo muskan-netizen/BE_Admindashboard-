@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\{Client, Category, Product, ClientPreference, UserDevice, UserLoyaltyPoint, Wallet, VendorSavedPaymentMethods, Nomenclature,NomenclatureTranslation};
 use Illuminate\Support\Facades\Storage;
 use Session;
+use GuzzleHttp\Client as GCLIENT;
+
 
 class BaseController extends Controller
 {
@@ -228,6 +230,47 @@ class BaseController extends Controller
         return $this->categoryOptionData;
     }
 
+
+    //function created by surendra singh-----------------------------//
+    public function printCategoryOptionsHeirarchy_new($tree, $parentCategory = [])
+    {
+        if (!is_null($tree) && count($tree) > 0) {
+            foreach ($tree as $key => $node) {
+                $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
+                if (!isset($node['children'])) {
+                    if($node['parent_id'] == 1){
+                        $parentCategory = [];
+                        $hierarchyName = $category;
+                    }else{
+                        $hierarchyName = implode(' > ', $parentCategory);
+                        $hierarchyName = $hierarchyName.' > '.$category;
+                    }
+                    $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'category'=>$category, 'can_add_products'=>$node['can_add_products']);
+                }
+            }
+
+            foreach ($tree as $key => $node) { 
+                
+                $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
+                if(isset($node['children']) && count($node['children']) > 0) {
+                    $parentCategory[] = $category;
+                    $hierarchyName = '';
+                    if(count($parentCategory) > 0){
+                        if($node['parent_id'] != 1){ // if category is not parent then make heirarchy
+                            $hierarchyName = implode(' > ', $parentCategory);
+                        }
+                    }
+                    $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'category'=>$category, 'can_add_products'=>$node['can_add_products']);
+                    //$hierarchyName = implode(' > ', $parentCategory);
+                    //$hierarchyName = $hierarchyName.' > '.$category;
+                    $this->printCategoryOptionsHeirarchy_new($node['children'], $parentCategory);
+                }
+            }
+        }
+        
+        return $this->categoryOptionData;
+    }
+
     /*      Category tree for vendor to enable & disable category      */
     public function printTreeToggle($tree, $activeCategory = [])
     {
@@ -397,4 +440,175 @@ class BaseController extends Controller
             return "Fixed Fee Per Order";
         }
     }
-}
+
+
+    # check if inventory system on 
+    public function checkIfInventoryOn()
+    {
+        $preference = ClientPreference::first();
+        if ($preference->need_inventory_service == 1 && !empty($preference->inventory_service_key_url) && !empty($preference->inventory_service_key_code))
+            return $preference;
+        else
+            return false;
+    }
+
+    # get all store list from inventory system 
+    public function getAllStoreListFromInventory(){
+        try {
+
+                $preference_data = $this->checkIfInventoryOn();
+                if($preference_data != false) {
+                    $preference = new GClient(['headers' => ['shortcode' => $preference_data->inventory_service_key_code,
+                    'content-type' => 'application/json']
+                        ]);
+
+                    $url = $preference_data->inventory_service_key_url;
+                    $res = $preference->get(
+                    $url.'/api/v1/order-store-list',
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['status'] == 200) { 
+                        $data = $response;
+                        $data['status'] = 200;
+                        $data['client_preferences'] = $preference_data;
+                        $data['message'] =  'Success';
+                        return $data;
+                    }else{
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  'Error';
+                        return $data;
+                    }
+                }
+                }catch(\Exception $e)
+                    {
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  $e->getMessage();
+                        return $data;
+
+                    }
+
+    }
+    
+
+    # get All Product List From Inventory
+    public function getAllProductListFromInventory($request){
+        try {
+
+                $preference_data = $this->checkIfInventoryOn();
+                if($preference_data != false) {
+                    $preference = new GClient(['headers' => ['shortcode' => $preference_data->inventory_service_key_code,
+                    'content-type' => 'application/json']
+                        ]);
+
+                    $url = $preference_data->inventory_service_key_url;
+                    $res = $preference->get(
+                    $url.'/api/v1/product-list-by-vendor?vendor_id='.$request->vendor_id,
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['status'] == 200) { 
+                        $data = $response;
+                        $data['status'] = 200;
+                        $data['message'] =  'Success';
+                        return $data;
+                    }else{
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  'Error';
+                        return $data;
+                    }
+                }
+                }catch(\Exception $e)
+                    {
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  $e->getMessage();
+                        return $data;
+
+                    }
+
+    }
+    
+
+    # get All Product List From Inventory with product ids
+    public function getAllProductListFromInventoryByIds($productids){
+        try {
+
+                $preference_data = $this->checkIfInventoryOn();
+                if($preference_data != false) {
+                    $postdata =  ['productids' => $productids];
+                    $preference = new GClient(['headers' => ['shortcode' => $preference_data->inventory_service_key_code,
+                    'content-type' => 'application/json']
+                        ]);
+
+                    $url = $preference_data->inventory_service_key_url;
+                    $res = $preference->POST(
+                    $url.'/api/v1/product-list-by-productids',['form_params' => ($postdata)]
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['status'] == 200) { 
+                        $data = $response;
+                        $data['status'] = 200;
+                        $data['message'] =  'Success';
+                        return $data;
+                    }else{
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  'Error';
+                        return $data;
+                    }
+                }
+                }catch(\Exception $e)
+                    {
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  $e->getMessage();
+                        return $data;
+
+                    }
+
+    }
+
+
+    # get All Category List From Inventory By Ids
+    public function getAllCategoryListFromInventoryByIds($productids){
+        try {
+
+                $preference_data = $this->checkIfInventoryOn();
+                if($preference_data != false) {
+                    $postdata =  ['productids' => $productids];
+                    $preference = new GClient(['headers' => ['shortcode' => $preference_data->inventory_service_key_code,
+                    'content-type' => 'application/json']
+                        ]);
+
+                    $url = $preference_data->inventory_service_key_url;
+                    $res = $preference->POST(
+                    $url.'/api/v1/category-list-by-productids',['form_params' => ($postdata)]
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['status'] == 200) { 
+                        $data = $response;
+                        $data['status'] = 200;
+                        $data['message'] =  'Success';
+                        return $data;
+                    }else{
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  'Error';
+                        return $data;
+                    }
+                }
+                }catch(\Exception $e)
+                    {
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  $e->getMessage();
+                        return $data;
+
+                    }
+
+    }
+
+
+    }

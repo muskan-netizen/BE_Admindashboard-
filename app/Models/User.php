@@ -11,7 +11,9 @@ use Yadahan\AuthenticationLog\AuthenticationLogable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+
 use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class User extends Authenticatable implements Wallet, WalletFloat, Auditable
 {
@@ -26,7 +28,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'description', 'phone_number', 'image', 'is_email_verified','email_verified_at', 'is_verified_phone', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone','import_user_id','last_login_at'
+        'name', 'email', 'password', 'description', 'phone_number','dial_code', 'image', 'is_email_verified','email_verified_at', 'is_verified_phone', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone','import_user_id','last_login_at'
     ];
     protected $appends = ['loyalty_name'];
     /**

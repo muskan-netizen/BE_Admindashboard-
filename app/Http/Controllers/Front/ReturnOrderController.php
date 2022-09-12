@@ -265,6 +265,19 @@ class ReturnOrderController extends FrontController{
         try {
 
             $order_vendor = OrderVendor::where('id',$request->id)->first();
+
+            $orderCancellationPercentage = 0;
+            if(($client_preferences->order_cancellation_time > 0)){
+                $orderData = Order::find($order_vendor->order_id);
+                
+                // get what time order placed according to current time
+                $orderPlacedTime = (strtotime(now()) - strtotime($orderData->created_at)) / 60; // in minutes
+                if($orderPlacedTime > $client_preferences->order_cancellation_time){
+                    $orderCancellationPercentage = $client_preferences->cancellation_percentage;
+                }
+            }
+
+            
             if($client_preferences->business_type == 'laundry'){
                 return \Response::json(\View::make('frontend.modals.vendor-cancel-order')->with([
                     'order_vendor' => $order_vendor,
@@ -272,14 +285,15 @@ class ReturnOrderController extends FrontController{
                     'pickup_order_date' => $pickup_order_date,
                     'order_number'  => $order_number,
                     'order_id'  => $order_id,
+                    'orderCancellationPercentage' => $orderCancellationPercentage
                 ])->render());
             }else{
                 if(isset($order_vendor)){
                     if ($request->ajax()) {
-                     return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor))->render());
+                     return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor, 'orderCancellationPercentage' => $orderCancellationPercentage))->render());
                     }
                 }
-                return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor))->render());
+                return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor, 'orderCancellationPercentage' => $orderCancellationPercentage))->render());
             }
 
 

@@ -87,6 +87,13 @@ class UserController extends BaseController
             ->addColumn('image_url', function($users) {
                 return $users->image['proxy_url'] . '40/40' . $users->image['image_path'];
             })
+            ->addColumn('user_type', function($users) {
+                if (!empty($users->is_admin) && $users->is_admin == 1) {
+                    return 'Vendor';
+                } else {
+                    return 'Customer';
+                }
+            })
             ->addColumn('login_type', function($users) {
                 if (!empty($users->facebook_auth_id)) {
                     return 'Facebook';
@@ -103,8 +110,8 @@ class UserController extends BaseController
             ->addColumn('is_superadmin', function($users) use($current_user) {
                 return $current_user->is_superadmin;
             })
-            ->addColumn('wallet', function($users) {
-                return $users->wallet;
+            ->addColumn('wallet_id', function($users) {
+                return $users->wallet->id ?? '';
             })
             ->addColumn('signup_date', function($users) {
                 $date = dateTimeInUserTimeZone($users->created_at, $users->timezone);
@@ -261,6 +268,7 @@ class UserController extends BaseController
         $user->phone_number = $phone;
         $user->is_email_verified = ($request->has('is_email_verified') && $request->is_email_verified == 'on') ? 1 : 0;
         $user->is_phone_verified = ($request->has('is_phone_verified') && $request->is_phone_verified == 'on') ? 1 : 0;
+        $user->status = 1;
         if ($request->hasFile('image')) {    /* upload logo file */
             $file = $request->file('image');
             $user->image = Storage::disk('s3')->put('/profile', $file, 'public');
@@ -540,14 +548,16 @@ class UserController extends BaseController
     {
         $pagiNate = 10;
         $user_transactions = Transaction::where('wallet_id', $request->walletId)->orderBy('id', 'desc')->get();
+        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         // dd($user_transactions->toArray());
         foreach ($user_transactions as $key => $trans) {
             // $user = User::find($trans->payable_id);
             $trans->serial = $key + 1;
             $trans->date = Carbon::parse($trans->created_at)->format('M d, Y, H:i A');
             // $trans->date = convertDateTimeInTimeZone($trans->created_at, $user->timezone, 'l, F d, Y, H:i A');
-            $trans->description = json_decode($trans->meta)[0];
-            $trans->amount = '$' . sprintf("%.2f", ($trans->amount / 100));
+            $reason = json_decode($trans->meta, true);
+            $trans->description = $reason['description'] ?? $reason[0];
+            $trans->amount = $clientCurrency->currency->symbol . sprintf("%.2f", ($trans->amount / 100));
             $trans->type = $trans->type;
         }
         return Datatables::of($user_transactions)
@@ -619,6 +629,7 @@ class UserController extends BaseController
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
             $notification_content = NotificationTemplate::where('id', 4)->first();
+            
             if ($notification_content) {
                 if($header_code == ''){
                     $header_code = Client::orderBy('id', 'asc')->first()->code;
@@ -626,6 +637,7 @@ class UserController extends BaseController
                 $code = $header_code;
                 $client = Client::where('code', $code)->first();
                 $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/client/order";
+                $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
                 $headers = [
                     'Authorization: key=' . $from,
                     'Content-Type: application/json',
@@ -634,7 +646,7 @@ class UserController extends BaseController
                     "registration_ids" => $devices,
                     "notification" => [
                         'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
+                        'body'  => $body_content,
                         'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                         'click_action' => $redirect_URL,

@@ -393,6 +393,30 @@ $(document).ready(function () {
         stripeOxxo = Stripe(stripe_oxxo_publishable_key);
     }
 
+    function stripeIdealInitialize() {
+        stripe_ideal = Stripe(stripe_ideal_publishable_key);
+        var elements = stripe_ideal.elements();
+        var options = {
+            // Custom styling can be passed to options when creating an Element
+            style: {
+              base: {
+                padding: '10px 12px',
+                color: '#32325d',
+                fontSize: '16px',
+                '::placeholder': {
+                  color: '#aab7c4'
+                },
+              },
+            },
+          };
+          
+          // Create an instance of the idealBank Element
+          var idealBank = elements.create('idealBank', options);
+          // Add an instance of the idealBank Element into
+          // the `ideal-bank-element` <div>
+          idealBank.mount('#ideal-bank-element'); 
+    }
+
     function stripeFPXInitialize() {
         stripe_fpx = Stripe(stripe_fpx_publishable_key);
         var elements = stripe_fpx.elements();
@@ -420,6 +444,11 @@ $(document).ready(function () {
     if ($("#fpx-bank-element").length > 0) {
         stripeFPXInitialize();
     }
+ 
+    if ($("#ideal-bank-element").length > 0) {
+        stripeIdealInitialize();
+    }
+
 
     $(document).delegate(".subscribe_btn", "click", function () {
         var sub_id = $(this).attr('data-id');
@@ -454,6 +483,9 @@ $(document).ready(function () {
                                 if(stripe_fpx_publishable_key != ''){
                                     stripeFPXInitialize();
                                 }
+                                if(stripe_ideal_publishable_key != ''){
+                                    stripeIdealInitialize();
+                                }
                             }
                         },
                         error: function (error) {
@@ -479,7 +511,6 @@ $(document).ready(function () {
         var selected_option = $("input[name='subscription_payment_method']:checked");
         // var subscription_id = $('#subscription_payment_form #subscription_id').val();
         var payment_option_id = selected_option.data("payment_option_id");
-        console.log(payment_option_id);
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
             subscriptionPaymentOPtions(payment_option_id);
             // $('#subscription_payment').modal('hide');
@@ -639,11 +670,12 @@ $(document).ready(function () {
             cartHeader($(this).val());
         }
     });
+ 
 
     $(document).on("change", ".schedule_datetime", function () {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
-
+        
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -733,6 +765,7 @@ $(document).ready(function () {
         $('.cross').hide();
         $('#schedule_datetime').val('');
         $('#tasknow').val('now');
+        cartHeader();
     });
 
     $(document).on("click", ".clproduct_cart_order_form", function(e) {
@@ -1034,6 +1067,9 @@ $(document).ready(function () {
                                     if(stripe_fpx_publishable_key != ''){
                                         stripeFPXInitialize();
                                     }
+                                    if(stripe_ideal_publishable_key != ''){
+                                        stripeIdealInitialize();
+                                    }
                                 }
                             },
                             error: function (error) {
@@ -1094,6 +1130,9 @@ $(document).ready(function () {
                         if(stripe_fpx_publishable_key != ''){
                             stripeFPXInitialize();
                         }
+                        if(stripe_ideal_publishable_key != ''){
+                            stripeIdealInitialize();
+                        }
                     }
                 }
             },
@@ -1135,6 +1174,9 @@ $(document).ready(function () {
                         }
                         if(stripe_fpx_publishable_key != ''){
                             stripeFPXInitialize();
+                        }
+                        if(stripe_ideal_publishable_key != ''){
+                            stripeIdealInitialize();
                         }
                         
                     }
@@ -1662,6 +1704,7 @@ $(document).ready(function () {
             return false;
         }
         var orderResponse = '';
+        
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -2057,8 +2100,9 @@ $(document).ready(function () {
     function cartHeader(address_id) {
         $(".shopping-cart").html("");
         $(".spinner-box").show();
+        
         $.ajax({
-            data: { address_id: address_id },
+            data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
             dataType: 'json',
             url: cart_product_url,
@@ -2113,6 +2157,11 @@ $(document).ready(function () {
                                     $("#order_placed_btn").removeAttr("disabled");
                                     $("#order_placed_btn").removeClass("d-none");
                                 }
+                                if(response.schedule_datetime!=null){
+                                    $("#schedule_datetime").val(response.schedule_datetime);
+                                    $("#taskschedule").click();
+                                }
+                                
                             }
                             cartTotalProductCount();
 
@@ -2797,6 +2846,30 @@ $(document).ready(function () {
         });
     }
 
+      window.getEstimateProductAddons = function getEstimateProductAddons(slug, variantId = 0) {
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: get_estimate_product_addon_url,
+            data: { "slug": slug, "variant": variantId },
+            success: function(response) {
+                if (response.status == 'Success') {
+                    $("#estimate_product_addon_modal .modal-content").html('');
+                    let estimate_addon_template = _.template($('#estimate_addon_template').html());
+                    $("#estimate_product_addon_modal .modal-content").append(estimate_addon_template({ estimateAddOnData: response.data }));
+                    $("#estimate_product_addon_modal").modal('show');                  
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function(error) {
+                var response = $.parseJSON(error.responseText);
+                let error_messages = response.message;
+                alert(error_messages);
+            },
+        });
+    }
+
     function getLastAddedProductVariant(_this, cart_id, product_id, addon) {
         $('#repeat_item_modal').find(".last_cart_product_id").val('');
         $('#repeat_item_modal').find(".curr_product_id").val('');
@@ -3045,6 +3118,11 @@ $(document).ready(function () {
         initAddVendorProduct(that);
     });
 
+    $(document).on("click", ".add_vendor_product_btn", function() {
+        let that = $(this);
+        initAddEstimateProduct(that);
+    });
+
     $(document).delegate("#repeat_item_with_new_addon_btn", "click", function () {
         let that = $(this).closest('.modal');
         let curr_product_id = that.find('.curr_product_id').val();
@@ -3073,6 +3151,28 @@ $(document).ready(function () {
         if (!$.hasAjaxRunning()) {
             addToCartProductsAddons(that, minimum_order_count);
         }
+    }
+
+    function initAddEstimateProduct(that){
+        let check_addon = that.attr('data-addon');
+        if (check_addon > 0) {
+            var variant_id = that.data("variant_id");
+            let slug = that.parents('.product_row').attr('data-slug');
+            getEstimateProductAddons(slug, variant_id);
+            return false;
+        }
+
+        var minimum_order_count = $(that).data("minimum_order_count");
+        if(minimum_order_count > 0)
+        minimum_order_count = minimum_order_count;
+        else
+        minimum_order_count = 1;
+
+
+        // end addons data
+        // if (!$.hasAjaxRunning()) {
+        //     addToCartProductsAddons(that,minimum_order_count);
+        // }
     }
 
     // add to cart on new page
@@ -3722,11 +3822,77 @@ $(document).ready(function () {
         }, 8000);
     }
 
-    $(document).on('click', '.prescription_btn', function (e) {
-        $("#product_id").val($(this).data("product"));
-        $("#vendor_idd").val($(this).data("vendor_id"));
-        $('#prescription_form').modal('show');
+    $(document).on('click', '.prescription-doc-remove', function (e) {
+        var prescriptionId = $(this).data("prescription_id");
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: get_product_prescription,
+            dataType: 'json',
+            data: {prescriptionId:prescriptionId,requestType:'delete_prescription'},
+            beforeSend: function () {
+                $(".loader_box").show();
+            },
+            success: function (response) {
+                if (response.status == 'success') {
+                    $(".modal .close").click();
+                    location.reload();
+                }
+            },
+            complete: function () {
+                $('.loader_box').hide();
+            }
+        });
     });
+
+    $(document).on('click', '.prescription_btn', function (e) {
+        e.preventDefault();
+        $(".uploaded-prescription").html("");
+        $(".uploaded-prescription-img").val(null);
+        var cart = $(this).data("cart");
+        var product = $(this).data("product");
+        var vendor = $(this).data("vendor_id");
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: get_product_prescription,
+            dataType: 'json',
+            data: {cart:cart,product:product},
+            beforeSend: function () {
+                $(".loader_box").show();
+            },
+            success: function (response) {
+                $("#product_id").val(product);
+                $("#vendor_idd").val(vendor);
+
+                // show-prescription-doc
+                var showPrescriptionDoc = '';
+                $.each(response, function (key, res) {
+                    showPrescriptionDoc += '<div class="show-prescription-close"><i class="fa fa-times prescription-doc-remove" data-prescription_id="'+res.id+'" aria-hidden="true"></i><img src="'+res.prescription.proxy_url+'50/50'+res.prescription.image_path+'" alt="product-img" height="60"></div>'
+                });
+                
+                $(".show-prescription-doc").html(showPrescriptionDoc);
+                $('#prescription_form').modal('show');
+            },
+            complete: function () {
+                $('.loader_box').hide();
+            }
+        });
+    });    
 
     $(document).on('click', '.submitPrescriptionForm', function (e) {
         e.preventDefault();
@@ -4024,7 +4190,29 @@ $(document).ready(function () {
 
             case 37:
                 stripeOXXOInitialize();
-                paymentViaStripeOXXO('', 37, '');
+                paymentViaStripeOXXO('', payment_option_id, '');
+            break;
+
+            case 39:
+                paymentViaStripeIdeal('', payment_option_id, ''); 
+            break;
+            case 40:
+                paymentViaUseRede('', payment_option_id, ''); 
+            break;
+            case 41:
+                payWithOpenPay('', payment_option_id, ''); 
+            break;
+            case 42:
+                paymentViaDpoSubscription('', payment_option_id, ''); 
+            break;
+            case 43:
+                paymentViaUPay('', payment_option_id, ''); 
+            break;
+            case 44:
+                paymentViaConekta('', payment_option_id, ''); 
+            break;
+            case 45:
+                paymentViaTelr('', payment_option_id, ''); 
             break;
         
         }
@@ -4404,6 +4592,75 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+
+            case '39':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaStripeIdeal(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
+            case '40':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaUseRede(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
+            case '41':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    payWithOpenPay(address_id, payment_option_id, order);
+                }else{
+                    return false;
+                }
+            break;
+            case '42':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
+                if (order != '') {
+                    //payWithDpo
+                    payWithDpo(order);
+                }
+                else{
+                    return false;
+                }
+            break;
+            case '43':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
+                if (order != '') {
+                    paymentViaUPay(address_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
+            case '44':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
+                if (order != '') {
+                    paymentViaConekta(address_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
+            case '45':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
+                if (order != '') {
+                    paymentViaTelr(address_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
+           
         
         }
 
@@ -4596,6 +4853,28 @@ $(document).ready(function () {
                     stripeOXXOInitialize();
                     paymentViaStripeOXXO('', payment_option_id, ''); 
             break;
+
+            case 39:
+                paymentViaStripeIdeal('', payment_option_id, ''); 
+            break;
+            case 40:
+                paymentViaUseRede('', payment_option_id, ''); 
+            break;
+            case 41:
+                payWithOpenPay('', payment_option_id, '');
+            break;
+            case 42:
+                paymentViaDpo('', payment_option_id, ''); 
+                break;
+            case 43:
+                paymentViaUPay('', payment_option_id, ''); 
+                break;
+            case 44:
+                paymentViaConekta('', payment_option_id, ''); 
+                break;
+            case 45:
+                paymentViaTelr('', payment_option_id, ''); 
+                break;
 
         }
     }
