@@ -38,7 +38,7 @@
                             <div class="row">
                                 <div class="col-md-4 col-6 mb-3">
                                     <h4 class="header-title">{{ __("Favicon") }}</h4>
-                                    <div class="mb-0">
+                                    <div class="mb-0 text-left alDropFile">
                                         <label>{{ __("Upload Favicon") }}</label>
                                         <input type="file" accept="image/*" data-default-file="{{$client_preferences->favicon ? $client_preferences->favicon['proxy_url'].'600/400'.$client_preferences->favicon['image_path'] : ''}}" data-plugins="dropify" name="favicon" class="dropify ss_form_submit" id="image" />
                                         <span class="invalid-feedback" role="alert">
@@ -50,7 +50,7 @@
                                 @if($themeId==4 || $themeId==6)
                                 <div class="col-md-4 col-6 mb-3">
                                     <h4 class="header-title">{{ __("Sign In/Up Image") }}</h4>
-                                    <div class="mb-0">
+                                    <div class="mb-0 text-left alDropFile">
                                         <label>{{ __("Sign In/Up Image") }}</label>
                                         <input type="file" accept="image/*" data-default-file="{{$client_preferences->signup_image ? $client_preferences->signup_image['proxy_url'].'600/400'.$client_preferences->signup_image['image_path'] : ''}}" data-plugins="dropify" name="sign_up_image" class="dropify ss_form_submit" id="image" />
                                         <span class="invalid-feedback" role="alert">
@@ -128,24 +128,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div  style="display:{{(($themeId==4 || $themeId==6)?'block':'none')}}" class="card changeIconOnTheme4">
-                                <div class="card-body alSignUpImageControal">
-                                    {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
-                                    <div class="row">
-                                        <div class="col-md-12 mb-3">
-                                            <div class="mb-0">
-                                                <label>Signup Image</label>
-                                                <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$VendorTypesName ? $client_preferences->$VendorTypesName['proxy_url'].'600/400'.$client_preferences->$VendorTypesName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{ $VendorTypesName }}" class="dropify ss_form_submit" id="image" />
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong></strong>
-                                                </span>
-                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 1920x768</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
+                    </div>
 
                         <div class="card">
                             <div class="card-body al_custom_control">
