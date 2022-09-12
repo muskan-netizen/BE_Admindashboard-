@@ -1293,7 +1293,8 @@ $checkSlot = findSlot('', $vendor->id, '');
             var latitude = "{{ $vendor->latitude }}";
             var longitude = "{{ $vendor->longitude }}";
             var latlng = new google.maps.LatLng(latitude, longitude);
-
+            var prev_infowindow =false;
+            
             map = new google.maps.Map(document.getElementById('vendor-map'), {
                 center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
                 zoom: 12
@@ -1340,6 +1341,13 @@ $checkSlot = findSlot('', $vendor->id, '');
                             map: map,
                         });
                     marker.addListener("click", () => {
+
+                        if( prev_infowindow ) {
+                            prev_infowindow.close();
+                        }
+
+                        prev_infowindow = infowindow;
+
                         infowindow.open(map, marker);
                     });
 
