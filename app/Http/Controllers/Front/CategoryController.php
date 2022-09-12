@@ -622,8 +622,14 @@ class CategoryController extends FrontController{
                     'longitude'        => $vendor ? $vendor->longitude : 76.80350870,
                     'schedule_date'    => $request->cur_date
                 ];
-                $res = $this->getSlotFeeDispatcher($dispatchData);
-                pr($res);
+                $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
+                $cart_product_id = $request->cart_product_id??0;
+                pr($dispatchAgents );
+             
+                if ($request->ajax()) {
+                    return \Response::json(\View::make('frontend.ondemand.dispatcher_agent_slots', array('dispatch_agents' => $dispatchAgents,'cart_product_id'=> $cart_product_id))->render());
+                }
+                //pr($dispatchAgents);
               }
             }
         }
