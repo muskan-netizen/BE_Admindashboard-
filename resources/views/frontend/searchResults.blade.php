@@ -165,6 +165,7 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
         var latitude = "{{ $vendorLatLong[0][0] }}";
         var longitude = "{{ $vendorLatLong[0][1] }}";
         var latlng = new google.maps.LatLng(latitude, longitude);
+        var prev_infowindow =false; 
 
         map = new google.maps.Map(document.getElementById('vendor-map'), {
             center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
@@ -172,7 +173,7 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
         });
 
         var url = window.location.origin;
-        var vendorData = {!!json_encode($listData)!!};
+        var vendorData = {!!json_encode($mapViewVendorList)!!};
 
         //    vendor  markers
         for (let i = 0; i < vendorData.length; i++) {
@@ -181,15 +182,21 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
             if(vendor.address != null && vendor.latitude != "" && vendor.latitude != "0.00000000" && vendor.longitude != "0.00000000" ){
                 var contentString = '';
 
-                contentString = '<div class="row no-gutters align-items-start">'+
+                var vendorPhone = '';
+                if(vendor.phone_no != '' && vendor.phone_no != null){
+                    console.log('vendor.phone_no', vendor.phone_no);
+                    vendorPhone = '<span> <i class="fas fa-phone-alt"></i>'+vendor?.dial_code +vendor?.phone_no+'</span>'
+                }
+
+                contentString = '<a target="_blank" href="'+vendor.redirect_url+'"><div class="row no-gutters align-items-start">'+
                     '<div class="col-sm-4">'+
                         '<div class="img_box mb-sm-0 mb-2"><a target="_blank" href="'+vendor.redirect_url+'"><img src="'+vendor.image_url+'"/></a></div> </div>'+
                     '<div class="col-sm-8 pl-2 user_info">'+
-                        '<div class="user_name mb-2"><a target="_blank" href="'+vendor.redirect_url+'"><label class="d-block m-0">'+vendor.name+'</label></a><span> <i class="fas fa-phone-alt"></i>'+vendor?.dial_code +vendor?.phone_no+'</span></div>'+
+                        '<div class="user_name mb-2"><label class="d-block m-0">'+vendor.name+'</label>'+vendorPhone+'</div>'+
                         '<div><b class="d-block mb-2"><i class="fas fa-mobile-alt"></i> <span> '+vendor.address+
                         ' </span></b> </div>'
                     '</div>'+
-                '</div>';
+                '</div></a>';
 
                 const infowindow = new google.maps.InfoWindow({
                     content: contentString,
@@ -215,6 +222,14 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
                 });
 
                 marker.addListener("click", () => {
+
+                    if( prev_infowindow ) {
+                        prev_infowindow.close();
+                    }
+
+                    prev_infowindow = infowindow;
+
+                    infowindow.close();
                     infowindow.open(map, marker);
                 });
             }

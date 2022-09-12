@@ -1,8 +1,8 @@
 @extends('layouts.vertical', ['title' => 'Orders'])
-@section('content') 
+@section('content')
 @php
 $timezone = Auth::user()->timezone;
-@endphp   
+@endphp
 <style type="text/css">
     .ellipsis{
         white-space: nowrap;
@@ -10,40 +10,43 @@ $timezone = Auth::user()->timezone;
       text-overflow: ellipsis;
     }
 </style>
-    <div class="container-fluid">
-       
+    <div class="container-fluid alReturnRequestsPage">
+
       <!-- Return Page Tabbar start from here -->
         <div class="row">
             <div class="col-12">
-                <div class="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 class="page-title">{{__('Return Requests')}}</h4>                    
+                <div class="page-title-box mt-2 alReturnRequestsTitle d-md-flex align-items-center justify-content-between">
+                    <h4 class="page-title">{{__('Return Requests')}}</h4>
+                    <div class="float-right">
+                        <div class="row ">
+                            <div class="col-sm-4 mb-1">
+                                <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
+                            </div>
+                            <div class="col-sm-4 mb-1">
+                                <select class="form-control" id="vendor_select_box">
+                                    <option value="">{{ __('Select Vendor') }}</option>
+                                    @forelse($vendors as $vendor)
+                                        <option value="{{$vendor->id}}">{{$vendor->name}}</option>
+                                    @empty
+                                    @endforelse
+                                </select>
+                            </div>
+                            <div class="col-sm-4 mb-1">
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
+                                        <i class="mdi mdi-close"></i>
+                                    </button>
+                                    <input type="search" class="form-control" placeholder="{{ __('Search...') }}" id="search_via_keyword">
+                                </div>
+                            </div>
+                    </div>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-12 mb-2 d-flex justify-content-end">
-                <div class="row align-items-center ">
-                    <div class="col">
-                        <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
-                    </div>
-                    <div class="col">
-                        <select class="form-control" id="vendor_select_box">
-                            <option value="">{{ __('Select Vendor') }}</option>
-                            @forelse($vendors as $vendor)
-                                <option value="{{$vendor->id}}">{{$vendor->name}}</option>
-                            @empty
-                            @endforelse
-                        </select>
-                    </div>
-                    <div class="col">
-                        <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
-                                <i class="mdi mdi-close"></i>
-                            </button>
-                            <input type="search" class="form-control" placeholder="{{ __('Search...') }}" id="search_via_keyword">
-                        </div>
-                    </div>
-                </div>
+
             </div>
-        </div>   
+        </div>
         <div class="row mb-lg-5">
             <div class="col-sm-12 col-lg-12 tab-product pt-0">
                 <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
@@ -82,7 +85,7 @@ $timezone = Auth::user()->timezone;
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if(isset($orders['Pending']) && count($orders['Pending']))    
+                                        @if(isset($orders['Pending']) && count($orders['Pending']))
                                         @foreach ($orders['Pending'] as $order)
                                         <tr data-id="{{ $order->id }}" class="show-return-product-modal"  data-status="Pending">
                                             <td>
@@ -92,7 +95,7 @@ $timezone = Auth::user()->timezone;
                                                 <a class="round_img_box mb-1" href="{{ route('vendor.show', $order->product->vendor_id) }}"><img class="rounded-circle" src="{{$order->product->vendor->logo['proxy_url'].'90/90'.$order->product->vendor->logo['image_path']}}" alt="{{$order->product->vendor->id}}"></a>
                                                 <a href="{{ route('vendor.show', $order->product->vendor_id) }}">{{$order->product->vendor->name??''}}</a>
                                             </td>
-                                           
+
                                             <td>
                                                 <a href="#">{{$order->returnBy->name??''}}</a>
                                             </td>
@@ -111,8 +114,8 @@ $timezone = Auth::user()->timezone;
                                         @endforeach
                                         @else
                                         <tr><td colspan="7">{{__('No Records Found')}}</td></tr>
-                                        @endif     
-                                       
+                                        @endif
+
                                     </tbody>
                                 </table>
                             </div>
@@ -137,7 +140,7 @@ $timezone = Auth::user()->timezone;
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if(isset($orders['Accepted']) && count($orders['Accepted']))    
+                                            @if(isset($orders['Accepted']) && count($orders['Accepted']))
                                             @foreach ($orders['Accepted'] as $order)
                                             <tr data-id="{{ $order->id }}" class="show-return-product-modal"  data-status="Accepted">
                                                 <td>
@@ -147,7 +150,7 @@ $timezone = Auth::user()->timezone;
                                                     <a class="round_img_box mb-1" href="{{ route('vendor.show', $order->product->vendor_id) }}"><img class="rounded-circle" src="{{$order->product->vendor->logo['proxy_url'].'90/90'.$order->product->vendor->logo['image_path']}}" alt="{{$order->product->vendor->id}}"></a>
                                                     <a href="{{ route('vendor.show', $order->product->vendor_id) }}">{{$order->product->vendor->name??''}}</a>
                                                 </td>
-                                               
+
                                                 <td>
                                                     <a href="#">{{$order->returnBy->name??''}}</a>
                                                 </td>
@@ -166,8 +169,8 @@ $timezone = Auth::user()->timezone;
                                             @endforeach
                                         @else
                                         <tr><td colspan="7">{{__('No Records Found')}}</td></tr>
-                                        @endif    
-                                       
+                                        @endif
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -192,7 +195,7 @@ $timezone = Auth::user()->timezone;
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if(isset($orders['Rejected']) && count($orders['Rejected']))    
+                                            @if(isset($orders['Rejected']) && count($orders['Rejected']))
                                             @foreach ($orders['Rejected'] as $order)
                                             <tr data-id="{{ $order->id }}" class="show-return-product-modal"  data-status="Rejected">
                                                 <td>
@@ -202,7 +205,7 @@ $timezone = Auth::user()->timezone;
                                                     <a class="round_img_box mb-1" href="{{ route('vendor.show', $order->product->vendor_id) }}"><img class="rounded-circle" src="{{$order->product->vendor->logo['proxy_url'].'90/90'.$order->product->vendor->logo['image_path']}}" alt="{{$order->product->vendor->id}}"></a>
                                                     <a href="{{ route('vendor.show', $order->product->vendor_id) }}">{{$order->product->vendor->name??''}}</a>
                                                 </td>
-                                               
+
                                                 <td>
                                                     <a href="#">{{$order->returnBy->name??''}}</a>
                                                 </td>
@@ -221,7 +224,7 @@ $timezone = Auth::user()->timezone;
                                             @endforeach
                                         @else
                                         <tr><td colspan="7">{{__('No Records Found')}}</td></tr>
-                                        @endif   
+                                        @endif
                                         </tbody>
                                     </table>
                                 </div>
@@ -233,9 +236,9 @@ $timezone = Auth::user()->timezone;
                     {{ $orders[$status]->links() }}
                 </div>
             </div>
-        </div>   
-       
-    </div> 
+        </div>
+
+    </div>
 <!-- product return modal -->
 <div class="modal fade return-order" id="return_order" tabindex="-1" aria-labelledby="return_orderLabel">
     <div class="modal-dialog modal-dialog-centered">
@@ -246,8 +249,8 @@ $timezone = Auth::user()->timezone;
                     </button>
                 <div id="return-order-form-modal">
 
-                </div>    
-               
+                </div>
+
 
             </div>
         </div>
@@ -257,7 +260,7 @@ $timezone = Auth::user()->timezone;
     @endsection
 
     @section('script')
-    
+
 <script type="text/javascript">
 
 //// ************  return product details   *****************  //
@@ -267,8 +270,8 @@ $timezone = Auth::user()->timezone;
         var id = $(this).data('id');
         var status = $(this).data('status');
         var returnurl = "{{route('get-return-product-modal')}}";
-        $.get(returnurl+'?id=' + id +'&status=' + status, function(markup){   
-            $('#return_order').modal('show'); 
+        $.get(returnurl+'?id=' + id +'&status=' + status, function(markup){
+            $('#return_order').modal('show');
             $('#return-order-form-modal').html(markup);
         });
     });
@@ -283,7 +286,7 @@ $timezone = Auth::user()->timezone;
             }
         });
         setTimeout(function(){$('#awaiting_review-tab').trigger('click');}, 200);
-        
+
         $(document).on("click",".nav-link",function() {
             let rel= $(this).data('rel');
             let status= $(this).data('status');
@@ -308,7 +311,7 @@ $timezone = Auth::user()->timezone;
         })
         function intialize()
         {
-            let rel= $("a.nav-link.active").data('rel'); 
+            let rel= $("a.nav-link.active").data('rel');
             let status= $("a.nav-link.active").data('status');
             init1(rel, status);
         }

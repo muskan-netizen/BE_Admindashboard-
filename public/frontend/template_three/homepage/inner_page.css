@@ -516,3 +516,12 @@ body[dir="rtl"].al_body_template_three .main-menu .menu-right .icon-nav .onhover
     padding: 0px 132px 0px 0px ;
 }
 
+/* new css 9/7/22 */
+.vender-icon img.rounded-circle.avatar-lg{
+    display: block;
+    height: 100px;
+    width: 100px;
+}
+a.morelink.less{
+    margin-left: 5px;
+}

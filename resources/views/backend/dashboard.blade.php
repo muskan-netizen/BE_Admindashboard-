@@ -6,24 +6,14 @@
 <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/dashboard/css/new_dashboard.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
-    span.nodatafound {
-        font-size: 120% !important;
-        border: 1px solid #FC0;
-        background: #FFC;
-        color: #384F34;
-        display: block;
-        font-weight: bold;
-        margin: 2px auto 14px;
-        padding: 15px !important;
-        text-align: left;
-    }
+span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: #FFC;color: #384F34;display: block;font-weight: bold;margin: 2px auto 14px;padding: 15px !important;text-align: left;}
 </style>
 @endsection
 @section('content')
 
 <!-- Dashboard start here -->
-<div class="container-fluid">
-    <div class="row d-flex align-items-center">
+<div class="container-fluid py-md-2" id="alDashboardStyle">
+    <div class="row d-flex align-items-center ">
         <div class="col-12">
             <!-- page title start here -->
             <div class="page-title-box mb-2">
@@ -36,7 +26,7 @@
                                 <i class="mdi mdi-calendar-range font-13"></i>
                             </span>
                         </div>
-                        <a href="javascript: void(0);" class="btn btn-primary ms-2" id="dashboard_refresh_btn">
+                        <a href="javascript: void(0);" class="btn btn-primary mx-2" id="dashboard_refresh_btn">
                             <i class="mdi mdi-autorenew"></i>
                         </a>
                         <!-- <a href="javascript: void(0);" class="btn btn-primary ms-1">

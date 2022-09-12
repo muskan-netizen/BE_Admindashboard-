@@ -296,7 +296,7 @@ height: auto;
 </section>
 <!-- shimmer_effect end -->
 @if(count($banners))
-<section class="home-slider-wrapper pt-md-3 pb-0">
+<section class="home-slider-wrapper pt-md-3 pb-3">
 	<div class="container">
 		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 			<div class="carousel-inner">
