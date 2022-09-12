@@ -111,12 +111,14 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
                         <h4>Showing Results for "{{$keyword}}"</h4>
                         <div class="displayProducts">
                             <div class="product-wrapper-grid">
+                                @if($vendorMapView == 1)
                                 <div class="googleMapArea col-md-12 p-0">
                                     <!-- <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13720.904154980397!2d76.81441854999998!3d30.71204525!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1657101273720!5m2!1sen!2sin" width="100%" height="550" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> -->
                                     <div id="vendor-map-container">
                                         <div id="vendor-map" class="w-100" style="height:400px"></div>
                                     </div>
                                 </div>
+                                @endif
                                 <div class="row margin-res">
                                     @if(!empty($listData))
                                     @foreach($listData as $key => $data)
@@ -163,6 +165,7 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
         var latitude = "{{ $vendorLatLong[0][0] }}";
         var longitude = "{{ $vendorLatLong[0][1] }}";
         var latlng = new google.maps.LatLng(latitude, longitude);
+        var prev_infowindow =false; 
 
         map = new google.maps.Map(document.getElementById('vendor-map'), {
             center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
@@ -170,7 +173,7 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
         });
 
         var url = window.location.origin;
-        var vendorData = {!!json_encode($listData)!!};
+        var vendorData = {!!json_encode($mapViewVendorList)!!};
 
         //    vendor  markers
         for (let i = 0; i < vendorData.length; i++) {
@@ -179,15 +182,21 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
             if(vendor.address != null && vendor.latitude != "" && vendor.latitude != "0.00000000" && vendor.longitude != "0.00000000" ){
                 var contentString = '';
 
-                contentString = '<div class="row no-gutters align-items-start">'+
+                var vendorPhone = '';
+                if(vendor.phone_no != '' && vendor.phone_no != null){
+                    console.log('vendor.phone_no', vendor.phone_no);
+                    vendorPhone = '<span> <i class="fas fa-phone-alt"></i>'+vendor?.dial_code +vendor?.phone_no+'</span>'
+                }
+
+                contentString = '<a target="_blank" href="'+vendor.redirect_url+'"><div class="row no-gutters align-items-start">'+
                     '<div class="col-sm-4">'+
                         '<div class="img_box mb-sm-0 mb-2"><a target="_blank" href="'+vendor.redirect_url+'"><img src="'+vendor.image_url+'"/></a></div> </div>'+
                     '<div class="col-sm-8 pl-2 user_info">'+
-                        '<div class="user_name mb-2"><a target="_blank" href="'+vendor.redirect_url+'"><label class="d-block m-0">'+vendor.name+'</label></a><span> <i class="fas fa-phone-alt"></i>'+vendor?.dial_code +vendor?.phone_no+'</span></div>'+
+                        '<div class="user_name mb-2"><label class="d-block m-0">'+vendor.name+'</label>'+vendorPhone+'</div>'+
                         '<div><b class="d-block mb-2"><i class="fas fa-mobile-alt"></i> <span> '+vendor.address+
                         ' </span></b> </div>'
                     '</div>'+
-                '</div>';
+                '</div></a>';
 
                 const infowindow = new google.maps.InfoWindow({
                     content: contentString,
@@ -213,6 +222,14 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
                 });
 
                 marker.addListener("click", () => {
+
+                    if( prev_infowindow ) {
+                        prev_infowindow.close();
+                    }
+
+                    prev_infowindow = infowindow;
+
+                    infowindow.close();
                     infowindow.open(map, marker);
                 });
             }

@@ -7,15 +7,13 @@
 @php
 $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
 @endphp
-<div class="container-fluid">
+<div class="container-fluid alPromocodePage">
     <div class="row align-items-center">
-        <div class="col-sm-6">
-            <div class="page-title-box">
+        <div class="col-sm-12">
+            <div class="page-title-box d-flex justify-content-between align-items-center">
                 <h4 class="page-title">{{ __('Promocode') }}</h4>
+                <button class="btn btn-info waves-effect waves-light text-sm-right openPromoModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }} </button>
             </div>
-        </div>
-        <div class="col-sm-6 text-sm-right">
-            <button class="btn btn-info waves-effect waves-light text-sm-right openPromoModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }} </button>
         </div>
     </div>
     <div class="row">
@@ -69,7 +67,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                 @foreach($promocodes as $promo)
                                 <tr data-row-id="">
                                     <td class="draggableTd"><span class="dragula-handle"></span></td>
-                                    <td> 
+                                    <td>
                                         <img class="promo_img" src="{{$promo->image['proxy_url'].'200/100'.$promo->image['image_path']}}" alt="{{$promo->id}}" >
                                     </td>
                                     <td><a class="openPromoModal text-capitalize" userId="{{$promo->id}}" href="#"> {{$promo->name}}</a></td>

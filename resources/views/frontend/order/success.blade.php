@@ -6,6 +6,7 @@ $total_amount = $order->payable_amount;
 $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges;
 $additional_price=0;
 $serviceType =  Session::get('vendorType');
+    $timezone = Auth::user()->timezone;
 @endphp
 @section('customcss')
 <style>
@@ -47,18 +48,16 @@ $serviceType =  Session::get('vendorType');
                             <h3>{{__('Your Order Details')}}</h3>
                          
                             @foreach($order->products as $product)
-                            
+                            {{-- {{dd($product['vendor']->name)}} --}}
                                 @php
-                                   // pr($product);
+
                                     $image = count($product->media) ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
                                     $additional_price+= $product->incremental_price;
                                 @endphp
 
-
-
-
-                                <div class="row product-order-detail">
-                                    <div class="col-2">
+                                    <div class="row product-order-detail">
+                                    <div class="col-12"><h4>{{$product['vendor']->name}}</h4></div>
+                                        <div class="col-2">
                                         <img src="{{ $image }}" class="img-fluid blur-up lazyloaded">
                                     </div>
                                     <div class="col-10">
@@ -66,7 +65,7 @@ $serviceType =  Session::get('vendorType');
                                             <div class="col-4 order_detail">
                                                 <div>
                                                     <h4>{{__('Product Name')}}</h4>
-                                                    <h5>{{$product->pvariant->translation_one->title ?? $product->pvariant->sku }}</h5>
+                                                    <h5>{{ (!empty($product->pvariant->translation) && isset($product->pvariant->translation[0])) ? $product->pvariant->translation[0]->title : ''}}</h5>
                                                     @foreach($product->pvariant->vset as $vset)
                                                         <label><span>{{$vset->optionData->trans->title}}:</span>{{$vset->variantDetail->trans->title}}</label>
                                                     @endforeach
@@ -192,10 +191,10 @@ $serviceType =  Session::get('vendorType');
                             <div class="col-sm-12">
                                 <ul class="order-detail row">
                                     <li class="col-4">{{__('Order ID')}}: <span> {{$order->order_number}}</span></li>
-                                    <li class="col-8">{{__('Order Date')}}:<span> {{ date('F d, Y', strtotime($order->created_at)) }}</span></li>
-
+                                    <li class="col-8">{{__('Order Date')}}:<span> {{ date('F d, Y', strtotime($order->created_at)) }} {{ convertDateTimeInTimeZone($order->created_at, $timezone, 'H:i')}}</span></li>
                                     @if (!empty($order->scheduled_date_time))
-                                    <li class="col-8">{{__('Scheduled Date')}}:<span> {{ date('F d, Y', strtotime($order->scheduled_date_time)) }}</span></li>
+                                    <li class="col-8">{{__('Scheduled Date')}}:<span> {{ date('F d, Y', strtotime($order->scheduled_date_time)) }} {{ convertDateTimeInTimeZone($order->scheduled_date_time, $timezone, 'H:i')}}</span></li>
+                                    {{-- <li class="col-8">{{__('Scheduled Date')}}:<span> {{ date('F d, Y', strtotime($order->scheduled_date_time)) }} {{ date("H:i",strtotime($order->scheduled_date_time ))}}</span></li> --}}
                                     @endif
                                 </ul>
                                 <ul class="order-detail row">

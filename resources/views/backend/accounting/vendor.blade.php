@@ -9,7 +9,7 @@
 @endsection
 @section('content')
 <div class="content">
-    <div class="container-fluid">
+    <div class="container-fluid alVendorsPages">
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
@@ -23,7 +23,7 @@
                 <div class="card widget-inline">
                     <div class="card-body p-2">
                         <div class="row">
-                            <div class="col-sm-6 col-md-4 mb-3 mb-md-0">
+                            <div class="col-6 col-md-4 mb-3 mb-md-0">
                                 <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-primary"></i>
@@ -32,7 +32,7 @@
                                     <p class="text-muted font-15 mb-0">{{ __("Total Order Value") }}</p>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-4 mb-3 mb-md-0">
+                            <div class="col-6 col-md-4 mb-3 mb-md-0">
                                 <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-success"></i>
@@ -41,7 +41,7 @@
                                     <p class="text-muted font-15 mb-0">{{ __("Total Delivery Fees") }}</p>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-4 mb-3 mb-md-0">
+                            <div class="col-6 col-md-4 mb-3 mb-md-0">
                                 <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-success"></i>
@@ -117,7 +117,7 @@
                 "dom": '<"toolbar">Bfrtip',
                 "destroy": true,
                 "processing": true,
-                
+
                 "responsive": true,
                 "serverSide": true,
                 "iDisplayLength": 50,

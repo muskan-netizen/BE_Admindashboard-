@@ -5,6 +5,8 @@
 .dataTables_filter,.toolbar,.dt-buttons.btn-group.flex-wrap {position: absolute;height:40px;}.dataTables_filter{right:0;top: -50px;}
 .dataTables_filter label{margin:0;height:40px;}.dataTables_filter label input{margin:0;height:40px;}.dt-buttons.btn-group.flex-wrap{right: 200px;top: -50px;}
 .table-responsive{position: relative;overflow:visible;margin-top:10px;}table.dataTable{margin-top:0 !important;}
+div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
+.dt-buttons.btn-group.flex-wrap {right: 310px;top: -50px;}
 </style>
 @endsection
 @section('content')
@@ -72,13 +74,13 @@
                 <div class="card-body position-relative al">
                     <div class="top-input position-absoluteal">
                         <div class="row">
-                            <div class="col-md-9">
+                            <div class="col-md-12">
                                 <form  action="{{route('account.order.export')}}" id="export-form" method="GET" >
                                 <div class="row">
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <input type="text" name="date_range" id="range-datepicker" class="form-control al_box_height flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
                                     </div>
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <select class="form-control al_box_height " id="vendor_select_box" name="vendor">
                                             <option value="">{{ __('Select Vendor') }}</option>
                                             @forelse($vendors as $vendor)
@@ -87,7 +89,7 @@
                                             @endforelse
                                         </select>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <select class="form-control al_box_height" id="order_status_option_select_box" name="order_status" >
                                             <option value="">{{ __('Select Order Status') }}</option>
                                             @forelse($order_status_options as $order_status_option)
@@ -96,7 +98,7 @@
                                             @endforelse
                                         </select>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <button type="button" class="btn btn-danger al_box_height waves-effect waves-light" id="clear_filter_btn_icon">
                                             <i class="mdi mdi-close"></i>
                                         </button>
@@ -208,7 +210,7 @@
                         },
                         buttons: [{
                                 className:'btn btn-success waves-effect Export_btn waves-light',
-                                id:'exp-btn', 
+                                id:'exp-btn',
                                 text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>{{__("Export CSV")}}',
                                 action: function ( e, dt, node, config ) {
                                     //window.location.href = "{{ route('account.order.export') }}";
@@ -259,7 +261,7 @@
                                 return data;
                                 // return numberWithCommas(data)+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                             }},
-                           
+
                             {data: 'payable_amount', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);

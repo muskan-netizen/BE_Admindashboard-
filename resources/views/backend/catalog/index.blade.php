@@ -68,7 +68,7 @@
 }
 .modal-category-list .select-category label::after{
     display:none;
-} 
+}
 .modal-category-list .form-check-input:checked~label .category-img::after {
     opacity: 1;
 }
@@ -94,7 +94,7 @@
     padding:2px 0px;
 }
 .modal-category-list .select-category .modal-category-btm-title p{
-    font-size:12px; 
+    font-size:12px;
 }
 .modal-category-list .select-category .modal-category-btm-title p i {
     font-size: 13px;
@@ -117,11 +117,11 @@
     /* .modal-category-list::-webkit-scrollbar {
         width: 1em;
     }
-    
+
     .modal-category-list::-webkit-scrollbar-track {
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
     }
-    
+
     .modal-category-list::-webkit-scrollbar-thumb {
         background-color: darkgrey;
         outline: 1px solid slategrey;
@@ -132,7 +132,7 @@
 </style>
 @endsection
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid alCatalogPage">
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
@@ -159,15 +159,15 @@
         <div class="col-xl-4 col-lg-6 mb-4 order-list-view">
             <div class="card-box h-100">
                 <div class="row mb-2">
-                    <div class="col-sm-8">
-                        <h4 class="page-title">{{ __('Category') }}</h4>
+                    <div class="col-sm-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="page-title">{{ __('Category') }}</h4>
+                            <button class="btn btn-info waves-effect waves-light text-sm-right openCategoryModal" dataid="0" is_vendor="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
+                            </button>
+                        </div>
                         <p class="sub-header ">
                             {{ __('Drag & drop Categories to make child parent relation') }}
                         </p>
-                    </div>
-                    <div class="col-sm-4 text-right">
-                        <button class="btn btn-info waves-effect waves-light text-sm-right openCategoryModal" dataid="0" is_vendor="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
-                        </button>
                     </div>
                 </div>
                 <div class="row mb-2">
@@ -195,18 +195,15 @@
         <div class="col-xl-4 col-lg-6 mb-4">
             <div class="card-box h-100">
                 <div class="row mb-2">
-                    <div class="col-sm-8">
-                        <h4 class="page-title">{{ __("Variant") }}</h4>
+                    <div class="col-sm-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="page-title">{{ __("Variant") }}</h4>
+                            <button class="btn btn-info waves-effect waves-light text-sm-right addVariantbtn" dataid="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
+                            </button>
+                        </div>
                         <p class="sub-header">
                             {{ __("Drag & drop Variant to change the position") }}
                         </p>
-                    </div>
-                    <div class="col-sm-4 text-right">
-                        <button class="btn btn-info waves-effect waves-light text-sm-right addVariantbtn" dataid="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
-                        </button>
-                    </div>
-                    <div class="col-sm-8">
-                        <h4 class="page-title"></h4>
                     </div>
                 </div>
                 <div class="row variant-row">
@@ -270,14 +267,14 @@
         <div class="col-xl-4 col-lg-6 mb-4">
             <div class="card-box ">
                 <div class="row mb-2">
-                    <div class="col-sm-8">
-                        <h4 class="page-title">{{ __('Brand') }}</h4>
+                    <div class="col-sm-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="page-title">{{ __('Brand') }}</h4>
+                            <button class="btn btn-info waves-effect waves-light text-sm-right addBrandbtn" dataid="0">
+                                <i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
+                            </button>
+                        </div>
                         <p class="sub-header"></p>
-                    </div>
-                    <div class="col-sm-4 text-right">
-                        <button class="btn btn-info waves-effect waves-light text-sm-right addBrandbtn" dataid="0">
-                            <i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
-                        </button>
                     </div>
                 </div>
                 <div class="row brand-row">
@@ -341,13 +338,13 @@
             <div class="card-box">
                 <div class="row mb-2">
                     <div class="col-sm-8">
-                        <h4 class="page-title">{{ __('Tags') }}</h4>
-                        <p class="sub-header"></p>
-                    </div>
-                    <div class="col-sm-4 text-right">
-                        <button class="btn btn-info waves-effect waves-light text-sm-right addTagbtn" dataid="0" id="add_product_tag_modal_btn">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="page-title">{{ __('Tags') }}</h4>
+                            <button class="btn btn-info waves-effect waves-light text-sm-right addTagbtn" dataid="0" id="add_product_tag_modal_btn">
                             <i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
                         </button>
+                        </div>
+                        <p class="sub-header"></p>
                     </div>
                 </div>
                 <div class="row brand-row">
@@ -357,7 +354,7 @@
                             <input type="hidden" name="orderData" id="orderTagData" value="" />
                         </form>
                         <div class="table-responsive {{ (($client_preference_detail->is_vendor_tags == '1') && (count($tags) > 2) ) ?  ( (count($tags) > 3) ? 'alSmHeight' : 'alHeightAutoScrooll' ) : ( (count($tags) > 3) ?  'alHeightAutoScrooll' :'') }} ">
-                            <table class="table table-centered table-nowrap table-striped" id="tag-datatable">  
+                            <table class="table table-centered table-nowrap table-striped" id="tag-datatable">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -403,7 +400,7 @@
             </div>
             @if($client_preference_detail->is_vendor_tags == '1')
             {{--  facilty section --}}
-            
+
             <div class="card-box pb-2 ">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                 <h4 class="header-title m-0">{{ __("Vendor Tags") }}</h4>
@@ -453,7 +450,7 @@
                 </table>
                 </div>
             </div>
-          
+
             <!--End Add facilty Modal -->
             <div id="add_facilty_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  standard-modalLabel aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-md">
@@ -468,7 +465,7 @@
                             <div id="save_social_media">
                                 <input type="hidden" name="facilty_id" value="">
                                 <div class="row">
-                                    
+
                                     <div class="col-md-6">
                                             <label>{{ __('Upload Logo') }} </label>
                                             <input type="file" accept="image/*" data-plugins="dropify" name="facilty_image" class="dropify" data-default-file="" />
@@ -477,7 +474,7 @@
                                     <div class="col-md-12 selector-option-al ">
                                         <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
                                             <tr class="trForClone">
-        
+
                                                 @foreach($client_languages as $langs)
                                                     <th>{{$langs->langName}}</th>
                                                 @endforeach
@@ -496,7 +493,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                
+
                                 </div>
                             </div>
                         </form>
@@ -510,12 +507,12 @@
             </div>
             {{--  facilty section Ends--}}
             @endif
-            
+
         </div>
         @endif
 
     </div>
-  
+
 </div>
 @include('backend.common.category-modals')
 @include('backend.catalog.modals')
@@ -596,7 +593,7 @@
             }
         });
     });
-    
+
     $(document).on("click", ".edit_facilty_btn", function() {
         let facilty_id = $(this).data('facilty_id');
         //console.log(facilty_id);
@@ -621,13 +618,13 @@
                 //   $(document).find("#add_vendor_registration_document_modal select[name=file_type]").val(response.data.file_type).change();
 
                   $("#add_facilty_modal input[name=facilty_id]").val(response.data.id);
-                  
+
                   $("#add_facilty_modal input[name='facilty_image']").attr('data-default-file',imagePath);
                   $('#add_facilty_modal #standard-modalLabel').html('Update facilty');
                   $('#add_facilty_modal').modal('show');
 
                   $('.dropify').dropify();
-                  
+
                   $.each(response.data.translations, function( index, value ) {
                     $('#add_facilty_modal #facilty_name_'+value.language_id).val(value.name);
                   });
@@ -636,7 +633,7 @@
             error: function() {}
         });
     }
-     // delete kyc document 
+     // delete kyc document
      $(document).on("click", ".delete_facilty_btn", function() {
          var facilty_id = $(this).data('facilty_id');
          Swal.fire({
@@ -667,7 +664,7 @@
         });
     });
 
-    
+
     $('#add_facilties_modal_btn').click(function(e) {
         document.getElementById("faciltyForm").reset();
         $('#faciltyForm input[name=facilty_id]').val("");
