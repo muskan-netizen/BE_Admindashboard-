@@ -40,6 +40,11 @@
         </div>
     </div>
 </div>
+<!-- spinner Start -->
+<div class="nb-spinner-main">
+    <div class="nb-spinner"></div>
+    </div>
+    <!-- spinner End -->
 @php
 $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @endphp
