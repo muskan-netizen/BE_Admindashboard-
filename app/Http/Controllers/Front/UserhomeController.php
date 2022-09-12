@@ -421,6 +421,12 @@ class UserhomeController extends FrontController
             $navCategories = $this->categoryNav($langId);
             Session::put('navCategories', $navCategories);
             $clientPreferences = ClientPreference::first();
+            $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
+
+            if(count($navCategories) > 0 && $vendor_type =='pick_drop' ){
+                $categoriesSlug = $navCategories[0]->slug;
+                return redirect()->route('categoryDetail',$categoriesSlug); 
+            }
             $count = 0;
             if ($clientPreferences) {
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
