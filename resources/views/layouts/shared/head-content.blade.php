@@ -1,5 +1,5 @@
 @yield('css')
-@php 
+@php
 $mapKey = '1234';
 $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
 if($theme && !empty($theme->map_key)){
@@ -119,8 +119,8 @@ if($theme && !empty($theme->map_key)){
 {{-- <link href="{{ asset('assets/libs/datetimepicker/jquery.datetimepicker.min.css') }}" rel="stylesheet" type="text/css" /> --}}
 <link href="{{ asset('assets/libs/datetimepicker/daterangepicker.css') }}" rel="stylesheet" type="text/css" />
 @yield('customcss')
-@php 
-$socket_url = ''; 
+@php
+$socket_url = '';
 $admin_chat = '';
 $driver_chat = '';
 $customer_chat = '';
@@ -157,7 +157,7 @@ if(Auth::check()){
 	var auth = "{!! $auth_id !!}";
 	var db = "{!! $db !!}";
 	var authData =  `<?php  echo $authData  ?>`;
-	
+
 	var socket = null;
 	var Auth = {
 		auth_id:auth,
@@ -166,7 +166,7 @@ if(Auth::check()){
 	}
 	var Chat = {
 		orderData:{
-			
+
 		}
 	}
 	var SocketConstants = {
@@ -175,7 +175,7 @@ if(Auth::check()){
 		driver_chat : driver_chat,
 		customer_chat : customer_chat,
 		socket:'',
-	} 
+	}
 </script>
 <script src="{{asset('assets/libs/spinner/spinner.js')}}"></script>
 <script src="{{asset('assets/js/constants.js')}}"></script>

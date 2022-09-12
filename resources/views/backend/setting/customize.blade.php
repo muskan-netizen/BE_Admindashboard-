@@ -6,7 +6,7 @@
 </style>
 @endsection
 @section('content')
-<div class="container-fluid" id="alRowBGColor">
+<div class="container-fluid" id="alCustomizePage">
     {{--<div class="row">
         <div class="col-12">
             <div class="page-title-box">
@@ -18,11 +18,11 @@
     <div class="row mb-2 mt-2">
         <div class="col-sm-12">
             <div class="text-sm-left">
-                
+
                 <div class="alert alert-success">
                     <span>{!! \Session::get('success') !!}</span>
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -31,11 +31,11 @@
     <div class="row mb-2 mt-2">
         <div class="col-sm-12">
             <div class="text-sm-left">
-                
+
                 <div class="alert alert-danger">
                     <span>{!! \Session::get('error') !!}</span>
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -127,11 +127,11 @@
         </div>
         <!-- Date & Time sec end -->
         <div class="col-lg-4 col-xl-3 mb-3">
-            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
                 <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
                 @csrf
                 <input type="hidden" name="send_to" id="send_to" value="customize">
-                <div class="card-box mb-2">
+                <div class="card-box mb-2 h-100">
                     <div class="d-flex align-items-center justify-content-between">
                     <h4 class="header-title mb-0">{{__('Delivery Time Estimator')}}</h4>
                     <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
@@ -152,10 +152,10 @@
                     </div>
                 </div>
             </form>
-            
+
         </div>
         <!-- Localization start -->
-        <div class="col-lg-5 col-xl-6 mb-3">
+        <div class="col-lg-4 col-xl-6 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
                 <div class="card-box mb-0 h-100 pb-0">
@@ -237,16 +237,16 @@
     </div>
     <div class="row col-spacing">
         <!--Vendor Type &  Distance to Time Calculator start -->
-        <div class="col-lg-4 col-xl-3 mb-3">
+        <div class="col-lg-4 mb-3">
             {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' ) --}}
             @php
                 $typeArray = getCategoryTypes();
             @endphp
-            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}"> 
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
                 <input type="hidden" name="send_to" id="send_to" value="customize">
                 <input type="hidden" name="verify_vendor_type" id="verify_vendor_type" value="1">
-                <div class="card-box mb-2">
+                <div class="card-box mb-2 h-100">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
@@ -256,137 +256,137 @@
                             @php
                                 $VendorTypesName = $vendor_typ_key.'_check';
                             @endphp
-                            @if(in_array($vendor_typ_key, $typeArray)) 
+                            @if(in_array($vendor_typ_key, $typeArray))
                                 <div class="col-md-12">
                                     <div class="form-group d-flex justify-content-between">
                                         <label for="{{$VendorTypesName}}" class="mr-3 mb-0 ">{{getDynamicTypeName($vendor_typ_value)}}</label>
                                         <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" @if((isset($preference) && $preference->$VendorTypesName == '1')) checked='checked' @endif>
                                     </div>
                                 </div>
-                            @endif    
+                            @endif
                         @endforeach
-                       
+
                     </div>
                 </div>
             </form>
             {{-- @endif --}}
         </div>
         <!--Vendor Type &  Distance to Time Calculator end -->
-        
+
         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry' && $client_preference_detail->on_demand_check == 1)
-            <div class="col-lg-3 col-md-6 mb-3">
-               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
-                  @csrf
-               <!-- On Demand Services section start -->
-               <input type="hidden" name="send_to" id="send_to" value="customize">
-               <div class="card-box h-100">
-                  <div class="d-flex align-items-center justify-content-between mb-2">
-                     <h4 class="header-title mb-0">{{ __('On Demand Services') }}</h4>
-                     <button class="btn btn-info d-block" type="submit"  name="need_dispacher_home_other_service_submit_btn" value ="1"> {{ __("Save") }} </button>
-                  </div>
-                  <p class="sub-header">{{ __('Offer On Demand Services with Dispatcher.') }}</p>
-                  <div class="row">
-                     <div class="col-12">
-                        <div class="form-group mb-0">
-                           <div class="form-group mb-0 switchery-demo">
-                              <label for="need_dispacher_home_other_service" class="mr-3">{{ __('Enable') }}</label>
-                              <input type="checkbox" data-plugin="switchery" name="need_dispacher_home_other_service" id="need_dispacher_home_other_service" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_home_other_service == '1')) checked='checked' @endif>
-                           </div>
+        <div class="col-lg-4 mb-3">
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
+                @csrf
+            <!-- On Demand Services section start -->
+            <input type="hidden" name="send_to" id="send_to" value="customize">
+            <div class="card-box h-100">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h4 class="header-title mb-0">{{ __('On Demand Services') }}</h4>
+                    <button class="btn btn-info d-block" type="submit"  name="need_dispacher_home_other_service_submit_btn" value ="1"> {{ __("Save") }} </button>
+                </div>
+                <p class="sub-header">{{ __('Offer On Demand Services with Dispatcher.') }}</p>
+                <div class="row">
+                    <div class="col-12">
+                    <div class="form-group mb-0">
+                        <div class="form-group mb-0 switchery-demo">
+                            <label for="need_dispacher_home_other_service" class="mr-3">{{ __('Enable') }}</label>
+                            <input type="checkbox" data-plugin="switchery" name="need_dispacher_home_other_service" id="need_dispacher_home_other_service" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_home_other_service == '1')) checked='checked' @endif>
                         </div>
+                    </div>
 
-                        <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
-                           <label for="dispacher_home_other_service_key_url">{{ __('Dispatcher URL') }} *(https://www.abc.com)</label>
-                           <input type="text" name="dispacher_home_other_service_key_url" id="dispacher_home_other_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('dispacher_home_other_service_key_url', $preference->dispacher_home_other_service_key_url ?? '')}}">
-                           @if($errors->has('dispacher_home_other_service_key_url'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('dispacher_home_other_service_key_url') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+                    <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="dispacher_home_other_service_key_url">{{ __('Dispatcher URL') }} *(https://www.abc.com)</label>
+                        <input type="text" name="dispacher_home_other_service_key_url" id="dispacher_home_other_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('dispacher_home_other_service_key_url', $preference->dispacher_home_other_service_key_url ?? '')}}">
+                        @if($errors->has('dispacher_home_other_service_key_url'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('dispacher_home_other_service_key_url') }}</strong>
+                        </span>
+                        @endif
+                    </div>
 
-                        <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
-                           <label for="dispacher_home_other_service_key_code">{{ __('Dispatcher Short code') }}</label>
-                           <input type="text" name="dispacher_home_other_service_key_code" id="dispacher_home_other_service_key_code" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key_code', $preference->dispacher_home_other_service_key_code ?? '')}}">
-                           @if($errors->has('dispacher_home_other_service_key_code'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('dispacher_home_other_service_key_code') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+                    <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="dispacher_home_other_service_key_code">{{ __('Dispatcher Short code') }}</label>
+                        <input type="text" name="dispacher_home_other_service_key_code" id="dispacher_home_other_service_key_code" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key_code', $preference->dispacher_home_other_service_key_code ?? '')}}">
+                        @if($errors->has('dispacher_home_other_service_key_code'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('dispacher_home_other_service_key_code') }}</strong>
+                        </span>
+                        @endif
+                    </div>
 
-                        <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
-                           <label for="dispacher_home_other_service_key">{{ __('Dispatcher API key') }}</label>
-                           <input type="text" name="dispacher_home_other_service_key" id="dispacher_home_other_service_key" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key', $preference->dispacher_home_other_service_key ?? '')}}">
-                           @if($errors->has('dispacher_home_other_service_key'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('dispacher_home_other_service_key') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+                    <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="dispacher_home_other_service_key">{{ __('Dispatcher API key') }}</label>
+                        <input type="text" name="dispacher_home_other_service_key" id="dispacher_home_other_service_key" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key', $preference->dispacher_home_other_service_key ?? '')}}">
+                        @if($errors->has('dispacher_home_other_service_key'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('dispacher_home_other_service_key') }}</strong>
+                        </span>
+                        @endif
+                    </div>
 
-                     </div>
-                  </div>
-               </div><!-- On Demand Services section end -->
+                    </div>
+                </div>
+            </div><!-- On Demand Services section end -->
             </form>
-            </div>
+        </div>
         @endif
-        
+
         @if($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app' && $client_preference_detail->pick_drop_check == 1 )
 
-            <div class="col-lg-3 col-md-6 mb-3">
-               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
-                  @csrf
-               <!-- Pickup & Delivery section start -->
-               <div class="card-box h-100">
-                  <div class="d-flex align-items-center justify-content-between mb-2">
-                     <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
-                     <button class="btn btn-info d-block" type="submit"  name="need_dispacher_ride_submit_btn" value ="1"> {{ __("Save") }} </button>
-                  </div>
-                  <p class="sub-header">{{ __("Offer Pickup & Delivery with Dispatcher.") }}</p>
-                  <div class="row">
-                     <div class="col-12">
-                        <div class="form-group mb-0">
-                           <div class="form-group mb-0 switchery-demo">
-                              <label for="need_dispacher_ride" class="mr-3">{{ __("Enable") }}</label>
-                              <input type="checkbox" data-plugin="switchery" name="need_dispacher_ride" id="need_dispacher_ride" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_ride == '1')) checked='checked' @endif>
-                           </div>
+        <div class="col-lg-4 mb-3">
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
+                @csrf
+            <!-- Pickup & Delivery section start -->
+            <div class="card-box h-100">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
+                    <button class="btn btn-info d-block" type="submit"  name="need_dispacher_ride_submit_btn" value ="1"> {{ __("Save") }} </button>
+                </div>
+                <p class="sub-header">{{ __("Offer Pickup & Delivery with Dispatcher.") }}</p>
+                <div class="row">
+                    <div class="col-12">
+                    <div class="form-group mb-0">
+                        <div class="form-group mb-0 switchery-demo">
+                            <label for="need_dispacher_ride" class="mr-3">{{ __("Enable") }}</label>
+                            <input type="checkbox" data-plugin="switchery" name="need_dispacher_ride" id="need_dispacher_ride" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_ride == '1')) checked='checked' @endif>
                         </div>
+                    </div>
 
-                        <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-                           <label for="pickup_delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
-                           <input type="text" name="pickup_delivery_service_key_url" id="pickup_delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('pickup_delivery_service_key_url', $preference->pickup_delivery_service_key_url ?? '')}}">
-                           @if($errors->has('pickup_delivery_service_key_url'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('pickup_delivery_service_key_url') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+                    <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                        <label for="pickup_delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
+                        <input type="text" name="pickup_delivery_service_key_url" id="pickup_delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('pickup_delivery_service_key_url', $preference->pickup_delivery_service_key_url ?? '')}}">
+                        @if($errors->has('pickup_delivery_service_key_url'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('pickup_delivery_service_key_url') }}</strong>
+                        </span>
+                        @endif
+                    </div>
 
-                        <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-                           <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
-                           <input type="text" name="pickup_delivery_service_key_code" id="pickup_delivery_service_key_code" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key_code', $preference->pickup_delivery_service_key_code ?? '')}}">
-                           @if($errors->has('pickup_delivery_service_key_code'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('pickup_delivery_service_key_code') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+                    <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                        <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
+                        <input type="text" name="pickup_delivery_service_key_code" id="pickup_delivery_service_key_code" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key_code', $preference->pickup_delivery_service_key_code ?? '')}}">
+                        @if($errors->has('pickup_delivery_service_key_code'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('pickup_delivery_service_key_code') }}</strong>
+                        </span>
+                        @endif
+                    </div>
 
-                        <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-                           <label for="pickup_delivery_service_key">{{ __("Dispatcher API key") }}</label>
-                           <input type="text" name="pickup_delivery_service_key" id="pickup_delivery_service_key" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key', $preference->pickup_delivery_service_key ?? '')}}">
-                           @if($errors->has('pickup_delivery_service_key'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('pickup_delivery_service_key') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+                    <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                        <label for="pickup_delivery_service_key">{{ __("Dispatcher API key") }}</label>
+                        <input type="text" name="pickup_delivery_service_key" id="pickup_delivery_service_key" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key', $preference->pickup_delivery_service_key ?? '')}}">
+                        @if($errors->has('pickup_delivery_service_key'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('pickup_delivery_service_key') }}</strong>
+                        </span>
+                        @endif
+                    </div>
 
-                     </div>
-                  </div>
-               </div><!-- Pickup & Delivery section end -->
-               </form>
-            </div>
+                    </div>
+                </div>
+            </div><!-- Pickup & Delivery section end -->
+            </form>
+        </div>
         @endif
 
         @if($client_preference_detail->business_type == 'laundry' && $client_preference_detail->laundry_check == 1 )
@@ -523,7 +523,7 @@
                             @endif
                         </div>
 
-                        
+
 
 
                     </div>
@@ -545,7 +545,7 @@
     </div>
     <div class="row col-spacing">
         <!-- Start custom domain  -->
-        <div class="col-lg-3 col-lg-3 mb-3">
+        <div class="col-lg-4 col-xl-3 mb-3">
             <form method="POST" class="h-100" action="{{route('client.updateDomain', Auth::user()->code)}}">
                 @csrf
                 <div class="card-box mb-0 h-100">
@@ -577,13 +577,13 @@
         </div>
         <!-- End custom domain  -->
         <!-- app link start  -->
-        <div class="col-lg-3 col-lg-3 mb-3">
+        <div class="col-lg-4 col-xl-3 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 <div class="card-box mb-0 h-100">
                     <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
                     @csrf
                     <input type="hidden" name="send_to" id="send_to" value="customize">
-                    <div class="mb-0 py-0 px-2">
+                    <div class="mb-0 py-0">
                        <div class="d-flex align-items-center justify-content-between">
                           <h4 class="header-title mb-0">{{ __("Android/IOS Link") }}</h4>
                           <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
@@ -604,7 +604,7 @@
         </div>
         <!-- app link end  -->
         <!-- Start Social Link -->
-        <div class="col-lg-3 mb-3">
+        <div class="col-lg-4 col-xl-3 mb-3">
             <div class="card-box mb-0 h-100 pb-1">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <h4 class="header-title mb-0">{{ __("Social Media") }}</h4>
@@ -669,7 +669,7 @@
     </div>
     <div class="row col-spacing">
         <div class="col-lg-12 col-lg-12 mb-3">
-            <form method="POST" class="h-100" action="{{route('nomenclature.store', Auth::user()->code)}}"> 
+            <form method="POST" class="h-100" action="{{route('nomenclature.store', Auth::user()->code)}}">
                 @csrf
                 <div class="card-box mb-0 h-100">
                     <div class="d-flex align-items-center justify-content-between">
@@ -732,7 +732,7 @@
                             </div>
                             @endforeach
                         </div>
-                       
+
                         <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
@@ -981,7 +981,7 @@
                             </div>
                             @endforeach
                         </div>
-                        @if($want_to_tip_nomenclature) 
+                        @if($want_to_tip_nomenclature)
                         <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
@@ -1062,7 +1062,7 @@
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
-                                    <input type="hidden" name="referral_code_language_ids[]" value="{{$client_language->langId}}">                                    
+                                    <input type="hidden" name="referral_code_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="referral_code_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Referral Code'))}}">
                                     @if($k == 0)
                                         @if($errors->has('referral_code_names.0'))
@@ -1075,7 +1075,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center" style="display: {{$client_preference_detail->business_type == 'taxi' ? '' : 'none'}} !important;"> 
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center" style="display: {{$client_preference_detail->business_type == 'taxi' ? '' : 'none'}} !important;">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Rides")}}</label>
@@ -1084,7 +1084,7 @@
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
-                                    <input type="hidden" name="rides_language_ids[]" value="{{$client_language->langId}}">                                    
+                                    <input type="hidden" name="rides_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="rides_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Rides'))}}">
                                     @if($k == 0)
                                         @if($errors->has('rides_names.0'))
@@ -1097,7 +1097,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center" style="display: {{$client_preference_detail->business_type == 'taxi' ? 'none' : ''}} !important;"> 
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center" style="display: {{$client_preference_detail->business_type == 'taxi' ? 'none' : ''}} !important;">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Orders") }}</label>
@@ -1106,7 +1106,7 @@
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
-                                    <input type="hidden" name="orders_language_ids[]" value="{{$client_language->langId}}">                                    
+                                    <input type="hidden" name="orders_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="orders_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Orders'))}}">
                                     @if($k == 0)
                                         @if($errors->has('orders_names.0'))
@@ -1126,12 +1126,12 @@
                                 </div>
                             </div>
                             @php
-                           
+
                             @endphp
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
-                                    <input type="hidden" name="product_order_form_language_ids[]" value="{{$client_language->langId}}">                                    
+                                    <input type="hidden" name="product_order_form_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="product_order_form_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Product Order Form'))}}">
                                     @if($k == 0)
                                         @if($errors->has('referral_code_names.0'))
@@ -1161,13 +1161,13 @@
     </div>
     <div class="row col-spacing">
        <!-- User Authentication start-->
-        <div class="col-md-3 mb-3">
+        <div class="col-md-4 mb-3">
             <div class="card-box pb-2 h-100">
-                <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}"> 
+                <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 <input type="hidden" name="verify_config" id="verify_config" value="1">
                 <input type="hidden" name="send_to" id="send_to" value="customize">
                 @csrf
-                
+
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h4 class="header-title mb-0">{{ __("User Authentication") }}</h4>
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
@@ -1183,15 +1183,15 @@
                         <div class="col-sm-12">
                             <div class="form-group d-flex justify-content-between">
                                 <label for="verify_phone" class="mr-3 mb-0">{{ __("Verify Phone") }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="verify_phone" id="verify_phone" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_phone == '1')) checked='checked' @endif> 
+                                <input type="checkbox" data-plugin="switchery" name="verify_phone" id="verify_phone" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_phone == '1')) checked='checked' @endif>
                             </div>
-                        </div> 
+                        </div>
                         <div class="col-sm-12">
                             <div class="form-group d-flex justify-content-between">
                                 <label for="verify_phone" class="mr-3 mb-0">{{ __("Concise SignUp") }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="concise_signup" id="concise_signup" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->concise_signup == '1')) checked='checked' @endif> 
+                                <input type="checkbox" data-plugin="switchery" name="concise_signup" id="concise_signup" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->concise_signup == '1')) checked='checked' @endif>
                             </div>
-                        </div> 
+                        </div>
                         @foreach($verify_options as $key => $opt)
                         @php $creds = json_decode($opt->credentials); @endphp
                         <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
@@ -1207,7 +1207,7 @@
                                     <div class="col-12">
                                         <div class="form-group d-flex justify-content-between">
                                             <label for="age_restriction_on_product_mode" class="mr-3 mb-0">{{ __("Age Restricted") }}</label>
-                                            <input type="checkbox" data-plugin="switchery" name="age_restriction_on_product_mode" class="form-control" @if( (isset($preference) && $preference->age_restriction_on_product_mode == '1')) checked='checked' @endif> 
+                                            <input type="checkbox" data-plugin="switchery" name="age_restriction_on_product_mode" class="form-control" @if( (isset($preference) && $preference->age_restriction_on_product_mode == '1')) checked='checked' @endif>
                                         </div>
                                     </div>
                                     <div class="col-12">
@@ -1409,8 +1409,8 @@
                 </table>
                 </div>
             </div>
-        </div> 
-        <!-- Category Kyc Documents end -->  
+        </div>
+        <!-- Category Kyc Documents end -->
         @endif
    </div>
    <!--User onbarding end -->
@@ -1454,7 +1454,7 @@
                     </div>
                     <div class="col-xl-12 my-2" id="addCur-160">
                     <label class="primaryCurText">{{ __("Referred To Amount") }} = </label>
-                    <input class="form-control" type="number" id="reffered_to_amount" name="reffered_to_amount" value="{{ old('reffered_to_amount', decimal_format($reffer_to) ?? '')}}" min="0" step="any"> 
+                    <input class="form-control" type="number" id="reffered_to_amount" name="reffered_to_amount" value="{{ old('reffered_to_amount', decimal_format($reffer_to) ?? '')}}" min="0" step="any">
                     </div>
                     <div class="col-xl-12 mb-2 mt-3" id="addCur-160">
                     <label class="primaryCurText">{{ __("Referred By Amount") }} = </label>
@@ -1465,7 +1465,7 @@
         </div>
 
         {{-- Added By Ovi --}}
-        <div class="col-lg-6 mb-3">
+        <div class="col-lg-8 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
                 <input type="hidden" name="slotting_and_scheduling" id="slotting_and_scheduling" value="1">
@@ -1524,13 +1524,15 @@
         </div>
         {{-- Added By Ovi --}}
         <!-- End refer and earn -->
+
+
          <!-- Xero Accounting API Credentials -->
-         @if($preference->third_party_accounting == '1' && !is_null($accounting)) 
+         @if($preference->third_party_accounting == '1' && !is_null($accounting))
             <div class="col-lg-3 col-md-6 mb-3">
                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
                   @csrf
                 <input type="hidden" name="send_to" id="send_to" value="customize">
-               <div class="card-box h-100 h-100"> 
+               <div class="card-box h-100 h-100">
                   <div class="d-flex align-items-center justify-content-between mb-2">
                      <h4 class="header-title text-uppercase mb-0">{{__('Xero Configuration')}}</h4>
                      <button class="btn btn-info d-block" type="submit" name="xero_submit"> {{ __("Save") }} </button>
@@ -1545,7 +1547,7 @@
                            </div>
                         </div>
                         @php
-                        $creds = json_decode($accounting->credentials); 
+                        $creds = json_decode($accounting->credentials);
                         @endphp
                         <div class="mt-2 xeroFields" @if($accounting->status != 1) style="display:none" @endif>
                            <div class="row">
@@ -1570,10 +1572,10 @@
             </div>
          @endif
          <!-- Xero Accounting API Credentials Ends -->
-         
+
          {{-- Added By harbans --}}
          <!-- static_dropoff List -->
-         @if($preference->is_static_dropoff == '1') 
+         @if($preference->is_static_dropoff == '1')
           <!-- static dropoff Location start -->
         <div class="col-md-6 mb-3">
             <div class="card-box pb-2 h-100">
@@ -1630,14 +1632,12 @@
          @endif
          <!-- static_dropoff Ends -->
 
-         
+
     </div>
     <!-- Miscellaneous End  -->
 
 
 <!-- End New Customize page -->
-
-</div>
 <div class="row">
     <div class="col-12">
         <div class="page-title-box">
@@ -1647,7 +1647,7 @@
 </div>
 <div class="row col-spacing">
         <!-- Order Email Notification start -->
-        <div class="col-lg-3 col-lg-3 mb-3">
+        <div class="col-lg-4 col-xl-3 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
                 <input type="hidden" name="send_to" id="send_to" value="customize">
@@ -1683,6 +1683,8 @@
         </div>
     </div>
 </div>
+</div>
+
 <div id="add_or_edit_social_media_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -1787,7 +1789,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    
+
                      </div>
                   </div>
                </form>
@@ -1850,7 +1852,7 @@
                                 <tbody id="table_body">
                                         <tr>
                                     @foreach($client_languages as $key => $vendor_langs)
-                                  
+
                                         <td>
                                             <input class="form-control" name="language_id[{{$key}}]" type="hidden" value="{{$vendor_langs->langId}}">
                                             <input class="form-control" name="name[{{$key}}]" type="text" id="vendor_registration_document_name_{{$vendor_langs->langId}}">
@@ -1961,12 +1963,12 @@
                                 <input type="text" name="static_address" id="static-address" onkeyup="checkAddressString(this,'static')" placeholder="" class="form-control">
                                 <div class="input-group-append">
                                     <button class="btn btn-xs btn-dark waves-effect waves-light showMap" type="button" num="add"> <i class="mdi mdi-map-marker-radius"></i></button>
-                                </div> 
+                                </div>
                             </div>
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
-                             
+
                            </div>
                         </div>
                         <div class="col-md-12">
@@ -2003,7 +2005,7 @@
                                 @endif
                             </div>
                         </div>
-                        
+
                      </div>
                   </div>
                </form>
@@ -2060,7 +2062,7 @@
                   <div id="save_social_media">
                      <input type="hidden" name="facilty_id" value="">
                      <div class="row">
-                        
+
                         <div class="col-md-6">
                                 <label>{{ __('Upload Logo') }} </label>
                                 <input type="file" accept="image/*" data-plugins="dropify" name="facilty_image" class="dropify" data-default-file="" />
@@ -2088,7 +2090,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    
+
                      </div>
                   </div>
                </form>
@@ -2142,7 +2144,7 @@
                               <label for="">{{('Category')}}</label>
                               <div class="input-group mb-2">
                                  <select class="form-control select2-multiple" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." id="category_list" name="category_id[]">
-                                   
+
                                  </select>
                               </div>
                            </div>
@@ -2169,7 +2171,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    
+
                      </div>
                   </div>
                </form>
@@ -2301,12 +2303,12 @@ $(document).ready(function(){
         $('#add_vendor_registration_document_modal #standard-modalLabel').html('Add Vendor Registration Document');
     });
 
-    
+
     $(document).on('click', '.submitSaveUserRegistrationDocument', function(e) {
         // alert('af');
         // return false;
         var user_registration_document_id = $("#add_user_registration_document_modal input[name=user_registration_document_id]").val();
-        
+
         if (user_registration_document_id) {
             var post_url = "{{ route('user.registration.document.update') }}";
         } else {
@@ -2357,7 +2359,7 @@ $(document).ready(function(){
             url: "{{ route('user.registration.document.edit') }}",
             success: function(response) {
                if (response.status = 'Success') {
-                  
+
                   $(document).find("#add_user_registration_document_modal select[name=file_type]").val(response.data.file_type).change();
 
                   $("#add_user_registration_document_modal input[name=user_registration_document_id]").val(response.data.id);
@@ -2409,7 +2411,7 @@ $(document).ready(function(){
         $('#add_category_kyc_document_modal_btn input[name=category_kyc_document_id]').val("");
         $.ajax({
                 type: "get",
-                
+
                 url: "{{route('categorykyc.getCategory')}}",
                 success: function(response) {
                     console.log(response);
@@ -2508,7 +2510,7 @@ $(document).ready(function(){
             error: function() {}
         });
     }
-    // delete kyc document 
+    // delete kyc document
     $(document).on("click", ".delete_category_kyc_document_btn", function() {
          var category_kyc_document_id = $(this).data('category_kyc_documents_id');
          Swal.fire({
@@ -2693,7 +2695,7 @@ $(document).ready(function(){
             }
         });
     });
-    
+
     $(document).on("click", ".edit_facilty_btn", function() {
         let facilty_id = $(this).data('facilty_id');
         //console.log(facilty_id);
@@ -2716,12 +2718,12 @@ $(document).ready(function(){
                 //   $(document).find("#add_vendor_registration_document_modal select[name=file_type]").val(response.data.file_type).change();
 
                   $("#add_facilty_modal input[name=facilty_id]").val(response.data.id);
-                  
+
                   $("#add_facilty_modal input[name=facilty_image]").attr('data-default-file',response.data.image.image_fit+'90/90'+response.data.image.image_path );
                   $('.dropify').dropify();
                   $('#add_facilty_modal #standard-modalLabel').html('Update facilty');
                   $('#add_facilty_modal').modal('show');
-                  
+
                   $.each(response.data.translations, function( index, value ) {
                     $('#add_facilty_modal #facilty_name_'+value.language_id).val(value.name);
                   });
@@ -2730,7 +2732,7 @@ $(document).ready(function(){
             error: function() {}
         });
     }
-     // delete kyc document 
+     // delete kyc document
      $(document).on("click", ".delete_facilty_btn", function() {
          var facilty_id = $(this).data('facilty_id');
          Swal.fire({
@@ -2761,7 +2763,7 @@ $(document).ready(function(){
         });
     });
 
-    
+
  $('#add_facilties_modal_btn').click(function(e) {
         document.getElementById("userRegistrationDocumentForm").reset();
         $('#faciltyForm input[name=facilty_id]').val("");
@@ -2993,7 +2995,7 @@ $(document).ready(function(){
     }
 </script>
 
-@if($preference->is_static_dropoff == '1') 
+@if($preference->is_static_dropoff == '1')
     @include('backend.setting.customizeDatatablescript')
 @endif
 

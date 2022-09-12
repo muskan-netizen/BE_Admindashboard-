@@ -77,10 +77,10 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                             <div class="col-md-12">
                                 <form  action="{{route('account.order.export')}}" id="export-form" method="GET" >
                                 <div class="row">
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <input type="text" name="date_range" id="range-datepicker" class="form-control al_box_height flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
                                     </div>
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <select class="form-control al_box_height " id="vendor_select_box" name="vendor">
                                             <option value="">{{ __('Select Vendor') }}</option>
                                             @forelse($vendors as $vendor)
@@ -89,7 +89,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                             @endforelse
                                         </select>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <select class="form-control al_box_height" id="order_status_option_select_box" name="order_status" >
                                             <option value="">{{ __('Select Order Status') }}</option>
                                             @forelse($order_status_options as $order_status_option)
@@ -98,7 +98,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                             @endforelse
                                         </select>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <button type="button" class="btn btn-danger al_box_height waves-effect waves-light" id="clear_filter_btn_icon">
                                             <i class="mdi mdi-close"></i>
                                         </button>
@@ -210,7 +210,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                         },
                         buttons: [{
                                 className:'btn btn-success waves-effect Export_btn waves-light',
-                                id:'exp-btn', 
+                                id:'exp-btn',
                                 text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>{{__("Export CSV")}}',
                                 action: function ( e, dt, node, config ) {
                                     //window.location.href = "{{ route('account.order.export') }}";
@@ -261,7 +261,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                 return data;
                                 // return numberWithCommas(data)+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                             }},
-                           
+
                             {data: 'payable_amount', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);

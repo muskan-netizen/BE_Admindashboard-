@@ -159,7 +159,7 @@
                         <h4 class="header-title">{{ __("Home Page Style") }}</h4>
                         <div class="row">
                             @foreach($homepage_style_options as $homepage_style)
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="col-sm-6 col-md-4 col-lg-3 mb-2">
                                         <div class="card mb-0">
                                             <div class="card-body">
                                                 <div class="row">
