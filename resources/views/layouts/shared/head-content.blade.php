@@ -177,6 +177,7 @@ if(Auth::check()){
 		socket:'',
 	}
 </script>
+<script src="{{asset('assets/libs/spinner/spinner.js')}}"></script>
 <script src="{{asset('assets/js/constants.js')}}"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
 <link href="{{asset('assets/libs/flatpickr/flatpickr.min.css') }}" rel="stylesheet" type="text/css" />
@@ -195,3 +196,4 @@ if(Auth::check()){
 <link href="{{asset('assets/css/jquery-ui.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/jquery-toast-plugin/jquery-toast-plugin.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/datatables/datatables.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/spinner/spinner.css')}}" rel="stylesheet">

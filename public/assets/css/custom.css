@@ -855,6 +855,13 @@ h1.control-label {
   overflow: auto
 }
 
+.mb-0.text-left.alDropFile .dropify-wrapper.has-preview {
+  margin: 0;
+}
+.mb-0.text-left.alDropFile  label.logo-size.d-block.text-center.mt-1{
+  text-align: left !important;
+}
+
 body .select2-container--default .select2-selection--single .select2-selection__rendered {
   padding: .45rem .9rem;
   font-size: .875rem;
