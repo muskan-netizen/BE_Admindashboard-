@@ -469,6 +469,7 @@ trait cartManager{
                     if($prod->product->sell_when_out_of_stock == 0 && $prod->product->has_inventory == 1){
                         $quantity_check = productvariantQuantity($prod->variant_id);
                         if($quantity_check < $prod->quantity ){
+                            $vendorData->product_quantity_less = 1;
                             $delivery_status = 0;
                             $product_out_of_stock = 1;
                         }
@@ -857,6 +858,7 @@ trait cartManager{
 
                 if(isset($serviceArea)){
                     if($serviceArea->isEmpty()){
+                        $vendorData->service_area_empty = 1;
                         $vendorData->isDeliverable = 0;
                         $delivery_status = 0;
                     }
@@ -872,6 +874,7 @@ trait cartManager{
                     }
                 }
                 if($vendorData->vendor->$action == 0){
+                    $vendorData->vendot_type_not_active = 1;
                     $vendorData->is_vendor_closed = 1;
                     $delivery_status = 0;
                 }
@@ -879,6 +882,7 @@ trait cartManager{
                 // dd($payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)); //36.81
                 // }
                 if((float)($vendorData->vendor->order_min_amount) > $payable_amount+(float)($vendorData->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)){  # if any vendor total amount of order is less then minimum order amount
+                    $vendorData->les_order_min_amount = 1;
                     $delivery_status = 0;
                 }
 
