@@ -74,16 +74,20 @@ class CashfreeGatewayController extends FrontController
 
                 $order = Order::where('order_number', $reference_number)->first();
                 $returnUrlParams = $returnUrlParams . '&cart_id=' .$cart->id; //. '&order_id={order_id}' .$reference_number. '&order_token=' .$reference_number;
-            }
-            elseif($payment_form == 'wallet'){
+
+                Payment::create(['amount'=>0,'transaction_id'=>$reference_number,'balance_transaction'=>0,'type'=>'cart','date'=>date('Y-m-d'),'user_id'=>auth()->user()->id]);
+        
+            }elseif($payment_form == 'wallet'){
                 $description = 'Wallet Checkout';
                 // $reference_number = $user->id;
+                Payment::create(['amount'=>0,'transaction_id'=>0,'balance_transaction'=>0,'type'=>'wallet','date'=>date('Y-m-d'),'user_id'=>auth()->user()->id]);
             }
             if($payment_form == 'tip'){
                 $description = 'Tip Checkout';
                 $order_tags['order_number'] = $request->order_number;
                 
                 $order = Order::where('order_number', $reference_number)->first();
+                Payment::create(['amount'=>0,'transaction_id'=>$request->order_number,'balance_transaction'=>0,'type'=>'tip','date'=>date('Y-m-d'),'user_id'=>auth()->user()->id]);
                 // $reference_number = $request->order_number;
                 // $returnUrlParams = $returnUrlParams . '&order_id=' .$reference_number. '&order_token=' .$reference_number;
             }
@@ -96,6 +100,7 @@ class CashfreeGatewayController extends FrontController
                     // $reference_number = $request->subscription_id;
                     $returnUrlParams = $returnUrlParams . '&subscription=' . $request->subscription_id;
                     $order_tags['subscription_id'] = $request->subscription_id;
+                    Payment::create(['amount'=>0,'transaction_id'=>$subscription_plan->id,'balance_transaction'=>0,'type'=>'subscription','date'=>date('Y-m-d'),'user_id'=>auth()->user()->id]);
                 }
             }
 
@@ -316,7 +321,7 @@ class CashfreeGatewayController extends FrontController
         // Notify cashfree that information has been received
         //dd('sad');
         
-         \Log::info($request->all());
+        // \Log::info($request->all());
 
         try{
             
@@ -324,10 +329,10 @@ class CashfreeGatewayController extends FrontController
             $response = $request->has('data') ? $request->data : [];
              \Log::info($response);
             // \Log::info($response['payment']);
-            
+            $user_id = $cart_id = $payment_form = $order_number = $subscription_id = $payStatus = '';
             if(!empty($response) && ($response['payment']['payment_status'] == 'SUCCESS')) {
                 $transactionId = $response['payment']['cf_payment_id'];
-                $user_id = $cart_id = $payment_form = $order_number = $subscription_id = '';
+               
                 $amount = $response['order']['order_amount'];
                 if($response['order']['order_tags']){
                     $tags = $response['order']['order_tags'];
@@ -336,10 +341,28 @@ class CashfreeGatewayController extends FrontController
                     $payment_form = $tags['payment_form'];
                     $user_id = intval($tags['user_id']);
                 }
+                $payStatus = 'SUCCESS';
+                $order_number = $response['order']['order_id'];
+                $cart_id = intval($response['order']['order_tags']['cart_id']) ?? '';
+
+            }elseif($request->txStatus == 'SUCCESS'){
+
+                $payment_exists = Payment::where('transaction_id', $request->orderId)->first();
+                $cart = Cart::where('user_id',auth()->id())->select('id')->first();
+                $cart_id = $cart->id;
+                $payment_form = $payment_exists->payment_from;
+                $order_number = $request->orderId;
+                $payStatus = 'SUCCESS';
+                $amount = $request->orderAmount;
+                $transactionId = $request->referenceId;
+                $subscription_id = $payment_exists->transaction_id;
+                $user_id = auth()->id();
+
+            }
+
+            if($payStatus == 'SUCCESS') {
 
                 if($payment_form == 'cart'){
-                    $order_number = $response['order']['order_id'];
-                    $cart_id = intval($response['order']['order_tags']['cart_id']) ?? '';
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
                         $order->payment_status = 1;
@@ -452,7 +475,7 @@ class CashfreeGatewayController extends FrontController
                 }
             }
         }
-        catch(Exception $ex){
+        catch(\Exception $ex){
             \Log::info($ex->getMessage());
             return response([],200);
         }
