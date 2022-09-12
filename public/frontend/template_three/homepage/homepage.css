@@ -16,7 +16,6 @@ article#page-container{position:relative;min-height:100vh;overflow:hidden}.slick
 
 .al_body_template_three .al_custom_brand .brand-box h6{font-size:18px;color:#000}.slick-list{position:relative;overflow:hidden;display:block;margin:0;padding:0}
 
-
 .al_box_third_template{padding:12px;border-radius:12px;background-color:transparent;border:1px solid transparent}
 .al_body_template_three .img-outer-box.position-relative{border-radius:12px;height:200px}.al_body_template_three .img-outer-box.position-relative img{width:100%;margin:0 auto;height:100%;object-fit:cover;transform:none;opacity:1;will-change:transform,opacity;border-radius:inherit;filter:unset;transition:opacity .25s ease 0s,transform .25s ease 0s}
 .slick-next:focus:before,.slick-next:hover:before,.slick-prev:focus:before,.slick-prev:hover:before{opacity:1}
