@@ -7,7 +7,7 @@
 @section('content')
 
 <!-- Start Content-->
-<div class="container-fluid">
+<div class="container-fluid" id="ProductPerformanceReport">
 
     <!-- start page title -->
     <div class="row">
@@ -17,13 +17,13 @@
             </div>
         </div>
     </div>
-    
+
     <div class="row">
         <div class="col-sm-12 mb-2">
             <div class="row align-items-center ">
-                <div class="col-sm-2">
+                <div class="col-sm-2 mb-1">
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-2 mb-1">
                     <select class="form-control" id="limit_select_box">
                         <option value="10">{{ __("Top 10") }}</option>
                         <option value="20">{{ __("Top 20") }}</option>
@@ -32,16 +32,16 @@
                         <option value="All">{{ __("All") }}</option>
                     </select>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-2 mb-1">
                     <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="Select Date Range" readonly="readonly">
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-4  mb-1">
                     <select class="form-control" multiple="multiple" id="product_select_box" name="product_select_box[]">
                         <option value="">{{ __('Select Product') }}</option>
-                       
+
                     </select>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-2  mb-1">
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
                             <i class="mdi mdi-close"></i>
@@ -64,7 +64,7 @@
                     </div>
                     <div class="col-12">
                         <div class="row">
-                            <div class="col-sm-12 col-lg-12 tab-product pt-0">
+                            <div class="col-sm-12 col-lg-12 p-0 tab-product pt-0">
                                 <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
                                     <li class="nav-item">
                                         <a class="nav-link active" id="top_performing_products_tab" data-toggle="tab" href="#top_performing_products" role="tab" aria-selected="false" data-rel="top_performing_products">
@@ -101,7 +101,7 @@
                                                         </thead>
                                                         <tbody id="tbody_tab1">
                                                         </tbody>
-                                                        
+
                                                     </table>
                                                 </div>
                                             </div>
@@ -125,7 +125,7 @@
                                                         </thead>
                                                         <tbody id="tbody_tab2">
                                                         </tbody>
-                                                        
+
                                                     </table>
                                                 </div>
                                             </div>
@@ -149,7 +149,7 @@
                                                         </thead>
                                                         <tbody id="tbody_tab3">
                                                         </tbody>
-                                                        
+
                                                     </table>
                                                 </div>
                                             </div>
@@ -173,7 +173,7 @@
 <script src="{{asset('assets/libs/apexcharts/apexcharts.min.js')}}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-    
+
     $('#top_performing_products_tab, #most_wishlist_products_tab, #most_refunded_products_tab').click(function(){
         setTimeout(function() { loadproductperformancereport(); }, 300);
     });
@@ -187,7 +187,7 @@ $(document).ready(function() {
             dataType: 'json',
             data: function(params) {
                 return {
-                    query: params.term, 
+                    query: params.term,
                     "_token": "{{ csrf_token() }}",
                 };
             },
@@ -213,7 +213,7 @@ $(document).ready(function() {
             loadproductperformancereport();
         }
     });
-    
+
     $("#product_select_box, #limit_select_box").change(function() {
         loadproductperformancereport();
     });
@@ -229,7 +229,7 @@ $(document).ready(function() {
         loadproductperformancereport();
     }
 
-    
+
     function loadproductperformancereport() {
         var url = "{{ route('report.loadproductreport') }}";
         if($('#top_performing_products').hasClass('active'))
@@ -253,14 +253,14 @@ $(document).ready(function() {
             var chartparent = "chartparent3";
             var tabid = 3;
         }
-        
+
         var product_select_box = $("#product_select_box").val();
         var date_filter = $('#range-datepicker').val();
         var limit_filter = $('#limit_select_box').val();
         $('#'+tableid).empty('');
         $('#'+chartparent).empty('');
-        $('#'+tableid).append('<tr><td colspan="4" style="height: 50px;"><div class="spinner-border text-blue m-2" role="status"></div></td></tr>');      
-        
+        $('#'+tableid).append('<tr><td colspan="4" style="height: 50px;"><div class="spinner-border text-blue m-2" role="status"></div></td></tr>');
+
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -339,13 +339,13 @@ $(document).ready(function() {
 
                         var chart = new ApexCharts(document.querySelector("#"+chartdivid), options);
                         chart.render();
-                        
+
                     }
                     else{
                         $('#'+tableid).empty('');
-                        $('#'+tableid).append('<tr><td colspan="4" style="height: 50px;">'+$("#productnotfound").html()+'</div></td></tr>'); 
+                        $('#'+tableid).append('<tr><td colspan="4" style="height: 50px;">'+$("#productnotfound").html()+'</div></td></tr>');
                     }
-                } 
+                }
             }
         });
     }

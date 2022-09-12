@@ -131,7 +131,7 @@
             @if($type->title == 'Celebrity' && $preference->celebrity_check == 0)
             @continue
             @endif
-            <div class="col-sm">
+            <div class="col-6 col-sm-3">
                 <div class="card p-0 text-center select-category" id="tooltip-container">
                     <input class="form-check-input type-select" for="edit" type="radio" id="type_id_{{$type->id}}" name="type_id" @if($category->type_id == $type->id) checked @endif value="{{$type->id}}">
                     <label for="type_id_{{$type->id}}" class="card-body p-0 mb-0">

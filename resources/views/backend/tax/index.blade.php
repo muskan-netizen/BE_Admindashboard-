@@ -4,7 +4,7 @@
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid alTaxPage">
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
@@ -29,14 +29,12 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-6">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
                     <div class="row mb-2">
-                        <div class="col-sm-8">
+                        <div class="col-sm-12 d-flex align-items-center justify-content-between">
                             <h4 class="page-title">{{ __("Tax Category") }}</h4>
-                        </div>
-                        <div class="col-sm-4 text-right">
                             <button class="btn btn-info waves-effect waves-light text-sm-right addTaxCateModal"
                              userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                             </button>
@@ -71,8 +69,8 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                       <button type="submit" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button> 
-                                                     <!--  <button type="submit" onclick="sweetAlert_popup('Are you sure?','You want to delete the tax category.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>  --> 
+                                                       <button type="submit" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>
+                                                     <!--  <button type="submit" onclick="sweetAlert_popup('Are you sure?','You want to delete the tax category.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>  -->
 
                                                     </div>
                                                 </form>
@@ -88,14 +86,12 @@
                 </div>
             </div>
         </div>
-        <div class="col-6">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
                     <div class="row mb-2">
-                        <div class="col-sm-8">
+                        <div class="col-sm-12 d-flex align-items-center justify-content-between">
                             <h4 class="page-title">{{ __("Tax Rate") }}</h4>
-                        </div>
-                        <div class="col-sm-4 text-right">
                             <button class="btn btn-info waves-effect waves-light text-sm-right addTaxRateModal"
                              userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                             </button>

@@ -24,19 +24,17 @@
 @section('content')
 
 <!-- Start Content-->
-<div class="container-fluid">
+<div class="container-fluid alInfluencerPage">
 
     <!-- start page title -->
     <div class="row align-items-center">
-        <div class="col-sm-6">
-            <div class="page-title-box">
+        <div class="col-sm-12">
+            <div class="page-title-box d-flex justify-content-between align-items-center">
                 <h4 class="page-title">{{ __('Influencer') }}</h4>
+                <button class="btn btn-info waves-effect waves-light text-sm-right"
+                    data-toggle="modal" data-target=".addModal"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
+                </button>
             </div>
-        </div>
-        <div class="col-sm-6 text-right">
-            <button class="btn btn-info waves-effect waves-light text-sm-right"
-                data-toggle="modal" data-target=".addModal"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
-            </button>
         </div>
     </div>
     <!-- end page title -->
