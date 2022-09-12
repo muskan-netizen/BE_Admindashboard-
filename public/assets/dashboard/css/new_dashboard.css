@@ -4,7 +4,6 @@
   src: url(https://example.com/material-symbols.woff) format('woff');
 }
 .widget-icon {
-
   font-size: 20px;
   height: 40px;
   width: 40px;
@@ -18,11 +17,18 @@
 .progress-w-percent .progress {
   width: calc(100% - 80px);
 }
+#alDashboardStyle .page-title-box .page-title-right {
+  margin-top: 10px;
+}
 .progress-w-percent .progress-value {
-  width: 50px;
+  width: auto;
+  margin-right: 10px;
   float: right;
   text-align: right;
   line-height: 0;
+}
+.jvectormap-label:empty{
+  display: none;
 }
 .dark span.input-group-text.bg-primary.border-primary.text-white {
   background-color: #d3a14a !important;
