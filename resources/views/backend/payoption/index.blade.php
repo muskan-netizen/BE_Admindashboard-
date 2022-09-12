@@ -110,6 +110,7 @@
                 $openpay_merchant_id = (isset($creds->openpay_merchant_id)) ? $creds->openpay_merchant_id : '';
                 $openpay_private_key = (isset($creds->openpay_private_key)) ? $creds->openpay_private_key : '';
                 $openpay_public_key = (isset($creds->openpay_public_key)) ? $creds->openpay_public_key : '';
+                $openpay_verification_key = (isset($creds->openpay_verification_key)) ? $creds->openpay_verification_key : '';
                 
                 $company_token = (isset($creds->company_token)) ? $creds->company_token : '';
                 $service_type = (isset($creds->service_type)) ? $creds->service_type : '';
@@ -128,7 +129,7 @@
                                 <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
                             </div>
                         </div>
-                        @if ( (strtolower($opt->code) != 'dpo') &&  (strtolower($opt->code) != 'cod') &&  (strtolower($opt->code) != 'razorpay') &&  (strtolower($opt->code) != 'simplify') && (strtolower($opt->code)!= 'kongapay') && (strtolower($opt->code)!= 'windcave') && (strtolower($opt->code)!= 'payphone') && (strtolower($opt->code)!= 'offline_manual'))
+                        @if ( (strtolower($opt->code) != 'dpo') &&  (strtolower($opt->code) != 'cod') &&  (strtolower($opt->code) != 'razorpay') &&  (strtolower($opt->code) != 'simplify') && (strtolower($opt->code)!= 'kongapay') && (strtolower($opt->code)!= 'windcave') && (strtolower($opt->code)!= 'payphone') && (strtolower($opt->code)!= 'offline_manual') && (strtolower($opt->code) != 'khalti'))
                         <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label>
@@ -969,6 +970,13 @@
                     </h6>    
                     <div class="row">
                             <div class="col-12">
+                                <div class="col-12">
+                                    <div class="form-group mb-2">
+                                        <label for="openpay_verification_key" class="mr-3">{{ __("Webhook Verification") }}</label>
+                                        <input type="text" name="openpay_verification_key" id="openpay_verification_key" class="form-control" value="{{$openpay_verification_key}}" >
+                                    </div>
+                                </div>
+
                                 <div class="form-group mb-2">
                                     <label for="openpay_merchant_id" class="mr-3">{{ __("Merchant Id") }}</label>
                                     <input type="text" name="openpay_merchant_id" id="openpay_merchant_id" class="form-control" value="{{$openpay_merchant_id}}" @if($opt->status == 1) required @endif>
@@ -1057,6 +1065,27 @@
                                 <div class="form-group mb-2">
                                     <label for="telr_api_key" class="mr-3">{{ __("Api Key") }}</label>
                                     <input type="text" name="telr_api_key" id="telr_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'khalti') )
+                    <div class="mt-2" id="khalti_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="khalti_public_key" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="text" name="khalti_public_key" id="khalti_public_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="khalti_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="khalti_secret_key" id="khalti_secret_key" class="form-control" value="{{$api_secret_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

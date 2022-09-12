@@ -47,6 +47,19 @@
                                         <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 32x32</label>
                                     </div>
                                 </div>
+                                @if($themeId==4 || $themeId==6)
+                                    <div class="col-md-4 mb-3">
+                                        <h4 class="header-title">{{ __("Sign In/Up Image") }}</h4>
+                                        <div class="mb-0">
+                                            <label>{{ __("Sign In/Up Image") }}</label>
+                                            <input type="file" accept="image/*" data-default-file="{{$client_preferences->signup_image ? $client_preferences->signup_image['proxy_url'].'600/400'.$client_preferences->signup_image['image_path'] : ''}}" data-plugins="dropify" name="sign_up_image" class="dropify ss_form_submit" id="image" />
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong></strong>
+                                            </span>
+                                            <label class="logo-size d-block text-center mt-1">{{ __("Image Size") }} 1920x768</label>
+                                        </div>
+                                    </div>
+                                @endif
 
                                 <div class="col-md-4  mb-3">
                                     <h4 class="header-title">{{ __("Color") }}</h4>
@@ -91,23 +104,28 @@
                                 {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
                                 <div class="row">
                                     <form id="themeIcon-form" method="post" enctype="multipart/form-data">
-                                    @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-                                        @php
-                                            $NomenclatureName  = getNomenclatureName($vendor_typ_value, true);
-                                            $iconFiledName     = config('constants.VendorTypesIcon.'.$vendor_typ_key);
-                                        @endphp
-                                        <div class="col-md-4 mb-3">
-                                            <div class="mb-0">
-                                                <label> {{$NomenclatureName. __(" Icon") }} </label>
-                                                <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$iconFiledName ? $client_preferences->$iconFiledName['proxy_url'].'600/400'.$client_preferences->$iconFiledName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{$iconFiledName }}" class="dropify ss_form_submit" id="image" />
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong></strong>
-                                                </span>
-                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                        <!-- <div class="col-md-4 mb-3">
+                                   
+                                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                                            @php
+                                                $VendorTypesName   = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+
+                                                $clientVendorTypes = $vendor_typ_key.'_check';
+                                            @endphp
+                                            @if($client_preference_detail->$clientVendorTypes == 1)
+                                                <div class="col-md-4 mb-3">
+                                                    <div class="mb-0">
+                                                        <label>{{getDynamicTypeName($vendor_typ_value)}}{{ __(" Icon") }}</label>
+                                                        <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$VendorTypesName ? $client_preferences->$VendorTypesName['proxy_url'].'600/400'.$client_preferences->$VendorTypesName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{ $VendorTypesName }}" class="dropify ss_form_submit" id="image" />
+                                                        <span class="invalid-feedback" role="alert">
+                                                            <strong></strong>
+                                                        </span>
+                                                        <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                                    </div>
+                                                </div>
+                                                @endif    
+                                        @endforeach
+                                       
+                                        {{-- <div class="col-md-4 mb-3">
                                             <div class="mb-0">
                                                 <label>{{ __("Delivery Icon") }}</label>
                                                 <input type="file" accept="image/*"  data-default-file="{{$client_preferences->deliveryicon ? $client_preferences->deliveryicon['proxy_url'].'600/400'.$client_preferences->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="deliveryIcon" class="dropify ss_form_submit" id="image" />
@@ -138,7 +156,7 @@
                                                 </span>
                                                 <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
                                             </div>
-                                        </div> -->
+                                        </div> --}}
 
                                     </form>
                                 </div>
@@ -211,12 +229,12 @@
                                     </div>
                                 </li>
                                 @endif
-                                <li class="d-flex align-items-center justify-content-between mt-2">
+                                {{-- <li class="d-flex align-items-center justify-content-between mt-2">
                                     <h4 class="header-title mb-2">{{ __("Show Payment Icons") }}</h4>
                                     <div class="mb-0">
                                         <input type="checkbox" id="show_payment_icons" data-plugin="switchery" name="show_payment_icons" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->show_payment_icons == 1 ? 'checked' : ''}}>
                                     </div>
-                                </li>
+                                </li> --}}
                                 @if($client_preference_detail->business_type != 'taxi')
                                 <li class="d-flex align-items-center justify-content-between mt-2">
                                     <h4 class="header-title mb-2">{{ __('Hide Nav Bar') }}</h4>
@@ -458,6 +476,12 @@
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
                                 @endif
+                                @if($home_page_label->slug == 'cities')
+                                <a class="action-icon edit_cities_page" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
+                                    <i class="mdi mdi-pencil"></i>
+                                </a>
+                            
+                                @endif
                                 @if($home_page_label->slug == 'dynamic_page')
                                 <input type="checkbox" name="for_no_product_found_html[{{$key}}]" {{$home_page_label->for_no_product_found_html == 1 ? 'checked' : ''}} >{{__('For No Records')}}
                                 @else
@@ -572,15 +596,24 @@
 <!-- end cab booking template -->
 
 </div>
-
+@include('backend.web_styling.city-section-model')
 @endsection
 
 @section('script')
+
 <script src="{{asset('assets/js/jscolor.js')}}"></script>
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
 <!-- allow drop html -->
 <script>
+    var Default_latitude = `{{ $client_preference_detail->Default_latitude }}`;
+    var Default_longitude = `{{ $client_preference_detail->Default_longitude }}`;
+    if(!Default_latitude ){
+        Default_latitude = "30.7333";
+    }
+    if(!Default_longitude ){
+        Default_longitude = "76.7794";
+    }
     function allowDrop(ev) {
         console.log('allowDrop');
        ev.preventDefault();
@@ -644,6 +677,7 @@ $(document).on('click','.edit_dynamic_page',function(){
         });
 
 });
+
 
 
 $(document).on('click', '.deletePickupSection', function() {

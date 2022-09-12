@@ -9,6 +9,9 @@ class Variant extends Model
 {
   protected $fillable = ['title', 'type', 'position', 'status'];
 
+  protected $appends = ['actual_price'];
+
+
   public function translation(){
     return $this->hasMany('App\Models\VariantTranslation')->join('languages', 'variant_translations.language_id', 'languages.id')->select('variant_translations.id', 'variant_translations.title', 'variant_translations.variant_id', 'variant_translations.language_id', 'languages.name');
   }
@@ -42,5 +45,49 @@ class Variant extends Model
   public function category(){
     return $this->belongsToMany(Category::class, 'variant_categories', 'variant_id', 'category_id');
   }
+
+
+  public function getActualPriceAttribute()
+    {
+       // if vendor actual price = price - markup price
+        if(auth()->user() !=null && !auth()->user()->is_admin == 1){
+                return $this->price - $this->markup_price??0;
+        }
+                return $this->price;
+    }
+
+    public function getPriceAttribute($value)
+    {
+        $checkMarkup = 0;
+        $vendor = Product::where('id', $this->product_id)->value('vendor_id');
+        $checkMarkup = Vendor::where('id',$vendor)->value('add_markup_price');
+        //if vendor price add with markup price
+           if(auth()->user() !=null && auth()->user()->is_admin == 1){
+            $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor)->first();
+            if($userVendor){
+                return $value;
+            }
+        }
+           if($checkMarkup){
+                return $value + $this->markup_price??0;
+            }
+        
+            return $value;  
+           
+    }
+
+    public function getMarkupPriceAttribute($value)
+    {
+        $checkMarkup = 0;
+        $vendor = Product::where('id', $this->product_id)->value('vendor_id');
+        $checkMarkup = Vendor::where('id',$vendor)->value('add_markup_price');
+        //if vendor price add with markup price
+           if($checkMarkup){
+                return $value;
+            }
+        
+            return 0;  
+           
+    }
 
 }

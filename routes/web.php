@@ -22,6 +22,7 @@ Route::group(['middleware' => 'languageSwitch'], function () {
     include_once "godpanel.php";
 
     Route::domain('{domain}')->middleware(['subdomain'])->group(function() {
+        include_once "commonRoute.php";
         include_once "frontend.php";
         include_once "backend.php";
     });

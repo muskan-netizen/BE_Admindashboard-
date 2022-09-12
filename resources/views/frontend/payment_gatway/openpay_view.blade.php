@@ -317,7 +317,7 @@ a.button.disabled {
                             <h2>{{__('Credit or debit card')}} </h2>
                             <div class="pymnt-cntnt">
                                 <div class="card-expl">
-                                    <div class="col-md-6 credit"><h4>{{__('Credit cards')}}Tarjetas de crédito</h4></div>
+                                    <div class="col-md-6 credit"><h4>{{__('Credit cards')}}Tarjetas de crï¿½dito</h4></div>
                                     <div class="col-md-6 debit"><h4>{{__('Debit cards')}}</h4></div>
                                 </div>
                                 <div class="sctn-row top">

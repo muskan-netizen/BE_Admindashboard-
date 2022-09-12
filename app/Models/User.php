@@ -70,6 +70,9 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     public function address(){
         return $this->hasMany('App\Models\UserAddress');
      }
+    public function defaultAddress(){
+        return $this->hasOne('App\Models\UserAddress')->where('is_primary',1);
+     }
 
      public function refund(){
         return $this->hasMany('App\Models\OrderRefund', 'user_id', 'id');

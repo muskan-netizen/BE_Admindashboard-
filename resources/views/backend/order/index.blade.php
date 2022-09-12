@@ -1,5 +1,10 @@
 @extends('layouts.vertical', ['title' => 'Orders'])
 @section('content')
+@php
+   
+    $clientData = \App\Models\Client::select('socket_url')->first();
+   
+@endphp
 <style type="text/css">
 .ellipsis {white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}body {font-size: 0.75rem;}.order_data>div,.order_head h4 {padding: 0 !important;
 }.order-page .card-box {padding: 20px 20px 5px !important;}.progress-order {width: calc(100% + 48px);margin: -24px 0 20px;background: #00000012;
@@ -15,6 +20,21 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 }
 .accounting_upload .btn.btn-info{
     border-radius : 10px!important;
+}
+.alBtnsOnOrders{position: absolute;left: 10px;padding: 0;
+    bottom: 10px;
+    margin: 0;}
+.alBtnsOnOrders li{list-style: none;margin-right: 3px;}
+.alBtnsOnOrders .start_chat {
+    color: #43bee1;
+    height: 30px;
+    width: 30px;
+    display: inline-block;
+    min-width: auto;
+    line-height: 26px;
+    z-index: 999;
+    background-color: transparent;
+    border: 1px solid;
 }
 </style>
 
@@ -55,16 +75,26 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 <div class="row  <%= ve ==0 ? 'mt-0' : 'mt-2'%>" id="single-order-div<%= k %><%= ve %>">
                                     <div class="col-12 order-hover-btn">
 
-
+                                        
 
                                        <div class="order_detail order_detail_data align-items-top pb-1 mb-0 card-box no-gutters h-100">
+                                        <ul class="alBtnsOnOrders d-flex justify-content-end">
+                                            @if( (!Auth::user()->is_superadmin) && ($clientData->socket_url) )
+                                            <li>
+                                                <a data-toggle="tooltip" data-placement="top" title="Start Chat" class="start_chat btn-info" data-vendor_order_id="<%= vendor.id%>" data-vendor_id="<%= vendor.vendor_id %>" data-orderId="<%= order.order_id  %>" data-order_id="<%= order.id %>"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">
+                                                    <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                                                  </svg></a>
+                                            </li>
+                                            @endif
+                                        </ul>
+                                        
                                         <a href="<%= vendor.vendor_detail_url %>" class="row">
                                             <% if(order.scheduled_date_time || (order.luxury_option_name != '')) { %>
                                             <div class="col-sm-12">
                                                 <div class="progress-order font-12  d-flex align-items-center justify-content-between pr-2">
                                                     <% if(order.luxury_option_name != '') { %>
 
-                                                        <span class="badge badge-info ml-2 my-1"><%= order.luxury_option_name %></span>
+                                                        <span class="badge badge-info ml-2 my-1 badge_<%= order.luxury_option_id %>"><%= order.luxury_option_name %></span>
                                                     <% } %>
                                                     <% if(vendor.order_status == 'Accepted' && vendor.accepted_by != null) { %>
                                                        <span class="ml-2 text-info"><%= vendor.order_status %> by <%= vendor.accepted_by.name %></span>
@@ -146,6 +176,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.subtotal_amount) %></span>
                                                     </li>
                                                     <% } %>
+                                                    <% if(vendor.additional_price > 0 ) { %>
+                                                        <li class="d-flex align-items-center justify-content-between">
+                                                            <label class="m-0">{{ __('Additional Price') }}</label>
+                                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.additional_price) %></span>
+                                                            
+                                                        </li>
+                                                        <% } %>
                                                     <% if(vendor.discount_amount > 0 || vendor.discount_amount < 0) { %>
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Promocode') }}</label>
@@ -184,11 +221,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                                 <% } %>
                                                             </li>
                                                             <% } %>
-                                                        <% if(order.fixed_fee_amount > 0 || order.fixed_fee_amount < 0) { %>
+                                                        <% if(vendor.fixed_fee > 0 || vendor.fixed_fee < 0) { %>
                                                             <li class="d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{ __($fixedFee) }}</label>
-                                                                <% if(order.fixed_fee_amount !== null) { %>
-                                                                <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.fixed_fee_amount) %></span>
+                                                                <% if(vendor.fixed_fee !== null) { %>
+                                                                <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.fixed_fee) %></span>
                                                                 <% }else { %>
                                                                     <span>{{$clientCurrency->currency->symbol}} 0.00</span>
                                                                 <% } %>
@@ -206,8 +243,15 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% } %>
                                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Amount') }}</label>
-                                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(vendor.payable_amount)+parseFloat(order.fixed_fee_amount)) %></span> --}}
-                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(vendor.subtotal_amount) - parseFloat(vendor.discount_amount) ) + parseFloat(vendor.total_container_charges) + parseFloat(vendor.taxable_amount) + parseFloat(vendor.service_fee_percentage_amount) + parseFloat(order.fixed_fee_amount) + parseFloat(vendor.delivery_fee )) %></span>
+                                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(vendor.payable_amount)+parseFloat(order.fixed_fee_amount)+parseFloat(vendor.additional_price)) %></span> --}}
+                                                        <%
+                                                        if(vendor.delivery_fee == '' || vendor.delivery_fee == null){
+                                                            vendor.delivery_fee = 0;
+                                                        }
+                                                        %>
+                                                        
+
+                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(vendor.subtotal_amount) - parseFloat(vendor.discount_amount) ) + parseFloat(vendor.total_container_charges) + parseFloat(vendor.taxable_amount) + parseFloat(vendor.service_fee_percentage_amount) + parseFloat(order.fixed_fee_amount) + parseFloat(vendor.delivery_fee ) +parseFloat(vendor.additional_price)) %></span>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -216,8 +260,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                         </a>
                                         <div id="update-single-status" class="my-2">
+                                            {{-- <a class=start_chat data-vendor_order_id="<%= vendor.id%>" data-vendor_id="<%= vendor.vendor_id %>" data-orderId="<%= order.order_id  %>" data-order_id="<%= order.id %>">Start Chat</a> --}}
                                                 <% if(vendor.order_status_option_id == 1) { %>
-                                                    <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Accept') }}</button>
+                                                    <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-is_alert = "<%= vendor.isAlert %>" data-alert_message = "<%= vendor.alertMessage %>">{{ __('Accept') }}</button>
                                                     <!--<button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>-->
                                                 <% } else if(vendor.order_status_option_id == 2) { %>
                                                     <button class="update-status btn-warning" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="4" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-order_luxury_option="<%= order.luxury_option_id %>">{{ __('Processing') }}</button>
@@ -237,6 +282,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                 <% if((vendor.order_status_option_id == 1) || ((vendor.order_status_option_id != 6) && (vendor.order_status_option_id != 3))) { %>
                                                     <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>
                                                 <% } %>
+                                                
                                             </div>
                                     </div>
                                     </div>
@@ -250,6 +296,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <label class="m-0">{{ __('Total') }}</label>
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_amount) %></span>
                                     </li>
+
+                                    <% if(order.additional_price > 0 || order.additional_price < 0) { %>
+                                        <li class="d-flex align-items-center justify-content-between">
+                                                 <label class="m-0">{{ __('Tax') }}</label>
+                                                 <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.additional_price) %></span>
+                                         </li>
+                                      <% } %>
 
                                     <% if(order.total_other_taxes_amount > 0 || order.total_other_taxes_amount < 0) { %>
                                        <li class="d-flex align-items-center justify-content-between">
@@ -324,7 +377,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <label class="m-0">{{ __('Payable') }} </label>
                                         {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount)+parseFloat(order.fixed_fee_amount))%></span> --}}
 
-                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(order.total_amount) - parseFloat(order.total_discount_calculate) ) + parseFloat(order.total_container_charges) + parseFloat(order.taxable_amount) + parseFloat(order.total_service_fee) + parseFloat(order.fixed_fee_amount) + parseFloat(order.total_delivery_fee )) %></span> --}}
+                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(order.total_amount) - parseFloat(order.total_discount_calculate) ) + parseFloat(order.total_container_charges) + parseFloat(order.taxable_amount) + parseFloat(order.total_service_fee) + parseFloat(order.fixed_fee_amount) + parseFloat(order.total_delivery_fee ) + parseFloat(order.additional_price )) %></span> --}}
 
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount))%></span>  
                                     </li>
@@ -351,26 +404,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 <div class="container-fluid order-page">
     <div class="row d-flex align-items-center justify-content-between">
         <div class="col-md-6">
-            <div class="page-title-box d-flex justify-content-between">
+            <div class="page-title-box d-flex justify-content-between dashboard_order_title mt-2">
                 <h4 class="page-title mr-3">{{ __('Orders') }}</h4>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="page-title-box page-title-box text-right pt-2">
-                <a class="return-btn" href="{{route('backend.order.returns',['Pending'])}}">
-                    <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
-                        <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
-                    </b>
-                </a> 
-                @if ($client_preferences->business_type == 'laundry')
-                <a class="return-btn" href="{{route('rescheduled.orders')}}">
-                    <b>{{ __("Rescheduled Orders") }} <sup class="total-items">({{$rescheduleOrderCount}})</sup>
-                        <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
-                    </b>
-                </a>
-                @endif
-            </div>
-        </div>
+       
         @if($client_preference_detail->third_party_accounting)
         @foreach($accounting as $accounting)
         <div class="pull-right accounting_upload">
@@ -382,8 +420,29 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         @endif
 
 
-        <div class="col-sm-12 mb-2 d-flex justify-content-end">
+        <div class="col-sm-12 mb-2">
             <div class="row align-items-center ">
+                <div class="col">
+                    <div class="page-title-box page-title-box text-left pt-2">
+                        <a class="return-btn mr-1" href="{{route('backend.order.returns',['Pending'])}}">
+                            <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
+                                <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                            </b>
+                        </a>
+                        <a class="mr-2" href="{{route('cancel-order.requests')}}">
+                            <b>{{ __("Cancel Order Request") }}<sup class="total-items">({{$cancel_order_requests}})</sup>
+                                <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                            </b>
+                        </a>
+                        @if ($client_preferences->business_type == 'laundry')
+                        <a class="return-btn" href="{{route('rescheduled.orders')}}">
+                            <b>{{ __("Rescheduled Orders") }} <sup class="total-items">({{$rescheduleOrderCount}})</sup>
+                                <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
+                            </b>
+                        </a>
+                        @endif
+                    </div>
+                </div>
                 <div class="col">
                     <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
                 </div>
@@ -396,6 +455,14 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         @endforelse
                     </select>
                 </div>
+             
+                {{-- <div class="col">
+                    <select class="form-control" id="sort_order">
+                        <option value="">{{ __('Change Sort') }}</option>
+                        <option value="distance">{{ __('Distance') }}</option>
+                        <option value="newest_slot">{{ __('Latest Slot') }}</option>
+                    </select>
+                </div> --}}
                 <div class="col">
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
@@ -420,41 +487,109 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 <div class="loader" id="order_list_order">
     <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
 </div>
-        <div class="col-12">
-            <div class="row">
-                <div class="col-sm-12 col-lg-12 tab-product pt-0">
-                    <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="pending_order-tab" data-toggle="tab" href="#pending_orders" role="tab" aria-selected="false" data-rel="pending_orders">
-                                <i class="icofont icofont-man-in-glasses"></i>{{ __('Pending Orders') }} <sup class="total-items" id="pending-orders">({{$pending_order_count}})</sup>
-                            </a>
-                            <div class="material-border"></div>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
-                                <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
-                            </a>
-                            <div class="material-border"></div>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="orders_history_tab" data-toggle="tab" href="#orders_history" role="tab" aria-selected="false" data-rel="orders_history">
-                                <i class="icofont icofont-man-in-glasses"></i>{{ __('Orders History') }} <sup class="total-items" id="history-orders">({{$past_order_count}})</sup>
-                            </a>
-                            <div class="material-border"></div>
-                        </li>
-                    </ul>
-                    <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
-                        <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
-                        <div class="tab-pane fade position-relative h-100" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
-                        <div class="tab-pane fade past-order position-relative h-100" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
-                            <div class="error-msg mt-3">
-                                <img class="mb-2" src="{{asset('images/no-order.svg')}}">
-                                <p>{{ __("You don't have orders right now.") }}</p>
-                            </div>
-                        </div>
+<div class="col-12">
+    <div class="row">
+        <div class="tab-product pl-2 pr-2 flex-grow-1">
+            <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="pending_order-tab" data-toggle="tab" href="#pending_orders" role="tab" aria-selected="false" data-rel="pending_orders">
+                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Pending Orders') }} <sup class="total-items" id="pending-orders">({{$pending_order_count}})</sup>
+                    </a>
+                    <div class="material-border"></div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
+                        <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
+                    </a>
+                    <div class="material-border"></div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="orders_history_tab" data-toggle="tab" href="#orders_history" role="tab" aria-selected="false" data-rel="orders_history">
+                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Orders History') }} <sup class="total-items" id="history-orders">({{$past_order_count}})</sup>
+                    </a>
+                    <div class="material-border"></div>
+                </li>
+            </ul>
+        </div>
+        <div class="pl-2 pr-2">
+            <div class="tabs_radio_controls">
+                @php
+                    $index = 1;
+                @endphp
+                <input type="radio" class="tabs_radio" id="all_tab" name="select" value="" checked>
+                <label class="tabs_label" for="all_tab">
+                    <h5 class="m-0">All</h5>
+                </label>
+                @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                    @php
+                        $clientVendorTypes = $vendor_typ_key.'_check';
+                        $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                        $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+                        $vendorTypeOrders = $VendorTypesName.'_orders';
+                    @endphp
+                    
+                    @if($client_preference_detail->$clientVendorTypes == 1)
+                        <input type="radio" class="tabs_radio" id="{{$VendorTypesName}}_tab" name="select" value="{{$VendorTypesName}}">
+                        <label class="tabs_label" for="{{$VendorTypesName}}_tab">
+                            <h5 class="m-0">{{$NomenclatureName}}</h5>
+                            {{-- <p class="m-0">5%</p> --}}
+                            <span class="ml-1" id="{{$VendorTypesName}}-orders">({{ $$vendorTypeOrders ?? 0 }})</span>
+                        </label>
+                    @endif
+                    @php
+                        $index++;
+                    @endphp
+                @endforeach
+            </div>
+        </div>
+                {{-- <li class="nav-item">
+                    <a class="nav-link active" id="all_luxury_tab" data-toggle="tab" href="#all_luxury_tab" role="tab" aria-controls="profile" aria-selected="false">{{__('All')}}</a>
+                </li> --}}
+                {{-- @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                    @php
+                        $clientVendorTypes = $vendor_typ_key.'_check';
+                        $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                        $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+                        $vendorTypeOrders = $VendorTypesName.'_orders';
+                    @endphp
+                    
+                    @if($client_preference_detail->$clientVendorTypes == 1)
+                    <li class="nav-item">
+                        <a class="nav-link" id="{{$VendorTypesName}}_tab" data-toggle="tab" href="#{{$VendorTypesName}}_orders" role="tab" aria-selected="false" data-rel="{{$VendorTypesName}}_orders">{{$NomenclatureName}} 
+                            
+                        </a> 
+                    </li>
+                    @endif
+                @endforeach
+                <div class="navigation-tab-overlay_alnew_design"></div>
+            </ul> --}}
+            
+    </div>
+    <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
+        <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
+        <div class="tab-pane fade position-relative h-100" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
+        <div class="tab-pane fade past-order position-relative h-100" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
+            <div class="error-msg mt-3">
+                <img class="mb-2" src="{{asset('images/no-order.svg')}}">
+                <p>{{ __("You don't have orders right now.") }}</p>
+            </div>
+        </div>
+        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+            @php
+                $clientVendorTypes = $vendor_typ_key.'_check';
+                $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+            @endphp
+            
+            @if($client_preference_detail->$clientVendorTypes == 1)
+                <div class="tab-pane fade past-order position-relative h-100" id="{{$VendorTypesName}}_orders" role="tabpanel" aria-labelledby="{{$VendorTypesName}}_tab">
+                    <div class="error-msg mt-3">
+                        <img class="mb-2" src="{{asset('images/no-order.svg')}}">
+                        <p>{{ __("You don't have orders right now.") }}</p>
                     </div>
                 </div>
-            </div>
+            @endif
+        @endforeach
     </div>
 </div>
 
@@ -487,6 +622,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 <!-- <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script> -->
 
 @endsection
+
+@section('script-bottom')
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{{asset('assets/js/chat/vendor_chat.js')}}"></script>
+@endsection
 @section('script')
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
@@ -509,6 +649,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         init(typ, "{{ route('orders.filter') }}", '', false);
     });
+    $("#sort_order, .tabs_radio").change(function() {
+        var typ=  $("a.nav-link.active").data('rel');
+        init(typ, "{{ route('orders.filter') }}", '', false);
+    });
     $("#clear_filter_btn_icon").click(function() {
         $('#range-datepicker').val('');
         $('#vendor_select_box').val('');
@@ -519,13 +663,15 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         //console.log('dasd');
         var type =  $("a.nav-link.active").data('rel');
         var search = $("#search_via_keyword").val();
+        
         init(type, "{{ route('orders.filter') }}", search, false);
-
     }
 
     function init(filter_order_status, url, search_keyword = "", isOnload = false) {
     var date_filter = $('#range-datepicker').val();
     var vendor_id = $('#vendor_select_box option:selected').val();
+    // var sort_order = $('#sort_order option:selected').val();
+    var order_type = $('.tabs_radio:checked').val();
         ajaxCall = $.ajax({
             url: url,
             type: "POST",
@@ -539,8 +685,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             data: {
                 filter_order_status: filter_order_status,
                 search_keyword: search_keyword,
+                order_type : order_type,
                 vendor_id: vendor_id,
-                date_filter: date_filter
+                date_filter: date_filter,
+                // sort_order: sort_order
             },
             success: function(response) {
                 // reload after 10 sec
@@ -570,7 +718,30 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     $("#active-orders").html("(" + response.data.active_orders + ")");
                     $("#pending-orders").html("(" + response.data.pending_orders + ")");
                     $("#history-orders").html("(" + response.data.orders_history + ")");
-
+                    if(response.data.delivery_orders !== undefined){
+                        $("#delivery-orders").html("(" + response.data.delivery_orders + ")");
+                    }
+                    if(response.data.dine_in_orders !== undefined){
+                        $("#dine_in-orders").html("(" + response.data.dine_in_orders + ")");
+                    }
+                    if(response.data.takeaway_orders !== undefined){
+                        $("#takeaway-orders").html("(" + response.data.takeaway_orders + ")");
+                    }
+                    if(response.data.rental_orders !== undefined){
+                        $("#rental-orders").html("(" + response.data.rental_orders + ")");
+                    }
+                    if(response.data.pick_drop_orders !== undefined){
+                        $("#pick_drop-orders").html("(" + response.data.pick_drop_orders + ")");
+                    }
+                    if(response.data.on_demand_orders !== undefined){
+                        $("#on_demand-orders").html("(" + response.data.on_demand_orders + ")");
+                    }
+                    if(response.data.laundry_orders !== undefined){
+                        $("#laundry-orders").html("(" + response.data.laundry_orders + ")");
+                    }
+                    if(response.data.appointment_orders !== undefined){
+                        $("#appointment-orders").html("(" + response.data.appointment_orders + ")");
+                    }
                  }
 
             },
@@ -585,7 +756,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         }, 1500);
 
         setInterval(function() {
-            autoloaddashboad();
+            // autoloaddashboad();
         }, 17000);
 
         $(document).on("click", ".load-more-btn", function() {
@@ -735,12 +906,18 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             var order_id = that.data("order_id");
             var vendor_id = that.data("vendor_id");
             var count = that.data("count");
+            var alertMessage = "";
+            if(status_option_id == 2 && that.data('is_alert'))
+            {
+                alertMessage = that.data('alert_message');
+            }
             if (status_option_id == 3) {
                 return openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id);
             } else {
                 Swal.fire({
                   title: "{{__('Are you Sure?')}}",
                   // icon: 'info',
+                  text: alertMessage,
                   showCancelButton: true,
                   confirmButtonText: 'Ok',
                 }).then((result) => {

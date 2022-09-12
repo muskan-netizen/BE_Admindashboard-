@@ -18,7 +18,51 @@ trait ConektaPaymentManager{
         'Content-Type' => 'application/json',
       ],
     ]);
-    // echo $response->getBody();
+  }
+  protected function init()
+  {
+    \Conekta\Conekta::setApiKey($this->private_key);
+    \Conekta\Conekta::setApiVersion("2.0.0");
+    \Conekta\Conekta::setLocale('en');
+  }
+  protected function createCustomer($data)
+  {
+    $validCustomer = [
+      'name' => $data['customer_name'],
+      'email' => $data['customer_email'],
+      'phone' => $data['customer_phone']
+    ];
+    $customer = \Conekta\Customer::create($validCustomer);
+    return $customer;
+  }
+  protected function createCheckout($data)
+  {
+    $this->init();
+    $customer = $this->createCustomer($data);
+    $after_url = $data['payment_from']."/".$data['come_from'].'/'.$data['amount']."/".($data["order_number"]??0);
+    $validOrderWithCheckout = array(
+      'line_items'=> $data['line_items'],
+      'checkout' => array(
+        'allowed_payment_methods' => array("card", "bank_transfer"),
+        'type' => 'HostedPayment',
+        'success_url' => $this->url."/success/".$after_url,
+        'failure_url' => $this->url."/failure/".$after_url,
+        'monthly_installments_enabled' => true,
+        'monthly_installments_options' => array(3, 6, 9, 12),
+        "redirection_time" => 4 //Tiempo de Redirección al Success/Failure URL, umbrales de 4 a 20 seg.
+      ),
+      'customer_info' => array(
+        'customer_id'   =>  $customer->id
+      ),
+      'currency'    => 'mxn',
+      'metadata'    => array('test' => 'extra info')
+    );
+    $order = \Conekta\Order::create($validOrderWithCheckout);
+    if(!is_null($order))
+    {
+      return $order->checkout->url;
+    }
+    return null;
   }
   protected function createPaymentRequest($data){
     $token = base64_encode($this->private_key);
@@ -66,56 +110,4 @@ trait ConektaPaymentManager{
       return json_decode((string) $response->getBody());
     }
   }
-  public function createCheckout($data){
-    $token = base64_encode($this->private_key);
-    $data =
-    [
-      "name" => $data['checkout_name'],
-        'line_items'=> [
-            [
-                'name'        => 'Box of Cohiba S1s',
-                'description' => 'Imported From Mex.',
-                'unit_price'  => 20000,
-                'quantity'    => 1,
-                'sku'         => 'cohb_s1',
-                'category'    => 'food',
-                'tags'        => ['food', 'mexican food']
-            ]
-        ],
-        'currency' => 'mxn',
-        'metadata' => ['test' => 'extra info'],
-        'checkout'    => [
-          'type' => 'HostedPayment',
-          'success_url' => route('payment.conekta.afterPayment').'?status=success',
-          'failure_url' => route('payment.conekta.afterPayment').'?status=failure',
-          "expires_at" => strtotime('+7 day',strtotime(date('Y-m-d'))),
-          'allowed_payment_methods' => ["cash", "card", "bank_transfer"],
-          'monthly_installments_enabled' => true,
-          'monthly_installments_options' => [3, 6, 9, 12],
-        ],
-        'currency' => 'mxn',
-        'customer_info' => [
-            'name'  => $data['customer_name'],
-            'phone' => $data['customer_phone'],
-            'email' => $data['customer_email'],
-        ]
-    ];
-    $client = new \GuzzleHttp\Client();
-    $response = $client->request('POST', 'https://api.conekta.io/orders', [
-      'body' => json_encode($data),
-      'headers' => [
-        'Accept' => 'application/vnd.conekta-v2.0.0+json',
-         'Authorization' => 'Basic '.$token,
-        'Content-Type' => 'application/json',
-        'accept' => 'application/vnd.conekta-v2.0.0+json',
-        'content-type' => 'application/json',
-      ],
-    ]);
-    
-    if($response->getStatusCode() == 200)
-    {
-      dd(json_decode((string) $response->getBody()));
-      return json_decode((string) $response->getBody());
-    }
-  }  
 }

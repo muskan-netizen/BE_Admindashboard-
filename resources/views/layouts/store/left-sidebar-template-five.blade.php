@@ -1,8 +1,12 @@
 @php
-$clientData = \App\Models\Client::select('id', 'logo')
+$clientData = \App\Models\Client::select('id', 'logo','dark_logo')
     ->where('id', '>', 0)
     ->first();
-$urlImg = $clientData ? $clientData->logo['original'] : ' ';
+if(Session::get('config_theme') == 'dark'){
+    $urlImg = $clientData ? $clientData->dark_logo['original'] : ' ';
+}else{
+    $urlImg = $clientData ? $clientData->logo['original'] : ' ';
+}
 $languageList = \App\Models\ClientLanguage::with('language')
     ->where('is_active', 1)
     ->orderBy('is_primary', 'desc')
@@ -154,7 +158,26 @@ $pages = \App\Models\Page::with([
                         <div class="al_count_tabs_new_design d-none d-sm-block"  >
                             @if($mod_count > 1)
                             <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods" id="top-tab" role="tablist">
-                                @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
+                            @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                                @php
+                                    $clientVendorTypes = $vendor_typ_key.'_check';
+                                    $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                                    $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+                                @endphp
+
+                                @if($client_preference_detail->$clientVendorTypes == 1)
+                                <li class="navigation-tab-item" role="presentation"> <a
+                                class="nav-link {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
+                                id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
+                                aria-controls="profile" aria-selected="false">
+                                        <span class="al_tabsIcons"><img src="{{$client_preference_detail->deliveryicon ? $client_preference_detail->deliveryicon['proxy_url'].'36/26'.$client_preference_detail->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" alt=""></span>
+                                        <span class="al_textTabsText">{{$NomenclatureName}}</span>
+                                    </a>
+                                </li>
+
+                                @endif
+                            @endforeach
+                            <!-- @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
                                 <li class="navigation-tab-item pr-lg-3" role="presentation">
                                     <a class="nav-link al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
                                         <span class="al_tabsIcons"><img src="{{$client_preference_detail->deliveryicon ? $client_preference_detail->deliveryicon['proxy_url'].'36/26'.$client_preference_detail->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" alt=""></span>
@@ -176,7 +199,7 @@ $pages = \App\Models\Page::with([
                                         <span class="al_textTabsText">{{$Takeaway}} </span>
                                     </a>
                                 </li>
-                                @endif
+                                @endif -->
                                 <div class="navigation-tab-overlay_alnew_design"></div>
                             </ul>
                             @endif
@@ -185,7 +208,26 @@ $pages = \App\Models\Page::with([
                         <div class="al_count_tabs_new_design al_tab_mobile position-fixed d-block d-sm-none">
                             @if($mod_count > 1)
                             <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods d-flex justify-content-around" id="top-tab" role="tablist">
-                                @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
+                            @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                                @php
+                                    $clientVendorTypes = $vendor_typ_key.'_check';
+                                    $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                                    $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+                                @endphp
+
+                                @if($client_preference_detail->$clientVendorTypes == 1)
+                                <li class="navigation-tab-item" role="presentation"> <a
+                                class="nav-link {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
+                                id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
+                                aria-controls="profile" aria-selected="false">
+                                        <span class="al_tabsIcons"><img src="{{$client_preference_detail->deliveryicon ? $client_preference_detail->deliveryicon['proxy_url'].'36/26'.$client_preference_detail->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" alt=""></span>
+                                        <span class="al_textTabsText">{{$NomenclatureName}}</span>
+                                    </a>
+                                </li>
+
+                                @endif
+                            @endforeach
+                            <!-- @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
                                 <li class="navigation-tab-item pr-lg-3" role="presentation">
                                     <a class="nav-link al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
                                         <span class="al_tabsIcons"><img src="{{$client_preference_detail->deliveryicon ? $client_preference_detail->deliveryicon['proxy_url'].'36/26'.$client_preference_detail->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" alt=""></span>
@@ -207,7 +249,7 @@ $pages = \App\Models\Page::with([
                                         <span class="al_textTabsText">{{$Takeaway}} </span>
                                     </a>
                                 </li>
-                                @endif
+                                @endif -->
                             </ul>
                             @endif
                         </div>
@@ -433,7 +475,7 @@ $pages = \App\Models\Page::with([
         </div>
     </div>
     @if(count($navCategories))
-    <div class="menu-navigation_al">
+    <div class="menu-navigation al">
       <div class="container-fluid">
          <div class="row">
             <div class="col-12">

@@ -126,7 +126,6 @@
             </form>
         </div>
         <!-- Date & Time sec end -->
-        <!--Vendor Type &  Distance to Time Calculator start -->
         <div class="col-lg-4 col-xl-3 mb-3">
             <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
                 <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
@@ -153,46 +152,8 @@
                     </div>
                 </div>
             </form>
-            @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
-            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}"> 
-                @csrf
-                <input type="hidden" name="send_to" id="send_to" value="customize">
-                <input type="hidden" name="verify_vendor_type" id="verify_vendor_type" value="1">
-                <div class="card-box mb-2">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
-                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                    </div>
-                    <div class="row align-items-start">
-                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-                            @php
-                                $VendorTypesName = $vendor_typ_key.'_check';
-                            @endphp
-                            <div class="col-md-12">
-                                <div class="form-group d-flex justify-content-between">
-                                    <label for="{{$VendorTypesName}}" class="mr-3 mb-0">{{getDynamicTypeName($vendor_typ_value)}}</label>
-                                    <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" @if((isset($preference) && $preference->$VendorTypesName == '1')) checked='checked' @endif>
-                                </div>
-                            </div>
-                        @endforeach
-                        <!-- <div class="col-md-12">
-                            <div class="form-group d-flex justify-content-between">
-                                <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
-                                <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group d-flex justify-content-between">
-                                <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
-                                <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
-                            </div>
-                        </div> -->
-                    </div>
-                </div>
-            </form>
-            @endif
+            
         </div>
-        <!--Vendor Type &  Distance to Time Calculator end -->
         <!-- Localization start -->
         <div class="col-lg-5 col-xl-6 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
@@ -266,8 +227,315 @@
         <!-- Localization end -->
     </div>
     <!--Localization end -->
+{{-- vendoe typs section aline by harbans singh :) --}}
+    <div class="row">
+        <div class="col-12">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __("Vendor Type") }}</h4>
+        </div>
+        </div>
+    </div>
+    <div class="row col-spacing">
+        <!--Vendor Type &  Distance to Time Calculator start -->
+        <div class="col-lg-4 col-xl-3 mb-3">
+            @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
+            @php
+                $typeArray = getCategoryTypes();
+            @endphp
+            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}"> 
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <input type="hidden" name="verify_vendor_type" id="verify_vendor_type" value="1">
+                <div class="card-box mb-2">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="row align-items-start">
+                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                            @php
+                                $VendorTypesName = $vendor_typ_key.'_check';
+                            @endphp
+                            @if(in_array($vendor_typ_key, $typeArray)) 
+                                <div class="col-md-12">
+                                    <div class="form-group d-flex justify-content-between">
+                                        <label for="{{$VendorTypesName}}" class="mr-3 mb-0 ">{{getDynamicTypeName($vendor_typ_value)}}</label>
+                                        <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" @if((isset($preference) && $preference->$VendorTypesName == '1')) checked='checked' @endif>
+                                    </div>
+                                </div>
+                            @endif    
+                        @endforeach
+                       
+                    </div>
+                </div>
+            </form>
+            @endif
+        </div>
+        <!--Vendor Type &  Distance to Time Calculator end -->
+        
+        @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry' && $client_preference_detail->on_demand_check == 1)
+            <div class="col-lg-3 col-md-6 mb-3">
+               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+                  @csrf
+               <!-- On Demand Services section start -->
+               <input type="hidden" name="send_to" id="send_to" value="customize">
+               <div class="card-box h-100">
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                     <h4 class="header-title mb-0">{{ __('On Demand Services') }}</h4>
+                     <button class="btn btn-info d-block" type="submit"  name="need_dispacher_home_other_service_submit_btn" value ="1"> {{ __("Save") }} </button>
+                  </div>
+                  <p class="sub-header">{{ __('Offer On Demand Services with Dispatcher.') }}</p>
+                  <div class="row">
+                     <div class="col-12">
+                        <div class="form-group mb-0">
+                           <div class="form-group mb-0 switchery-demo">
+                              <label for="need_dispacher_home_other_service" class="mr-3">{{ __('Enable') }}</label>
+                              <input type="checkbox" data-plugin="switchery" name="need_dispacher_home_other_service" id="need_dispacher_home_other_service" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_home_other_service == '1')) checked='checked' @endif>
+                           </div>
+                        </div>
 
-    <!-- Links Start -->
+                        <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
+                           <label for="dispacher_home_other_service_key_url">{{ __('Dispatcher URL') }} *(https://www.abc.com)</label>
+                           <input type="text" name="dispacher_home_other_service_key_url" id="dispacher_home_other_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('dispacher_home_other_service_key_url', $preference->dispacher_home_other_service_key_url ?? '')}}">
+                           @if($errors->has('dispacher_home_other_service_key_url'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('dispacher_home_other_service_key_url') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
+                           <label for="dispacher_home_other_service_key_code">{{ __('Dispatcher Short code') }}</label>
+                           <input type="text" name="dispacher_home_other_service_key_code" id="dispacher_home_other_service_key_code" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key_code', $preference->dispacher_home_other_service_key_code ?? '')}}">
+                           @if($errors->has('dispacher_home_other_service_key_code'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('dispacher_home_other_service_key_code') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
+                           <label for="dispacher_home_other_service_key">{{ __('Dispatcher API key') }}</label>
+                           <input type="text" name="dispacher_home_other_service_key" id="dispacher_home_other_service_key" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key', $preference->dispacher_home_other_service_key ?? '')}}">
+                           @if($errors->has('dispacher_home_other_service_key'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('dispacher_home_other_service_key') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+
+                     </div>
+                  </div>
+               </div><!-- On Demand Services section end -->
+            </form>
+            </div>
+        @endif
+        
+        @if($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app' && $client_preference_detail->pick_drop_check == 1 )
+
+            <div class="col-lg-3 col-md-6 mb-3">
+               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+                  @csrf
+               <!-- Pickup & Delivery section start -->
+               <div class="card-box h-100">
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                     <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
+                     <button class="btn btn-info d-block" type="submit"  name="need_dispacher_ride_submit_btn" value ="1"> {{ __("Save") }} </button>
+                  </div>
+                  <p class="sub-header">{{ __("Offer Pickup & Delivery with Dispatcher.") }}</p>
+                  <div class="row">
+                     <div class="col-12">
+                        <div class="form-group mb-0">
+                           <div class="form-group mb-0 switchery-demo">
+                              <label for="need_dispacher_ride" class="mr-3">{{ __("Enable") }}</label>
+                              <input type="checkbox" data-plugin="switchery" name="need_dispacher_ride" id="need_dispacher_ride" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_ride == '1')) checked='checked' @endif>
+                           </div>
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                           <label for="pickup_delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
+                           <input type="text" name="pickup_delivery_service_key_url" id="pickup_delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('pickup_delivery_service_key_url', $preference->pickup_delivery_service_key_url ?? '')}}">
+                           @if($errors->has('pickup_delivery_service_key_url'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('pickup_delivery_service_key_url') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                           <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
+                           <input type="text" name="pickup_delivery_service_key_code" id="pickup_delivery_service_key_code" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key_code', $preference->pickup_delivery_service_key_code ?? '')}}">
+                           @if($errors->has('pickup_delivery_service_key_code'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('pickup_delivery_service_key_code') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                           <label for="pickup_delivery_service_key">{{ __("Dispatcher API key") }}</label>
+                           <input type="text" name="pickup_delivery_service_key" id="pickup_delivery_service_key" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key', $preference->pickup_delivery_service_key ?? '')}}">
+                           @if($errors->has('pickup_delivery_service_key'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('pickup_delivery_service_key') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+
+                     </div>
+                  </div>
+               </div><!-- Pickup & Delivery section end -->
+               </form>
+            </div>
+        @endif
+
+        @if($client_preference_detail->business_type == 'laundry' && $client_preference_detail->laundry_check == 1 )
+            <div class="col-lg-3 col-md-6 mb-3">
+            <!-- laundry section start -->
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+            <div class="card-box h-100">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h4 class="header-title mb-0">{{ __("Laundry") }}</h4>
+                    <button class="btn btn-info d-block" type="submit" name="laundry_submit_btn" value ="1"> {{ __("Save") }} </button>
+                </div>
+                <p class="sub-header">{{ __("Offer laundry with Dispatcher.") }}</p>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group mb-0">
+                        <div class="form-group mb-0 switchery-demo">
+                            <label for="need_laundry_service" class="mr-3">{{ __("Enable") }}</label>
+                            <input data-plugin="switchery" name="need_laundry_service" id="need_laundry_service" class="form-control" data-color="#43bee1" type="checkbox" @if((isset($preference) && $preference->need_laundry_service == '1')) checked @endif >
+                        </div>
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="laundry_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
+                        <input type="text" name="laundry_service_key_url" id="laundry_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('laundry_service_key_url', $preference->laundry_service_key_url ?? '')}}">
+                        @if($errors->has('laundry_service_key_url'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('laundry_service_key_url') }}</strong>
+                        </span>
+                        @endif
+                        </div>
+                        <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="laundry_service_key_code">{{ __("Dispatcher Short code") }}</label>
+                        <input type="text" name="laundry_service_key_code" id="laundry_service_key_code" placeholder="" class="form-control" value="{{ old('laundry_service_key_code', $preference->laundry_service_key_code ?? '')}}">
+                        @if($errors->has('laundry_service_key_code'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('laundry_service_key_code') }}</strong>
+                        </span>
+                        @endif
+                        </div>
+                        <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="laundry_service_key">{{ __("Dispatcher API key") }}</label>
+                        <input type="text" name="laundry_service_key" id="laundry_service_key" placeholder="" class="form-control" value="{{ old('laundry_service_key', $preference->laundry_service_key ?? '')}}">
+                        @if($errors->has('laundry_service_key'))
+                        <span class="text-danger" role="alert">
+                            <strong>{{ $errors->first('laundry_service_key') }}</strong>
+                        </span>
+                        @endif
+                        </div>
+
+                        @if($laundry_teams != null && count($laundry_teams))
+                        <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{(isset($preference) && $preference->need_laundry_service == '1') ? '' : 'display: none;'}}" id="laundryPickupTeamListDiv">
+                        <div class="form-group">
+                            {!! Form::label('title', __('Team Tag For Laundry Pickup'),['class' => 'control-label']) !!}
+                            <select class="form-control" id="laundryPickupTeamList" name="laundry_pickup_team" data-toggle="select2" >
+                                <option value="0">{{__('Select Team Tag')}}</option>
+                                @foreach($laundry_teams as $nm)
+                                    <option value="{{$nm['name']}}" @if($preference->laundry_pickup_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
+                                @endforeach
+
+                            </select>
+                        </div>
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{(isset($preference) && $preference->need_laundry_service == '1') ? '' : 'display: none;'}}" id="laundryDropoffTeamListDiv">
+                        <div class="form-group">
+                            {!! Form::label('title', __('Team Tag For Laundry Dropoff'),['class' => 'control-label']) !!}
+                            <select class="form-control" id="laundryDropoffTeamList" name="laundry_dropoff_team" data-toggle="select2" >
+                                <option value="0">{{__('Select Team Tag')}}</option>
+                                @foreach($laundry_teams as $nm)
+                                    <option value="{{$nm['name']}}" @if($preference->laundry_dropoff_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
+                                @endforeach
+
+                            </select>
+                        </div>
+                        </div>
+                        @endif
+
+
+                    </div>
+                </div>
+            </div>
+            </form>
+            </div>
+        @endif
+
+        @if( $client_preference_detail->appointment_check == 1 )
+            <div class="col-lg-3 col-md-6 mb-3">
+            <!-- appointment section start -->
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+            <div class="card-box h-100">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h4 class="header-title mb-0">{{ getDynamicTypeName('Appointment')  }}</h4>
+                    <button class="btn btn-info d-block" type="submit" name="appointment_submit_btn" value ="1"> {{ __("Save") }} </button>
+                </div>
+                <p class="sub-header">{{ __("Offer appointment with Dispatcher.") }}</p>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group mb-0">
+                        <div class="form-group mb-0 switchery-demo">
+                            <label for="need_appointment_service" class="mr-3">{{ __("Enable") }}</label>
+                            <input data-plugin="switchery" name="need_appointment_service" id="need_appointment_service" class="form-control" data-color="#43bee1" type="checkbox" @if((isset($preference) && $preference->need_appointment_service == '1')) checked @endif >
+                        </div>
+                        </div>
+
+                        <div class="form-group mt-3 mb-0 appointmentServiceFields" style="{{((isset($preference) && $preference->need_appointment_service == '1')) ? '' : 'display:none;'}}">
+                            <label for="appointment_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
+                                <input type="text" name="appointment_service_key_url" id="appointment_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('appointment_service_key_url', $preference->appointment_service_key_url ?? '')}}">
+                                @if($errors->has('appointment_service_key_url'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('appointment_service_key_url') }}</strong>
+                                </span>
+                                @endif
+                        </div>
+                        <div class="form-group mt-3 mb-0 appointmentServiceFields" style="{{((isset($preference) && $preference->need_appointment_service == '1')) ? '' : 'display:none;'}}">
+                            <label for="appointment_service_key_code">{{ __("Dispatcher Short code") }}</label>
+                            <input type="text" name="appointment_service_key_code" id="appointment_service_key_code" placeholder="" class="form-control" value="{{ old('appointment_service_key_code', $preference->appointment_service_key_code ?? '')}}">
+                            @if($errors->has('appointment_service_key_code'))
+                            <span class="text-danger" role="alert">
+                                <strong>{{ $errors->first('appointment_service_key_code') }}</strong>
+                            </span>
+                            @endif
+                        </div>
+                        <div class="form-group mt-3 mb-0 appointmentServiceFields" style="{{((isset($preference) && $preference->need_appointment_service == '1')) ? '' : 'display:none;'}}">
+                            <label for="appointment_service_key">{{ __("Dispatcher API key") }}</label>
+                            <input type="text" name="appointment_service_key" id="appointment_service_key" placeholder="" class="form-control" value="{{ old('appointment_service_key', $preference->appointment_service_key ?? '')}}">
+                            @if($errors->has('appointment_service_key'))
+                            <span class="text-danger" role="alert">
+                                <strong>{{ $errors->first('appointment_service_key') }}</strong>
+                            </span>
+                            @endif
+                        </div>
+
+                        
+
+
+                    </div>
+                </div>
+            </div>
+            </form>
+            </div>
+        @endif
+
+    </div>
+{{-- vendoe typs section --}}
+        <!-- Links Start -->
     <div class="row">
       <div class="col-12">
          <div class="page-title-box">
@@ -536,14 +804,14 @@
                         <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
-                                    <label for="custom_domain">{{ __("On Demand Services") }}</label>
+                                    <label for="custom_domain">{{ __("Services") }}</label>
                                 </div>
                             </div>
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="on_demand_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="on_demand_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('On Demand Services'))}}">
+                                    <input type="text" name="on_demand_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Services'))}}">
                                     @if($k == 0)
                                         @if($errors->has('on_demand_names.0'))
                                             <span class="text-danger" role="alert">
@@ -569,6 +837,29 @@
                                     <input type="text" name="laundry_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Laundry'))}}">
                                     @if($k == 0)
                                         @if($errors->has('laundry_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Appointment") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="appointment_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="appointment_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Appointment'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('appointment_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -828,7 +1119,31 @@
                             </div>
                             @endforeach
                         </div>
-
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Product Order Form") }}</label>
+                                </div>
+                            </div>
+                            @php
+                           
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="product_order_form_language_ids[]" value="{{$client_language->langId}}">                                    
+                                    <input type="text" name="product_order_form_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Product Order Form'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </form>
@@ -1153,6 +1468,7 @@
         <div class="col-lg-6 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
+                <input type="hidden" name="slotting_and_scheduling" id="slotting_and_scheduling" value="1">
                 <input type="hidden" name="send_to" id="send_to" value="customize">
                 <div class="card-box mb-0 pb-1 h-100">
                     <div class="d-flex align-items-center justify-content-between">
@@ -1192,6 +1508,13 @@
                             <div class="form-group d-flex justify-content-between mb-3">
                                 <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Rescheduling')}}<small class="d-block pr-5">Enable or disable same day pickup & delivery for rescheduling.</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="same_day_orders_for_rescheduing" id="same_day_orders_for_rescheduing" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->same_day_orders_for_rescheduing == '1')) checked='checked' @endif>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 my-2" id="slots_with_service_area_div">
+                            <div class="form-group d-flex justify-content-between mb-3">
+                                <label for="slots_with_service_area" class="mr-2 mb-0">{{__('Food Truck Service')}}<small class="d-block pr-5">{{__('Enable or disable multiple service area for trucks')}}</small></label>
+                            <span> <input type="checkbox" data-plugin="switchery" name="slots_with_service_area" id="slots_with_service_area" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->slots_with_service_area == '1')) checked='checked' @endif>
                                 </span>
                             </div>
                         </div>
@@ -1306,6 +1629,8 @@
         <!-- Vendor Registration Documents end -->
          @endif
          <!-- static_dropoff Ends -->
+
+         
     </div>
     <!-- Miscellaneous End  -->
 
@@ -1333,7 +1658,8 @@
                     </div>
                     <div class="col-xl-12 my-2 p-0" id="addCur-160">
                         <label class="primaryCurText">{{ __('Free Cancellation Upto') }}</label>
-                        <select class="form-control al_box_height" id="order_cancellation_time" name="order_cancellation_time">
+                        <input class="form-control" type="number" min="0" id="order_cancellation_time" name="order_cancellation_time" value="{{ !empty($preference->order_cancellation_time)? $preference->order_cancellation_time : 0}}" step="0">
+                        <!-- <select class="form-control al_box_height" id="order_cancellation_time" name="order_cancellation_time">
                             <option value="0"  {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 0)? 'selected' : '' }}>{{__('No Cancellation')}}</option>
                             <option value="10" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 10)? 'selected' : '' }}>{{__('10 Minutes')}}</option>
                             <option value="20" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 20)? 'selected' : '' }}>{{__('20 Minutes')}}</option>
@@ -1346,7 +1672,7 @@
                             <option value="90" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 90)? 'selected' : '' }}>{{__('90 Minutes')}}</option>
                             <option value="100" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 100)? 'selected' : '' }}>{{__('100 Minutes')}}</option>
                             <option value="120" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 120)? 'selected' : '' }}>{{__('120 Minutes')}}</option>
-                        </select>
+                        </select> -->
                     </div>
                     <div class="col-xl-12 my-2 p-0" id="late-cancellation" style="{{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time > 0)? 'display:block;' : 'display:none;'}}">
                         <label class="primaryCurText">{{ __('Late Cancellation Fee').'(%)' }}</label>
@@ -1570,7 +1896,7 @@
                                 <div id="option_div">
 
                                         <div class="selector-option-al ">
-                                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
+                                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="vendor-selector-datatable">
                                                 <tr class="trForClone">
 
                                                     @foreach($client_languages as $langs)
@@ -1720,6 +2046,60 @@
     </div>
 </div>
 
+<!--End Add facilty Modal -->
+<div id="add_facilty_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  standard-modalLabel aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header border-bottom al">
+               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add facilty") }}</h4>
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+               <form id="faciltyForm" method="POST" action="javascript:void(0)">
+                  @csrf
+                  <div id="save_social_media">
+                     <input type="hidden" name="facilty_id" value="">
+                     <div class="row">
+                        
+                        <div class="col-md-6">
+                                <label>{{ __('Upload Logo') }} </label>
+                                <input type="file" accept="image/*" data-plugins="dropify" name="facilty_image" class="dropify" data-default-file="" />
+                                <label class="logo-size text-right w-100">{{ __('Logo Size') }} 170x96</label>
+                        </div>
+                        <div class="col-md-12 selector-option-al ">
+                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
+                                <tr class="trForClone">
+
+                                    @foreach($client_languages as $langs)
+                                        <th>{{$langs->langName}}</th>
+                                    @endforeach
+                                    <th></th>
+                                </tr>
+                                <tbody id="table_body">
+                                        <tr>
+                                    @foreach($client_languages as $lankey => $User_langs)
+                                        <td>
+                                            <input class="form-control" name="language_id[{{$lankey}}]" type="hidden" value="{{$User_langs->langId}}">
+                                            <input class="form-control" name="name[{{$lankey}}]" type="text" id="facilty_name_{{$User_langs->langId}}">
+                                        </td>
+                                    @endforeach
+                                    <td class="lasttd"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    
+                     </div>
+                  </div>
+               </form>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-primary submitSaveFacilty">{{ __("Save") }}</button>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
 
    <!-- Add category kyc Document Modal -->
 <div id="add_category_kyc_document_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  standard-modalLabel aria-hidden="true">
@@ -1893,9 +2273,9 @@ $(document).ready(function(){
         var price_section_temp    = $('#vendorSelectorTemp').html();
         var modified_temp         = _.template(price_section_temp);
         var result_html           = modified_temp({id:section_id,data:data});
-        $("#table_body").append(result_html);
+        $("#vendor-selector-datatable #table_body").append(result_html);
         $('.add_more_button').hide();
-        $('#add_button_'+section_id).show();
+        $('#vendor-selector-datatable #add_button_'+section_id).show();
     }
      $(document).on('click','.add_more_button',function(){
         var main_id = $(this).data('id');
@@ -1921,14 +2301,7 @@ $(document).ready(function(){
         $('#add_vendor_registration_document_modal #standard-modalLabel').html('Add Vendor Registration Document');
     });
 
-    //user document model
-    $('#add_user_registration_document_modal_btn').click(function(e) {
-        document.getElementById("userRegistrationDocumentForm").reset();
-        $('#add_user_registration_document_modal input[name=user_registration_document_id]').val("");
-        $('#add_user_registration_document_modal').modal('show');
-        $('#add_user_registration_document_modal #standard-modalLabel').html('Add User Registration Document');
-    });
-
+    
     $(document).on('click', '.submitSaveUserRegistrationDocument', function(e) {
         // alert('af');
         // return false;
@@ -2225,14 +2598,14 @@ $(document).ready(function(){
                             section_id                = parseInt(section_id);
                             row                       = parseInt(section_id)
                             section_id                = section_id +1;
-                            $('#table_body').append(modified_temp({ id:section_id,data:value}));
+                            $('#vendor-selector-datatable #table_body').append(modified_temp({ id:section_id,data:value}));
                             var options_trans = value.translations;
                             $(options_trans).each(function(trans_index, trans_value) {
                                 var input_id = '#option_name_'+row+'_'+trans_value.language_id;
                                 $(input_id).val(trans_value.name);
                             });
                             $('.add_more_button').hide();
-                            $('#add_button_'+section_id).show();
+                            $('#vendor-selector-datatable #add_button_'+section_id).show();
                         });
                     }else{
                         $('.option_section').remove();
@@ -2280,6 +2653,120 @@ $(document).ready(function(){
                });
             }
         });
+    });
+
+    //user document model
+    $('#add_facilties_modal_btn').click(function(e) {
+        document.getElementById("userRegistrationDocumentForm").reset();
+        $('#faciltyForm input[name=facilty_id]').val("");
+        $('#add_facilty_modal').modal('show');
+        $('#add_facilty_modal #standard-modalLabel').html('Add facilty');
+    });
+    //vendor registration document
+    $(document).on('click', '.submitSaveFacilty', function(e) {
+        var vendor_registration_document_id = $("#add_facilty_modal input[name=facilty_id]").val();
+        if (vendor_registration_document_id) {
+            var post_url = "{{ route('facilty.update') }}";
+        } else {
+            var post_url = "{{ route('facilty.store') }}";
+        }
+        var form_data = new FormData(document.getElementById("faciltyForm"));
+        $.ajax({
+            url: post_url,
+            method: 'POST',
+            data: form_data,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+               if (response.status == 'Success') {
+                  $('#add_or_edit_social_media_modal').modal('hide');
+                  $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                  setTimeout(function() {
+                     location.reload()
+                  }, 2000);
+               } else {
+                  $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+               }
+            },
+            error: function(response) {
+               $('#add_vendor_registration_document_modal .social_media_url_err').html('The default language name field is required.');
+            }
+        });
+    });
+    
+    $(document).on("click", ".edit_facilty_btn", function() {
+        let facilty_id = $(this).data('facilty_id');
+        //console.log(facilty_id);
+        editfaciltyForm(facilty_id);
+    });
+    function editfaciltyForm(facilty_id){
+        let language_id = $('#option_client_language').val();
+         $('#faciltyForm input[name=facilty_id]').val(facilty_id);
+         $.ajax({
+            method: 'GET',
+            data: {
+                facilty_id: facilty_id,
+                language_id:language_id
+            },
+            url: "{{ route('facilty.edit') }}",
+            success: function(response) {
+               if (response.status = 'Success') {
+                   console.log(response.data);
+                   console.log(response.data.image.image_fit+'90/90'+response.data.image.image_path);
+                //   $(document).find("#add_vendor_registration_document_modal select[name=file_type]").val(response.data.file_type).change();
+
+                  $("#add_facilty_modal input[name=facilty_id]").val(response.data.id);
+                  
+                  $("#add_facilty_modal input[name=facilty_image]").attr('data-default-file',response.data.image.image_fit+'90/90'+response.data.image.image_path );
+                  $('.dropify').dropify();
+                  $('#add_facilty_modal #standard-modalLabel').html('Update facilty');
+                  $('#add_facilty_modal').modal('show');
+                  
+                  $.each(response.data.translations, function( index, value ) {
+                    $('#add_facilty_modal #facilty_name_'+value.language_id).val(value.name);
+                  });
+               }
+            },
+            error: function() {}
+        });
+    }
+     // delete kyc document 
+     $(document).on("click", ".delete_facilty_btn", function() {
+         var facilty_id = $(this).data('facilty_id');
+         Swal.fire({
+            title: "{{__('Are you Sure?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+         }).then((result) => {
+            if (result.value) {
+               $.ajax({
+                  type: "POST",
+                  dataType: 'json',
+                  url: "{{ route('facilty.delete') }}",
+                  data: {
+                     _token: "{{ csrf_token() }}",
+                     facilty_id: facilty_id
+                  },
+                  success: function(response) {
+                     if (response.status == "Success") {
+                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        setTimeout(function() {
+                           location.reload()
+                        }, 2000);
+                     }
+                  }
+               });
+            }
+        });
+    });
+
+    
+ $('#add_facilties_modal_btn').click(function(e) {
+        document.getElementById("userRegistrationDocumentForm").reset();
+        $('#faciltyForm input[name=facilty_id]').val("");
+        $('#add_facilty_modal').modal('show');
+        $('#add_facilty_modal #standard-modalLabel').html('Add facilty');
     });
     //End Vendor Registration Document Script
     $(document).ready(function() {
@@ -2462,6 +2949,48 @@ $(document).ready(function(){
             $("#" + code + "_fields_wrapper").find('input').removeAttr('required');
         }
     });
+
+    var dispatcherDiv = $('#need_dispacher_ride');
+    var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
+    var laundry_service = $('#need_laundry_service');
+    var need_appointment_service = $('#need_appointment_service');
+    if(dispatcherDiv.length > 0){
+        dispatcherDiv[0].onchange = function() {
+            if ($('#need_dispacher_ride:checked').length != 1) {
+                $('.dispatcherFields').hide();
+            } else {
+                $('.dispatcherFields').show();
+            }
+        }
+    }
+
+    if(need_dispacher_home_other_service.length > 0){
+        need_dispacher_home_other_service[0].onchange = function() {
+            if ($('#need_dispacher_home_other_service:checked').length != 1) {
+                $('.home_other_dispatcherFields').hide();
+            } else {
+                $('.home_other_dispatcherFields').show();
+            }
+        }
+    }
+    if(laundry_service.length > 0){
+        laundry_service[0].onchange = function() {
+            if ($('#need_laundry_service:checked').length != 1) {
+                $('.laundryServiceFields').hide();
+            } else {
+                $('.laundryServiceFields').show();
+            }
+        }
+    }
+    if(need_appointment_service.length > 0){
+        need_appointment_service[0].onchange = function() {
+            if ($('#need_appointment_service:checked').length != 1) {
+                $('.appointmentServiceFields').hide();
+            } else {
+                $('.appointmentServiceFields').show();
+            }
+        }
+    }
 </script>
 
 @if($preference->is_static_dropoff == '1') 

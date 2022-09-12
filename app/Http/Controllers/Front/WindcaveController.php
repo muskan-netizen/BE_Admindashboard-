@@ -108,6 +108,7 @@ class WindcaveController extends FrontController
             "callbackUrls" => ["approved"=> route('windcave.success').'?oid='.$order_number, "declined"=> route('windcave.fail').'?oid='.$order_number, "cancelled"=> route('windcave.fail').'?oid='.$order_number ],
             "notificationUrl" => route('windcave.success').'?oid='.$order_number
         );
+        \Log::info(json_encode($data));
         $url = $this->postCurl($data,$this->token);
         \Log::info('resp=');
         \Log::info(json_encode($url));

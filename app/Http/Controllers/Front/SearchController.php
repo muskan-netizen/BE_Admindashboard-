@@ -22,7 +22,7 @@ class SearchController extends FrontController{
         $vendorType = Session::get('vendorType');
         $allowed_vendors = $this->getServiceAreaVendors();
        
-        $vendors = Vendor::select('id', 'name', 'logo','slug');
+        $vendors = Vendor::select('id', 'name', 'logo','slug', 'show_slot');
         if (count($allowed_vendors) > 0) {
             $vendors = $vendors->whereIn('id', $allowed_vendors);
         }
@@ -42,6 +42,23 @@ class SearchController extends FrontController{
                         $query->select('vendor_id')
                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
                     });
+                }
+
+                if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
+                    $slot_vendors = clone $vendors;
+                    $data = $slot_vendors->get();
+                    foreach ($data as $key => $value) {
+                        $vendors = $vendors->when(($value->show_slot == 0), function($query) use ($latitude, $longitude) {
+                            return $query->where(function($query1) use ($latitude, $longitude) {
+                                $query1->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                })
+                                ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                });
+                            });
+                        });
+                    }
                 }
             }
         }
@@ -119,8 +136,7 @@ class SearchController extends FrontController{
         $language_id = Session::get('customerLanguage');
         $preferences = Session::get('preferences');
         $vendorType = Session::get('vendorType');
-       
-        $vendors = Vendor::select('id', 'name', 'logo','slug')->where($vendorType,1);
+        $vendors = Vendor::select('id', 'name', 'logo','slug','latitude','longitude','address','dial_code','phone_no')->where($vendorType,1);
         if($preferences){
             if( (empty($latitude)) && (empty($longitude)) && (empty($selectedAddress)) ){
                 $selectedAddress = $preferences->Default_location_name;
@@ -161,7 +177,8 @@ class SearchController extends FrontController{
         }
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
                         ->leftjoin('types', 'types.id', 'categories.type_id')
-                        ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')
+                        ->leftjoin('vendors', 'vendors.id','categories.vendor_id')
+                        ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to','vendors.latitude','vendors.longitude','vendors.address','vendors.dial_code','vendors.phone_no')
                         ->where('categories.id', '>', '1')
                         ->where('categories.is_visible', 1)
                         ->where('categories.status', '!=', 2)
@@ -176,25 +193,35 @@ class SearchController extends FrontController{
         foreach ($categories as $category) {
             $redirect_url = route('categoryDetail', $category->slug);
             $image_url = $category->image['proxy_url'].'300/300'.$category->image['image_path'];
-            $response[] = ['id' => $category->id, 'name' => $category->name, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
+            $response[] = ['id' => $category->id, 'name' => $category->name,'latitude' => $category->latitude,'longitude' => $category->longitude, 'address'=>$category->address, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
         }
         $products = Product::with('media')->join('product_translations as pt', 'pt.product_id', 'products.id')->join('vendors', 'vendors.id','products.vendor_id')
-                    ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description','products.vendor_id','vendors.slug as vendor_slug','products.url_slug')
+                    ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description','products.vendor_id','vendors.slug as vendor_slug','products.url_slug','vendors.latitude','vendors.longitude','vendors.address','vendors.dial_code','vendors.phone_no')
                     ->where('pt.language_id', $language_id)
                     ->whereHas('vendor',function($query) use ($vendorType){
                         $query->where($vendorType,1);
                       })
                     ->where(function ($q) use ($keyword) {
                         $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
-                    })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->get();
+                    })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->get();  
         foreach ($products as $product) {
             $redirect_url = route('productDetail', [$product->vendor_slug,$product->url_slug]);
             $image_url = $product->media->first() ? $product->media->first()->image->path['proxy_url'].'300/300'.$product->media->first()->image->path['image_path'] : '';
-            $response[] = ['id' => $product->id, 'name' => $product->dataname, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
+            $response[] = ['id' => $product->id, 'name' => $product->dataname,'latitude' => $product->latitude,'longitude' => $product->longitude, 'address'=>$product->address, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
         }
 
         $language_id = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($language_id);
-        return view('frontend.searchResults')->with(['listData'=>$response, 'navCategories'=>$navCategories, 'keyword'=>$keyword]);
+        $vendorLatLong = [];
+
+        if(!empty($response)){
+            foreach($response as $res){
+                if(!empty($res['latitude']) && !empty($res['longitude'])){
+                    $addres[] = [$res['latitude'],$res['longitude']];
+                    $vendorLatLong = $addres;
+                }
+            }
+        }
+        return view('frontend.searchResults')->with(['listData'=>$response, 'vendorLatLong'=>$vendorLatLong, 'navCategories'=>$navCategories, 'keyword'=>$keyword]);
     }
 }

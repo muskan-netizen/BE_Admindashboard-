@@ -12,7 +12,7 @@ use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
-use App\Models\{VendorSlot, ClientCurrency, Order};
+use App\Models\{VendorSlot, ClientCurrency, Order,Type};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 
@@ -87,7 +87,7 @@ if (!function_exists('pr')) {
         echo '<pre>';
         print_r($var);
         echo '</pre>';
-        // exit();
+         exit();
     }
 }
 if (!function_exists('http_check')) {
@@ -245,6 +245,19 @@ if (!function_exists('getRazorPayApiKey')) {
     }
 }
 
+if (!function_exists('getKhaltiPayApiKey')) {
+    function getKhaltiPayApiKey()
+    {
+        $khaltipay_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'khalti')->where('status', 1)->first(); 
+        $api_key_khaltipay = "";
+        if($khaltipay_creds)
+        {
+            $creds_arr_khaltipay = json_decode($khaltipay_creds->credentials);
+            $api_key_khaltipay = (isset($creds_arr_khaltipay->api_key)) ? $creds_arr_khaltipay->api_key : '';
+        }
+        return $api_key_khaltipay;
+    }
+}
 
 if (!function_exists('dateTimeInUserTimeZone')) {
     function dateTimeInUserTimeZone($date, $timezone, $showDate=true, $showTime=true, $showSeconds=false)
@@ -549,6 +562,28 @@ if (!function_exists('showSlot')) {
         }
     
         return $viewSlot;
+    }
+}
+if (!function_exists('getShowSlot')) {
+    function getShowSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
+    {
+        $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        if(count((array)$slots) == 0){
+            $myDate  = date('Y-m-d',strtotime('+1 day'));
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        }
+        if(count((array)$slots) == 0){
+            $myDate  = date('Y-m-d',strtotime('+2 day'));
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        }
+
+        if(count((array)$slots) == 0){
+            $myDate  = date('Y-m-d',strtotime('+3 day'));
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        }
+        $response['slots']=$slots;
+        $response['date']=$myDate;
+        return  $response;
     }
 }
 if (!function_exists('showSlotTemp')) {
@@ -894,3 +929,141 @@ if (!function_exists('taxRates')) {
         return App\Models\TaxRate::all();
     }
 }
+if (!function_exists('getServiceTypesCategory')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getServiceTypesCategory($vendorType) {
+        //echo $vendorType; exit();
+        try {
+            $client_preference = ClientPreference::select('business_type')->first();
+            $types =   Type::query();
+            $service_types = [];
+            if($vendorType =="delivery" || $vendorType =="dine_in" || $vendorType =="takeaway"){
+                $service_types= ['products_service'];
+            }elseif($vendorType =="rental" ){
+                $service_types= ['rental_service'];
+            }elseif($vendorType =="pick_drop" ){
+                $service_types= ['pick_drop_service'];
+            }elseif($vendorType =="on_demand" ){
+                $service_types= ['on_demand_service'];
+            }elseif($vendorType =="laundry" ){
+                $service_types= ['laundry_service'];
+            }
+            elseif($vendorType =="appointment" ){
+                $service_types= ['appointment_service'];
+            }
+            if($client_preference->business_type == 'taxi'){
+                $service_types= ['pick_drop_service'];
+            }elseif($client_preference->business_type == 'laundry'){
+                $service_types= ['laundry_service'];
+            }elseif($client_preference->business_type == 'home_service'){
+                $service_types= ['on_demand_service','appointment_service'];
+            }
+            if($client_preference->business_type == 'laundry'){
+                $service_types= ['laundry_service'];
+            }
+           
+            $types =  $types->whereIn('service_type',$service_types);
+            $types_id = $types->pluck('id')->toArray();
+            return $types_id ;
+        } catch (\Throwable $th) {
+           return [];
+        }
+       
+    }
+}
+
+if (!function_exists('getCategoryTypes')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getCategoryTypes() {
+        $client_preference = ClientPreference::select('business_type')->first();
+        switch($client_preference->business_type){
+            case "taxi":
+                $typeArray =['pick_drop'];
+            break;
+            case "food_grocery_ecommerce":
+                $typeArray =['delivery','dinein','takeaway'];
+            break;
+            case "home_service":
+                $typeArray =['on_demand','appointment'];
+            break;
+            case "laundry":
+                $typeArray =['laundry'];
+            break;
+            case "rental":
+                $typeArray =['rental'];
+            break;
+        
+            case "super_app":
+                $typeArray =['delivery','dinein','takeaway','rental','pick_drop','on_demand','appointment'];
+            break;
+            default:
+            $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];
+        }
+        return $typeArray;
+    }
+}
+if (!function_exists('getCategoryTypesServices')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getCategoryTypesServices() {
+        $client_preference = ClientPreference::select('business_type')->first();
+        switch($client_preference->business_type){
+            case "taxi":
+                $typeArray =['pick_drop_service'];
+            break;
+            case "food_grocery_ecommerce":
+                $typeArray =['products_service'];
+            break;
+            case "home_service":
+                $typeArray =['on_demand_service','appointment_service'];
+            break;
+            case "laundry":
+                $typeArray =['laundry_service','pick_drop_service'];
+            break;
+            case "rental":
+                $typeArray =['rental_service'];
+            break;
+        
+            case "super_app":
+                $typeArray =['pick_drop_service','on_demand_service','appointment_service','rental_service','products_service'];
+            break;
+            default:
+            $typeArray =['products_service','pick_drop_service','on_demand_service','appointment_service'];
+        }
+        return $typeArray;
+    }
+}
+
+if (!function_exists('getHoursMinutes')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getHoursMinutes($minutes)
+    {
+        $hours = floor($minutes / 60);
+        $min = $minutes - ($hours * 60);
+        return $hours.' hour ' .$min. ' min ';
+
+    }
+}
+
+
+if (!function_exists('getMinutes')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getMinutes($hrs,$minutes)
+    {
+        $minutes = ($hrs*60)+($minutes);
+        return $minutes;
+
+    }
+}
+
+
+
