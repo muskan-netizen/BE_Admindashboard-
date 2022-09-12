@@ -504,9 +504,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         <p>{{ __("You don't have orders right now.") }}</p>
     </div>
     </script>
-<div class="loader" id="order_list_order">
-    <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
-</div>
 <div class="col-12">
     <div class="row">
         <div class="tab-product pl-2 pr-2 flex-grow-1">

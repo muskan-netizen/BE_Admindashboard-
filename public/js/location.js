@@ -26,7 +26,7 @@ $(document).ready( async function () {
         if($("#address-longitude").length > 0){
             longitude = $("#address-longitude").val();
         }
-       //await getHomePageCategoryMenu(latitude, longitude);
+       // await getHomePageCategoryMenu(latitude, longitude);
       //  getHomePage(latitude, longitude);
         // $(document).ready(function () {
         if ($.cookie("age_restriction") != 1) {
