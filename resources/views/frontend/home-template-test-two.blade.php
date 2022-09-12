@@ -425,7 +425,6 @@ height: auto;
 	</a>
 </script>
 
-
 <script type="text/template" id="vendors_template">
     <% _.each(vendors, function(vendor, k){%>
         <div class="product-box scale-effect">

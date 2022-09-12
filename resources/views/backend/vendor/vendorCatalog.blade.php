@@ -79,17 +79,7 @@
             }
         }
         /* NO BORDER SPINNER */
-.nb-spinner {
-  width: 75px;
-  height: 75px;
-  margin: 0;
-  background: transparent;
-  border-top: 4px solid #009688;
-  border-right: 4px solid transparent;
-  border-radius: 50%;
-  -webkit-animation: 1s spin linear infinite;
-  animation: 1s spin linear infinite;
-}
+
 
     </style>
 @endsection
@@ -362,9 +352,6 @@
                                                     @endforeach
                                                 </tbody> -->
                                             </table>
-                                        </div>
-                                        <div style="display: flex;justify-content: center;">
-                                            <div class="nb-spinner"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -861,13 +848,7 @@
 
 
     <script type="text/javascript">
-     $( document ).ajaxStart(function() {
-            $( ".nb-spinner" ).show();
-        });
 
-        $( document ).ajaxComplete(function() {
-            $( ".nb-spinner" ).hide();
-        });
         $(".all-product_check").click(function() {
             if ($(this).is(':checked')) {
                 $("#action_product_button").css("display", "block");
