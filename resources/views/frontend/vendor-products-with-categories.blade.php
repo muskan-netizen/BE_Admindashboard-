@@ -6,11 +6,10 @@
 @endsection
 @section('css-links')
 <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/price-range.css') }}">
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
     <!-- section start -->
-    <section class="section-b-space ratio_asos">
+    <section class="section-b-space ratio_asos alProductCategories">
         <div class="collection-wrapper">
             <div class="container">
                 <div class="row">
@@ -142,11 +141,11 @@
                             <div class="col-md-8"></div>
                             <div class="col-12">
                                 <div class="row vendor-products-wrapper">
-                                    <div class="col-sm-4 col-lg-3 border-right al_white_bg_round p-0">
+                                    <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
                                         <nav class="scrollspy-menu">
                                             <ul>
                                                 @forelse($listData as $key => $data)
-                                                    <li><a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation_one->name??'' }}({{ $data->products_count }})</a>
+                                                    <li><a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation[0]->name??'' }}({{ $data->products_count }})</a>
                                                     </li>
                                                 @empty
                                                 @endforelse
@@ -249,11 +248,13 @@
                                                                                     if (count($data->addOn) > 0) {
                                                                                         $isAddonExist = 1;
                                                                                     }
+                                                                                   // dd($data->variant);
                                                                                 @endphp
 
                                                                                 @foreach ($data->variant as $var)
                                                                                     @if (isset($var->checkIfInCart) && count($var->checkIfInCart) > 0)
                                                                                         @php
+                                                                                            //dd($var->_markup_price);
                                                                                             $productVariantInCart = 1;
                                                                                             $productVariantIdInCart = $var->checkIfInCart['0']['variant_id'];
                                                                                             $cartProductId = $var->checkIfInCart['0']['id'];
@@ -530,13 +531,13 @@
                                                         {{ Session::get('currencySymbol') }}<%=  Helper.formatPrice(vendor_product.quantity_price) %>
 
                                                     </span>
-                                                    <a class="action-icon remove_product_via_cart text-danger" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
+                                                    <a class="action-icon remove_product_via_cart text-danger" style="cursor: pointer;" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                                             <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                         </a>
                                                 </h6>
                                             </div>
                                         </li>
-
+                                        <hr class="my-2">
                                         <% if(vendor_product.addon.length != 0) { %>
                                             <div class="row align-items-md-center">
                                                 <div class="col-12">
@@ -555,17 +556,18 @@
                                                     <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
                                                 </div>
                                             </div>
+                                            <hr class="my-2">
                                             <% }); %>
                                         <% } %>
 
                                     <% }); %>
-                                    <% if(product.delivery_fee_charges > 0) { %>
+                                    <% if(cart_details.delivery_charges > 0) { %>
                                         <div class="row justify-content-between">
                                             <div class="col-md-6 col-sm-6 text-left">
-                                                <h6 class="m-0 font-14"><b>{{ __('Delivery fee') }}</b></h6>
+                                                <h6 class="m-0 font-14">{{ __('Delivery fee') }}</h6>
                                             </div>
                                             <div class="col-md-6 col-sm-6 text-right">
-                                                <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.delivery_fee_charges) %></div>
+                                                <div class="font-14 mr-xl-2">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.delivery_charges) %></div>
                                             </div>
                                         </div>
                                     <% } %>
@@ -573,16 +575,16 @@
                                 <% }); %>
 
                                 <h5 class="d-flex align-items-center justify-content-between pb-2">{{ __('PRICE DETAILS') }} </h5>
-                                <li class="p-0">
+                                <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Price') }}</span>
+                                            <span class="ellips">{{ __('Total') }}</span>
                                             <span >{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.gross_amount) %></span>
                                         </h6>
                                     </div>
                                 </li>
 
-                                <li class="p-0">
+                                <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
                                             <span class="ellips">{{ __('Tax') }}</span>
@@ -592,33 +594,33 @@
                                 </li>
 
                                 <% if(cart_details.total_subscription_discount != undefined) { %>
-                                 <li class="p-0">
+                                 <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">- {{ __('Subscription Discount') }}</span>
-                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
+                                            <span class="ellips"> {{ __('Subscription Discount') }}</span>
+                                             <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
                                         </h6>
                                     </div>
                                 </li>
                                 <% } %>
 
                                 <% if(cart_details.loyalty_amount > 0) { %>
-                                <li class="p-0">
+                                <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">- {{ __('Loyalty Amount') }} </span>
-                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
+                                            <span class="ellips"> {{ __('Loyalty Amount') }} </span>
+                                             <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
                                         </h6>
                                     </div>
                                 </li>
                                 <% } %>
 
                                 <% if(cart_details.wallet_amount_used > 0) { %>
-                                <li class="p-0">
+                                <li class="p-0 alSixCart">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">- {{ __('Wallet Amount') }} </span>
-                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
+                                            <span class="ellips"> {{ __('Wallet Amount') }} </span>
+                                             <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
                                         </h6>
                                     </div>
                                 </li>
@@ -634,7 +636,7 @@
         <div class="row">
                                     <div class="col-12 text-center pb-3">
                                         <img class="w-50 pt-3 pb-1" src="{{ asset('front-assets/images/ic_emptycart.svg') }}" alt="">
-                                        <h5>Your cart is empty<br/>{{ __('Add an item to begin') }}</h5>
+                                        <h5>{{ __('Your cart is empty') }}<br/>{{ __('Add an item to begin') }}</h5>
                                     </div>
                                 </div>
                             </script>
@@ -686,7 +688,7 @@
                                         <div class="customizable-text">customizable</div>
                                     <% } %>
                                 <% }else{ %>
-                                    <span class="text-danger">Out of stock</span>
+                                    <span class="text-danger">{{ __('Out of stock')}}</span>
                                 <% } %>
                             </script>
     <script type="text/template" id="addon_template">
@@ -720,18 +722,18 @@
                                                         <%
                                                             var min_select = '';
                                                             if(addon.min_select > 0){
-                                                                min_select = 'Minimum ' + addon.min_select;
+                                                                min_select = "{{ __('Minimum')}} " + addon.min_select;
                                                             }
                                                             var max_select = '';
                                                             if(addon.max_select > 0){
-                                                                max_select = 'Maximum ' + addon.max_select;
+                                                                max_select = "{{ __('Maximum')}} " + addon.max_select;
                                                             }
                                                             if( (min_select != '') && (max_select != '') ){
-                                                                min_select = min_select + ' and ';
+                                                                min_select = min_select + " {{ __('and')}} ";
                                                             }
                                                         %>
                                                         <% if( (min_select != '') || (max_select != '') ) { %>
-                                                            <small><%=min_select + max_select %> Selections allowed</small>
+                                                            <small><%=min_select + max_select %> {{ __('Selections Allowed')}}</small>
                                                         <% } %>
                                                     </div>
                                                     <div class="productAddonSetOptions" data-min="<%= addon.min_select %>" data-max="<%= addon.max_select %>" data-addonset-title="<%= addon.title %>">
@@ -853,11 +855,16 @@
 
 @endsection
 @section('script')
+
     <script src="{{ asset('front-assets/js/rangeSlider.min.js') }}"></script>
     <script src="{{ asset('front-assets/js/my-sliders.js') }}"></script>
-    <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
-
     <script>
+        @if(!empty($vendor->banner))
+            $(document).ready(function() {
+                $("body").addClass("homeHeader");
+            });
+        @endif
+
          //Get the modal vendorStories
         var modal = document.getElementById("vendorStories");
 
@@ -886,8 +893,8 @@
 
             var scroll = jQuery(window).scrollTop();
             var categories_list_height = $('.vendor-products-wrapper').height() +400;
-            
-            if (scroll >= 400) {
+
+            if (scroll >= 600) {
                 jQuery(".categories-product-list").addClass("fixed-bar");
             } else {
                 jQuery(".categories-product-list").removeClass("fixed-bar");

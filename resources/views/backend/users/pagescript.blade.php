@@ -211,5 +211,54 @@
 
     }
 
+    $("#customer_search").autocomplete({
+        source: function(request, response) {
+            // Fetch data
+            $.ajax({
+                url: "{{ route('customer.customSearch') }}",
+                type: 'post',
+                dataType: "json",
+                data: {
+                    _token: jQuery('meta[name="csrf-token"]').attr('content'),
+                    search: request.term
+                },
+                success: function(data) {
+                    response(data);
+                }
+            });
+        },
+        appendTo: "#cus_search_wrapper",
+        select: function(event, ui) {
+            // Set selection
+            $('#customer_search').val(ui.item.label); // display the selected text
+            $('#cusid').val(ui.item.value); // save selected id to input
+            $(".oldhide").hide();
+            return false;
+        }
+    });
+
+    $(document).on("submit", "#submitpayreceive", function(e) {
+        e.preventDefault();
+        var formdata = $(this).serialize();
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('customer.pay.receive') }}",
+            data: formdata,
+            success: function(response) {
+                if (response.status == 'Success') {
+                    $("#pay-receive-modal .close").click();
+                    location.reload();
+                } else {
+                    $("#pay-receive-modal .show_all_error.invalid-feedback").show();
+                    $("#pay-receive-modal .show_all_error.invalid-feedback").text(response.message);
+                }
+            },
+            error: function(response){
+                let errors = response.responseJSON;
+                $("#pay-receive-modal .show_all_error.invalid-feedback").show();
+                $("#pay-receive-modal .show_all_error.invalid-feedback").text(errors.message);
+            }
+        });
+    });
 
 </script>

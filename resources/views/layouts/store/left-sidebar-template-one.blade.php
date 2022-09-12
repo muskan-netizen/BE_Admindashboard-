@@ -1,8 +1,13 @@
 @php
-$clientData = \App\Models\Client::select('id', 'logo')
+$clientData = \App\Models\Client::select('id', 'logo', 'dark_logo')
 ->where('id', '>', 0)
 ->first();
-$urlImg = $clientData ? $clientData->logo['original'] : ' ';
+if(Session::get('config_theme') == 'dark'){
+    $urlImg = $clientData ? $clientData->dark_logo['original'] : ' ';
+}else{
+    $urlImg = $clientData ? $clientData->logo['original'] : ' ';
+}
+
 $languageList = \App\Models\ClientLanguage::with('language')
 ->where('is_active', 1)
 ->orderBy('is_primary', 'desc')
@@ -30,7 +35,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-sm-3 col-md-2">
-                    <a class="navbar-brand mr-0" style="height:60px" href="{{ route('userHome') }}"><img height="60" alt="" src="{{ $urlImg }}"></a>
+                    <a class="navbar-brand mr-0" style="height:60px" href="{{ route('userHome') }}"><img id="theme-logo" height="60" alt="" src="{{ $urlImg }}"></a>
                 </div>
                 <div class="col-sm-9 col-md-10 top-header bg-transparent">
                     <ul class="header-dropdown d-flex align-items-center justify-content-md-end justify-content-center">
@@ -144,7 +149,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
             <div class="container p-0 align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
                     <div class="row mobile-header align-items-center justify-content-between my-sm-2">
-                        <div class="logo col-2">
+                        {{-- @include('frontend.home_page_1.main_menu') --}}
+                        <div class="logo">
                             <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" style="height:60px" href="{{route('userHome')}}"><img alt="" src="{{$urlImg}}"></a>
                         </div>
                         <div class="al_count_tabs my-1">
@@ -152,21 +158,21 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                             <ul class="nav nav-tabs navigation-tab nav-material tab-icons vendor_mods"
                                 id="top-tab" role="tablist">
                                 @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-                                        @php
-                                            $clientVendorTypes = $vendor_typ_key.'_check';
-                                            $VendorTypesName   = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-                                            $NomenclatureName  = getNomenclatureName($vendor_typ_value, true);
-                                        @endphp
-
-                                        @if($client_preference_detail->$clientVendorTypes == 1)
-                                        <li class="navigation-tab-item" role="presentation"> <a
-                                        class="nav-link {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
-                                        id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
-                                        aria-controls="profile" aria-selected="false">{{$NomenclatureName}}</a> </li>
-                                        @endif
-                                    @endforeach
-                                    <!-- @if($client_preference_detail->delivery_check==1) @php
-                                    $Delivery=getNomenclatureName('Delivery', true); 
+                                    @php
+                                    $clientVendorTypes = $vendor_typ_key.'_check';
+                                    $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                                    $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+                                    @endphp
+                        
+                                    @if($client_preference_detail->$clientVendorTypes == 1)
+                                    <li class="navigation-tab-item" role="presentation"> <a
+                                    class="nav-link {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
+                                    id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
+                                    aria-controls="profile" aria-selected="false">{{$NomenclatureName}}</a> </li>
+                                    @endif
+                                @endforeach
+                                    {{-- @if($client_preference_detail->delivery_check==1) @php
+                                    $Delivery=getNomenclatureName('Delivery', true);
                                     $Delivery=($Delivery==='Delivery') ?
                                     __('Delivery') : $Delivery; @endphp
                                     <li class="navigation-tab-item" role="presentation"> <a
@@ -174,7 +180,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                             id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab"
                                             aria-controls="profile" aria-selected="false">{{$Delivery}}</a> </li>
                                     @endif @if($client_preference_detail->dinein_check==1) @php
-                                    $Dine_In=getNomenclatureName('Dine-In', true); 
+                                    $Dine_In=getNomenclatureName('Dine-In', true);
                                     $Dine_In=($Dine_In==='Dine-In') ?
                                     __('Dine-In') : $Dine_In; @endphp
                                     <li class="navigation-tab-item" role="presentation"> <a
@@ -188,12 +194,12 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                             class="nav-link {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}"
                                             id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab"
                                             aria-controls="takeaway_tab" aria-selected="false">{{$Takeaway}}</a> </li>
-                                    @endif -->
+                                    @endif --}}
                                 <div class="navigation-tab-overlay"></div>
                             </ul>
                             @endif
                         </div>
-
+                        
                         <div class=" ipad-view">
                             <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
                                @if(Session::get('preferences') && (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
@@ -225,7 +231,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                     <div class="row mx-0">
                                         <% _.each(results, function(result, k){%>
                                         <a class="col-12 text-center al_search_results list-items pt-2" href="<%=result.redirect_url %>">
-
+                        
                                             <img class="blur-up lazyload" data-src="<%=result.image_url%>" alt="">
                                             <div class="result-item-name">
                                                 <b><%=result.name %></b>
@@ -247,9 +253,10 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                         <li class="onhover-div pl-0 shake-effect">
                                             @if($client_preference_detail)
                                             @if($client_preference_detail->cart_enable==1)
-                                            <a class="btn btn-solid_al d-flex align-items-center "
+                                            <a class="btn btn-solid_al d-flex align-items-center px-0"
                                                 href="{{route('showCart')}}">
-                                                <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i>
+
+                                                <span class="mr-1"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                                                 <!-- <span>{{__('Cart')}}•</span> -->
                                                 <span id="cart_qty_span"></span>
                                             </a> @endif @endif
@@ -316,7 +323,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                 </ul>
                                                 @endif
                                             </div>
-
+                        
                                             <div class=" ipad-view order-lg-3">
                                                 <div
                                                     class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
@@ -377,13 +384,12 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                             <li class="onhover-div pl-0 shake-effect">
                                                                 @if($client_preference_detail)
                                                                 @if($client_preference_detail->cart_enable==1)
-                                                                <a class="btn btn-solid_al d-flex align-items-center "
+                                                                <a class="btn btn-solid_al d-flex align-items-center px-0"
                                                                     href="{{route('showCart')}}">
-                                                                    <i class="fa fa-shopping-cart mr-1 "
-                                                                        aria-hidden="true"></i>
+                                                                    <span class="mr-1"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+
                                                                     <!-- <span>{{__('Cart')}}</span> -->
-                                                                    <span id="cart_qty_span">
-                                                                    </span>
+                                                                    <span id="cart_qty_span"></span>
                                                                 </a>
                                                                 @endif
                                                                 @endif
@@ -472,11 +478,13 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                             </div>
                                         </li>
                                     </ul>
-
+                        
                                 </div>
                             </div>
                             <div class="col-lg-5 col-9 order-lg-2 order-1 position-initial"> </div>
                         </div>
+                        
+                    
                     </div>
                 </div>
             </div>
@@ -484,26 +492,26 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12">
-
+                                {{-- @include('frontend.home_page_1.sub_menu') --}}
                                 <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
                                     @foreach($navCategories as $cate)
                                     @if($cate['name'])
                                     <li class="al_main_category">
-
+                                
                                         @if ($client_preference_detail->view_get_estimation_in_category == 1 && $client_preference_detail->business_type == "laundry")
                                             <a href="/get-estimation#{{$cate['slug']}}">
-                                                @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
+                                                @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='homeTest'))
                                                 <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
                                                 @endif{{$cate['name']}}
                                             </a>
                                         @else
                                             <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
+                                                @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='homeTest'))
                                                 <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
                                                 @endif{{$cate['name']}}
                                             </a>
                                         @endif
-
+                                
                                         @if(!empty($cate['children']))
                                         <ul class="al_main_category_list">
                                             @foreach($cate['children'] as $childs)
@@ -641,7 +649,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
             <ul>
                 @foreach($languageList as $key => $listl)
                     <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)
                             ({{$listl->language->nativeName}})
                             @endif </a>
                     </li>

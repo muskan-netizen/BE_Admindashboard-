@@ -8,6 +8,12 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
         Route::post('sendToken', 'Api\v1\AuthController@sendToken');
         Route::post('verifyAccount', 'Api\v1\AuthController@verifyToken');
         Route::get('deleteUser', 'Api\v1\AuthController@deleteUser');
+
+
+
+        
+
+
     });
     Route::group(['middleware' => ['dbCheck']], function() {
         Route::post('login', 'Api\v1\AuthController@login');
@@ -30,9 +36,29 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('social/info', 'Api\v1\SocialController@getKeys');
         Route::post('social/login/{driver}', 'Api\v1\SocialController@login');
     });
-    Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() {            
+    Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() {       
+        
+         /**Chat resourses */
+        //Route::resource('chat', 'Client\ChatController');
+        Route::get('chat/all/{room_id?}', 'Api\v1\ChatController@index');
+        Route::get('chat/user/{room_id?}', 'Api\v1\ChatController@VendorUserChat');
+        Route::post('chat/startChat',      'Api\v1\ChatController@startChat');
+        Route::get('chat/vendor/{room_id?}', 'Api\v1\ChatController@UservendorChat');
+        Route::post('chat/joinChatRoom', 'Api\v1\ChatController@JoinRoom');
+        Route::post('chat/sendMessage', 'Api\v1\ChatController@sendMessage');
+
+        Route::post('chat/fetchOrderDetail', 'Api\v1\ChatController@fetchOrderDetail');
+        Route::post('chat/userVendorChatRoom', 'Api\v1\ChatController@userVendorChatRoom');
+        Route::post('chat/vendorUserChatRoom', 'Api\v1\ChatController@vendorUserChatRoom');
+        Route::post('chat/userAgentChatRoom', 'Api\v1\ChatController@userAgentChatRoom');
+        Route::post('chat/sendNotificationToUser', 'Api\v1\ChatController@sendNotificationToUser');
+        
+
+
+          
         Route::get('profile', 'Api\v1\ProfileController@profile');
         Route::get('getProfile', 'Api\v1\ProfileController@getProfile');
+        Route::post('get/agents', 'Api\v1\PickupDeliveryController@getAgents');
         Route::get('account', 'Api\v1\ProfileController@account');
         Route::get('orders', 'Api\v1\OrderController@getOrdersList');
         Route::post('orders/tip-after-order', 'Api\v1\OrderController@tipAfterOrder'); 
@@ -68,6 +94,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('mystore/vendors', 'Api\v1\StoreController@getMyStoreVendors');
         Route::get('mystore/vendor/dashboard/{id}', 'Api\v1\StoreController@getMyStoreVendorDashboard');
         Route::get('mystore/vendor/orders/{id}', 'Api\v1\StoreController@getMyStoreVendorOrders');
+        Route::get('mystore/vendor/bagOrders/{qrcode?}', 'Api\v1\StoreController@getMyStoreVendorBagOrders');
+        Route::get('mystore/vendor/clearBagOrders/{qrcode?}/{order_number?}', 'Api\v1\StoreController@clearBagOrders');
+	    Route::post('mystore/vendor/rescheduleOrder', 'Api\v1\StoreController@rescheduleOrder'); 
         Route::post('mystore/vendor/category', 'Api\v1\StoreController@VendorCategory');
         Route::post('mystore/product/add', 'Api\v1\StoreController@addProduct');
         Route::post('mystore/product/detail', 'Api\v1\StoreController@productDetail'); 
@@ -130,9 +159,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('promo-code/verify', 'Api\v1\PickupDeliveryController@postVerifyPromoCode');
             Route::post('promo-code/remove', 'Api\v1\PickupDeliveryController@postRemovePromoCode');
             Route::post('order-tracking-details', 'Api\v1\PickupDeliveryController@getOrderTrackingDetails');
-            Route::match(['get','post'],'add-rider','Api\v1\PickupDeliveryController@getAllRiders');
-           
-            
+            Route::match(['get','post'],'add-rider','Api\v1\PickupDeliveryController@getAllRiders');            
         });
 
         // user subscription 
@@ -174,5 +201,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::group(['prefix' => 'edit-order'], function () {
             Route::post('approve/reject', 'Api\v1\OrderController@submitEditedOrder');
         }); 
+
+       
+
     });
 });

@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="{{ asset('front-assets/css/main.css') }}" /> -->
 
     <link rel="stylesheet" href="{{asset('css/jquery.exzoom.css')}}">
-    <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.btn-disabled{opacity:.5;pointer-events:none}.fab{font:normal normal normal 14px/1 FontAwesome;font-size:inherit}
     #number{display:block}#exzoom{display:none}.exzoom .exzoom_btn a.exzoom_next_btn{right:-12px} .exzoom .exzoom_nav .exzoom_nav_inner{-webkit-transition:all .5s;-moz-transition:all .5s;transition:all .5s}
@@ -26,7 +25,6 @@
 @endsection
 
 @section('content')
-
 @if(!empty($category))
 @include('frontend.included_files.products_breadcrumb')
 @endif
@@ -38,7 +36,9 @@
       Some text inside the toast body
     </div>
   </div> -->
-
+@php
+$checkSlot = findSlot('',$product->vendor->id,'');
+@endphp
 <section class="section-b-space FiveTemplate alSingleProducts">
     <div class="collection-wrapper al">
         <div class="container">
@@ -223,6 +223,9 @@
                                     <div class="description_txt mt-3">
                                         <p>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description : ''}}</p>
                                     </div>
+                                    <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
+                                    <input type="hidden" name="start_time" id="start_time" value="">
+                                    <input type="hidden" name="end_time" id="end_time" value="">
                                     <div id="product_variant_wrapper">
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
                                         @if($product->inquiry_only == 0)
@@ -255,7 +258,7 @@
                                                             $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
                                                             ?>
                                                             <label class="radio d-inline-block txt-14 mr-2">{{$optn->title}}
-                                                                <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
+                                                                <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}} data-cartCheck="{{(($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($optn->quantity <= $product_quantity_in_cart && $product->has_inventory) || ($optn->quantity < $product->minimum_order_count)) ? 1 : 0}}">
                                                                 <span class="checkround"></span>
                                                             </label>
                                                             @endforeach
@@ -379,9 +382,6 @@
                                         </table>--}}
                                     </div>
                                     @endif
-                                    @php
-                                    $checkSlot = findSlot('',$product->vendor->id,'');
-                                    @endphp
                                     <div class="product-buttons">
                                         @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                         @if($is_inwishlist_btn && $is_available)
@@ -401,8 +401,8 @@
 
 
                                         @endphp
-                                        @if($is_available == 1 && $product->variant[0]->quantity >= $product->minimum_order_count)
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}"><i class="ti-shopping-cart"></i> {{__('Add To Cart')}}</a>
+                                        @if($is_available == 1 )
+                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory) || ($product->variant[0]->quantity < $product->minimum_order_count)) ? 'btn-disabled' : '' }}" ><i class="ti-shopping-cart"></i> {{__('Add To Cart')}}</a>
                                         @endif
 
                                             @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
@@ -732,11 +732,12 @@
 @section('js-script')
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
-<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
 @endsection
 @section('script')
 <script>
+    var maximumquantitylert = "{{__('Quantity is not available in stock')}}";
+    var minimumquantitylert = "{{__('Minimum Quantity count is')}}";
     $(document).on('click', '.submitInquiryForm', function(e) {
         e.preventDefault();
         var formData = new FormData(document.getElementById("inquiry-form"));
@@ -825,6 +826,12 @@
     var add_to_cart_url = "{{ route('addToCart') }}";
     $('.changeVariant').click(function() {
         updatePrice();
+        $('.addToCart').removeClass('btn-disabled');
+        var check = $(this).attr('data-cartCheck');
+        if(check == 1 ||check == '1')
+        {
+            $('.addToCart').addClass('btn-disabled');
+        }
     });
     function updatePrice()
     {

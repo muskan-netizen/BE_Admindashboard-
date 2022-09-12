@@ -11,7 +11,12 @@
 .iti.iti--allow-dropdown .phone,
 .flag-container .phone {padding: 17px 0 17px 100px !important;}
 .mdi-icons {color: #43bee1;font-size: 26px;vertical-align: middle;}
- 
+.login-form input[type="radio"]:checked+label {
+    border: 1px solid #6658dd;
+}
+.ui-menu.ui-autocomplete {
+    z-index: 9000 !important;
+}
 .al_new_export_table.royo_customber_btn div.dataTables_wrapper div.dataTables_filter {position: absolute;right: 0;top: -92px;}
 .al_new_export_table.royo_customber_btn .dt-buttons.btn-group.flex-wrap {position: absolute;top: -92px !important;}
 
@@ -19,6 +24,8 @@
 .royo_customber_btn .card {background: none !important;box-shadow: none !important;}
 .royo_customber_btn .card-body {background: none !important;box-shadow: none !important;}
 
+
+.table_customber_add.royo_customber_btn div.dataTables_wrapper div.dataTables_filter {position: inherit;top: 0px !important;}
 
 @media  screen and (max-width:1800px){
 .royo_customber_btn .position-absolute {
@@ -32,14 +39,14 @@
 .royo_customber_btn .position-absolute {
     left: 5%;
 }
-    
+
 }
 
 
 @media screen and (max-width:991px) {
 .royo_customber_btn .position-absolute {
     left: 0%;
-} 
+}
 }
 
 @media screen and (max-width:767px) {
@@ -54,7 +61,7 @@
 .royo_customber_btn .position-absolute .btn.btn-info{
     font-size:10px;
 }
-.al_new_export_table.royo_customber_btn .dt-buttons.btn-group.flex-wrap .btn-success.waves-effect.waves-light{  
+.al_new_export_table.royo_customber_btn .dt-buttons.btn-group.flex-wrap .btn-success.waves-effect.waves-light{
     height: 30px;
     font-size: 10px;
 }
@@ -84,7 +91,7 @@
 </style>
 @endsection
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid alCustomersPage">
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
@@ -99,7 +106,7 @@
         <div class="col-12">
             <div class="card-box">
                 <div class="row">
-                    <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
+                    <div class="col-6 col-md-4 mb-3 mb-md-0">
                         <div class="text-center">
                             <h3>
                                 <i class="fa fa-user text-primary mdi-24px"></i>
@@ -108,7 +115,7 @@
                             <p class="text-muted font-15 mb-0">{{ __("Active User Count") }}</p>
                         </div>
                     </div>
-                    <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
+                    <div class="col-6 col-md-4 mb-3 mb-md-0">
                         <div class="text-center">
                             <h3>
                                 <i class="fas fa-user-clock text-primary mdi-24px"></i>
@@ -117,7 +124,7 @@
                             <p class="text-muted font-15 mb-0">{{ __("Inactive User Count") }}</p>
                         </div>
                     </div>
-                    <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
+                    <div class="col-6 col-md-4 mb-3 mb-md-0">
                         <div class="text-center">
                             <h3>
                                 <i class="mdi mdi-login text-primary mdi-24px"></i>
@@ -150,15 +157,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="al_new_export_table royo_customber_btn">
+                <div class="al_new_export_table royo_customber_btn table_customber_add">
                     <div class="position-absolute mb-2">
                         <button class="btn btn-info waves-effect waves-light text-sm-right importUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                         </button>
                         <button class="btn btn-info waves-effect waves-light text-sm-right addUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                         </button>
+                        <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal" data-target="#pay-receive-modal" data-backdrop="static" data-keyboard="false">{{__("Edit Wallet")}}</button>
                     </div>
 
-    
+
                     <div class="row mt-1 sml_royo-responsive">
                         <div class="col-sm-12 col-lg-12 tab-product  pt-0">
                             <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
@@ -173,13 +181,13 @@
                                         <i class="icofont icofont-ui-home"></i>{{ __('InActive') }}<sup class="inactive_user_count">({{$inactive_users}})</sup>
                                     </a>
                                     <div class="material-border"></div>
-                                </li>                       
+                                </li>
                             </ul>
                             <div class="tab-content nav-material pt-0" id="top-tabContent">
                                 <div class="tab-pane fade past-order show active" id="active_user" role="tabpanel" aria-labelledby="active-user">
                                     <div class="row">
                                         <div class="col-12">
-                                    
+
                                             <div class="card">
                                                 <div class="card-body">
                                                     <div class="table-responsive">
@@ -266,7 +274,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            
+
                             </div>
                         </div>
                     </div>
@@ -317,6 +325,7 @@
             try {
                 $('#'+table).DataTable({
                     "dom": '<"toolbar">Bfrtip',
+                    "searching": true,
                     "destroy": true,
                     "scrollX": true,
                     "processing": true,
@@ -489,7 +498,7 @@
                             orderable: false,
                             searchable: false,
                             "mRender": function(data, type, full) {
-                               
+
                                 return "<a href='javascript:void(0)' class='customer_order_link'  data-id='" + full.id + "'>" + data + "</a>";
                             }
                         },
@@ -605,12 +614,10 @@
                 targets: [1, 3],
                 className: "text-nowrap",
             }],
-            columns: [{
-                    data: 'serial',
-                    name: 'serial',
-                    orderable: false,
-                    searchable: false
-                },
+            columns: [
+                {data: '', name: 'serial', orderable: false, searchable: false, render: function (data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }},
                 {
                     data: 'date',
                     name: 'date',
@@ -635,6 +642,8 @@
                         return '<span class="text-right ' + ((full.type == 'deposit') ? 'text-success' : ((full.type == 'withdraw') ? 'text-danger' : '')) + '">' + data + '</span>';
                     }
                 },
+                {data: 'remarks', name: 'remarks', orderable: false, searchable: false},
+                {data: 'created_by', name: 'created_by', orderable: false, searchable: false}
             ]
         });
     });

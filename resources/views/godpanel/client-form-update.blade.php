@@ -2,6 +2,9 @@
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/jquery-toast-plugin/jquery-toast-plugin.min.css')}}" rel="stylesheet" type="text/css" />
+
 @endsection
 @section('content')
 <style type="text/css">
@@ -207,11 +210,86 @@
             
         </div>
     </div>
+
+
+      <!-- Migrate Client  -->
+      <div class="row">
+        <div class="col-12">    
+                   <div class="card">
+                        <div class="card-body"><h3>{{__('Socket Url')}}</h3>
+                        <form  method="post" action="{{route('client.socketUpdate',$client->id)}}"
+                            enctype="multipart/form-data" autocomplete="off">
+                            @csrf
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="languages">Socket Url </label>
+                                    <select class="form-control" id="socket_url" name="socket_url">
+                                        <option class="" value="" data-id="">Disable chat</option>
+                                        @if(isset($ChatSocketUrl))
+                                            @foreach ($ChatSocketUrl as $socketUrl)
+                                                <option @if($client->socket_url == $socketUrl->domain_url) selected="selected" @endif class="" value="{{$socketUrl->domain_url}}" data-id="{{$socketUrl->id}}">{{ $socketUrl->domain_url }}</option>
+                                            @endforeach
+                                        @endif
+                                        <!-- <option value="DEV">DEV</option>
+                                        <option value="STAGING">STAG</option>
+                                        <option value="PROD">PROD</option> -->
+                                    </select>
+                                </div>    
+                            </div>
+                            <div style="display: none" class=" row">
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        {!! Form::label('Admin chat', __('Admin chat '),['class' => 'control-label']) !!}
+                                        <div class="mt-md-1">
+                                            <input type="checkbox" {{($client->admin_chat == 1) ? 'checked' : ''}} data-action="admin_chat"  data-plugin="switchery" name="admin_chat" class="form-control chk_box" data-color="#43bee1" >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        {!! Form::label('Driver chat', __('Driver chat '),['class' => 'control-label']) !!}
+                                        <div class="mt-md-1">
+                                            <input type="checkbox" {{($client->driver_chat == 1) ? 'checked' : ''}} data-action="driver_chat" data-plugin="switchery" name="driver_chat" class="form-control chk_box" data-color="#43bee1" >
+                                        </div>
+                                    </div>
+                                   
+                                </div>
+                            </div>
+                            <div style="display: none" class=" row">
+
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        {!! Form::label('Customer chat', __('Customer chat '),['class' => 'control-label']) !!}
+                                        <div class="mt-md-1">
+                                            <input type="checkbox" {{($client->customer_chat == 1) ? 'checked' : ''}} data-action="customer_chat" data-plugin="switchery" name="customer_chat" class="form-control chk_box" data-color="#43bee1" >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="row">
+                                    <button type="submit" class="btn btn-info waves-effect waves-light">{{__('Submit')}}</button>
+                                </div>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+            
+        </div>
+    </div>
+
+
     <!--end default --> 
 
 </div>
+<script src="{{asset('assets/libs/mohithg-switchery/mohithg-switchery.min.js')}}"></script>
+
+<script src="{{asset('assets/libs/jquery-toast-plugin/jquery-toast-plugin.min.js')}}"></script>
+<script src="{{asset('assets/js/pages/toastr.init.js')}}"></script>
 <script type="text/javascript">
 $(document).ready(function(){
+    var update_status_chat = "{{route('client.socketUpdateAction', ':id')}}";
+
     var loc = "{{route('client.index')}}";
     $('#side-menu').find('a').each(function() {
         if($(this).attr('href') == loc)
@@ -220,11 +298,47 @@ $(document).ready(function(){
             $(this).parent().toggleClass('menuitem-active');
         }
     });
-});
+    var elems = Array.prototype.slice.call(document.querySelectorAll('.chk_box'));
+        elems.forEach(function(html) {
+        var switchery =new Switchery(html);
+    });
+
+    $(document).on("change",'.chk_box' ,function() {
+            var action = $(this).attr('data-action');
+            var client_id = '{!! $client->id !!}';
+            var status = 2;
+            if($(this).is(":checked")){
+                status = 1;
+            }
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('input[name="_token"]').val()
+                }
+            });
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: update_status_chat.replace(":id", client_id),
+                data: {status: status,action:action},
+                success: function(jsondata) {
+                    if(jsondata.success)
+                    {var color = 'green';var heading ="Success!";}else{var color = 'red';var heading ="Error!";}
+                    $.toast({ 
+                    heading:heading,
+                    text : jsondata.message, 
+                    showHideTransition : 'slide', 
+                    bgColor : color,              
+                    textColor : '#eee',            
+                    allowToastClose : true,      
+                    hideAfter : 5000,            
+                    stack : 5,                   
+                    textAlign : 'left',         
+                    position : 'top-right'      
+                    })
+                }
+            });
+        });
+    
+    });
 </script>
-@endsection
-@section('script')
-<script src="{{asset('assets/libs/dropzone/dropzone.min.js')}}"></script>
-<script src="{{asset('assets/libs/dropify/dropify.min.js')}}"></script>
-<script src="{{asset('assets/js/pages/form-fileuploads.init.js')}}"></script>
 @endsection

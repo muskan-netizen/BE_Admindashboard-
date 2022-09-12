@@ -30,13 +30,13 @@
 
 
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-9">
             <form id="favicon-form" method="post" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-md-8 h-100">
                         <div class="card card-box ">
                             <div class="row">
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-4 col-6 mb-3">
                                     <h4 class="header-title">{{ __("Favicon") }}</h4>
                                     <div class="mb-0">
                                         <label>{{ __("Upload Favicon") }}</label>
@@ -47,8 +47,21 @@
                                         <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 32x32</label>
                                     </div>
                                 </div>
+                                @if($themeId==4 || $themeId==6)
+                                <div class="col-md-4 col-6 mb-3">
+                                    <h4 class="header-title">{{ __("Sign In/Up Image") }}</h4>
+                                    <div class="mb-0">
+                                        <label>{{ __("Sign In/Up Image") }}</label>
+                                        <input type="file" accept="image/*" data-default-file="{{$client_preferences->signup_image ? $client_preferences->signup_image['proxy_url'].'600/400'.$client_preferences->signup_image['image_path'] : ''}}" data-plugins="dropify" name="sign_up_image" class="dropify ss_form_submit" id="image" />
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                        <label class="logo-size d-block text-center mt-1">{{ __("Image Size") }} 1920x768</label>
+                                    </div>
+                                </div>
+                                @endif
 
-                                <div class="col-md-4  mb-3">
+                                <div class="col-md-4 col-6  mb-3">
                                     <h4 class="header-title">{{ __("Color") }}</h4>
                                     <div class="form-group">
                                         <label for="primary_color">{{ __("Primary Color") }}</label>
@@ -60,7 +73,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-4 mb-0">
+                                <div class="col-md-4 col-6 mb-0">
                                     <h4 class="header-title">{{ __("Show Dark Mode") }}</h4>
                                     <ul class="pl-0 mb-0">
                                         <li class="d-flex flex-column justify-content-start mt-2">
@@ -86,78 +99,67 @@
                             </div>
 
 
-                        <div  style="display:{{(($themeId==3)?'block':'none')}}" class="card changeIcon">
-                            <div class="card-body al_custom_control">
-                                {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
-                                <div class="row">
-                                    <form id="themeIcon-form" method="post" enctype="multipart/form-data">
-                                    @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-                                        @php
-                                            $NomenclatureName  = getNomenclatureName($vendor_typ_value, true);
-                                            $iconFiledName     = config('constants.VendorTypesIcon.'.$vendor_typ_key);
-                                        @endphp
-                                        <div class="col-md-4 mb-3">
+                            <div  style="display:{{(($themeId==3)?'block':'none')}}" class="card changeIcon">
+                                <div class="card-body al_custom_control">
+                                    {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
+                                    <div class="row">
+                                        <form id="themeIcon-form" method="post" enctype="multipart/form-data">
+
+                                            @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                                                @php
+                                                    $VendorTypesName   = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+
+                                                    $clientVendorTypes = $vendor_typ_key.'_check';
+                                                @endphp
+                                                @if($client_preference_detail->$clientVendorTypes == 1)
+                                                    <div class="col-md-4 mb-3">
+                                                        <div class="mb-0">
+                                                            <label>{{getDynamicTypeName($vendor_typ_value)}}{{ __(" Icon") }}</label>
+                                                            <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$VendorTypesName ? $client_preferences->$VendorTypesName['proxy_url'].'600/400'.$client_preferences->$VendorTypesName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{ $VendorTypesName }}" class="dropify ss_form_submit" id="image" />
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong></strong>
+                                                            </span>
+                                                            <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                                        </div>
+                                                    </div>
+                                                    @endif
+                                            @endforeach
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div  style="display:{{(($themeId==4 || $themeId==6)?'block':'none')}}" class="card changeIconOnTheme4">
+                                <div class="card-body alSignUpImageControal">
+                                    {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
                                             <div class="mb-0">
-                                                <label> {{$NomenclatureName. __(" Icon") }} </label>
-                                                <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$iconFiledName ? $client_preferences->$iconFiledName['proxy_url'].'600/400'.$client_preferences->$iconFiledName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{$iconFiledName }}" class="dropify ss_form_submit" id="image" />
+                                                <label>Signup Image</label>
+                                                <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$VendorTypesName ? $client_preferences->$VendorTypesName['proxy_url'].'600/400'.$client_preferences->$VendorTypesName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{ $VendorTypesName }}" class="dropify ss_form_submit" id="image" />
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong></strong>
                                                 </span>
-                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 1920x768</label>
                                             </div>
                                         </div>
-                                    @endforeach
-                                        <!-- <div class="col-md-4 mb-3">
-                                            <div class="mb-0">
-                                                <label>{{ __("Delivery Icon") }}</label>
-                                                <input type="file" accept="image/*"  data-default-file="{{$client_preferences->deliveryicon ? $client_preferences->deliveryicon['proxy_url'].'600/400'.$client_preferences->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="deliveryIcon" class="dropify ss_form_submit" id="image" />
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong></strong>
-                                                </span>
-                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-4 mb-3">
-                                            <div class="mb-0">
-                                                <label>{{ __("Dine-In Icon") }}</label>
-                                                <input type="file" accept="image/*" data-default-file="{{$client_preferences->dineinicon ? $client_preferences->dineinicon['proxy_url'].'600/400'.$client_preferences->dineinicon['image_path'] : asset('images/al_custom1.png')}}" data-plugins="dropify" name="dineinIcon" class="dropify ss_form_submit" id="image" />
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong></strong>
-                                                </span>
-                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-4 mb-3">
-                                            <div class="mb-0">
-                                                <label>{{ __("Takeway Icon") }}</label>
-                                                <input type="file" accept="image/*" data-default-file="{{$client_preferences->takewayicon ? $client_preferences->takewayicon['proxy_url'].'600/400'.$client_preferences->takewayicon['image_path'] : asset('images/al_custom2.png')}}" data-plugins="dropify" name="takewayIcon" class="dropify ss_form_submit" id="image" />
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong></strong>
-                                                </span>
-                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
-                                            </div>
-                                        </div> -->
-
-                                    </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
                         <div class="card">
                             <div class="card-body al_custom_control">
                                 <h4 class="header-title">{{ __("Home Page Style") }}</h4>
-                                <div class="row">
+                                <div class="row mt-3">
                                     @foreach($homepage_style_options as $homepage_style)
-                                    <div class="col-sm-3 mb-3">
+                                    <div class="col-xl-4 col-md-4 mb-3 alThemeDemoSec">
                                         <div class="card mb-0">
                                             <div class="card-body p-0">
                                                 <div class="col-sm-12 custom-control custom-radio radio_new p-0">
                                                     <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
                                                     <label class="custom-control-label" for="{{$homepage_style->id}}">
-                                                        <img class="card-img-top img-fluid" src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap">
+                                                        <span class="card-img-top img-fluid" style="background-image: url( {{('../images/'.$homepage_style->image)}})"></span>
+                                                        <!-- <img  src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap"> -->
 
                                                     </label>
                                                 </div>
@@ -170,7 +172,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                     </div>
 
                     <div class="col-md-4 h-100">
@@ -211,12 +213,12 @@
                                     </div>
                                 </li>
                                 @endif
-                                <li class="d-flex align-items-center justify-content-between mt-2">
+                                {{-- <li class="d-flex align-items-center justify-content-between mt-2">
                                     <h4 class="header-title mb-2">{{ __("Show Payment Icons") }}</h4>
                                     <div class="mb-0">
                                         <input type="checkbox" id="show_payment_icons" data-plugin="switchery" name="show_payment_icons" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->show_payment_icons == 1 ? 'checked' : ''}}>
                                     </div>
-                                </li>
+                                </li> --}}
                                 @if($client_preference_detail->business_type != 'taxi')
                                 <li class="d-flex align-items-center justify-content-between mt-2">
                                     <h4 class="header-title mb-2">{{ __('Hide Nav Bar') }}</h4>
@@ -240,20 +242,15 @@
                             </ul>
                         </div>
                     </div>
-                    
+
                 </div>
             </form>
-          
-       
-
-              
-           
         </div>
-        <div class="col-md-4 h-100">
+        <div class="col-md-3 h-100">
             <form method="POST" action="{{route('web.styling.update_contact_up')}}">
                 @csrf
                 <div class="row h-100">
-                    <div class="col-9">
+                    <div class="col-12">
                         <div class="card-box">
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <h4 class="header-title mb-0">{{ __("Contact Us") }}</h4>
@@ -308,7 +305,7 @@
             </form>
             @if($client_preference_detail->business_type != 'taxi')
             <div class="row h-100">
-                <div class="col-9">
+                <div class="col-12">
                     <div class="card card-box">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <h4 class="header-title mb-0">{{ __("Age Restriction Popup") }}</h4>
@@ -326,11 +323,11 @@
     </div>
     <div class="row">
              <!--Payment Method Icons start -->
-             <div class="col-md-6 mb-3">
+        <div class="col-md-6 mb-3">
             <div class="card-box pb-2 h-100">
                 <div class="d-flex align-items-center justify-content-between">
                    <h4 class="header-title m-0">{{ __("Payment Method Icons") }}</h4>
-                   
+
                       <!-- <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }} -->
                       <form id="show_payment_icons_form" action="{{route('styling.updatePaymentIcons')}}" method="post" enctype="multipart/form-data">
                         @csrf
@@ -458,6 +455,12 @@
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
                                 @endif
+                                @if($home_page_label->slug == 'cities')
+                                <a class="action-icon edit_cities_page" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
+                                    <i class="mdi mdi-pencil"></i>
+                                </a>
+
+                                @endif
                                 @if($home_page_label->slug == 'dynamic_page')
                                 <input type="checkbox" name="for_no_product_found_html[{{$key}}]" {{$home_page_label->for_no_product_found_html == 1 ? 'checked' : ''}} >{{__('For No Records')}}
                                 @else
@@ -572,15 +575,24 @@
 <!-- end cab booking template -->
 
 </div>
-
+@include('backend.web_styling.city-section-model')
 @endsection
 
 @section('script')
+
 <script src="{{asset('assets/js/jscolor.js')}}"></script>
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
 <!-- allow drop html -->
 <script>
+    var Default_latitude = `{{ $client_preference_detail->Default_latitude }}`;
+    var Default_longitude = `{{ $client_preference_detail->Default_longitude }}`;
+    if(!Default_latitude ){
+        Default_latitude = "30.7333";
+    }
+    if(!Default_longitude ){
+        Default_longitude = "76.7794";
+    }
     function allowDrop(ev) {
         console.log('allowDrop');
        ev.preventDefault();
@@ -646,6 +658,7 @@ $(document).on('click','.edit_dynamic_page',function(){
 });
 
 
+
 $(document).on('click', '.deletePickupSection', function() {
         var did = $(this).attr('dataid');
         if (confirm("Are you sure? You want to delete this section.")) {
@@ -692,7 +705,7 @@ $(document).on('click', '.deletePickupSection', function() {
     //     submitData();
     // });
     $("#show_payment_icons_id").change(function() {
-       
+
        $('#show_payment_icons_form').submit();
     });
     // $("#hide_nav_bar").change(function() {
@@ -743,7 +756,7 @@ $(document).on('click', '.deletePickupSection', function() {
             }
         });
     });
-   
+
 
 
     function submitDataNewPickup() {
@@ -932,9 +945,17 @@ $(document).on('click', '.deletePickupSection', function() {
             success: function(response) {
                 if (response.status == 'success') {
                    if(response.theme == 3){
+                        $('.changeIconOnTheme4').hide();
                        $('.changeIcon').show();
+                   } else if(response.theme == 4){
+                       $('.changeIcon').hide();
+                       $('.changeIconOnTheme4').show();
+                   } else if(response.theme == 6){
+                       $('.changeIcon').hide();
+                       $('.changeIconOnTheme4').show();
                    }else{
-                    $('.changeIcon').hide();
+                        $('.changeIcon').hide();
+                        $('.changeIconOnTheme4').hide();
                    }
                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                 }

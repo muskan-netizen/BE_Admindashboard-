@@ -23,6 +23,56 @@ class PromoCodeController extends Controller{
     use ApiResponser;
     protected $user;
 
+    
+    public function postProductPromoCodeCheck(Request $request){
+        try {
+            $user = Auth::user();
+            $langId = Session::has('customerLanguage') ? Session::get('customerLanguage') : 1;
+            $promo_codes = new \Illuminate\Database\Eloquent\Collection;
+            $product_id = $request->product_id;
+            $firstOrderCheck = 0;
+            $is_from_cart = $request->is_cart ? $request->is_cart :0;
+            $now = Carbon::now()->toDateTimeString();
+            $now = convertDateTimeInClientTimeZone($now);
+
+             
+            $promo_code_details = PromoCodeDetail::where('refrence_id', $product_id)->pluck('promocode_id');
+            $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details,$firstOrderCheck) {
+                $query->where(function ($query2) use ($promo_code_details) {
+                    $query2->where('restriction_type', 1);
+                    if (!empty($promo_code_details->toArray())) {
+                        $query2->whereNotIn('id', $promo_code_details->toArray());
+                    }
+                });
+
+                $query->orWhere(function ($query1) use ($promo_code_details) {
+                    $query1->where('restriction_type', 0);
+                    if (!empty($promo_code_details->toArray())) {
+                        $query1->whereIn('id', $promo_code_details->toArray());
+                    } else {
+                        $query1->where('id', 0);
+                    }
+                });
+            });
+            // if($firstOrderCheck){
+            //     $result1->where('first_order_only', 0);
+            // }
+            // if($is_from_cart != 1){
+            //     $result1->where(['promo_visibility' => 'public']);
+            // }
+            $result1 = $result1->where('is_deleted', 0)->first();
+            if(isset($result1) && $result1->id){
+                return $this->successResponse($result1, '', 200);
+            }
+            return $this->errorResponse('', 400);
+
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+
     public function postPromoCodeList(Request $request){
         try {
             $user = Auth::user();
@@ -54,6 +104,8 @@ class PromoCodeController extends Controller{
             //pr($firstOrderCheck);
             // $order_vendor_coupon_list = OrderVendor::whereNotNull('coupon_id')->where('user_id', $user->id)->get([DB::raw('coupon_id'),  DB::raw('sum(coupon_id) as total')]);
             $now = Carbon::now()->toDateTimeString();
+            $now = convertDateTimeInClientTimeZone($now);
+
             $product_ids = Product::where('vendor_id', $request->vendor_id)->pluck("id");
             $cart_products = CartProduct::with(['product.variant' => function($q){
                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
@@ -87,7 +139,7 @@ class PromoCodeController extends Controller{
                         if($addon_option->exists()){
                             $addon_price = $addon_option->first()->price * $cart_product->quantity;
                         }                        
-                        $product_addon_price += $addon_price;
+                        $product_addon_price += $addon_price??0;
                     }
                 }
                 $total_minimum_spend += $product_addon_price;
@@ -127,6 +179,7 @@ class PromoCodeController extends Controller{
                 }
 
                 $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
+               
                 $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details) {
                     $query->where(function ($query2) use ($vendor_promo_code_details) {
                         $query2->where('restriction_type', 1);
@@ -152,8 +205,11 @@ class PromoCodeController extends Controller{
                     $result2->where(['promo_visibility' => 'public']);
                 }
                 $result2 = $result2->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->get();
+
                 $promo_codes = $promo_codes->merge($result2);
             }
+            
+
             foreach ($promo_codes as $key => $promo_code) {
                 $minimum_spend = 0;
                 if (isset( $promo_code->minimum_spend)) {
@@ -168,6 +224,7 @@ class PromoCodeController extends Controller{
                     $promo_codes->forget($key);
                 }
             }
+            //dd($promo_codes);
             return $this->successResponse($promo_codes, '', 200);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

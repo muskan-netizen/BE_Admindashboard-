@@ -6,6 +6,23 @@
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.1/spectrum.min.css">
 <style>
 /* td { white-space:pre-line; word-break:break-all} */
+/* table css add here */
+.product_tab_inner tr ,td {border: 1px solid#eee;padding: 10px 10px;}.product_tab_inner tr th {padding: 10px 10px;border: 1px solid#eee;font-weight: 600;}.outer_div {border-radius: 10px;border: 1px solid#bab8b8;background: #f4efefc2;}.outer_div h6 {font-size: 14px;font-weight: 600 !important;
+}
+
+
+.product_appointment_spa h4.header-title {
+    display: inline-block;
+}
+.product_appointment_spa p {
+    display: inline-block;
+    float: right;
+}
+
+
+
+
+
 #cancel-request-card{
     background: #ddd;
 }
@@ -111,15 +128,17 @@ $timezone = Auth::user()->timezone;
                                     <p>#{{$order->order_number}}</p>
                                 </div>
                             </div>
-                             @if(isset($order->vendors) && empty($order->vendors->first()->dispatch_traking_url) && ($order->vendors->first()->delivery_fee > 0) && ($order->vendors->first()->order_status_option_id >= 2) && $order->vendors->first()->shipping_delivery_type=='D')
-                             <div class='inner-div d-inline-block' style="float: right;">
-                                <form method='POST' action='"+full.destroy_url+"'>
+                            @if(!in_array($order->luxury_option_id, [6,8]) )
+                                @if(isset($order->vendors) && empty($order->vendors->first()->dispatch_traking_url) && ($order->vendors->first()->delivery_fee > 0) && ($order->vendors->first()->order_status_option_id >= 2) && $order->vendors->first()->shipping_delivery_type=='D')
+                                <div class='inner-div d-inline-block' style="float: right;">
+                                    <form method='POST' action='"+full.destroy_url+"'>
 
-                                        <button type='button' class='btn btn-danger' id="create_dispatch_request"  data-order_vendor_id="{{$order->vendors->first()->id}}">{{__('Create Dispatch Request')}}</i>
-                                        </button>
+                                            <button type='button' class='btn btn-danger' id="create_dispatch_request"  data-order_vendor_id="{{$order->vendors->first()->id}}">{{__('Create Dispatch Request')}}</i>
+                                            </button>
 
-                                </form>
-                             </div>
+                                    </form>
+                                </div>
+                                @endif
                             @endif
 
                             @if(isset($order->vendors) && isset($order->vendors->first()->dispatch_traking_url) && $order->vendors->first()->dispatch_traking_url !=null && $order->vendors->first()->dispatch_traking_url !=0 )
@@ -276,7 +295,7 @@ $timezone = Auth::user()->timezone;
             </div>
             <div class="col-lg-8 mb-3">
                 <div class="card mb-0 h-100">
-                    <div class="card-body">
+                    <div class="card-body product_appointment_spa">
                         <h4 class="header-title mb-3">
                             <div class="form-ul mb-1">
 
@@ -293,6 +312,9 @@ $timezone = Auth::user()->timezone;
                             @foreach($order->vendors as $vendor)
                                 <p>{{ $vendor->dineInTableName }} | Category : {{ $vendor->dineInTableCategory }} | Capacity : {{ $vendor->dineInTableCapacity }}</p>
                             @endforeach
+                        @endif
+                        @if($order->product_schedule_type == 'schedule')
+                            <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('*Instant/Scheduled Product Wise') }}</span> </p>
                         @endif
 
                       
@@ -314,16 +336,17 @@ $timezone = Auth::user()->timezone;
                                     $taxable_amount = 0;
                                     $adminRevenue = 0;
                                     $storeRevenue = 0;
-                                    $revenue = ($vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
+                                    $revenue = ($vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount + $vendor->total_markup_price);
                                     @endphp
                                     @foreach($vendor->products as $product)
-                                    @if($product->order_id == $order->id)
-                                    @php
-                                    $taxable_amount = $vendor->taxable_amount;
-                                    $vendor_service_fee = $vendor->service_fee_percentage_amount;
-                                    $container_charges = $vendor->total_container_charges;
-                                    $sub_total += $product->total_amount;
-                                    @endphp
+                                        @if($product->order_id == $order->id)
+                                        @php
+                                        $taxable_amount = $vendor->taxable_amount;
+                                        $vendor_service_fee = $vendor->service_fee_percentage_amount;
+                                        $container_charges = $vendor->total_container_charges;
+                                        $sub_total += $product->total_amount;
+                                        @endphp
+
                                     <tr>
                                         <th scope="row" class="product-modal2">
 
@@ -337,13 +360,14 @@ $timezone = Auth::user()->timezone;
                                             @if (isset($product->user_product_order_form))
                                             <a href="javascript:void(0)" class="Order_product_form float-right "  data-product_form_id="{{$product->id}}">
                                                 <span class="badge badge-info mr-2">
-                                                    {{__('Product form ')}}
+                                                    {{$nomenclatureProductOrderForm}}
                                                 </span>
                                             </a>
                                             @endif
 
                                             <p class="p-0 m-0">
-                                                @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
+                                                @if(isset($product->scheduled_date_time)) {{ date('Y-m-d',strtotime(dateTimeInUserTimeZone($product->scheduled_date_time, $timezone))) }}  @endif
+                                                @if($product->schedule_slot!='') {{ __('slot') }} {{ $product->schedule_slot }}  @endif
                                             </p>
 
                                             @foreach($product->prescription as $pres)
@@ -369,7 +393,7 @@ $timezone = Auth::user()->timezone;
                                         </td>
                                         <td>{{ $product->quantity }}</td>
                                         <td>
-                                            {{$clientCurrency->currency->symbol}}{{decimal_format($product->price)}}
+                                            {{$clientCurrency->currency->symbol}}{{decimal_format($product->actual_price)}}
                                             @if($product->addon->isNotEmpty())
                                                 <hr class="my-2">
                                                 @foreach($product->addon as $addon)
@@ -380,6 +404,30 @@ $timezone = Auth::user()->timezone;
 
                                         <td>{{$clientCurrency->currency->symbol}}{{decimal_format($product->total_amount)}}</td>
                                     </tr>
+                                    @if(count($product->routes) >0)
+                                    <tr class="route">
+                                        <th scope="row" colspan="4" class="text-end">
+                                            <div class="outer_div p-2">
+                                                <h6>{{ __('Dispatcher Routes') }}</h6>
+                                                <table class="wp-table w-100">
+                                                    <tr>
+                                                        <th width="20%">#</th>
+                                                        <th width="40%">{{ __('Tracking URL') }}</th>
+                                                        <th width="40%">{{ __('Status') }}</th>
+                                                    </tr>
+                                                    @foreach ( $product->routes as $key => $route)
+                                                    <tr>
+                                                        <td>{{ $key+1 }}</td>
+                                                        <td><a href="{{ $route->dispatch_traking_url }}" target="_blank">{{ __('Track') }}</a></td>
+                                                        <td>{{ $route->DispatchStatus->first() ? ( $route->DispatchStatus[0]->status_data['driver_status'] ?? '' ) : 'na'  }}</td>
+                                                    </tr>
+                                                    @endforeach
+                                                </table>
+                                            </div>
+                                        </th> 
+                                        <td></td>
+                                    </tr>
+                                    @endif
                                     @endif
                                     @endforeach
                                     <tr>
@@ -438,21 +486,24 @@ $timezone = Auth::user()->timezone;
                                             <td>{{$clientCurrency->currency->symbol}}@money($container_charges)</td>
                                         </tr>
                                     @endif
+                                    @php
+                            
+                                        $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
+
+                                        $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+                                
+                                    @endphp
 
                                     {{-- @if(Auth::user()->is_superadmin) --}}
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{$client_head->name}} {{ __("Revenue") }} :</th>
-                                        @php
-                                            $adminRevenue = ($revenue+$taxable_amount+$container_charges+$vendor_service_fee+$vendor->delivery_fee)-$adminDiscount;
-                                        @endphp
+                                       
                                         <td>{{$clientCurrency->currency->symbol}}{{decimal_format($adminRevenue)}}</td>
                                     </tr>
+                                   
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
-                                        @php
-                                            $storeRevenue = $sub_total - $revenue - $vendorDiscount;
-                                        @endphp
-                                        {{-- <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->sub_total * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)}}</td> --}}
+                                        {{-- <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->sub_total * $clientCurrency->doller_compare - $revenue - $vendorDiscount)}}</td> --}}
                                         <td>{{$clientCurrency->currency->symbol}}{{decimal_format($storeRevenue)}}</td>
                                     </tr>
                                     {{-- @endif --}}
@@ -468,11 +519,17 @@ $timezone = Auth::user()->timezone;
                                         <td style="width:200px;">{{$vendor->reject_reason}}</td>
                                     </tr>
                                     @endif
+                                    @if($vendor->additional_price>0)
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Additional Price") }} :</th>
+                                        <td style="width:200px;">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->additional_price)}}</td>
+                                    </tr>
+                                    @endif
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                                         <td>
                                             {{-- <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}</div> --}}
-                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($adminRevenue+$storeRevenue)}}</div> 
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($adminRevenue+$storeRevenue + @$vendor->additional_price)}}</div> 
                                         </td>
                                     </tr>
                                 </tbody>
@@ -608,6 +665,7 @@ $timezone = Auth::user()->timezone;
 
                     <div class="card-body">
                         <h4 class="header-title mb-3 ">{{ __('Comment/Schedule Information') }}</h4>
+                       
                         @if($order->comment_for_pickup_driver)
                           <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Comment for Pickup Driver') }} :</span> {{ $order->comment_for_pickup_driver ?? ''}}</p>
                         @endif
@@ -619,7 +677,7 @@ $timezone = Auth::user()->timezone;
                         @if($order->comment_for_vendor)
                           <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Comment for Vendor') }} :</span> {{ $order->comment_for_vendor ?? ''}}</p>
                         @endif
-
+                        
                         @if($order->schedule_pickup)
                           <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Schedule Pickup') }} :</span> {{dateTimeInUserTimeZone($order->schedule_pickup, $timezone) .' '.(($order->scheduled_slot)?', Slot : '.$order->scheduled_slot:'')}} </p>
                         @endif
@@ -782,6 +840,8 @@ $timezone = Auth::user()->timezone;
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
     $("#order_statuses li").click(function() {
+        var reload_page = `{{in_array($order->luxury_option_id,[6,8]) ? 1 : 0}}`;
+        
         Swal.fire({
             title: "{{__('Are you sure?')}}",
            // text:"{{__('You want to delete the banner.')}}",
@@ -808,6 +868,9 @@ $timezone = Auth::user()->timezone;
                         console.log(response);
                         that.addClass("completed");
                         if (status_option_id == 2) {
+                            if(reload_page ==1 || reload_page == '1'){
+                                setTimeout(function(){location.reload();}, 2500);
+                            }
                             that.next('li').remove();
                         }
                         if (status_option_id == 3) {

@@ -100,7 +100,9 @@ class CustomerAuthController extends FrontController
         if($set_template->template_id == 4)
         {
             $login_page = "template_four.account.loginnew";
-        }else{
+        }elseif($set_template->template_id == 6){
+            $login_page = "template_six.account.loginnew";
+        } else{
             $login_page = "account.loginnew";
         }
         return view('frontend.'.$login_page)->with(['navCategories' => $navCategories]);
@@ -111,7 +113,7 @@ class CustomerAuthController extends FrontController
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $navCategories = $this->categoryNav($langId);
-        
+
         $urlPrevious = url()->previous();
         $routePrevious = app('router')->getRoutes($urlPrevious)->match(app('request')->create($urlPrevious))->getName();
         if($routePrevious == 'showCart'){
@@ -135,6 +137,8 @@ class CustomerAuthController extends FrontController
         if($set_template->template_id == 4)
         {
             $register_page = "template_four.account.registernew";
+        }elseif($set_template->template_id == 6){
+            $register_page = "template_six.account.registernew";
         }else{
             $register_page = "account.registernew";
         }
@@ -327,19 +331,53 @@ class CustomerAuthController extends FrontController
                     }
                 }
                 Auth::login($user);
+                Session::put('default_country_code', $user->dial_code);
                 $this->checkCookies($user->id);
+                $user_cart = Cart::where('user_id', $user->id)->first();
+                if ($user_cart) {
+                    $unique_identifier_cart = Cart::where('unique_identifier', session()->get('_token'))->first();
+                    if ($unique_identifier_cart) {
+                        $unique_identifier_cart_products = CartProduct::where('cart_id', $unique_identifier_cart->id)->get();
+                        foreach ($unique_identifier_cart_products as $unique_identifier_cart_product) {
+                            $user_cart_product_detail = CartProduct::where('cart_id', $user_cart->id)->where('product_id', $unique_identifier_cart_product->product_id)->first();
+                            if ($user_cart_product_detail) {
+                                $user_cart_product_detail->quantity = ($unique_identifier_cart_product->quantity + $user_cart_product_detail->quantity);
+                                $user_cart_product_detail->save();
+                                $unique_identifier_cart_product->delete();
+                            } else {
+                                $unique_identifier_cart_product->cart_id = $user_cart->id;
+                                $unique_identifier_cart_product->save();
+                            }
+                        }
+                        $unique_identifier_cart->delete();
+                    }
+                } else {
+                    Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $user->id, 'created_by' => $user->id, 'unique_identifier' => '']);
+                }
                 Session::forget('referrer');
                 $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
                         'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from',
                         'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider',
                         'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
-                if(!empty($prefer->sms_provider) ){
-                    $response['send_otp'] = 1;
-                    $to = '+'.$user->dial_code.$user->phone_number;
+                
+                if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+                    if ($user->dial_code == "971") {
+                        $to = '+' . $user->dial_code . "0" . $user->phone_number;
+                    } else {
+                        $to = '+' . $user->dial_code . $user->phone_number;
+                    }
                     $provider = $prefer->sms_provider;
-                    $body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
+                    $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                    // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
 
+                    if( $prefer->verify_phone == 1 ){
+                        $response['send_otp'] = 1;
+                        $to = '+'.$user->dial_code.$user->phone_number;
+                        $provider = $prefer->sms_provider;
+                        $body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
+                        $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    }
                 }
                 if(!empty($prefer->mail_driver) && !empty($prefer->mail_host) && !empty($prefer->mail_port) && !empty($prefer->mail_port) && !empty($prefer->mail_password) && !empty($prefer->mail_encryption)){
                     $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
@@ -835,20 +873,41 @@ class CustomerAuthController extends FrontController
             }
             $vendor = new Vendor();
             $count = 0;
+            
+           
+            $single_vendor_type = "delivery";
             if($client_preference){
-                if($client_preference->dinein_check == 1){$count++;}
-                if($client_preference->takeaway_check == 1){$count++;}
-                if($client_preference->delivery_check == 1){$count++;}
+                foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                    $clientVendorTypes = $vendor_typ_key.'_check';
+                    if($client_preference->$clientVendorTypes == 1){
+                        if($count == 0){
+                          $single_vendor_type   = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
+                        }
+                        $count++;
+                    }
+                }
             }
+
+            // if($client_preference){
+            //     if($client_preference->dinein_check == 1){$count++;}
+            //     if($client_preference->takeaway_check == 1){$count++;}
+            //     if($client_preference->delivery_check == 1){$count++;}
+            // }
             if($count > 1){
-                $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
-                $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
-                $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
+                foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                    $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                    $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
+                    
+                }
+                // $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
+                // $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
+                // $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
             }
             else{
-                $vendor->dine_in = $client_preference->dinein_check == 1 ? 1 : 0;
-                $vendor->takeaway = $client_preference->takeaway_check == 1 ? 1 : 0;
-                $vendor->delivery = $client_preference->delivery_check == 1 ? 1 : 0;
+                $vendor->$single_vendor_type = 1;
+                // $vendor->dine_in = $client_preference->dinein_check == 1 ? 1 : 0;
+                // $vendor->takeaway = $client_preference->takeaway_check == 1 ? 1 : 0;
+                // $vendor->delivery = $client_preference->delivery_check == 1 ? 1 : 0;
             }
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
@@ -992,6 +1051,11 @@ class CustomerAuthController extends FrontController
         $vendor->save();
         if($request->has('category_ids')){
             foreach($request->category_ids as $category_id){
+                VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
+            }
+        }
+        if($request->has('selectedCategories')){
+            foreach($request->selectedCategories as $category_id){
                 VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
             }
         }

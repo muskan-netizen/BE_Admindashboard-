@@ -145,6 +145,7 @@ class AuthController extends BaseController
             Cart::where('unique_identifier', $loginReq->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
         }
         $checkSystemUser = $this->checkCookies($user->id);
+        $data['id'] = $user->id;
         $data['name'] = $user->name;
         $data['email'] = $user->email;
         $data['auth_token'] =  $token;
@@ -152,6 +153,7 @@ class AuthController extends BaseController
         $data['verify_details'] = $verified;
         $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
         $data['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
+        $data['is_superadmin'] = $user->is_superadmin ?? 0;
         //$data['is_admin'] = $user->is_admin;
         $data['client_preference'] = $prefer;
         $data['dial_code'] = $user->dial_code;
@@ -258,6 +260,7 @@ class AuthController extends BaseController
         $data['verify_details'] = $verified;
         $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
         $data['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
+        $data['is_superadmin'] = $user->is_superadmin ?? 0;
         //$data['is_admin'] = $user->is_admin;
         $data['client_preference'] = $prefer;
         $data['dial_code'] = $user->dial_code;
@@ -459,6 +462,7 @@ class AuthController extends BaseController
             $checkSystemUser = $this->checkCookies($user->id);
             $response['status'] = 'Success';
             $response['name'] = $user->name;
+            $response['id'] = $user->id;
             $response['auth_token'] =  $token;
             $response['email'] = $user->email;
             $response['dial_code'] = $user->dial_code;
@@ -974,6 +978,7 @@ class AuthController extends BaseController
                 Cart::where('unique_identifier', $req->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
             }
             $checkSystemUser = $this->checkCookies($user->id);
+            $data['id'] = $user->id;
             $data['name'] = $user->name;
             $data['email'] = $user->email;
             $data['auth_token'] =  $token;
@@ -981,6 +986,7 @@ class AuthController extends BaseController
             $data['verify_details'] = $verified;
             $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
             $data['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
+            $data['is_superadmin'] = $user->is_superadmin ?? 0;
             //$data['is_admin'] = $user->is_admin;
             $data['client_preference'] = $prefer;
             $data['dial_code'] = $user->dial_code;
@@ -1197,6 +1203,7 @@ class AuthController extends BaseController
                     Cart::where('unique_identifier', $request->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
                 }
                 $checkSystemUser = $this->checkCookies($user->id);
+                $data['id'] = $user->id;
                 $data['name'] = $user->name;
                 $data['email'] = $user->email;
                 $data['auth_token'] =  $token;
@@ -1204,7 +1211,7 @@ class AuthController extends BaseController
                 $data['verify_details'] = $verified;
                 $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
                 $data['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
-                //$data['is_admin'] = $user->is_admin;
+                $data['is_superadmin'] = $user->is_superadmin ?? 0;
                 $data['client_preference'] = $prefer;
                 $data['dial_code'] = $user->dial_code;
                 $data['phone_number'] = $user->phone_number;

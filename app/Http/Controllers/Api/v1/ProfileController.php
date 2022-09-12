@@ -43,18 +43,30 @@ class ProfileController extends BaseController{
                         $sendto = $SendReferralRequest->email;
                         $mail_from = $client_preference_detail->mail_from;
                         try {
-                            Mail::send(
+                            $email_template_content = '';
+                            $email_template = EmailTemplate::where('id', 8)->first();
+                            if($email_template){
+                                $email_template_content = $email_template->content;
+                                $email_template_content = str_ireplace("{code}", $refferal_code, $email_template_content);
+                                $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
+                            }
+                         
+                           $t = Mail::send(
                                 'email.verify',
                                 [
+                                    'email' => $sendto,
+                                    'mail_from' => $mail_from,
+                                    'client_name' => $client_name,
                                     'code' => $refferal_code,
                                     'logo' => $client->logo['original'],
                                     'customer_name' => "Link from ".$user->name,
                                     'code_text' => 'Register yourself using this referral code below to get bonus offer',
                                     'link' => "http://local.myorder.com/user/register?refferal_code=".$refferal_code,
+                                    'email_template_content' => $email_template_content,
                                 ],
                                 function ($message) use ($sendto, $client_name, $mail_from) {
                                     $message->from($mail_from, $client_name);
-                                    $message->to($sendto)->subject('OTP to verify account');
+                                    $message->to($sendto)->subject('Referral For Registration');
                                 }
                             );
                         } catch (\Exception $e) {
