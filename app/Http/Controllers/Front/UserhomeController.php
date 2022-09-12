@@ -263,7 +263,7 @@ class UserhomeController extends FrontController
                 return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
         }
     }
-    public function index(Request $request, $domain='')
+    public function indexTest(Request $request, $domain='')
     {
 
         try {
@@ -403,7 +403,7 @@ class UserhomeController extends FrontController
             die;
         }
     }
-    public function indexTest(Request $request, $domain='')
+    public function index(Request $request, $domain='')
     {
         try {
             $home = array();
@@ -508,20 +508,25 @@ class UserhomeController extends FrontController
             // $last_mile = $this->checkIfLastMileDeliveryOn();
             $view_page ="home-template-one";
             if (isset($set_template)  && $set_template->template_id == 1){
-                $view_page = 'home-template-one';
+                // $view_page = 'home-template-one';
+                $view_page = 'home-template-test-one';
             }elseif(isset($set_template)  && $set_template->template_id == 2){
-                $view_page = "home-template-two";
+                // $view_page = "home-template-two";
+                $view_page = 'home-template-test-two';
             }elseif(isset($set_template)  && $set_template->template_id == 3){
-                $view_page = "home-template-three";
+                // $view_page = "home-template-three";
+                $view_page = 'home-template-test-three';
             }elseif(isset($set_template)  && $set_template->template_id == 4){
-                $view_page = "home-template-four";
+                // $view_page = "home-template-four";
+                $view_page = 'home-template-test-four';
             }elseif(isset($set_template)  && $set_template->template_id == 5){
                 $view_page = "home-template-five";
             }elseif(isset($set_template)  && $set_template->template_id == 6){
-                $view_page = "home-template-six";
+                // $view_page = "home-template-six";
+                $view_page = "home-template-test-six";
             }
-            $view_page = 'home-template-test';
             //pr($set_template->toArray());exit();
+
             return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData]);
 
         } catch (Exception $e) {
@@ -677,7 +682,6 @@ class UserhomeController extends FrontController
         }
 
         $trendingVendors = Vendor::with('slot.day', 'slotDate')->whereIn('id', $subscribed_vendors_for_trending)->where('status', 1)->inRandomOrder()->get();
-
         if ((!empty($trendingVendors) && count($trendingVendors) > 0)) {
             foreach ($trendingVendors as $key => $value) {
                 $value->tag_title = $trending_vendors_title??'0';
@@ -816,10 +820,8 @@ class UserhomeController extends FrontController
             );
         }
 
-        $activeOrders = [];
-
-        if (in_array('recent_ordersx', $enable_layout)) {     # if enable brands section in
-
+// ------------------------------------------ Recent order ------------------------------------------
+$activeOrders = [];
             $user = Auth::user();
 
             if ($user) {
@@ -866,9 +868,26 @@ class UserhomeController extends FrontController
                             $order->converted_scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
                         }
             }
-        }else{
 
-        }
+        // dd($home_page_labels);
+
+        $cities = [];
+
+            $cities =  VendorCities::with(['translations'=> function ($q) use($language_id) {
+                                $q->where('language_id', $language_id);
+                            }])->where(function ($q)  {
+                                $q->where('latitude','!=', null);
+                                $q->where('longitude','!=', null);
+                            })->get();
+          
+            $cities = $cities->map(function($da) {
+                $da->title = $da->translations->first() ? $da->translations->first()->name : $da->slug ;
+                unset($da->translations);
+                return $da;
+           
+            });
+            // dd($cities->toArray());
+// -----------------------------------------------------------------------------------------------------------------------
 
         $data = [
             'brands' => $brands,
@@ -888,9 +907,12 @@ class UserhomeController extends FrontController
                 'homePageLabels' => $home_page_labels,
                 'featured_products' => $feature_products,
                 'on_sale' => $on_sale_products,
-                'best_sellers' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
-                'active_orders' => $activeOrders
+                'cities' => $cities,
+                'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:[],
+                'best_sellers' => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
+                'recent_orders' => $activeOrders
             ];
+            // dd( $data);
             return $data ;
         }
 

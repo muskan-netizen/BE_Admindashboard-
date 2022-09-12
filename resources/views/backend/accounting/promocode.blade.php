@@ -74,10 +74,10 @@
                         <div class="row">
                             <div class="col-md-9">
                                 <div class="row">
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <input type="text" id="range-datepicker" class="form-control al_box_height flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
                                     </div>
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <select class="form-control al_box_height" id="order_status_option_select_box">
                                             <option value="">{{ __("Select Order Status") }}</option>
                                             @forelse($order_status_options as $order_status_option)
@@ -86,7 +86,7 @@
                                             @endforelse
                                         </select>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <select class="form-control al_box_height" name="" id="promo_code_option_select_box">
                                             <option value="">{{ __("Select Coupon Code") }}</option>
                                             @forelse($promo_code_options as $promo_code_option)
@@ -95,7 +95,7 @@
                                             @endforelse
                                         </select>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-sm-3 mb-1">
                                         <button type="button" class="btn btn-danger al_box_height waves-effect waves-light" id="clear_filter_btn_icon">
                                             <i class="mdi mdi-close"></i>
                                         </button>

@@ -132,10 +132,12 @@ class SearchController extends FrontController{
     public function showSearchResults($domain="", $keyword){
 
         $response = [];
+        $mapViewVendorList = [];
         $keyword = $keyword;
         $language_id = Session::get('customerLanguage');
         $preferences = Session::get('preferences');
         $vendorType = Session::get('vendorType');
+        $vendorMapView = '';
         $vendors = Vendor::select('id', 'name', 'logo','slug','latitude','longitude','address','dial_code','phone_no')->where($vendorType,1);
         if($preferences){
             if( (empty($latitude)) && (empty($longitude)) && (empty($selectedAddress)) ){
@@ -155,6 +157,10 @@ class SearchController extends FrontController{
                     });
                 }
             }
+            if(($preferences->map_on_search_screen == 1)){
+                $vendorMapView = 1;
+            }
+            
         }
         $vendors = $vendors->where(function ($q) use ($keyword) {
                         $q->where('name', 'LIKE', "%$keyword%");
@@ -163,7 +169,11 @@ class SearchController extends FrontController{
             $vendor->redirect_url = route('vendorDetail', $vendor->slug);
             $vendor->image_url = $vendor->logo['proxy_url'].'300/300'.$vendor->logo['image_path'];
             $response[] = $vendor;
+            if(!empty($vendorMapView)){
+                $mapViewVendorList[] = $vendor;
+            }
         }
+
         $brands = Brand::join('brand_translations as bt', 'bt.brand_id', 'brands.id')
                 ->select('brands.id', 'bt.title as name', 'image')
                 ->where('bt.title', 'LIKE', '%' . $keyword . '%')
@@ -175,10 +185,12 @@ class SearchController extends FrontController{
             $brand->image_url = $brand->image['proxy_url'].'300/300'.$brand->image['image_path'];
             $response[] = $brand;
         }
+
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
                         ->leftjoin('types', 'types.id', 'categories.type_id')
                         ->leftjoin('vendors', 'vendors.id','categories.vendor_id')
-                        ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to','vendors.latitude','vendors.longitude','vendors.address','vendors.dial_code','vendors.phone_no')
+                        ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 
+                        'types.title as redirect_to','vendors.id as vendor_id', 'vendors.name as vendor_name', 'vendors.slug as vendor_slug', 'vendors.latitude','vendors.longitude','vendors.address','vendors.dial_code','vendors.phone_no')
                         ->where('categories.id', '>', '1')
                         ->where('categories.is_visible', 1)
                         ->where('categories.status', '!=', 2)
@@ -194,9 +206,15 @@ class SearchController extends FrontController{
             $redirect_url = route('categoryDetail', $category->slug);
             $image_url = $category->image['proxy_url'].'300/300'.$category->image['image_path'];
             $response[] = ['id' => $category->id, 'name' => $category->name,'latitude' => $category->latitude,'longitude' => $category->longitude, 'address'=>$category->address, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
+            if(!empty($vendorMapView)){
+                $vendorRedirectUrl = route('vendorDetail', $category->vendor_slug);
+                $mapViewVendorList[] = ['id' => $category->vendor_id, 'name' => $category->vendor_name,'dial_code'=>(!empty($category->dial_code)? $category->dial_code : ''),'phone_no'=>$category->phone_no, 'latitude' => $category->latitude,'longitude' => $category->longitude, 'address'=>$category->address, 'image_url' => $image_url, 'redirect_url' => $vendorRedirectUrl];;
+            }
         }
+
         $products = Product::with('media')->join('product_translations as pt', 'pt.product_id', 'products.id')->join('vendors', 'vendors.id','products.vendor_id')
-                    ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description','products.vendor_id','vendors.slug as vendor_slug','products.url_slug','vendors.latitude','vendors.longitude','vendors.address','vendors.dial_code','vendors.phone_no')
+                    ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description','products.vendor_id',
+                    'vendors.name as vendor_name','vendors.slug as vendor_slug','products.url_slug','vendors.latitude','vendors.longitude','vendors.address','vendors.dial_code','vendors.phone_no')
                     ->where('pt.language_id', $language_id)
                     ->whereHas('vendor',function($query) use ($vendorType){
                         $query->where($vendorType,1);
@@ -207,7 +225,11 @@ class SearchController extends FrontController{
         foreach ($products as $product) {
             $redirect_url = route('productDetail', [$product->vendor_slug,$product->url_slug]);
             $image_url = $product->media->first() ? $product->media->first()->image->path['proxy_url'].'300/300'.$product->media->first()->image->path['image_path'] : '';
-            $response[] = ['id' => $product->id, 'name' => $product->dataname,'latitude' => $product->latitude,'longitude' => $product->longitude, 'address'=>$product->address, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
+            $response[] = ['id' => $product->id, 'name' => $product->vendor_name,'latitude' => $product->latitude,'longitude' => $product->longitude, 'address'=>$product->address, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
+            if(!empty($vendorMapView)){
+                $vendorRedirectUrl = route('vendorDetail', $product->vendor_slug);
+                $mapViewVendorList[] = ['id' => $product->vendor_id, 'name' => $product->vendor_name,'dial_code'=>(!empty($product->dial_code)? $product->dial_code : ''),'phone_no'=>$product->phone_no, 'latitude' => $product->latitude,'longitude' => $product->longitude, 'address'=>$product->address, 'image_url' => $image_url, 'redirect_url' => $vendorRedirectUrl];;
+            }
         }
 
         $language_id = Session::get('customerLanguage');
@@ -222,6 +244,7 @@ class SearchController extends FrontController{
                 }
             }
         }
-        return view('frontend.searchResults')->with(['listData'=>$response, 'vendorLatLong'=>$vendorLatLong, 'navCategories'=>$navCategories, 'keyword'=>$keyword]);
+        
+        return view('frontend.searchResults')->with(['listData'=>$response, 'mapViewVendorList'=>$mapViewVendorList, 'vendorMapView'=>$vendorMapView, 'vendorLatLong'=>$vendorLatLong, 'navCategories'=>$navCategories, 'keyword'=>$keyword]);
     }
 }

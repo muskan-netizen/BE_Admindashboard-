@@ -1,5 +1,5 @@
 
-<div class="row ">    
+<div class="row ">
     <div class="col-md-12">
         <div class="row border-bottom">
             <div class="col-md-3">
@@ -75,7 +75,7 @@
                 <label>Banner image</label>
                 <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$category->image['proxy_url'].'1000/200'.$category->image['image_path']}}" />
                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
-            </div>            
+            </div>
         </div>
         <div class="row border-bottom pt-1">
             <div class="px-2 ">
@@ -131,7 +131,7 @@
             @if($type->title == 'Celebrity' && $preference->celebrity_check == 0)
             @continue
             @endif
-            <div class="col-sm">
+            <div class="col-6 col-sm-3">
                 <div class="card p-0 text-center select-category" id="tooltip-container">
                     <input class="form-check-input type-select" for="edit" type="radio" id="type_id_{{$type->id}}" name="type_id" @if($category->type_id == $type->id) checked @endif value="{{$type->id}}">
                     <label for="type_id_{{$type->id}}" class="card-body p-0 mb-0">
@@ -140,7 +140,7 @@
                         </div>
                         <div class="form-check form-check-info modal-category-btm-title p-2">
                             <h6 for="customradio5">{{$type->title}}</h6>
-                            <p class="add-cat-text text-left">Lorem ipsum... </p>
+                            <!-- <p class="add-cat-text text-left">Lorem ipsum... </p> -->
                         </div>
                     </label>
                 </div>
@@ -178,16 +178,16 @@
                                 <div class="col">
                                     <input type="file" accept="image/*" data-plugins="dropify" name="cat_banner[]" class="dropify" data-default-file="{{ !empty($category->sub_cat_banners[2])? $category->sub_cat_banners[2]['proxy_url'].'1000/200'.$category->sub_cat_banners[2]['image_path'] : ''}}" />
                                     <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
-                                </div>            
+                                </div>
                                 <div class="col">
                                     <input type="file" accept="image/*" data-plugins="dropify" name="cat_banner[]" class="dropify" data-default-file="{{ !empty($category->sub_cat_banners[3])? $category->sub_cat_banners[3]['proxy_url'].'1000/200'.$category->sub_cat_banners[3]['image_path'] : ''}}" />
                                     <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
-                                </div> 
+                                </div>
                                 <div class="col">
                                     <input type="file" accept="image/*" data-plugins="dropify" name="cat_banner[]" class="dropify" data-default-file="{{ !empty($category->sub_cat_banners[4])? $category->sub_cat_banners[4]['proxy_url'].'1000/200'.$category->sub_cat_banners[4]['image_path'] : ''}}" />
                                     <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
                                 </div>
-                            </div>       
+                            </div>
                         </div>
                     </div>
                 </div>

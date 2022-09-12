@@ -50,53 +50,54 @@
         @endif
     </div>
     <div class="row">
-        @if(Auth::user()->is_superadmin == 1) 
-        <div class="col-md-10 col-xl-7 col-lg-8">
+        @if(Auth::user()->is_superadmin == 1)
+        <div class="col-md-12 col-xl-7 col-lg-10">
             <div class="card">
                 <div class="card-body">
                     <form id="UpdateClient" method="post" action="{{route('client.profile.update',Auth::user()->code)}}" enctype="multipart/form-data">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <div class="mb-0">
+                    <div class=" mb-2">
+                        <div class="d-flex align-items-center justify-content-between">
                             <h4 class="header-title">{{ __("Organization details") }}</h4>
-                            <p class="sub-header">
-                                {{ __("View and edit your organization's profile details.") }}
-                            </p>
+                            <button type="submit" class=" btn btn-info waves-effect waves-light">{{ __("Update") }}</button>
                         </div>
-                       
-                        <button type="submit" class=" mt-3 btn btn-info waves-effect waves-light">{{ __("Update") }}</button>
+                        <p class="sub-header pr-sm-0 pr-5">
+                            {{ __("View and edit your organization's profile details.") }}
+                        </p>
+
+
                      </div>
 
                         @method('PUT')
                         @csrf
                         <div class="row mb-2 d-flex align-items-center">
-                            <div class="col-md-3 positoin-relative text-left">
+                            <div class="col-md-3 col-6 positoin-relative text-left">
                                 <label>{{ __("Light Theme Logo") }}</label>
                                 <input type="file" accept="image/png, image/gif, image/jpeg, image/jpg" data-plugins="dropify" name="logo" data-default-file="{{$client->logo['image_fit'] . '300/100' . $client->logo['image_path']}}" />
                                 <label class="logo-size d-block text-left mt-1">{{ __("Image Size") }} 300x100</label>
                             </div>
-                            <div class="col-md-3 positoin-relative text-left">
+                            <div class="col-md-3 col-6 positoin-relative text-left">
                                 <label>{{ __("Dark Theme Logo") }}</label>
                                 <input type="file" accept="image/png, image/gif, image/jpeg, image/jpg" data-plugins="dropify" name="dark_logo" data-default-file="{{ !empty($client->dark_logo)? $client->dark_logo['image_fit'] . '300/100' . $client->dark_logo['image_path'] : ''}}" />
                                 <label class="logo-size d-block text-left mt-1">{{ __("Image Size") }} 300x100</label>
                             </div>
                             <div class="col-md-6">
                                 <div class="row">
-                                    <div class="col-md-6 mb-2">
+                                    <div class="col-md-6 col-6 mb-2">
                                         <div class="form-group">
                                         <p class="sub-header">{{ __("Short Code") }} </p>
                                             <h1 class="control-label">{{Auth::user()->code}}</h1>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 mb-2">
+                                    <div class="col-md-6 col-6 mb-2">
                                         @if(isset($client_preference_detail->ios_link) && !empty($client_preference_detail->ios_link))
                                         <div class="text-center mb-3">
-                                            <a href="{{ $client_preference_detail->ios_link }}" target="_blank"><img src="{{asset('assets/images/iosstore.png')}}" alt="image" > </a>
+                                            <a href="{{ $client_preference_detail->ios_link }}" target="_blank"><img class="w-100" src="{{asset('assets/images/iosstore.png')}}" alt="image" > </a>
                                         </div>
                                         @endif
 
                                         @if(isset($client_preference_detail->android_app_link) && !empty($client_preference_detail->android_app_link))
                                         <div class="text-center">
-                                            <a href="{{ $client_preference_detail->android_app_link }}" target="_blank"><img src="{{asset('assets/images/playstore.png')}}" alt="image" > </a>
+                                            <a href="{{ $client_preference_detail->android_app_link }}" target="_blank"><img class="w-100" src="{{asset('assets/images/playstore.png')}}" alt="image" > </a>
                                         </div>
                                         @endif
 
@@ -204,7 +205,7 @@
                     </form>
                 </div>
             </div>
-        </div> 
+        </div>
         @endif
 
 
