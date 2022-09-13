@@ -93,7 +93,11 @@ class AddressController extends BaseController{
     public function staticDropoffLocations(){
         // return $request->all();
         $addresses=StaticDropoffLocation::get();
-        return $this->successResponse($addresses, __('Address deleted successfully.'));
+        if($addresses->count()){
+            return $this->successResponse($addresses, __('Address deleted successfully.'));
+        }else{
+            return $this->successResponse([],'No address found');
+        }
     }
 
 }
