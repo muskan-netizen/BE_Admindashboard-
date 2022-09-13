@@ -156,10 +156,6 @@
                         </div>
                     </div>
 
-
-
-                    </div>
-
                     <div class="col-md-4 h-100">
                         <div class="card card-box h-100">
                             <ul class="pl-0 mb-0">

@@ -10,7 +10,7 @@
     }
 @endphp
 <div class="row  mb-sm-2 mb-1">
-  
+
     <div class="col-lg-12 d-flex justify-content-between align-items-center" id="add_new_address_btn">
         <h4 class="page-title m-0">{{ __($label)  }} {{ ($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</h4>
         @if(!in_array($action , ['dine_in','takeaway','on_demand','appointment']))
@@ -41,7 +41,7 @@
             <h4>Book a table</h4>
             @if($vendor_details['vendor_tables']->isNotEmpty())
                 <select name="vendor_table" id="vendor_table" data-id="{{ $vendor_details['vendor_address']->id }}" class="form-control">
-                    <option value="">{{__('Select...')}}</option>
+                    <!-- <option value="">{{__('Select...')}}</option> -->
                     @foreach($vendor_details['vendor_tables'] as $k => $table)
                         <option value="{{$table->id}}" {{ ($cart_dinein_table_id == $table->id) ? 'selected' : '' }}>Category : {{ $table->category->title }} | Table : {{ $table->table_number }} | Seat Capacity : {{ $table->seating_number }}</option>
                     @endforeach

@@ -32,7 +32,8 @@ body .booking-experience{height: 100%;position: relative;width: 100%;left: 0;top
 #cart_main_page .card-box{background-color: transparent;box-shadow:none;}
 #social-links li{margin-right: 20px;}
 .homepageSix{max-width: 1400px;margin: 0 auto;}
-.breadcrumb-section.bg-transparent{display: none;}
+.breadcrumb-section.bg-transparent .theme-breadcrumb{margin-top: 10px;}
+.breadcrumb-section.bg-transparent .theme-breadcrumb li{padding-left: 20px;padding-right: 10px;}
 .al_body_template_six.homeHeader .container{max-width: 100%;}
 .al_body_template_six.homeHeader .container .col-12{padding: 0;}
 .al_body_template_six.homeHeader .product-bottom-bar{padding: 20px 0; max-width: 1400px;margin: -70px auto 0;background-color: #fff;width: 100%;position: relative;border-radius: 20px 20px 0 0;box-shadow: 0 -30px 20px rgb(0 0 0 / 20%);}
@@ -47,7 +48,7 @@ body .booking-experience{height: 100%;position: relative;width: 100%;left: 0;top
 .product-banner-img{height: 550px;overflow: hidden;width: 100%;}
 .alScrollspyProduct .text-right span{display: none !important;}
 .alScrollspyProduct select#order_type{border: 1px solid #e5e8eb;color: #000000a1;height: 40px;border-radius: 10px;width: 100%;}
-.alScrollspyProduct h2.category-head{font-size: 18px;}
+.alScrollspyProduct h2.category-head{font-size: 18px;position: sticky;padding: 10px;background-color: #fff;top: 100px; z-index: 9;}
 .class_img.product_image img{width: 100%;}
 .member_no span{font-size: 14px;line-height: normal;}
 .customizable-text{font-size: 10px;padding-right: 15px;}

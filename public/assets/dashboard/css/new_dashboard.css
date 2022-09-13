@@ -12,8 +12,6 @@
   border-radius: 3px;
   display: inline-block;
 }
-
-
 .progress-w-percent .progress {
   width: calc(100% - 80px);
 }

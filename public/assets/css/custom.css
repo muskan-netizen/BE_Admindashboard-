@@ -4481,7 +4481,7 @@ body[dir="rtl"] .dataTables_filter {
 
 /*================= templa 5 hide====================== */
 
-.card-body.al_custom_control .alThemeDemoSec:nth-child(5) {display: none;}
+/* .card-body.al_custom_control .alThemeDemoSec:nth-child(5) {display: none;} */
 #alDashboardStyle h2.fw-normal.mb-3 span,
 #alDashboardStyle h3{color: #555657;}
 .dark #alDashboardStyle h2.fw-normal.mb-3 span,
@@ -4558,4 +4558,10 @@ body div.dataTables_wrapper div.dataTables_filter input {width: 100%;margin: 0;}
 .order-list-view .ellips {max-width: calc(100% - 100px);}
 
 
+}
+
+
+
+.card.changeIcon {
+  box-shadow: none !important;
 }
