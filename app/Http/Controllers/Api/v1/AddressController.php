@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, Client, UserAddress};
+use App\Models\{User, Client, StaticDropoffLocation, UserAddress};
 
 class AddressController extends BaseController{
 	use ApiResponser;
@@ -88,6 +88,12 @@ class AddressController extends BaseController{
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+    }
+
+    public function staticDropoffLocations(){
+        // return $request->all();
+        $addresses=StaticDropoffLocation::get();
+        return $this->successResponse($addresses, __('Address deleted successfully.'));
     }
 
 }

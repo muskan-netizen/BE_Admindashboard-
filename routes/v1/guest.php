@@ -2,13 +2,14 @@
 Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () {
 
         Route::post('check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromInventory');
-
+        
         Route::post('vendor-sync-inventory', 'Api\v1\VendorController@vendorSyncInventory')->middleware('ConnectDbFromInventory');
-
-
-  
-   Route::group(['middleware' => ['dbCheck', 'checkAuth']], function() { //apilogger
-
+        
+        
+        
+        Route::group(['middleware' => ['dbCheck', 'checkAuth']], function() { //apilogger
+            
+            Route::get('static-dropoff-locations', 'Api\v1\AddressController@staticDropoffLocations');
 
         Route::group(['prefix' => 'estimation'], function () {
     
