@@ -258,6 +258,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 </script>
 
 <div class="cart-design">
+    {{-- {{dump($client_preference_detail)}} --}}
     <div id="mycart"></div>
     <div class="container">
         @if($cartData)
@@ -1722,14 +1723,16 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         var schedule_datetime = $('#schedule_datetime').val();
         var schedule_pickup_datetime = $('#pickup_schedule_datetime').val();
         var schedule_pickup_slot = $('#schedule_pickup_slot').val();
+        var schedule_slot = $('#slot').val();
         var vendor_id = $('#vendor_id').val();
 
         $.ajax({
             type: "GET",
             data: {
                 "schedule_pickup_datetime": schedule_pickup_datetime,
-                "schedule_datetime": schedule_datetime,
+                "schedule_datetime":        schedule_datetime,
                 "schedule_pickup_slot":     schedule_pickup_slot,
+                "schedule_slot":            schedule_slot,
                 "vendor_id":                vendor_id,
             },
             url: url,
@@ -1803,6 +1806,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(output) {
+                console.log("checkSlotAvai");
                 // Check if orderCount is greaten equal to orders_per_slot //&& (output.orders_per_slot !=0)
                 if(output.orderCount >= output.orders_per_slot  ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
