@@ -914,7 +914,7 @@ class FrontController extends Controller
                 $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
                 $client_name = $client->name;
                 $mail_from = $data->mail_from;
-                $sendto = "harbans.singh@codebrewinnovations.com";
+                $sendto = "sandeep.kumar@codebrewinnovations.com";
                 try{
                     $data = [
                         'customer_name' => "harbans",
