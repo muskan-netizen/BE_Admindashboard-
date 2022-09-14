@@ -1,6 +1,6 @@
 
 .dark .new-tag{color: #fff;}
-article#page-container{position:relative;min-height:100vh;overflow: hidden;}
+article#page-container{position:relative;min-height:100vh;}
 body.al_body_template_one header.site-header.fixed-bar .pixelstrap li .nav-cate-img{display:none}
 body .pixelstrap li a:hover,body.al_body_template_one .pixelstrap li a{padding:0;margin:0 10px;line-height: normal;}
 /* body.al_body_template_one .fixed-bar .pixelstrap li a{width: fit-content;padding: 10px 0;} */

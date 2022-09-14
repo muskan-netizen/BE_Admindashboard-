@@ -129,7 +129,7 @@
                                 </div>
                             </div>
                         </div>
-                    
+
 
                         <div class="card">
                             <div class="card-body al_custom_control">
@@ -156,7 +156,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
                     <div class="col-md-4 h-100">

@@ -7,7 +7,7 @@
 .al_QRcode svg{margin-bottom: 10px;}
 .al_footer_template_six{background-color: #0C0C0C;}
 footer#footer{position: absolute;bottom: 0;width: 100%;margin: 0;}
-article#page-container{position: relative;min-height: 100vh;overflow: hidden;}
+article#page-container{position: relative;min-height: 100vh;}
 .al_footer_template_six .sub-footer{background-color: transparent;}
 .al_footer_template_six .footer-end{border-top: 1px solid #B6B6B6;}
 .al_footer_template_six  .footer-theme .sub-title .contact-list li{padding: 0;}
