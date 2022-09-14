@@ -18,12 +18,12 @@ trait DispatcherSlot{
                 $postdata =  [ 
                                 "latitude"  => $data['latitude'], 
                                 "longitude" => $data['longitude'], 
-                                "tags"      => $data['tags'], 
+                                "tags"      => $data['tags'] ?? 'RoyoPlatinum', 
                                 "schedule_date" => $data['schedule_date'] ,
                                 "service_time" => "30"
                             ];
                 
-                pr($postdata);
+              //pr($postdata);
                 $client = new GClient([
                     'headers' => [
                         'personaltoken' => $data['service_key'],
@@ -40,7 +40,7 @@ trait DispatcherSlot{
                 //pr($res->getBody());
                 $response = json_decode($res->getBody(), true);
                 
-             pr($response);
+            
                 if ($response && $response['message'] == 'success') {
                     $agets =count($response['data']) > 0 ? $response['data'] : [];
                     return $agets;

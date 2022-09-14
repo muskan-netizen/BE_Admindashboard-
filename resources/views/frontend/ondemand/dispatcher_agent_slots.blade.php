@@ -1,19 +1,86 @@
+<style>
+    #avail_slot .grid-item {
+    color: #fff;
+    padding: 3.5em 1em;
+    font-size: 1em;
+    font-weight: 700;
+  }
+
+  #avail_slot .main {
+    grid-area: main;
+    padding: 0;
+  }
+
+  #avail_slot .items {
+    position: relative;
+    width: 100%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+    will-change: transform;
+    user-select: none;
+    cursor: pointer;
+  }
+  #avail_slot .grid-item .item.active {
+    background: #000;
+}
+#avail_slot .grid-item .item.active label span {
+    color: #fff;
+}
+  #avail_slot  .item {
+    display: inline-block;
+    background:#f3f3f3;
+    padding:10px;
+    border-radius: 10px;
+    margin:8px 10px;
+  }
+#avail_slot  .grid-item.main .items .item input {
+    display: none;
+}
+#avail_slot  .grid-item.main .items .item label {
+    color: #000;
+    font-size: 13px;
+    margin: 0px;
+}
+</style>
 <h4 class="mt-4 mb-2"><b>What time would you like us to start?</b></h4>
-<div class="booking-time radio-btns long-radio">   
+<div class="booking-time  radio-btns long-radio">   
    
-    @foreach ($dispatch_agents as $key => $date)
-    @php
+    @foreach ($dispatch_agents as $key => $data)
+    {{-- @php
     pr($data);
-    @endphp
-    {{-- @if($key+1 < count($time_slots))
-    <div>
-        <div class="radios">
-            <input type="radio" value='{{$date}} - {{@$time_slots[$key+1]}}' name='booking_time' id='time{{$cart_product_id}}{{$key+1}}'/>          
-            <label for='time{{$cart_product_id}}{{$key+1}}'><span class="customCheckbox selected-time" aria-hidden="true"  data-value='{{$date}}' data-cart_product_id='{{$cart_product_id}}'>{{$date}} - {{@$time_slots[$key+1]}}</span></label>
-            
+    @endphp --}}
+    <div class="agent_slot">
+        <div>
+            <a class="agentInfo d-block dispatch_agent black-box" data-agent_id="{{ $data['id'] }}" href="javascript:void(0)">
+                <div class="brand-ing">
+                       <img class="agentImg" src="{{ $data['image_url'] }}" alt="" title="">
+                   </div>
+                <h6>{{ $data['name'] }}</h6>
+               </a>
         </div>
-    </div>
-    @endif --}}
+    </div>    
+    {{-- <div class="agent_slot_{{ $data['id'] }} d-none">
+        @foreach ($data['slotings'] as $key => $slot)
+
+        <div>
+            <div class="radios agent_{{ $data['id'] }}">
+                <input type="radio" value='{{$slot['value']}} - {{@$time_slots[$key+1]}}' name='booking_time' id='time{{$cart_product_id}}{{$key+1}}'/>          
+                <label for='time{{$cart_product_id}}{{$key+1}}'><span class="customCheckbox selected-time" aria-hidden="true"  data-value='{{$slot['value']}}' data-cart_product_id='{{$cart_product_id}}'>{{$slot['name']}} - {{@$time_slots[$key+1]}}</span></label>
+                
+            </div>
+        </div>
+        @endforeach
+    </div> --}}
     @endforeach
 </div>
+<div class="agent_slots" id="avail_slot">
+</div>
 <P id="message_of_time{{$cart_product_id}}"></P>
+<script>
+    var dispatch_agents = {
+        agent: {!!json_encode($dispatch_agents)!!}
+    } 
+</script>
+<script src="{{ asset('js/onDemand/AgentSlot.js') }}"></script>
+

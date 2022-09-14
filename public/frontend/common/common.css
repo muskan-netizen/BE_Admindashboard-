@@ -160,3 +160,24 @@ body[dir="rtl"] .al .col-lg-5.pl-0 {padding-right: 0px;}
 
 .show-subscription-mdl button.close {position: absolute;right: 6px;top: 10px;background: transparent;line-height: 0pc;padding: 0px;font-size: 20px;cursor: pointer;z-index: 999;}
 .show-subscription-mdl .modal-content {border: 1px solid rgba(0,0,0,.2);border-radius: 0.3rem;}
+
+/* ================== agent page css===================================== */
+.agentInfo .brand-ing {
+    height: 100px;
+    width: 100px;
+    margin: 0 auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #fff;
+    box-shadow: 0 0 5px rgb(0 0 0 / 20%);
+}
+.agentInfo .brand-ing:hover{box-shadow: 0 0 5px rgb(0 0 0 / 50%);border-color: var(--theme-deafult);}
+a.agentInfo.d-block.black-box {
+    text-align: center;
+    padding-top: 10px;
+}
+.agentInfo .brand-ing img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

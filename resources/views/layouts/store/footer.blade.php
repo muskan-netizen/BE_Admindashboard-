@@ -188,6 +188,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @endif
 <script src="{{asset('assets/libs/moment/moment.min.js')}}"></script>
 <script src="{{asset('assets/libs/datetimepicker/daterangepicker.min.js')}}" ></script>
+<script src="{{ asset('js/storage/OrderStorage.js') }}"></script>
 @if((!empty($socket_url)))
 <!-- /** socket_accept */ -->
 <script src="{{$socket_url}}/socket.io/socket.io.js"></script>
