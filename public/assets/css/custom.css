@@ -918,7 +918,7 @@ body.dark .navbar-custom {
 .dark .show>.btn-blue.dropdown-toggle,
 body.dark .btn {
   border-radius: 50px;
-  color: #36404a;
+  color: #fff;
   background-color: rgb(247 184 75 / 82%);
   border-color: rgb(247 184 75 / 82%)
 }
@@ -4480,9 +4480,21 @@ body[dir="rtl"] .dataTables_filter {
 }
 
 /*================= templa 5 hide====================== */
-.card-body.al_custom_control .alThemeDemoSec:nth-child(5) {display: none;}
+
+/* .card-body.al_custom_control .alThemeDemoSec:nth-child(5) {display: none;} */
 #alDashboardStyle h2.fw-normal.mb-3 span,
-#alDashboardStyle h5, #alDashboardStyle h3{color: #98a6ad ;}
+#alDashboardStyle h3{color: #555657;}
+.dark #alDashboardStyle h2.fw-normal.mb-3 span,
+.dark #alDashboardStyle h3{color: #c6c6c6;}
+#alDashboardStyle h3 {font-weight: 600 !important;}
+#alDashboardStyle h5{color: #777;}
+.dark #alDashboardStyle h5{color: #98a6ad;}
+
+.alDasBoxItems span.text-nowrap {padding-left: 8px;}
+.card-body.alRevenueBox {min-height: 364px;}
+.card.alDasBoxItems {  min-height: 170px;}
+.alRevenueByLocation{min-height: 585px;}
+.dark #alDashboardStyle h3{color: #c6c6c6;;}
 
 .al_new_export_table.royo_customber_btn.table_customber_add .position-absolute.mb-2 {z-index: 999; right: 0;margin: 0 !important;text-align: right;}
 .al_new_export_table.royo_customber_btn.table_customber_add .row.mt-1.sml_royo-responsive {margin-top: -40px !important;}
@@ -4546,4 +4558,10 @@ body div.dataTables_wrapper div.dataTables_filter input {width: 100%;margin: 0;}
 .order-list-view .ellips {max-width: calc(100% - 100px);}
 
 
+}
+
+
+
+.card.changeIcon {
+  box-shadow: none !important;
 }
