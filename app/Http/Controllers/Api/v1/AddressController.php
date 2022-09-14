@@ -90,13 +90,13 @@ class AddressController extends BaseController{
         }
     }
 
-    public function staticDropoffLocations(){
-        // return $request->all();
-        $addresses=StaticDropoffLocation::get();
-        if($addresses->count()){
+    public function staticDropoffLocations()
+    {
+        $addresses = StaticDropoffLocation::select('*', 'title as name')->get();
+        if ($addresses->count()) {
             return $this->successResponse($addresses, __('Address Found successfully.'));
-        }else{
-            return $this->successResponse([],'No address found');
+        } else {
+            return $this->successResponse([], 'No address found');
         }
     }
 
