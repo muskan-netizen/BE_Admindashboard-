@@ -129,6 +129,8 @@
                                 </div>
                             </div>
                         </div>
+
+
                         <div class="card">
                             <div class="card-body al_custom_control">
                                 <h4 class="header-title">{{ __("Home Page Style") }}</h4>

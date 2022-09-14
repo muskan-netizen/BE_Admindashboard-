@@ -2993,6 +2993,14 @@ $(document).ready(function(){
             }
         }
     }
+
+    $('#add_user_registration_document_modal_btn').click(function(e) {
+        document.getElementById("userRegistrationDocumentForm").reset();
+        $('#add_user_registration_document_modal input[name=user_registration_document_id]').val("");
+        $('#add_user_registration_document_modal').modal('show');
+        $('#add_user_registration_document_modal #standard-modalLabel').html('Add User Registration Document');
+    });
+
 </script>
 
 @if($preference->is_static_dropoff == '1')

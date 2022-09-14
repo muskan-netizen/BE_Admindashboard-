@@ -5,9 +5,6 @@
 </div>
 <div class="d-none" id ="nearmap">
 </div>
-  <div class="loader_box" style="display: none;">
-    <div class="spinner-border text-danger m-2 showLoader" role="status"></div>
-  </div>
   <div class="spinner-overlay">
     <div class="page-spinner">
         <div class="circle-border">
@@ -41,6 +38,15 @@
     </div>
 </div>
 
+<!-- spinner Start -->
+
+<div class="nb-spinner-main">
+
+    <div class="nb-spinner"></div>
+
+    </div>
+
+    <!-- spinner End -->
 @php
 $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @endphp
