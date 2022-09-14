@@ -160,3 +160,11 @@ body[dir="rtl"] .al .col-lg-5.pl-0 {padding-right: 0px;}
 
 .show-subscription-mdl button.close {position: absolute;right: 6px;top: 10px;background: transparent;line-height: 0pc;padding: 0px;font-size: 20px;cursor: pointer;z-index: 999;}
 .show-subscription-mdl .modal-content {border: 1px solid rgba(0,0,0,.2);border-radius: 0.3rem;}
+.ellipsis{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+body .order-page .order_head {
+    text-transform: capitalize;
+}

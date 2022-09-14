@@ -56,8 +56,8 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         @if( (Auth::user()->is_superadmin) ||  ($client_preference_detail->hide_order_address ==0) )
                         <div class="col-md-3"><h4>{{ __("Address") }}</h4>
                         <% if(order.address !== null) { %>
-                            <div class="col-md-3">
-                                <span class="mb-0" data-toggle="tooltip" data-placement="top" title="<%= order.address.address %>">
+                            <div class="col-md-12 pl-0 ellips">
+                                <span class="mb-0 " data-toggle="tooltip" data-placement="top" title="<%= order.address.address %>">
                                     <%= order.address.house_number?order.address.house_number+',' : ''  %> <%= order.address.address %>
                                 </p>
                             </div>

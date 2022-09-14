@@ -1,5 +1,5 @@
 /**
- * custom spinner Js 
+ * custom spinner Js
  */
 const spinnerJS = {
     showSpinner() {
