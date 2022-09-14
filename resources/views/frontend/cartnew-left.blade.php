@@ -9,8 +9,7 @@
         //$label = 'Delivery';
     }
 @endphp
-<div class="row  mb-sm-2 mb-1">
-
+<div class="row mb-sm-2 mb-1">
     <div class="col-lg-12 d-flex justify-content-between align-items-center" id="add_new_address_btn">
         <h4 class="page-title m-0">{{ __($label)  }} {{ ($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</h4>
         @if(!in_array($action , ['dine_in','takeaway','on_demand','appointment']))

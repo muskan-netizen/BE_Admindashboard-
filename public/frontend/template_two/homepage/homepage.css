@@ -2,6 +2,7 @@
     color: var(--theme-deafult);
     border-bottom: 1px solid var(--theme-deafult);
 }
+.al_body_template_two .home-slider-wrapper .banner-img-outer img{max-width: 1920px;max-height: 550px;}
 .fa-facebook-square:before, .fa-heart:before, .fa-twitter:before, .fa-user:before, .fa-whatsapp:before{font-family: FontAwesome !important;}
 .al_body_template_two .pixelstrap ul{padding: 5px 0;z-index: 9;}
 .al_body_template_two .common-banner{height: 300px;margin-bottom: 0px;}
