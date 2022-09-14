@@ -7,7 +7,7 @@ $clientData = \App\Models\Client::select('id', 'logo','custom_domain','code')->w
 if($clientData){
 $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'];
 }
-                    
+
 @endphp
 <!-- Topbar Start -->
 <audio id="orderAudio">
@@ -20,6 +20,13 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
     <div class="col d-flex align-items-center justify-content-between justify-content-lg-end">
 
         <ul class="top-site-links d-flex align-items-center p-0 mb-0 mr-lg-2 mr-auto">
+            <li class="AlSpinnerCustom">
+                <!-- spinner Start -->
+                <div class="nb-spinner-main">
+                    <div class="nb-spinner"></div>
+                </div>
+                <!-- spinner End -->
+            </li>
             @if(Auth::user()->is_superadmin )
                 <li class="alToggleSwitch">
                     <label class="altoggle">
@@ -55,6 +62,7 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
                     </a>
                 </div>
             </li>
+
             <li class="mobile-toggle">
                 <button id="shortclick" class="button-menu-mobile waves-effect waves-light">
                     <i class="fe-menu"></i>
