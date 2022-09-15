@@ -519,7 +519,19 @@
                                         <li class="p-0" id="cart_product_<%= vendor_product.id %>" data-qty="<%= vendor_product.quantity %>">
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between m-0">
-                                                    <span class="ellips"><%= vendor_product.quantity %>x <%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></span>
+
+                                                    <% 
+                                                        translationOneTitle = '';
+                                                        count = 20;
+                                                        if(vendor_product.product.translation_one != ''){
+                                                            title = vendor_product.product.translation_one.title;
+                                                            translationOneTitle = title.slice(0, count) + (title.length > count ? "..." : "");
+                                                            
+                                                        }
+                                                    %>
+
+                                                    <span class="ellips"><%= vendor_product.quantity %>x <%= 
+                                                    vendor_product.product.translation_one ? translationOneTitle :  vendor_product.product.sku %></span>
                                                     <span>
 
                                                         {{ Session::get('currencySymbol') }}<%=  Helper.formatPrice(vendor_product.quantity_price) %>
