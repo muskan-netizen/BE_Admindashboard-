@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use App\Models\ProductFaq;
 use App\Http\Controllers\Client\BaseController;
+use App\Models\ProductFaqSelectOption;
+use App\Models\ProductFaqSelectOptionTranslation;
 use App\Models\ProductFaqTranslation;
 
 class ProductFaqController extends BaseController{
@@ -14,11 +16,18 @@ class ProductFaqController extends BaseController{
     public function store(Request $request){
         try {
             $this->validate($request, [
-              'name.0' => 'required|string|max:255',
-            ],['name.0' => 'The default language question field is required.']);
+                'name.0' => 'required|string|max:60',
+                'file_type' => 'required',
+              ],['name.0' => 'The default language name field is required.']);
+              if($request->file_type=="Selecter"){
+                  $this->validate($request, [
+                      'option_name.0.0' => 'required|string|max:60',
+                    ],['option_name.0.0' => 'The default Option name field is required.']);
+              }
             DB::beginTransaction();
             $product_faq = new ProductFaq();
             $product_faq->is_required = $request->is_required;
+            $product_faq->file_type = $request->file_type;
             $product_faq->product_id = $request->product_id;
             $product_faq->save();
             $language_id = $request->language_id;
@@ -33,6 +42,30 @@ class ProductFaqController extends BaseController{
                     $ProductFaqTranslation->save();
                 }
             }
+
+            if($request->has('option_name')){
+                foreach($request->option_name as $key =>$value){
+
+                    if(isset($value[0]) && !empty($value[0])){
+                        $option  = new ProductFaqSelectOption();
+                        $option->product_faq_id = $product_faq->id;
+                        $option->save();
+
+                        foreach($request->language_id as $lang_key =>$lang_value){
+                            if(isset($value[$lang_key]) && !empty($value[$lang_key])){
+                                $optionTrabslation  = new ProductFaqSelectOptionTranslation();
+                                $optionTrabslation->product_faq_select_option_id =$option->id ;
+                                $optionTrabslation->language_id = $lang_value;
+                                $optionTrabslation->name =$value[$lang_key] ;
+                                $optionTrabslation->save();
+                            }
+                        }
+                    }
+
+
+                }
+            }
+
             DB::commit();
             return $this->successResponse($product_faq, 'Product Order Form Added Successfully.');
         } catch (Exception $e) {
