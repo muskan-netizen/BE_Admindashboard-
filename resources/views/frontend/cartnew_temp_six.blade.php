@@ -1053,10 +1053,10 @@ $client_preferences = \App\Models\ClientPreference::first();
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-center">
                 <input type="hidden" id="vendor_id" value="">
                 <input type="hidden" id="cartproduct_id" value="">
-                <h6 class="m-0">{{__('Are You Sure You Want To Remove This Item?')}}</h6>
+                <h6 class="m-0 px-4">{{__('Are You Sure You Want To Remove This Item?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
