@@ -14,6 +14,8 @@ class ProductVariantSet extends Model
 	public function options() {
 	    return $this->hasMany('App\Models\VariantOption', 'variant_id', 'variant_type_id')
 	    		->join('product_variant_sets as pvs', 'pvs.variant_option_id', 'variant_options.id')
+				->join('product_variants as pv','pvs.product_variant_id','pv.id')
+				->where('pv.status',1)
 	    		->groupBy('pvs.variant_option_id')->orderBy('pvs.product_variant_id');
 	}
 

@@ -2174,7 +2174,7 @@ class VendorController extends BaseController{
             })->withCount(['data' => function ($q)use($vid){
                 $q->where('is_live', 1)->where('vendor_id', $vid);
             }])->with(['translation' => function($q) use($langId){
-                    $q->where('category_translations.language_id', $langId)->groupBy('category_translations.language_id');
+                    $q->where('category_translations.language_id', $langId);
                 }])->with(['data' => function ($q)use($langId,$userid, $multipli,$vid){
                         $q->where('is_live', 1)->where('vendor_id', $vid)->with([
                          'inwishlist' => function($qry) use($userid){
