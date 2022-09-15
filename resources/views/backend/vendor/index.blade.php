@@ -94,7 +94,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-12 col-lg-12 tab-product vendor-products pt-0 invisible">
+        <div class="col-sm-12 col-lg-12 tab-product vendor-products invisible">
             <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="active-vendor" data-toggle="tab" href="#active_vendor" role="tab" aria-selected="false" data-rel="vendor_active_datatable" data-status="1">
@@ -127,7 +127,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                 <div class="tab-pane fade past-order show active" id="active_vendor" role="tabpanel" aria-labelledby="active-vendor">
                     <div class="row">
                         <div class="col-12">
-                       
+
                             <div class="card">
                                 <div class="card-body">
                                     <div class="table-responsive">

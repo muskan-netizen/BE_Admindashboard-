@@ -127,7 +127,7 @@ a.view-cart{font-size: 14px;}
 div#dark-light-btn-toggle{display: none;}
 .al_body_template_six span.rating-number{position: absolute;top: 5px;right: 10px;padding: 3px 10px;background-color: var(--theme-deafult);color: var(--top-header-color); border-radius: 30px;}
 .al_body_template_six .suppliers-box{position: relative;}
-a.media.flex-shrink-0{border-radius: 15px;overflow: hidden;}
+a.media.flex-shrink-0 img{border-radius: 15px;overflow: hidden;}
 
 /* =========================== day night css============================== */
 .alSwitch{position: fixed;z-index: 9999999;top: 50%;right: 0;cursor: pointer; -webkit-transform: translate(0, -50%);transform: translate(0, -50%);}

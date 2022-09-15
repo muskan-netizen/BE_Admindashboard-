@@ -6,24 +6,14 @@
 <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/dashboard/css/new_dashboard.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
-    span.nodatafound {
-        font-size: 120% !important;
-        border: 1px solid #FC0;
-        background: #FFC;
-        color: #384F34;
-        display: block;
-        font-weight: bold;
-        margin: 2px auto 14px;
-        padding: 15px !important;
-        text-align: left;
-    }
+span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: #FFC;color: #384F34;display: block;font-weight: bold;margin: 2px auto 14px;padding: 15px !important;text-align: left;}
 </style>
 @endsection
 @section('content')
 
 <!-- Dashboard start here -->
-<div class="container-fluid">
-    <div class="row d-flex align-items-center">
+<div class="container-fluid py-md-2" id="alDashboardStyle">
+    <div class="row d-flex align-items-center ">
         <div class="col-12">
             <!-- page title start here -->
             <div class="page-title-box mb-2">
@@ -36,7 +26,7 @@
                                 <i class="mdi mdi-calendar-range font-13"></i>
                             </span>
                         </div>
-                        <a href="javascript: void(0);" class="btn btn-primary ms-2" id="dashboard_refresh_btn">
+                        <a href="javascript: void(0);" class="btn btn-primary mx-2" id="dashboard_refresh_btn">
                             <i class="mdi mdi-autorenew"></i>
                         </a>
                         <!-- <a href="javascript: void(0);" class="btn btn-primary ms-1">
@@ -54,7 +44,7 @@
             <div class="row">
                 <div class="col-sm-6">
                     <!-- Customer box start here -->
-                    <div class="card">
+                    <div class="card alDasBoxItems">
                         <div class="card-body">
                             <div class="float-right">
                                 <i class="mdi mdi-account-multiple widget-icon"></i>
@@ -70,7 +60,7 @@
                 </div>
                 <div class="col-sm-6">
                     <!-- Orders box start here -->
-                    <div class="card">
+                    <div class="card alDasBoxItems">
                         <div class="card-body">
                             <div class="float-right">
                                 <i class="mdi mdi-cart-plus widget-icon"></i>
@@ -89,12 +79,12 @@
             <div class="row">
                 <div class="col-sm-6">
                     <!-- Revenue box start here -->
-                    <div class="card">
+                    <div class="card alDasBoxItems">
                         <div class="card-body">
                             <div class="float-right">
                                 <i class="mdi mdi-currency-usd widget-icon"></i>
                             </div>
-                            <h5 class="" title="Number of Revenue">Revenue</h5>
+                            <h5 class="" title="Number of Revenue">Total Revenue</h5>
                             <h3 class="mt-3 mb-3" id="total_revenue">0</h3>
                             <p class="mb-0" id="revenue_change">
                                 <!-- <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 5.27%</span> -->
@@ -105,7 +95,7 @@
                 </div>
                 <div class="col-sm-6">
                     <!-- Growth box start here -->
-                    <div class="card">
+                    <div class="card alDasBoxItems">
                         <div class="card-body">
                             <div class="float-right">
                                 <i class="mdi mdi-pulse widget-icon"></i>
@@ -125,9 +115,9 @@
         <div class="col-xl-7 col-lg-6">
             <div class="card card-h-100">
                 <!-- month wise data shown start here  -->
-                <div class="card-body">
+                <div class="card-body alRevenueBox">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h4 class="header-title">Revenue</h4>
+                        <h4 class="header-title">Revenue Monthly</h4>
                         <!-- <div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
@@ -153,11 +143,11 @@
 
         <div class="col-lg-8">
             <!-- total revenue sec start here -->
-            <div class="card">
+            <div class="card alRevenueByLocation">
                 <div class="card-body">
                     <!-- total revenue title start here -->
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h4 class="header-title">REVENUE</h4>
+                        <h4 class="header-title">Revenue Weekly</h4>
                         <!-- <div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop " data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
@@ -216,7 +206,7 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card">
+            <div class="card alRevenueByLocation">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="header-title">Revenue By Location</h4>

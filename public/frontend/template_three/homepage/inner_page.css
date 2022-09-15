@@ -128,7 +128,8 @@ body .al_body_template_three .collection-filter .theme-card .offer-slider img{pa
 
 /* footer#footer{position:relative;bottom:0;width:100%} */
 ul.social-links.d-flex a span{font-size:0}
-article#page-container{position: relative;min-height: 100vh;overflow: hidden;}
+article#page-container{position: relative;min-height: 100vh;}
+
 .related-products .product-description{text-align: left;}
 
 /* Footer height */
@@ -221,12 +222,15 @@ body #page-container #footer .footer-theme .sub-title .contact-list li span{padd
 .coupon-code{box-shadow: 0 0.75rem 6rem rgb(56 65 74 / 7%);}
 .coupon-code.mt-0 h6.mt-0{    margin-bottom: 0;}
 .dark .coupon_box{background-color: #2b2b2b}
-
+.al_body_template_three .product-banner-img{box-shadow: 0 0 5px rgba(0,0,0,0.1);}
 
 /* cab booking code end */
 .cart-main-box,
-.scrollspy-menu{position:sticky;top:230px;height:auto;width: 350px;z-index: 9;}
-.scrollspy-menu ul{display:block;list-style:none;text-align:center;margin:0;padding:0;position:sticky;top:0}
+.scrollspy-menu{position:sticky;top:203px;width: 100%;}
+.al_body_template_three h2.category-head{position:sticky;top:203px;padding: 15px;background-color: #fff;z-index: 99;}
+
+.scrollspy-menu ul{display:block;list-style:none;text-align:center;}
+
 .scrollspy-menu li{display:block}
 .scrollspy-menu .active a{border-color:#87ceeb;border-color:var(--theme-deafult);background:linear-gradient(90deg,#f7ebec 0,rgba(251,246,247,0) 92.47%)}
 .scrollspy-menu a{display:block;padding:0;color:var(--theme-deafult);text-decoration:none;text-align:left;padding:10px 20px;display:block;border-left:3px solid transparent}
@@ -516,3 +520,12 @@ body[dir="rtl"].al_body_template_three .main-menu .menu-right .icon-nav .onhover
     padding: 0px 132px 0px 0px ;
 }
 
+/* new css 9/7/22 */
+.vender-icon img.rounded-circle.avatar-lg{
+    display: block;
+    height: 100px;
+    width: 100px;
+}
+a.morelink.less{
+    margin-left: 5px;
+}

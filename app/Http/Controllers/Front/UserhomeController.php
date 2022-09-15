@@ -421,6 +421,12 @@ class UserhomeController extends FrontController
             $navCategories = $this->categoryNav($langId);
             Session::put('navCategories', $navCategories);
             $clientPreferences = ClientPreference::first();
+            $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
+
+            if(count($navCategories) > 0 && $vendor_type =='pick_drop' ){
+                $categoriesSlug = $navCategories[0]->slug;
+                return redirect()->route('categoryDetail',$categoriesSlug); 
+            }
             $count = 0;
             if ($clientPreferences) {
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
@@ -561,7 +567,7 @@ class UserhomeController extends FrontController
         }
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
-        $preferences = (object)Session::get('preferences');
+        $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'): ClientPreference::first();
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
 
@@ -655,11 +661,17 @@ class UserhomeController extends FrontController
                 }else{
                     $value->is_vendor_closed = 0;
                     if($value->slotDate->isNotEmpty()){
-                        $value->opening_time = Carbon::parse($value->slotDate->first()->start_time)->format('g:i A');
-                        $value->closing_time = Carbon::parse($value->slotDate->first()->end_time)->format('g:i A');
+                        if($value->slotDate->first()->start_time!='' && $value->slotDate->first()->end_time!=''){
+                            $value->opening_time  = date('g:i A',strtotime($value->slotDate->first()->start_time));
+                            $value->closing_time = date('g:i A',strtotime($value->slotDate->first()->end_time));
+                        }
+                     
                     }elseif($value->slot->isNotEmpty()){
-                        $value->opening_time = Carbon::parse($value->slot->first()->start_time)->format('g:i A');
-                        $value->closing_time = Carbon::parse($value->slot->first()->end_time)->format('g:i A');
+                        \Log::info( date('g:i A',strtotime($value->slot->first()->end_time)));
+                        if($value->slot->first()->start_time && $value->slot->first()->end_time){
+                            $value->opening_time = date('g:i A',strtotime($value->slot->first()->start_time));
+                            $value->closing_time = date('g:i A',strtotime($value->slot->first()->end_time));
+                        }
                     }
                 }
             }
@@ -779,7 +791,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $new_product_detail->inquiry_only,
                 'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
                 'vendor' => $new_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($new_product_detail->variant->first()->price??0 * $multiply,',')),
+                'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
             );
         }
@@ -797,7 +809,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $feature_product_detail->inquiry_only,
                 'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
                 'vendor' => $feature_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($feature_product_detail->variant->first()->price * $multiply,',')),
+                'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$feature_product_detail->variant->first()->price * $multiply,',')),
                 'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug
             );
         }
@@ -815,7 +827,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $on_sale_product_detail->inquiry_only,
                 'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                 'vendor' => $on_sale_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
+                'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
         }
@@ -1434,7 +1446,7 @@ $activeOrders = [];
                     'inquiry_only' => $on_sale_product_detail->inquiry_only,
                     'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                     'vendor' => $on_sale_product_detail->vendor,
-                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format($on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
+                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
                     'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
                 );
             }
@@ -1458,7 +1470,7 @@ $activeOrders = [];
                 'inquiry_only' => $new_product_detail->inquiry_only,
                 'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
                 'vendor' => $new_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($new_product_detail->variant->first()->price??0 * $multiply, ',')),
+                'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply, ',')),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
             );
             }
@@ -1483,7 +1495,7 @@ $activeOrders = [];
                     'inquiry_only' => $feature_product_detail->inquiry_only,
                     'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
                     'vendor' => $feature_product_detail->vendor,
-                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format($feature_product_detail->variant->first()->price * $multiply, ',')),
+                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$feature_product_detail->variant->first()->price * $multiply, ',')),
                     'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug
                 );
             }

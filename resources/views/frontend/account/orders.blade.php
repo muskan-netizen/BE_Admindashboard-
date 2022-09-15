@@ -144,11 +144,11 @@
                                                                         <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                                                                     </div>
                                                                     <div class="col-md-3 alOrderStatus">
-                                                                        <h4>{{ __('Customer Name') }}</h4>
+                                                                        <h4>{{ __('Vendor Name') }}</h4>
                                                                         <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
-                                                                        <div class="col-md-3">
+                                                                        <div class="col-md-3 ellipsis">
                                                                             <h4>{{ __('Address') }}</h4>
                                                                             @if($order->luxury_option_id == 3)
 
@@ -241,7 +241,7 @@
                                                                                                 } else {
                                                                                                   //  $luxury_option_name = 'Delivery';
                                                                                                     $luxury_option_name = getNomenclatureName($luxury_option->title);
-                                                                                                   
+
                                                                                                 }
                                                                                             @endphp
                                                                                             <span
@@ -384,7 +384,7 @@
                                                                                                 @endif
                                                                                             @endforeach
                                                                                         </ul>
-                                                                                        
+
                                                                                     </div>
                                                                                     <div class="col-md-5 mt-md-0 mt-sm-2">
                                                                                         <ul class="price_box_bottom m-0 p-0">
@@ -1574,7 +1574,7 @@
                                                                                                 } elseif ($luxury_option->title == 'dine_in') {
                                                                                                     $luxury_option_name = 'Dine-In';
                                                                                                 } else {
-                                                                                                    
+
                                                                                                     //$luxury_option_name = 'Delivery';
                                                                                                     $luxury_option_name = getNomenclatureName($luxury_option->title);
                                                                                                 }
@@ -1884,8 +1884,8 @@
                 <span aria-hidden="true">×</span>
               </button>
             </div>
-            <div class="modal-body">
-              <h6 class="m-0">{{__('This change will remove all your cart products. Do you really want to continue ?')}}</h6>
+            <div class="modal-body text-center">
+              <h6 class="m-0 px-3">{{__('This change will remove all your cart products. Do you really want to continue ?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
               <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>

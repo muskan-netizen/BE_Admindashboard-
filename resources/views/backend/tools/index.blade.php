@@ -7,7 +7,7 @@
 @section('content')
 
 <!-- Start Content-->
-<div class="container-fluid">
+<div class="container-fluid alToolsPage">
 
     <!-- start page title -->
     <div class="row">
@@ -71,8 +71,8 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-2 mt-3">
-                            <div class="form-group mb-0 text-center">
+                        <div class="col-md-12 mt-3">
+                            <div class="form-group mb-0">
                                 <button class="btn btn-info btn-block" id="catalog_copy_button" type="submit"> {{ __("Copy") }} </button>
                             </div>
                         </div>
@@ -117,8 +117,8 @@
                             </div>
                         </div>
 
-                        <div class="col-md-2 mt-3">
-                            <div class="form-group mb-0 text-center">
+                        <div class="col-md-12 mt-3">
+                            <div class="form-group mb-0">
                                 <button class="btn btn-info btn-block" id="tax_copy_button" type="submit"> {{ __("Update") }} </button>
                             </div>
                         </div>
@@ -187,7 +187,7 @@
                 }else{
                     $('.imageCopyName').append('<tr id="'+res.data.image_id+'"><td style="padding: 5px"><img src="'+res.data.image_url+'"></td><td style="padding: 5px"><a href="'+res.data.show_image_url+'" target="_blank" style="font-size: 12px;" id="image_'+res.data.image_id+'">'+res.data.image_path+' </td><td style="padding: 5px"><label class="copy_link " id="cp_btn" title="copy" data-image_id="'+res.data.image_id+'" onclick="copyUrl(this)"><img src="{{asset("assets/icons/domain_copy_icon.svg")}}" alt="" style="margin: 0"><span class="copied_txt" id="show_copy_msg_on_click_copy" style="display: none;">Copied</span> </label></td></tr>');
                 }
-                
+
                 uploadedDocumentMap[file.name] = res.data.image_id;
                 var imageUrl = $('#pwd_spn').text();
                 //alert();

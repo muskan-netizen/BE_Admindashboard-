@@ -1,5 +1,5 @@
 @yield('css')
-@php 
+@php
 $mapKey = '1234';
 $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
 if($theme && !empty($theme->map_key)){
@@ -13,6 +13,8 @@ if($theme && !empty($theme->map_key)){
 <link href="{{asset('assets/css/app.min.css')}}" rel="stylesheet" type="text/css" id="app-default-stylesheet" />
 <link href="{{asset('assets/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/css/custom.css')}}" rel="stylesheet" type="text/css" />
+<link defer type="text/css" rel="stylesheet" href="{{asset('frontend/common/arabic_common.css')}}">
+
 
 @if(isset($mode) && $mode == 'rtl')
 
@@ -119,8 +121,8 @@ if($theme && !empty($theme->map_key)){
 {{-- <link href="{{ asset('assets/libs/datetimepicker/jquery.datetimepicker.min.css') }}" rel="stylesheet" type="text/css" /> --}}
 <link href="{{ asset('assets/libs/datetimepicker/daterangepicker.css') }}" rel="stylesheet" type="text/css" />
 @yield('customcss')
-@php 
-$socket_url = ''; 
+@php
+$socket_url = '';
 $admin_chat = '';
 $driver_chat = '';
 $customer_chat = '';
@@ -157,7 +159,7 @@ if(Auth::check()){
 	var auth = "{!! $auth_id !!}";
 	var db = "{!! $db !!}";
 	var authData =  `<?php  echo $authData  ?>`;
-	
+
 	var socket = null;
 	var Auth = {
 		auth_id:auth,
@@ -166,7 +168,7 @@ if(Auth::check()){
 	}
 	var Chat = {
 		orderData:{
-			
+
 		}
 	}
 	var SocketConstants = {
@@ -175,8 +177,9 @@ if(Auth::check()){
 		driver_chat : driver_chat,
 		customer_chat : customer_chat,
 		socket:'',
-	} 
+	}
 </script>
+<script src="{{asset('assets/libs/spinner/spinner.js')}}"></script>
 <script src="{{asset('assets/js/constants.js')}}"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
 <link href="{{asset('assets/libs/flatpickr/flatpickr.min.css') }}" rel="stylesheet" type="text/css" />
@@ -195,3 +198,4 @@ if(Auth::check()){
 <link href="{{asset('assets/css/jquery-ui.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/jquery-toast-plugin/jquery-toast-plugin.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/datatables/datatables.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/spinner/spinner.css')}}" rel="stylesheet">

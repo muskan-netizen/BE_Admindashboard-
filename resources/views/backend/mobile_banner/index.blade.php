@@ -10,19 +10,17 @@
 $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
 @endphp
 <!-- Start Content-->
-<div class="container-fluid">
+<div class="container-fluid alMobileBanner">
 
     <!-- start page title -->
     <div class="row align-items-center">
-        <div class="col-sm-6">
-            <div class="page-title-box">
+        <div class="col-sm-12">
+            <div class="page-title-box d-flex justify-content-between align-items-center">
                 <h4 class="page-title">{{ __('Mobile Banner') }}</h4>
-            </div>
-        </div>
-        <div class="col-sm-6 text-right">
-            <button class="btn btn-info waves-effect waves-light text-sm-right openBannerModal"
+                <button class="btn btn-info waves-effect waves-light text-sm-right openBannerModal"
                 userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
             </button>
+            </div>
         </div>
     </div>
     <!-- end page title -->
@@ -134,10 +132,8 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                     <div id="show_map-canvas"></div>
                                 </div>
                                 <div class="row align-items-center mb-3">
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-12 d-flex justify-content-between align-items-center">
                                         <h4 class="mb-2 "><span> {{ __('Service Area') }} </span></h4>
-                                    </div>
-                                    <div class="col-sm-6 text-center text-sm-right">
                                         <button class="btn btn-info openServiceModal"> {{ __('Add Service Area') }}</button>
                                     </div>
                                 </div>
@@ -155,10 +151,10 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                                 <td class="table-user">
                                                     <a href="javascript:void(0);" class="text-body">{{$geo->name}}</a>
                                                 </td>
-                    
+
                                                 <td>
                                                     <button type="button" class="btn btn-primary-outline action-icon editAreaBtn" area_id="{{$geo->id}}"><i class="mdi mdi-square-edit-outline"></i></button>
-                    
+
                                                     <form action="{{ route('banner.serviceArea.delete', $geo->id) }}" method="POST" class="action-icon">
                                                         @csrf
                                                         <input type="hidden" value="{{$geo->id}}" name="area_id">
@@ -170,7 +166,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                         </tbody>
                                     </table>
                                 </div>
-                            
+
                                 <form action="{{ route('banner.draw.circle.with.radius') }}" method="post">
                                     @csrf()
                                     <input type="hidden" name="type" value="2" />
@@ -216,21 +212,21 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                 @foreach($banners as $ban)
                                 <tr data-row-id="{{$ban->id}}">
                                     <td class="draggableTd"><span class="dragula-handle"></span></td>
-                                    <td class="banner_wrapper"> 
+                                    <td class="banner_wrapper">
                                         <div class="banner_box">
                                             <img src="{{$ban->image['proxy_url'].'400/160'.$ban->image['image_path']}}" alt="{{$ban->id}}" >
-                                        </div>    
+                                        </div>
                                     </td>
 
-                                    <td><a class="openBannerModal" userId="{{$ban->id}}" href="#"> {{ $ban->name }}</a> </td> 
+                                    <td><a class="openBannerModal" userId="{{$ban->id}}" href="#"> {{ $ban->name }}</a> </td>
                                     <td> <span class="text-center d-inline-block">
                                         @if(isset($ban->start_date_time) && isset($ban->end_date_time))
-                                        {{ convertDateTimeInTimeZone($ban->start_date_time, $timezone, 'd-m-Y, H:i A')}} <br/> to <br/> {{convertDateTimeInTimeZone($ban->end_date_time, $timezone, 'd-m-Y, H:i A')}} 
+                                        {{ convertDateTimeInTimeZone($ban->start_date_time, $timezone, 'd-m-Y, H:i A')}} <br/> to <br/> {{convertDateTimeInTimeZone($ban->end_date_time, $timezone, 'd-m-Y, H:i A')}}
                                         @else
                                         -
                                         @endif
                                     </span></td>
-                                    <td>                                         
+                                    <td>
                                         @if($ban->link == 'category')
                                             {{ __("Category") }}
                                         @elseif($ban->link == 'vendor')
@@ -239,13 +235,13 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                             {{ __("N/A") }}
                                         @endif
                                      </td>
-                                    <td> 
+                                    <td>
                                         <input type="checkbox" bid="{{$ban->id}}" id="cur_{{$ban->id}}" data-plugin="switchery" name="validity_index" class="chk_box" data-color="#43bee1" {{($ban->validity_on == '1') ? 'checked' : ''}} >
                                      </td>
-                                    <td> 
+                                    <td>
                                         <div class="form-ul" style="width: 60px;">
                                             <div class="inner-div" style="float: left;">
-                                                <a class="action-icon openBannerModal" userId="{{$ban->id}}" href="#"> <i class="mdi mdi-square-edit-outline"></i></a> 
+                                                <a class="action-icon openBannerModal" userId="{{$ban->id}}" href="#"> <i class="mdi mdi-square-edit-outline"></i></a>
                                             </div>
                                             <div class="inner-div">
                                                 <form method="POST" action="{{ route('mobilebanner.destroy', $ban->id) }}" id="deleteMobileBanner_{{$ban->id}}">
@@ -254,7 +250,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                                     <div class="form-group mb-0">
                                                         <button type="button" class="btn btn-primary-outline action-icon" id="deleteMobileBannerButton" onclick="deleteBanner('{{$ban->id}}')">
                                                             <i class="mdi mdi-delete"></i>
-                                                        </button> 
+                                                        </button>
 
                                                     </div>
                                                 </form>

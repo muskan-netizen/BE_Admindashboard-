@@ -388,7 +388,298 @@
 	</div>
 </div><!-- age-restriction end -->
 
+<script type="text/template" id="desktop_banners_template">
+	<div class="carousel-inner">
+	   <% _.each(banners, function(banner, k){%>
+		  <%
+		  var url='#';
+		  if(banner.link == 'category'){
+			 if(banner.category != null){
+				url = "{{route('categoryDetail')}}" + "/" + banner.category.slug;
+			 }
+		  }
+          else if(banner.link == 'vendor'){
+			 if(banner.vendor != null){
+				url = "{{route('vendorDetail')}}" + "/" + banner.vendor.slug;
+			 }
+		  }
+		  %>
+		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
+			 <a class="banner-img-outer" href="<%= url %>">
+				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1920/400<%= banner.image.image_path %>" />
+				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>1920/400<%= banner.image.image_path %>">
+			 </a>
+		  </div>
+	   <% }); %>
+	</div>
+	<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="sr-only">Previous</span>
+	</a>
+	<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="sr-only">Next</span>
+	</a>
+</script>
 
+<script type="text/template" id="mobile_banners_template">
+	<div class="carousel-inner">
+	   <% _.each(banners, function(banner, k){%>
+		  <%
+		  var url='#';
+		  if(banner.link == 'category'){
+			 if(banner.category != null){
+				url = "{{route('categoryDetail')}}" + "/" + banner.category.slug;
+			 }
+		  }
+          else if(banner.link == 'vendor'){
+			 if(banner.vendor != null){
+				url = "{{route('vendorDetail')}}" + "/" + banner.vendor.slug;
+			 }
+		  }
+		  %>
+		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
+			 <a class="banner-img-outer" href="<%= url %>">
+				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1920/400<%= banner.image.image_path %>" />
+				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>1920/400<%= banner.image.image_path %>">
+			 </a>
+		  </div>
+	   <% }); %>
+	</div>
+	<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="sr-only">Previous</span>
+	</a>
+	<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="sr-only">Next</span>
+	</a>
+</script>
+
+ <!-- vendors_template start -->
+<script type="text/template" id="vendors_template" >
+	<% _.each(vendors, function(vendor, k){%>
+		<% if(k < 7){%>
+			<div class="col-lg-3 col-md-4 col-6">
+				<div class="product-card-box position-relative text-center al_custom_vendors_sec_al_">
+					<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
+						<div class="suppliers-img-outer position-relative " style="height:100px">
+							<% if(vendor.is_vendor_closed==1){%>
+								<img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+							<%}else{%>
+								<img  class="fluid-img mx-auto blur-up lazyload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+							<%}%>
+
+						</div>
+						<div class="supplier-rating">
+							<h6 class="mb-1 ellips"><%=vendor.name %></h6>
+							{{--<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips d-none">
+								<%=vendor.categoriesList %>
+							</p>--}}
+								<% if(vendor.timeofLineOfSightDistance !=undefined){%>
+									<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
+								<%}%>
+						</div>
+						@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
+						<% if(vendor.vendorRating > 0){%> <span class="rating-number"><%=vendor.vendorRating %> </span>
+						<%}%> @endif @endif
+					</a>
+				</div>
+			</div>
+		<%}%>
+		<% if(k == 7){%>
+			<div class="col-sm-3">
+				<div class="al_boxSeeAll">
+					<a class="al_boxSeeAllArea" href="{{route('vendor.all')}}">
+						<span style="">
+							<i class="fa fa-arrow-right"></i>
+						</span>
+						{{__("See all")}}
+					</a>
+				</div>
+			</div>
+		<% return false;}%>
+
+	<% }); %>
+</script><!-- vendors_template end -->
+
+<!-- banner_template start -->
+<script type="text/template" id="banner_template" >
+	<% _.each(brands, function(brand, k){%>
+		<div  >
+			<a class="brand-box d-block black-box" href="<%=brand.redirect_url %>">
+				<div class="brand-ing"> <img class="blur-up lazyload" data-src="<%=brand.image.image_fit %>260/260<%=brand.image.image_path %>" alt="" title=""> </div>
+				<h6><%=brand.translation_title %></h6> </a>
+		</div>
+		<% }); %>
+</script><!-- banner_template end -->
+
+<!-- products_template start -->
+<script type="text/template" id="products_template" >
+	<% _.each(products, function(product, k){ %>
+		<div class="product-card-box position-relative al_box_four_template al"  >
+			{{--<div class="add-to-fav 12">
+				<input id="fav_pro_one" type="checkbox">
+				<label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
+			</div>--}}
+			<a class="common-product-box text-center" href="<%=product.vendor.slug %>/product/<%=product.url_slug %>">
+				<div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="<%=product.image_url %>" alt="" title="">
+					<div class="pref-timing"> </div>
+				</div>
+				<div class="media-body align-self-start">
+					<div class="inner_spacing px-0">
+						<div class="product-description mt-2 text-left">
+							<div class="al_productName">
+								<p class="al_vendorName mb-0 ellips"><%=product.vendor_name %></p>
+							</div>
+							<h6 class="card_title m-0 ellips"><%=product.title %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
+								<% if(product.averageRating > 0){%>
+									<%}%> @endif @endif
+							<div class="product-description_list">
+								<p class="al_ratingNumber mb-0">
+									<!-- <span class="rating-number"><%=product.averageRating %></span> -->
+									<span class="Stars" style="--rating: <%=product.averageRating %>;" aria-label="Rating of this product is <%=product.averageRating %> out of 5."></span>
+								</p>
+								<p class="al_product_category mb-0">
+									<span>{{__('In')}} <%=product.category %></span>
+								</p>
+							</div>
+							<div class="d-flex align-items-center justify-content-end al_clock px-2">
+								<b><% if(product.inquiry_only==0){%> <%=product.price %> <%}%></b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</a>
+		</div>
+		<% }); %>
+</script><!-- products_template end -->
+
+<!-- trending_vendors_template start -->
+<script type="text/template" id="trending_vendors_template" >
+	<% _.each(trending_vendors, function(vendor, k){%>
+		<div class="product-card-box position-relative text-center al_custom_vendors_sec"  >
+			<a class="suppliers-box al_vendors_template2 d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
+				<div class="suppliers-img-outer position-relative ">
+					<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+						<%}else{%> <img class="fluid-img mx-auto blur-up lazyload w-100" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+							<%}%>
+				</div>
+				<div class="supplier-rating">
+					<h6 class="mb-1 ellips"><%=vendor.name %></h6>
+					<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips d-none">
+						<%=vendor.categoriesList %>
+					</p>
+
+						<% if(vendor.timeofLineOfSightDistance !=undefined){%>
+									<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
+									<%}%>
+				</div>
+				@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
+						<% if(vendor.vendorRating > 0){%>
+						<span class="rating-number"><%=vendor.vendorRating %> </span>
+						<%}%> @endif @endif
+			</a>
+		</div>
+		<% }); %>
+</script><!-- trending_vendors_template end -->
+
+<!-- recent_orders_template start -->
+<script type="text/template" id="recent_orders_template"  >
+	<% _.each(recent_orders, function(order, k){ %>
+		<% subtotal_order_price = total_order_price = total_tax_order_price = 0; %>
+			<% _.each(order.vendors, function(vendor, k){ %>
+				<%   product_total_count = product_subtotal_amount = product_taxable_amount = 0; %>
+					<div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0"  >
+						<% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){%>
+							<div class="progress-order font-12">
+								<% if(order.scheduled_slot==null){%>
+									<% if(order.scheduled_date_time){%> <span class="badge badge-success ml-2">Scheduled</span> <span class="ml-2">{{__('Your order will arrive by ')}}<%=order.converted_scheduled_date_time %></span>
+										<%}else{%> <span class="ml-2">{{__('Your order will arrive by ')}}<%=vendor.ETA %></span>
+											<%}%>
+												<%}else{%> <span class="badge badge-success ml-2">Scheduled</span> <span class="ml-2">{{__('Your order will arrive by ')}}<%=order.converted_scheduled_date_time %>, Slot : <%=order.scheduled_slot %></span>
+													<%}%>
+							</div>
+							<%}%> <span class="left_arrow pulse"></span>
+								<div class="row">
+									<div class="col-5 col-sm-3">
+										<h5 class="m-0">{{__('Order Status')}}</h5>
+										<ul class="status_box mt-1 pl-0">
+											<% if(vendor.order_status){%>
+												<li>
+													<% if(vendor.order_status=='placed'){%> <img class="blur-up lazyload" data-src="{{asset('assets/images/order-icon.svg')}}" alt="" title="">
+														<%}else if(vendor.order_status=='accepted'){%> <img class="blur-up lazyload" data-src="{{asset('assets/images/payment_icon.svg')}}" alt="" title="">
+															<%}else if(vendor.order_status=='processing'){%> <img class="blur-up lazyload" data-src="{{asset('assets/images/customize_icon.svg')}}" alt="" title="">
+																<%}else if(vendor.order_status=='out for delivery'){%> <img class="blur-up lazyload" data-src="{{asset('assets/images/driver_icon.svg')}}" alt="" title="">
+																	<%}%>
+																		<label class="m-0 in-progress">
+																			<%=(vendor.order_status).charAt(0).toUpperCase() + (vendor.order_status).slice(1) %>
+																		</label>
+												</li>
+												<%}%>
+													<% if(vendor.dispatch_traking_url){%> <img class="blur-up lazyload" data-src="{{asset('assets/images/order-icon.svg')}}" alt="" title=""> <a href="{{route('front.booking.details')}}/<%=order.order_number %>" target="_blank">{{__('Details')}}</a>
+														<%}%>
+															<% if(vendor.dineInTable){%>
+																<li>
+																	<h5 class="mb-1">{{__('Dine-in')}}</h5>
+																	<h6 class="m-0"><%=vendor.dineInTableName %></h6>
+																	<h6 class="m-0">Category : <%=vendor.dineInTableCategory %></h6>
+																	<h6 class="m-0">Capacity : <%=vendor.dineInTableCapacity %></h6> </li>
+																<%}%>
+										</ul>
+									</div>
+									<div class="col-7 col-sm-4">
+										<ul class="product_list d-flex align-items-center p-0 flex-wrap m-0">
+											<% _.each(vendor.products, function(product, k){%>
+												<% if(vendor.vendor_id==product.vendor_id){%>
+													<li class="text-center"> <img class="blur-up lazyload" data-src="<%=product.image_url %>" alt="" title=""> <span class="item_no position-absolute">x <%=product.quantity %></span>
+														<label class="items_price">{{Session::get('currencySymbol')}}
+															<%= Helper.formatPrice(product.price * product.pricedoller_compare) %>
+														</label>
+													</li>
+													<% product_total_price=product.price * product.doller_compare; product_total_count +=product.quantity * product_total_price; product_taxable_amount +=product.taxable_amount; total_tax_order_price +=product.taxable_amount; %>
+														<%}%>
+															<%}); %>
+										</ul>
+									</div>
+									<div class="col-md-5 mt-md-0 mt-sm-2">
+										<ul class="price_box_bottom m-0 p-0">
+											<li class="d-flex align-items-center justify-content-between">
+												<label class="m-0">{{__('Product Total')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.subtotal_amount) %></span> </li>
+											<li class="d-flex align-items-center justify-content-between">
+												<label class="m-0">{{__('Coupon Discount')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.discount_amount) %></span> </li>
+											<li class="d-flex align-items-center justify-content-between">
+												<label class="m-0">{{__('Delivery Fee')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.delivery_fee) %></span> </li>
+											<li class="grand_total d-flex align-items-center justify-content-between">
+												<label class="m-0">{{__('Amount')}}</label>
+												<% product_subtotal_amount=product_total_count - vendor.discount_amount + vendor.delivery_fee; subtotal_order_price +=product_subtotal_amount; %> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.payable_amount) %></span> </li>
+										</ul>
+									</div>
+								</div>
+					</div>
+					<% }); %>
+						<% }); %>
+</script><!-- recent_orders_template end -->
+
+<!-- cities start -->
+<script type="text/template" id="cities_template" >
+	<% _.each(cities, function(city, k){%>
+	   <div class="alSpaListSlider">
+		  <div>
+			 <div class="alSpaListBox">
+				<div class="alSpaCityBox">
+				   <a href="/cities/<%=city.slug %>"><img class="w-100" src="<%=city.image.image_fit %>260/260<%=city.image.image_path %>"></a>
+				</div>
+				<p><%=city.title %></p>
+			 </div>            
+		  </div>
+	   </div>
+		<% }); 
+	%>
+ </script><!-- cities cities end -->
+
+
+<!-- our_vendor_main_div start -->
 
 
 <!-- footer code in layouts.store/footercontent-template-two -->

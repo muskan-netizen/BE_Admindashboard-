@@ -44,7 +44,7 @@
                                 <ul id='main-nav-list'>
                                 @if(!empty($category->childs) && count($category->childs) > 0)
                                         @foreach ($category->childs as $key => $childs)
-                                    
+
                                             @if( in_array($childs->type_id , [8,12]))
                                             <li><a href="#section_set{{$key}}">{{ $childs['translation_name'] ?? ''}}</a></li>
                                             @endif
@@ -98,7 +98,7 @@
                                                                             @endif
                                                                             <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
                                                                         </h5>
-                                                                      
+
 
                                                                         @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
                                                                         @php
@@ -144,12 +144,12 @@
                                                                             $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                                         } ?>
                                                                     <div class="class_img">
-                                                                        @if($imagePath != '') 
+                                                                        @if($imagePath != '')
                                                                         <img src="{{$imagePath}}" alt="">
                                                                         @else
-                                                                       
+
                                                                         @endif
-                                                                        
+
                                                                     </div>
                                                                 </div>
 
@@ -188,7 +188,7 @@
                                                 @endif
                                                 @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
-                                               
+
                                                 {{-- new product design  --}}
                                                 <div class="row classes_wrapper no-gutters align-items-center" href="#">
                                                     <div class="col-md-9 col-sm-8 pr-md-2">
@@ -207,10 +207,10 @@
                                                                 $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                             } ?>
                                                         <div class="class_img">
-                                                            @if($imagePath != '') 
+                                                            @if($imagePath != '')
                                                             <img src="{{$imagePath}}" alt="">
                                                             @else
-                                                            
+
                                                             @endif
                                                         </div>
                                                     </div>
@@ -221,7 +221,7 @@
                                                                     @endif
                                                                     <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
                                                                 </h5>
-                                                                
+
                                                                 @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
                                                                 @php
                                                                     $cartcount = 1;
@@ -350,7 +350,7 @@
                                 <div id="step-2-ondemand">
                                    @php
                                    $lastKey = count($cartData) - 1;
-                                  
+
                                    @endphp
                                    {{ Arr::last($cartData)}}
                                     @foreach ($cartData as $cd => $cart_data)
@@ -432,6 +432,7 @@
                                             <h4 class="mt-4 mb-2"><b>{{__('Do you have any specific instructions?')}}</b></h4>
                                             <textarea class="form-control" name="specific_instructions" id="specific_instructions" cols="30" rows="7"></textarea>
                                         </div>
+
 
                                 </div>
                             @endif

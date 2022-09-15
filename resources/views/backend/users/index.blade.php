@@ -39,14 +39,14 @@
 .royo_customber_btn .position-absolute {
     left: 5%;
 }
-    
+
 }
 
 
 @media screen and (max-width:991px) {
 .royo_customber_btn .position-absolute {
     left: 0%;
-} 
+}
 }
 
 @media screen and (max-width:767px) {
@@ -61,7 +61,7 @@
 .royo_customber_btn .position-absolute .btn.btn-info{
     font-size:10px;
 }
-.al_new_export_table.royo_customber_btn .dt-buttons.btn-group.flex-wrap .btn-success.waves-effect.waves-light{  
+.al_new_export_table.royo_customber_btn .dt-buttons.btn-group.flex-wrap .btn-success.waves-effect.waves-light{
     height: 30px;
     font-size: 10px;
 }
@@ -91,7 +91,7 @@
 </style>
 @endsection
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid alCustomersPage">
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
@@ -106,7 +106,7 @@
         <div class="col-12">
             <div class="card-box">
                 <div class="row">
-                    <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
+                    <div class="col-6 col-md-4 mb-3 mb-md-0">
                         <div class="text-center">
                             <h3>
                                 <i class="fa fa-user text-primary mdi-24px"></i>
@@ -115,7 +115,7 @@
                             <p class="text-muted font-15 mb-0">{{ __("Active User Count") }}</p>
                         </div>
                     </div>
-                    <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
+                    <div class="col-6 col-md-4 mb-3 mb-md-0">
                         <div class="text-center">
                             <h3>
                                 <i class="fas fa-user-clock text-primary mdi-24px"></i>
@@ -124,7 +124,7 @@
                             <p class="text-muted font-15 mb-0">{{ __("Inactive User Count") }}</p>
                         </div>
                     </div>
-                    <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
+                    <div class="col-6 col-md-4 mb-3 mb-md-0">
                         <div class="text-center">
                             <h3>
                                 <i class="mdi mdi-login text-primary mdi-24px"></i>
@@ -166,7 +166,7 @@
                         <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal" data-target="#pay-receive-modal" data-backdrop="static" data-keyboard="false">{{__("Edit Wallet")}}</button>
                     </div>
 
-    
+
                     <div class="row mt-1 sml_royo-responsive">
                         <div class="col-sm-12 col-lg-12 tab-product  pt-0">
                             <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
@@ -181,13 +181,13 @@
                                         <i class="icofont icofont-ui-home"></i>{{ __('InActive') }}<sup class="inactive_user_count">({{$inactive_users}})</sup>
                                     </a>
                                     <div class="material-border"></div>
-                                </li>                       
+                                </li>
                             </ul>
                             <div class="tab-content nav-material pt-0" id="top-tabContent">
                                 <div class="tab-pane fade past-order show active" id="active_user" role="tabpanel" aria-labelledby="active-user">
                                     <div class="row">
                                         <div class="col-12">
-                                    
+
                                             <div class="card">
                                                 <div class="card-body">
                                                     <div class="table-responsive">
@@ -274,7 +274,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            
+
                             </div>
                         </div>
                     </div>
@@ -417,7 +417,7 @@
                             name: 'login_type',
                             orderable: false,
                             searchable: false
-                        },                        
+                        },
                         {
                             data: 'signup_date',
                             name: 'signup_date',
@@ -498,7 +498,7 @@
                             orderable: false,
                             searchable: false,
                             "mRender": function(data, type, full) {
-                               
+
                                 return "<a href='javascript:void(0)' class='customer_order_link'  data-id='" + full.id + "'>" + data + "</a>";
                             }
                         },

@@ -186,7 +186,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                             <div class="col-12">
                                 <div class="row vendor-products-wrapper">
                                     <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
-                                        <nav class="scrollspy-menu">
+                                        <nav class="scrollspy-menu ">
                                             <ul>
                                                 @forelse($listData as $key => $data)
                                                 <li>
@@ -680,7 +680,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                 </div>
             </div>
         </section>
-        
+
     <script type="text/template" id="header_cart_template_ondemand">
         <ul class="pl-2 pr-2 pb-2 pt-0 ">
             <div class="dcpj" >
@@ -966,11 +966,11 @@ $checkSlot = findSlot('', $vendor->id, '');
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-center">
                     <input type="hidden" id="vendor_id" value="">
                     <input type="hidden" id="product_id" value="">
                     <input type="hidden" id="cartproduct_id" value="">
-                    <h6 class="m-0">{{ __('Are You Sure You Want To Remove This Item?') }}</h6>
+                    <h6 class="m-0 px-3">{{ __('Are You Sure You Want To Remove This Item?') }}</h6>
                 </div>
                 <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                     <button type="button" class="btn btn-solid black-btn"
@@ -1069,22 +1069,22 @@ $checkSlot = findSlot('', $vendor->id, '');
     <script>
         var get_product_addon_url = "{{ route('vendorProductAddons') }}"
 
-        jQuery(window).scroll(function() {
+        // jQuery(window).scroll(function() {
 
-            var scroll = jQuery(window).scrollTop();
-            var header_height = $('.site-header.fixed-bar').height();
-            var product_section = $('.vendor-products-wrapper').offset().top - header_height;
-            var categories_list_height = $('.vendor-products-wrapper').height() + product_section;
+        //     var scroll = jQuery(window).scrollTop();
+        //     var header_height = $('.site-header.fixed-bar').height();
+        //     var product_section = $('.vendor-products-wrapper').offset().top - header_height;
+        //     var categories_list_height = $('.vendor-products-wrapper').height() + product_section;
 
-            if (scroll >= product_section) {
-                jQuery(".categories-product-list").addClass("fixed-bar");
-            } else {
-                jQuery(".categories-product-list").removeClass("fixed-bar");
-            }
-            if(scroll >= categories_list_height){
-                jQuery(".categories-product-list").removeClass("fixed-bar");
-            }
-        });
+        //     if (scroll >= product_section) {
+        //         jQuery(".categories-product-list").addClass("fixed-bar");
+        //     } else {
+        //         jQuery(".categories-product-list").removeClass("fixed-bar");
+        //     }
+        //     if(scroll >= categories_list_height){
+        //         jQuery(".categories-product-list").removeClass("fixed-bar");
+        //     }
+        // });
 
         var addonids = [];
         var addonoptids = [];
@@ -1293,6 +1293,7 @@ $checkSlot = findSlot('', $vendor->id, '');
             var latitude = "{{ $vendor->latitude }}";
             var longitude = "{{ $vendor->longitude }}";
             var latlng = new google.maps.LatLng(latitude, longitude);
+            var prev_infowindow =false;
 
             map = new google.maps.Map(document.getElementById('vendor-map'), {
                 center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
@@ -1340,6 +1341,13 @@ $checkSlot = findSlot('', $vendor->id, '');
                             map: map,
                         });
                     marker.addListener("click", () => {
+
+                        if( prev_infowindow ) {
+                            prev_infowindow.close();
+                        }
+
+                        prev_infowindow = infowindow;
+
                         infowindow.open(map, marker);
                     });
 

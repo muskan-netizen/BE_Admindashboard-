@@ -512,11 +512,11 @@ $checkSlot = findSlot('', $vendor->id, '');
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-center">
                     <input type="hidden" id="vendor_id" value="">
                     <input type="hidden" id="product_id" value="">
                     <input type="hidden" id="cartproduct_id" value="">
-                    <h6 class="m-0">{{ __('Are You Sure You Want To Remove This Item?') }}</h6>
+                    <h6 class="m-0 px-3">{{ __('Are You Sure You Want To Remove This Item?') }}</h6>
                 </div>
                 <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                     <button type="button" class="btn btn-solid black-btn"
@@ -615,20 +615,20 @@ $checkSlot = findSlot('', $vendor->id, '');
     <script>
         var get_product_addon_url = "{{ route('vendorProductAddons') }}"
 
-        jQuery(window).scroll(function() {
+        // jQuery(window).scroll(function() {
 
-            var scroll = jQuery(window).scrollTop();
-            var categories_list_height = $('.vendor-products-wrapper').height() +400;
+        //     var scroll = jQuery(window).scrollTop();
+        //     var categories_list_height = $('.vendor-products-wrapper').height() +400;
 
-            if (scroll >= 400) {
-                jQuery(".categories-product-list").addClass("fixed-bar");
-            } else {
-                jQuery(".categories-product-list").removeClass("fixed-bar");
-            }
-            if(scroll >= categories_list_height){
-                jQuery(".categories-product-list").removeClass("fixed-bar");
-            }
-        });
+        //     if (scroll >= 400) {
+        //         jQuery(".categories-product-list").addClass("fixed-bar");
+        //     } else {
+        //         jQuery(".categories-product-list").removeClass("fixed-bar");
+        //     }
+        //     if(scroll >= categories_list_height){
+        //         jQuery(".categories-product-list").removeClass("fixed-bar");
+        //     }
+        // });
 
         var addonids = [];
         var addonoptids = [];
@@ -672,7 +672,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         $(document).delegate(".product_tag_filter", "change", function() {
             vendorProductsSearchResults();
         });
-        
+
 
     </script>
     <script>
@@ -840,6 +840,7 @@ $checkSlot = findSlot('', $vendor->id, '');
          var latitude = "{{ $vendor->latitude }}";
          var longitude = "{{ $vendor->longitude }}";
          var latlng = new google.maps.LatLng(latitude, longitude);
+         var prev_infowindow =false;
 
          map = new google.maps.Map(document.getElementById('vendor-map'), {
              center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
@@ -887,6 +888,11 @@ $checkSlot = findSlot('', $vendor->id, '');
                             position: { lat: parseFloat(vendor.latitude), lng: parseFloat(vendor.longitude) },
                         });
                 marker.addListener("click", () => {
+                    if( prev_infowindow ) {
+                        prev_infowindow.close();
+                    }
+                    prev_infowindow = infowindow;
+
                     infowindow.open(map, marker);
                 });
 
