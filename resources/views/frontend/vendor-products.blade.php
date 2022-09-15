@@ -100,9 +100,10 @@
                         @endif
                         @if(!empty($variantSets) && count($variantSets) > 0)
                         @foreach($variantSets as $key => $sets)
+                        
                         <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
                             @php
-                            $slug = $sets->variantDetail->varcategory->cate ? $sets->variantDetail->varcategory->cate->slug.' > ' : '';
+                            $slug = $sets->variantDetail->varcategory ?  ($sets->variantDetail->varcategory->cate ? $sets->variantDetail->varcategory->cate->slug.' > ' : '' ) : '';
                             @endphp
                             @if($slug)
                             <h3 class="collapse-block-title"> {{$slug . $sets->title}}</h3>

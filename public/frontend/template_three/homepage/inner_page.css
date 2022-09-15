@@ -196,6 +196,9 @@ body #page-container #footer .footer-theme .sub-title .contact-list li span{padd
 
 
 
+.al_body_template_three div#date_time_set_div9 .slick-slider .slick-prev{left: -25px;z-index: 9;} 
+.al_body_template_three div#date_time_set_div9 .slick-slider .slick-next{right: -25px;}
+
 
 .code-outer label{
     border: 2px dashed var(--theme-deafult);
