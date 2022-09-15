@@ -1,3 +1,9 @@
+.al_white_bg_round .scrollspy-menu{
+    position: sticky;
+    top: 145px;
+}
+.al_white_bg_round .scrollspy-menu ul li.active{color: var(--theme-deafult);}
+.al_white_bg_round .scrollspy-menu ul{padding: 15px;}
 .al_mobile_menu{
     display: none;
     position: absolute;
