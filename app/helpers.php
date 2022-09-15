@@ -524,6 +524,7 @@ if (!function_exists('showSlot')) {
         ->get();
         }
 
+        // check if vendor has added slots. if not added then no need to execute this.
         if (isset($slots) && count($slots)>0) {
             $min[] = '';
             $cart = CartProduct::where('vendor_id', $vid)->get();

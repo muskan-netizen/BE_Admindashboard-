@@ -363,6 +363,7 @@
                                     </div>
                                     @endif
                                     @php
+                                        // check if vendor is closed or not, if closed then get slots otherwise no need.
                                         if($vendor_info->is_vendor_closed == 1)
                                             $checkSlot = findSlot('',$product->vendor->id,'');
                                         else
