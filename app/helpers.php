@@ -534,40 +534,44 @@ if (!function_exists('showSlot')) {
         })
         ->get();
         }
-        $min[] = '';
-        $cart = CartProduct::where('vendor_id', $vid)->get();
-        if (isset($cart) && $cart->count()>0) {
-            foreach ($cart as $product) {
-                $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
-                $delayMin= isset($product->product->delay_order_min) ? ($product->product->delay_order_min) : 0;
-                $min[] = (($delayHr * 60) + $delayMin);
-            }
-        }
 
+        // check if vendor has added slots. if not added then no need to execute this.
         if (isset($slots) && count($slots)>0) {
-            $slotss = [];
-            foreach ($slots as $slott) {
-                if (isset($slott->days->id)) {
-                    $new_slot = SplitTime($myDate, $slott->start_time, $slott->end_time, $duration, max($min));
-                    if (!in_array($new_slot, $slotss)) {
-                        $slotss[] = $new_slot;
-                    }
-                } else {
-                    $slotss[] = [];
+            $min[] = '';
+            $cart = CartProduct::where('vendor_id', $vid)->get();
+            if (isset($cart) && $cart->count()>0) {
+                foreach ($cart as $product) {
+                    $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
+                    $delayMin= isset($product->product->delay_order_min) ? ($product->product->delay_order_min) : 0;
+                    $min[] = (($delayHr * 60) + $delayMin);
                 }
             }
-
-            $arr = array();
-            $count = count($slotss);
-            for ($i=0;$i<$count;$i++) {
-                $arr = array_merge($arr, $slotss[$i]);
-            }
-
-            if (isset($arr)) {
-                foreach ($arr as $k=> $slt) {
-                    $sl = explode(' - ', $slt);
-                    $viewSlot[$k]['name'] = date('h:i:A', strtotime($sl[0])).' - '.date('h:i:A', strtotime($sl[1]));
-                    $viewSlot[$k]['value'] = $slt;
+    
+            if (isset($slots) && count($slots)>0) {
+                $slotss = [];
+                foreach ($slots as $slott) {
+                    if (isset($slott->days->id)) {
+                        $new_slot = SplitTime($myDate, $slott->start_time, $slott->end_time, $duration, max($min));
+                        if (!in_array($new_slot, $slotss)) {
+                            $slotss[] = $new_slot;
+                        }
+                    } else {
+                        $slotss[] = [];
+                    }
+                }
+    
+                $arr = array();
+                $count = count($slotss);
+                for ($i=0;$i<$count;$i++) {
+                    $arr = array_merge($arr, $slotss[$i]);
+                }
+    
+                if (isset($arr)) {
+                    foreach ($arr as $k=> $slt) {
+                        $sl = explode(' - ', $slt);
+                        $viewSlot[$k]['name'] = date('h:i:A', strtotime($sl[0])).' - '.date('h:i:A', strtotime($sl[1]));
+                        $viewSlot[$k]['value'] = $slt;
+                    }
                 }
             }
         }
