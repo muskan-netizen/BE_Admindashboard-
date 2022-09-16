@@ -39,7 +39,7 @@ class WebStylingOptionSeeder extends Seeder
                 foreach ($web_styling_options as $option) {
                     $webStylingOption = WebStylingOption::where('template_id', $option['template_id'])->first();
                     if ($webStylingOption !== null) {
-                        $webStylingOption->update(['web_styling_id' => $web_styling, 'name' => $option['name'], 'template_id' => $option['template_id']]);
+                        $webStylingOption->update(['web_styling_id' => $web_styling, 'name' => $option['name'], 'image' => $option['image']]);
                     } else {
                         WebStylingOption::create([
                             'name' => $option['name'],
