@@ -29,12 +29,16 @@
 }
   #avail_slot  .item {
     display: inline-block;
-    background:#f3f3f3;
-    padding:10px;
-    border-radius: 10px;
-    margin:8px 10px;
   }
-#avail_slot  .grid-item.main .items .item input {
+  div#avail_slot .alCustomHomeServiceRadio.items .item label span.customCheckbox{
+    padding: 10px;
+    border-radius: 10px;
+    color: #000;
+    margin: 2px 5px;
+    display: inline-block;
+    background-color: #f3f3f3;
+  }
+#avail_slot  .grid-item.main .items .item input[type="radio"]{
     display: none;
 }
 #avail_slot  .grid-item.main .items .item label {
@@ -42,6 +46,7 @@
     font-size: 13px;
     margin: 0px;
 }
+
 </style>
 <h4 class="mt-4 mb-2"><b>What time would you like us to start?</b></h4>
 <div class="booking-time  radio-btns long-radio">   

@@ -10,7 +10,7 @@ $(document).on('click','.dispatch_agent',function(){
 
 function initSlots(agent){
     var html=`<div class="grid-item main radios agent_${agent.id}">`;
-    html+=`<div class="items">`;
+    html+=`<div class="alCustomHomeServiceRadio items">`;
     if(agent.slotings.length < 0) {
         html+='<span>No available slot found !!</span></div>';
         html+=`</div>`;
