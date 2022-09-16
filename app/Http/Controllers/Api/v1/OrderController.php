@@ -1534,10 +1534,11 @@ class OrderController extends BaseController
     public function sendOrderNotification($id)
     {
         $token = UserDevice::whereNotNull('device_token')->pluck('device_token')->where('user_id', $id)->toArray();
-        $from = env('FIREBASE_SERVER_KEY');
-
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        //$from = env('FIREBASE_SERVER_KEY');
         $notification_content = NotificationTemplate::where('id', 1)->first();
-        if ($notification_content) {
+        if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
+            $from = $client_preferences->fcm_server_key;
             $headers = [
                 'Authorization: key=' . $from,
                 'Content-Type: application/json',

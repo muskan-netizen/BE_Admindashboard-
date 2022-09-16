@@ -149,13 +149,14 @@ class ReturnOrderController extends BaseController{
         foreach($devices as $device){
             $token[] = $device;
         }
-        $token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
+        //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
         // dd($token);
 
-        $from = env('FIREBASE_SERVER_KEY');
-
+        //$from = env('FIREBASE_SERVER_KEY');
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         $notification_content = NotificationTemplate::where('id', 3)->first();
-        if($notification_content){
+         if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
+            $from = $client_preferences->fcm_server_key;
             $headers = [
                 'Authorization: key=' . $from,
                 'Content-Type: application/json',
