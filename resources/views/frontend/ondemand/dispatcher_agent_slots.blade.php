@@ -46,6 +46,7 @@
     font-size: 13px;
     margin: 0px;
 }
+div#avail_slot .alCustomHomeServiceRadio input[type="radio"]:checked + label span{background: var(--theme-deafult)!important;color: #fff !important;}
 
 </style>
 <h4 class="mt-4 mb-2"><b>What time would you like us to start?</b></h4>

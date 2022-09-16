@@ -3800,12 +3800,13 @@ $(document).ready(function () {
 
     $(document).on('click', '.selected-time', function () {
 
-        let selected_time   = $(this).html();
+        let selected_time   =  $(this).html();
         let cart_product_id = $(this).data("cart_product_id");
+        let dispatch_agent_id = $(this).data("agent_id");
         $("#show_time" + cart_product_id).html(selected_time);
         $("#message_of_time" + cart_product_id).html("Your service will start between " + selected_time);
         $("#next-button-ondemand-3").show();
-
+        selected_time = (dispatch_agent_id !='' && dispatch_agent_id != undefined ) ? $(this).data("value") : selected_time;
         var task_type = 'schedule';
         //var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date" + cart_product_id + "']:checked").val();
 
@@ -3826,7 +3827,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: update_cart_product_schedule,
-            data: { task_type: task_type, schedule_dt: schedule_dt,schedule_time:selected_time,cart_product_id: cart_product_id },
+            data: { task_type: task_type, schedule_dt: schedule_dt,schedule_time:selected_time,cart_product_id: cart_product_id,dispatch_agent_id:dispatch_agent_id },
             success: function (response) {
                 if (response.status == "Success") {
                 }

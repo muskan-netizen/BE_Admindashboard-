@@ -259,7 +259,6 @@ span.pagingInfo{position:absolute;top:-80px;right:35px;color:#fff}ol.breadcrumb{
 #date_time_set_div1681 .radio-btns .slick-prev{left: 0px;}
 #date_time_set_div1681 .radio-btns .slick-next{right: 0px;}
 .alCustomHomeServiceRadio input[type="radio"]:checked + label span{background: var(--theme-deafult);color: #fff;}
-div#avail_slot .alCustomHomeServiceRadio input[type="radio"]:checked + label span{background: var(--theme-deafult)!important;color: #fff !important;}
 
 .radio-btns.long-radio input[type="radio"]:checked+label .customCheckbox{background: var(--theme-deafult);color: #fff;}
 .spinner-box{width:100%;height:100%;display:flex;justify-content:center;align-items:center;background-color:#000;position:fixed;top:0;left:0;z-index:999;opacity: .7;}
