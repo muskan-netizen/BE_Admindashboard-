@@ -1,5 +1,6 @@
 
 $(document).on('click','.dispatch_agent',function(){
+
     var agent_id = $(this).data('agent_id');
     var agentData = dispatch_agents.agent;
     var agent = agentData.find(item => item.id === agent_id);
@@ -16,10 +17,11 @@ function initSlots(agent){
         html+=`</div>`;
         
     } else{
+        console.log(cart_product_id);
         agent.slotings.forEach(function(data) {
             // code
             html+=`<div class="item"><input type="radio" value='${data.value}' name='booking_time' id='time${data.value}'/>          
-                    <label for='time${data.value}'><span class="customCheckbox selected-time" aria-hidden="true"  data-value='${data.value}' data-cart_product_id='{cart_product_id}'>${data.name}</span></label></div>`;
+                    <label for='time${data.value}'><span class="customCheckbox selected-time" aria-hidden="true"  data-value='${data.value}' data-cart_product_id='${cart_product_id}'>${data.name}</span></label></div>`;
         });
     }
     html+='</div>';

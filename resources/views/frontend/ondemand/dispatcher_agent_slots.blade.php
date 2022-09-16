@@ -86,6 +86,7 @@
     var dispatch_agents = {
         agent: {!!json_encode($dispatch_agents)!!}
     } 
+    var cart_product_id = "{{ $cart_product_id }}"
 </script>
 <script src="{{ asset('js/onDemand/AgentSlot.js') }}"></script>
 
