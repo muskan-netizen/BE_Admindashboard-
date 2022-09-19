@@ -150,17 +150,10 @@ class ReturnOrderController extends BaseController{
             $token[] = $device;
         }
         //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
-        // dd($token);
-
-        //$from = env('FIREBASE_SERVER_KEY');
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         $notification_content = NotificationTemplate::where('id', 3)->first();
          if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
-            $from = $client_preferences->fcm_server_key;
-            $headers = [
-                'Authorization: key=' . $from,
-                'Content-Type: application/json',
-            ];
+            
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -168,18 +161,7 @@ class ReturnOrderController extends BaseController{
                     'body'  => $notification_content->content,
                 ]
             ];
-            $dataString = $data;
-
-            $ch = curl_init();
-            curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
-            curl_setopt( $ch,CURLOPT_POST, true );
-            curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
-            curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
-            curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
-            curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $dataString ) );
-            $result = curl_exec($ch );
-            // dd($result);
-            curl_close( $ch );
+            sendFcmCurlRequest($data);
         }
     }
 

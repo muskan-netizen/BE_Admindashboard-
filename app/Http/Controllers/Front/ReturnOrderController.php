@@ -178,11 +178,7 @@ class ReturnOrderController extends FrontController{
         $notification_content = NotificationTemplate::where('id', 3)->first();
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
-            $from = $client_preferences->fcm_server_key;
-            $headers = [
-                'Authorization: key=' . $from,
-                'Content-Type: application/json',
-            ];
+            
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -190,18 +186,8 @@ class ReturnOrderController extends FrontController{
                     'body'  => $notification_content->content,
                 ]
             ];
-            $dataString = $data;
-
-            $ch = curl_init();
-            curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
-            curl_setopt( $ch,CURLOPT_POST, true );
-            curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
-            curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
-            curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
-            curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $dataString ) );
-            $result = curl_exec($ch );
-            // dd($result);
-            curl_close( $ch );
+            
+            sendFcmCurlRequest($data);
         }
     }
 

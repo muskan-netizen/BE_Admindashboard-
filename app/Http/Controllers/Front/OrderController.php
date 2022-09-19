@@ -1452,11 +1452,7 @@ class OrderController extends FrontController
         $notification_content = NotificationTemplate::where('id', 1)->first();
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
-            $from = $client_preferences->fcm_server_key;
-            $headers = [
-                'Authorization: key=' . $from,
-                'Content-Type: application/json',
-            ];
+           
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -1464,17 +1460,8 @@ class OrderController extends FrontController
                     'body'  => $notification_content->content,
                 ]
             ];
-            $dataString = $data;
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-            $result = curl_exec($ch);
-            // dd($result);
-            curl_close($ch);
+            
+            sendFcmCurlRequest($data);
         }
     }
 
@@ -1513,7 +1500,7 @@ class OrderController extends FrontController
            
             if(!empty($from)){
                 // helper function
-                curlJsonRequest($from, $data);
+                sendFcmCurlRequest($data);
             }
 
             // Individual Vendor App User Token
@@ -1525,7 +1512,7 @@ class OrderController extends FrontController
                 $from = $client_preferences->vendor_fcm_server_key;
                 $data['registration_ids'] = $vendorAppUserDevices;
                
-                $result = curlJsonRequest($from, $data);
+                $result = sendFcmCurlRequest($data);
                 Log::info($result);
             }
         }
@@ -2359,11 +2346,7 @@ class OrderController extends FrontController
         $notification_content = NotificationTemplate::where('id', 2)->first();
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
-            $from = $client_preferences->fcm_server_key;
-            $headers = [
-                'Authorization: key=' . $from,
-                'Content-Type: application/json',
-            ];
+           
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -2373,16 +2356,7 @@ class OrderController extends FrontController
             ];
             $dataString = $data;
 
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-            $result = curl_exec($ch);
-            // dd($result);
-            curl_close($ch);
+            sendFcmCurlRequest($data);
         }
     }
 
