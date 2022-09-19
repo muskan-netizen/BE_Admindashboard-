@@ -411,9 +411,12 @@ class OrderController extends FrontController
                 }
                 // $res = $this->testOrderMail($email_data);
                 // dd($res);
+                Log::info("Request Cycle with Queues Begins");
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                Log::info("Request Cycle with Queues Ends");
                 $notified = 1;
-            } catch (\Exception $e) {
+            } catch(\Exception $e){
+                return response()->json(['data' => $e->getMessage()]);
             }
         }
     }
