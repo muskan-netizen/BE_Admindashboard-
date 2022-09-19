@@ -43,7 +43,7 @@ use Illuminate\Support\Arr;
                                 <ul id='main-nav-list'>
                                 @if(!empty($category->childs) && count($category->childs) > 0)
                                         @foreach ($category->childs as $key => $childs)
-                                    
+
                                             @if( in_array($childs->type_id , [8,12]))
                                             <li><a href="#section_set{{$key}}">{{ $childs['translation_name'] ?? ''}}</a></li>
                                             @endif
@@ -97,7 +97,7 @@ use Illuminate\Support\Arr;
                                                                             @endif
                                                                             <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
                                                                         </h5>
-                                                                      
+
 
                                                                         @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
                                                                         @php
@@ -182,7 +182,7 @@ use Illuminate\Support\Arr;
                                                 @endif
                                                 @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
-                                               
+
                                                 {{-- new product design  --}}
                                                 <div class="row classes_wrapper no-gutters align-items-center" href="#">
                                                     <div class="col-md-9 col-sm-8 pr-md-2">
@@ -211,7 +211,7 @@ use Illuminate\Support\Arr;
                                                                     @endif
                                                                     <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
                                                                 </h5>
-                                                                
+
                                                                 @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
                                                                 @php
                                                                     $cartcount = 1;
@@ -340,7 +340,7 @@ use Illuminate\Support\Arr;
                                 <div id="step-2-ondemand">
                                    @php
                                    $lastKey = count($cartData) - 1;
-                                  
+
                                    @endphp
                                    {{ Arr::last($cartData)}}
                                     @foreach ($cartData as $cd => $cart_data)
@@ -652,10 +652,10 @@ use Illuminate\Support\Arr;
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-center">
                 <input type="hidden" id="vendor_id" value="">
                 <input type="hidden" id="cartproduct_id" value="">
-                <h6 class="m-0">{{__('Are You Sure You Want To Remove This Item?')}}</h6>
+                <h6 class="m-0 px-3">{{__('Are You Sure You Want To Remove This Item?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>

@@ -1144,14 +1144,9 @@ class VendorController extends BaseController
     public function updateVendorConfigProfile(Request $request, $domain = '',  $id){
         $vendor = Vendor::where('id', $id)->first();
         $msg = 'Order configuration';
-
-        if($request->has('is_show_vendor_details')){
-            $vendor->is_show_vendor_details = ($request->has('is_show_vendor_details') && $request->is_show_vendor_details == 'on') ? 1 : 0;
-            $vendor->save();
-        }
-
+        $vendor->is_show_vendor_details = ($request->has('is_show_vendor_details') && $request->is_show_vendor_details == 'on') ? 1 : 0;
+        $vendor->save();
         return redirect()->back()->with('success', $msg . ' updated successfully!');
-        
     }
 
     /**     update vendor configuration data     */
