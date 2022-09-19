@@ -400,40 +400,48 @@ div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button
                                                     </div>
                                                 @endforeach
                                             </div>
+                                            @if($cart_data->is_dispatch_slot == 1)
+                                            @php
+                                            $dispatch_agents = $cart_data->dispatchAgents ?? [];
+                                            $cart_product_id = $cart_data->id;
+                                            @endphp
+                                            @include('frontend.ondemand.dispatcher_agent_slots')
+                                            @else
+                                                <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
+                                                    <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
 
-                                            <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
-                                                <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
-
-                                                <div class="booking-time radio-btns long-radio mb-0">
-                                                    @php
-                                                    if(!empty($cart_data->timeSlots)){
-                                                        $time_slots = $cart_data->timeSlots;
-                                                    }
-                                                    @endphp
-                                                    @foreach ($time_slots as $key => $date)
-                                                    @if($key+1 < count($time_slots))
-                                                    @php
-                                                    $checked='';
-                                                        $slotTime = $date.' - '.@$time_slots[$key+1];
-                                                        if(isset($cart_data->schedule_slot) && $cart_data->schedule_slot == $slotTime){
-                                                            echo $checked="checked";
+                                                    <div class="booking-time radio-btns long-radio mb-0">
+                                                        @php
+                                                        if(!empty($cart_data->timeSlots)){
+                                                            $time_slots = $cart_data->timeSlots;
                                                         }
-                                                    @endphp
-                                                    <div>
-                                                        <div class="radios">
-                                                            <div class="alCustomHomeServiceRadio">
-                                                                <input type="radio" value='{{$date}} - {{@$time_slots[$key+1]}}' name='booking_time' id='time{{$cart_data->id}}{{$key+1}}' @if($checked) {{$checked}} @endif class="ondemand_{{$checked }}" />
-                                                                <label for='time{{$cart_data->id}}{{$key+1}}'>
-                                                                    <span class="customCheckbox selected-time" aria-hidden="true"  data-value='{{$date}} - {{@$time_slots[$key+1]}}' data-cart_product_id='{{$cart_data->id}}'>{{$date}} - {{@$time_slots[$key+1]}}</span>
-                                                                </label>
+                                                        @endphp
+                                                        @foreach ($time_slots as $key => $date)
+                                                        @if($key+1 < count($time_slots))
+                                                        @php
+                                                        $checked='';
+                                                            $slotTime = $date.' - '.@$time_slots[$key+1];
+                                                            if(isset($cart_data->schedule_slot) && $cart_data->schedule_slot == $slotTime){
+                                                                echo $checked="checked";
+                                                            }
+                                                        @endphp
+                                                        <div>
+                                                            <div class="radios">
+                                                                <div class="alCustomHomeServiceRadio">
+                                                                    <input type="radio" value='{{$date}} - {{@$time_slots[$key+1]}}' name='booking_time' id='time{{$cart_data->id}}{{$key+1}}' @if($checked) {{$checked}} @endif class="ondemand_{{$checked }}" />
+                                                                    <label for='time{{$cart_data->id}}{{$key+1}}'>
+                                                                        <span class="customCheckbox selected-time" aria-hidden="true"  data-value='{{$date}} - {{@$time_slots[$key+1]}}' data-cart_product_id='{{$cart_data->id}}'>{{$date}} - {{@$time_slots[$key+1]}}</span>
+                                                                    </label>
+                                                                </div>
                                                             </div>
                                                         </div>
+                                                        @endif
+                                                        @endforeach
                                                     </div>
-                                                    @endif
-                                                    @endforeach
+                                                    <P id="message_of_time{{$cart_data->id}}"></P>
                                                 </div>
-                                                <P id="message_of_time{{$cart_data->id}}"></P>
-                                            </div>
+                                            @endif
+                                            
 
                                             <input type="hidden" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" checked>
                                         </div>

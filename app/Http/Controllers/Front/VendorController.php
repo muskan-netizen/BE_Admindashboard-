@@ -81,7 +81,7 @@ class VendorController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function vendorProducts(Request $request, $domain = '', $slug = 0){
-       
+      
         if($request->ajax())
         {
             $returnHTML = $this->vendorFilters($request,'',$slug);
@@ -216,6 +216,8 @@ class VendorController extends FrontController
                 }
                  // if vendor type selecter on demand service by harbans i don't want to do this garvage 
                 if($type == 'on_demand' || $type == 'appointment'){
+                  
+                   //pr($this->productDetail('73'));
                     $cartDataGet    = $this->getCartOnDemand($request);
                     $cartData       = $cartDataGet['cartData'];
                     $period         = $cartDataGet['period'];
@@ -283,35 +285,16 @@ class VendorController extends FrontController
         else{
             $page = 'products';
         }
-        //pr( $Map_vendors->toArray());
     
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             $vendors = $this->getServiceAreaVendors();
             if(isset($vendor) && isset($vendor->id)){
                 if(!in_array($vendor->id, $vendors)){
                     $listData =collect();
-                   //pr($vendor->toArray());
+                  
                     return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'cartData'=>$cartData,'period' => $period,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors]);
                 }
             }
-
-            // if(Session::has('vendors')){
-            //     $vendors = Session::get('vendors');
-            //     if(!is_array($vendors))
-            //     {
-            //         $vendors = $vendors->toArray();
-            //     }
-            //     if(isset($vendor) && isset($vendor->id)){
-            //         if(!in_array($vendor->id, $vendors)){
-            //             $listData =collect();
-            //             return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
-
-            //         }
-            //     }
-
-            // }else{
-            //     // abort(404);
-            // }
         }
 
         $is_vendor_closed = 0;
@@ -322,11 +305,12 @@ class VendorController extends FrontController
                 $is_vendor_closed = 0;
             }
         }
-      // pr($Map_vendors->all());
+      
         $product_tag_ids = Product::byProductCategoryServiceType($type)->where('vendor_id', $vendor->id)->where('is_live', 1)->pluck('id')->toArray();
         $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
         $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();
          // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';vendor-products-with-categories-extended
+        
         return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed,'cartData'=>$cartData,'period' => $period ,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors]);
     }
 

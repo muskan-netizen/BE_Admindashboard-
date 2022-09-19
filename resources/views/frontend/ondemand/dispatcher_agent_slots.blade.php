@@ -83,6 +83,7 @@ div#avail_slot .alCustomHomeServiceRadio input[type="radio"]:checked + label spa
 <div class="agent_slots" id="avail_slot">
 </div>
 <P id="message_of_time{{$cart_product_id}}"></P>
+@section('js-script')
 <script>
     var dispatch_agents = {
         agent: {!!json_encode($dispatch_agents)!!}
@@ -91,3 +92,4 @@ div#avail_slot .alCustomHomeServiceRadio input[type="radio"]:checked + label spa
 </script>
 <script src="{{ asset('js/onDemand/AgentSlot.js') }}"></script>
 
+@endsection
