@@ -1924,7 +1924,7 @@ class CartController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function getCartData($domain = '', Request $request)
-    {   $cart_details = [];
+    {   $cart_details = null;
         $user = Auth::user();
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
