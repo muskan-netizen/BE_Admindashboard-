@@ -424,24 +424,6 @@ class ProductController extends FrontController{
                 $qs->where('language_id',$langId);
             }],'selection')->get();
             if(isset($product_faqs)){
-        // $opt= '';
-        //         foreach($product_faqs as $key => $qs){
-        //         if(!$qs->translations->isEmpty()){
-        //         $opt .='<div class="col-md-12 mb-3">
-        //                 <label for="review"><b>'.$qs->translations->first()->name.'</b></label>';
-        //                 if(!$qs->selection->isEmpty()){
-        //                     $opt.='<select name="'.$qs->translations->first()->name.'" class="form-control mb-0" >';
-        //                 foreach($qs->selection as $qs1){
-        //                     $opt .='<option value="'.$qs1->translations->first()->name.'"></option>';
-        //                     } 
-        //                     $opt.='</select>';
-        //                 }else{
-        //                     $opt='<input type="text" class="form-control mb-0"  name="'.$qs->translations->first()->name.'" data-product_faq_id="'.$qs->translations->first()->product_faq_id.'" data-required="'.$qs->is_required.'" >';
-        //                     }
-        //          $opt.='</div>';
-        //     }
-        // }
-        //     dd($opt);
 
                 if ($request->ajax()) {
                  return \Response::json(\View::make('frontend.modals.product-order-form', array('product_faqs'=>  $product_faqs))->render());
