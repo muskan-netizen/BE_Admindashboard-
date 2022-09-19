@@ -113,7 +113,12 @@ body .iti--separate-dial-code .iti__selected-flag {background-color: #eee;}
 @media only screen and (max-width: 700px){ #vendorStories .modal-content{width: 100%;}} */
 /* vendorStories page css end */
 body section.cab-banner-area {margin: 0 !important;}
-
+.al_body_template_three div#step-2-ondemand .alCustomHomeServiceRadio input{display: none;}
+.al_body_template_three  div#step-2-ondemand .radios .alCustomHomeServiceRadio {text-align: center;}
+.al_body_template_three  div#step-2-ondemand .radios{text-align: center;}
+.al_body_template_three div#step-2-ondemand .radio-btns.long-radio input[type=radio]+label .customCheckbox{
+width: auto;border-radius: 50px;height: auto;line-height: normal;padding: 10px 14px;z-index: 1;color: #1f2431;background: #f3f3f3;overflow: hidden;transition: all .5s;cursor: pointer;display: inline-block;box-sizing: border-box;position: relative;}
+.al_body_template_three div#step-2-ondemand .radio-btns input[type=radio] {z-index: -1;position: absolute;display: none;}
 
 
 
