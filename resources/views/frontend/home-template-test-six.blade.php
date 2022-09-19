@@ -376,7 +376,7 @@
                </div>
             </div>
          </section>
-      @elseif($homePageLabel->slug == 'cities')
+      @elseif($homePageLabel->slug == 'cities' && (count($homePageData['cities']) != 0))
          <section class="container render_full_{{$homePageLabel->slug}}">
             <div class=" top-heading d-flex justify-content-between align-self-center">
                <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
