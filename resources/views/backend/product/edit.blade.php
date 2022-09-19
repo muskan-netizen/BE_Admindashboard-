@@ -1772,7 +1772,65 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
             }
          });
       });
+
       $(document).on("click", ".edit_product_faq_btn", function() {
+        let product_faq_id = $(this).data('product_faq_id');
+       
+        editProductOrderForm(product_faq_id);
+    });
+    function editProductOrderForm(product_faq_id){
+        let language_id = $('#option_client_language').val();
+        $('#add_product_faq_modal input[name=product_faq_id]').val(product_faq_id);
+         $.ajax({
+            method: 'GET',
+            data: {
+                product_faq_id: product_faq_id,
+               language_id:language_id
+            },
+            url: "{{ route('product.faq.edit') }}",
+            success: function(response) {
+               if (response.status = 'Success') {
+                    if(response.data.file_type=="selector"){
+                        $("#selector_div").removeClass("d-none");
+                        $('.option_section').remove();
+                        var options = response.data.options;
+                        var section_id =0
+                        var row =0
+                        var option_section_temp    = $('#vendorSelectorTemp').html();
+                        var modified_temp         = _.template(option_section_temp);
+                        $(options).each(function(index, value) {
+                            section_id                = parseInt(section_id);
+                            row                       = parseInt(section_id)
+                            section_id                = section_id +1;
+                            $('#vendor-selector-datatable #table_body').append(modified_temp({ id:section_id,data:value}));
+                            var options_trans = value.translations;
+                            $(options_trans).each(function(trans_index, trans_value) {
+                                var input_id = '#option_name_'+row+'_'+trans_value.language_id;
+                                $(input_id).val(trans_value.name);
+                            });
+                            $('.add_more_button').hide();
+                            $('#vendor-selector-datatable #add_button_'+section_id).show();
+                        });
+                    }else{
+                        $('.option_section').remove();
+                        $("#selector_div").addClass("d-none");
+                    }
+                  $(document).find("#add_product_faq_modal select[name=file_type]").val(response.data.file_type).change();
+
+                  $("#add_product_faq_modal input[name=vendor_registration_document_id]").val(response.data.id);
+                  $(document).find("#add_product_faq_modal select[name=is_required]").val(response.data.is_required).change();
+                  $('#add_product_faq_modal #standard-modalLabel').html('Update Vendor Registration Document');
+                  $('#add_product_faq_modal').modal('show');
+                  $.each(response.data.translations, function( index, value ) {
+                    $('#add_product_faq_modal #product_faq_name_'+value.language_id).val(value.name);
+                  });
+               }
+            },
+            error: function() {}
+        });
+    }
+
+      $(document).on("click", ".edit_product_faq_btnOld", function() {
          let product_faq_id = $(this).data('product_faq_id');
          $('#add_product_faq_modal input[name=product_faq_id]').val(product_faq_id);
          $.ajax({

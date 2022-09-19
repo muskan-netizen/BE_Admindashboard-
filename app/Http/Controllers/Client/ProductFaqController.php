@@ -83,6 +83,12 @@ class ProductFaqController extends BaseController{
     public function show(Request $request){
         try {
             $product_faq = ProductFaq::with(['translations'])->where(['id' => $request->product_faq_id])->firstOrFail();
+
+            if($product_faq->file_type == 'selector'){
+                $product_faq->options = ProductFaqSelectOption::with(['translations'])
+                                                            ->where(['product_faq_id' => $request->product_faq_id])
+                                                            ->get();
+            }
             return $this->successResponse($product_faq, '');
         } catch (Exception $e) {
             return $this->errorResponse([], $e->getMessage());
@@ -120,6 +126,44 @@ class ProductFaqController extends BaseController{
                     $ProductFaqTranslation->save();
                 }
             }
+
+            $delete_option = [];
+
+            if($request->has('option_name')){
+                foreach($request->option_name as $key =>$value){
+                    if(isset($value[0]) && !empty($value[0])){
+                        $data = [
+                            'product_faq_id'       =>$product_faq->id
+                        ];
+                        $option = ProductFaqSelectOption::updateOrCreate(
+                            ['id' => $request->option_id[$key][0] ],
+                            $data
+                        );
+                        $delete_option[] =$option->id;
+                        foreach($request->language_id as $lang_key =>$lang_value){
+                            if(isset($value[$lang_key]) && !empty($value[$lang_key])){
+                                $translationData = [
+                                    'name' => $value[$lang_key]
+                                ];
+                                $optionTrabslation = ProductFaqSelectOptionTranslation::updateOrCreate(
+                                    ['product_faq_select_option_id' => $option->id,'language_id'=>  $lang_value],
+                                    $translationData
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+
+            $pfaqsop = ProductFaqSelectOption::whereNotIn('id',$delete_option)
+                                            ->where('product_faq_id', $product_faq_id)
+                                            ->first();
+            if(isset($pfaqsop)){
+                ProductFaqSelectOptionTranslation::where('product_faq_select_option_id', $pfaqsop->id)
+                                            ->delete();
+                $pfaqsop->delete();
+            }
+
             DB::commit();
             return $this->successResponse($product_faq, 'Product Order Form Updated Successfully.');
         } catch (Exception $e) {
