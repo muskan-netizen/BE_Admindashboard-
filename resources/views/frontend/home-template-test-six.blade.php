@@ -726,8 +726,9 @@
 <!-- footer code in layouts.store/footercontent-template-two -->
 @endsection
 @section('home-page')
- <script type="text/javascript" src="{{asset('front-assets/js/homepage-six.js')}}"></script>
+ {{-- <script type="text/javascript" src="{{asset('front-assets/js/homepage-six.js')}}"></script> --}}
  <script type="text/javascript" src="{{asset('assets/js/template/commonFunction.js')}}"></script>
+ <script type="text/javascript" src="{{asset('assets/js/template/template-six/templateFunction.js')}}"></script>
 @endsection
 
 @section('script')
