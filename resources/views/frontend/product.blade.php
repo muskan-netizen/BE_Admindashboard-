@@ -363,7 +363,11 @@
                                     </div>
                                     @endif
                                     @php
-                                    $checkSlot = findSlot('',$product->vendor->id,'');
+                                        // check if vendor is closed or not, if closed then get slots otherwise no need.
+                                        if($vendor_info->is_vendor_closed == 1)
+                                            $checkSlot = findSlot('',$product->vendor->id,'');
+                                        else
+                                            $checkSlot = 0;
                                     @endphp
                                     <div class="product-buttons">
                                         @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)

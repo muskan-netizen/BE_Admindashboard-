@@ -163,7 +163,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                     $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
                                     $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
                                     @endphp
-                        
+
                                     @if($client_preference_detail->$clientVendorTypes == 1)
                                     <li class="navigation-tab-item" role="presentation"> <a
                                     class="nav-link {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
@@ -199,7 +199,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                             </ul>
                             @endif
                         </div>
-                        
+
                         <div class=" ipad-view">
                             <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
                                @if(Session::get('preferences') && (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
@@ -231,7 +231,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                     <div class="row mx-0">
                                         <% _.each(results, function(result, k){%>
                                         <a class="col-12 text-center al_search_results list-items pt-2" href="<%=result.redirect_url %>">
-                        
+
                                             <img class="blur-up lazyload" data-src="<%=result.image_url%>" alt="">
                                             <div class="result-item-name">
                                                 <b><%=result.name %></b>
@@ -323,7 +323,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                 </ul>
                                                 @endif
                                             </div>
-                        
+
                                             <div class=" ipad-view order-lg-3">
                                                 <div
                                                     class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
@@ -478,13 +478,13 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                             </div>
                                         </li>
                                     </ul>
-                        
+
                                 </div>
                             </div>
                             <div class="col-lg-5 col-9 order-lg-2 order-1 position-initial"> </div>
                         </div>
-                        
-                    
+
+
                     </div>
                 </div>
             </div>
@@ -497,7 +497,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                     @foreach($navCategories as $cate)
                                     @if($cate['name'])
                                     <li class="al_main_category">
-                                
+
                                         @if ($client_preference_detail->view_get_estimation_in_category == 1 && $client_preference_detail->business_type == "laundry")
                                             <a href="/get-estimation#{{$cate['slug']}}">
                                                 @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='homeTest'))
@@ -511,7 +511,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                 @endif{{$cate['name']}}
                                             </a>
                                         @endif
-                                
+
                                         @if(!empty($cate['children']))
                                         <ul class="al_main_category_list">
                                             @foreach($cate['children'] as $childs)
@@ -617,8 +617,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
                         aria-hidden="true">×</span> </button>
             </div>
-            <div class="modal-body">
-                <h6 class="m-0">
+            <div class="modal-body text-center">
+                <h6 class="m-0 px-3">
                     {{__('This change will remove all your cart products. Do you really want to continue ?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center"> <button type="button"

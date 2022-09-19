@@ -76,7 +76,7 @@
     $fixed_fee_amount=0;
     $total_fixed_fee_amount=0;
     $price_bifurcation=0;
-    $total_wallet_amount_used=0;
+    $total_wallet_amount_used= !empty($cart_details->wallet_amount_used)? $cart_details->wallet_amount_used : 0;
     $closed_store= 0;
 
     /* Getting other taxes */
