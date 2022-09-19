@@ -777,7 +777,7 @@ class OrderController extends FrontController
             $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
             $order->comment_for_dropoff_driver = $cart->comment_for_dropoff_driver ?? null;
             $order->comment_for_vendor = $cart->comment_for_vendor ?? null;
-            $order->schedule_pickup = $cart->schedule_pickup ?? null;
+            $order->schedule_pickup  = $cart->schedule_pickup ?? null;
             $order->schedule_dropoff = $cart->schedule_dropoff ?? null;
             $order->fixed_fee_amount = $fixed_fee_amount;
             $order->specific_instructions = $cart->specific_instructions ?? null;
@@ -933,6 +933,7 @@ class OrderController extends FrontController
                     //$vendor_payable_amount = $vendor_payable_amount + $quantity_price;
                     
                     $OrderVendor->schedule_slot = !empty($vendor_cart_product->schedule_slot)? $vendor_cart_product->schedule_slot : '';
+                    
                     $OrderVendor->scheduled_date_time = !empty($vendor_cart_product->scheduled_date_time)? $vendor_cart_product->scheduled_date_time : '';
                     $deliver_Vendor_type = ['delivery','appointment','on_demand']; // pass vendor type for delivery option
                     if ( in_array($action, $deliver_Vendor_type) ) {
@@ -1051,6 +1052,7 @@ class OrderController extends FrontController
                     $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
                     $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
                     $order_product->schedule_slot = !empty($vendor_cart_product->schedule_slot)? $vendor_cart_product->schedule_slot : '';
+                    $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id)? $vendor_cart_product->dispatch_agent_id : null;
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }

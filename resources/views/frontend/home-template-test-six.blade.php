@@ -376,7 +376,7 @@
                </div>
             </div>
          </section>
-      @elseif($homePageLabel->slug == 'cities' && (count($homePageData['cities']) != 0))
+      @elseif($homePageLabel->slug == 'cities' && count($homePageData[$homePageLabel->slug]) != 0  )
          <section class="container render_full_{{$homePageLabel->slug}}">
             <div class=" top-heading d-flex justify-content-between align-self-center">
                <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
@@ -388,7 +388,7 @@
                         <div>
                            <div class="alSpaListBox">
                               <div class="alSpaCityBox">
-                                 <a href="/cities/{{$cities['slug']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
+                                 <a href="javascript:void(0);" class="cities updateLocationByCity" data-lat="{{$cities['latitude']}}" data-long="{{$cities['longitude']}}" data-address="{{$cities['address']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
                               </div>
                               <p>{{$cities["title"]}} </p>
                            </div>            
@@ -726,13 +726,11 @@
 <!-- footer code in layouts.store/footercontent-template-two -->
 @endsection
 @section('home-page')
-<script type="text/javascript" src="{{asset('front-assets/js/homepage-six.js')}}"></script>
+ {{-- <script type="text/javascript" src="{{asset('front-assets/js/homepage-six.js')}}"></script> --}}
+ <script type="text/javascript" src="{{asset('assets/js/template/commonFunction.js')}}"></script>
+ <script type="text/javascript" src="{{asset('assets/js/template/template-six/templateFunction.js')}}"></script>
 @endsection
-@section('js-script')
-{{--<script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
-@endsection
+
 @section('script')
 <script type="text/javascript">
     @if(count($banners))
@@ -740,35 +738,6 @@
         $("body").addClass("homeHeader");
     });
     @endif
-   // AOS.init();
-   function changeImage(image, check) {
-      var  icon = $(image).attr('data-icon');
-      var  icon_two = $(image).attr('data-icon_two');
-      if(check == 1)
-      {
-        setTimeout(function () {
-            $(image).attr('data-src',icon_two);
-            $(image).attr('src',icon_two);
-        },200);
-      }else if(check == 0){
-           setTimeout(function () {
-               $(image).attr('data-src',icon);
-               $(image).attr('src',icon);
-           },200);
 
-      }
-   }
-</script>
-
-<script>
-   $(window).scroll(function() {
-       var scroll = $(window).scrollTop();
-
-       if (scroll >= 100) {
-           $(".header").addClass("darkHeader");
-       } else {
-           $(".header").removeClass("darkHeader");
-       }
-   });
 </script>
 @endsection

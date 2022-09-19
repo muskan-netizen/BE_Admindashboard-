@@ -194,8 +194,8 @@ window.initializeSlider = function initializeSlider() {
     $(".al_t2_suppliers-slider").slick({infinite:!0,speed:300,slidesToShow:6,slidesToScroll:1,centerMode:!1,centerPadding:"0",arrows:!0,dots:!1,responsive:[{breakpoint:1367,settings:{slidesToShow:4,slidesToScroll:2,infinite:!0}},{breakpoint:991,settings:{slidesToShow:3,slidesToScroll:1}},{breakpoint:767,settings:{slidesToShow:2,slidesToScroll:1}},{breakpoint:360,settings:{slidesToShow:1,slidesToScroll:1}}]});
     $(".product-5").slick({arrows:!0,dots:!1,infinite:!0,dots:!1,speed:300,slidesToShow:6,slidesToScroll:3,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}},{breakpoint:420,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
     $(".vendor-product").slick({infinite:!0,speed:300,arrows:!0,dots:!1,slidesToShow:4,slidesToScroll:2,autoplay:!0,autoplaySpeed:5e3,rtl:!1,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:767,settings:{slidesToShow:1,slidesToScroll:1,arrows:!0}}]});
-    $(".booking-time").slick({dots:!1,arrows:!0,infinite:!0,speed:300,slidesToShow:3,slidesToScroll:3,responsive:[{breakpoint:1367,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:1024,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:767,settings:{slidesToShow:3,arrows:!0,slidesToScroll:3,infinite:!0}},{breakpoint:480,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
-
+    $(".booking-time, .agentSlotSlider").slick({dots:!1,arrows:!0,infinite:!0,speed:300,slidesToShow:3,slidesToScroll:3,responsive:[{breakpoint:1367,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:1024,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:767,settings:{slidesToShow:3,arrows:!0,slidesToScroll:3,infinite:!0}},{breakpoint:480,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    //$('.').slick({dots:!1,arrows:!0,infinite:!0,speed:300,slidesToShow:3,slidesToScroll:3,responsive:[{breakpoint:1367,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:1024,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:767,settings:{slidesToShow:3,arrows:!0,slidesToScroll:3,infinite:!0}},{breakpoint:480,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
     if ($('body').attr('dir') == 'rtl') {
         $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .al_t2_suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
     }
@@ -2186,7 +2186,7 @@ $(document).ready(function () {
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
                   
-                    if (cart_details!= undefined) {
+                    if (cart_details!= undefined && cart_details!= null) {
                         if (cart_details.products.length > 0) {
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
@@ -3687,7 +3687,11 @@ $(document).ready(function () {
         let cur_date = $(this).val();
         let cart_product_id = $(this).data("cart_product_id");
         let product_vendor_id = $(this).data("product_vendor_id");
-        getTimeSlots(cur_date, cart_product_id , product_vendor_id);
+        let product_id = $(this).data("product_id");
+        let product_tag = $(this).data("product_tag");
+        let product_category_type = $(this).data("product_category_type");
+
+        getTimeSlots(cur_date, cart_product_id , product_vendor_id,product_id,product_tag,product_category_type);
 
     });
 
@@ -3796,12 +3800,13 @@ $(document).ready(function () {
 
     $(document).on('click', '.selected-time', function () {
 
-        let selected_time   = $(this).html();
+        let selected_time   =  $(this).html();
         let cart_product_id = $(this).data("cart_product_id");
+        let dispatch_agent_id = $(this).data("agent_id");
         $("#show_time" + cart_product_id).html(selected_time);
         $("#message_of_time" + cart_product_id).html("Your service will start between " + selected_time);
         $("#next-button-ondemand-3").show();
-
+        selected_time = (dispatch_agent_id !='' && dispatch_agent_id != undefined ) ? $(this).data("value") : selected_time;
         var task_type = 'schedule';
         //var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date" + cart_product_id + "']:checked").val();
 
@@ -3822,7 +3827,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: update_cart_product_schedule,
-            data: { task_type: task_type, schedule_dt: schedule_dt,schedule_time:selected_time,cart_product_id: cart_product_id },
+            data: { task_type: task_type, schedule_dt: schedule_dt,schedule_time:selected_time,cart_product_id: cart_product_id,dispatch_agent_id:dispatch_agent_id },
             success: function (response) {
                 if (response.status == "Success") {
                 }
@@ -3857,7 +3862,7 @@ $(document).ready(function () {
     });
 
     // on demand add to cart
-    function getTimeSlots(cur_date, cart_product_id,product_vendor_id) {
+    function getTimeSlots(cur_date, cart_product_id,product_vendor_id,product_id,product_tag,product_category_type) {
         $("#show_date" + cart_product_id).html(cur_date);
         $.ajax({
             type: "post",
@@ -3866,7 +3871,11 @@ $(document).ready(function () {
             data: {
                 "cur_date": cur_date,
                 "cart_product_id": cart_product_id,
-                "product_vendor_id": product_vendor_id
+                "vendor_type": vendor_type,
+                "product_vendor_id": product_vendor_id,
+                "product_category_type": product_category_type,
+                "product_id": product_id,
+                "product_tag": product_tag
             },
             success: function (response) {
                 var booking_time_slick = $("#show-all-time-slots" + cart_product_id).find('.booking-time');
