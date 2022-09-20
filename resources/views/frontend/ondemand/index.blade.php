@@ -174,6 +174,7 @@ use Illuminate\Support\Arr;
         });
         var top = 0;
         // Sticky Header - http://jqueryfordesigners.com/fixed-floating-elements/
+
         if( $( "#mydiv").length > 0){
           top = $('#main-nav').offset().top - parseFloat($('#main-nav').css('margin-top').replace(/auto/, 0));
         }

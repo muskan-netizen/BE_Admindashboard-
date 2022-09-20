@@ -25,6 +25,7 @@ class UserhomeController extends FrontController
 {
     use ApiResponser;
     private $field_status = 2;
+    public $cities = [];
 
 
     public function setTheme(Request $request)
@@ -540,7 +541,13 @@ class UserhomeController extends FrontController
             pr($e->getCode());
             die;
         }
-    }
+    }    
+    /**
+     * postHomePageData
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function postHomePageData(Request $request)
     {
         
@@ -863,9 +870,8 @@ class UserhomeController extends FrontController
                 'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
         }
-
-// ------------------------------------------ Recent order ------------------------------------------
-$activeOrders = [];
+        /**  Recent order */
+            $activeOrders = [];
             $user = Auth::user();
 
             if ($user) {
@@ -912,26 +918,16 @@ $activeOrders = [];
                             $order->converted_scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
                         }
             }
+        /**  Recent order end */
 
-        // dd($home_page_labels);
-
-        $cities = [];
-
-            $cities =  VendorCities::with(['translations'=> function ($q) use($language_id) {
-                                $q->where('language_id', $language_id);
-                            }])->where(function ($q)  {
-                                $q->where('latitude','!=', null);
-                                $q->where('longitude','!=', null);
-                            })->get();
-          
-            $cities = $cities->map(function($da) {
-                $da->title = $da->translations->first() ? $da->translations->first()->name : $da->slug ;
-                unset($da->translations);
-                return $da;
-           
-            });
-            // dd($cities->toArray());
-// -----------------------------------------------------------------------------------------------------------------------
+        /**  Get cities */
+        if($preferences->is_hyperlocal==1){
+            $this->getCities($language_id);
+        }
+        /**  Get cities end */
+        
+         
+        /** Respose data */
 
         $data = [
             'brands' => $brands,
@@ -951,7 +947,7 @@ $activeOrders = [];
                 'homePageLabels' => $home_page_labels,
                 'featured_products' => $feature_products,
                 'on_sale' => $on_sale_products,
-                'cities' => $cities,
+                'cities' => $this->cities,
                 'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:[],
                 'best_sellers' => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
                 'recent_orders' => $activeOrders
@@ -963,6 +959,28 @@ $activeOrders = [];
 
 
         return $this->successResponse($data);
+    }
+ 
+    /**
+     * getCities
+     *
+     * @param  mixed $language_id
+     * @return $cities
+     */
+    public function getCities($language_id){
+        $this->cities =  VendorCities::with(['translations'=> function ($q) use($language_id) {
+                            $q->where('language_id', $language_id);
+                        }])->where(function ($q)  {
+                            $q->where('latitude','!=', null);
+                            $q->where('longitude','!=', null);
+                        })->get();
+      
+        $this->cities = $this->cities->map(function($da) {
+            $da->title = $da->translations->first() ? $da->translations->first()->name : $da->slug ;
+            unset($da->translations);
+            return $da;
+         });
+         return $this->cities;
     }
 
     public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type)

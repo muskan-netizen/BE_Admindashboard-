@@ -688,8 +688,8 @@ if (!function_exists('SplitTimeTemp')) {
             }
         }
 
-        $cr = Carbon::now()->addMinutes($delayMin);
-        $now = dateTimeInUserTimeZone24($cr, $timezoneset);
+        $cr   = Carbon::now()->addMinutes($delayMin);
+        $now  = dateTimeInUserTimeZone24($cr, $timezoneset);
         $nowT = strtotime($now);
         $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
         $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
