@@ -7,7 +7,7 @@ use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand,TagTranslation,Tag};
+use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductFaqSelectOption, TagTranslation,Tag};
 use Validation;
 use DB;
 use App\Http\Traits\ApiResponser;
@@ -424,6 +424,12 @@ class ProductController extends BaseController
             $qs->where('language_id',$langId);
         }])->get();
         
+        if($product_faqs->file_type == 'selector'){
+            $product_faqs->options = ProductFaqSelectOption::with(['translations'])
+                                                        ->where(['product_faq_id' => $product_faqs->id])
+                                                        ->get();
+        }
+
         if(!$product_faqs){
             return response()->json(['error' => 'No record found.'], 404);
         }
