@@ -768,12 +768,12 @@ class OrderController extends FrontController
                 $latitude = Session::get('latitude');
                 $longitude = Session::get('longitude');
             }
-            pr($action);
+         
             if( $action == 'appointment'){ // no need to check serviceArea in appointment
                 $latitude =  '';
                 $longitude = '';
             }
-pr($longitude);
+
             /* Uodating client other details in order object */
             $order->payment_option_id = $request->payment_option_id;
             $order->total_other_taxes = $request->other_taxes_string;
