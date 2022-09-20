@@ -12,12 +12,16 @@ $(function(){
     });
 
 
-    // Update the location of the city
+    // Update the location by selected city
     $(document).on("click", ".updateLocationByCity", function (e) {
         var $this = $(this);
-        var lat = $this.attr('data');
+        var lat = $this.attr('data-lat');
+        var long = $this.attr('data-long');
+        if(!lat || !long){
+            return;
+        }
         console.log(lat);
-        changeLocationByCity(lat);
+        changeLocationByCity(lat,long);
     });
 
     // AOS.init();
@@ -40,10 +44,25 @@ $(function(){
         }
     }
 
-    // Change the location of a city
+    // Change the location by  city lat long
 
-    function changeLocationByCity(lat){
-        
+    function changeLocationByCity(lat,long){
+        alert(lat);
+        axios.post(`/booking/checkProductAvailibility`, formData)
+        .then(async response => {
+            console.log(response);
+            var data = response.data.variant_data;
+           
+            if(response.data.success){
+              
+            } else{
+                sweetAlert.error('Oops...','Something went wrong, try again later!')
+            }
+        })
+        .catch(e => {
+             console.log(e);
+             sweetAlert.error('Oops...','Something went wrong, try again later!')
+        })    
     }
 
 })
