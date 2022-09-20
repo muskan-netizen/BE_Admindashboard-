@@ -536,10 +536,10 @@
 
 <!-- spinner Start -->
 
-<div class="nb-spinner-main">
+<!-- <div class="nb-spinner-main">
 
     <div class="nb-spinner"></div>
 
-    </div>
+    </div> -->
 
     <!-- spinner End -->
