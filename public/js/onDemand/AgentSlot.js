@@ -2,14 +2,15 @@
 $(document).on('click','.dispatch_agent',function(){
 
     var agent_id = $(this).data('agent_id');
+    var cart_product_id = $(this).data('cart_product_id');
     var agentData = dispatch_agents.agent;
     var agent = agentData.find(item => item.id === agent_id);
     console.log(agent);
-    initSlots(agent,agent_id);
+    initSlots(agent,agent_id,cart_product_id);
 
 })
 
-function initSlots(agent,agent_id){
+function initSlots(agent,agent_id,cart_product_id){
     var html=`<div class="grid-item main radios agent_${agent.id}">`;
     html+=`<div class="alCustomHomeServiceRadio items">`;
     if(agent.slotings.length < 0) {

@@ -375,7 +375,8 @@ div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button
                                       @endphp
 
 
-                                        <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif>
+                                        <div  id="date_time_set_div{{$cart_data->id}}" > 
+                                            {{-- @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif --}}
 
                                             <h4 class="mb-2" ><b>{{ __('When would you like your service?')}}</b></h4>
                                             <div class="date-items radio-btns hide">
@@ -406,6 +407,7 @@ div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button
                                             $dispatch_agents = $cart_data->dispatchAgents ?? [];
                                             $cart_product_id = $cart_data->id;
                                             $dispatch_agent_id = $cart_data->dispatch_agent_id;
+                                            
                                             @endphp
                                             @include('frontend.ondemand.dispatcher_agent_slots')
                                             @else

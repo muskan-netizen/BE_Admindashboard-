@@ -65,7 +65,7 @@ a.agentInfo.d-block.selected_agent h6 {
     @endphp --}}
     <div class="agent_slot">
         <div>
-            <a class="agentInfo d-block dispatch_agent black-box {{ ($data['id'] == @$dispatch_agent_id) ? 'selected_agent' : '' }}" data-agent_id="{{ $data['id'] }}" href="javascript:void(0)">
+            <a class="agentInfo d-block dispatch_agent black-box {{ ($data['id'] == @$dispatch_agent_id) ? 'selected_agent' : '' }}" data-agent_id="{{ $data['id'] }}" href="javascript:void(0)" data-cart_product_id="{{ @$cart_product_id }}" >
                 <div class="brand-ing">
                        <img class="agentImg" src="{{ $data['image_url'] }}" alt="" title="">
                    </div>
@@ -95,7 +95,7 @@ a.agentInfo.d-block.selected_agent h6 {
     var dispatch_agents = {
         agent: {!!json_encode($dispatch_agents)!!}
     } 
-    var cart_product_id = "{{ $cart_product_id }}"
+   
 </script>
 <script src="{{ asset('js/onDemand/AgentSlot.js') }}"></script>
 
