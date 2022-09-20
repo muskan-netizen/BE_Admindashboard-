@@ -7,7 +7,7 @@ use App\Helpers\Easebuzz;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Redirect;
-use App\Models\{PaymentOption,ClientCurrency,SubscriptionPlansUser, Order, Cart, CartAddon, CartProduct, User,  Payment,  CartCoupon, CartProductPrescription, UserVendor, Transaction};
+use App\Models\{PaymentOption,ClientCurrency,SubscriptionPlansUser, Order, Cart, CartAddon, CartProduct, User,  Payment,  CartCoupon, CartProductPrescription, UserVendor, Transaction, Vendor};
 use App\Http\Controllers\Api\v1\{BaseController, OrderController, WalletController, UserSubscriptionController};
 
 class EasebuzzController  extends BaseController
@@ -57,7 +57,7 @@ class EasebuzzController  extends BaseController
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
             $cart_id =   $cart->id;
             $returnUrlParams = $returnUrlParams . '&cart_id=' .$cart->id; //. '&order_id={order_id}' .$reference_number. '&order_token=' .$reference_number;
-          
+            $request->vendor_id = $cart->cartvendor[0]->vendor_id??null;
         }
         elseif($payment_form == 'subscription'){
             $description = 'Subscription Checkout';
@@ -96,7 +96,6 @@ class EasebuzzController  extends BaseController
         if($request->vendor_id){
             $vendor = Vendor::select('id','easebuzz_sub_merchent_id')->where('id', $request->vendor_id)->first();
             $sub_merchnt_id = $vendor->easebuzz_sub_merchent_id ?? '';
-          
         }
         if(($this->Sub_merchant == 1) && ($sub_merchnt_id != '' )){
             $postData['sub_merchant_id']= $sub_merchnt_id ;

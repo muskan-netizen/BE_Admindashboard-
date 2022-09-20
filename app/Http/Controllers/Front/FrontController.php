@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product, SmsTemplate, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor, VendorCategory, ClientLanguage, LoyaltyCard, Nomenclature, NomenclatureTranslation, Order};
+use App\Models\{Client, Category, Product,Type, SmsTemplate, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor, VendorCategory, ClientLanguage, LoyaltyCard, Nomenclature, NomenclatureTranslation, Order};
 
 class FrontController extends Controller
 {
@@ -97,10 +97,19 @@ class FrontController extends Controller
     }
     public function categoryNav($lang_id)
     {
-       $preferences = Session::get('preferences');
-       $primary = ClientLanguage::orderBy('is_primary','desc')->first();
-       $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-       ->select('categories.id', 'categories.icon', 'categories.icon_two' , 'categories.slug', 'categories.parent_id', 'cts.name')->orderBy('position')->distinct('categories.slug');
+        $preferences = Session::get('preferences');
+        // get selected vendor type 
+        $vendorType  = Session::get('vendorType');
+        // set category layout by on behalf of vendor type
+        $categoryTypes = getServiceTypesCategory($vendorType);
+       // pr($categoryTypes);
+        $primary     = ClientLanguage::orderBy('is_primary','desc')->first();
+       // DB::enableQueryLog();
+        $categories  = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
+                                ->select('categories.id', 'categories.icon', 'categories.icon_two' , 'categories.slug', 'categories.parent_id','cts.name','categories.type_id')
+                                ->whereIn('categories.type_id',$categoryTypes )
+                                ->orderBy('position')->distinct('categories.slug');
+        //dd(DB::getQueryLog());
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
         $celebrity_check = 0;
@@ -111,8 +120,11 @@ class FrontController extends Controller
                     $celebrity_check = 1;
                     $include_categories[] = 5; // type 5 for celebrity
                 }
-                $vendors = (Session::has('vendors')) ? Session::get('vendors') : $this->getServiceAreaVendors();
-
+                if(isset($_REQUEST['request_from']) && ($_REQUEST['request_from'] == 1) ){
+                    $vendors = $this->getServiceAreaVendors();
+                } else {
+                    $vendors = (Session::has('vendors')) ? Session::get('vendors') : $this->getServiceAreaVendors();
+                }
                 $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
                     ->where(function ($q1) use ($vendors , $include_categories) {
                         $q1->whereIn('vct.vendor_id', $vendors)
@@ -142,6 +154,7 @@ class FrontController extends Controller
                                 ->whereNull('categories.vendor_id')
                               //  ->orderBy('categories.position', 'asc')
                                 ->orderBy('categories.parent_id', 'asc')->groupBy('id')->get();
+
         if ($categories) {
             $categories = $this->buildTree($categories); 
         }
@@ -220,7 +233,7 @@ class FrontController extends Controller
         $longitude = Session::get('longitude');
         $vendorType = Session::get('vendorType');
         $preferences = Session::has('preferences') ? Session::get('preferences') : $client_preferences;
-        $serviceAreaVendors = Vendor::select('id');
+        $serviceAreaVendors = Vendor::select('id', 'show_slot');
         $vendors = [];
         if($vendorType){
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
@@ -232,6 +245,23 @@ class FrontController extends Controller
                     $query->select('vendor_id')
                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
                 });
+
+                if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
+                    $slot_vendors = clone $serviceAreaVendors;
+                    $data = $slot_vendors->get();
+                    foreach ($data as $key => $value) {
+                        $serviceAreaVendors = $serviceAreaVendors->when(($value->show_slot == 0), function($query) use ($latitude, $longitude) {
+                            return $query->where(function($query1) use ($latitude, $longitude) {
+                                $query1->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                })
+                                ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                });
+                            });
+                        });
+                    }
+                }
             }
         }
         $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
@@ -248,6 +278,32 @@ class FrontController extends Controller
         return $vendors;
     }
 
+    public function getServiceAreaVendorsWithoutHyperlocal($latitude, $longitude){
+        $vendorType = Session::get('vendorType');
+        $preferences = Session::has('preferences') ? Session::get('preferences') : ClientPreference::where('id', '>', 0)->first();;
+        $serviceAreaVendors = Vendor::select('id', 'show_slot');
+        $vendors = [];
+        if($vendorType){
+            $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
+        }
+
+        if (!empty($latitude) && !empty($longitude)) {
+            $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                $query->select('vendor_id')
+                ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+            });
+        }
+        $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
+
+
+        if($serviceAreaVendors->isNotEmpty()){
+            foreach($serviceAreaVendors as $value){
+                $vendors[] = $value->id;
+            }
+        }
+        return $vendors;
+    }
+
     public function loadDefaultImage(){
         $proxy_url = \Config::get('app.IMG_URL1');
         $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
@@ -258,9 +314,10 @@ class FrontController extends Controller
 
     public function productList($vendorIds, $langId, $currency = 'USD', $where = '')
     {
+        $type = Session::get('vendorType');
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         $multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
-        $products = Product::with([
+        $products = Product::byProductCategoryServiceType($type)->with([
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
@@ -275,7 +332,7 @@ class FrontController extends Controller
                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode')->orderBy('price');
                 $q->groupBy('product_id');
             },
-        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','minimum_order_count','batch_count');
+        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','minimum_order_count','batch_count','minimum_duration_min');
 
         if ($where !== '') {
             $products = $products->where($where, 1);
@@ -660,7 +717,9 @@ class FrontController extends Controller
 
             $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($timezone)->format('Y-m-d');
             $cartData[$key]->scheduled_date_time = $selectedDate;
-            $slots = showSlot($selectedDate,$data->vendor_id,'delivery');
+            $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
+            $slots = (object)$slotsRes['slots'];
+            //$slots = showSlot($selectedDate,$data->vendor_id,'delivery');
             $time_slots = [];
             $i = 0;
             foreach($slots as $slot){
@@ -935,4 +994,15 @@ class FrontController extends Controller
         }
 
     }
+     # get prefereance if appointment on in config
+     public function getDispatchAppointmentDomain()
+     {
+         $preference = ClientPreference::select('need_appointment_service','appointment_service_key','appointment_service_key_url','appointment_service_key_code')->first();
+         if ($preference->need_appointment_service == 1 && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_url) && !empty($preference->appointment_service_key_code)) {
+             return $preference;
+         } else {
+             return false;
+         }
+     }
+ 
 }

@@ -120,6 +120,19 @@ class WalletController extends FrontController
                     $payment_option->title = 'Pay Now';
                 }elseif($payment_option->code == 'mvodafone'){
                     $payment_option->title = 'Vodafone M-PAiSA';
+                }elseif($payment_option->code == 'mobbex'){
+                    $payment_option->title = __('Mobbex');
+                }elseif($payment_option->code == 'offline_manual'){
+                    $json = json_decode($payment_option->credentials);
+                    $payment_option->title = $json->manule_payment_title;
+                }elseif($payment_option->code == 'mycash'){
+                    $payment_option->title = __('Digicel MyCash');
+                }elseif($payment_option->code == 'windcave'){
+                    $payment_option->title = __('Windcave (Debit/Credit card)');
+                }elseif($payment_option->code == 'stripe_ideal'){
+                    $payment_option->title = __('iDEAL');
+                }elseif($payment_option->code == 'authorize_net'){
+                    $payment_option->title = __('Credit/Debit Card');
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);

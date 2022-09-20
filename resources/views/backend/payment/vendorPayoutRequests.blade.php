@@ -4,7 +4,7 @@
 @endsection
 @section('content')
 <div class="content">
-    <div class="container-fluid">
+    <div class="container-fluid alPayoutRequestsPage">
 
         <div class="row">
             <div class="col-12">
@@ -19,7 +19,7 @@
                 <div class="card widget-inline">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-sm-6 col-md-4 mb-3 mb-md-0">
+                            <div class="col-6 col-md-4 mb-3 mb-md-0">
                                 <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-primary"></i>
@@ -28,7 +28,7 @@
                                     <p class="text-muted font-15 mb-0">{{ __('Total Order Value') }}</p>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-4 mb-3 mb-md-0">
+                            <div class="col-6 col-md-4 mb-3 mb-md-0">
                                 <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-primary"></i>
@@ -37,7 +37,7 @@
                                     <p class="text-muted font-15 mb-0"> {{ __('Pending Payout Value') }}</p>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-4 mb-3 mb-md-0">
+                            <div class="col-6 col-md-4 mb-3 mb-md-0">
                                 <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-primary"></i>
@@ -71,12 +71,12 @@
                     <div class="tab-pane fade past-order show active" id="pending_payouts" role="tabpanel" aria-labelledby="pending-payouts">
                         <div class="row">
                             <div class="col-12">
-                               
+
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="table-responsive">
                                             {{-- <form name="saveOrder" id="saveOrder"> @csrf</form> --}}
-                                           
+
                                             <table class="table table-centered table-nowrap table-striped" id="pending_payouts_datatable" width="100%">
                                                 <thead>
                                                     <tr>
@@ -145,7 +145,7 @@
                 </div>
                 <div class="modal-body px-3">
                     <div class="row">
-                        <h4 class="modal-title">{{__('Are you sure you want to payout')}} 
+                        <h4 class="modal-title">{{__('Are you sure you want to payout')}}
                             <span id="payout-vendor"></span> for
                             <span id="payout-amount-final"></span>?
                         </h4>

@@ -211,7 +211,7 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-3 mb-3" >
-                                        <label for="validationCustom01">{{getNomenclatureName('Zip Code', true) }} / PO Box</label>
+                                        <label for="validationCustom01">{{getNomenclatureName('Zip Code', true) }}</label>
                                         <input type="text" class="form-control" id="pincode" name="pincode" value="">
                                         <span class="invalid-feedback" id="pincode_error"><strong></strong></span>
                                     </div>
@@ -235,11 +235,26 @@
                                 @if($mod_count > 1)
                                 @if($client_preferences)
                                     <div class="form-row">
-                                        @if($client_preferences->dinein_check == 1)
+                                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                                            @php
+                                                $clientVendorTypes = $vendor_typ_key.'_check';
+                                                $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                                                $vendor_DynamicTypeName = $vendor_typ_key == "dinein" ? 'Dine-In' : $vendor_typ_value ;
+                                            @endphp
+                                            @if($client_preferences->$clientVendorTypes == 1 )
+                                                <div class="col-md-2 col-4 mb-3">
+                                                    <label for="">{{getDynamicTypeName($vendor_DynamicTypeName)}}</label>
+                                                    <div class="mt-md-1">
+                                                        <input type="checkbox" data-plugin="switchery" checked data-color="#43bee1" id="{{$VendorTypesName}}" name="{{$VendorTypesName}}">
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                        {{-- @if($client_preferences->dinein_check == 1)
                                         @php
                                         $Dine_In = getNomenclatureName('Dine-In', true);
                                         $Dine_In = ($Dine_In === 'Dine-In') ? __('Dine-In') : $Dine_In;
-                                    @endphp
+                                         @endphp
                                             <div class="col-md-2 col-4 mb-3">
                                                 <label for="">{{$Dine_In}}</label>
                                                 <div class="mt-md-1">
@@ -260,17 +275,17 @@
                                             </div>
                                         @endif
                                         @if($client_preferences->delivery_check == 1)
-                                        @php
-                                        $Delivery = getNomenclatureName('Delivery', true);
-                                        $Delivery = ($Delivery === 'Delivery') ? __('Delivery') : $Delivery;
-                                        @endphp
-                                            <div class="col-md-2 col-4 mb-3">
-                                                <label for="">{{$Delivery}}</label>
-                                                <div class="mt-md-1">
-                                                    <input type="checkbox" data-plugin="switchery" data-color="#43bee1" id="delivery" name="delivery">
+                                            @php
+                                            $Delivery = getNomenclatureName('Delivery', true);
+                                            $Delivery = ($Delivery === 'Delivery') ? __('Delivery') : $Delivery;
+                                            @endphp
+                                                <div class="col-md-2 col-4 mb-3">
+                                                    <label for="">{{$Delivery}}</label>
+                                                    <div class="mt-md-1">
+                                                        <input type="checkbox" data-plugin="switchery" data-color="#43bee1" id="delivery" name="delivery">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        @endif
+                                        @endif --}}
                                     </div>
                                 @endif
                                 @endif
@@ -402,7 +417,7 @@
                                                             @endif
                                                     </div>
                                                 </div>
-                                                @if(isset($user->is_superadmin) && ($user->is_superadmin == 1))
+                                                {{-- @if(isset($user->is_superadmin) && ($user->is_superadmin == 1))
                                                     <div class="col-md-4">
                                                         <div class="al_advanced_details p-2">
                                                             <p class="al_custom_title mb-1"><span class="">{{ __("Commission") }}</span> ({{ __("Visible For Admin") }})</p>
@@ -424,7 +439,7 @@
 
                                                         </div>
                                                     </div>
-                                                @endif
+                                                @endif --}}
                                                 <div class="col-md-4">
 
                                                     <div class="col-md-12">
@@ -800,11 +815,19 @@ function isNumberKey(evt) {
 
     $(document).on('click', '.showMap', function() {
         var no = $(this).attr('num');
+
         var lats = document.getElementById(no + '_latitude').value;
         var lngs = document.getElementById(no + '_longitude').value;
         var address = document.getElementById(no+'_address').value;
-        console.log(lats + '--' + lngs);
 
+        var addressLatitude = document.getElementById('address-latitude');
+        var addressLongitude = document.getElementById('address-longitude');
+
+        if(addressLatitude != null && addressLongitude != null){
+            var lats = addressLatitude.value;
+            var lngs = addressLongitude.value;
+        }
+        
         document.getElementById('map_for').value = no;
 
         if (lats == null || lats == '0' || lats =='') {

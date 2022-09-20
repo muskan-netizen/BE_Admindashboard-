@@ -134,9 +134,6 @@ class CategoryController extends BaseController
                 }
                 $vendor->categoriesList = $categoriesList;
 
-                // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($user->latitude) && ($user->longitude)) {
-                //     $vendor = $this->getVendorDistanceWithTime($user->latitude, $user->longitude, $vendor, $preferences);
-                // }
                 $vendor->is_vendor_closed = 0;
                 if ($vendor->show_slot == 0) {
                     if (($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty())) {
@@ -168,7 +165,7 @@ class CategoryController extends BaseController
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                 },
                 'variant' => function ($q) use ($langId) {
-                    $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                    $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
                     // $q->groupBy('product_id');
                 }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                 'tags.tag.translations' => function ($q) use ($langId) {
@@ -236,8 +233,6 @@ class CategoryController extends BaseController
                 }
             }
             $vendorData = $vendorData->where('status', 1)->whereIn('id', $vendor_ids)->with('slot', 'products')->paginate($limit, $page);
-            // $avgRating = $vendorData->products->avg('averageRating');
-            // $vendorData->avgRating = "fmwjkenf";
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 1) ? 0 : 1;
@@ -273,27 +268,35 @@ class CategoryController extends BaseController
 
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
-            $products = Product::has('vendor')->select('products.category_id', 'mode_of_service', 'products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count',DB::raw("'$multipli' as variant_multiplier"))->with([
-                'category.categoryDetail', 'category.categoryDetail.translation' => function ($q) use ($langId) {
-                    $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
-                        ->where('category_translations.language_id', $langId);
-                }, 'inwishlist' => function ($qry) use ($userid) {
-                    $qry->where('user_id', $userid);
-                },
-                'media.image', 
-                'translation' => function ($q) use ($langId) { 
-                    $q->select('id','product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id')->where('language_id', $langId)->groupBy('language_id','product_id');
+                
+            $products = Product::has('vendor')->with([
+                'category.categoryDetail', 'media.image',
+                'translation' => function ($q) use ($langId) {
+                    $q->select('id','product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                    $q->groupBy('language_id','product_id');
                 },
                 'variant' => function ($q) use ($langId) {
-                    $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
-                    // $q->groupBy('product_id');
-                }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
+                    $q->select('id','sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
+                },
+                'variant.checkIfInCartApp', 'checkIfInCartApp',
                 'tags.tag.translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
+                }, 'inwishlist' => function ($qry) use ($userid) {
+                    $qry->where('user_id', $userid);
                 }
-            ])->where('products.category_id', $category_id)->where('products.is_live', 1)
-                ->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)
-                ->withCount(['variantSet','addOn'])->paginate($limit, $page);   
+            ])->where('products.category_id', $category_id)
+                ->where('products.is_live', 1); 
+
+
+            $products = $products->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', DB::raw("'$multipli' as variant_multiplier"))
+                ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
+                ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
+                ->withCount('OrderProduct');
+            $products = $products->orderBy('product_translations.title', 'asc');
+            
+            $products = $products->withCount(['variantSet','addOn'])->groupBy('id');
+            $products = $products->paginate($limit, $page);
+
             if (!empty($products)) {
                 foreach ($products as $key => $product) {
                    
@@ -377,6 +380,7 @@ class CategoryController extends BaseController
             }
             $startRange = 0;
             $endRange = 20000;
+            $type = $request->has('type') ? $request->type : 'delivery';
             if ($request->has('range') && !empty($request->range)) {
                 $range = explode(';', $request->range);
                 $clientCurrency->doller_compare;
@@ -417,14 +421,14 @@ class CategoryController extends BaseController
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
         
-            $products = Product::has('vendor')->with([
+            $products = Product::byProductCategoryServiceType($type)->has('vendor')->with([
                 'category.categoryDetail', 'media.image',
                 'translation' => function ($q) use ($langId) {
                     $q->select('id','product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     $q->groupBy('language_id','product_id');
                 },
                 'variant' => function ($q) use ($langId, $variantIds,$order_type) {
-                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode','price');
+                    $q->select('id','sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
                     if (!empty($variantIds)) {
                         $q->whereIn('id', $variantIds);
                     }

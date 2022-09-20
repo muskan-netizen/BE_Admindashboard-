@@ -1,3 +1,4 @@
+
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Vendor'])
 
 @section('css')
@@ -51,6 +52,7 @@
         margin: auto;
         border-radius: 10px;
         overflow: hidden;
+        padding: 10px;
     }
 
     .pricingtable .pricingtable-header {
@@ -235,7 +237,70 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane {{($tab == 'configuration') ? 'active show' : '' }} " id="configuration">
+                       @if($vendor->vendor_templete_id ==  6)
+                        <div class="card-box">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                                            <h4 class="mb-2 "><span> {{ __('Vendor Section') }} </span></h4>
+                                            <button class="btn btn-info openVendorSectionModal" > {{ __('Add Vendor Section') }}</button>
+                                        </div>
+                                    </div>
 
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="table-responsive mb-3" style="max-height:350px; overflow-y: auto;">
+                                                <table class="table table-centered table-nowrap table-striped" id="products-datatable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{{ __('#') }}</th>
+                                                            <th>{{ __('Name') }}</th>
+                                                            <th>{{ __('Sub Section') }}</th>
+                                                            <th style="width: 85px;">{{ __('Action') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($vendorSection as $key=>$section)
+                                                        <tr>
+                                                            <td class="table-user">
+                                                                <a href="javascript:void(0);" class="text-body">{{$key+1}}</a>
+                                                            </td>
+                                                            <td class="table-user">
+                                                                <a href="javascript:void(0);" class="text-body">{{ ($section->primary ??false) ? $section->primary->heading : '' }}</a>
+                                                            </td>
+                                                            <td class="table-user">
+                                                                <a href="javascript:void(0);" class="text-body">{{$section->section_count}}</a>
+                                                            </td>
+
+                                                            <td>
+
+
+                                                                <button type="button" class="btn btn-primary-outline action-icon editSectionBtn" data-id="{{$section->id}}" data-language_id="{{ ($section->primary ??false) ? $section->primary->language_id : '' }}"><i class="mdi mdi-square-edit-outline"></i></button>
+
+                                                                <form action="{{route('vsection.delete', $section->id)}}" method="POST" class="action-icon">
+                                                                    @csrf
+                                                                    <input type="hidden" value="{{$section->id}}" name="area_id">
+                                                                    <button type="submit" onclick="return confirm('Are you sure? You want to delete the section.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>
+
+                                                                </form>
+                                                            </td>
+                                                        </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                         {{-- <div class="row">
                                 <div class="col-md-12">
                                     <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" id="slot-configs" method="post">
@@ -316,13 +381,19 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="row align-items-center mb-3">
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-12 d-flex align-items-center justify-content-between">
                                             <h4 class="mb-2 "><span> {{ __('Service Area') }} </span></h4>
-                                        </div>
-                                        <div class="col-sm-6 text-center text-sm-right">
                                             <button class="btn btn-info openServiceModal"> {{ __('Add Service Area') }}</button>
                                         </div>
                                     </div>
+                                    @if(($client_preference_detail->slots_with_service_area == 1) && ($vendor->show_slot == 0))
+                                        <div class="row">
+                                            <div class="col-sm-4 mb-2 d-flex align-items-center justify-content-between">
+                                                {!! Form::label('title', __('Auto Assign Service Area As Per Slots'),['class' => 'control-label font-weight-bold']) !!}
+                                                <input type="checkbox" data-plugin="switchery" name="cron_for_service_area" id="cron_for_service_area" class="form-control" data-color="#43bee1" @if($vendor->cron_for_service_area == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                                            </div>
+                                        </div>
+                                    @endif
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="table-responsive mb-3" style="height: 330px; overflow-y: auto;">
@@ -337,10 +408,14 @@
                                                         @foreach($areas as $geo)
                                                         <tr>
                                                             <td class="table-user">
-                                                                <a href="javascript:void(0);" class="text-body font-weight-semibold">{{$geo->name}}</a>
+                                                                <a href="javascript:void(0);" class="text-body">{{$geo->name}}</a>
                                                             </td>
 
                                                             <td>
+                                                                @if(($client_preference_detail->slots_with_service_area == 1) && ($vendor->show_slot == 0))
+                                                                    <input type="checkbox" data-plugin="switchery" name="is_active_for_vendor_slot" class="form-control is_active_for_vendor_slot" data-color="#43bee1" data-aid="{{$geo->id}}" @if($geo->is_active_for_vendor_slot == 1) checked @endif {{ ($vendor->cron_for_service_area == 1) ? 'disabled' : '' }}>
+                                                                @endif
+
                                                                 <button type="button" class="btn btn-primary-outline action-icon editAreaBtn" area_id="{{$geo->id}}"><i class="mdi mdi-square-edit-outline"></i></button>
 
                                                                 <form action="{{route('vendor.serviceArea.delete', $vendor->id)}}" method="POST" class="action-icon">
@@ -797,6 +872,7 @@
 @include('backend.vendor.profile-modals')
 @include('backend.vendor.modals.laundry.pickup-modals')
 @include('backend.vendor.modals.laundry.dropoff-modals')
+@include('backend.vendor.modals.add-section')
 @endsection
 
 @section('script')
@@ -819,6 +895,7 @@
     $( document ).ready(function() {
         $(".base_url").html(base_url);
     });
+
     $(document).on("click", ".editTablebtn", function() {
         let table_id = $(this).data('id');
         $.ajax({
@@ -1002,7 +1079,6 @@
                 $('#latlongs').val(event.overlay.getPath().getArray());
                 // console.log(map.getZoom());
                 $('#zoom_level').val(map.getZoom());
-                alert(map.getZoom());
             } else {
                 alert('You can draw only one zone at a time');
                 event.overlay.setMap(null);
@@ -1347,6 +1423,7 @@
                                 slot_dine_in: data.slot_dine_in,
                                 slot_takeaway: data.slot_takeaway,
                                 slot_delivery: data.slot_delivery,
+                                service_area: data.service_area,
                             });
                         });
                         successCallback(events);
@@ -1391,6 +1468,10 @@
                 if(ev.event.extendedProps.slot_dine_in == 0){
                     $("#edit_dine_in").prop("checked", false);
                 }
+
+                // display selected service areas
+                var service_areas = ev.event.extendedProps.service_area;
+                $("#edit_slot_service_area").val(service_areas).trigger('change');
 
                 $('#edit_slot_date').flatpickr({
                     minDate: "today",
@@ -1487,6 +1568,62 @@
     $(function() {
         $('#save').click(function() {
             //iterate polygon latlongs?
+        });
+    });
+
+    $(document).on('change', '#cron_for_service_area', function(){
+        var statusVal = 0;
+        if($(this).is(':checked')){
+            statusVal = 1;
+        }
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{{route('vendor.serviceArea.cron.update', $vendor->id)}}",
+            data: {
+                _token: CSRF_TOKEN,
+                status: statusVal
+            },
+            success: function(response) {
+                if (response.status == 'Success') {
+                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                } else {
+                    $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+                }
+            },
+            error: function(errors){
+                var error = errors.responseJSON;
+                $.NotificationApp.send("Error", error.message, "top-right", "#ab0535", "error");
+            }
+        });
+    });
+
+    $(document).on('change', '.is_active_for_vendor_slot', function(){
+        var statusVal = 0;
+        if($(this).is(':checked')){
+            statusVal = 1;
+        }
+        var aid = $(this).attr('data-aid');
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{{url('client/vendor/updateAreaStatusForSlot')}}" + '/' + aid,
+            data: {
+                _token: CSRF_TOKEN,
+                vid: "{{ $vendor->id }}",
+                status: statusVal
+            },
+            success: function(response) {
+                if (response.status == 'Success') {
+                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                } else {
+                    $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+                }
+            },
+            error: function(errors){
+                var error = errors.responseJSON;
+                $.NotificationApp.send("Error", error.message, "top-right", "#ab0535", "error");
+            }
         });
     });
 </script>

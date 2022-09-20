@@ -20,12 +20,12 @@ class WebStylingOptionSeeder extends Seeder
         if($web_styling > 0){
             $web_styling_options_count = DB::table('web_styling_options')->count();
             $web_styling_options = array(
-                array('web_styling_id' => $web_styling, 'name' => 'Home Page 1', 'is_selected' => '0', 'template_id' => '1', 'image' => 'template-one.png'),
-                array('web_styling_id' => $web_styling, 'name' => 'Home Page 2', 'is_selected' => '0', 'template_id' => '2', 'image' => 'template-two.png'),
-                array('web_styling_id' => $web_styling, 'name' => 'Food Delivery', 'is_selected' => '0', 'template_id' => '3', 'image' => 'template-three.png'),
-                array('web_styling_id' => $web_styling, 'name' => 'E-Commerce', 'is_selected' => '0', 'template_id' => '4', 'image' => 'template-four.png'),
-                array('web_styling_id' => $web_styling, 'name' => 'Pickup & Drop', 'is_selected' => '0', 'template_id' => '5', 'image' => 'template-five.png'),
-                array('web_styling_id' => $web_styling, 'name' => 'Home Service', 'is_selected' => '0', 'template_id' => '6', 'image' => 'template-six.png')
+                array('web_styling_id' => $web_styling, 'name' => 'Home Page 1', 'is_selected' => '0', 'template_id' => '1', 'image' => 'template-one.jpg'),
+                array('web_styling_id' => $web_styling, 'name' => 'Home Page 2', 'is_selected' => '0', 'template_id' => '2', 'image' => 'template-two.jpg'),
+                array('web_styling_id' => $web_styling, 'name' => 'Food Delivery', 'is_selected' => '0', 'template_id' => '3', 'image' => 'template-three.jpg'),
+                array('web_styling_id' => $web_styling, 'name' => 'E-Commerce', 'is_selected' => '0', 'template_id' => '4', 'image' => 'template-four.jpg'),
+               // array('web_styling_id' => $web_styling, 'name' => 'Pickup & Drop', 'is_selected' => '0', 'template_id' => '5', 'image' => 'template-five.jpg'),
+                array('web_styling_id' => $web_styling, 'name' => 'On Demand Service', 'is_selected' => '0', 'template_id' => '6', 'image' => 'template-six.jpg')
             );
             if($web_styling_options_count == 0)
             {
@@ -37,7 +37,7 @@ class WebStylingOptionSeeder extends Seeder
             }
             else{
                 foreach ($web_styling_options as $option) {
-                    $webStylingOption = WebStylingOption::where('image', $option['image'])->first();
+                    $webStylingOption = WebStylingOption::where('template_id', $option['template_id'])->first();
                     if ($webStylingOption !== null) {
                         $webStylingOption->update(['web_styling_id' => $web_styling, 'name' => $option['name'], 'template_id' => $option['template_id']]);
                     } else {
@@ -51,6 +51,6 @@ class WebStylingOptionSeeder extends Seeder
                     }
                 }
             }
-        }        
+        }
     }
 }

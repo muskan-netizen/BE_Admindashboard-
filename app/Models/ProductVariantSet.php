@@ -14,6 +14,8 @@ class ProductVariantSet extends Model
 	public function options() {
 	    return $this->hasMany('App\Models\VariantOption', 'variant_id', 'variant_type_id')
 	    		->join('product_variant_sets as pvs', 'pvs.variant_option_id', 'variant_options.id')
+				->join('product_variants as pv','pvs.product_variant_id','pv.id')
+				->where('pv.status',1)
 	    		->groupBy('pvs.variant_option_id')->orderBy('pvs.product_variant_id');
 	}
 
@@ -21,8 +23,10 @@ class ProductVariantSet extends Model
 	    return $this->hasMany('App\Models\ProductVariantSet', 'variant_type_id', 'variant_type_id')
     		->join('variant_options as pvs', 'product_variant_sets.variant_option_id', 'pvs.id')
     		->join('variant_option_translations as vt','vt.variant_option_id','pvs.id')
-    		->select('pvs.hexacode', 'vt.title', 'product_variant_sets.product_id', 'product_variant_sets.variant_type_id', 'product_variant_sets.variant_option_id', 'product_variant_sets.product_variant_id')
-    		->groupBy('product_variant_sets.variant_option_id');
+    		->join('product_variants as pv','product_variant_sets.product_variant_id','pv.id')
+    		->select('pvs.hexacode', 'vt.title', 'product_variant_sets.product_id', 'product_variant_sets.variant_type_id', 'product_variant_sets.variant_option_id', 'product_variant_sets.product_variant_id','pv.quantity','pv.price','pv.status')
+    		->where('pv.status',1)
+			->groupBy('product_variant_sets.variant_option_id');
 	}
 
 	public function optionData() {

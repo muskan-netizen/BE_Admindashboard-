@@ -1587,6 +1587,10 @@ $(document).ready(function () {
             case '18':
                 paymentViaAuthorize('', order);
                 break;
+            
+            case '47':
+                paymentViaKhalti('', order);
+                break;
         
         }
 

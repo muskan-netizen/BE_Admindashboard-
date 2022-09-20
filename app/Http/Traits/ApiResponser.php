@@ -20,7 +20,7 @@ use Auth;
 use App\Models\Cart;
 use App\Models\EmailTemplate;
 use App\Models\UserAddress;
-use App\Models\{Product, OrderProductRating, ClientPreference,UserDevice,NotificationTemplate};
+use App\Models\{Product, OrderProductRating, ClientPreference,UserDevice, NotificationTemplate};
 
 trait ApiResponser
 {
@@ -185,6 +185,17 @@ trait ApiResponser
 		else
 			return false;
 	}
+
+	# check if on demand service  on
+	public function checkIfAppointmentOnCommon()
+	{
+		$preference = ClientPreference::select('id', 'need_appointment_service', 'appointment_service_key_code', 'appointment_service_key', 'appointment_service_key_url')->first();
+		if ($preference->need_appointment_service == 1 && !empty($preference->appointment_service_key_code) && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_url))
+			return $preference;
+		else
+			return false;
+	}
+
 
 
 	# set currency in session
@@ -439,8 +450,7 @@ trait ApiResponser
 
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            $from = $client_preferences->fcm_server_key;
-            if ($order_status_id == 2) {
+           if ($order_status_id == 2) {
                 $notification_content = NotificationTemplate::where('id', 5)->first();
             } elseif ($order_status_id == 3) {
                 $notification_content = NotificationTemplate::where('id', 6)->first();
@@ -452,10 +462,7 @@ trait ApiResponser
                 $notification_content = NotificationTemplate::where('id', 9)->first();
             }
             if ($notification_content) {
-                $headers = [
-                    'Authorization: key=' . $from,
-                    'Content-Type: application/json',
-                ];
+                
                 $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
                 $data = [
                     "registration_ids" => $devices,
@@ -474,17 +481,7 @@ trait ApiResponser
                     ],
                     "priority" => "high"
                 ];
-                $dataString = $data;
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                $result = curl_exec($ch);
-
-                curl_close($ch);
+                sendFcmCurlRequest($data);
             }
         }
     }

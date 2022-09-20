@@ -227,10 +227,15 @@ class BaseController extends Controller{
         return $category_list;
     }
 
-    public function categoryNav($lang_id, $vends=[]) {
+    public function categoryNav($lang_id, $vends=[],$type = 'delivery') {
+
+        $categoryTypes = getServiceTypesCategory($type);
+
         $preferences = ClientPreference::select('is_hyperlocal', 'client_code', 'language_id', 'celebrity_check')->first();
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-                    ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')->distinct('categories.slug');
+                    ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')
+                    ->whereIn('categories.type_id',$categoryTypes )
+                    ->distinct('categories.slug');
 
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
@@ -401,7 +406,7 @@ class BaseController extends Controller{
         $latitude = ($user->latitude) ? $user->latitude : $lat;
         $longitude = ($user->longitude) ? $user->longitude : $lng;
         $vendorType = $user->vendorType ? $user->vendorType : $type;
-        $serviceAreaVendors = Vendor::select('id');
+        $serviceAreaVendors = Vendor::select('id', 'show_slot');
         $vendors = [];
         if($vendorType){
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
@@ -415,8 +420,24 @@ class BaseController extends Controller{
                     $query->select('vendor_id')
                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
                 });
-            }
 
+                if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
+                    $slot_vendors = clone $serviceAreaVendors;
+                    $data = $slot_vendors->get();
+                    foreach ($data as $key => $value) {
+                        $serviceAreaVendors = $serviceAreaVendors->when(($value->show_slot == 0), function($query) use ($latitude, $longitude) {
+                            return $query->where(function($query1) use ($latitude, $longitude) {
+                                $query1->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                })
+                                ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                });
+                            });
+                        });
+                    }
+                }
+            }
         }
         $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
 

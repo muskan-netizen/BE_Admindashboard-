@@ -18,7 +18,8 @@ class PaymentMethodSeeder extends Seeder
             array('id' => '1','name' => __('Visa'),'image' => 'visa.png', 'slug' => 'visa', 'is_show' => '1'),
             array('id' => '2','name' => __('Discover'),'image' => 'discover.png', 'slug' => 'discover','is_show' => '1'),
             array('id' => '3','name' => __('American Express'),'image' => 'american-express.png','slug' => 'american-express', 'is_show' => '1'),
-            array('id' => '4','name' => __('Master Cart'),'image' => 'master.png','slug' => 'master', 'is_show' => '1'),
+            array('id' => '4','name' => __('Master Card'),'image' => 'master.png','slug' => 'master', 'is_show' => '1'),
+            array('id' => '5','name' => __('Mobile Money'),'image' => 'mobile-money.png','slug' => 'mobile-money', 'is_show' => '1'),
         );
        
       if($option_count == 0)

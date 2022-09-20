@@ -17,7 +17,7 @@
                     <div class="col-md-6" id="imageInput">
                         <label>{{ __('Upload image') }}</label>
                         <input data-default-file="" type="file" data-plugins="dropify" name="image" accept="image/*" class="dropify" />
-                        <label class="logo-size d-block text-right mt-1">{{ __('Image Size') }} 150x150</label>                    
+                        <label class="logo-size d-block text-right mt-1">{{ __('Image Size') }} 150x150</label>
                         <span class="invalid-feedback" role="alert">
                             <strong></strong>
                         </span>
@@ -35,19 +35,26 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        {{__('Notification Type')}}
+                        <label for="title" class="control-label">{{__('Notification Type')}}</label>
                         <div class="form-group row" id="nameInput">
-                            <div class="col-md-3">  
-                                <input name="type" type="radio" value="1" checked>
-                                <label for="push" class="control-label">{{__('SMS')}}</label> 
+
+                            <div class="col-md-3">
+                                <p class="alCustomCheckBoxText m-0">
+                                    <input name="type" id="sms" type="radio" value="1" checked>
+                                    <label for="sms" class="control-label">{{__('SMS')}}</label>
+                                </p>
                             </div>
-                            <div class="col-md-3">      
-                                <input name="type" type="radio" value="2">
-                                <label for="push" class="control-label">{{__('Email')}}</label> 
+                            <div class="col-md-3">
+                                <p class="alCustomCheckBoxText m-0">
+                                    <input name="type" id="email" type="radio" value="2">
+                                    <label for="email" class="control-label">{{__('Email')}}</label>
+                                </p>
                             </div>
-                            <div class="col-md-3">         
-                                <input name="type" type="radio" value="3">
-                                <label for="push" class="control-label">{{__('Push Notification')}}</label>
+                            <div class="col-md-3">
+                                <p class="alCustomCheckBoxText m-0">
+                                    <input name="type" id="push" type="radio" value="3">
+                                    <label for="push" class="control-label">{{__('Push Notification')}}</label>
+                                </p>
                             </div>
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
@@ -112,7 +119,7 @@
                             <div class="col-md-12" id="pushimageInput">
                                 <label>{{ __('Upload image') }}</label>
                                 <input data-default-file="" type="file" data-plugins="dropify" name="push_image" accept="image/*" class="dropify" />
-                                <label class="logo-size d-block text-right mt-1">{{ __('Image Size') }} 150x150</label>                    
+                                <label class="logo-size d-block text-right mt-1">{{ __('Image Size') }} 150x150</label>
                                 <span class="invalid-feedback" role="alert">
                                     <strong></strong>
                                 </span>
@@ -133,7 +140,7 @@
                                         <option value="1">URL</option>
                                         <option value="2">Category</option>
                                         <option value="3">Vendor</option>
-                                    </select>                            
+                                    </select>
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
                                     </span>
@@ -160,9 +167,9 @@
                                 <div class="form-group">
                                     <label for="send_to" class="control-label">{{__("Select Users")}}</label>
                                     <select class="form-control" name="send_to" id="send_to">
-                                        <option value="1">All</option>                                
+                                        <option value="1">All</option>
                                         <option value="2">Vendors</option>
-                                    </select>                            
+                                    </select>
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
                                     </span>
@@ -172,7 +179,7 @@
                                 <div class="form-group" id="schedule_datetimeInput">
                                     <label for="schedule_datetime" class="control-label">{{__("Schedule Date")}}</label>
                                     <input type="datetime-local" class="form-control" name="schedule_datetime" id="schedule_datetime">
-                                                               
+
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
                                     </span>
@@ -182,7 +189,7 @@
                                 <div class="form-group">
                                     <label for="request_user_count" class="control-label">{{__("Request User Count")}}</label>
                                     <input type="text" class="form-control" name="request_user_count" id="request_user_count" value="999">
-                                                               
+
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
                                     </span>
@@ -201,9 +208,9 @@
                                 <div class="form-group">
                                     <label for="status" class="control-label">{{__("Status")}}</label>
                                     <select class="form-control" name="status" id="campaign_status">
-                                        <option value="1">Active</option>                                
+                                        <option value="1">Active</option>
                                         <option value="2">Pause</option>
-                                    </select>                            
+                                    </select>
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
                                     </span>
@@ -212,10 +219,10 @@
                         </div>
                     </div>
                 </div>
-                
-                
-                
-                
+
+
+
+
 
                 <div class="modal-footer border-0">
                     <button type="submit" class="btn btn-info waves-effect waves-light submitAddForm">{{ __('Submit') }}</button>

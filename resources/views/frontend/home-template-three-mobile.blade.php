@@ -43,7 +43,7 @@ if(session()->has('applocale')){
 
     <!-- shimmer_effect start -->
     <article class="section-b-space_al_shimer position-absolute  p-0 ratio_asos">
-        <div class="container-fulid mb-5 shimmer_effect">
+        <div class="container-fulid mb-5 shimmer_effect main_shimer">
             <div class="row ">
                 <div class="col-12 cards d-flex justify-content-between">
                         <h2 class="h2-heading loading mb-3"></h2>
@@ -356,7 +356,26 @@ if(session()->has('applocale')){
 
             @if($mod_count > 1)
             <ul class="row nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods d-flex justify-content-around" id="top-tab" role="tablist">
-                @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
+            @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                @php
+                $clientVendorTypes = $vendor_typ_key.'_check';
+                $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+                @endphp
+
+                @if($client_preference_detail->$clientVendorTypes == 1)
+                <li class="navigation-tab-item" role="presentation"> <a
+                class="nav-link {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
+                id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
+                aria-controls="profile" aria-selected="false">
+                        <span><img src="{{$client_preference_detail->deliveryicon ? $client_preference_detail->deliveryicon['proxy_url'].'36/26'.$client_preference_detail->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" alt=""></span>
+                        {{$NomenclatureName}}
+                    </a>
+                </li>
+                
+                @endif
+            @endforeach 
+            <!-- @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
                 <li class="col navigation-tab-item text-center" role="presentation">
                     <a class="nav-link al_delivery {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
                         <span><img src="{{asset('images/al_custom3.png')}}" alt=""></span>
@@ -378,7 +397,7 @@ if(session()->has('applocale')){
                         {{$Takeaway}}
                     </a>
                 </li>
-                @endif
+                @endif -->
             </ul>
             @endif
 
@@ -586,6 +605,21 @@ if(session()->has('applocale')){
                             <% }); %>
     </script><!-- recent_orders_template end -->
 
+    <script type="text/template" id="cities_template" >
+        <% _.each(cities, function(city, k){%>
+           <div class="alSpaListSlider">
+              <div>
+                 <div class="alSpaListBox">
+                    <div class="alSpaCityBox">
+                       <a href="/cities/<%=city.slug %>"><img class="w-100" src="<%=city.image.image_fit %>260/260<%=city.image.image_path %>"></a>
+                    </div>
+                    <p><%=city.title %></p>
+                 </div>            
+              </div>
+           </div>
+            <% }); 
+        %>
+     </script><!-- cities cities end -->
 
 
     <!-- our_vendor_main_div start -->
@@ -616,6 +650,19 @@ if(session()->has('applocale')){
                         </div>
                     </div>
                 </div>
+            @elseif($homePageLabel->slug == 'cities')
+                <section class="suppliers-section render_full_{{$homePageLabel->slug}} d-none ">
+                    <div class="container mb-0"  >
+                        <div class=" top-heading d-flex justify-content
+                        -between align-self-center">
+                            <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
+                        </div>
+                        <div class="col-12 p-0">
+                            <div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </section> @elseif($homePageLabel->slug == 'trending_vendors')
             <section class="suppliers-section">
                 <div class="container"  >
@@ -629,7 +676,7 @@ if(session()->has('applocale')){
                     </div>
                 </div>
             </section> @else
-            <section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
+            <section class="container mb-0 render_full_{{$homePageLabel->slug}} d-none" id="{{$homePageLabel->slug.$key}}"  >
 
                     <div class="col-md-12 top-heading d-flex align-items-center justify-content-between">
                     <h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>

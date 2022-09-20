@@ -113,10 +113,8 @@
                             <div class="col-xl-4">
                                 <div class="card-box">
                                     <div class="row" style="max-height: 600px; overflow-x: auto">
-                                        <div class="col-sm-6">
-                                            <h4 class="mb-4"> {{ __("Categories") }}</h4>
-                                        </div>
-                                        <div class="col-sm-6 text-right">
+                                        <div class="col-sm-12 d-flex justify-content-between align-items-center mb-2">
+                                            <h4 class=""> {{ __("Categories") }}</h4>
                                             @if($vendor->add_category == 1)
                                             <button class="btn btn-info waves-effect waves-light text-sm-right openCategoryModal" dataid="0" is_vendor="1" {{$vendor->status == 1 ? '' : 'disabled'}}><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                                             </button>
@@ -138,13 +136,14 @@
                             <div class="col-xl-8">
                                 <div class="card-box">
                                     <div class="row" style="max-height: 600px; overflow-x: auto">
-                                        <div class="col-sm-8">
-                                            <h4 class="mb-4"> {{ __("Addon Set") }}</h4>
-                                        </div>
-                                        <div class="col-sm-4 text-right">
+                                        <div class="col-sm-12 mb-2 d-flex justify-content-between align-items-center">
+                                            <h4 class=""> {{ __("Addon Set") }}</h4>
                                             <button class="btn btn-info waves-effect waves-light text-sm-right openAddonModal" dataid="0" {{$vendor->status == 1 ? '' : 'disabled'}}>
                                                 <i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                                             </button>
+                                        </div>
+                                        <div class="col-sm-4 text-right">
+
                                         </div>
                                         <div class="col-md-12">
                                             <div class="row addon-row">

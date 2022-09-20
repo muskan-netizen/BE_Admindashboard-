@@ -3,7 +3,7 @@
 @section('content')
 
 <!-- Start Content-->
-     <div class="col-12">
+     <div class="col-12 alDeliveryOptionsPage">
         <div class="page-title-box">
              <h4 class="page-title">{{ __("Delivery Options") }}</h4>
         </div>
@@ -43,10 +43,8 @@
 
                 <div class="card-box h-100">
                     <div class="row ">
-                        <div class="col-md-6">
+                        <div class="col-md-12 d-flex justify-content-between align-items-center">
                             <h3 class="mb-1"> <span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/royoDis.png')}}" alt=""></span> {{getNomenclatureName('Royo Dispatcher')}}</h3>
-                        </div>
-                        <div class="col-md-6 mt-2 text-right">
                             <button class="btn btn-info waves-effect waves-light save_btn" type="submit" name="last_mile_submit_btn" value ="1"> {{ __("Save") }}</button>
                         </div>
                     </div>
@@ -74,7 +72,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-sm-6">
                                         <div class="form-group mt-3 mb-0 ">
                                             <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
                                             <input type="text" name="delivery_service_key_code" id="delivery_service_key_code" placeholder="" class="form-control" value="{{ old('delivery_service_key_code', $preference->delivery_service_key_code ?? '')}}">
@@ -85,7 +83,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-sm-6">
                                         <div class="form-group mt-3 mb-0 " >
                                             <label for="delivery_service_key">{{ __("Dispatcher API key") }}</label>
                                             <input type="text" name="delivery_service_key" id="delivery_service_key" placeholder="" class="form-control" value="{{ old('delivery_service_key', $preference->delivery_service_key ?? '')}}">
@@ -146,12 +144,10 @@
                     $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
                     ?>
                     <div class="row">
-                    <div class="col-md-6">
-                        <h3 class="mb-1"> <span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$delOption->code.'.png')}}" alt=""></span>  {{$delOption->title}}</h3>
-                    </div>
-                    <div class="col-md-6 mt-2 text-right">
-                        <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
-                    </div>
+                        <div class="col-md-12  d-flex justify-content-between align-items-center">
+                            <h3 class="mb-1"> <span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$delOption->code.'.png')}}" alt=""></span>  {{$delOption->title}}</h3>
+                            <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                        </div>
                     </div>
                     <div class="row mt-2">
                         <div class="col-6">
@@ -250,7 +246,7 @@
 
                             <div class="col-12 mt-3 p-0">
 
-                                <h5 class="d-inline-block mt-3">
+                                <h5 class="d-inline-block mt-0">
                                     <span>{{ __('Webhook Url') }} : </span>
                                     <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('webhook')}}</span></a>
                                 </h5>
@@ -260,7 +256,7 @@
                                     </a>
                                     <h6 id="copy_message" class="copy-message mt-2"></h6>
                                 </sup>
-                  
+
                                 <div class="form-group mb-0 switchery-demo">
                                     <label for="" class="mr-3">{{ __("Set Base Price Fare") }}</label>
                                     <input type="checkbox"  data-title="{{$delOption->code}}" data-plugin="switchery" name="base_active" class="chk_box base_select" data-color="#43bee1" @if($base_price > 0) checked @endif>
@@ -329,16 +325,15 @@
                     $weight = (isset($creds->weight)) ? $creds->weight : '0';
                     ?>
                     <div class="row">
-                    <div class="col-md-6 ">
-                        <h3 class="mb-1"><span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$opt->code.'.png')}}" alt=""></span>  {{$opt->title}}</h3>
-                    </div>
-                    <div class="col-md-6 text-right">
-                        <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
-                    </div>
+                        <div class="col-md-12 d-flex justify-content-between align-items-center">
+                            <h3 class="mb-1"><span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$opt->code.'.png')}}" alt=""></span>  {{$opt->title}}</h3>
+                            <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                        </div>
+
                     </div>
 
                     <div class="row mt-2">
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-3">{{ __("Enable") }}</label>
                                 <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
@@ -359,13 +354,13 @@
                         <hr>
 
                         <div class="row">
-                            <div class="col-6">
+                            <div class="col-sm-6">
                                 <div class="form-group mb-0">
                                     <label for="shiprocket_username" class="mr-3">{{ __("Email Address") }}</label>
                                     <input type="email" name="shiprocket_username" id="shiprocket_username" class="form-control" value="{{$username}}" @if($opt->status == 1) required @endif autofill="off">
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-sm-6">
                                 <div class="form-group mb-0">
                                     <label for="shiprocket_password" class="mr-3">{{ __("Password") }}</label>
                                     <input type="password" name="shiprocket_password" id="shiprocket_password" class="form-control" value="{{$password}}" @if($opt->status == 1) required @endif autofill="off">
@@ -482,16 +477,15 @@
                     $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
                     ?>
                     <div class="row">
-                    <div class="col-md-6">
-                        <h3 class="mb-1"> <span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$optDunzo->code.'.png')}}" alt=""></span>  {{__($optDunzo->title)}}</h3>
-                    </div>
-                    <div class="col-md-6 text-right">
-                        <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
-                    </div>
+                        <div class="col-md-12 d-flex justify-content-between align-items-center">
+                            <h3 class="mb-1"> <span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$optDunzo->code.'.png')}}" alt=""></span>  {{__($optDunzo->title)}}</h3>
+                            <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                        </div>
+
                     </div>
 
                     <div class="row mt-2">
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-3">{{ __("Enable") }}</label>
                                 <input type="checkbox" data-id="{{$optDunzo->id}}" data-title="{{$optDunzo->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($optDunzo->status == 1) checked @endif>
@@ -546,41 +540,34 @@
                                 <label for="" class="mr-3">{{ __("Set Base Price Fare") }}</label>
                                 <input type="checkbox"  data-title="{{$optDunzo->code}}" data-plugin="switchery" name="base_active" class="chk_box base_select" data-color="#43bee1" @if($base_price > 0) checked @endif>
                             </div>
-                        <hr/>
+                            <hr/>
                         </div>
+                        <div class="row mt-3" id="dunzo_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
 
+                            <div class="col-md-4">
+                                <div class="form-group mb-0">
+                                    <label for="dunzo_base_price" class="mr-3">{{ __("Base Price") }}</label>
+                                    <input type="text" name="base_price" id="dunzo_base_price" class="form-control" value="{{@$base_price}}" >
+                                </div>
+                            </div>
 
-                    <div class="row mt-3" id="dunzo_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
+                            <div class="col-md-4">
+                                <div class="form-group mb-0">
+                                    <label for="dunzo_distance" class="mr-3">{{ __("Distance") }}</label>
+                                    <input type="text" name="distance" id="dunzo_distance" class="form-control" value="{{@$distance}}" >
+                                </div>
+                            </div>
 
-                        <div class="col-md-4">
-                            <div class="form-group mb-0">
-                                <label for="dunzo_base_price" class="mr-3">{{ __("Base Price") }}</label>
-                                <input type="text" name="base_price" id="dunzo_base_price" class="form-control" value="{{@$base_price}}" >
+                            <div class="col-md-4">
+                                <div class="form-group mb-0">
+                                    <label for="dunzo_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
+                                    <input type="text" name="amount_per_km" id="dunzo_amount_per_km" class="form-control" value="{{@$amount_per_km}}" >
+                                </div>
                             </div>
                         </div>
-
-                        <div class="col-md-4">
-                            <div class="form-group mb-0">
-                                <label for="dunzo_distance" class="mr-3">{{ __("Distance") }}</label>
-                                <input type="text" name="distance" id="dunzo_distance" class="form-control" value="{{@$distance}}" >
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="form-group mb-0">
-                                <label for="dunzo_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
-                                <input type="text" name="amount_per_km" id="dunzo_amount_per_km" class="form-control" value="{{@$amount_per_km}}" >
-                            </div>
-                        </div>
-                    </div>
-
                     </div>
                     @endif
-
-
-
                 </div>
-
             </form>
         </div>
         @endif
@@ -614,16 +601,15 @@
                     $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
                     ?>
                     <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12 d-flex justify-content-between align-items-center">
                         <h3 class="mb-1"> <span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$optAhoy->code.'.png')}}" alt=""></span>  {{$optAhoy->title}}</h3>
-                    </div>
-                    <div class="col-md-6 text-right">
                         <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
                     </div>
+
                     </div>
 
                     <div class="row mt-2">
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-3">{{ __("Enable") }}</label>
                                 <input type="checkbox" data-id="{{$optAhoy->id}}" data-title="{{$optAhoy->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($optAhoy->status == 1) checked @endif>
@@ -735,27 +721,28 @@
                      $token = (isset($creds->token)) ? $creds->token : '';
                     //  $username = (isset($creds->username)) ? $creds->username : '';
                     //  $password = (isset($creds->password)) ? $creds->password : '';
- 
- 
+
+
                      $base_price = (isset($creds->base_price)) ? $creds->base_price : '0';
                      $distance = (isset($creds->distance)) ? $creds->distance : '0';
                      $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
- 
+
                      $height = (isset($creds->height)) ? $creds->height : '0';
                      $width = (isset($creds->width)) ? $creds->width : '0';
                      $weight = (isset($creds->weight)) ? $creds->weight : '0';
                      ?>
                      <div class="row">
-                     <div class="col-md-6 ">
+                     <div class="col-md-12 d-flex justify-content-between align-items-center">
                          <h3 class="mb-1"><span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$shippoOption->code.'.png')}}" alt=""></span>  {{$shippoOption->title}}</h3>
-                     </div>
-                     <div class="col-md-6 text-right">
                          <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
                      </div>
+                     <div class="col-md-6 text-right">
+
                      </div>
- 
+                     </div>
+
                      <div class="row">
-                         <div class="col-md-6">
+                         <div class="col-6">
                              <div class="form-group mb-0 switchery-demo">
                                  <label for="" class="mr-3">{{ __("Enable") }}</label>
                                  <input type="checkbox" data-id="{{$shippoOption->id}}" data-title="{{$shippoOption->code}}" data-plugin="switchery" name="active[{{$shippoOption->id}}]" class="chk_box all_select" data-color="#43bee1" @if($shippoOption->status == 1) checked @endif>
@@ -770,13 +757,13 @@
                          </div>
                          @endif
                      </div>
- 
+
                      @if ( (strtolower($shippoOption->code) == 'shippo') )
                      <div id="shippo_fields_wrapper" @if($shippoOption->status != 1) style="display:none" @endif>
                          <hr>
- 
+
                          <div class="row">
-                             <div class="col-6">
+                             <div class="col-sm-6">
                                  <div class="form-group mb-0">
                                      <label for="shippo_token" class="mr-3">{{ __("Shippo Token") }}</label>
                                      <input type="text" name="shippo_token" id="shippo_token" class="form-control" value="{{$token}}" @if($shippoOption->status == 1) required @endif autofill="off">
@@ -789,11 +776,11 @@
                                  </div>
                              </div> --}}
                          </div>
- 
- 
-                         
+
+
+
                          <div class="col-md-12 mt-3 p-0">
-                           
+
                             <h5 class="d-inline-block ">
                                 <span>{{ __('Webhook Url') }} : </span>
                                 <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('webshiprocket')}}</span></a>
@@ -811,24 +798,24 @@
                              </div>
                          <hr/>
                          </div>
- 
- 
+
+
                      <div class="row mt-3" id="shippo_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
- 
+
                          <div class="col-md-4">
                              <div class="form-group mb-0">
                                  <label for="shippo_base_price" class="mr-3">{{ __("Base Price") }}</label>
                                  <input type="text" name="base_price" id="shippo_base_price" class="form-control" value="{{$base_price??0}}" >
                              </div>
                          </div>
- 
+
                          <div class="col-md-4">
                              <div class="form-group mb-0">
                                  <label for="shippo_distance" class="mr-3">{{ __("Distance") }}</label>
                                  <input type="text" name="distance" id="shippo_distance" class="form-control" value="{{@$distance??0}}" >
                              </div>
                          </div>
- 
+
                          <div class="col-md-4">
                              <div class="form-group mb-0">
                                  <label for="shippo_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
@@ -836,8 +823,8 @@
                              </div>
                          </div>
                      </div>
- 
- 
+
+
                      <div class="form-group mt-2">
                          <label for="" class="mr-3">{{ __("Item weight") }}</label>
                      </div>
@@ -848,14 +835,14 @@
                                  <input type="text" name="height" class="form-control" value="{{@$height}}" >
                              </div>
                          </div>
- 
+
                          <div class="col-md-4">
                              <div class="form-group mb-0">
                                  <label for="shippo_distance" class="mr-3">{{ __("Product Width (cms)") }}</label>
                                  <input type="text" name="width" class="form-control" value="{{@$width}}" >
                              </div>
                          </div> --}}
- 
+
                          <div class="col-md-4">
                              <div class="form-group mb-0">
                                  <label for="shippo_amount_per_km" class="mr-3">{{ __("Product Weight (Kgs)") }}</label>
@@ -869,7 +856,7 @@
              </form>
          </div>
          @endif
- 
+
          <!-- End Ship Rocket -->
 
 

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,OrderLocations,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,User, UserAddress,Order,SubscriptionInvoicesUser,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail, VendorCategory,VendorOrderDispatcherStatus,ProductFaq,ClientLanguage, Payment, PaymentOption,Rider};
+use App\Models\{Category,OrderLocations,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,User, UserAddress,Order,SubscriptionInvoicesUser,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail, VendorCategory,VendorOrderDispatcherStatus,ProductFaq,ClientLanguage, Payment, PaymentOption,Rider,LuxuryOption};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -25,7 +25,7 @@ class PickupDeliveryController extends FrontController{
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
-        $code = array('cod', 'dpo', 'razorpay','stripe','paystack', 'payfast','authorize_net','payphone'); 
+        $code = array('cod', 'dpo', 'razorpay','stripe','paystack', 'payfast','authorize_net','payphone', 'khalti'); 
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials' ,'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
@@ -37,6 +37,9 @@ class PickupDeliveryController extends FrontController{
             }
             elseif($option->code == 'mobbex'){
                 $option->title = __('Mobbex');
+            }
+            elseif($option->code == 'authorize_net'){
+                $option->title = __('Credit/Debit Card');
             }
             elseif($option->code == 'offline_manual'){
                 $json = json_decode($option->credentials);
@@ -532,6 +535,8 @@ class PickupDeliveryController extends FrontController{
         $payable_amount = 0;
         $user = Auth::user();
         $currency_id = Session::get('customerCurrency');
+        $action = 'pick_drop';
+        $luxury_option = LuxuryOption::where('title', $action)->first();
         $request->address_id = $request->address_id ??null;
         $request->payment_option_id = $request->payment_option_id ??1;
         if ($user) {
@@ -580,13 +585,22 @@ class PickupDeliveryController extends FrontController{
                 $order->order_number = generateOrderNo();
                 $order->address_id = $request->address_id;
                 $order->payment_option_id = $payment_option;
+                
+                $schedule_datetime_del = NULL;
+                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
+                    $schedule_datetime_del = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
+                }
 
-                $order->scheduled_date_time = $request->schedule_time;
+                $schedule_datetime_del = NULL;
+                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
+                    $schedule_datetime_del = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
+                }
+                $order->scheduled_date_time = $schedule_datetime_del;
                 /*book for a friend*/
                 $order->type = $request->type;
                 $order->friend_name = $request->friendName;
                 $order->friend_phone_number = $request->friendPhoneNumber;
-                
+                $order->luxury_option_id = $luxury_option->id;
                 $order->save();
   
                 // save pickup delivery task 
@@ -808,6 +822,13 @@ class PickupDeliveryController extends FrontController{
                 if(empty($friendPhoneNumber)){
                     $type=0;
                 }
+
+                $task_type = 'now';
+                if($request->has('task_type')){
+                    $task_type = $request->task_type;
+                }elseif(!empty($order->scheduled_date_time)){
+                    $task_type = 'schedule';
+                }
                 
                 if ($customer->dial_code == "971") {
                     // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
@@ -815,6 +836,13 @@ class PickupDeliveryController extends FrontController{
                 } else {                
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
+                }
+                $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
+                $client = Client::orderBy('id', 'asc')->first();
+
+                $schedule_datetime_del = NULL;
+                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
+                    $schedule_datetime_del = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
                 }
                 
                 $postdata =  [
@@ -826,12 +854,12 @@ class PickupDeliveryController extends FrontController{
                     'allocation_type' => 'a',
                     'task' => $request->tasks,
                     'order_team_tag' => $team_tag,
-                    'task_type' => $request->task_type,
+                    'task_type' => $task_type,
                     'order_agent_tag' => $order_agent_tag,
                     'call_back_url' => $call_back_url??null,
                     'customer_email' => $customer->email ?? '',
                     'cash_to_be_collected' => $payable_amount??0.00,
-                    'schedule_time' => $request->schedule_time ?? null,
+                    'schedule_time' => $schedule_datetime_del ?? null,
                     'task_description' => null,
                     'order_number' =>  $order->order_number,
                     'order_time_zone' => $request->order_time_zone ??null,
@@ -842,9 +870,15 @@ class PickupDeliveryController extends FrontController{
                     'customer_dial_code' => $customer->dial_code ?? null,
                     'type'=>$type,
                     'friend_name'=>$friendName,
-                    'friend_phone_number'=>$friendPhoneNumber
+                    'friend_phone_number'=>$friendPhoneNumber,
+                    'vendor_id' => $vendor,
+                    'order_vendor_id' => $order_vendor->id,
+                    'dbname' => $client->database_name,
+                    'order_id' => $order->id,
+                    'customer_id' => $order->user_id,
+                    'user_icon' => $customer->image
                 ];
-                // dd($postdata);
+                
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);

@@ -8,7 +8,7 @@
 @section('content')
 
 <!-- Start Content-->
-<div class="container-fluid">
+<div class="container-fluid alpaymentOptionPage">
 
     <!-- start page title -->
     <div class="row">
@@ -41,15 +41,11 @@
         @csrf
         @method('POST')
         <div class="row align-items-center">
-            <div class="col-sm-8">
-                <div class="text-sm-left">
-                    <div class="page-title-box">
-                        <h4 class="page-title">{{ __("Payment Options") }}</h4>
-                    </div>
+            <div class="col-sm-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="page-title">{{ __("Payment Options") }}</h4>
+                    <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
                 </div>
-            </div>
-            <div class="col-sm-4 text-right">
-                <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
             </div>
         </div>
         <div class="row">
@@ -110,7 +106,8 @@
                 $openpay_merchant_id = (isset($creds->openpay_merchant_id)) ? $creds->openpay_merchant_id : '';
                 $openpay_private_key = (isset($creds->openpay_private_key)) ? $creds->openpay_private_key : '';
                 $openpay_public_key = (isset($creds->openpay_public_key)) ? $creds->openpay_public_key : '';
-                
+                $openpay_verification_key = (isset($creds->openpay_verification_key)) ? $creds->openpay_verification_key : '';
+
                 $company_token = (isset($creds->company_token)) ? $creds->company_token : '';
                 $service_type = (isset($creds->service_type)) ? $creds->service_type : '';
                 $aes_key = (isset($creds->aes_key)) ? $creds->aes_key : '';
@@ -128,7 +125,7 @@
                                 <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
                             </div>
                         </div>
-                        @if ( (strtolower($opt->code) != 'dpo') &&  (strtolower($opt->code) != 'cod') &&  (strtolower($opt->code) != 'razorpay') &&  (strtolower($opt->code) != 'simplify') && (strtolower($opt->code)!= 'kongapay') && (strtolower($opt->code)!= 'windcave') && (strtolower($opt->code)!= 'payphone') && (strtolower($opt->code)!= 'offline_manual'))
+                        @if ( (strtolower($opt->code) != 'dpo') &&  (strtolower($opt->code) != 'cod') &&  (strtolower($opt->code) != 'razorpay') &&  (strtolower($opt->code) != 'simplify') && (strtolower($opt->code)!= 'kongapay') && (strtolower($opt->code)!= 'windcave') && (strtolower($opt->code)!= 'payphone') && (strtolower($opt->code)!= 'offline_manual') && (strtolower($opt->code) != 'khalti'))
                         <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label>
@@ -617,7 +614,7 @@
                     <h6 class="mt-3">
                         <span>{{ __('Webhook Url') }} : </span>
                         <a href="javascript:;" class="webhook_url"><span id="pwd_spn" class="password-span">{{route('payment.easebuzz.easybuzzNotify')}}</span></a>
-                    </h6> 
+                    </h6>
                         <div class="row">
                         <div class="col-12">
                                 <div class="form-group mb-2">
@@ -712,7 +709,7 @@
                                     <input type="password" name="mvodafone_secret_key" id="mvodafone_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                     @endif
@@ -739,7 +736,7 @@
                                     <input type="password" name="flutterwave_enc_key" id="flutterwave_enc_key" class="form-control" value="{{$enc_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                     @endif
@@ -966,9 +963,16 @@
                     <h6 class="mt-3">
                         <span>{{ __('Webhook Url') }} : </span>
                         <a href="javascript:;" class="webhook_url"><span id="pwd_spn" class="password-span">{{route('payment.webhook.opnepay')}}</span></a>
-                    </h6>    
+                    </h6>
                     <div class="row">
                             <div class="col-12">
+                                <div class="col-12">
+                                    <div class="form-group mb-2">
+                                        <label for="openpay_verification_key" class="mr-3">{{ __("Webhook Verification") }}</label>
+                                        <input type="text" name="openpay_verification_key" id="openpay_verification_key" class="form-control" value="{{$openpay_verification_key}}" >
+                                    </div>
+                                </div>
+
                                 <div class="form-group mb-2">
                                     <label for="openpay_merchant_id" class="mr-3">{{ __("Merchant Id") }}</label>
                                     <input type="text" name="openpay_merchant_id" id="openpay_merchant_id" class="form-control" value="{{$openpay_merchant_id}}" @if($opt->status == 1) required @endif>
@@ -986,7 +990,7 @@
                                     <input type="text" name="openpay_public_key" id="openpay_public_key" class="form-control" value="{{$openpay_public_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                     @endif
@@ -1063,6 +1067,27 @@
                     </div>
                     @endif
 
+                    @if ( (strtolower($opt->code) == 'khalti') )
+                    <div class="mt-2" id="khalti_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="khalti_public_key" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="text" name="khalti_public_key" id="khalti_public_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="khalti_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="khalti_secret_key" id="khalti_secret_key" class="form-control" value="{{$api_secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                 </div>
             </div>
             @endforeach
@@ -1073,20 +1098,16 @@
         @csrf
         @method('POST')
         <div class="row align-items-center">
-            <div class="col-sm-8">
-                <div class="text-sm-left">
-                    <div class="page-title-box">
-                        <h4 class="page-title">{{ __("Payout Options") }}</h4>
-                    </div>
+            <div class="col-sm-12">
+                <div class="page-title-box  d-flex align-items-center justify-content-between">
+                    <h4 class="page-title">{{ __("Payout Options") }}</h4>
+                    <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
                 </div>
-            </div>
-            <div class="col-sm-4 text-right">
-                <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
             </div>
         </div>
         <div class="row">
             @foreach($payoutOption as $key => $opt)
-            <div class="col-md-2 mb-3">
+            <div class="col-6 col-md-3 col-xl-2 mb-3">
 
                 <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
                 <input type="hidden" name="method_name[]" id="{{$opt->code}}" value="{{$opt->code}}">
@@ -1175,7 +1196,7 @@
                     </div>
                     @endif
 
-                   
+
                 </div>
             </div>
             @endforeach
