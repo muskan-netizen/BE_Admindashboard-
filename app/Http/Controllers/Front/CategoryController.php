@@ -629,6 +629,7 @@ class CategoryController extends FrontController{
                         'schedule_date'    => $request->cur_date
                     ];
                     $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
+                   // pr(  $dispatchAgents);
                 }
                 if ($request->ajax()) {
                     return \Response::json(\View::make('frontend.ondemand.dispatcher_agent_slots', array('dispatch_agents' => $dispatchAgents,'cart_product_id'=> $cart_product_id))->render());

@@ -186,7 +186,8 @@ class ProductController extends FrontController{
                     $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
                     $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
-                 }
+                    $value->category_type_id = (!empty($value->category->categoryDetail->first())) ? $value->category->categoryDetail->type_id : 0;
+                }
             }
             $listData = $nlistData;
             $category = $category_detail;

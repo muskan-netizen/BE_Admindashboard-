@@ -565,6 +565,7 @@ class VendorController extends FrontController
                         $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
                         $value->variant_id = ($value->variant->isNotEmpty()) ? $value->variant->first()->id : 0;
                         $value->variant_quantity = ($value->variant->isNotEmpty()) ? $value->variant->first()->quantity : 0;
+                        $value->category_type_id = (!empty($value->category->categoryDetail->first())) ? $value->category->categoryDetail->type_id : 0;
                     }
                 }
                 if($products->count() > 0){

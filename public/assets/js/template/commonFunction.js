@@ -17,11 +17,12 @@ $(function(){
         var $this = $(this);
         var lat = $this.attr('data-lat');
         var long = $this.attr('data-long');
+        var address = $this.attr('data-address');
         if(!lat || !long){
             return;
         }
         console.log(lat);
-        changeLocationByCity(lat,long);
+        changeLocationByCity(lat,long,address);
     });
 
     // AOS.init();
@@ -46,23 +47,12 @@ $(function(){
 
     // Change the location by  city lat long
 
-    function changeLocationByCity(lat,long){
-        alert(lat);
-        axios.post(`/booking/checkProductAvailibility`, formData)
-        .then(async response => {
-            console.log(response);
-            var data = response.data.variant_data;
-           
-            if(response.data.success){
-              
-            } else{
-                sweetAlert.error('Oops...','Something went wrong, try again later!')
-            }
-        })
-        .catch(e => {
-             console.log(e);
-             sweetAlert.error('Oops...','Something went wrong, try again later!')
-        })    
+    function changeLocationByCity(lat,long,address){
+       
+        
+        let url = `/updateLocation?latitude=${lat}&&longitude=${long}&&address=${address}` ;
+        window.location.href = url;
+        
     }
 
 })

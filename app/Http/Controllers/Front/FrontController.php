@@ -349,6 +349,7 @@ class FrontController extends Controller
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
                 }
+              
                 $value->vendor_name = $value->vendor ? $value->vendor->name : '';
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
                 $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
@@ -357,6 +358,7 @@ class FrontController extends Controller
                 $value->averageRating = number_format($value->averageRating, 1, '.', '');
                 $value->image_url = ($value->media->first() && !is_null($value->media->first()->image))  ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 $value->category_name = ($value->category->categoryDetail->translation->first()) ? $value->category->categoryDetail->translation->first()->name :  $value->category->slug;
+               // $value->category_type_id = ($value->category->categoryDetail->first()) ? $value->category->categoryDetail->first()->type_id : '';
             }
         }
         return $products;
