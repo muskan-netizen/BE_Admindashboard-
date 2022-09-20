@@ -144,10 +144,7 @@ class AutoRejectOrders extends Command
                             $body_content = str_ireplace("{order_id}", "#" . $orderDetail->order_number, $notification_content->content);
                             if ($body_content) {
                                 $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/user/orders";
-                                $headers = [
-                                    'Authorization: key=' . $from,
-                                    'Content-Type: application/json',
-                                ];
+                                
                                 $data = [
                                     "registration_ids" => $devices,
                                     "notification" => [
@@ -165,16 +162,7 @@ class AutoRejectOrders extends Command
                                     ],
                                     "priority" => "high"
                                 ];
-                                $dataString = $data;
-                                $ch = curl_init();
-                                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                                curl_setopt($ch, CURLOPT_POST, true);
-                                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                                $result = curl_exec($ch);
-                                curl_close($ch);
+                                sendFcmCurlRequest($data);
                             }
                         }
                     

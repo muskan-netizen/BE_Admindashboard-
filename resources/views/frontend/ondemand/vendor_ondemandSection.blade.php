@@ -526,7 +526,7 @@
                                                         <div class="radios {{ $checked }}" >
                                                             <p>{{date('D', strtotime($date))}}</p>
                                                             <div class="alCustomHomeServiceRadio">
-                                                                <input type="radio" class="check-time-slots ondemand-time-slots  ondemand_{{$checked }}" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' {{$checked }} @if(($key == 0 && $checked == "")) checked @endif />
+                                                                <input type="radio" class="check-time-slots ondemand-time-slots ondemand_{{ $checked }}" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" data-product_id ="{{$cart_data->product->id}}" data-product_tag ="{{$cart_data->product->tags}}" data-product_category_type ="{{$cart_data->product->productcategory->type_id}}"  value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' {{$checked }} @if(($key == 0 && $checked == "")) checked @endif />
                                                                 <label for='radio{{$cd}}{{$key}}'>
                                                                 <span class="customCheckbox" aria-hidden="true" >{{date('d', strtotime($date))}}</span>
                                                                 </label>

@@ -36,22 +36,31 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
     }
 }
 
-if (!function_exists('curlJsonRequest')) {
-    function curlJsonRequest($from, $data){
-        $headers = [
-            'Authorization: key=' . $from,
-            'Content-Type: application/json',
-        ];
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return $result;
+if (!function_exists('sendFcmCurlRequest')) {
+    function sendFcmCurlRequest($data)
+    {
+        $client_preferences = ClientPreference::first();
+        if (!empty($client_preferences->fcm_server_key)) {
+            $headers = [
+                'Authorization: key=' . $client_preferences->fcm_server_key,
+                'Content-Type: application/json',
+            ];
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            $result = curl_exec($ch);
+            // if ($result === FALSE) {
+            //     die('Oops! FCM Send Error: ' . curl_error($ch));
+            // }
+            curl_close($ch);
+            return $result;
+        } else {
+            return false;
+        }
     }
 }
 
@@ -679,8 +688,8 @@ if (!function_exists('SplitTimeTemp')) {
             }
         }
 
-        $cr = Carbon::now()->addMinutes($delayMin);
-        $now = dateTimeInUserTimeZone24($cr, $timezoneset);
+        $cr   = Carbon::now()->addMinutes($delayMin);
+        $now  = dateTimeInUserTimeZone24($cr, $timezoneset);
         $nowT = strtotime($now);
         $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
         $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;

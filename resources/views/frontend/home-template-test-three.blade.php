@@ -648,7 +648,7 @@
 					</div>
 				</div>
 			</section> 
-		@elseif($homePageLabel->slug == 'cities' && (count($homePageData['vendors']) != 0))
+		@elseif($homePageLabel->slug == 'cities' && (count($homePageData['cities']) != 0))
 			<section class="suppliers-section container render_full_{{$homePageLabel->slug}}">
 				<div class=" top-heading d-flex justify-content-between align-self-center">
 					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
@@ -783,7 +783,9 @@
 
 <!-- footer code in layouts.store/footercontent-template-two -->
 @section('home-page')
-<script type="text/javascript" src="{{asset('front-assets/js/homepage-three.js')}}"></script>
+{{-- <script type="text/javascript" src="{{asset('front-assets/js/homepage-three.js')}}"></script> --}}
+<script type="text/javascript" src="{{asset('assets/js/template/commonFunction.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/js/template/template-three/templateFunction.js')}}"></script>
 @endsection
 @endsection
 @section('js-script')
@@ -792,24 +794,4 @@
 <script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
 @endsection
 @section('script')
-<script type="text/javascript">
-    // AOS.init();
-	function changeImage(image, check) {
-       var  icon = $(image).attr('data-icon');
-       var  icon_two = $(image).attr('data-icon_two');
-       if(check == 1)
-       {
-	        setTimeout(function () {
-	            $(image).attr('data-src',icon_two);
-	            $(image).attr('src',icon_two);
-	        },200);
-       }else if(check == 0){
-            setTimeout(function () {
-                $(image).attr('data-src',icon);
-                $(image).attr('src',icon);
-            },200);
-
-       }
-    }
-</script>
 @endsection
