@@ -7,8 +7,8 @@
     div#step-2-ondemand .radio-btns input[type="radio"]:checked + label span{background: var(--theme-deafult);
     color: #fff;}
     div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button.slick-prev.slick-arrow {
-    left: -6px;top: 56%;}
-div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button.slick-next.slick-arrow {right: -8px;top: 56%;}
+    left: 0;top: 66%;}
+div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button.slick-next.slick-arrow {right: 0;top: 66%;}
     div#show-all-time-slots11 .slick-slider .slick-prev{left:0px;top:38%;}
     div#show-all-time-slots11 .slick-slider .slick-next{right:0px;top:38%;}
     div#step-2-ondemand span.customCheckbox {font-size: 14px;}
@@ -370,6 +370,7 @@ div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button
                                       @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
 
                                       @php
+                                      
                                         $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
                                       @endphp
 
@@ -404,6 +405,7 @@ div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button
                                             @php
                                             $dispatch_agents = $cart_data->dispatchAgents ?? [];
                                             $cart_product_id = $cart_data->id;
+                                            $dispatch_agent_id = $cart_data->dispatch_agent_id;
                                             @endphp
                                             @include('frontend.ondemand.dispatcher_agent_slots')
                                             @else
