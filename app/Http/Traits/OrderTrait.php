@@ -147,7 +147,7 @@ trait OrderTrait{
      // place Request To Dispatch for Appointment , OnDemand
     public function placeRequestToDispatchSingleProduct($order, $vendor, $dispatch_domain,$request)
     {
-      pr($dispatch_domain); exit();
+      //pr($dispatch_domain); exit();
         try {
 
             $order = Order::find($order);
@@ -203,7 +203,7 @@ trait OrderTrait{
                     'phone_number' => $vendor_details->phone_no ?? null,
                     'appointment_duration' =>  $dispatch_domain['service_type'] == 'appointment' ? ($product->product->first() ? $product->product->minimum_duration_min : 0) : null ,
                 );
-            pr($tasks);
+          //  pr($tasks);
                 if($product->dispatch_agent_id){
                     $allocation_type = 'm';
                     $agent = $product->dispatch_agent_id;

@@ -4565,3 +4565,37 @@ body div.dataTables_wrapper div.dataTables_filter input {width: 100%;margin: 0;}
 .card.changeIcon {
   box-shadow: none !important;
 }
+.outer-box.border-dashed {
+  border-style: dashed;
+  border-width: 2px;
+  height: 100%;
+  min-height: 80px;
+  border-radius: 7px;
+  overflow: hidden;
+}
+.alProDuctBannerImg {
+  position: relative;
+  padding-bottom: 100%;
+  border-radius: 7px;
+  overflow: hidden;
+}
+.alProDuctBannerImg img.w-100 {
+  position: absolute;
+  left: 0;
+  top: 0;
+  object-fit: cover;
+  height: 100%;
+}
+.alProDuctBannerImg span {
+  position: absolute;
+  z-index: 1;
+  background-color: red;
+  right: 0px;
+  top: 0;
+  height: 20px;
+  width: 20px;
+  border-radius: 20px;
+  line-height: 23px;
+  color: #fff;
+  font-weight: 400;
+}
