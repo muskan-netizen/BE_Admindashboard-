@@ -10,8 +10,9 @@ if (Session::has('toaster')) {
         </script>';
 }
 ?>
+<script src="{{asset('assets/libs/moment/moment.min.js')}}"></script>
 
-
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/libs/selectize/selectize.min.js')}}"></script>
 <script src="{{asset('assets/libs/mohithg-switchery/mohithg-switchery.min.js')}}"></script>
 <script src="{{asset('assets/libs/multiselect/multiselect.min.js')}}"></script>
@@ -37,8 +38,19 @@ if (Session::has('toaster')) {
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" ></script> --}}
+<script src="{{asset('assets/libs/datetimepicker/daterangepicker.min.js')}}" ></script>
+
+{{-- <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" ></script> --}}
+
+
+{{-- <script src="{{asset('assets/libs/datetimepicker/jquery.datetimepicker.min.js')}}"></script> --}}
+@if((!empty($socket_url)))
+    <script src="{{$socket_url}}/socket.io/socket.io.js"></script>
+@endif
 
 <script>
+    
     let stripe_publishable_key = "{{ $stripe_publishable_key }}";
     let is_hyperlocal = 0;
     var business_type = '';
@@ -97,9 +109,15 @@ if (Session::has('toaster')) {
 </script>
 @if(!str_contains(url()->current(), '/godpanel'))
 @if((!empty(Auth::user())))
+@if((!empty($socket_url)))
+    <script>
+        //createSocketConnection();
+    </script>
+@endif
 <script>
-      $(document).ready(function() {
-
+     //createSocketConnection();
+      $(document).ready( async function() {
+       
         // Audio.prototype.play = (function(play) {
 
         //     return function() {
@@ -142,7 +160,15 @@ if (Session::has('toaster')) {
     // socket.on('createOrderByCustomer_' + host_arr[0] + "_" + "{{ (!empty(Auth::user()))?Auth::user()->id:0 }}", (message) => {
     //     get_latest_order_socket(message.order_number);
     // });
+    // async function createSocketConnection(){
+    //     if(SocketConstants.Socket_url != '' && SocketConstants.Socket_url != null && SocketConstants.Socket_url != undefined) {
 
+    //         socket = new io(SocketConstants.Socket_url);
+    //         await socket.connect(); 
+    //         console.log(socket);
+    //         console.log(SocketConstants.Socket_url);
+    //     }
+    // }
     function get_latest_order_socket(order_number){
         console.log(order_number);
         Audio.prototype.play = (function(play) {
@@ -196,6 +222,7 @@ if (Session::has('toaster')) {
 @if(@Session::has('preferences') && !empty(@Session::get('preferences')['fcm_api_key']))
 <script>
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
+    //console.log(firebaseCredentials);
     var firebaseConfig = {
         apiKey: firebaseCredentials.fcm_api_key,
         authDomain: firebaseCredentials.fcm_auth_domain,
@@ -214,7 +241,7 @@ if (Session::has('toaster')) {
         messaging.requestPermission().then(function() {
             return messaging.getToken()
         }).then(function(token) {
-
+            
             $.ajax({
                 url: "{{ route('client.save_fcm') }}",
                 type: "POST",
@@ -237,6 +264,8 @@ if (Session::has('toaster')) {
 
     initFirebaseMessagingRegistration();
     messaging.onMessage(function(payload) {
+        console.log("payload");
+        console.log(payload);
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");
         }
@@ -262,6 +291,22 @@ if (Session::has('toaster')) {
                         event.preventDefault();
                         window.open(payload.notification.click_action, "_blank");
                         push_notification.close();
+                    };
+                } else {
+                   // alert();
+                    var notificationTitle = payload.notification.title;
+                    var notificationOptions = {
+                        body: payload.notification.body,
+                        icon: payload.notification.icon
+                    };
+                    var push_notification = new Notification(
+                        notificationTitle,
+                        notificationOptions
+                    );
+                    push_notification.onclick = function(event) {
+                        event.preventDefault();
+                        // window.open(payload.notification.click_action, "_blank");
+                        // push_notification.close();
                     };
                 }
             }
@@ -372,7 +417,7 @@ if (Session::has('toaster')) {
 
 
 @yield('script-bottom')
-
+{{-- <script  src="{{asset('assets/js/chat/chatNotifications.js')}}"></script> --}}
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
 <script>

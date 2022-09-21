@@ -531,7 +531,7 @@
                                                                                         aria-hidden="true"></i>
                                                                                 </span>
                                                                             </div>
-                                                                            <div class="customizable-text">customizable
+                                                                            <div class="customizable-text">{{ _('customizable')}}
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -592,15 +592,15 @@
                                                                                         <h6 class="m-0 font-12"><b>Add Ons</b></h6>
                                                                                     </div>
                                                                                 </div>
-                                                                            
+
                                                                             @foreach ($estimatedProduct->estimated_product_addons as $addon)
                                                                                     <div class="row mb-1">
                                                                                         <div class="col-md-12 col-sm-4 items-details text-left">
                                                                                             <p class="m-0 font-14 p-0">{{$addon->estimated_product_addon_option->title}}</p>
                                                                                         </div>
                                                                                     </div>
-                                                                            @endforeach                                                    
-                                                                        
+                                                                            @endforeach
+
                                                                             <hr class="my-2">
 
                                                                         @endforeach
@@ -639,7 +639,7 @@
 
             <% if(estimateAddOnData != ''){ %>
                         <% if(estimateAddOnData.product_image){ %>
-                   
+
                             <div class="d-flex" style="max-height:200px">
                                 <img class="w-100" src="<%= estimateAddOnData.product_image %>" alt=""  style="object-fit:cover">
                             </div>
@@ -663,33 +663,33 @@
                             <% _.each(estimateAddOnData.estimate_product_addons, function(estimate_product_addon, key1){ %>
                                 <div class="border-product border-top">
                                     <div class="addon-product" style="padding: 16px;">
-                                        
+
                                         <% _.each(estimate_product_addon, function(estimate_addon_set, key2){ %>
                                             <h4 addon_id="<%= estimate_addon_set.id %>" class="header-title productAddonSet mb-0"><%= estimate_addon_set.title %></h4>
                                                 <div class="addonSetMinMax mb-2">
                                                     <%
                                                         var min_select = '';
                                                         if(estimate_addon_set.min_select > 0){
-                                                            min_select = 'Minimum ' + estimate_addon_set.min_select;
+                                                            min_select = "{{ __('Minimum')}} " + estimate_addon_set.min_select;
                                                         }
                                                         var max_select = '';
                                                         if(estimate_addon_set.max_select > 0){
-                                                            max_select = 'Maximum ' + estimate_addon_set.max_select;
+                                                            max_select = "{{ __('Maximum')}} " + estimate_addon_set.max_select;
                                                         }
                                                         if( (min_select != '') && (max_select != '') ){
-                                                            min_select = min_select + ' and ';
+                                                            min_select = min_select + " {{ __('and')}} ";
                                                         }
                                                     %>
                                                     <% if( (min_select != '') || (max_select != '') ) { %>
-                                                        <small><%=min_select + max_select %> Selections allowed</small>
+                                                        <small><%=min_select + max_select %> {{ __('Selections Allowed')}}</small>
                                                     <% } %>
                                                 </div>
-                                              
+
                                                 <div class="estimateProductAddonSetOptions" data-min="<%= estimate_addon_set.min_select %>" data-max="<%= estimate_addon_set.max_select %>" data-addonset-title="<%= estimate_addon_set.title %>" >
 
                                             <% count = _.size(estimate_addon_set.option); %>
                                             <% if(count <= 4){ %>
-    
+
                                                     <% _.each(estimate_addon_set.option, function(option, key2){ %>
                                                         <div class="checkbox-success d-flex mb-1">
                                                             <label class="pr-2 mb-0 flex-fill font-14" for="inlineCheckbox_<%= key1 %>_<%= key2 %>">
@@ -702,19 +702,19 @@
                                                             </div>
                                                         </div>
                                                     <% }); %>
-                                                
+
                                                 <% }else{ %>
 
                                                     <div class="checkbox-success d-flex mb-1">
                                                         <input type="hidden" id="fake_product_id" name="fake_product_id" value="<%= estimateAddOnData.id %>">
-                                                        <select class="pr-2 mb-0 flex-fill font-14 estimate_product_addon_option" name="addonOptionData[<%= key1 %>][]" required>
+                                                        <select class="pr-2 mb-0 flex-fill font-14 estimate_product_addon_option form-control" name="addonOptionData[<%= key1 %>][]" required>
                                                             <option value="">--Please Select--</option>
                                                             <% _.each(estimate_addon_set.option, function(option, key2){ %>
                                                             <option value="<%= option.id %>"><%= option.title %></option>
                                                             <% }); %>
                                                         </select>
                                                         <div>
-                                                            
+
 
                                                 <% } %>
                                             </div>
@@ -725,7 +725,7 @@
                             <div class="estimate_addon_response text-danger font-14 d-none" style="padding:0 16px"></div>
                         </div>
                         <div class="modal-footer flex-nowrap align-items-center">
-                       
+
 
 
                             <a class="btn btn-solid add-cart-btn flex-fill add_estimate_addon_product" id="add_estimate_addon_product" href="javascript:void(0)" data-variant_id="2" data-add_to_cart_url="{{ route('addToEstimateCart') }}" data-product_id="<%= estimateAddOnData.id %>">{{ __('Add') }}</a>
@@ -753,11 +753,11 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-center">
                     <input type="hidden" id="vendor_id" value="">
                     <input type="hidden" id="product_id" value="">
                     <input type="hidden" id="cartproduct_id" value="">
-                    <h6 class="m-0">{{ __('Are You Sure You Want To Remove This Item?') }}</h6>
+                    <h6 class="m-0 px-3">{{ __('Are You Sure You Want To Remove This Item?') }}</h6>
                 </div>
                 <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                     <button type="button" class="btn btn-solid black-btn"
@@ -798,14 +798,14 @@
     <script>
         var get_estimate_product_addon_url = "{{ route('estimateProductAddons') }}"
 
-        jQuery(window).scroll(function() {
-            var scroll = jQuery(window).scrollTop();
-            if (scroll >= 900) {
-                jQuery(".categories-product-list").addClass("fixed-bar");
-            } else {
-                jQuery(".categories-product-list").removeClass("fixed-bar");
-            }
-        });
+        // jQuery(window).scroll(function() {
+        //     var scroll = jQuery(window).scrollTop();
+        //     if (scroll >= 900) {
+        //         jQuery(".categories-product-list").addClass("fixed-bar");
+        //     } else {
+        //         jQuery(".categories-product-list").removeClass("fixed-bar");
+        //     }
+        // });
 
         var addonids = [];
         var addonoptids = [];
@@ -845,7 +845,7 @@
         $(document).delegate(".product_tag_filter", "change", function() {
             vendorProductsSearchResults();
         });
-                         
+
         $(document).on('click', '.add_estimate_addon_product', function() {
             var check = false;
 
@@ -855,30 +855,30 @@
                     var max_select = $(this).attr("data-max");
                     var addon_set_title = $(this).attr("data-addonset-title");
                     var addon_set_id = $(this).attr("data-addonset-id");
-                    
+
                     var elementType = $($(this).find(".estimate_product_addon_option"))[0].tagName.toLowerCase();
                     // console.log(($(this).find(".estimate_product_addon_option option:selected").length < min_select), 'condition');
                     // console.log($(this).find(".estimate_product_addon_option option:selected").length, 'length');
                     // console.log(elementType);
                     // return false;
-                    
-                    if ((min_select > 0) && 
-                    (((elementType=='input') && ($(this).find(".estimate_product_addon_option:checked").length < min_select)) || 
+
+                    if ((min_select > 0) &&
+                    (((elementType=='input') && ($(this).find(".estimate_product_addon_option:checked").length < min_select)) ||
                     ((elementType=='select') && ($(this).find(".estimate_product_addon_option option:not(:first-child):selected").length < min_select))) ) {
                                 success_error_alert('error', "Minimum " + min_select + " " + addon_set_title + " required", ".estimate_addon_response");
                                 check = true;
                                 return false;
                     }
-            
+
                     if ((max_select > 0) &&
-                    (((elementType=='input') && ($(this).find(".estimate_product_addon_option:checked").length > max_select)) || 
+                    (((elementType=='input') && ($(this).find(".estimate_product_addon_option:checked").length > max_select)) ||
                     ((elementType=='select') && ($(this).find(".estimate_product_addon_option option:not(:first-child):selected").length > max_select))) ) {
                             success_error_alert('error', "You can select maximum " + max_select + " " + addon_set_title, ".estimate_addon_response");
                             check = true;
                             return false;
                     }
                 }
-                
+
              });
 
             if(check === false){
@@ -962,7 +962,7 @@
                     success: function(output) {
                         $("#estimated_product_addon_modal .modal-content").html('');
                         $("#estimated_product_addon_modal .modal-content").append(output.html);
-                        $("#estimated_product_addon_modal").modal('show'); 
+                        $("#estimated_product_addon_modal").modal('show');
                         $('.get_estimation_btn_text').text('Get Estimation');
                         $('#get_estimation_btn_loader').hide();
 
@@ -973,7 +973,7 @@
                         // window.location.reload();
                     },
             });
-          
+
         });
 
         $(document).on('click', '.add_real_cart', function(){
@@ -992,8 +992,9 @@
                             "addonoptID":      option_id,
                             "from_estimation": true,
                         };
-                        // console.log(data);
-                        // return false;
+                        // alert('ih');
+                        //  console.log(data);
+                        //  return false;
                 $.ajax({
                     type: "POST",
                     url: url,
@@ -1148,6 +1149,6 @@
                 }
             });
         }
-    
+
     </script>
 @endsection

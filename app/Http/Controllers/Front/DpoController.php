@@ -107,6 +107,7 @@ class DpoController extends FrontController
         $redirectUrl = $url->to('/payment/dpo/redirect/?order_no='.$order_number);
         $user = User::where('auth_token', $request->auth_token)->first();
         $total_amount = $this->getDollarCompareAmount($request->amt);
+        $total_amount = round($total_amount);
         $name = explode(' ',$user->name);
         $customerFirstName = $name[0];
         $customerLastName = !empty($name[1])? $name[1] : '';
@@ -155,6 +156,7 @@ class DpoController extends FrontController
         $user = Auth::user();
         $redirectUrl = $request->serverUrl.'payment/dpo/redirect/?order_no='.$order_number.'&payment_via=app&status=200&utoken='.$user->auth_token;
         $total_amount = $this->getDollarCompareAmount($request->amt);
+        $total_amount = round($total_amount);
         $name = explode(' ',$user->name);
         $customerFirstName = $name[0];
         $customerLastName = !empty($name[1])? $name[1] : '';

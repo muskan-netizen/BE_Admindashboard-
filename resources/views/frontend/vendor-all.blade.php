@@ -1,4 +1,4 @@
-@extends('layouts.store', ['title' => __('All Vendors')])
+@extends('layouts.store', ['title' => isset($page_title) ? $page_title :__('All Vendors')])
 @section('css-links')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
@@ -9,7 +9,7 @@
    <div class="container">
       <div class="row">
          <div class="col-12" >
-            <h2 class="mb-3 mt-3">{{__('All Vendors')}}</h2>
+            <h2 class="mb-3 mt-3">{{ isset($page_title) ? $page_title :__('All Vendors')}}</h2>
          </div>
       </div>
       <div class="row margin-res">
@@ -23,7 +23,7 @@
                <div class="supplier-rating">
                   <h6 class="mb-1 ellips">{{$vendor->name}}</h6>
                   @if($client_preference_detail && $client_preference_detail->rating_check == 1 && $vendor->vendorRating > 0)
-                  <span class="rating-number">{{$vendor->vendorRating}}</span>
+                  <span class="rating-number"><i class="fa fa-star"></i> {{$vendor->vendorRating}}</span>
                   @endif
                   <p title="{{$vendor->categoriesList}}" class="vendor-cate {{$vendor->is_show_vendor_details == 1 ? ' border-bottom':''}} pb-1 mb-1 ellips">{{$vendor->categoriesList}}</p>
                   <div class="product-timing">

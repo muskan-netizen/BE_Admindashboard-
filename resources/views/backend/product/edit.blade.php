@@ -77,6 +77,15 @@
     }
 </style>
 @endsection
+@php 
+$lastmileShow = array('7','10','11');
+
+$brandNotShow = array('7','8','12');
+
+if($client_preference_detail->appointment_check == 1 && ($client_preference_detail->need_appointment_service == '1') ){
+    $lastmileShow = array_diff($lastmileShow,['11']);
+}
+@endphp
 @section('content')
 <div class="container-fluid">
 
@@ -212,6 +221,8 @@
                         </div>
                     </div>
                 </div>
+                {{-- @php
+                pr($product->toArray()); @endphp --}}
                 @if($product->category->categoryDetail->type_id != 7)
                 <div class="card-box">
 
@@ -221,7 +232,9 @@
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
                             @include('backend.primary_currency')
-                            {!! Form::text('price', decimal_format($product->variant[0]->price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            
+                            {!! Form::text('price', decimal_format($product->variant[0]->actual_price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+
                         </div>
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
@@ -236,6 +249,19 @@
                             {!! Form::text('container_charges', $product->variant[0]->container_charges, ['class'=>'form-control', 'id' => 'container_charges', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         @endif
+                        @if($product->vendor->add_markup_price == 1 && Auth::user()->is_superadmin == 1)
+                        <div class="col-4 mb-2">
+                            {!! Form::label('title', __('Markup Price'), ['class' => 'control-label']) !!} 
+                            @include('backend.primary_currency') ({{ __("Visible For Admin") }})
+                            {!! Form::text('markup_price', $product->variant[0]->markup_price, ['class'=>'form-control', 'id' => 'markup_price', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        </div>
+                        @endif
+                        @if( in_array( $product->category->categoryDetail->type_id , [12]) )
+                        <div class="col-4  mb-2">
+                            {!! Form::label('title', __('Appointment Duration').' '. __('min:'), ['class' => 'control-label']) !!}
+                            {!!Form::input('number','minimum_duration_min', $product->minimum_duration_min, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'minimum_duration_min', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
+                        </div>
+                        @endif
                         {{-- <div class="col-4 mb-2">
                             {!! Form::label('title', 'Cost Price (Optional)', ['class' => 'control-label']) !!}
                             {!! Form::text('cost_price', $product->variant[0]->cost_price, ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
@@ -243,7 +269,7 @@
                     </div>
                     @endif
                     <div class="row mb-2">
-                        @if(!in_array($product->category->categoryDetail->type_id,[8,9]))
+                        @if(!in_array($product->category->categoryDetail->type_id,[8,9,10,12]))
                         <div class="col-sm-4">
                             {!! Form::label('title', __('Track Inventory')) !!} <br>
                             <input type="checkbox" bid="" id="has_inventory" data-plugin="switchery" name="has_inventory" class="chk_box" data-color="#43bee1" {{$product->has_inventory == 1 ? 'checked' : ''}}>
@@ -252,7 +278,7 @@
 
                         <div class="col-sm-8 check_inventory ">
                             <div class="row">
-                                @if($product->category->categoryDetail->type_id != 8)
+                                @if( !in_array($product->category->categoryDetail->type_id,[8,10,12]) )
                                 @if($product->has_variant == 0)
                                 <div class="col-sm-4">
                                     {!! Form::label('title', __('Quantity'),['class' => 'control-label']) !!}
@@ -276,122 +302,193 @@
                             </div>
                         </div>
                     </div>
+                    
+
+                    @if(  in_array( $product->category->categoryDetail->type_id , [10]) )
+                        <div class="row col-md-12 mb-2">
+                            <div class="col-4 mb-2 row">
+                                <div class="col-12">
+                                    {!! Form::label('title', __('Minimum Duration'), ['class' => 'control-label']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
+
+                                    {!!Form::input('number','minimum_duration', $product->minimum_duration, ['min' => '00','class'=>'form-control', 'id' => 'minimum_duration', 'placeholder' => '00', 'onkeyup' => 'return isNumberKey(event)']) !!}
+                                </div>
+                                <div class="col-6 pr-3">
+                                    {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
+                                    {!!Form::input('number','minimum_duration_min', $product->minimum_duration_min, ['min' => '00','max' => '59','class'=>'form-control', 'id' => 'minimum_duration_min', 'placeholder' => '00', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
+                                </div>
+                            </div>
+                            <div class="col-4 mb-2 row">
+                                <div class="col-12">
+                                    {!! Form::label('title', __('Additional Increment Duration'), ['class' => 'control-label']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
+                                    {!! Form::input('number','additional_increments', $product->additional_increments, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'additional_increments', 'placeholder' => '0', 'onkeyup' => 'return isNumberKey(event)']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
+                                    {!! Form::input('number','additional_increments_min', $product->additional_increments_min, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'additional_increments_min', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
+                                </div>
+                            
+                            </div>
+                            <div class="col-4 mb-2 row">
+                                <div class="col-12">
+                                    {!! Form::label('title', __('Buffer time Duration'), ['class' => 'control-label']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
+                                    {!! Form::input('number','buffer_time_duration', $product->buffer_time_duration, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                </div>
+                                <div class="col-6 pl-3">
+                                    {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
+                                    {!! Form::input('number','buffer_time_duration_min', $product->buffer_time_duration_min, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration_min', 'placeholder' => '0', 'onkeypress' => 'return isNumberKeyMax(event)']) !!}
+                                </div>
+
+                            </div>
+                           
+                        </div>
+                        {{-- <div class="row mb-2">
+                           
+                        </div> --}}
+                        @if($product->category->categoryDetail->type_id  ==  10)
+                            <div class="row mb-2" style="display: none;">
+                                <div class="col-sm-3">
+                                    {!! Form::label('title', __('Fix Check-in time'),['class' => 'control-label']) !!} <br />
+                                    <input type="checkbox" bid="" id="is_fix_check_in_time" data-plugin="switchery" name="is_fix_check_in_time" class="chk_box" data-color="#43bee1" @if($product->is_fix_check_in_time == 1) checked @endif>
+                                </div>
+                                <div class="col-4 mb-2 check_in_time @if($product->is_fix_check_in_time != 1) d-none @endif">
+                                    {!! Form::label('title', __('Check in time'), ['class' => 'control-label']) !!}
+                                    {!! Form::text('check_in_time', $product->check_in_time, ['class'=>'form-control', 'id' => 'range-datepicker', 'placeholder' => '00:00']) !!}
+                                </div>
+                            
+                            </div>
+                        @endif
+                    @endif
 
                 </div>
                 @endif
-
-                @if($productVariants->count() > 0)
-                <div class="card-box" >
-                    <div class="row mb-2 bg-light">
-                        <div class="col-8" style="margin:auto;">
-                            <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
-                        </div>
-                        @if(!empty($productVariants))
-                        <div class="col-4 p-2 mt-0 text-right" style="margin:auto; ">
-                            <button type="button" class="btn btn-info makeVariantRow"> {{ __("Make Variant Sets") }}</button>
-                        </div>
-                        @endif
-                    </div>
-                    <p>{{ __("Select or change category to get variants") }}</p>
-
-                    <div class="row" style="width:100%; overflow-x: scroll;">
-                        <div id="variantAjaxDiv" class="col-12 mb-2">
-                            <h5 class="">{{__('Variant List')}}</h5>
-                            <div class="row mb-2">
-                                @foreach($productVariants as $vk => $var)
-                                <div class="col-sm-3">
-                                    <label class="control-label">{{$var->title??null}}</label>
-                                </div>
-                                <div class="col-sm-9">
-                                    @foreach($var->option as $key => $opt)
-                                    @if(isset($opt) && !empty($opt->title) && isset($var) && !empty($var->title) )
-                                        <div class="checkbox checkbox-success form-check-inline pr-3">
-                                            <input type="checkbox" name="variant{{$var->id}}" class="intpCheck" opt="{{$opt->id.';'.$opt->title}}" varId="{{$var->id.';'.$var->title}}" id="opt_vid_{{$opt->id}}" @if(in_array($opt->id, $existOptions)) checked @endif>
-                                            <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
-                                        </div>
-                                    @endif
-                                    @endforeach
-                                </div>
-                                @endforeach
+                
+                @if($product->category->categoryDetail->type_id == 10)
+                    @include('backend.product.popup.scheduleTableRows')
+                    {{-- @include('backend.product.popup.addBlockTimeTablePopup') --}}
+                    @include('backend.product.variant')
+                @else
+                    @if($productVariants->count() > 0)
+                    <div class="card-box" >
+                        <div class="row mb-2 bg-light">
+                            <div class="col-8" style="margin:auto;">
+                                <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
                             </div>
+                            @if(!empty($productVariants))
+                            <div class="col-4 p-2 mt-0 text-right" style="margin:auto; ">
+                                <button type="button" class="btn btn-info makeVariantRow"> {{ __("Make Variant Sets") }}</button>
+                            </div>
+                            @endif
                         </div>
+                        <p>{{ __("Select or change category to get variants") }}</p>
 
-                        @if($product->has_variant == 1)
-                        <div class="col-12" id="exist_variant_div">
-                            <h5 class="">{{ __("Applied Variants Set") }}</h5>
-                            <table class="table table-centered table-nowrap table-striped">
-                                <thead>
-                                    <th>{{ __("Image") }}</th>
-                                    <th>{{ __("Name") }}</th>
-                                    <th>{{ __("Variants") }}</th>
-                                    <th>{{ __("Price") }}</th>
-                                    <th>{{ __('Compare at price') }}</th>
-                                    <th>{{ __('Cost Price') }}</th>
-                                    <th class="check_inventory">{{ __("Quantity") }}</th>
-                                    <th>{{ __("Action") }}</th>
-                                </thead>
-                                <tbody id="product_tbody_{{$product->id}}">
-                                    @foreach($product->variant as $varnt)
-                                    <?php
-                                    $existSet = array();
-
-                                    $mediaPath = Storage::disk('s3')->url('default/default_image.png');
-
-                                    if (!empty($varnt->vimage) && isset($varnt->vimage->pimage->image)) {
-                                        $mediaPath = $varnt->vimage->pimage->image->path['proxy_url'] . '100/100' . $varnt->vimage->pimage->image->path['image_path'];
-                                    }
-                                    $existSet = explode('-', $varnt->sku);
-                                    $vsets = '';
-
-                                    foreach ($varnt->set as $vs) {
-                                        if(isset($vs) && !empty($vs->title)){
-                                            $vsets .= $vs->title . ', ';
-                                        }
-
-
-                                    }
-                                    ?>
-                                    <tr id="tr_{{$varnt->id}}">
-                                        <td>
-                                            <div class="image-upload">
-                                                <label class="file-input uploadImages" for="{{$varnt->id}}">
-                                                    <img src="{{$mediaPath}}" width="30" height="30" for="{{$varnt->id}}" />
-                                                </label>
+                        <div class="row" style="width:100%; overflow-x: scroll;">
+                            <div id="variantAjaxDiv" class="col-12 mb-2">
+                                <h5 class="">{{__('Variant List')}}</h5>
+                                <div class="row mb-2">
+                                    @foreach($productVariants as $vk => $var)
+                                    <div class="col-sm-3">
+                                        <label class="control-label">{{$var->title??null}}</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @foreach($var->option as $key => $opt)
+                                        @if(isset($opt) && !empty($opt->title) && isset($var) && !empty($var->title) )
+                                            <div class="checkbox checkbox-success form-check-inline pr-3">
+                                                <input type="checkbox" name="variant{{$var->id}}" class="intpCheck" opt="{{$opt->id.';'.$opt->title}}" varId="{{$var->id.';'.$var->title}}" id="opt_vid_{{$opt->id}}" @if(in_array($opt->id, $existOptions)) checked @endif>
+                                                <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
                                             </div>
-                                            <div class="imageCountDiv{{$varnt->id}}"></div>
-                                        </td>
-                                        <td>
-                                            <input type="hidden" name="variant_ids[]" value="{{$varnt->id}}">
-                                            <input type="hidden" class="exist_sets" value="{{$existSet[(count($existSet) - 1)]}}">
-                                            <input type="text" name="variant_titles[]" value="{{$varnt->title??null}}">
-                                        </td>
-                                        <td>{{rtrim($vsets, ', ')}}</td>
-                                        <td>
-                                            <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
-                                        </td>
-                                        <td>
-                                            <input type="text" style="width: 100px;" name="variant_compare_price[]" value="{{decimal_format($varnt->compare_at_price)}}" onkeypress="return isNumberKey(event)">
-                                        </td>
-                                        <td>
-                                            <input type="text" style="width: 70px;" name="variant_cost_price[]" value="{{decimal_format($varnt->cost_price)}}" onkeypress="return isNumberKey(event)">
-                                        </td>
-                                        <td class="check_inventory">
-                                            <input type="text" style="width: 70px;" name="variant_quantity[]" value="{{$varnt->quantity}}" onkeypress="return isNumberKey(event)">
-                                        </td>
-                                        <td>
-                                            <a href="javascript:void(0);" data-varient_id="{{$varnt->id}}" class="action-icon deleteExistRow">
-                                                <i class="mdi mdi-delete"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
+                                        @endif
+                                        @endforeach
+                                    </div>
                                     @endforeach
-                                </tbody>
-                            </table>
+                                </div>
+                            </div>
+
+                            @if($product->has_variant == 1)
+                            <div class="col-12" id="exist_variant_div">
+                                <h5 class="">{{ __("Applied Variants Set") }}</h5>
+                                <table class="table table-centered table-nowrap table-striped">
+                                    <thead>
+                                        <th>{{ __("Image") }}</th>
+                                        <th>{{ __("Name") }}</th>
+                                        <th>{{ __("Variants") }}</th>
+                                        <th>{{ __("Price") }}</th>
+                                        <th>{{ __('Compare at price') }}</th>
+                                        <th>{{ __('Cost Price') }}</th>
+                                        <th class="check_inventory">{{ __("Quantity") }}</th>
+                                        <th>{{ __("Action") }}</th>
+                                    </thead>
+                                    <tbody id="product_tbody_{{$product->id}}">
+                                        @foreach($product->variant as $varnt)
+                                        <?php
+                                        $existSet = array();
+
+                                        $mediaPath = Storage::disk('s3')->url('default/default_image.png');
+
+                                        if (!empty($varnt->vimage) && isset($varnt->vimage->pimage->image)) {
+                                            $mediaPath = $varnt->vimage->pimage->image->path['proxy_url'] . '100/100' . $varnt->vimage->pimage->image->path['image_path'];
+                                        }
+                                        $existSet = explode('-', $varnt->sku);
+                                        $vsets = '';
+
+                                        foreach ($varnt->set as $vs) {
+                                            if(isset($vs) && !empty($vs->title)){
+                                                $vsets .= $vs->title . ', ';
+                                            }
+
+
+                                        }
+                                        ?>
+                                        <tr id="tr_{{$varnt->id}}">
+                                            <td>
+                                                <div class="image-upload">
+                                                    <label class="file-input uploadImages" for="{{$varnt->id}}">
+                                                        <img src="{{$mediaPath}}" width="30" height="30" for="{{$varnt->id}}" />
+                                                    </label>
+                                                </div>
+                                                <div class="imageCountDiv{{$varnt->id}}"></div>
+                                            </td>
+                                            <td>
+                                                <input type="hidden" name="variant_ids[]" value="{{$varnt->id}}">
+                                                <input type="hidden" class="exist_sets" value="{{$existSet[(count($existSet) - 1)]}}">
+                                                <input type="text" name="variant_titles[]" value="{{$varnt->title??null}}">
+                                            </td>
+                                            <td>{{rtrim($vsets, ', ')}}</td>
+                                            <td>
+                                                <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
+                                            </td>
+                                            <td>
+                                                <input type="text" style="width: 100px;" name="variant_compare_price[]" value="{{decimal_format($varnt->compare_at_price)}}" onkeypress="return isNumberKey(event)">
+                                            </td>
+                                            <td>
+                                                <input type="text" style="width: 70px;" name="variant_cost_price[]" value="{{decimal_format($varnt->cost_price)}}" onkeypress="return isNumberKey(event)">
+                                            </td>
+                                            <td class="check_inventory">
+                                                <input type="text" style="width: 70px;" name="variant_quantity[]" value="{{$varnt->quantity}}" onkeypress="return isNumberKey(event)">
+                                            </td>
+                                            <td>
+                                                <a href="javascript:void(0);" data-varient_id="{{$varnt->id}}" class="action-icon deleteExistRow">
+                                                    <i class="mdi mdi-delete"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            @endif
+                            <div id="variantRowDiv" class="col-12"></div>
                         </div>
-                        @endif
-                        <div id="variantRowDiv" class="col-12"></div>
                     </div>
-                </div>
+                    @endif
                 @endif
             </div>
             <div class="col-lg-5">
@@ -427,7 +524,8 @@
                             @endif
                         @endif
                         {{-- $configData->need_delivery_service == 1 &&  --}}
-                        @if($product->category->categoryDetail->type_id != 7 && (!in_array($client_preference_detail->business_type,['taxi','laundry'])))
+                        {{-- @if($product->category->categoryDetail->type_id != 7 && (!in_array($client_preference_detail->business_type,['taxi','laundry']))) --}}
+                        @if((!in_array($product->category->categoryDetail->type_id,$lastmileShow)) && (!in_array($client_preference_detail->business_type,['taxi','laundry'])))
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Requires Last Mile Delivery'),['class' => 'control-label']) !!}
                             <input type="checkbox" id="last_mile" data-plugin="switchery" name="last_mile" class="chk_box" data-color="#43bee1" @if($product->Requires_last_mile == 1) checked @endif>
@@ -457,26 +555,26 @@
                             </select>
                         </div>
                         @endif
-                        @if($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8)
-                        <div class="col-md-6 d-flex justify-content-between mb-2">
-                            {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
-                            <select class="selectize-select1 form-control" name="tags" required>
-                                @if($agent_dispatcher_on_demand_tags != null && count($agent_dispatcher_on_demand_tags))
-                                    @foreach($agent_dispatcher_on_demand_tags as $key => $tags)
-                                    <option value="{{ $tags['name'] }}" @if($product->tags == $tags['name']) selected="selected" @endif>{{ ucfirst($tags['name']) }}</option>
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
-                        @endif
-                        @if($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8)
-                        <div class="col-md-6 d-flex justify-content-between mb-2">
-                            {!! Form::label('title', __('Mode Of Service'),['class' => 'control-label']) !!}
-                            <select class="selectize-select1 form-control" name="mode_of_service" required>
-                                <option value="instant" @if($product->mode_of_service == 'instant') selected="selected" @endif>{{ __('Instant') }}</option>
-                                <option value="schedule" @if($product->mode_of_service == 'schedule') selected="selected" @endif>{{ __('Schedule') }}</option>
-                            </select>
-                        </div>
+                       
+                        @if(($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8) || ($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12) )
+                            <div class="col-md-6 d-flex justify-content-between mb-2">
+                                {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
+                                <select class="selectize-select1 form-control" name="tags" required>
+                                    @if($agent_dispatcher_on_demand_tags != null && count($agent_dispatcher_on_demand_tags))
+                                        @foreach($agent_dispatcher_on_demand_tags as $key => $tags)
+                                        <option value="{{ $tags['name'] }}" @if($product->tags == $tags['name']) selected="selected" @endif>{{ ucfirst($tags['name']) }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 d-flex justify-content-between mb-2">
+                                {!! Form::label('title', __('Mode Of Service'),['class' => 'control-label']) !!}
+                                <select class="selectize-select1 form-control" name="mode_of_service" required>
+                                    <option value="instant" @if($product->mode_of_service == 'instant') selected="selected" @endif>{{ __('Instant') }}</option>
+                                    <option value="schedule" @if($product->mode_of_service == 'schedule') selected="selected" @endif>{{ __('Schedule') }}</option>
+                                </select>
+                            </div>
                         @endif
                         @if($configData->age_restriction_on_product_mode == 1)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
@@ -499,7 +597,7 @@
                             </select>
                         </div>
 
-                        @if($product->category->categoryDetail->type_id != 8 && $product->category->categoryDetail->type_id != 7)
+                        @if( !in_array($product->category->categoryDetail->type_id,[8,7,12]))
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Brand'),['class' => 'control-label']) !!}
                             <select class="form-control " id="brand_idBox" name="brand_id">
@@ -587,21 +685,21 @@
                         </select>
                     </div> --}}
 
-                    <div class="row">
+                    {{-- <div class="row">
                         <div class="col-md-12">
                         <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Taxes") }}</h5>
                         </div>
-                    </div>
-                    
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                    </div> --}}
+                   
+                    {{-- <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Container Charges'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="container_charges_tax" class="form-control" data-color="#43bee1" @if($product->container_charges_tax == 1) checked @endif>
-                    </div>
+                    </div> --}}
                 
 
-                    
-                    <div class="form-group w-100" style="display:{{$product->container_charges_tax == 0 ? 'none!important' : 'block'}}" id="container_charges_tax_id">
-                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
+                    @if($product->vendor->need_container_charges)
+                    <div class="form-group w-100" id="container_charges_tax_id">
+                     {!! Form::label('title',__('On Container Charges') .' '. __('Taxes Available'),['class' => 'control-label']) !!}
                         <select class="form-control" name="container_charges_tax_id">
                             <option value="">{{__('Select any')}}</option>
                             @foreach(taxRates() as $row)
@@ -609,7 +707,7 @@
                             @endforeach
                         </select>
                     </div> 
-                    
+                    @endif
 
                     @if($configData->delay_order == 1 || $product->delay_order_hrs > 0 || $product->delay_order_min > 0)
                     @if(in_array($configData->business_type,['laundry']))
@@ -725,7 +823,7 @@
                             </select>
                         </div>
                     </div> -->
-
+                    
                 </div>
 
                 <div class="card-box">
@@ -779,7 +877,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        @if($product->category->categoryDetail->type_id != 8)
+                        @if( !in_array($product->category->categoryDetail->type_id ,[8,12]))
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Up Sell Products'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="up_cell[]" data-toggle="select2" multiple="multiple" placeholder="Select gear...">
@@ -834,7 +932,7 @@
                     <div class="col-lg-12">
                              <div class="card-box pb-2">
                                 <div class="d-flex align-items-center justify-content-between">
-                                   <h4 class="header-title text-uppercase m-0">{{ __("Product Order Form") }}</h4>
+                                   <h4 class="header-title text-uppercase m-0">{{ $nomenclatureProductOrderForm }}</h4>
                                    <a class="btn btn-info d-block" id="add_product_faq_modal_btn">
                                       <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
                                    </a>
@@ -976,12 +1074,15 @@
 <!-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script> -->
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
+
 <script>
     CKEDITOR.replace('body_html');
     CKEDITOR.config.height = 150;
 </script>
 
 <script type="text/javascript">
+
+    
     $('#requiredShipping').change(function() {
         var val = $(this).prop('checked');
         if (val == true) {
@@ -1038,6 +1139,43 @@
             if (confirm("Are you sure? You want to delete this variant.")) {
                 removeVariant(product_id, product_variant_id, is_product_delete);
             }
+        }
+    });
+    $(document).on('click', '.deleteExistRowRental', function() {
+        var that = $(this);
+        var product_id = "{{$product->id}}";
+        var product_variant_id = $(this).data('varient_id');
+        var rowCount = $('#product_tbody_' + product_id + ' tr').length;
+        if (rowCount == 1) {
+            var is_product_delete = 1;
+            Swal.fire({
+                title: 'Warning!',
+                text: 'Are you sure you?',
+                input: 'text',
+                inputPlaceholder: 'Delete',
+              }).then(({value}) => {
+                if (value === "Delete") {
+                    removeVariant(product_id, product_variant_id, is_product_delete);
+                    $(".addExistRow").css('display','none');
+                    $('.addExistRow').last().show();
+                    Swal.fire('Deleted!', 'Row has been deleted!', 'success')
+                } 
+              });
+        } else {
+            var is_product_delete = 0;
+            Swal.fire({
+                title: 'Warning!',
+                text: 'Are you sure you?',
+                input: 'text',
+                inputPlaceholder: 'Delete',
+              }).then(({value}) => {
+                if (value === "Delete") {
+                    removeVariant(product_id, product_variant_id, is_product_delete);
+                    $(".addExistRow").css('display','none');
+                    $('.addExistRow').last().show();
+                    Swal.fire('Deleted!', 'Row has been deleted!', 'success')
+                }   
+              });
         }
     });
 
@@ -1539,4 +1677,5 @@
     </script>
 
 <!-- end product faq -->
+<script src="{{ asset('assets/js/backend/product/edit_product.js')}}"></script>
 @endsection

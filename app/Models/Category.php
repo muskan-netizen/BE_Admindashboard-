@@ -66,14 +66,15 @@ class Category extends Model
 
     public function childs()
     {
-        return $this->hasMany(Category::class, 'parent_id', 'id')->select('id', 'slug', 'parent_id', 'icon', 'icon_two','image','type_id')->orderBy('position', 'ASC');
+        return $this->hasMany(Category::class, 'parent_id', 'id')->join('types', 'types.id', 'categories.type_id')
+        ->select('categories.id', 'categories.slug', 'categories.parent_id', 'categories.icon', 'categories.icon_two','categories.image','type_id', 'types.title as redirect_to')->orderBy('position', 'ASC');
     }
     public function products()
     {
         return $this->hasMany(Product::class, 'category_id', 'id');
     }
     public function type(){
-      return $this->belongsTo('App\Models\Type')->select('id', 'title');
+      return $this->belongsTo('App\Models\Type')->select('id', 'title','service_type');
     }
     public function vendor(){
       return $this->belongsTo('App\Models\Vendor');
@@ -111,6 +112,23 @@ class Category extends Model
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
       $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
       $values['image_fit'] = \Config::get('app.FIT_URl');
+      return $values;
+    }
+
+    public function getSubCatBannersAttribute($value)
+    {
+      $values = array();
+      $img = 'default/default_image.png';
+      if(!empty($value)){
+        $imgs = explode(',', $value);
+        foreach($imgs as $img){
+          $ex = checkImageExtension($img);
+          $banner['proxy_url'] = \Config::get('app.IMG_URL1');
+          $banner['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+          $banner['image_fit'] = \Config::get('app.FIT_URl');
+          $values[] = $banner;
+        }
+      }
       return $values;
     }
 
@@ -177,5 +195,12 @@ class Category extends Model
   {
     return $this->hasMany(Product::class,'category_id', 'id');
   }
-
+  
+  public function scopeServiceType($query)
+  {  
+      $categoryTypesArray = getCategoryTypes();
+      return $query->whereHas('type',function($q) use ($categoryTypesArray){ 
+        $q->whereIn('service_type',$categoryTypesArray);
+      });
+  }
 }

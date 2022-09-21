@@ -24,19 +24,17 @@
 @section('content')
 
 <!-- Start Content-->
-<div class="container-fluid">
+<div class="container-fluid alCampaignsPage">
 
     <!-- start page title -->
     <div class="row align-items-center">
-        <div class="col-sm-6">
-            <div class="page-title-box">
+        <div class="col-sm-12">
+            <div class="page-title-box d-flex justify-content-between align-items-center">
                 <h4 class="page-title">{{ __('Campaigns') }}</h4>
+                <button class="btn btn-info waves-effect waves-light text-sm-right"
+                    data-toggle="modal" data-target=".addModal"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
+                </button>
             </div>
-        </div>
-        <div class="col-sm-6 text-right">
-            <button class="btn btn-info waves-effect waves-light text-sm-right"
-                data-toggle="modal" data-target=".addModal"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
-            </button>
         </div>
     </div>
     <!-- end page title -->
@@ -58,7 +56,7 @@
                                 </div>
                                 @endif
                             </div>
-                        </div>                        
+                        </div>
                     </div>
 
                     <div class="table-responsive">
@@ -84,7 +82,7 @@
 
                                 <tr data-row-id="{{$campaign->id}}">
                                     <!-- <td class="draggableTd"><span class="dragula-handle"></span></td> -->
-                                    <td>                                         
+                                    <td>
                                     </td>
                                     {{-- <td><a class="openEditModal text-capitalize" loyaltyID="{{$campaign->id}}" href="#">{{ $campaign->title }}</a> </td> --}}
                                     <td class="text-capitalize">{{ $campaign->title }} </td>
@@ -95,7 +93,7 @@
                                             {{__('Email')}}
                                         @else
                                             {{__('Push Notification')}}
-                                        @endif    
+                                        @endif
                                     </td>
                                     <td>
                                         @if ($campaign->push_url_option==1)
@@ -103,43 +101,43 @@
                                         @elseif($campaign->push_url_option==2)
                                         {{__('Category')}}
                                         @elseif($campaign->push_url_option==3)
-                                        {{__('Vendor')}} 
+                                        {{__('Vendor')}}
                                         @else
-                                        @endif                                        
+                                        @endif
                                     </td>
-                                    <td> 
+                                    <td>
                                         @if($campaign->send_to==1)
                                             {{__('All')}}
                                         @else
                                             {{__('Vendors')}}
                                         @endif
                                     </td>
-                                    <td> 
+                                    <td>
                                         {{$campaign->schedule_datetime}}
                                     </td>
-                                    <td> 
+                                    <td>
                                         {{$campaign->request_user_count}}
                                     </td>
-                                    <td> 
+                                    <td>
                                         {{$campaign->request_time_difference}}
                                     </td>
-                                    <td> 
+                                    <td>
                                         {{$campaign->total_request_count}}
                                     </td>
-                                    <td> 
+                                    <td>
                                         {{$campaign->livecount}}
                                     </td>
-                                    <td> 
+                                    <td>
                                         <div class="form-ul" style="width: 60px;">
                                             {{-- <div class="inner-div" style="float: left;">
-                                                <a class="action-icon openEditModal" loyaltyID="{{$campaign->id}}" href="#"><i class="mdi mdi-square-edit-outline"></i></a> 
+                                                <a class="action-icon openEditModal" loyaltyID="{{$campaign->id}}" href="#"><i class="mdi mdi-square-edit-outline"></i></a>
                                             </div> --}}
                                             <div class="inner-div">
                                                 <form method="POST" action="{{ route('campaign.destroy', $campaign->id) }}" id="deleteCampaign">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                       <button type="button" id="deleteCampaignButton" class="btn btn-primary-outline action-icon deleteCampaignButton"><i class="mdi mdi-delete"></i></button> 
+                                                       <button type="button" id="deleteCampaignButton" class="btn btn-primary-outline action-icon deleteCampaignButton"><i class="mdi mdi-delete"></i></button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -190,7 +188,7 @@
       if(type==1)
       {
         $('.sms-section').css('display','');
-        $('.email-section, .push-section').css('display','none');        
+        $('.email-section, .push-section').css('display','none');
         // $('#email_title, #email_subject, #email_body').val('');
         // $('#push_title, #push_message_body, #push_url_option, #push_url_option_value').val('');
       }else if(type==2){
@@ -233,6 +231,6 @@
 @include('backend.campaign.pagescript')
 <script>
     CKEDITOR.replace('email_body');
-    
+
 </script>
 @endsection

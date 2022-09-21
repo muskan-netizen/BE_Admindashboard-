@@ -1,6 +1,5 @@
 @extends('layouts.store', ['title' => 'Product'])
 @section('css')
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
 @section('content')
@@ -16,9 +15,6 @@
     <div class="booking-experience ds bc">
         <div class="address-form">
 
-            <div class="loader-outer d-none">
-                <div class="spinner-border avatar-lg text-primary m-2" role="status"></div> 
-            </div>
                 @if(isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
                 <div class="tip_radio_controls_book_friend text-center mt-2">
                     <input type="radio" class="tip_radio is_for_friend" id="for_me" name="is_for_friend" value="0">
@@ -318,7 +314,7 @@
                         <% } %>
                         <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
                             <div class="col-6 mb-2">Loyalty</div>
-                            <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>xx
+                            <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
                         <% } %>
                     </div>
                 </div>
@@ -702,6 +698,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('payphone',$client_payment_options))
 <script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
 @endif
+@if(in_array('khalti',$client_payment_options))
+<script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
+@endif
 <!-- <script src="https://js.stripe.com/v3/"></script> -->
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
@@ -724,6 +723,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
     var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
     var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
+    var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
+    var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var cabbookingwallet = 1;
     var amount_required_error_msg = "{{__('Please enter amount.') }}";
     var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
@@ -838,7 +839,18 @@ $('body').on('click', '.clproduct_order_form', function (event) {
 
 <script type="text/javascript">
     $(document).ready(function (e) {
-        
+
+        var path = window.location.pathname;
+        var inputs = path.split("/");
+        var lastslug = inputs[inputs.length - 1];
+        //console.log(lastslug);
+        $('#main-menu a').each(function(index, val) {
+            var href = $(val).attr('href');
+            if( (href.indexOf('category') !== -1) && (href.indexOf(lastslug) !== -1) ){
+                $(val).addClass('active');
+                $(val).parents("li").addClass('active');
+            }
+        })
         // if(parseInt($('input[name=is_for_friend]:checked')).val()==1){
         //     $('#label_for_me').removeClass('active');
         //     $('#label_for_friend').addClass('active');

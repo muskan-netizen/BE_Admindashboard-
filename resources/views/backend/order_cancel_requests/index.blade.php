@@ -17,11 +17,35 @@
 </style>
 @endsection
 @section('content')
-<div class="container-fluid vendor-page">
+<div class="container-fluid alCancelOrderRequestsPage">
     <div class="row align-items-center">
         <div class="col-sm-12">
-            <div class="page-title-box">
+            <div class="page-title-box alCancelOrderRequestsPageDashboard align-items-center d-md-flex justify-content-between my-2">
                 <h4 class="page-title">{{ __('Cancel Order Requests') }}</h4>
+                <div class="float-right">
+                    <div class="row align-items-center ">
+                        <div class="col-sm-4 mb-1">
+                            <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
+                        </div>
+                        <div class="col-sm-4 mb-1">
+                            <select class="form-control" id="vendor_select_box">
+                                <option value="">{{ __('Select Vendor') }}</option>
+                                @forelse($vendors as $vendor)
+                                    <option value="{{$vendor->id}}">{{$vendor->name}}</option>
+                                @empty
+                                @endforelse
+                            </select>
+                        </div>
+                        <div class="col-sm-4 mb-1">
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                                <input type="search" class="form-control" placeholder="{{ __('Search...') }}" id="search_via_keyword">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -130,7 +154,7 @@
             </div>
         </div>
     </div>
-    
+
 </div>
 
 <script type="text/template" id="user_id_section">

@@ -1,5 +1,5 @@
 {{--@if($listData->isNotEmpty()) --}}
-<div class="col-sm-4 col-lg-3 border-right al_white_bg_round p-0">
+<div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
     <nav class="scrollspy-menu">
         <ul>
             @forelse($listData as $key => $data)
