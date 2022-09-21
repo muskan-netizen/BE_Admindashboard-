@@ -334,7 +334,7 @@ class ProductController extends BaseController
             $product->is_new                    = ($request->has('is_new') && $request->is_new == 'on') ? 1 : 0;
             $product->is_featured               = ($request->has('is_featured') && $request->is_featured == 'on') ? 1 : 0;
             $product->is_physical               = ($request->has('is_physical') && $request->is_physical == 'on') ? 1 : 0;
-            $product->pharmacy_check               = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
+            $product->pharmacy_check            = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
             $product->has_inventory             = ($request->has('has_inventory') && $request->has_inventory == 'on') ? 1 : 0;
             $product->sell_when_out_of_stock    = ($request->has('sell_stock_out') && $request->sell_stock_out == 'on') ? 1 : 0;
             $product->requires_shipping         = ($request->has('require_ship') && $request->require_ship == 'on') ? 1 : 0;
