@@ -124,13 +124,13 @@
         //alert('asd');
         var banner_id =  $(this).data('banner_id');
        console.log(banner_id);
-       Swal.fire({
-            title: 'Are you sure? You want to delete this Banner.',
+        Swal.fire({
+            icon: 'warning',
+            title: "{{ __('Are you sure? You want to delete this Banner.')}}",
             confirmButtonText: 'Yes',
             focusConfirm: false,
-            icon: 'info',
             preConfirm: () => {
-         
+                
             },onOpen: function() {
             }
           }).then(async (result) => {
@@ -145,7 +145,14 @@
         axios.get(`/client/vendor_banner/destroy/${banner_id}`)
         .then(async response => {
             console.log(response);
-          
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.data.message,
+                })
+                setTimeout(async ()=>{
+                    location.reload();
+                },2000)
              
         })
         .catch(e => {
@@ -163,10 +170,16 @@
         if(document.getElementsByName("banner_image")[0].value == "") {
             sweetAlert.error('Oops...','Please select an Image!')
         }
-
         axios.post(`/client/vendor_banner/store`, formData)
         .then(async response => {
-            
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: response.data.message,
+            })
+            setTimeout(async ()=>{
+                location.reload();
+            },2000)
           
              
         })

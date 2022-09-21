@@ -74,10 +74,22 @@ class VendorMultiBannerController extends BaseController
      * @param  \App\Cms  $cms
      * @return \Illuminate\Http\Response
      */
-    public function destroy($domain = '', $id)
+    public function destroy(Request $request,$domain = '', $id)
     {
-        VendorMultiBanner::where('id',$request->banner_id)->delete();
-        return redirect()->back()->with('success', 'Banner deleted successfully!');
+        try{
+            DB::beginTransaction();
+            VendorMultiBanner::where('id',$id)->delete();
+            DB::commit();
+            return redirect()->back()->with('success', 'Banner deleted successfully!');
+        }catch(Exception $ex){
+            DB::rollback();
+            return response()->json([
+                'status'=>'success',
+                'message' => $ex->message(),
+                'data' => []
+            ]);
+            
+        }
     }
 
  
