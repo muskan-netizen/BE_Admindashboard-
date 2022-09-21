@@ -581,6 +581,10 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     {!! Form::label('title', __('Sloting from Dispatch'),['class' => 'control-label']) !!}
                                     <input type="checkbox" id="is_slot_from_dispatch" data-plugin="switchery" name="is_slot_from_dispatch" class="chk_box" data-color="#43bee1" @if($product->is_slot_from_dispatch == 1) checked @endif>
                                 </div>
+                                <div class="col-md-6 d-flex justify-content-between mb-2">
+                                    {!! Form::label('title', __('Show Dispatch Agent'),['class' => 'control-label']) !!}
+                                    <input type="checkbox" id="is_show_dispatcher_agent" data-plugin="switchery" name="is_show_dispatcher_agent" class="chk_box" data-color="#43bee1" @if($product->is_show_dispatcher_agent == 1) checked @endif>
+                                </div>
                             @endif
                         @endif
                         @if($configData->age_restriction_on_product_mode == 1)

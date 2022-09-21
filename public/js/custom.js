@@ -3797,12 +3797,25 @@ $(document).ready(function () {
         });
         return res;
     }
+    
 
     $(document).on('click', '.selected-time', function () {
 
         let selected_time   =  $(this).html();
         let cart_product_id = $(this).data("cart_product_id");
-        let dispatch_agent_id = $(this).data("agent_id");
+        let dispatch_agent_id = '';
+        let agent_ids = $(this).data("agent_ids");
+        let show_agent = $(this).data("show_agent");
+       
+        //&& (show_agent != undefined && show_agent !='' )
+        if((agent_ids != undefined && agent_ids !='' )  ){
+            var myArray = agent_ids.split(",");
+            dispatch_agent_id = myArray[0] ;
+        }
+        if((show_agent != undefined && show_agent ==1  ) && (agent_ids != undefined && agent_ids !='' )  ){
+           console.log('show driver');
+           showDispatchDriver(agent_ids,cart_product_id);
+        }
         $("#show_time" + cart_product_id).html(selected_time);
         $("#message_of_time" + cart_product_id).html("Your service will start between " + selected_time);
         $("#next-button-ondemand-3").show();

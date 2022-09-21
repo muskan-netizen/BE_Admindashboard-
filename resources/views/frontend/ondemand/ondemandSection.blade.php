@@ -416,12 +416,17 @@ div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button
                                             </div>
                                             @if($cart_data->is_dispatch_slot == 1)
                                             @php
+                                           
                                             $dispatch_agents = $cart_data->dispatchAgents ?? [];
                                             $cart_product_id = $cart_data->id;
                                             $dispatch_agent_id = $cart_data->dispatch_agent_id;
+                                            $show_dispatcher_agent = $cart_data->product->is_show_dispatcher_agent;
+                                            $schedule_slot = $cart_data->schedule_slot;
                                             
                                             @endphp
-                                            @include('frontend.ondemand.dispatcher_agent_slots')
+                                            <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
+                                             @include('frontend.ondemand.dispatcher_agent_slots')
+                                            </div>
                                             @else
                                                 <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
                                                     <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
