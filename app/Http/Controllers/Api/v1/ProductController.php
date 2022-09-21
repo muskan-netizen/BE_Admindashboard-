@@ -423,11 +423,12 @@ class ProductController extends BaseController
         $product_faqs = ProductFaq::where('product_id',$product_id)->with(['translations' => function ($qs) use($langId){
             $qs->where('language_id',$langId);
         }])->get();
-        
-        if($product_faqs->file_type == 'selector'){
-            $product_faqs->options = ProductFaqSelectOption::with(['translations'])
-                                                        ->where(['product_faq_id' => $product_faqs->id])
+        foreach($product_faqs as $faq){
+        if($faq->file_type == 'selector'){
+            $faq->options = ProductFaqSelectOption::with(['translations'])
+                                                        ->where(['product_faq_id' => $faq->id])
                                                         ->get();
+           }
         }
 
         if(!$product_faqs){
