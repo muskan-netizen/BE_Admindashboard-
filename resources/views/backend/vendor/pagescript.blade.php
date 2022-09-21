@@ -119,6 +119,79 @@
         getVendorSection(section_id, language_id);
       }
     });
+    
+    $(document).on("click",".deleteMultiBanner",function() {
+        //alert('asd');
+        var banner_id =  $(this).data('banner_id');
+       console.log(banner_id);
+        Swal.fire({
+            icon: 'warning',
+            title: "{{ __('Are you sure? You want to delete this Banner.')}}",
+            confirmButtonText: 'Yes',
+            focusConfirm: false,
+            preConfirm: () => {
+                
+            },onOpen: function() {
+            }
+          }).then(async (result) => {
+           
+            await  deleteMultiBanner(banner_id)
+          })
+
+      
+    
+    });
+    function deleteMultiBanner(banner_id){
+        axios.get(`/client/vendor_banner/destroy/${banner_id}`)
+        .then(async response => {
+            console.log(response);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.data.message,
+                })
+                setTimeout(async ()=>{
+                    location.reload();
+                },2000)
+             
+        })
+        .catch(e => {
+            Swal.fire(
+                'Something went wrong, try again later!',                                    
+                'error'
+            )
+        })    
+
+    }
+    $(document).on("click",".submitMultibannerForm",function() {
+        //alert('asd');
+        var form = document.getElementById('save_multi_banner_form');
+        var formData = new FormData(form);
+        if(document.getElementsByName("banner_image")[0].value == "") {
+            sweetAlert.error('Oops...','Please select an Image!')
+        }
+        axios.post(`/client/vendor_banner/store`, formData)
+        .then(async response => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: response.data.message,
+            })
+            setTimeout(async ()=>{
+                location.reload();
+            },2000)
+          
+             
+        })
+        .catch(e => {
+            Swal.fire(
+               "{{__('Something went wrong, try again later!')}}",                                    
+                'error'
+            )
+        })    
+    
+    });
+    
     $(document).on('click','.editSectionBtn',function(){
         var section_id = $(this).data('id');
         var language_id = $(this).data('language_id');

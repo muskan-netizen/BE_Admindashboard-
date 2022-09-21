@@ -470,6 +470,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('vendor_city/show/{id?}', 'Client\VendorCitiesController@show')->name("vendor_city.show");
         Route::post('vendor_city/update', 'Client\VendorCitiesController@update')->name("vendor_city.update");
         Route::get('vendor_city/destroy/{id}', 'Client\VendorCitiesController@destroy')->name('vendor_city.destroy');
+
+        // vendor multi banner for t6 :)
+        Route::post('vendor_banner/store', 'Client\VendorMultiBannerController@store')->name("vendor_banner.store");
+        Route::get('vendor_banner/destroy/{id}', 'Client\VendorMultiBannerController@destroy')->name("vendor_banner.destroy");
         
     });
 });

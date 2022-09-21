@@ -23,14 +23,9 @@ $checkSlot = findSlot('', $vendor->id, '');
                         @if (!empty($vendor->banner))
                             <div><img src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}" alt=""></div>
                         @endif
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
+                        @foreach ($vendorMultiBanner['banner'] as $key =>$multiBanner )
+                         <div><img src="{{$multiBanner->image['proxy_url'] . '1920/1080' . $multiBanner->image['image_path']}}" alt=""></div>
+                       @endforeach
                     </div>
 
 
@@ -38,14 +33,9 @@ $checkSlot = findSlot('', $vendor->id, '');
                         @if (!empty($vendor->banner))
                         <div><img src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}" alt=""></div>
                     @endif
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
+                        @foreach ($vendorMultiBanner['banner'] as $key =>$multiBanner )
+                         <div><img src="{{$multiBanner->image['proxy_url'] . '1920/1080' . $multiBanner->image['image_path']}}" alt=""></div>
+                        @endforeach
                     </div>
                  </div>
             </div>
