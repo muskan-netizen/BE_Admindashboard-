@@ -237,5 +237,32 @@ body.al_body_template_six.light{visibility: visible;}
 
 a.brand-box.d-block.black-box{text-align: center;}
 
+/*09--19--2022*/
+.recent-orders ul.product_list .item_no{
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: -1px;
+    top: -7px;
+    right: auto;
+    left: 55px;
+    background: var(--theme-deafult);
+    text-align: center;
+    border-radius: 50px;
+    color: #fff;
+}
+.recent-orders ul.product_list li img{
+    width: 100%;
+    object-fit: cover;
+    height: 100%;
+    border-radius: 50px;
+}
+.al_body_template_six.dark .al_custom_brand .render_brands  .brand-box{
+background-color: #232323;
+}
+
 
 
