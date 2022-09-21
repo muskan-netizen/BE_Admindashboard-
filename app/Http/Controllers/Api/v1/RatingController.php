@@ -16,10 +16,11 @@ use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderPro
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Requests\Web\CheckImageRequest;
+use App\Http\Traits\OrderTrait;
 
 class RatingController extends BaseController{
 
-    use ApiResponser;
+    use ApiResponser, OrderTrait;
     /**
      * update order product rating
 
@@ -49,6 +50,10 @@ class RatingController extends BaseController{
                     }
                 }
                 $this->updateaverageRating($request->product_id);
+
+                // update vendor rating 
+                $this->updateVendorRating($order_details->vendor_id);
+
                 if(isset($request->remove_files) && is_array($request->remove_files))    # send index array of deleted images
                 $removefiles = OrderProductRatingFile::where('order_product_rating_id',$ratings->id)->whereIn('id',$request->remove_files)->delete();
 
