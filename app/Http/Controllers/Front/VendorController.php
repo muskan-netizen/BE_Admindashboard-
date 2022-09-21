@@ -6,6 +6,7 @@ use Auth;
 use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Http\Traits\VendorTrait;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -16,6 +17,7 @@ use Log;
 class VendorController extends FrontController
 {
     use ApiResponser;
+    use VendorTrait;
     private $field_status = 2;
 
 
@@ -95,7 +97,7 @@ class VendorController extends FrontController
         $period      = [];
         $time_slots  = [];
         $Map_vendors = [];
-
+        $vendorMultiBanner = [];
         $vendor = Vendor::with('slot.day', 'slotDate', 'productsLive.reviews')
             ->select('id','email', 'name', 'slug', 'desc','short_desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot','closed_store_order_scheduled','instagram_url','country','state',
             'dynamic_html')->where('slug', $slug)->where('status', 1)->firstOrFail();
@@ -207,6 +209,7 @@ class VendorController extends FrontController
                                                     }])->where('vendor_id',$vendor->id)->get();
                 // pr($vendor->id);
                 //pr($Vendor_section);
+                $vendorMultiBanner = $this->getMultiBanner($vendor->id);
                 $vendor->vendor_section = $Vendor_section;
                 $vendor->facilty  = [];
                 if( (isset($preferences->is_vendor_tags)) && ($preferences->is_vendor_tags == 1) ){
@@ -254,6 +257,7 @@ class VendorController extends FrontController
                         }
                         
                     }
+                   
                     //pr('asdf');
                     $page = 'products-with-categories-ondemand';   
                 }
@@ -291,8 +295,8 @@ class VendorController extends FrontController
             if(isset($vendor) && isset($vendor->id)){
                 if(!in_array($vendor->id, $vendors)){
                     $listData =collect();
-                  
-                    return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'cartData'=>$cartData,'period' => $period,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors]);
+                   //pr($vendor->toArray());
+                    return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'cartData'=>$cartData,'period' => $period,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors,'vendorMultiBanner'=>$vendorMultiBanner]);
                 }
             }
         }
@@ -309,9 +313,9 @@ class VendorController extends FrontController
         $product_tag_ids = Product::byProductCategoryServiceType($type)->where('vendor_id', $vendor->id)->where('is_live', 1)->pluck('id')->toArray();
         $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
         $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();
+      
          // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';vendor-products-with-categories-extended
-        
-        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed,'cartData'=>$cartData,'period' => $period ,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors]);
+        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed,'cartData'=>$cartData,'period' => $period ,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors,'vendorMultiBanner'=>$vendorMultiBanner]);
     }
 
     /**

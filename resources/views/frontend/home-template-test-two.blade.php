@@ -765,30 +765,14 @@ height: auto;
     </div>
 </div>
 @endsection
+@section('home-page')
+<script type="text/javascript" src="{{asset('assets/js/template/commonFunction.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/js/template/template-two/templateFunction.js')}}"></script>
+@endsection
 @section('js-script')
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 {{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
 @endsection
 @section('script')
-<script type="text/javascript">
-    // AOS.init();
-    function changeImage(image, check) {
-       var  icon = $(image).attr('data-icon');
-       var  icon_two = $(image).attr('data-icon_two');
-       if(check == 1)
-       {
-        setTimeout(function () {
-            $(image).attr('data-src',icon_two);
-            $(image).attr('src',icon_two);
-        },200);
-       }else if(check == 0){
-            setTimeout(function () {
-                $(image).attr('data-src',icon);
-                $(image).attr('src',icon);
-            },200);
-
-       }
-    }
-</script>
 @endsection

@@ -48,8 +48,7 @@ $(function(){
     // Change the location by  city lat long
 
     function changeLocationByCity(lat,long,address){
-       
-        
+    
         let url = `/updateLocation?latitude=${lat}&&longitude=${long}&&address=${address}` ;
         window.location.href = url;
         
