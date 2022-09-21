@@ -219,6 +219,8 @@ class VendorController extends FrontController
                 }
                  // if vendor type selecter on demand service by harbans i don't want to do this garvage 
                 if($type == 'on_demand' || $type == 'appointment'){
+                  
+                   //pr($this->productDetail('73'));
                     $cartDataGet    = $this->getCartOnDemand($request);
                     $cartData       = $cartDataGet['cartData'];
                     $period         = $cartDataGet['period'];
@@ -287,7 +289,6 @@ class VendorController extends FrontController
         else{
             $page = 'products';
         }
-        //pr( $Map_vendors->toArray());
     
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             $vendors = $this->getServiceAreaVendors();
@@ -298,24 +299,6 @@ class VendorController extends FrontController
                     return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'cartData'=>$cartData,'period' => $period,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors,'vendorMultiBanner'=>$vendorMultiBanner]);
                 }
             }
-
-            // if(Session::has('vendors')){
-            //     $vendors = Session::get('vendors');
-            //     if(!is_array($vendors))
-            //     {
-            //         $vendors = $vendors->toArray();
-            //     }
-            //     if(isset($vendor) && isset($vendor->id)){
-            //         if(!in_array($vendor->id, $vendors)){
-            //             $listData =collect();
-            //             return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
-
-            //         }
-            //     }
-
-            // }else{
-            //     // abort(404);
-            // }
         }
 
         $is_vendor_closed = 0;
@@ -326,7 +309,7 @@ class VendorController extends FrontController
                 $is_vendor_closed = 0;
             }
         }
-      // pr($Map_vendors->all());
+      
         $product_tag_ids = Product::byProductCategoryServiceType($type)->where('vendor_id', $vendor->id)->where('is_live', 1)->pluck('id')->toArray();
         $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
         $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();
@@ -586,6 +569,7 @@ class VendorController extends FrontController
                         $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
                         $value->variant_id = ($value->variant->isNotEmpty()) ? $value->variant->first()->id : 0;
                         $value->variant_quantity = ($value->variant->isNotEmpty()) ? $value->variant->first()->quantity : 0;
+                        $value->category_type_id = (!empty($value->category->categoryDetail->first())) ? $value->category->categoryDetail->type_id : 0;
                     }
                 }
                 if($products->count() > 0){

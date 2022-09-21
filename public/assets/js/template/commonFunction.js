@@ -48,8 +48,10 @@ $(function(){
     // Change the location by  city lat long
 
     function changeLocationByCity(lat,long,address){
-        var url = `/setHyperlocalLocation?lat=${lat}&&long=${long}&&address=${address}`
-        window.location = url;
+    
+        let url = `/updateLocation?latitude=${lat}&&longitude=${long}&&address=${address}` ;
+        window.location.href = url;
+        
     }
 
 })
