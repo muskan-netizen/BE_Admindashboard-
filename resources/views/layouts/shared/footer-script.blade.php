@@ -427,6 +427,12 @@ gtag('js', new Date());
 
 gtag('config', 'G-5LPF1QP3Y3');
 
+@if(isset($abc) && !empty($abc))
+gtag('config', {{$abc ?? ""}});
+@endif
+@if(isset($xyz) && !empty($xyz))
+fbq('config', {{$xyz ?? ""}});
+@endif
 
 $("#change_password").on("hidden.bs.modal", function(){
     $('.pwd-msg').html("");

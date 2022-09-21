@@ -15,6 +15,7 @@
 @php
     $mapKey = '1234';
     $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
+    $analytics = \App\Models\ClientPreferenceNew::where(['client_code' => $theme->client_code])->first();
     if($theme && !empty($theme->map_key)){
         $mapKey = $theme->map_key;
     }
@@ -217,6 +218,14 @@ window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-5LPF1QP3Y3');
+
+@if(isset($analytics->gtag_id) && !empty($analytics->gtag_id))
+gtag('config', {{$analytics->gtag_id ?? ""}});
+@endif
+@if(isset($analytics->fpixel_id) && !empty($analytics->fpixel_id))
+fbq('config', {{$analytics->fpixel_id ?? ""}});
+@endif
+
 @if(!isset($_COOKIE['show-subscription-plan']) && ($showSubscriptionPlanPopUp == 1) && (Route::current()->getName() != 'userHome'))
     $(document).ready(function() {
         $("#show-subscription-plan-mdl").modal("show");

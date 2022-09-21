@@ -203,4 +203,9 @@ class ClientPreference extends Model
       return $this->belongsTo('App\Models\Client','client_code','code');
     }
 
+    public function client_preference_new()
+    {
+      return $this->hasOne('App\Models\ClientPreferenceNew','client_code','client_code');
+    }
+
 }
