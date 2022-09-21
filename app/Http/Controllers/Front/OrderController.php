@@ -697,8 +697,9 @@ class OrderController extends FrontController
         try {
             $latitude = '';
             $longitude = '';
+           
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
-            if($action == 'takeaway' || $action == 'dine_in'){
+            if($action == 'takeaway' || $action == 'dine_in'|| $action == 'appointment'){
                 $latitude = Session::get('latitude') ?? '';
                 $longitude = Session::get('longitude') ?? '';
             }
@@ -766,6 +767,11 @@ class OrderController extends FrontController
                 $order->address_id = $cart->address_id??null;
                 $latitude = Session::get('latitude');
                 $longitude = Session::get('longitude');
+            }
+         
+            if( $action == 'appointment'){ // no need to check serviceArea in appointment
+                $latitude =  '';
+                $longitude = '';
             }
 
             /* Uodating client other details in order object */

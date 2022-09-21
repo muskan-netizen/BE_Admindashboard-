@@ -20,7 +20,7 @@ class WebStylingOptionSeeder extends Seeder
         if($web_styling > 0){
             $web_styling_options_count = DB::table('web_styling_options')->count();
             $web_styling_options = array(
-                array('web_styling_id' => $web_styling, 'name' => 'Home Page 1', 'is_selected' => '0', 'template_id' => '1', 'image' => 'template-one.jpg'),
+                array('web_styling_id' => $web_styling, 'name' => 'Home Page 1', 'is_selected' => '1', 'template_id' => '1', 'image' => 'template-one.jpg'),
                 array('web_styling_id' => $web_styling, 'name' => 'Home Page 2', 'is_selected' => '0', 'template_id' => '2', 'image' => 'template-two.jpg'),
                 array('web_styling_id' => $web_styling, 'name' => 'Food Delivery', 'is_selected' => '0', 'template_id' => '3', 'image' => 'template-three.jpg'),
                 array('web_styling_id' => $web_styling, 'name' => 'E-Commerce', 'is_selected' => '0', 'template_id' => '4', 'image' => 'template-four.jpg'),
@@ -39,7 +39,7 @@ class WebStylingOptionSeeder extends Seeder
                 foreach ($web_styling_options as $option) {
                     $webStylingOption = WebStylingOption::where('template_id', $option['template_id'])->first();
                     if ($webStylingOption !== null) {
-                        $webStylingOption->update(['web_styling_id' => $web_styling, 'name' => $option['name'], 'template_id' => $option['template_id']]);
+                        $webStylingOption->update(['web_styling_id' => $web_styling, 'name' => $option['name'], 'image' => $option['image']]);
                     } else {
                         WebStylingOption::create([
                             'name' => $option['name'],
@@ -51,6 +51,7 @@ class WebStylingOptionSeeder extends Seeder
                     }
                 }
             }
+            WebStylingOption::where('template_id', '5')->delete();
         }
     }
 }

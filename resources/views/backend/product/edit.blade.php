@@ -81,6 +81,7 @@
 $lastmileShow = array('7','10','11');
 
 $brandNotShow = array('7','8','12');
+$on_demand_check = array('8','12');
 
 if($client_preference_detail->appointment_check == 1 && ($client_preference_detail->need_appointment_service == '1') ){
     $lastmileShow = array_diff($lastmileShow,['11']);
@@ -556,7 +557,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                         @endif
                        
-                        @if(($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8) || ($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12) )
+                        @if(($configData->need_dispacher_home_other_service == 1 && ($product->category->categoryDetail->type_id == 8)) || ($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12 ) )
                             <div class="col-md-6 d-flex justify-content-between mb-2">
                                 {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
                                 <select class="selectize-select1 form-control" name="tags" required>
@@ -575,6 +576,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     <option value="schedule" @if($product->mode_of_service == 'schedule') selected="selected" @endif>{{ __('Schedule') }}</option>
                                 </select>
                             </div>
+                            @if($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12 )
+                                <div class="col-md-6 d-flex justify-content-between mb-2">
+                                    {!! Form::label('title', __('Sloting from Dispatch'),['class' => 'control-label']) !!}
+                                    <input type="checkbox" id="is_slot_from_dispatch" data-plugin="switchery" name="is_slot_from_dispatch" class="chk_box" data-color="#43bee1" @if($product->is_slot_from_dispatch == 1) checked @endif>
+                                </div>
+                            @endif
                         @endif
                         @if($configData->age_restriction_on_product_mode == 1)
                         <div class="col-md-6 d-flex justify-content-between mb-2">

@@ -791,6 +791,7 @@ class OrderController extends BaseController
                         //Create Shipping request for dispatcher
                        // \Log::info('11');
                         $order_dispatch = $this->checkIfanyProductLastMileon($request);
+                      
                         if ($order_dispatch && $order_dispatch == 1){
                             $stats = $this->insertInVendorOrderDispatchStatus($request);
                             $orderPlaced = true;

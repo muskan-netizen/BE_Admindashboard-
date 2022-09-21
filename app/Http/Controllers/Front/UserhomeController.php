@@ -20,10 +20,11 @@ use Redirect;
 use DB;
 use Illuminate\Http\Response;
 use Cookie;
+use App\Http\Traits\OrderTrait;
 
 class UserhomeController extends FrontController
 {
-    use ApiResponser;
+    use ApiResponser, OrderTrait;
     private $field_status = 2;
     public $cities = [];
 
@@ -541,7 +542,30 @@ class UserhomeController extends FrontController
             pr($e->getCode());
             die;
         }
-    }    
+    }   
+    
+        
+    /**
+     * setHyperlocalAddress
+     *
+     * @param  mixed $lat
+     * @param  mixed $long
+     * @param  mixed $address
+     * @return void
+     */
+    public function setHyperlocalAddress(Request $request)
+    {
+        $latitude        = $request->latitude;
+        $longitude       =  $request->longitude;
+        $selectedAddress =  $request->address;
+        if ((!empty($latitude)) && (!empty($longitude)) && (!empty($selectedAddress))) {
+            Session::put('latitude', $latitude);
+            Session::put('longitude', $longitude);
+            Session::put('selectedAddress', $selectedAddress);
+        }
+       
+        return redirect()->route('userHome');
+    } 
     /**
      * postHomePageData
      *
@@ -644,12 +668,18 @@ class UserhomeController extends FrontController
         /**
          * put a limit to get vendors.
          */
-        $vendors = $vendors->where('status', 1)->inRandomOrder()->limit(10)->get();
+        $vendors = $vendors->where('status', 1)
+                    ->inRandomOrder()
+                    ->limit(10)->get();
 
 
         foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;
-            $value->vendorRating = $this->vendorRating($value->products);
+            // $value->vendorRating = $this->vendorRating($value->products);
+            
+            // get or update rating
+            $value->vendorRating = $this->getVendorRating($value->id);
+
             // $value->name = Str::limit($value->name, 15, '..');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
