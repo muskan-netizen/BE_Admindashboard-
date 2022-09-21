@@ -20,10 +20,11 @@ use Redirect;
 use DB;
 use Illuminate\Http\Response;
 use Cookie;
+use App\Http\Traits\OrderTrait;
 
 class UserhomeController extends FrontController
 {
-    use ApiResponser;
+    use ApiResponser, OrderTrait;
     private $field_status = 2;
 
 
@@ -542,6 +543,7 @@ class UserhomeController extends FrontController
     }
     public function postHomePageData(Request $request)
     {
+        
         $vendor_ids = [];
         $new_products = [];
         $feature_products = [];
@@ -631,12 +633,22 @@ class UserhomeController extends FrontController
                 }
             }
         }
-        $vendors = $vendors->where('status', 1)->inRandomOrder()->get();
+
+        /**
+         * put a limit to get vendors.
+         */
+        $vendors = $vendors->where('status', 1)
+                    ->inRandomOrder()
+                    ->limit(10)->get();
 
 
         foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;
-            $value->vendorRating = $this->vendorRating($value->products);
+            // $value->vendorRating = $this->vendorRating($value->products);
+            
+            // get or update rating
+            $value->vendorRating = $this->getVendorRating($value->id);
+
             // $value->name = Str::limit($value->name, 15, '..');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
@@ -685,7 +697,6 @@ class UserhomeController extends FrontController
         })
             ->select('id', 'vendor_id', 'subscription_id')
             ->where('end_date', '>=', $now)
-            ->whereIn('subscription_invoices_vendor.vendor_id', $vendor_ids)
             ->pluck('vendor_id')->toArray();
 
         if (($latitude) && ($longitude)) {
@@ -693,7 +704,21 @@ class UserhomeController extends FrontController
             Session::put('vendors', $vendor_ids);
         }
 
-        $trendingVendors = Vendor::with('slot.day', 'slotDate')->whereIn('id', $subscribed_vendors_for_trending)->where('status', 1)->inRandomOrder()->get();
+        $trendingVendors = Vendor::with('slot.day', 'slotDate')->whereIn('id', $subscribed_vendors_for_trending)->where('status', 1)->inRandomOrder();
+
+        // add hyperlocal check to get vendors
+        if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+
+            if (!empty($latitude) && !empty($longitude)) {
+                $trendingVendors = $trendingVendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                    $query->select('vendor_id')
+                    ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                });
+            }
+        }
+
+        $trendingVendors = $trendingVendors->get();
+
         if ((!empty($trendingVendors) && count($trendingVendors) > 0)) {
             foreach ($trendingVendors as $key => $value) {
                 $value->tag_title = $trending_vendors_title??'0';
@@ -733,7 +758,20 @@ class UserhomeController extends FrontController
         if (($preferences) && ($preferences->is_hyperlocal == 1)) {
             $trendingVendors = $trendingVendors->sortBy('lineOfSightDistance')->values()->all();
         }
-        $mostSellingVendors = Vendor::with('slot.day', 'slotDate')->select('vendors.*',DB::raw('count(vendor_id) as max_sales'))->join('order_vendors','vendors.id','=','order_vendors.vendor_id')->whereIn('vendors.id',$vendor_ids)->where('vendors.status', 1)->groupBy('order_vendors.vendor_id')->orderBy(DB::raw('count(vendor_id)'),'desc')->get();
+        $mostSellingVendors = Vendor::with('slot.day', 'slotDate')->select('vendors.*',DB::raw('count(vendor_id) as max_sales'))->join('order_vendors','vendors.id','=','order_vendors.vendor_id')->whereIn('vendors.id',$vendor_ids)->where('vendors.status', 1)->groupBy('order_vendors.vendor_id')->orderBy(DB::raw('count(vendor_id)'),'desc');
+
+        // add hyperlocal check to get vendors
+        if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+
+            if (!empty($latitude) && !empty($longitude)) {
+                $mostSellingVendors = $mostSellingVendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                    $query->select('vendor_id')
+                    ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                });
+            }
+        }
+        $mostSellingVendors = $mostSellingVendors->get();
+
         if ((!empty($mostSellingVendors) && count($mostSellingVendors) > 0)) {
             foreach ($mostSellingVendors as $key => $value) {
                 $value->vendorRating = $this->vendorRating($value->products);
