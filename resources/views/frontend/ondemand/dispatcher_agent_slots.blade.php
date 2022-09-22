@@ -69,7 +69,7 @@ a.agentInfo.d-block.selected_agent h6 {
                 <div class="item  {{ ($slot['value'] ==@$schedule_slot) ? 'checked_item': ''  }}">
                     <input type="radio" value='{{ $slot['value'] }}' name='booking_time' {{ ($slot['value'] ==@$schedule_slot) ? 'checked': ''  }} id='time{{$cart_product_id}}{{$slot['value']}}'/>  
                     <label for='time{{$cart_product_id}}{{$slot['value']}}'>
-                        <span class="customCheckbox selected-time" aria-hidden="true"  data-show_agent="{{ $show_dispatcher_agent }}" data-agent_ids="{{ $slot['agent_id'] }}" data-value='{{$slot['value']}}' data-cart_product_id='{{$cart_product_id}}' >{{$slot['name']}}</span>
+                        <span class="customCheckbox selected-time" aria-hidden="true"  data-show_agent="{{ $show_dispatcher_agent }}" data-selected_agnet_id="{{ @$selected_agent_id  }}" data-agent_ids="{{ $slot['agent_id'] }}" data-value='{{$slot['value']}}' data-cart_product_id='{{$cart_product_id}}' >{{$slot['name']}}</span>
                     </label>
                 </div>
             @endforeach
