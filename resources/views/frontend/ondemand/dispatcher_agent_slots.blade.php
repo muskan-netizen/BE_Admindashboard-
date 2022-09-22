@@ -65,14 +65,18 @@ a.agentInfo.d-block.selected_agent h6 {
 <div class="booking-tim  radio-btns long-radio">   
     <div class="grid-item main radios agent_{{ $cart_product_id }}">
         <div class="alCustomHomeServiceRadio  items">
+         @if((isset($dispatch_agents)) && (isset($dispatch_agents['slots'])) && (count($dispatch_agents['slots']) > 0) )
             @foreach ($dispatch_agents['slots'] as $key => $slot)
                 <div class="item  {{ ($slot['value'] ==@$schedule_slot) ? 'checked_item': ''  }}">
                     <input type="radio" value='{{ $slot['value'] }}' name='booking_time' {{ ($slot['value'] ==@$schedule_slot) ? 'checked': ''  }} id='time{{$cart_product_id}}{{$slot['value']}}'/>  
                     <label for='time{{$cart_product_id}}{{$slot['value']}}'>
-                        <span class="customCheckbox selected-time" aria-hidden="true"  data-show_agent="{{ $show_dispatcher_agent }}" data-selected_agnet_id="{{ @$selected_agent_id  }}" data-agent_ids="{{ $slot['agent_id'] }}" data-value='{{$slot['value']}}' data-cart_product_id='{{$cart_product_id}}' >{{$slot['name']}}</span>
+                        <span class="customCheckbox selected-time" aria-hidden="true"  data-show_agent="{{ $show_dispatcher_agent }}" data-selected_agnet_id="{{ @$selected_agent_id  }}" data-agent_ids="{{ json_encode($slot['agent_id'],TRUE)}}" data-value='{{$slot['value']}}' data-cart_product_id='{{$cart_product_id}}' >{{$slot['name']}}</span>
                     </label>
                 </div>
             @endforeach
+        @else
+         <h5>{{ __('No Slot Available!') }}</h5>
+        @endif
         </div>
     </div>
            
@@ -83,7 +87,7 @@ a.agentInfo.d-block.selected_agent h6 {
 @section('js-script')
 <script>
     var dispatch_agents = {
-        agent: {!!json_encode($dispatch_agents['agents'])!!}
+        agent: {!!json_encode(($dispatch_agents['agents'] ?? ''))!!}
     } 
    
 </script>
