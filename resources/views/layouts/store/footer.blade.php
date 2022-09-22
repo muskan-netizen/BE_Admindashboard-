@@ -223,6 +223,11 @@ gtag('config', 'G-5LPF1QP3Y3');
 gtag('config', "{{$analytics->gtag_id ?? ''}}");
 @endif
 
+@if(!isset($_COOKIE['show-subscription-plan']) && ($showSubscriptionPlanPopUp == 1) && (Route::current()->getName() != 'userHome'))
+    $(document).ready(function() {
+        $("#show-subscription-plan-mdl").modal("show");
+    });
+@endif
 </script>
 <!-- End googletagmanager -->
 
@@ -243,12 +248,6 @@ gtag('config', "{{$analytics->gtag_id ?? ''}}");
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{$analytics->fpixel_id}}&ev=PageView&noscript=1"/></noscript>
 @endif
 <!-- End Meta Pixel Code -->
-
-@if(!isset($_COOKIE['show-subscription-plan']) && ($showSubscriptionPlanPopUp == 1) && (Route::current()->getName() != 'userHome'))
-    $(document).ready(function() {
-        $("#show-subscription-plan-mdl").modal("show");
-    });
-@endif
 
 @php
 if($showSubscriptionPlanPopUp == 1){

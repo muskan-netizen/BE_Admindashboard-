@@ -1,3 +1,18 @@
+ul.exzoom_img_ul {
+        min-height: 550px;
+        position: relative;
+    }
+    ul.exzoom_img_ul img {
+        width: 100%;
+    }
+body[dir="rtl"] .product-order h3,
+body[dir="rtl"] .product-order .total-sec ul li {
+    text-align: right;
+}
+body[dir="rtl"] .product-order .final-total h3 span,
+body[dir="rtl"] .product-order .total-sec ul li span{
+    float: left;
+}
 .sm .nav-cate-img.activ_nav {
     margin: 0 auto;
 }
