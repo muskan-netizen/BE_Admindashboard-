@@ -208,6 +208,30 @@
                                                                     <div class="productDetails pl-0 pr-lg-5 m-0 position-relative">
                                                                         <p class="position-relative px-3 py-2">{!! $prod->translation_description !!} </p>
                                                                     </div>
+                                                                    {{-- <div class=" pt-3 m-0 position-relative row">
+                                                                        <div class="col-md-9 col-sm-8 pr-md-2 productDetails">
+                                                                        <p class="position-relative px-3 py-2">{!! $prod->translation_description !!} </p>
+                                                                        </div>
+                                                                        <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
+                                                                         
+                                                                            <?php $imagePath = $imagePath2 = '';
+                                                                            $mediaCount = count($prod->media);
+                                                                            for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
+                                                                                if($i == 0){
+                                                                                    $imagePath = $prod->media[$i]->image->path['proxy_url'].'300/300'.$prod->media[$i]->image->path['image_path'];
+                                                                                }
+                                                                                $imagePath2 = $prod->media[$i]->image->path['proxy_url'].'300/300'.$prod->media[$i]->image->path['image_path'];
+                                                                            } ?>
+                                                                        <div class="class_img">
+                                                                            @if($imagePath != '')
+                                                                            <img src="{{$imagePath}}" alt="">
+                                                                            @else
+    
+                                                                            @endif
+    
+                                                                        </div>
+                                                                    </div>
+                                                                </div> --}}
                                                                     {{-- <ul class="productDetails pl-0 pr-lg-5 m-0 position-relative">
                                                                         <li class="position-relative px-3 py-2">
                                                                             <p class="m-0">One night bed and breakfast</p>
@@ -520,7 +544,8 @@
                                         @endphp
 
 
-                                        <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif>
+                                        <div  id="date_time_set_div{{$cart_data->id}}">
+                                            {{-- <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif> --}}
 
                                             <h4 class="mb-2"><b>{{__('When would you like your service?')}}</b></h4>
                                             <div class="date-items radio-btns hide">

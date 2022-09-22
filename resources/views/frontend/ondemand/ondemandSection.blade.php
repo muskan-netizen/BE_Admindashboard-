@@ -6,9 +6,10 @@
 
     div#step-2-ondemand .radio-btns input[type="radio"]:checked + label span{background: var(--theme-deafult);
     color: #fff;}
-    div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button.slick-prev.slick-arrow {
-    left: 0;top: 66%;}
-div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button.slick-next.slick-arrow {right: 0;top: 66%;}
+    div#step-2-ondemand .slick-initialized .slick-arrow { right: 0;top: 52%;left: -5px;}
+    div#step-2-ondemand .slick-initialized .slick-next.slick-arrow {  right: -5px;left: auto;}
+    .al_body_template_six div#step-2-ondemand .slick-initialized .slick-arrow { right: 0;top: 60%;left: 0;}
+    .al_body_template_six div#step-2-ondemand .slick-initialized .slick-next.slick-arrow { right: 0;left: auto;}
     div#show-all-time-slots11 .slick-slider .slick-prev{left:0px;top:38%;}
     div#show-all-time-slots11 .slick-slider .slick-next{right:0px;top:38%;}
     div#step-2-ondemand span.customCheckbox {font-size: 14px;}
@@ -17,6 +18,9 @@ div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button
         background: var(--theme-deafult);
     color: #fff;
     }
+    .radios {
+    text-align: center;
+}
 </style>
 @endsection
 <section class="home-serivces" id="alSixHomeServices">
@@ -284,7 +288,7 @@ div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button
 
                                                 @endforeach
                                             @else
-                                                <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">No Product Found</h5></div>
+                                                <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">{{ __('No Product Found') }}</h5></div>
                                             @endif
 
 
@@ -388,7 +392,6 @@ div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button
 
 
                                         <div  id="date_time_set_div{{$cart_data->id}}" > 
-                                            {{-- @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif --}}
 
                                             <h4 class="mb-2" ><b>{{ __('When would you like your service?')}}</b></h4>
                                             <div class="date-items radio-btns hide">
@@ -400,12 +403,13 @@ div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button
                                                         if($productDate == $singleDate && !empty($productDate)){
                                                             $checked = "checked";
                                                         }
+                                                        $dateRandNo = rand(10,100);
                                                         @endphp
                                                         <div class="radios">
                                                             <p>{{date('D', strtotime($date))}}</p>
                                                             <div class="alCustomHomeServiceRadio">
-                                                                <input type="radio" class="check-time-slots ondemand-time-slots ondemand_{{ $checked }}" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" data-product_id ="{{$cart_data->product->id}}" data-product_tag ="{{$cart_data->product->tags}}" data-product_category_type ="{{$cart_data->product->productcategory->type_id}}"  value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' {{$checked }} @if(($key == 0 && $checked == "")) checked @endif />
-                                                                <label for='radio{{$cd}}{{$key}}'>
+                                                                <input type="radio" class="check-time-slots ondemand-time-slots ondemand_{{ $checked }}" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" data-product_id ="{{$cart_data->product->id}}" data-product_tag ="{{$cart_data->product->tags}}" data-product_category_type ="{{$cart_data->product->productcategory->type_id}}"  value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}{{ $dateRandNo }}' {{$checked }} @if(($key == 0 && $checked == "")) checked @endif />
+                                                                <label for='radio{{$cd}}{{$key}}{{$dateRandNo  }}'>
                                                                 <span class="customCheckbox" aria-hidden="true" >{{date('d', strtotime($date))}}</span>
                                                                 </label>
                                                                 <input type="hidden" name="productid" id="productid" value="{{$cart_data->id}}" />
