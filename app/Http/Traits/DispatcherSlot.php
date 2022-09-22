@@ -18,9 +18,9 @@ trait DispatcherSlot{
                 $postdata =  [ 
                                 "latitude"  => $data['latitude'], 
                                 "longitude" => $data['longitude'], 
-                                "tags"      => $data['tags'] ?? 'RoyoPlatinum', 
+                                "tags"      => $data['tags'], 
                                 "schedule_date" => $data['schedule_date'] ,
-                                "service_time" => "30"
+                                "service_time" => $data['service_time'] ?? "30"
                             ];
                 
               //pr($postdata);

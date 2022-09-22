@@ -749,6 +749,7 @@ class FrontController extends Controller
                         'tags'             => $productDetail->tags,
                         'latitude'         => $vendor_latitude,
                         'longitude'        => $vendor_longitude,
+                        'service_time'     => $product->minimum_duration_min,
                         'schedule_date'    => $selectedDate
                     ];
                     $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
