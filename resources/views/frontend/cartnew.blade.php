@@ -191,7 +191,7 @@ right: 20px;
 
 
 @media only screen and (min-width:1367px) and (max-width:1429px){
-.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;height:auto;}
+.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;height:auto;}   
 }
 @media only screen and (max-width:1366px){
 .cart-design .alFourTemplateCartButtons a.shoping i{font-size:17px;vertical-align: middle;}
@@ -258,6 +258,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 </script>
 
 <div class="cart-design">
+    {{-- {{dump($client_preference_detail)}} --}}
     <div id="mycart"></div>
     <div class="container">
         @if($cartData)
@@ -464,10 +465,10 @@ $client_preferences = \App\Models\ClientPreference::first();
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body text-center">
+            <div class="modal-body">
                 <input type="hidden" id="vendor_id" value="">
                 <input type="hidden" id="cartproduct_id" value="">
-                <h6 class="m-0 px-3">{{__('Are You Sure You Want To Remove This Item?')}}</h6>
+                <h6 class="m-0">{{__('Are You Sure You Want To Remove This Item?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
@@ -1279,23 +1280,24 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         var product_order_form_element_data = [];
         var out = {};
         var s_data = $(dom_query).serializeArray();
-
+          
+        document.querySelectorAll('.form-control').forEach(function(inp) {
+        });
             //transform into simple data/value object
             for(var i = 0; i < s_data.length; i++){
                 var record = s_data[i];
-                // console.log(record);
                 out[record.name] = record.value;
-                var product_faq_id = $(dom_query+' input[name="'+record.name+'"]').attr('data-product_faq_id');
-                var is_required = $(dom_query+' input[name="'+record.name+'"]').attr('data-required');
-                console.log(is_required);
+                var select_faq_id = $(dom_query+' select[name="'+record.name+'"]').attr('data-product_faq_id');
+                var is_required = $(dom_query+' select[name="'+record.name+'"]').attr('data-required');
 
+                if(!select_faq_id){
+                    var product_faq_id = $(dom_query+' input[name="'+record.name+'"]').attr('data-product_faq_id');
+                     var is_required = $(dom_query+' input[name="'+record.name+'"]').attr('data-required');
+                }
+               
                 if((is_required)==1 && (record.value =='' )){
                     var errorMsg ="The "+ record.name +" field is required.";
                     $('.product_order_form_error').html(errorMsg);
-                    // errorMsg = document.querySelector(".product_order_form_error");
-                    // errorMsg.html = "error msg";
-                    // errorMsg.style.display = 'none';
-                    // alert("hello");
                     return 0;
                 } else {
                     $('.product_order_form_error').html('');
@@ -1722,14 +1724,16 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         var schedule_datetime = $('#schedule_datetime').val();
         var schedule_pickup_datetime = $('#pickup_schedule_datetime').val();
         var schedule_pickup_slot = $('#schedule_pickup_slot').val();
+        var schedule_slot = $('#slot').val();
         var vendor_id = $('#vendor_id').val();
 
         $.ajax({
             type: "GET",
             data: {
                 "schedule_pickup_datetime": schedule_pickup_datetime,
-                "schedule_datetime": schedule_datetime,
+                "schedule_datetime":        schedule_datetime,
                 "schedule_pickup_slot":     schedule_pickup_slot,
+                "schedule_slot":            schedule_slot,
                 "vendor_id":                vendor_id,
             },
             url: url,
@@ -1803,6 +1807,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(output) {
+                console.log("checkSlotAvai");
                 // Check if orderCount is greaten equal to orders_per_slot //&& (output.orders_per_slot !=0)
                 if(output.orderCount >= output.orders_per_slot  ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
