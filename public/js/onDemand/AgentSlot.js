@@ -80,7 +80,7 @@ function showSelectedAgent(){
 }
 
 async  function showDispatchDriver(driver_ids,cart_product_id,selected_agent=''){
-    var driverIdArray = driver_ids.split(",");
+    var driverIdArray = driver_ids;
     var agentData = dispatch_agents.agent;
   
    var html=`<div class="grid-item main alCustomHomeServiceAgentRadio d-flex justify-content-center radios agentS_${cart_product_id}">`;

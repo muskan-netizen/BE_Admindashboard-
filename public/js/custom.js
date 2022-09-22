@@ -3809,8 +3809,8 @@ $(document).ready(function () {
        
         //&& (show_agent != undefined && show_agent !='' )
         if((agent_ids != undefined && agent_ids !='' )  ){
-            var myArray = agent_ids.split(",");
-            dispatch_agent_id = myArray[0] ;
+          
+            dispatch_agent_id = agent_ids[0] ;
         }
         if((show_agent != undefined && show_agent ==1  ) && (agent_ids != undefined && agent_ids !='' )  ){
            console.log('show driver');
