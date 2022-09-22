@@ -193,6 +193,8 @@ trait OrderTrait{
 
                 $task_type_id = $dispatch_domain['service_type'] == 'appointment' ?  3 : 1;
                 $service_time = $product->product->first() ? $product->product->minimum_duration_min : 0;
+                Log::info('service_time');
+                Log::info($service_time);
                 $tasks[] = array(
                     'task_type_id' => $task_type_id,
                     'latitude'     => $vendor_details->latitude ?? '',

@@ -628,6 +628,7 @@ class CategoryController extends FrontController{
                         'tags'             => $product->tags,
                         'latitude'         => $vendor_latitude,
                         'longitude'        => $vendor_longitude,
+                        'service_time'     => $product->minimum_duration_min,
                         'schedule_date'    => $request->cur_date
                     ];
                     $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
