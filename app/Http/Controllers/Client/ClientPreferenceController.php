@@ -110,7 +110,7 @@ class ClientPreferenceController extends BaseController{
         }
 
         $preference = $ClientPreference ? $ClientPreference : new ClientPreference();
-        $preference->client_preference_new;
+
         $nomenclature_value = Nomenclature::first();
         foreach ($preference->currency as $value) {
             $cli_currs[] = $value->currency_id;
