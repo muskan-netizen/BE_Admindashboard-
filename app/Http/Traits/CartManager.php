@@ -595,7 +595,7 @@ trait cartManager{
                     /* Getting taxes info */
                   
                     $taxData = array();
-                    if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
+                    if (!empty($prod->product->taxCategory) && ($preferences->is_tax_price_inclusive==0) && count($prod->product->taxCategory->taxRate) > 0) {
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                             $rate = $tax_value->tax_rate;
                             $tax_amount = ($price_in_doller_compare * $rate) / 100;

@@ -13,7 +13,9 @@ class AlterTableClientPreferenceTaxPriceType extends Migration
      */
     public function up()
     {
-        //
+        Schema::table('client_preferences', function (Blueprint $table) {
+            $table->tinyInteger('is_tax_price_inclusive')->default('0');
+        });
     }
 
     /**
@@ -23,6 +25,8 @@ class AlterTableClientPreferenceTaxPriceType extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('client_preferences', function (Blueprint $table) {
+            $table->dropColumn('is_tax_price_inclusive');
+        });
     }
 }
