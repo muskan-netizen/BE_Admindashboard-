@@ -1165,6 +1165,53 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
 
    </div>
+   <div class="row">
+      <div class="col-12">
+         <!-- Social Logins title start -->
+         <div class="page-title-box">
+            <h4 class="page-title text-uppercase">CRM</h4>
+         </div><!-- Social Logins title end -->
+      </div>
+   </div>
+
+   <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+      <input type="hidden" name="crm" id="crm" value="1">
+      @csrf
+      <div class="row">
+         <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
+            <!-- HubSpot card start -->
+            <div class="card-box h-100">
+               <div class="row">
+                  <div class="col-12">
+                     <div class="form-group mb-0 switchery-demo">
+                        <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                           <h5 class="social_head"><i class="fab fa-facebook-f"></i> <span>{{ __("Hubspot") }}</span></h5>
+                           <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
+                        </label>
+                        <label for="" class="mr-3">{{ __("Enable") }}</label>
+                        <input type="checkbox" data-plugin="switchery" name="hubspot_login" id="hubspot_login" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->fb_login == '1')) checked='checked' @endif>
+                     </div>
+                  </div>
+               </div>
+               <div class="row fb_row" style="{{((isset($preference) && $preference->fb_login == '1')) ? '' : 'display:none;'}}">
+                  <div class="col-12">
+                     <div class="form-group mb-2 mt-2">
+                        <label for="fb_client_id">{{ __("Access token Key") }}</label>
+                        <input type="password" name="hubspot_client_id" id="hubspot_client_id" placeholder="" class="form-control" value="{{ old('hubspot_client_id', $preference->fb_client_id ?? '')}}">
+                        @if($errors->has('hubspot_client_id'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('hubspot_client_id') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+                  </div>
+               </div>
+            </div><!-- HubSpot card end -->
+         </div>
+      </div>
+   </form>
+
+
 
    <div class="row">
       {{-- <div class="col-md-12 show-custom-mods">
@@ -1459,7 +1506,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          <!-- Custom Mods end -->
       </div>
    </div>
-
+   
    <div class="row">
       {{--<div class="col-lg-6">
          <div class="page-title-box">

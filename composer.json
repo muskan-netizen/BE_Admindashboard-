@@ -69,6 +69,7 @@
         "rap2hpoutre/laravel-log-viewer": "^1.7",
         "razorpay/razorpay": "2.*",
         "rivalex/laravel-intl": "^1.1",
+        "rossjcooper/laravel-hubspot": "^4.0",
         "sentry/sentry-laravel": "^2.7",
         "shippo/shippo-php": "^1.5",
         "simplesoftwareio/simple-qrcode": "^4.2",
