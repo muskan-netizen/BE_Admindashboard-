@@ -12,10 +12,10 @@
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="javascript: void(0);">UBold</a></li>
                             <li class="breadcrumb-item"><a href="javascript: void(0);">eCommerce</a></li>
-                            <li class="breadcrumb-item active">Product Detail</li>
+                            <li class="breadcrumb-item active">{{ __('Product Detail') }}</li>
                         </ol>
                     </div>
-                    <h4 class="page-title">Product Detail</h4>
+                    <h4 class="page-title">{{ __('Product Detail') }}</h4>
                 </div>
             </div>
         </div>     
@@ -78,7 +78,7 @@
                                 </p>
                                 <p class="mb-4"><a href="" class="text-muted">( 36 Customer Reviews )</a></p>
                                 <h6 class="text-danger text-uppercase">20 % Off</h6>
-                                <h4 class="mb-4">Price : <span class="text-muted mr-2"><del>$80 USD</del></span> <b>$64 USD</b></h4>
+                                <h4 class="mb-4">{{ __('Price') }} : <span class="text-muted mr-2"><del>$80 USD</del></span> <b>$64 USD</b></h4>
                                 <h4><span class="badge bg-soft-success text-success mb-4">Instock</span></h4>
                                 <p class="text-muted mb-4">The languages only differ in their grammar, their pronunciation and their most common words. Everyone realizes why a new common language would be desirable: one could refuse to pay expensive translators.</p>
                                 <div class="row mb-3">
@@ -134,7 +134,7 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th>Outlets</th>
-                                    <th>Price</th>
+                                    <th>{{ __('Price') }}</th>
                                     <th>Stock</th>
                                     <th>Revenue</th>
                                 </tr>
