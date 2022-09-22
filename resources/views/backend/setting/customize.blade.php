@@ -1463,6 +1463,40 @@
                 </div>
             </form>
         </div>
+        <!-- Start Google analytics -->
+        <div class="col-lg-3 col-lg-3 mb-3">
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box pb-1 h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title ">{{ __('Google Analytics') }}</h4>
+                        <button class="btn btn-info d-block" name="gtag_submit" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="col-xl-12 my-2 p-0" id="addCur-160">
+                        <label class="primaryCurText">{{ __('GA Measurment Id') }}</label>
+                        <input class="form-control" type="text" id="gtag_id" name="gtag_id" value="{{ old('gtag_id', $preference->client_preferences_additional->gtag_id ?? "")}}">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- Start Google analytics -->
+        <div class="col-lg-3 col-lg-3 mb-3">
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box pb-1 h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title ">{{ __('Facebook Pixel') }}</h4>
+                        <button class="btn btn-info d-block" name="fpixel_submit" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="col-xl-12 my-2 p-0" id="addCur-160">
+                        <label class="primaryCurText">{{ __('Pixel id') }}</label>
+                        <input class="form-control" type="text" id="fpixel_id" name="fpixel_id" value="{{ old('fpixel_id', $preference->client_preferences_additional->fpixel_id ?? "")}}">
+                    </div>
+                </div>
+            </form>
+        </div>
 
         {{-- Added By Ovi --}}
         <div class="col-lg-8 mb-3">
