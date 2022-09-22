@@ -1464,6 +1464,16 @@
             </form>
         </div>
         <!-- Start Google analytics -->
+        @if(!$preference->client_preferences_additional->isEmpty())
+            @foreach($preference->client_preferences_additional as $addiPreference)
+                @if($addiPreference->key_name == 'gtag_id')
+                    @php $gtag_id = $addiPreference->key_value; @endphp
+                @endif   
+                @if($addiPreference->key_name == 'fpixel_id')
+                    @php $fpixel_id = $addiPreference->key_value; @endphp
+                @endif 
+            @endforeach 
+        @endif
         <div class="col-lg-3 col-lg-3 mb-3">
             <form method="POST" class="h-100" action="{{route('additional.update')}}">
                 @csrf
@@ -1475,13 +1485,6 @@
                     </div>
                     <div class="col-xl-12 my-2 p-0" id="addCur-160">
                         <label class="primaryCurText">{{ __('GA Measurment Id') }}</label>
-                        @if(!$preference->client_preferences_additional->isEmpty())
-                            @foreach($preference->client_preferences_additional as $addiPreference)
-                                @if($addiPreference->key_name == 'gtag_id')
-                                    @php $gtag_id = $addiPreference->key_value; @endphp
-                                @endif   
-                            @endforeach 
-                        @endif
                             <input class="form-control" type="text" id="gtag_id" name="gtag_id" value="{{ old('gtag_id', $gtag_id ?? "")}}"> 
                     </div>
                 </div>
@@ -1499,13 +1502,6 @@
                     </div>
                     <div class="col-xl-12 my-2 p-0" id="addCur-160">
                         <label class="primaryCurText">{{ __('Pixel Id') }}</label>
-                        @if(!$preference->client_preferences_additional->isEmpty())
-                            @foreach($preference->client_preferences_additional as $addiPreference)
-                                @if($addiPreference->key_name == 'fpixel_id')
-                                @php $fpixel_id = $addiPreference->key_value; @endphp
-                                @endif   
-                            @endforeach 
-                        @endif
                             <input class="form-control" type="text" id="fpixel_id" name="fpixel_id" value="{{ old('fpixel_id',  $fpixel_id ?? "")}}">
                     </div>
                 </div>
