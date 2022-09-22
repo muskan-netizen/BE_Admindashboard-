@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, ClientPreferenceNew, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty};
+use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
@@ -170,14 +170,14 @@ class ClientPreferenceController extends BaseController{
 
         $cp = new ClientPreference();
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
-        $preferenceNew = ClientPreferenceNew::where('client_code', $preference->client_code)->first();
+        $preferenceAdditional = ClientPreferenceAdditional::where('client_code', $preference->client_code)->first();
         if(!$preference){
             $preference = new ClientPreference();
             $preference->client_code = $code;
         }
-        if(!$preferenceNew){
-            $preferenceNew = new ClientPreferenceNew();
-            $preferenceNew->client_code = $preference->client_code;
+        if(!$preferenceAdditional){
+            $preferenceAdditional = new ClientPreferenceAdditional();
+            $preferenceAdditional->client_code = $preference->client_code;
         }
 
         $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','need_inventory_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id', 'subscription_tab_taxi',"sos","sos_police_contact",'sos_ambulance_contact' ,'sos_enable','is_static_dropoff','is_vendor_tags', 'slotting_and_scheduling','appointment_submit_btn','need_appointment_service','appointment_service_key_url','appointment_service_key_code','appointment_service_key');
@@ -229,14 +229,14 @@ class ClientPreferenceController extends BaseController{
 
         /* gtag update */
         if($request->has('gtag_submit')){
-            $preferenceNew->gtag_id = $request->gtag_id;
+            $preferenceAdditional->gtag_id = $request->gtag_id;
             unset($preference->gtag_submit);
             unset($preference->gtag_id);
         }
 
         /* fpixel update */
         if($request->has('fpixel_submit')){
-            $preferenceNew->fpixel_id = $request->fpixel_id;
+            $preferenceAdditional->fpixel_id = $request->fpixel_id;
             unset($preference->fpixel_submit);
             unset($preference->fpixel_id);
         }
@@ -473,7 +473,7 @@ class ClientPreferenceController extends BaseController{
         }
 
         $preference->save();      
-        $preferenceNew->save();
+        $preferenceAdditional->save();
 
 
         $preferenceset = ClientPreference::where('client_code', Auth::user()->code)->first();

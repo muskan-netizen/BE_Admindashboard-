@@ -1475,7 +1475,7 @@
                     </div>
                     <div class="col-xl-12 my-2 p-0" id="addCur-160">
                         <label class="primaryCurText">{{ __('GA Measurment Id') }}</label>
-                        <input class="form-control" type="text" id="gtag_id" name="gtag_id" value="{{ old('gtag_id', $preference->client_preference_new->gtag_id ?? "")}}">
+                        <input class="form-control" type="text" id="gtag_id" name="gtag_id" value="{{ old('gtag_id', $preference->client_preferences_additional->gtag_id ?? "")}}">
                     </div>
                 </div>
             </form>
@@ -1492,7 +1492,7 @@
                     </div>
                     <div class="col-xl-12 my-2 p-0" id="addCur-160">
                         <label class="primaryCurText">{{ __('Pixel id') }}</label>
-                        <input class="form-control" type="text" id="fpixel_id" name="fpixel_id" value="{{ old('fpixel_id', $preference->client_preference_new->fpixel_id ?? "")}}">
+                        <input class="form-control" type="text" id="fpixel_id" name="fpixel_id" value="{{ old('fpixel_id', $preference->client_preferences_additional->fpixel_id ?? "")}}">
                     </div>
                 </div>
             </form>

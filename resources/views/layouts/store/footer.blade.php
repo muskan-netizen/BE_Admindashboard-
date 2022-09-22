@@ -15,7 +15,7 @@
 @php
     $mapKey = '1234';
     $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
-    $analytics = \App\Models\ClientPreferenceNew::where(['client_code' => $theme->client_code])->first();
+    $analytics = \App\Models\ClientPreferenceAdditional::where(['client_code' => $theme->client_code])->first();
     if($theme && !empty($theme->map_key)){
         $mapKey = $theme->map_key;
     }

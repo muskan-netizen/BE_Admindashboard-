@@ -2,7 +2,7 @@
 <!-- Vendor js -->
 <?php
     $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
-    $analytics = \App\Models\ClientPreferenceNew::where(['client_code' => $theme->client_code])->first();
+    $analytics = \App\Models\ClientPreferenceAdditional::where(['client_code' => $theme->client_code])->first();
 if (Session::has('toaster')) {
     $toast = Session::get('toaster');
     echo '<script>

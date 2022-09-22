@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ClientPreferenceNew extends Model
+class ClientPreferenceAdditional extends Model
 {
-  protected $table = 'client_preferences_new';
+  protected $table = 'client_preferences_additional';
     protected $fillable = ['client_code','gtag_id','fpixel_id'];
 
     public function domain()
