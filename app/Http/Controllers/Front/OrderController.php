@@ -411,9 +411,12 @@ class OrderController extends FrontController
                 }
                 // $res = $this->testOrderMail($email_data);
                 // dd($res);
+                Log::info("Request Cycle with Queues Begins");
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                Log::info("Request Cycle with Queues Ends");
                 $notified = 1;
-            } catch (\Exception $e) {
+            } catch(\Exception $e){
+                return response()->json(['data' => $e->getMessage()]);
             }
         }
     }
@@ -697,8 +700,9 @@ class OrderController extends FrontController
         try {
             $latitude = '';
             $longitude = '';
+           
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
-            if($action == 'takeaway' || $action == 'dine_in'){
+            if($action == 'takeaway' || $action == 'dine_in'|| $action == 'appointment'){
                 $latitude = Session::get('latitude') ?? '';
                 $longitude = Session::get('longitude') ?? '';
             }
@@ -766,6 +770,11 @@ class OrderController extends FrontController
                 $order->address_id = $cart->address_id??null;
                 $latitude = Session::get('latitude');
                 $longitude = Session::get('longitude');
+            }
+         
+            if( $action == 'appointment'){ // no need to check serviceArea in appointment
+                $latitude =  '';
+                $longitude = '';
             }
 
             /* Uodating client other details in order object */

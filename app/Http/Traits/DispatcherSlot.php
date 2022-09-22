@@ -18,9 +18,9 @@ trait DispatcherSlot{
                 $postdata =  [ 
                                 "latitude"  => $data['latitude'], 
                                 "longitude" => $data['longitude'], 
-                                "tags"      => $data['tags'] ?? 'RoyoPlatinum', 
+                                "tags"      => $data['tags'], 
                                 "schedule_date" => $data['schedule_date'] ,
-                                "service_time" => "30"
+                                "service_time" => $data['service_time'] ?? "30"
                             ];
                 
               //pr($postdata);
@@ -40,10 +40,10 @@ trait DispatcherSlot{
                 //pr($res->getBody());
                 $response = json_decode($res->getBody(), true);
                 
-            
+          //pr($response['data']['slots']);
                 if ($response && $response['message'] == 'success') {
-                    $agets =count($response['data']) > 0 ? $response['data'] : [];
-                    return $agets;
+                    $agets =count($response['data']['agents']) > 0 ? $response['data']['agents'] : [];
+                    return $response['data'];
                 }
                
         // } catch (\Exception $e) {

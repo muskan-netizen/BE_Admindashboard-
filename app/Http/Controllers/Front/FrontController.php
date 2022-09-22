@@ -23,6 +23,7 @@ use App\Models\{Client, Category, Product,Type, SmsTemplate, ClientPreference,Em
 class FrontController extends Controller
 {
     use \App\Http\Traits\smsManager;
+    use \App\Http\Traits\DispatcherSlot;
 
     private $field_status = 2;
     protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
@@ -348,6 +349,7 @@ class FrontController extends Controller
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
                 }
+              
                 $value->vendor_name = $value->vendor ? $value->vendor->name : '';
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
                 $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
@@ -356,6 +358,7 @@ class FrontController extends Controller
                 $value->averageRating = number_format($value->averageRating, 1, '.', '');
                 $value->image_url = ($value->media->first() && !is_null($value->media->first()->image))  ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 $value->category_name = ($value->category->categoryDetail->translation->first()) ? $value->category->categoryDetail->translation->first()->name :  $value->category->slug;
+               // $value->category_type_id = ($value->category->categoryDetail->first()) ? $value->category->categoryDetail->first()->type_id : '';
             }
         }
         return $products;
@@ -666,7 +669,13 @@ class FrontController extends Controller
         Session::put('vendorType', $type);
         return Session::get('vendorType');
     }
-
+    public function productDetail($product_id){
+        return Product::with(['vendor'=> function ($q1)  {
+            $q1->select('id', 'latitude','longitude');
+        },'productcategory'=> function ($q1)  {
+            $q1->select('id', 'type_id');
+        }])->find($product_id);
+    }
 
     // get cart data in on demand product listing page
     public function getCartOnDemand($request)
@@ -717,16 +726,50 @@ class FrontController extends Controller
 
             $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($timezone)->format('Y-m-d');
             $cartData[$key]->scheduled_date_time = $selectedDate;
-            $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
-            $slots = (object)$slotsRes['slots'];
-            //$slots = showSlot($selectedDate,$data->vendor_id,'delivery');
-            $time_slots = [];
-            $i = 0;
-            foreach($slots as $slot){
-                $newSlot = explode('-', $slot['value']);
-                $time_slots[$i++] = trim($newSlot[0]);
+            $cartData[$key]->is_dispatch_slot = 0 ;
+            // check product 
+            $productDetail = $this->productDetail($data->product_id);
+            $cateTypeId = $productDetail ? ($productDetail->productcategory ? $productDetail->productcategory->type_id : '') : '';
+            $is_slot_from_dispatch = $productDetail ? $productDetail->is_slot_from_dispatch  : '';
+            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) ){ 
+                $Dispatch =  $this->getDispatchAppointmentDomain();
+                $dispatchAgents = [];
+                if($Dispatch){
+                    $vendor_latitude =  $productDetail->vendor ? $productDetail->vendor->latitude : 30.71728880;
+                    $vendor_longitude =  $productDetail->vendor ? $productDetail->vendor->longitude : 76.80350870;
+                    $location[] = array(
+                        'latitude' =>  $vendor_latitude,
+                        'longitude' => $vendor_longitude
+                    );
+                    $dispatchData=[
+                        'service_key'      => $Dispatch->appointment_service_key,
+                        'service_key_code' => $Dispatch->appointment_service_key_code,
+                        'service_key_url'  => $Dispatch->appointment_service_key_url,
+                        'service_type'     => 'appointment',
+                        'tags'             => $productDetail->tags,
+                        'latitude'         => $vendor_latitude,
+                        'longitude'        => $vendor_longitude,
+                        'service_time'     => $productDetail->minimum_duration_min,
+                        'schedule_date'    => $selectedDate
+                    ];
+                    $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
+                }
+                $cartData[$key]->timeSlots = [];
+                $cartData[$key]->dispatchAgents = $dispatchAgents;
+                $cartData[$key]->is_dispatch_slot = 1 ;
+             }else{
+                $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
+                $slots = (object)$slotsRes['slots'];
+                //$slots = showSlot($selectedDate,$data->vendor_id,'delivery');
+                $time_slots = [];
+                $i = 0;
+                foreach($slots as $slot){
+                    $newSlot = explode('-', $slot['value']);
+                    $time_slots[$i++] = trim($newSlot[0]);
+                }
+                $cartData[$key]->timeSlots = $time_slots;
+                $cartData[$key]->dispatchAgents = [];
             }
-            $cartData[$key]->timeSlots = $time_slots;
         }
 
         
@@ -914,7 +957,7 @@ class FrontController extends Controller
                 $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
                 $client_name = $client->name;
                 $mail_from = $data->mail_from;
-                $sendto = "harbans.singh@codebrewinnovations.com";
+                $sendto = "sandeep.kumar@codebrewinnovations.com";
                 try{
                     $data = [
                         'customer_name' => "harbans",

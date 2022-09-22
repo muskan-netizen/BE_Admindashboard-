@@ -542,7 +542,30 @@ class UserhomeController extends FrontController
             pr($e->getCode());
             die;
         }
-    }    
+    }   
+    
+        
+    /**
+     * setHyperlocalAddress
+     *
+     * @param  mixed $lat
+     * @param  mixed $long
+     * @param  mixed $address
+     * @return void
+     */
+    public function setHyperlocalAddress(Request $request)
+    {
+        $latitude        = $request->latitude;
+        $longitude       =  $request->longitude;
+        $selectedAddress =  $request->address;
+        if ((!empty($latitude)) && (!empty($longitude)) && (!empty($selectedAddress))) {
+            Session::put('latitude', $latitude);
+            Session::put('longitude', $longitude);
+            Session::put('selectedAddress', $selectedAddress);
+        }
+       
+        return redirect()->route('userHome');
+    } 
     /**
      * postHomePageData
      *

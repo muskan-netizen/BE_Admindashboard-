@@ -148,7 +148,7 @@ trait OrderTrait{
      // place Request To Dispatch for Appointment , OnDemand
     public function placeRequestToDispatchSingleProduct($order, $vendor, $dispatch_domain,$request)
     {
-      pr($dispatch_domain); exit();
+       
         try {
 
             $order = Order::find($order);
@@ -190,9 +190,13 @@ trait OrderTrait{
                     $scheduleDateTime = $selectedDate.' '.$slotTime;
                     $schedule_time =  $scheduleDateTime?? null;
                 }
-                
+
+                $task_type_id = $dispatch_domain['service_type'] == 'appointment' ?  3 : 1;
+                $service_time = $product->product->first() ? $product->product->minimum_duration_min : 0;
+                Log::info('service_time');
+                Log::info($service_time);
                 $tasks[] = array(
-                    'task_type_id' => $dispatch_domain['service_type'] == 'appointment' ?  3 : 1,
+                    'task_type_id' => $task_type_id,
                     'latitude'     => $vendor_details->latitude ?? '',
                     'longitude'    => $vendor_details->longitude ?? '',
                     'short_name'   => '',
@@ -202,9 +206,8 @@ trait OrderTrait{
                     'flat_no'     => null,
                     'email'       => $vendor_details->email ?? null,
                     'phone_number' => $vendor_details->phone_no ?? null,
-                    'appointment_duration' =>  $dispatch_domain['service_type'] == 'appointment' ? ($product->product->first() ? $product->product->minimum_duration_min : 0) : null ,
+                    'appointment_duration' =>  $dispatch_domain['service_type'] == 'appointment' ?  $service_time  : null ,
                 );
-            pr($tasks);
                 if($product->dispatch_agent_id){
                     $allocation_type = 'm';
                     $agent = $product->dispatch_agent_id;
@@ -223,7 +226,8 @@ trait OrderTrait{
                         'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
                     );
                 }
-        
+                Log::info('send agent id to driver');
+                Log::info($agent);
                 if ($customer->dial_code == "971") {
                     // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                     $customerno = "0" . $customer->phone_number;
@@ -231,6 +235,7 @@ trait OrderTrait{
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
+               
                 $client = CP::orderBy('id', 'asc')->first();
                 for ($x = 1; $x <= $product->quantity; $x++) {
                     //  send all payment to fist order 
@@ -267,10 +272,12 @@ trait OrderTrait{
                         'order_id' => @$order->id,
                         'customer_id' => @$order->user_id,
                         'user_icon' => $customer->image,
-                        'agent'     => $agent 
+                        'agent'     => $agent,
+                        'task_type_id' =>$task_type_id, //  for add agent booking in case of appointment
+                        'service_time' =>  $service_time
                     ];
                   
-                   
+                    
                     if($order_vendor->is_restricted == 1)
                     {
                         $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -320,7 +327,7 @@ trait OrderTrait{
             }
             return $return_response;
         } catch (\Exception $e) {
-            return 2;
+            //return 2;
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
