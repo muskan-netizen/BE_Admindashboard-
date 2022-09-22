@@ -9,7 +9,7 @@ use Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, WebStylingOption};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption};
 class ProductController extends FrontController{
     private $field_status = 2;
 
@@ -176,7 +176,7 @@ class ProductController extends FrontController{
             $sets[] = ['variant_types' => $variant_type_id, 'variant_options' => $variant_option_id];
         }
         if(  in_array($product->category->categoryDetail->type_id ,[8,12]) ){ // onDemand and appointent
-          
+         
             $cartDataGet = $this->getCartOnDemand($request);
             $nlistData = clone $product;
             $nlistData = $nlistData->where('url_slug', $url_slug)->paginate(10);
@@ -186,7 +186,8 @@ class ProductController extends FrontController{
                     $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
                     $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
-                 }
+                    $value->category_type_id = (!empty($value->category->categoryDetail->first())) ? $value->category->categoryDetail->type_id : 0;
+                }
             }
             $listData = $nlistData;
             $category = $category_detail;
@@ -428,7 +429,7 @@ class ProductController extends FrontController{
 
             $product_faqs = ProductFaq::where('product_id',$product_id)->with(['translations' => function ($qs) use($langId){
                 $qs->where('language_id',$langId);
-            }])->get();
+            }],'selection')->get();
             if(isset($product_faqs)){
 
                 if ($request->ajax()) {

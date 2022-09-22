@@ -81,6 +81,7 @@
 $lastmileShow = array('7','10','11');
 
 $brandNotShow = array('7','8','12');
+$on_demand_check = array('8','12');
 
 if($client_preference_detail->appointment_check == 1 && ($client_preference_detail->need_appointment_service == '1') ){
     $lastmileShow = array_diff($lastmileShow,['11']);
@@ -556,7 +557,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                         @endif
                        
-                        @if(($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8) || ($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12) )
+                        @if(($configData->need_dispacher_home_other_service == 1 && ($product->category->categoryDetail->type_id == 8)) || ($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12 ) )
                             <div class="col-md-6 d-flex justify-content-between mb-2">
                                 {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
                                 <select class="selectize-select1 form-control" name="tags" required>
@@ -575,6 +576,16 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     <option value="schedule" @if($product->mode_of_service == 'schedule') selected="selected" @endif>{{ __('Schedule') }}</option>
                                 </select>
                             </div>
+                            @if($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12 )
+                                <div class="col-md-6 d-flex justify-content-between mb-2">
+                                    {!! Form::label('title', __('Sloting from Dispatch'),['class' => 'control-label']) !!}
+                                    <input type="checkbox" id="is_slot_from_dispatch" data-plugin="switchery" name="is_slot_from_dispatch" class="chk_box" data-color="#43bee1" @if($product->is_slot_from_dispatch == 1) checked @endif>
+                                </div>
+                                <div class="col-md-6 d-flex justify-content-between mb-2">
+                                    {!! Form::label('title', __('Show Dispatch Agent'),['class' => 'control-label']) !!}
+                                    <input type="checkbox" id="is_show_dispatcher_agent" data-plugin="switchery" name="is_show_dispatcher_agent" class="chk_box" data-color="#43bee1" @if($product->is_show_dispatcher_agent == 1) checked @endif>
+                                </div>
+                            @endif
                         @endif
                         @if($configData->age_restriction_on_product_mode == 1)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
@@ -1027,32 +1038,82 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                       <div class="col-md-6">
                          <div class="form-group position-relative">
-                            <label for="">Is Required?</label>
+                            <label for="">Type</label>
                             <div class="input-group mb-2">
-                               <select class="form-control" name="is_required">
-                                  <option value="1">{{__('Yes')}}</option>
-                                  <option value="0">{{__('No')}}</option>
-                               </select>
+                                <select class="form-control" name="file_type" id="file_type_select">
+                                    <option value="Text">Text</option>
+                                    <option value="selector">Selector</option>
+                                 </select>
                             </div>
                          </div>
                       </div>
-                      @forelse($languages as $k => $client_language)
-                      <div class="col-md-6 mb-2">
-                         <div class="row">
-                            <div class="col-12">
-                               <div class="form-group position-relative">
-                                  <label for="">{{ __("Question") }} ({{$client_language->langName}})</label>
-                                  <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
-                                  <input class="form-control" name="name[{{$k}}]" type="text" id="product_faq_name_{{$client_language->langId}}">
-                               </div>
-                               @if($k == 0)
-                                  <span class="text-danger error-text social_media_url_err"></span>
-                               @endif
+
+                      <div class="col-md-6">
+                        <div class="form-group position-relative">
+                           <label for="">Is Required?</label>
+                           <div class="input-group mb-2">
+                              <select class="form-control" name="is_required">
+                                 <option value="1">{{__('Yes')}}</option>
+                                 <option value="0">{{__('No')}}</option>
+                              </select>
+                           </div>
+                        </div>
+                     </div>
+                     
+                      <!--- Start -->
+
+                      <div class="col-md-12 selector-option-al ">
+                        <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
+                            <tr class="trForClone">
+
+                                @foreach($languages as $langs)
+                                    <th>{{ __("Question") }} ({{$langs->langName}})</th>
+                                @endforeach
+                                <th></th>
+                            </tr>
+                            <tbody id="table_body">                                                     
+                                    <tr>
+                                @foreach($languages as $key => $vendor_langs)
+                                    <td>
+                                        <input class="form-control" name="language_id[{{$key}}]" type="hidden" value="{{$vendor_langs->langId}}">
+                                        <input class="form-control" name="name[{{$key}}]" type="text" id="product_faq_name_{{$vendor_langs->langId}}">
+                                    </td>                                       
+                                @endforeach
+                                <td class="lasttd"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    <div id="selector_div" class="col-md-12 d-none">
+                        <div class="card">
+                        <div class="card-box mb-0 ">
+                            <div class="d-flex align-items-center justify-content-between">
+                               <h4 class="header-title text-uppercase">{{__('Options')}}</h4>
                             </div>
-                         </div>
-                      </div>
-                      @empty
-                      @endforelse
+                            <div id="option_div">
+
+                                    <div class="selector-option-al ">
+                                        <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="vendor-selector-datatable">
+                                            <tr class="trForClone">
+
+                                                @foreach($languages as $langs)
+                                                    <th>{{$langs->langName}}</th>
+                                                @endforeach
+                                                <th></th>
+                                            </tr>
+                                            <tbody id="table_body">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                      <!-- End -->
+
+
                    </div>
                 </div>
              </form>
@@ -1065,6 +1126,30 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
  </div>
 <!-- end product faq -->
 
+<script type="text/template" id="vendorSelectorTemp">
+    <tr class ="option_section" id ="option_section_<%= id %>" data-section_number="<%= id %>">
+    <input type="hidden" name="option_id[<%= id-1 %>][]"  id="option_id<%= id %>" data-id ="<%= id %>" value ="<%= data?data.id:'' %>">
+    @foreach($languages as $key => $langs)
+    <td>
+        <div class="form-group mb-0">
+            <input type="hidden" name="option_lang_id[<%= id-1 %>][]"   value ="{{$langs->langId}}">
+            <input type="text" name="option_name[<%= id-1 %>][]" class="form-control" @if($langs->is_primary == 1) required @endif   id="option_name_<%= id-1 %>_{{$langs->langId}}" placeholder="" data-id ="<%= id %>" value ="<%= data?(data.translations?data.translations.name:''):'' %>">
+        </div>
+    </td>
+
+    @endforeach
+    <td class="lasttd d-flex align-items-center justify-content-center">
+        <% if(id > 1) { %>
+            <a href="javascript:void(0)" class="action-icon remove_more_button"  id ="remove_button_<%= id %>" data-id ="<%= id %>"> <i class="mdi mdi-delete"></i></a>
+        <% } %>
+        <a href="javascript:void(0)" class="add_more_button" id ="add_button_<%= id %>" data-id ="<%= id %>"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+
+    </td>
+
+</tr>
+
+
+</script>
 @endsection
 
 @section('script')
@@ -1082,6 +1167,56 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
 <script type="text/javascript">
 
+        $(document).on("change", "#file_type_select", function() {
+        var file_type = $(this).val();
+        if(file_type == 'selector'){
+            $("#selector_div").removeClass("d-none");
+            var classoption_section = $('#option_div').find('.option_section');
+            if(classoption_section.length==0){
+                addoptionTemplate(0);
+            }
+        }
+        else{
+            $("#selector_div").addClass("d-none");
+        }
+    });
+
+    function addoptionTemplate(section_id){
+        section_id                = parseInt(section_id);
+        section_id                = section_id +1;
+        var data                  = '';
+
+        var price_section_temp    = $('#vendorSelectorTemp').html();
+        var modified_temp         = _.template(price_section_temp);
+        var result_html           = modified_temp({id:section_id,data:data});
+        $("#vendor-selector-datatable #table_body").append(result_html);
+        $('.add_more_button').hide();
+        $('#vendor-selector-datatable #add_button_'+section_id).show();
+    }
+
+    $(document).on('click','.add_more_button',function(){
+        var main_id = $(this).data('id');
+        addoptionTemplate(main_id);
+        console.log($('.add_more_button').length);
+    });
+    $(document).on('click','.remove_more_button',function(){
+        var main_id =$(this).data('id');
+        removeSeletOptionSectionTemplate(main_id);
+        $('.add_more_button').each(function(key,value){
+            if(key == ($('.add_more_button').length-1)){
+                $('#add_button_'+$(this).data('id')).show();
+            }
+        });
+    });
+    function removeSeletOptionSectionTemplate(div_id){
+        $('#option_section_'+div_id).remove();
+    }
+    $('#add_vendor_registration_document_modal_btn').click(function(e) {
+        document.getElementById("vendorRegistrationDocumentForm").reset();
+        $('#add_vendor_registration_document_modal input[name=vendor_registration_document_id]').val("");
+        $('#add_vendor_registration_document_modal').modal('show');
+        $('#add_vendor_registration_document_modal #standard-modalLabel').html('Add Vendor Registration Document');
+    });
     
     $('#requiredShipping').change(function() {
         var val = $(this).prop('checked');
@@ -1648,7 +1783,65 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
             }
          });
       });
+
       $(document).on("click", ".edit_product_faq_btn", function() {
+        let product_faq_id = $(this).data('product_faq_id');
+       
+        editProductOrderForm(product_faq_id);
+    });
+    function editProductOrderForm(product_faq_id){
+        let language_id = $('#option_client_language').val();
+        $('#add_product_faq_modal input[name=product_faq_id]').val(product_faq_id);
+         $.ajax({
+            method: 'GET',
+            data: {
+                product_faq_id: product_faq_id,
+               language_id:language_id
+            },
+            url: "{{ route('product.faq.edit') }}",
+            success: function(response) {
+               if (response.status = 'Success') {
+                    if(response.data.file_type=="selector"){
+                        $("#selector_div").removeClass("d-none");
+                        $('.option_section').remove();
+                        var options = response.data.options;
+                        var section_id =0
+                        var row =0
+                        var option_section_temp    = $('#vendorSelectorTemp').html();
+                        var modified_temp         = _.template(option_section_temp);
+                        $(options).each(function(index, value) {
+                            section_id                = parseInt(section_id);
+                            row                       = parseInt(section_id)
+                            section_id                = section_id +1;
+                            $('#vendor-selector-datatable #table_body').append(modified_temp({ id:section_id,data:value}));
+                            var options_trans = value.translations;
+                            $(options_trans).each(function(trans_index, trans_value) {
+                                var input_id = '#option_name_'+row+'_'+trans_value.language_id;
+                                $(input_id).val(trans_value.name);
+                            });
+                            $('.add_more_button').hide();
+                            $('#vendor-selector-datatable #add_button_'+section_id).show();
+                        });
+                    }else{
+                        $('.option_section').remove();
+                        $("#selector_div").addClass("d-none");
+                    }
+                  $(document).find("#add_product_faq_modal select[name=file_type]").val(response.data.file_type).change();
+
+                  $("#add_product_faq_modal input[name=vendor_registration_document_id]").val(response.data.id);
+                  $(document).find("#add_product_faq_modal select[name=is_required]").val(response.data.is_required).change();
+                  $('#add_product_faq_modal #standard-modalLabel').html('Update Vendor Registration Document');
+                  $('#add_product_faq_modal').modal('show');
+                  $.each(response.data.translations, function( index, value ) {
+                    $('#add_product_faq_modal #product_faq_name_'+value.language_id).val(value.name);
+                  });
+               }
+            },
+            error: function() {}
+        });
+    }
+
+      $(document).on("click", ".edit_product_faq_btnOld", function() {
          let product_faq_id = $(this).data('product_faq_id');
          $('#add_product_faq_modal input[name=product_faq_id]').val(product_faq_id);
          $.ajax({
