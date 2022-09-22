@@ -224,7 +224,8 @@ trait OrderTrait{
                         'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
                     );
                 }
-        
+                Log::info('send agent id to driver');
+                Log::info($agent);
                 if ($customer->dial_code == "971") {
                     // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                     $customerno = "0" . $customer->phone_number;
