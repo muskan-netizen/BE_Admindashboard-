@@ -520,7 +520,8 @@
                                         @endphp
 
 
-                                        <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif>
+                                        <div  id="date_time_set_div{{$cart_data->id}}">
+                                            {{-- <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif> --}}
 
                                             <h4 class="mb-2"><b>{{__('When would you like your service?')}}</b></h4>
                                             <div class="date-items radio-btns hide">
