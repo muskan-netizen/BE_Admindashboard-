@@ -148,7 +148,7 @@ trait OrderTrait{
      // place Request To Dispatch for Appointment , OnDemand
     public function placeRequestToDispatchSingleProduct($order, $vendor, $dispatch_domain,$request)
     {
-    
+       
         try {
 
             $order = Order::find($order);
@@ -232,6 +232,7 @@ trait OrderTrait{
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
+               
                 $client = CP::orderBy('id', 'asc')->first();
                 for ($x = 1; $x <= $product->quantity; $x++) {
                     //  send all payment to fist order 
@@ -273,7 +274,7 @@ trait OrderTrait{
                         'service_time' =>  $service_time
                     ];
                   
-                   
+                    
                     if($order_vendor->is_restricted == 1)
                     {
                         $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;

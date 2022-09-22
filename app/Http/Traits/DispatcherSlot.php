@@ -40,10 +40,10 @@ trait DispatcherSlot{
                 //pr($res->getBody());
                 $response = json_decode($res->getBody(), true);
                 
-            
+          //pr($response['data']['agents']);
                 if ($response && $response['message'] == 'success') {
-                    $agets =count($response['data']) > 0 ? $response['data'] : [];
-                    return $agets;
+                    $agets =count($response['data']['agents']) > 0 ? $response['data']['agents'] : [];
+                    return $response['data'];
                 }
                
         // } catch (\Exception $e) {

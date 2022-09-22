@@ -589,6 +589,7 @@ $checkSlot = findSlot('', $vendor->id, '');
     <script src="{{ asset('front-assets/js/my-sliders.js') }}"></script>
     <script>
         var update_cart_product_schedule = "{{route('cart.updateProductSchedule')}}";
+        var update_cart_product_schedule_agnet = "{{route('cart.updateDispatcherAgent')}}";
         // @if(!empty($vendor->banner))
         //     $(document).ready(function() {
         //         $("body").addClass("homeHeader");
