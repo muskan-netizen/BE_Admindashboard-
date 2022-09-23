@@ -2462,6 +2462,30 @@ class CartController extends FrontController
         }
     }
 
+     # update dispatch agent id  home services basis on services
+     public function updateDispatcherAgent(Request $request, $domain = '')
+     {
+        //pr($request->all());
+         DB::beginTransaction();
+         try{
+             $user = Auth::user();
+             if ($user) {
+                 
+                 CartProduct::where('id', $request->cart_product_id)->update(['dispatch_agent_id' => $request->dispatch_agent_id]);
+                 
+                 DB::commit();
+                 return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);
+             }
+             else{
+                 return response()->json(['status'=>'Error', 'message'=>'Invalid user']);
+             }
+         }
+         catch(\Exception $ex){
+             DB::rollback();
+             return response()->json(['status'=>'Error', 'message'=>$ex->getMessage()]);
+         }
+     }
+ 
     // add ones add in cart for ondemand
 
     public function postAddToCartAddons(Request $request, $domain = '')

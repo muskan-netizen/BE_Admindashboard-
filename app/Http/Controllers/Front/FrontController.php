@@ -34,8 +34,8 @@ class FrontController extends Controller
                 if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
                     $client = new TwilioClient($client_preference->sms_key, $client_preference->sms_secret);
                     $send =  $client->messages->create($to, ['from' => $client_preference->sms_from, 'body' => $body]);
-                    Log::info('SMS twilio respons');
-                    Log::info($send);
+                    // Log::info('SMS twilio respons');
+                    // Log::info($send);
                 }else{
                     return 2;
                 }
@@ -64,8 +64,8 @@ class FrontController extends Controller
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
                     $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
-                    Log::info('SMS twilio respons');
-                    Log::info($send);
+                    // Log::info('SMS twilio respons');
+                    // Log::info($send);
                 }else{
                     return 2;
                 }
@@ -73,8 +73,8 @@ class FrontController extends Controller
             //return $send;
         }
         catch(\Exception $e){
-            Log::info('SMS logs');
-            Log::info($e->getMessage());
+            // Log::info('SMS logs');
+            // Log::info($e->getMessage());
             return '2';
         }
         return '1';
@@ -731,7 +731,8 @@ class FrontController extends Controller
             $productDetail = $this->productDetail($data->product_id);
             $cateTypeId = $productDetail ? ($productDetail->productcategory ? $productDetail->productcategory->type_id : '') : '';
             $is_slot_from_dispatch = $productDetail ? $productDetail->is_slot_from_dispatch  : '';
-            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) ){ 
+            $last_mile_check = $productDetail ? $productDetail->Requires_last_mile  : '';
+            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ($last_mile_check == 1)){ 
                 $Dispatch =  $this->getDispatchAppointmentDomain();
                 $dispatchAgents = [];
                 if($Dispatch){
@@ -749,6 +750,7 @@ class FrontController extends Controller
                         'tags'             => $productDetail->tags,
                         'latitude'         => $vendor_latitude,
                         'longitude'        => $vendor_longitude,
+                        'service_time'     => $productDetail->minimum_duration_min,
                         'schedule_date'    => $selectedDate
                     ];
                     $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
@@ -956,7 +958,7 @@ class FrontController extends Controller
                 $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
                 $client_name = $client->name;
                 $mail_from = $data->mail_from;
-                $sendto = "harbans.singh@codebrewinnovations.com";
+                $sendto = "sandeep.kumar@codebrewinnovations.com";
                 try{
                     $data = [
                         'customer_name' => "harbans",

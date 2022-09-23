@@ -127,6 +127,7 @@ use Illuminate\Support\Arr;
     var getTimeSlotsForOndemand = "{{route('getTimeSlotsForOndemand')}}";
     var update_cart_schedule = "{{route('cart.updateSchedule')}}";
     var update_cart_product_schedule = "{{route('cart.updateProductSchedule')}}";
+    var update_cart_product_schedule_agnet = "{{route('cart.updateDispatcherAgent')}}";
     var showCart = "{{route('showCart')}}";
     var update_addons_in_cart = "{{route('addToCartAddons')}}";
     var addonids = [];

@@ -9,7 +9,7 @@ use Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, WebStylingOption};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption};
 class ProductController extends FrontController{
     private $field_status = 2;
 
@@ -429,7 +429,7 @@ class ProductController extends FrontController{
 
             $product_faqs = ProductFaq::where('product_id',$product_id)->with(['translations' => function ($qs) use($langId){
                 $qs->where('language_id',$langId);
-            }])->get();
+            }],'selection')->get();
             if(isset($product_faqs)){
 
                 if ($request->ajax()) {
