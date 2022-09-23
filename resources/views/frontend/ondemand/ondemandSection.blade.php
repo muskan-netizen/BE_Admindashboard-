@@ -6,9 +6,10 @@
 
     div#step-2-ondemand .radio-btns input[type="radio"]:checked + label span{background: var(--theme-deafult);
     color: #fff;}
-    div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button.slick-prev.slick-arrow {
-    left: 0;top: 66%;}
-div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button.slick-next.slick-arrow {right: 0;top: 66%;}
+    div#step-2-ondemand .slick-initialized .slick-arrow { right: 0;top: 52%;left: -5px;}
+    div#step-2-ondemand .slick-initialized .slick-next.slick-arrow {  right: -5px;left: auto;}
+    .al_body_template_six div#step-2-ondemand .slick-initialized .slick-arrow { right: 0;top: 60%;left: 0;}
+    .al_body_template_six div#step-2-ondemand .slick-initialized .slick-next.slick-arrow { right: 0;left: auto;}
     div#show-all-time-slots11 .slick-slider .slick-prev{left:0px;top:38%;}
     div#show-all-time-slots11 .slick-slider .slick-next{right:0px;top:38%;}
     div#step-2-ondemand span.customCheckbox {font-size: 14px;}
@@ -17,6 +18,9 @@ div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button
         background: var(--theme-deafult);
     color: #fff;
     }
+    .radios {
+    text-align: center;
+}
 </style>
 @endsection
 <section class="home-serivces" id="alSixHomeServices">
@@ -388,7 +392,6 @@ div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button
 
 
                                         <div  id="date_time_set_div{{$cart_data->id}}" > 
-                                            {{-- @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif --}}
 
                                             <h4 class="mb-2" ><b>{{ __('When would you like your service?')}}</b></h4>
                                             <div class="date-items radio-btns hide">
@@ -416,12 +419,18 @@ div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button
                                             </div>
                                             @if($cart_data->is_dispatch_slot == 1)
                                             @php
+                                           
                                             $dispatch_agents = $cart_data->dispatchAgents ?? [];
                                             $cart_product_id = $cart_data->id;
                                             $dispatch_agent_id = $cart_data->dispatch_agent_id;
+                                            $show_dispatcher_agent = $cart_data->product->is_show_dispatcher_agent;
+                                            $selected_agent_id = $cart_data->dispatch_agent_id;
+                                            $schedule_slot = $cart_data->schedule_slot;
                                             
                                             @endphp
-                                            @include('frontend.ondemand.dispatcher_agent_slots')
+                                            <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
+                                             @include('frontend.ondemand.dispatcher_agent_slots')
+                                            </div>
                                             @else
                                                 <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
                                                     <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>

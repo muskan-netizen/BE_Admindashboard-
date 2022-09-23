@@ -2,6 +2,13 @@
 :root{
     --alBodyTemplateThreeFont: 'Jost', sans-serif;
 }
+ul.exzoom_img_ul {
+        min-height: 550px;
+        position: relative;
+    }
+    ul.exzoom_img_ul img {
+        width: 100%;
+    }
 .al_body_template_one,.al_body_template_two,.al_body_template_three,body,html,p,label,h1,h2,h3,h4,h5,h6,span,b,strong,div,section,a{font-family: var(--alBodyTemplateThreeFont) !important;}
 html{scroll-behavior:smooth}body{scroll-behavior: smooth;overflow-x:hidden ; font-size:16px;position:initial;}a{color:var(--theme-deafult)}input[type=radio],input[type=checkbox]{cursor:pointer!important}.slick-slider{visibility:hidden}
 .slick-slider.slick-initialized{visibility:visible}.onhover-dropdown .onhover-show-div{display:none}.onhover-dropdown:hover .onhover-show-div{display:block}

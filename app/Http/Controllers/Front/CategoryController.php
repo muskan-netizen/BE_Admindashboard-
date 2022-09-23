@@ -605,9 +605,12 @@ class CategoryController extends FrontController{
         // get slot from dispatcher by harbans :)
         if($request->has('product_category_type') &&  $request->has('product_id')){
             $product = $this->productDetail($request->product_id);
+          
             $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';
             $is_slot_from_dispatch = $product ? $product->is_slot_from_dispatch  : '';
-            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) ){ 
+            $show_dispatcher_agent =  $product ? $product->is_show_dispatcher_agent  : '';
+            $last_mile_check      = $product ? $product->Requires_last_mile  : '';
+            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
                 $Dispatch =  $this->getDispatchAppointmentDomain();
                 $dispatchAgents = [];
                 $cart_product_id = $request->cart_product_id??0;
@@ -626,13 +629,14 @@ class CategoryController extends FrontController{
                         'tags'             => $product->tags,
                         'latitude'         => $vendor_latitude,
                         'longitude'        => $vendor_longitude,
+                        'service_time'     => $product->minimum_duration_min,
                         'schedule_date'    => $request->cur_date
                     ];
                     $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
                    // pr(  $dispatchAgents);
                 }
                 if ($request->ajax()) {
-                    return \Response::json(\View::make('frontend.ondemand.dispatcher_agent_slots', array('dispatch_agents' => $dispatchAgents,'cart_product_id'=> $cart_product_id))->render());
+                    return \Response::json(\View::make('frontend.ondemand.dispatcher_agent_slots', array('dispatch_agents' => $dispatchAgents,'cart_product_id'=> $cart_product_id,'show_dispatcher_agent'=>$show_dispatcher_agent))->render());
                 }
             }
         }
