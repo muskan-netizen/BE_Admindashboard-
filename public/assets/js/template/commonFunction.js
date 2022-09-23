@@ -18,11 +18,12 @@ $(function(){
         var lat = $this.attr('data-lat');
         var long = $this.attr('data-long');
         var address = $this.attr('data-address');
+        var place_id = $this.attr('data-place_id');
         if(!lat || !long){
             return;
         }
         console.log(lat);
-        changeLocationByCity(lat,long,address);
+        changeLocationByCity(lat,long,address,place_id);
     });
 
     // AOS.init();
@@ -47,9 +48,9 @@ $(function(){
 
     // Change the location by  city lat long
 
-    function changeLocationByCity(lat,long,address){
+    function changeLocationByCity(lat,long,address,place_id){
     
-        let url = `/updateLocation?latitude=${lat}&&longitude=${long}&&address=${address}` ;
+        let url = `/updateLocation?latitude=${lat}&&longitude=${long}&&address=${address}&&place_id=${place_id}` ;
         window.location.href = url;
         
     }
