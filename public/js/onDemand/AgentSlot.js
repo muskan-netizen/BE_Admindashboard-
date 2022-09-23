@@ -22,7 +22,7 @@ $(function(){
         
 //     } else{
 //         console.log(cart_product_id);
-//         agent.slotings.forEach(function(data) {
+//         agent.slotings.forEach(function(data) {  
 //             // code
 //             html+=`<div class="item"><input type="radio" value='${data.value}' name='agent_id' id='time${data.value}_${cart_product_id}'/>          
 //                     <label for='time${data.value}_${cart_product_id}'><span class="customCheckbox selected-time" aria-hidden="true" data-agent_id='${agent_id}'  data-value='${data.value}' data-cart_product_id='${cart_product_id}'>${data.name}</span></label></div>`;
@@ -33,9 +33,9 @@ $(function(){
 //     initSlideDrag();
 // }
 
-initSlideDrag();
-function initSlideDrag(){
-    const slider = document.querySelector('.items');
+
+function initSlideDrag(Id="",className="items"){
+    const slider = document.querySelector(`.${className}`);
     let isDown = false;
     let startX;
     let scrollLeft;

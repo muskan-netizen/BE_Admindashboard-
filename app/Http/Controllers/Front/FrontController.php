@@ -731,7 +731,8 @@ class FrontController extends Controller
             $productDetail = $this->productDetail($data->product_id);
             $cateTypeId = $productDetail ? ($productDetail->productcategory ? $productDetail->productcategory->type_id : '') : '';
             $is_slot_from_dispatch = $productDetail ? $productDetail->is_slot_from_dispatch  : '';
-            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) ){ 
+            $last_mile_check = $productDetail ? $productDetail->Requires_last_mile  : '';
+            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ($last_mile_check == 1)){ 
                 $Dispatch =  $this->getDispatchAppointmentDomain();
                 $dispatchAgents = [];
                 if($Dispatch){

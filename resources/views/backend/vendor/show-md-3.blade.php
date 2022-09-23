@@ -1,3 +1,8 @@
+<style>
+    a.deleteMultiBanner {
+        color: #fff;
+    }
+</style>
 <div class="card-box text-center p-0 overflow-hidden" style="">
     <div class="background pt-3 pb-2 px-2" style="background:url({{$vendor->banner['proxy_url'] . '200/100' . $vendor->banner['image_path']}}) no-repeat center center;background-size:cover;">
         <div class="vendor_text">

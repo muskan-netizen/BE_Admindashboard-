@@ -6,9 +6,10 @@
 
     div#step-2-ondemand .radio-btns input[type="radio"]:checked + label span{background: var(--theme-deafult);
     color: #fff;}
-    div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button.slick-prev.slick-arrow {
-    left: 0;top: 66%;}
-div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button.slick-next.slick-arrow {right: 0;top: 66%;}
+    div#step-2-ondemand .slick-initialized .slick-arrow { right: 0;top: 52%;left: -5px;}
+    div#step-2-ondemand .slick-initialized .slick-next.slick-arrow {  right: -5px;left: auto;}
+    .al_body_template_six div#step-2-ondemand .slick-initialized .slick-arrow { right: 0;top: 60%;left: 0;}
+    .al_body_template_six div#step-2-ondemand .slick-initialized .slick-next.slick-arrow { right: 0;left: auto;}
     div#show-all-time-slots11 .slick-slider .slick-prev{left:0px;top:38%;}
     div#show-all-time-slots11 .slick-slider .slick-next{right:0px;top:38%;}
     div#step-2-ondemand span.customCheckbox {font-size: 14px;}
@@ -17,6 +18,9 @@ div#step-2-ondemand .date-items.radio-btns.slick-initialized.slick-slider button
         background: var(--theme-deafult);
     color: #fff;
     }
+    .radios {
+    text-align: center;
+}
 </style>
 @endsection
 <section class="home-serivces" id="alSixHomeServices">
