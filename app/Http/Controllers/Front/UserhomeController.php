@@ -586,18 +586,16 @@ class UserhomeController extends FrontController
         }elseif(isset($set_template)  && $set_template->template_id == 2){
             $p_dim = '260/180';
         }
+        $latitude = Session::get('latitude');
+        $longitude = Session::get('longitude');
         if($request->has('latitude')){
             $latitude = $request->latitude;
             Session::put('latitude', $latitude);
-        } else{
-            $latitude = Session::get('latitude');
-        }
+        } 
         if ($request->has('longitude')) {
             $longitude = $request->longitude;
             Session::put('longitude', $longitude);
-        } else {
-            $longitude = Session::get('longitude');
-        }
+        } 
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'): ClientPreference::first();
