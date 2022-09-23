@@ -609,7 +609,8 @@ class CategoryController extends FrontController{
             $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';
             $is_slot_from_dispatch = $product ? $product->is_slot_from_dispatch  : '';
             $show_dispatcher_agent =  $product ? $product->is_show_dispatcher_agent  : '';
-            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) ){ 
+            $last_mile_check      = $product ? $product->Requires_last_mile  : '';
+            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
                 $Dispatch =  $this->getDispatchAppointmentDomain();
                 $dispatchAgents = [];
                 $cart_product_id = $request->cart_product_id??0;

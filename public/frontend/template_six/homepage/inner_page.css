@@ -297,7 +297,7 @@ section.home-serivces .card-box{background-color: transparent;padding: 0;box-sha
 #alSixHomeServices hr{display: none;}
 #alSixHomeServices .shopping-cart hr{display: block;margin: 5px 0 !important;}
 /*===================== order page css =============================*/
-
+.product-order .total-sec h5 {margin: 0;padding-bottom: 0 !important;}
 .step-indicator{margin-top: 50px;display: flex;align-items: center;padding: 0 15px;}
 .step{display: flex;align-items: center;flex-direction: column;position: relative;z-index: 1;}
 .step-indicator .step-icon{height: 50px;width: 50px;border-radius: 50%;background: #c2c2c2;font-size: 10px;text-align: center;color: #fff;position: relative;line-height: 50px;font-size: 20px;}
