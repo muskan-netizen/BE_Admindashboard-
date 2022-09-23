@@ -544,7 +544,8 @@ class OrderController extends FrontController
                     $prod->pvariant->quantity_price = number_format($quantity_price, 2);
                     $payable_amount = $payable_amount + $quantity_price;
                     $taxData = array();
-                    if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
+                    $is_tax_price_inclusive = ClientPreference::value('is_tax_price_inclusive');
+                    if (!empty($prod->product->taxCategory) && ($is_tax_price_inclusive == 0) && count($prod->product->taxCategory->taxRate) > 0) {
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                             $rate = round($tax_value->tax_rate);
                             $tax_amount = ($price_in_doller_compare * $rate) / 100;
@@ -706,7 +707,7 @@ class OrderController extends FrontController
 
             $fixed_fee_amount=$request->total_fixed_fee_amount??0.00;
             DB::beginTransaction();
-            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area','stop_order_acceptance_for_users')->first();
+            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area','stop_order_acceptance_for_users','is_tax_price_inclusive')->first();
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (!empty($request->user_id))) {
@@ -1203,7 +1204,11 @@ class OrderController extends FrontController
                 $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
                 $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);
                 $new_vendor_taxable_amount = floatval($new_vendor_taxable_amount);
-                $total_taxable_amount+=$new_vendor_taxable_amount;
+                //check if is_tax_price_inclusive is on than no tax 
+                if ($preferences->is_tax_price_inclusive) {
+                    $new_vendor_taxable_amount = 0;
+                    $total_taxable_amount+=$new_vendor_taxable_amount;
+                }
                 // $OrderVendor->taxable_amount   = $vendor_taxable_amount;
 
               
