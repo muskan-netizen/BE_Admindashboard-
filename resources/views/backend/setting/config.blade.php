@@ -1174,7 +1174,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       </div>
    </div>
 
-   <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+   <form method="POST" action="{{route('configure.updateAdditional', Auth::user()->code)}}">
       <input type="hidden" name="crm" id="crm" value="1">
       @csrf
       <div class="row">
@@ -1186,21 +1186,25 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      <div class="form-group mb-0 switchery-demo">
                         <label for="fb_login" class="d-flex align-items-center justify-content-between">
                            <h5 class="social_head"><i class="fab fa-facebook-f"></i> <span>{{ __("Hubspot") }}</span></h5>
+
                            <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
                         </label>
                         <label for="" class="mr-3">{{ __("Enable") }}</label>
-                        <input type="checkbox" data-plugin="switchery" name="hubspot_login" id="hubspot_login" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->fb_login == '1')) checked='checked' @endif>
+                        <input type="checkbox" data-plugin="switchery" name="is_hubspot_enable" id="is_hubspot_enable" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1')) checked='checked' @endif>
                      </div>
                   </div>
                </div>
-               <div class="row fb_row" style="{{((isset($preference) && $preference->fb_login == '1')) ? '' : 'display:none;'}}">
+               <input type="hidden" name='custom_mods_config_additional' value='1'>
+               <input type="hidden" name='is_hubspot' value='1'>
+               <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}">
                   <div class="col-12">
                      <div class="form-group mb-2 mt-2">
+
                         <label for="fb_client_id">{{ __("Access token Key") }}</label>
-                        <input type="password" name="hubspot_client_id" id="hubspot_client_id" placeholder="" class="form-control" value="{{ old('hubspot_client_id', $preference->fb_client_id ?? '')}}">
+                        <input type="password" name="hubspot_access_token" id="hubspot_access_token" placeholder="" class="form-control" value="{{ old('hubspot_access_token', $preference->client_preferences_additional->is_hubspot_enable ?? '')}}">
                         @if($errors->has('hubspot_client_id'))
                         <span class="text-danger" role="alert">
-                           <strong>{{ $errors->first('hubspot_client_id') }}</strong>
+                           <strong>{{ $errors->first('hubspot_access_token') }}</strong>
                         </span>
                         @endif
                      </div>

@@ -178,7 +178,11 @@ class ClientPreferenceController extends BaseController{
         if(!$preferenceAdditional){
             $preferenceAdditional = new ClientPreferenceAdditional();
             $preferenceAdditional->client_code = $preference->client_code;
+           
         }
+       
+        
+        
 
         $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','need_inventory_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id', 'subscription_tab_taxi',"sos","sos_police_contact",'sos_ambulance_contact' ,'sos_enable','is_static_dropoff','is_vendor_tags', 'slotting_and_scheduling','appointment_submit_btn','need_appointment_service','appointment_service_key_url','appointment_service_key_code','appointment_service_key');
 
@@ -665,6 +669,39 @@ class ClientPreferenceController extends BaseController{
         }
 
         $preferenceset->save();
+
+        if($request->has('send_to') && $request->send_to == 'customize' ){
+            return redirect()->route('configure.customize')->with('success', 'Client customizations updated successfully!');
+        }
+        return redirect()->route('configure.index')->with('success', 'Client configurations updated successfully!');
+    }
+/**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\ClientPreference  $clientPreference
+     * @return \Illuminate\Http\Response
+     */
+    public function updateAdditional(Request $request, $code){
+
+
+        $preferenceAdditional = ClientPreferenceAdditional::where('client_code', $code)->first();
+     
+        if(!$preferenceAdditional){
+            $preferenceAdditional = new ClientPreferenceAdditional();
+            $preferenceAdditional->client_code = $code;
+           
+        }
+        if($request->has('custom_mods_config_additional') && $request->custom_mods_config_additional == '1'){
+            $preferenceAdditional->is_hubspot_enable = ($request->has('is_hubspot_enable') && $request->is_hubspot_enable == 'on') ? 1 : 0;
+        }
+        if($request->has('is_hubspot') && $request->is_hubspot == '1'){
+            $preferenceAdditional->hubspot_access_token = $request->hubspot_access_token ;
+        }
+        
+        $preferenceAdditional->save();
+
+       
 
         if($request->has('send_to') && $request->send_to == 'customize' ){
             return redirect()->route('configure.customize')->with('success', 'Client customizations updated successfully!');
