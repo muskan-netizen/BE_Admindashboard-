@@ -85,8 +85,8 @@ async  function showDispatchDriver(driver_ids,cart_product_id,selected_agent='')
   
    var html=`<div class="grid-item main alCustomHomeServiceAgentRadio d-flex justify-content-center radios agentS_${cart_product_id}">`;
     agentData.forEach(function(data,index) {
-
-        if(driverIdArray.includes(String(data.id)) || driverIdArray.includes(data.id)){
+// driverIdArray.includes(String(data.id)) ||
+        if( driverIdArray.includes(data.id)){
             let Selectedclass =  (index==0)? 'selected_agent': '';
             if(selected_agent !='' && selected_agent != undefined ){
                  Selectedclass = selected_agent === data.id  ? 'selected_agent' : '';
