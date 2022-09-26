@@ -400,15 +400,15 @@ trait OrderTrait{
         if($vendor && $vendor->rating == null){
             
             $vendor_rating = $this->updateVendorRating($vendor_id);
-            return $vendor_rating;
+            return number_format($vendor_rating, 1);
 
         }else if($vendor){
 
-            return $vendor->rating;
+            return number_format($vendor->rating, 1);
 
         }else{
 
-            return $vendor_rating;
+            return number_format($vendor_rating, 1);
 
         }
 
