@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Auth;
 
 if (!function_exists('getAdditionalPreference')) {
     function getAdditionalPreference($key){
-        $user = Auth::user();
+        $user = ClientData::first();
         $return = [];
         $result = ClientPreferenceAdditional::where(['client_code' => $user->code])->whereIn('key_name',$key)->get();
         foreach ($result as $variable) {

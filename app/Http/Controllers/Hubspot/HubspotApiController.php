@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Country, ClientPreferenceAdditional, User,CarImages ,Product, UserAddress};
+use App\Models\{Country,Client as cl, ClientPreferenceAdditional, User,CarImages ,Product, UserAddress};
 
 class HubspotApiController extends FrontController{
 
@@ -26,16 +26,19 @@ class HubspotApiController extends FrontController{
 public function create(Request $r)
     {
         //pr(env('HUBSPOT_API_KEY'));
-       // try {
-            $hubspot = Factory::createWithOAuth2Token('pat-na1-58be0ab0-c539-4c0d-a3b7-1208f112e510');
+        try {
+            $hub_key = @getAdditionalPreference(['hubspot_access_token','hubspot_last_update']);
+            $hubspot = Factory::createWithOAuth2Token($hub_key['hubspot_access_token']);
             $endpoint = 'https://api.hubapi.com/contacts/v1/contact/batch';
             $client = $hubspot->getClient();
             $lastUpdate='1998-01-14' ;
-            $preference =  ClientPreferenceAdditional::first();
-            if($preference){
-               $lastUpdate = $preference->hubspot_last_update;
+            if(isset($hub_key['hubspot_last_update'])){
+               $lastUpdate =  Carbon::parse($hub_key['hubspot_last_update'])->format('Y-m-d h:i:s');
+            } else {
+                $lastUpdate =  Carbon::parse($lastUpdate)->format('Y-m-d h:i:s');
             }
-            $users = User::whereDate('created_at','>',$lastUpdate)->get()->take(2);
+                
+            $users = User::where('created_at','>',$lastUpdate)->get()->take(3);
             ///$arr = [];
             $data = [];
             if(sizeof($users)){
@@ -45,7 +48,7 @@ public function create(Request $r)
                                             [
                                                 [ 'property' => 'firstname', 'value'  => $user->name ],
                                                 [ 'property' => 'lastname', 'value'  => $user->name ],
-                                                [ 'property' => 'phone', 'value'  =>$user->dial_code.$user->phone_number ],
+                                                [ 'property' => 'phone', 'value'  => $user->phone_number ],
                                                 // [ 'property' => 'address', 'value'  => $user->email ],
                                                 // [ 'property' => 'city', 'value'  => $user->email ],
                                                 // [ 'property' => 'state', 'value'  => $user->email ],
@@ -54,25 +57,27 @@ public function create(Request $r)
                                 ];
                                 
                 }
-               // pr($data);
                 if(count($data)>0){
                     $rp = $client->request(
                         'post',
                         $endpoint,
                         ['json' => $data]
                     );
-                    $now = Carbon::now();
-                    $preference->hubspot_last_update = $now;
-                    $preference->save();
+                    $now = Carbon::now()->format('Y-m-d h:i:s');
+       
+                    $client = cl::first();
+                    ClientPreferenceAdditional::updateOrCreate(
+                        ['key_name' => 'hubspot_last_update', 'client_code' => $client->code],
+                        ['key_name' => 'hubspot_last_update', 'key_value' => $now,'client_code' => $client->code,'client_id'=> $client->id]);
+                   
                     return response()->json(['status' => true, 'notiFY' => [] , 'message' => __('Sucessfully !!!')]);
                 }
                 return response()->json(['status' => false, 'notiFY' => [] , 'message' => __('No Data found !!!')]);
             }
             return response()->json(['status' => false, 'notiFY' => [] , 'message' => __('No Data found !!!')]);
-        // } catch (\Throwable $th) {
-        //     pr($th);
-        //     return response()->json(['status' => false, 'notiFY' => [] , 'message' => __('Something went wrong !!!')]);
-        // }
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'notiFY' => [] , 'message' => __('Something went wrong !!!')]);
+        }
      
     }
 }

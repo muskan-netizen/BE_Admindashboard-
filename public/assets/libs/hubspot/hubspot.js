@@ -10,9 +10,12 @@ function syncHubspotData(){
     spinnerJS.showSpinner();
     axios.post(`/client/hubspot/create-contact`)
     .then(async response => {
-        if(response.data.success){
+        console.log(response)
+        if(response.data.status){
             spinnerJS.hideSpinner();
-        } 
+        } else {
+            spinnerJS.hideSpinner();
+        }
     })
     .catch(e => {
         spinnerJS.hideSpinner();
