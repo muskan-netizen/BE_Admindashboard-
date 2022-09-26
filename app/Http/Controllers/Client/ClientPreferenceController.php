@@ -16,6 +16,7 @@ use Session;
 class ClientPreferenceController extends BaseController{
     use \App\Http\Traits\ClientPreferenceManager;
     use ApiResponser;
+    public $client_preference_fillable_key = ['hubspot_access_token', 'is_hubspot_enable', 'gtag_id', 'fpixel_id'];
 
     public function index(){
         $client = Auth::user();
@@ -163,6 +164,32 @@ class ClientPreferenceController extends BaseController{
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
+     * @param  \App\ClientPreferenceAdditional  $PreferenceAdditional
+     * @return \Illuminate\Http\Response
+     */
+
+    public function additionalupdate(Request $request){
+        
+        try {
+            $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
+            $validated_keys = $request->only($this->client_preference_fillable_key);
+            $client = Client::first();
+            foreach($validated_keys as $key => $value){ 
+                    ClientPreferenceAdditional::where('client_code',$preference->client_code)->updateOrCreate(
+                        ['key_name' => $key, 'client_code' => $preference->client_code],
+                        ['client_id' => $client->id,"key_value" => $value]);
+            } 
+            return redirect()->back()->with('success', 'Client settings updated successfully!');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'Something went wrong!!');
+        }
+      
+    }
+    
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
      * @param  \App\ClientPreference  $clientPreference
      * @return \Illuminate\Http\Response
      */
@@ -170,19 +197,11 @@ class ClientPreferenceController extends BaseController{
 
         $cp = new ClientPreference();
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
-        $preferenceAdditional = ClientPreferenceAdditional::where('client_code', $preference->client_code)->first();
         if(!$preference){
             $preference = new ClientPreference();
             $preference->client_code = $code;
         }
-        if(!$preferenceAdditional){
-            $preferenceAdditional = new ClientPreferenceAdditional();
-            $preferenceAdditional->client_code = $preference->client_code;
-           
-        }
-       
-        
-        
+
 
         $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','need_inventory_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id', 'subscription_tab_taxi',"sos","sos_police_contact",'sos_ambulance_contact' ,'sos_enable','is_static_dropoff','is_vendor_tags', 'slotting_and_scheduling','appointment_submit_btn','need_appointment_service','appointment_service_key_url','appointment_service_key_code','appointment_service_key');
 
@@ -229,20 +248,6 @@ class ClientPreferenceController extends BaseController{
                 ];
             }
             $preference->sms_credentials = json_encode($sms_credentials);
-        }
-
-        /* gtag update */
-        if($request->has('gtag_submit')){
-            $preferenceAdditional->gtag_id = $request->gtag_id;
-            unset($preference->gtag_submit);
-            unset($preference->gtag_id);
-        }
-
-        /* fpixel update */
-        if($request->has('fpixel_submit')){
-            $preferenceAdditional->fpixel_id = $request->fpixel_id;
-            unset($preference->fpixel_submit);
-            unset($preference->fpixel_id);
         }
       
         /* SOS update */
@@ -477,8 +482,6 @@ class ClientPreferenceController extends BaseController{
         }
 
         $preference->save();      
-        $preferenceAdditional->save();
-
 
         $preferenceset = ClientPreference::where('client_code', Auth::user()->code)->first();
         if(isset($request->last_mile_submit_btn) && !empty($request->last_mile_submit_btn))
@@ -669,39 +672,6 @@ class ClientPreferenceController extends BaseController{
         }
 
         $preferenceset->save();
-
-        if($request->has('send_to') && $request->send_to == 'customize' ){
-            return redirect()->route('configure.customize')->with('success', 'Client customizations updated successfully!');
-        }
-        return redirect()->route('configure.index')->with('success', 'Client configurations updated successfully!');
-    }
-/**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\ClientPreference  $clientPreference
-     * @return \Illuminate\Http\Response
-     */
-    public function updateAdditional(Request $request, $code){
-
-
-        $preferenceAdditional = ClientPreferenceAdditional::where('client_code', $code)->first();
-     
-        if(!$preferenceAdditional){
-            $preferenceAdditional = new ClientPreferenceAdditional();
-            $preferenceAdditional->client_code = $code;
-           
-        }
-        if($request->has('custom_mods_config_additional') && $request->custom_mods_config_additional == '1'){
-            $preferenceAdditional->is_hubspot_enable = ($request->has('is_hubspot_enable') && $request->is_hubspot_enable == 'on') ? 1 : 0;
-        }
-        if($request->has('is_hubspot') && $request->is_hubspot == '1'){
-            $preferenceAdditional->hubspot_access_token = $request->hubspot_access_token ;
-        }
-        
-        $preferenceAdditional->save();
-
-       
 
         if($request->has('send_to') && $request->send_to == 'customize' ){
             return redirect()->route('configure.customize')->with('success', 'Client customizations updated successfully!');
