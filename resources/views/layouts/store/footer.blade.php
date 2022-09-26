@@ -15,7 +15,7 @@
 @php
     $mapKey = '1234';
     $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
-    $analytics = \App\Models\ClientPreferenceAdditional::where(['client_code' => $theme->client_code])->orWhere (['key_name' => 'gtag_id', 'key_name' => 'fpixel_id'])->get();
+    $analytics = getAdditionalPreference(['gtag_id', 'fpixel_id']);
     if($theme && !empty($theme->map_key)){
         $mapKey = $theme->map_key;
     }
@@ -219,13 +219,10 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-5LPF1QP3Y3');
 
-@foreach($analytics as $analytic)
-    @if($analytic->key_name == 'gtag_id')
-    @if(isset($analytic->key_value) && !empty($analytic->key_value))
-        gtag('config', "{{$analytic->key_value ?? ''}}");
-    @endif
-    @endif   
-@endforeach 
+@if(isset($analytics['gtag_id']))
+    gtag('config', "{{$analytics['gtag_id'] ?? ''}}");
+@endif   
+
 @if(!isset($_COOKIE['show-subscription-plan']) && ($showSubscriptionPlanPopUp == 1) && (Route::current()->getName() != 'userHome'))
     $(document).ready(function() {
         $("#show-subscription-plan-mdl").modal("show");
@@ -233,10 +230,8 @@ gtag('config', 'G-5LPF1QP3Y3');
 @endif
 </script>
 <!-- End googletagmanager -->
-@foreach($analytics as $analytic)
-    @if($analytic->key_name == 'fpixel_id')
+    @if(isset($analytics['fpixel_id']))
     <!-- Meta Pixel Code -->
-    @if(isset($analytic->key_value) && !empty($analytic->key_value))
         <script>
         !function(f,b,e,v,n,t,s)
         {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -246,15 +241,12 @@ gtag('config', 'G-5LPF1QP3Y3');
         t.src=v;s=b.getElementsByTagName(e)[0];
         s.parentNode.insertBefore(t,s)}(window, document,'script',
         'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', "{{$analytic->key_value}}");
+        fbq('init', "{{$analytics['fpixel_id']}}");
         fbq('track', 'PageView');
         </script>
-        <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{$analytic->key_value}}&ev=PageView&noscript=1"/></noscript>
-    @endif
+        <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{$analytics['fpixel_id']}}&ev=PageView&noscript=1"/></noscript>
     <!-- End Meta Pixel Code -->
     @endif   
-@endforeach 
-
 
 @php
 if($showSubscriptionPlanPopUp == 1){
