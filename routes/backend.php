@@ -475,7 +475,13 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         // vendor multi banner for t6 :)
         Route::post('vendor_banner/store', 'Client\VendorMultiBannerController@store')->name("vendor_banner.store");
         Route::get('vendor_banner/destroy/{id}', 'Client\VendorMultiBannerController@destroy')->name("vendor_banner.destroy");
-        
+
+
+        /**  Hubspot Create a contact.
+         * 
+         */
+        Route::post('/hubspot/create-contact', 'Hubspot\HubspotApiController@create');
+        /** end */
     });
 });
 
