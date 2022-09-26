@@ -851,6 +851,7 @@ class FrontController extends Controller
                       $html .= "<option value=''>".__('Select Slot')." </option>";
                    
                       foreach($dispatchAgents['slots'] as $slot){
+                      
                           $html .= "<option value='".$slot['value']."'  data-show_agent='".json_encode($slot['agent_id'],TRUE)."' >".$slot['name'].`"</option>"`;
                       }
 

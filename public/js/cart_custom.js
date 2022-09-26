@@ -44,10 +44,10 @@ $(function(){
         // get selected varival
         var option= vendor_schedule_slot_selecter.options[vendor_schedule_slot_selecter.selectedIndex];
         let agent_ids = option.getAttribute("data-show_agent");
-     console.log(agent_ids);
+        let agentIds = JSON.parse(agent_ids);
         let dispatch_agent_id = '';
         if((agent_ids != undefined && agent_ids !='' )  ){
-            dispatch_agent_id ='18';// agent_ids[0] ; 
+            dispatch_agent_id = agentIds[0] ; 
         }
         var task_type = 'schedule';
         
