@@ -228,7 +228,7 @@ body.al_body_template_four .vendor-products-wrapper .add_vendor_product{min-widt
 /* Handle */::-webkit-scrollbar-thumb{background-color: var(--theme-deafult);}
   /*search css end here*/
 
-.al_fourthTemplateVender .product-card-box{margin-bottom: 20px;}
+.suppliers-section .product-card-box{margin-bottom: 20px;}
 
 .alFourTemplateCartButtons a i{position: absolute;height: 30px;width: 30px;background-color: #fff;right: 0;box-shadow: 0 0 5px rgb(0 0 0 / 30%);text-align: center;line-height: 30px;border-radius: 50%;}
 .alFourTemplateCartButtons a span{padding-right: 35px;}
