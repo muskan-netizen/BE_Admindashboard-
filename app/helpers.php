@@ -548,10 +548,10 @@ if (!function_exists('showSlot')) {
             })->get();
         } else {
             $slots = VendorSlot::where('vendor_id', $vid)
-        ->whereHas('days', function ($q) use ($mytime, $type) {
-            return $q->where('day', $mytime)->where($type, '1');
-        })
-        ->get();
+                    ->whereHas('days', function ($q) use ($mytime, $type) {
+                        return $q->where('day', $mytime)->where($type, '1');
+                    })
+                    ->get();
         }
 
         // check if vendor has added slots. if not added then no need to execute this.
@@ -756,6 +756,10 @@ if (!function_exists('findSlot')) {
             $time = explode(' - ', $slots[0]['value']);
 
             if ($api != 'api') {
+                if($api == 'webFormet'){ // webFormet for geting date and time 
+                    return ['date'=>$myDate,
+                            'time'=>$time[0]];
+                }
                 return date('d M, Y h:i:A', strtotime($myDate.'T'.$time[0]));
             } else {
                 return date('Y-m-d', strtotime($myDate.'T'.$time[0]));
