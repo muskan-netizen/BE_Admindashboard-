@@ -3391,11 +3391,6 @@ body .menu-title+.nav-second-level>li>a span:first-child {
 .menu-title+.nav-second-level>li>a:hover img {
   filter: grayscale(0)
 }
-
-span.icon-payment-option_s.aldelivery svg {
-  height: 16px
-}
-
 .menu-title+.nav-second-level>li>a:hover .cls-1,
 .menu-title+.nav-second-level>li>a:hover .cls-2 {
   fill: #43bee1
@@ -3731,7 +3726,7 @@ table.al_table_responsive_data tr td input {
 
 span.icon-payment-option_s.aldelivery svg {
   height: 18px;
-  margin-top: 5px;
+  margin-top: 0px;
 }
 
 .txtarea.form-control {
@@ -4094,6 +4089,11 @@ ul.nav-second-level.p-0.mx-2 span.mdi.mdi-chat-processing-outline {
   border-color: #f1ffce;
 }
 
+.tabs_radio_controls label[for="appointment_tab"] {
+  background-color: #f7ceff;
+  border-color: #f7ceff;
+}
+
 .tabs_radio_controls label:hover {
   border-color: #888;
   color: #000;
@@ -4285,7 +4285,7 @@ span.mdibookoutline svg {
   color: #a1a1a1;
 }
 
-.menu-title+.nav-second-level>li>a:hover span svg {
+.menu-title+.nav-second-level>li>a:hover span svg path {
   fill: #43bee1;
 }
 

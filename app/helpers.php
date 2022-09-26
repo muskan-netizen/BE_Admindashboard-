@@ -12,11 +12,21 @@ use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
-use App\Models\{VendorSlot, ClientCurrency, Order,Type};
+use App\Models\{VendorSlot, ClientCurrency, Order,Type, ClientPreferenceAdditional};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 
-
+if (!function_exists('getAdditionalPreference')) {
+    function getAdditionalPreference($key){
+        $user = Auth::user();
+        $return = [];
+        $result = ClientPreferenceAdditional::where(['client_code' => $user->code])->whereIn('key_name',$key)->get();
+        foreach ($result as $variable) {
+            $return[$variable->key_name] = $variable->key_value;
+        } 
+        return $return;
+    }
+}
 
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date,$date_format){
