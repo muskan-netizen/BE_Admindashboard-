@@ -163,5 +163,27 @@ class Vendor extends Model implements Auditable{
      // return $this->hasMany('App\Models\VendorFacilty', 'vendor_id', 'id');
       return $this->belongsToMany(\App\Models\Facilty::class, 'vendor_facilties', 'vendor_id', 'facilty_id');
   }
+    public function getIsVendorCloseAttribute()
+    {
+     $value = 0;
+     if($this->show_slot == 1){
+        $value = 0 ;
+     } else {
+            if (($this->slotDate->isEmpty()) && ($this->slot->isEmpty())) {
+              $value = 1;
+            } else {
+              $value = 0;
+              if ($this->slotDate->isNotEmpty()) {
+                  $this->opening_time = Carbon::parse($this->slotDate->first()->start_time)->format('g:i A');
+                  $this->closing_time = Carbon::parse($this->slotDate->first()->end_time)->format('g:i A');
+              } elseif ($this->slot->isNotEmpty()) {
+                  $this->opening_time = Carbon::parse($this->slot->first()->start_time)->format('g:i A');
+                  $this->closing_time = Carbon::parse($this->slot->first()->end_time)->format('g:i A');
+              }
+          }
+     }
+     return $value;
+
+    }
 
 }

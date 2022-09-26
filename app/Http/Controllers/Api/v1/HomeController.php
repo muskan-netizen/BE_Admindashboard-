@@ -268,7 +268,7 @@ class HomeController extends BaseController
            
             $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                 $q->whereIn('type_id',$categoryTypes);
-            })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+            })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_close' ,'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 
 
             $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
@@ -295,7 +295,22 @@ class HomeController extends BaseController
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
             $allVendorData = clone $vendorData;
-            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
+            $client = Client::first();
+            $mytime = Carbon::now()->setTimezone($client->timezone);
+            $current_time = $mytime->toTimeString();
+            $sortBy = "ASC";
+            if($venderFilterClose && ($venderFilterClose == 1) ){
+                $sortBy = "sortByDesc";
+            }
+            if($venderFilterOpen && ($venderFilterOpen == 1) ){
+                $sortBy =  "sortBy";
+            }
+            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->get()->$sortBy('is_vendor_close')->take(5);
+            //$vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
+            // $vendorData = $vendorData->whereHas('slot', function($query) use ($current_time) {
+            //     //$query->where('start_time', '<', $current_time)->where('end_time', '>', $current_time);
+            // })->where('status', 1)->get();
+            //pr($vendorData->toArray());
             $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
             
             // \Log::info($vendorData->toSql());
@@ -377,12 +392,12 @@ class HomeController extends BaseController
 
             }
             //filter vendor
-            if($venderFilterClose && ($venderFilterClose == 1) ){
-                $vendorData =   $vendorData->where('is_vendor_closed',1)->values();
-            }
-            if($venderFilterOpen && ($venderFilterOpen == 1) ){
-                $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
-            }
+            // if($venderFilterClose && ($venderFilterClose == 1) ){
+            //     $vendorData =   $vendorData->where('is_vendor_closed',1)->values();
+            // }
+            // if($venderFilterOpen && ($venderFilterOpen == 1) ){
+            //     $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
+            // }
            
 
 
