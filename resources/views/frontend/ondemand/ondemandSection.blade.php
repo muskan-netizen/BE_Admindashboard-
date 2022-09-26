@@ -386,7 +386,7 @@
                                       @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
 
                                       @php
-                                      
+                                    
                                         $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
                                       @endphp
 
@@ -395,7 +395,7 @@
 
                                             <h4 class="mb-2" ><b>{{ __('When would you like your service?')}}</b></h4>
                                             <div class="date-items radio-btns hide">
-                                                @foreach ($period as $key => $date)
+                                                @foreach ($cart_data->period as $key => $date)
                                                     <div>
                                                         @php
                                                         $checked = '';

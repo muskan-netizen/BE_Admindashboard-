@@ -905,6 +905,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 @section('script')
 
 <script type="text/javascript" src="{{asset('assets/libs/jquery-clock-timepicker/jquery-clock-timepicker.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/cart_custom.js')}}"></script>
 <script type="text/javascript">
     function handler(e) {
         $('.standard').clockTimePicker();
@@ -1141,6 +1142,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var post_category_kyc_document = "{{ route('updateCartCategoryKyc') }}";
 
     var passbase_page = "{{route('passbase.page')}}";
+    var get_dispatch_slot = "{{ route('getSlotFromDispatchDemand') }}";
     var product_order_form_element_data = [];
     var error_Slot_is_required = "{{__('Slot is required')}}";
     var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";

@@ -51,11 +51,11 @@
             </div>
             <div class="row border-bottom product_title_add py-1 no-gutters">
                     <div class="col-md-4 col">
-                        <span>Product Details</span>
+                        <span>{{ __('Product Details') }}</span>
                     </div>
 
                     <div class="col-md-2 col text-center">
-                        <span>Price</span>
+                        <span>{{ __('Price') }}</span>
                     </div>
                     @if($serviceType ==  'rental')
                         <div class="col-md-2 text-center">
@@ -63,7 +63,7 @@
                         </div>
                     @else
                     <div class="col-md-2 text-center">
-                        <span>Quantity</span>
+                        <span>{{ __('Quantity') }}</span>
                     </div>
                     @endif
                     <div class="col-md-4 text-center">
@@ -327,7 +327,11 @@
                       
 
                         {{-- Home Service Schedual code Start at down --}}
+                        {{-- @php
+                       pr($cart_details->closed_store_order_scheduled);
+                        @endphp --}}
                         @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ( in_array($serviceType ,['appointment','on_demand']) && $vendor_product->product->mode_of_service == "schedule" ))
+                        
                         <hr class="my-1">
                            @if($client_preference_detail->business_type != 'laundry')
                            @if($vendor_product->product->is_slot_from_dispatch !=1 || ($vendor_product->product->Requires_last_mile !=1) )
@@ -361,7 +365,33 @@
                                </div>
                            </div>
                            @else
-                           <div class="row align-items-md-center alVendorDispatchDate">
+                          
+                           <div class="row mb-1 d-flex align-items-center " style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
+                                <div class="col-5 offset-3 text-lg-right">
+                                    <label class="m-0 radio">
+                                        {{__('Scheduled Slot')}} :</label>
+                                </div>
+                            <div class="col-4 vendor_slot_cart">
+                                <input type="hidden" class="custom-control-input check" id="tasknow" name="task_type" value='schedule' >
+                                @if((isset($vendor_product->dispatchAgents)) && (isset($vendor_product->dispatchAgents->slots)) && (count((array)$vendor_product->dispatchAgents->slots) > 0) )
+                              {{-- @php
+                              pr($product->delay_date);
+                              @endphp --}}
+                                    <input type="date" class="form-control vendor_product_schedule_datetime" placeholder="Inline calendar" data-schedule_type="date" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" data-product_id="{{$vendor_product->product->id}}"    value="{{(($vendor_product->scheduled_date_time != '')?$vendor_product->scheduled_date_time : $product->delay_date ) }}"  min="{{(($vendor_product->vendorStartDate != '0') ? $vendor_product->vendorStartDate : $product->delay_date) }}" id="vendor_schedule_date_{{$product->cart_product_id }}" >
+                                    <select  class="form-control vendor_product_schedule_slot " id="vendor_schedule_slot_selecter_{{$product->cart_product_id }}" data-schedule_type="time"  data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" >
+                                            <option value="">{{__("Select Slot")}} </option>
+                                            @foreach($vendor_product->dispatchAgents->slots as $slot)
+
+                                                <option value="{{$slot->value}}" {{$slot->value == $product->schedule_slot ? "selected" : ""}}  data-show_agent="{{ json_encode($slot->agent_id,TRUE)}}" >{{$slot->name }}</option>
+                                            @endforeach
+                                    </select>
+                                  
+    
+                                @endif
+                                    
+                            </div>
+                        </div>
+                           {{-- <div class="row align-items-md-center alVendorDispatchDate">
                             <div class="col-6"></div>
                                <div class="col-3">
                                    <h6 class="m-0 pl-0">{{ __('Booking Date') }}</h6>
@@ -371,7 +401,7 @@
                                    <h6 class="m-0 pl-0">{{ __('Slot') }}</h6>
                                    <p class="m-0">{{$product->schedule_slot}}</p>
                                </div>
-                           </div>
+                           </div> --}}
                            @endif
                            @endif
                         @endif
@@ -552,7 +582,7 @@
         <div class="row m-0">
          <div class="cart-summary p-2 pb-4">
             <div class="col-12 mb-2">
-                <h5 class="order_text">Order Summary</h5>
+                <h5 class="order_text">{{ __('Order Summary') }}</h5>
             </div>
         <input type="hidden" name="without_category_kyc" value="{{$cart_details->without_category_kyc}}">
         @if($client_preference_detail->category_kyc_documents ==1)
