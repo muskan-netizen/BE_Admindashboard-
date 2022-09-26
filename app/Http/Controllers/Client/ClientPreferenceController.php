@@ -16,6 +16,7 @@ use Session;
 class ClientPreferenceController extends BaseController{
     use \App\Http\Traits\ClientPreferenceManager;
     use ApiResponser;
+    public $client_preference_fillable_key = ['hubspot_access_token', 'is_hubspot_enable', 'gtag_id', 'fpixel_id'];
 
     public function index(){
         $client = Auth::user();
@@ -166,36 +167,24 @@ class ClientPreferenceController extends BaseController{
      * @param  \App\ClientPreferenceAdditional  $PreferenceAdditional
      * @return \Illuminate\Http\Response
      */
+
     public function additionalupdate(Request $request){
-
-        $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
-        $preferenceAdditional = ClientPreferenceAdditional::where('client_code',$preference->client_code)->whereIn('key_name',$request->keys())->first();
-
-
-        if(!$preferenceAdditional){
-            $preferenceAdditional = new ClientPreferenceAdditional();
-            $preferenceAdditional->client_code = $preference->client_code;
-        }
-
-        /* gtag update */
-        if($request->has('gtag_submit')){
-            $preferenceAdditional->key_name = 'gtag_id';
-            $preferenceAdditional->key_value = $request->gtag_id;
-        }
-
-        /* fpixel update */     
-        if($request->has('fpixel_submit')){
-            $preferenceAdditional->key_name = 'fpixel_id';
-            $preferenceAdditional->key_value = $request->fpixel_id;
-        }
-
-        $preferenceAdditional->save();
-
-        if($request->has('send_to') && $request->send_to == 'customize' ){
-            return redirect()->route('configure.customize')->with('success', 'Client customizations updated successfully!');
-        }
         
+        try {
+            $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
+            $validated_keys = $request->only($this->client_preference_fillable_key);
+            foreach($validated_keys as $key => $value){ 
+                    ClientPreferenceAdditional::where('client_code',$preference->client_code)->updateOrCreate(
+                        ['key_name' => $key, 'client_code' => $preference->client_code],
+                        ['client_id' => auth()->user()->id,"key_value" => $value]);
+            } 
+            return redirect()->back()->with('success', 'Client settings updated successfully!');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'Something went wrong!!');
+        }
+      
     }
+    
     /**
      * Update the specified resource in storage.
      *
@@ -492,8 +481,6 @@ class ClientPreferenceController extends BaseController{
         }
 
         $preference->save();      
-        $preferenceAdditional->save();
-
 
         $preferenceset = ClientPreference::where('client_code', Auth::user()->code)->first();
         if(isset($request->last_mile_submit_btn) && !empty($request->last_mile_submit_btn))

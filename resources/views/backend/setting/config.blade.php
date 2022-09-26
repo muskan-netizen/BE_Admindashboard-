@@ -1165,6 +1165,76 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
 
    </div>
+   <div class="row">
+      <div class="col-12">
+         <!-- Social Logins title start -->
+         <div class="page-title-box">
+            <h4 class="page-title text-uppercase">CRM</h4>
+         </div><!-- Social Logins title end -->
+      </div>
+   </div>
+
+   @php $is_hubspot_enable = NULL;@endphp
+   @if(!$preference->client_preferences_additional->isEmpty())
+      @foreach($preference->client_preferences_additional as $addiPreference)  
+         @if($addiPreference->key_name == 'is_hubspot_enable')
+            @php $is_hubspot_enable = $addiPreference->key_value; @endphp
+         @endif 
+         @if($addiPreference->key_name == 'hubspot_access_token')
+            @php $hubspot_access_token = $addiPreference->key_value; @endphp
+         @endif 
+      @endforeach 
+   @endif
+
+   <form method="POST" action="{{route('additional.update')}}">
+      <input type="hidden" name="crm" id="crm" value="1">
+      <input type="hidden" name="send_to" id="send_to" value="configure">
+      @csrf
+      <div class="row">
+         <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
+            <!-- HubSpot card start -->
+            <div class="card-box h-100">
+               <div class="row">
+                  <div class="col-12">
+                     <div class="form-group mb-0 switchery-demo">
+                        <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                           <h5 class="social_head"><i class="fab fa-facebook-f"></i> <span>{{ __("Hubspot") }}</span></h5>
+
+                           <button class="btn btn-info btn-block save_btn" name="hubspot_submit" type="submit"> {{ __("Save") }} </button>
+                        </label>
+                        <label for="" class="mr-3">{{ __("Enable") }}</label>
+                        <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable" class="form-control checkbox_change" data-className="is_hubspot_enable_hidden" data-color="#43bee1" 
+                        @if($is_hubspot_enable == 1) checked='checked' value="1"  @endif>
+                        <input type="hidden"  @if($is_hubspot_enable == 1) value="1" @else value="0" @endif  name="is_hubspot_enable"  id="is_hubspot_enable_hidden"/>
+      
+                        {{-- @if((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1')) checked='checked' @endif> --}}
+                     </div>
+                  </div>
+               </div>
+               {{-- <input type="hidden" name='custom_mods_config_additional' value='1'>
+               <input type="hidden" name='is_hubspot' value='1'> --}}
+               {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
+               <div class="row fb_row" style="{{ $is_hubspot_enable ?? ""}}">
+                  <div class="col-12">
+                     <div class="form-group mb-2 mt-2">
+
+                        <label for="fb_client_id">{{ __("Access token Key") }}</label>
+                        {{-- <input type="password" name="hubspot_access_token" id="hubspot_access_token" placeholder="" class="form-control" value="{{ old('hubspot_access_token', $preference->client_preferences_additional->is_hubspot_enable ?? '')}}"> --}}
+                        <input type="password" name="hubspot_access_token" id="hubspot_access_token" placeholder="" class="form-control" value="{{ old('hubspot_access_token',  $hubspot_access_token ?? '')}}">
+                        @if($errors->has('hubspot_client_id'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('hubspot_access_token') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+                  </div>
+               </div>
+            </div><!-- HubSpot card end -->
+         </div>
+      </div>
+   </form>
+
+
 
    <div class="row">
       {{-- <div class="col-md-12 show-custom-mods">
@@ -1459,7 +1529,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          <!-- Custom Mods end -->
       </div>
    </div>
-
+   
    <div class="row">
       {{--<div class="col-lg-6">
          <div class="page-title-box">
@@ -1774,6 +1844,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
    @endsection
    @section('script')
+   <script src="{{ asset('assets\js\backend\backend_common.js') }}"></script>
    <script type="text/javascript">
 
     $(document).on("change","#option_client_language",function() {
