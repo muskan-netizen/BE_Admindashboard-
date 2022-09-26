@@ -1195,7 +1195,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </label>
                         <label for="" class="mr-3">{{ __("Enable") }}</label>
                         <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable" class="form-control checkbox_change" data-className="is_hubspot_enable_hidden" data-color="#43bee1" 
-                        @if(isset($getAdditionalPreference['is_hubspot_enable']) == 1) checked='checked' value="1"  @endif>
+                        @if($getAdditionalPreference['is_hubspot_enable'] == '1') checked='checked' value="1"  @endif>
                         <input type="hidden"  @if(isset($getAdditionalPreference['is_hubspot_enable']) == 1) value="1" @else value="0" @endif  name="is_hubspot_enable"  id="is_hubspot_enable_hidden"/>
       
                         {{-- @if((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1')) checked='checked' @endif> --}}
@@ -1205,7 +1205,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                {{-- <input type="hidden" name='custom_mods_config_additional' value='1'>
                <input type="hidden" name='is_hubspot' value='1'> --}}
                {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
-               <div class="row fb_row" style="{{ $getAdditionalPreference['is_hubspot_enable'] ?? ""}}">
+               <div class="row hub_row" style="{{((isset($getAdditionalPreference['is_hubspot_enable']) && $getAdditionalPreference['is_hubspot_enable'] == 1)) ? '' : 'display:none;'}}">
                   <div class="col-12">
                      <div class="form-group mb-2 mt-2">
 

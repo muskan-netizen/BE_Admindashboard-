@@ -174,11 +174,13 @@ class ClientPreferenceController extends BaseController{
          
             $validated_keys = $request->only($this->client_preference_fillable_key);
             $client = Client::first();
+           
             foreach($validated_keys as $key => $value){ 
-                    ClientPreferenceAdditional::where('client_code',$client->code)->updateOrCreate(
-                        ['key_name' => $key, 'client_code' => $client->code],
-                        ['client_id' => $client->id,"key_value" => $value]);
-            } 
+              
+                ClientPreferenceAdditional::updateOrCreate(
+                    ['key_name' => $key, 'client_code' => $client->code],
+                    ['key_name' => $key, 'key_value' => $value,'client_code' => $client->code,'client_id'=> $client->id]);
+             } 
             return redirect()->back()->with('success', 'Client settings updated successfully!');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Something went wrong!!');
