@@ -6,8 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class ClientPreferenceAdditional extends Model
 {
-  protected $table = 'client_preferences_additional';
-    protected $fillable = ['client_code','gtag_id','fpixel_id'];
+  protected $table = 'client_preference_additional';
+    protected $fillable = [
+      'client_code',
+      'key_name',
+      'key_value',
+      'description',
+      'is_active',
+      'is_private',
+      'is_boolean'
+    ];
 
     public function domain()
     {
