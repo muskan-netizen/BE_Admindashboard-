@@ -16,7 +16,7 @@ class CreateClientPreferenceAdditionalTable extends Migration
             Schema::create('client_preference_additional', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('client_id');
-                $table->string('client_code', 10)->unique()->nullable();
+                $table->string('client_code', 10)->nullable();
                 $table->string('key_name')->nullable();
                 $table->string('key_value')->nullable();
                 $table->string('description')->nullable();
@@ -24,7 +24,7 @@ class CreateClientPreferenceAdditionalTable extends Migration
                 $table->string('is_private')->nullable();
                 $table->string('is_boolean')->nullable();
                 $table->timestamps();
-                $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+               
             });
             
             
