@@ -2198,8 +2198,12 @@ class VendorController extends BaseController{
                     }]);
                     
                     if(isset($request->category_id))
-                    $vendor_categories = $vendor_categories->where('id',$request->category_id);
-
+                    {
+                       $vendor_categories = $vendor_categories->where(function($q) use ($request)
+                        {
+                            $q->where('id',$request->category_id)->orWhere('parent_id',$request->category_id);
+                        });
+                    }
                  
                     
                     $vendor_categories = $vendor_categories->get()->map(function ($query) {
