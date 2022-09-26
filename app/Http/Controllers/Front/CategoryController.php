@@ -608,8 +608,15 @@ class CategoryController extends FrontController{
           
             $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';
             $is_slot_from_dispatch = $product ? $product->is_slot_from_dispatch  : '';
-            $show_dispatcher_agent =  $product ? $product->is_show_dispatcher_agent  : '';
-            $last_mile_check      = $product ? $product->Requires_last_mile  : '';
+            $show_dispatcher_agent = $product ? $product->is_show_dispatcher_agent  : '';
+            $last_mile_check       = $product ? $product->Requires_last_mile  : '';
+            $vendorStartDate       = $vendorStartTime  = '';
+            $slotsDate = findSlot('',$product->vendor_id,'','webFormet');
+            if($slotsDate){
+                $vendorStartDate = (($slotsDate)?$slotsDate['date']:'');
+                $vendorStartTime = (($slotsDate)?$slotsDate['time']:'');
+            }
+            // ch
             if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
                 $Dispatch =  $this->getDispatchAppointmentDomain();
                 $dispatchAgents = [];
@@ -630,10 +637,10 @@ class CategoryController extends FrontController{
                         'latitude'         => $vendor_latitude,
                         'longitude'        => $vendor_longitude,
                         'service_time'     => $product->minimum_duration_min,
-                        'schedule_date'    => $request->cur_date
+                        'schedule_date'    => $request->cur_date,
+                        'slot_start_time'  => $vendorStartTime
                     ];
                     $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
-                   // pr(  $dispatchAgents);
                 }
                 if ($request->ajax()) {
                     return \Response::json(\View::make('frontend.ondemand.dispatcher_agent_slots', array('dispatch_agents' => $dispatchAgents,'cart_product_id'=> $cart_product_id,'show_dispatcher_agent'=>$show_dispatcher_agent))->render());

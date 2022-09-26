@@ -727,6 +727,15 @@ class FrontController extends Controller
             $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($timezone)->format('Y-m-d');
             $cartData[$key]->scheduled_date_time = $selectedDate;
             $cartData[$key]->is_dispatch_slot = 0 ;
+            $vendorStartDate =  $vendorStartTime  ='';
+            $slotsDate = findSlot('',$data->vendor_id,'','webFormet');
+            $cartData[$key]->period = [];
+            if($slotsDate){
+                $vendorStartDate = (($slotsDate)?$slotsDate['date']:'');
+                $vendorStartTime = (($slotsDate)?$slotsDate['time']:'');
+                $vendorEndDate = Date('Y-m-d', strtotime($vendorStartDate. '+13 days'));
+                $cartData[$key]->period = CarbonPeriod::create($vendorStartDate, $vendorEndDate);
+            }
             // check product 
             $productDetail = $this->productDetail($data->product_id);
             $cateTypeId = $productDetail ? ($productDetail->productcategory ? $productDetail->productcategory->type_id : '') : '';
@@ -751,8 +760,10 @@ class FrontController extends Controller
                         'latitude'         => $vendor_latitude,
                         'longitude'        => $vendor_longitude,
                         'service_time'     => $productDetail->minimum_duration_min,
-                        'schedule_date'    => $selectedDate
+                        'schedule_date'    => $selectedDate,
+                        'slot_start_time'  => $vendorStartTime
                     ];
+                      
                     $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
                 }
                 $cartData[$key]->timeSlots = [];
@@ -771,6 +782,9 @@ class FrontController extends Controller
                 $cartData[$key]->timeSlots = $time_slots;
                 $cartData[$key]->dispatchAgents = [];
             }
+          
+           
+           
         }
 
         
@@ -788,6 +802,64 @@ class FrontController extends Controller
         return ['time_slots' => $time_slots,'period' => $period,'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user];
     }
 
+
+    // get slot fron dispatcher
+    public function getSlotFromDispatchDemand(Request $request)
+    {
+       
+           $product = $this->productDetail($request->product_id);
+        
+            $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';
+            $is_slot_from_dispatch = $product ? $product->is_slot_from_dispatch  : '';
+            $show_dispatcher_agent = $product ? $product->is_show_dispatcher_agent  : '';
+            $last_mile_check       = $product ? $product->Requires_last_mile  : '';
+            $vendorStartDate       = $vendorStartTime  = '';
+           
+            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
+                
+                $Dispatch =  $this->getDispatchAppointmentDomain();
+                $dispatchAgents = [];
+                $cart_product_id = $request->cart_product_id??0;
+                $html = "";
+                if($Dispatch){
+                  
+                   $vendor_latitude =  $product->vendor ? $product->vendor->latitude : 30.71728880;
+                   $vendor_longitude =  $product->vendor ? $product->vendor->longitude : 76.80350870;
+                    $location[] = array(
+                        'latitude' =>   $vendor_longitude,
+                        'longitude' =>  $vendor_longitude
+                    );
+                    $dispatchData=[
+                        'service_key'      => $Dispatch->appointment_service_key,
+                        'service_key_code' => $Dispatch->appointment_service_key_code,
+                        'service_key_url'  => $Dispatch->appointment_service_key_url,
+                        'service_type'     => 'appointment',
+                        'tags'             => $product->tags,
+                        'latitude'         => $vendor_latitude,
+                        'longitude'        => $vendor_longitude,
+                        'service_time'     => $product->minimum_duration_min,
+                        'schedule_date'    => $request->cur_date,
+                        'slot_start_time'  => $vendorStartTime
+                    ];
+                   
+                    $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
+                   
+                }
+                
+                if((isset($dispatchAgents)) && (isset($dispatchAgents['slots'])) && ( count($dispatchAgents['slots']) > 0 ) ){
+                   
+                      $html .= "<option value=''>".__('Select Slot')." </option>";
+                   
+                      foreach($dispatchAgents['slots'] as $slot){
+                          $html .= "<option value='".$slot['value']."'  data-show_agent='".json_encode($slot['agent_id'],TRUE)."' >".$slot['name'].`"</option>"`;
+                      }
+
+                }
+                return response()->json(['status'=>'Success','html'=>$html, 'message'=>'get slots']);
+            }
+            return response()->json(['status'=>'Success','html'=>'', 'message'=>"get slots"]);
+          
+    }
 
     /////////// ***************    get all time slots *******************************  /////////////////////
     function SplitTime($StartTime, $EndTime, $Duration="30"){
