@@ -1174,18 +1174,9 @@ $sms_crendential = json_decode($preference->sms_credentials);
       </div>
    </div>
 
-   @php $is_hubspot_enable = NULL;@endphp
-   @if(!$preference->client_preferences_additional->isEmpty())
-      @foreach($preference->client_preferences_additional as $addiPreference)  
-         @if($addiPreference->key_name == 'is_hubspot_enable')
-            @php $is_hubspot_enable = $addiPreference->key_value; @endphp
-         @endif 
-         @if($addiPreference->key_name == 'hubspot_access_token')
-            @php $hubspot_access_token = $addiPreference->key_value; @endphp
-         @endif 
-      @endforeach 
-   @endif
-
+   @php
+   $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable']);
+   @endphp
    <form method="POST" action="{{route('additional.update')}}">
       <input type="hidden" name="crm" id="crm" value="1">
       <input type="hidden" name="send_to" id="send_to" value="configure">
@@ -1204,8 +1195,8 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </label>
                         <label for="" class="mr-3">{{ __("Enable") }}</label>
                         <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable" class="form-control checkbox_change" data-className="is_hubspot_enable_hidden" data-color="#43bee1" 
-                        @if($is_hubspot_enable == 1) checked='checked' value="1"  @endif>
-                        <input type="hidden"  @if($is_hubspot_enable == 1) value="1" @else value="0" @endif  name="is_hubspot_enable"  id="is_hubspot_enable_hidden"/>
+                        @if(isset($getAdditionalPreference['is_hubspot_enable']) == 1) checked='checked' value="1"  @endif>
+                        <input type="hidden"  @if(isset($getAdditionalPreference['is_hubspot_enable']) == 1) value="1" @else value="0" @endif  name="is_hubspot_enable"  id="is_hubspot_enable_hidden"/>
       
                         {{-- @if((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1')) checked='checked' @endif> --}}
                      </div>
@@ -1214,13 +1205,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
                {{-- <input type="hidden" name='custom_mods_config_additional' value='1'>
                <input type="hidden" name='is_hubspot' value='1'> --}}
                {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
-               <div class="row fb_row" style="{{ $is_hubspot_enable ?? ""}}">
+               <div class="row fb_row" style="{{ $getAdditionalPreference['is_hubspot_enable'] ?? ""}}">
                   <div class="col-12">
                      <div class="form-group mb-2 mt-2">
 
                         <label for="fb_client_id">{{ __("Access token Key") }}</label>
                         {{-- <input type="password" name="hubspot_access_token" id="hubspot_access_token" placeholder="" class="form-control" value="{{ old('hubspot_access_token', $preference->client_preferences_additional->is_hubspot_enable ?? '')}}"> --}}
-                        <input type="password" name="hubspot_access_token" id="hubspot_access_token" placeholder="" class="form-control" value="{{ old('hubspot_access_token',  $hubspot_access_token ?? '')}}">
+                        <input type="password" name="hubspot_access_token" id="hubspot_access_token" placeholder="" class="form-control" value="{{ old('hubspot_access_token',  $getAdditionalPreference['hubspot_access_token'] ?? '')}}">
                         @if($errors->has('hubspot_client_id'))
                         <span class="text-danger" role="alert">
                            <strong>{{ $errors->first('hubspot_access_token') }}</strong>

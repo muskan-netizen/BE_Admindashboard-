@@ -173,10 +173,11 @@ class ClientPreferenceController extends BaseController{
         try {
             $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
             $validated_keys = $request->only($this->client_preference_fillable_key);
+            $client = Client::first();
             foreach($validated_keys as $key => $value){ 
                     ClientPreferenceAdditional::where('client_code',$preference->client_code)->updateOrCreate(
                         ['key_name' => $key, 'client_code' => $preference->client_code],
-                        ['client_id' => auth()->user()->id,"key_value" => $value]);
+                        ['client_id' => $client->id,"key_value" => $value]);
             } 
             return redirect()->back()->with('success', 'Client settings updated successfully!');
         } catch (\Throwable $th) {

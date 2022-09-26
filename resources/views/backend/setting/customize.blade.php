@@ -1464,6 +1464,9 @@
             </form>
         </div>
         <!-- Start Google analytics -->
+        @php
+        $getAdditionalPreference = getAdditionalPreference(['gtag_id','fpixel_id']);
+        @endphp
         @if(!$preference->client_preferences_additional->isEmpty())
             @foreach($preference->client_preferences_additional as $addiPreference)
                 @if($addiPreference->key_name == 'gtag_id')
@@ -1485,7 +1488,7 @@
                     </div>
                     <div class="col-xl-12 my-2 p-0" id="addCur-160">
                         <label class="primaryCurText">{{ __('GA Measurment Id') }}</label>
-                            <input class="form-control" type="text" id="gtag_id" name="gtag_id" value="{{ old('gtag_id', $gtag_id ?? "")}}"> 
+                            <input class="form-control" type="text" id="gtag_id" name="gtag_id" value="{{ old('gtag_id',  $getAdditionalPreference['gtag_id'] ?? "")}}"> 
                     </div>
                 </div>
             </form>
@@ -1502,7 +1505,7 @@
                     </div>
                     <div class="col-xl-12 my-2 p-0" id="addCur-160">
                         <label class="primaryCurText">{{ __('Pixel Id') }}</label>
-                            <input class="form-control" type="text" id="fpixel_id" name="fpixel_id" value="{{ old('fpixel_id',  $fpixel_id ?? "")}}">
+                            <input class="form-control" type="text" id="fpixel_id" name="fpixel_id" value="{{ old('fpixel_id',  $getAdditionalPreference['fpixel_id'] ?? "")}}">
                     </div>
                 </div>
             </form>
