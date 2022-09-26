@@ -104,10 +104,34 @@ width: 100%;
 
 
 /*-------cart page design css  start here---------*/
+.items-details p {
+    font-size: 12px;
+}
 .single_cart_heading h3 {font-weight: 600;color: #000;}
 .cart-summary h5.order_text{font-size: 22px;font-weight: 600;color:#000;}
 .item-show-cart h4 {font-size: 20px !important;font-weight: 600;color: #000;}
 .shoping_cart {background: #fff;box-shadow: 10px 16px 14px 10px #eee9;border: 1px solid#eeeeee8c;}
+#specific_instructions::-webkit-input-placeholder { color:#fff; }
+#specific_instructions::-moz-input-placeholder { color:#fff; }
+.dark .new_cart .add-address i ,
+.dark .cart_delivery,
+.dark .alert-danger {
+    background: #242424;
+    border: 1px solid #242424;
+    box-shadow: 5px 6px 4px #0000001a;
+}
+.dark .cart-summary,
+.dark .new_cart,
+.dark .shoping_cart{background-color: #0c0c0c;box-shadow: none;border: 0px;}
+.dark .item-show-cart h4,
+.dark .new_cart .page-title,
+.dark .cart-summary h5.order_text,
+.dark .cart-summary .alFourSpecificInstructions span,
+.dark .cart-summary .cart-price .text-right b,
+.dark .shoping_cart .order-md-4 .items-price,
+.dark .single_cart_heading h3 {
+    color: #fff;
+}
 .cart-design .card-box {padding: 0px;}
 .cart-summary{background-color: #f5f5f6;border: 1px solid#efefef;box-shadow: 6px 13px 30px #1615152b;border-radius: 4px;width: 100%;}
 .cart-summary .alFourSpecificInstructions span {font-size: 18px;color: #000;display: block;}
@@ -140,6 +164,7 @@ padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .cart-page-layout .alFourTemplateCartPage .items-details p{font-size: 14px;}
 .cart-page-layout .alFourTemplateCartPage .extra-items-price {color: #000;font-size: 14px;}
 .product_title_add span {text-transform: uppercase;font-size: 14px;}
+
 /* .al_body_template_two .cart-summary {background: #fff;} */
 .shoping_cart .number{width: fit-content;}
 .al_body_template_three .cart-summary .tip_radio_controls label{width:auto;margin:0px;}
@@ -191,7 +216,7 @@ right: 20px;
 
 
 @media only screen and (min-width:1367px) and (max-width:1429px){
-.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;height:auto;}   
+.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;height:auto;}
 }
 @media only screen and (max-width:1366px){
 .cart-design .alFourTemplateCartButtons a.shoping i{font-size:17px;vertical-align: middle;}
@@ -1280,7 +1305,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         var product_order_form_element_data = [];
         var out = {};
         var s_data = $(dom_query).serializeArray();
-          
+
         document.querySelectorAll('.form-control').forEach(function(inp) {
         });
             //transform into simple data/value object
@@ -1294,7 +1319,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
                     var product_faq_id = $(dom_query+' input[name="'+record.name+'"]').attr('data-product_faq_id');
                      var is_required = $(dom_query+' input[name="'+record.name+'"]').attr('data-required');
                 }
-               
+
                 if((is_required)==1 && (record.value =='' )){
                     var errorMsg ="The "+ record.name +" field is required.";
                     $('.product_order_form_error').html(errorMsg);

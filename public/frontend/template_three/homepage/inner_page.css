@@ -28,7 +28,7 @@ body .create_box a.btn.btn-solid.mt-2{padding: 5px 40px !important;}.user-info.d
 span.fa.fa-eye-slash.toggle-password.eye::before{content:"\f06e"}
 
 .hide{right:0;opacity:0;z-index:-1}#social-links li{margin-right:20px}.checkbox-input input[type=checkbox]{padding:0;height:initial;width:initial;margin-bottom:0;display:none;cursor:pointer}.checkbox-input label:before{content:'';-webkit-appearance:none;background-color:transparent;border:2px solid var(--theme-deafult);box-shadow:0 1px 2px rgb(0,0%,0 / 5%),inset 0 -15px 10px -12px rgb(0,0%,0 / 5%);padding:5px;display:inline-block;position:relative;vertical-align:middle;cursor:pointer;margin-right:6px;margin-top:-3px;border-radius:2px}.checkbox-input input:checked+label:after{content:'';display:block;position:absolute;top:6px;left:4px;width:5px;height:8px;border:solid var(--theme-deafult);border-width:0 2px 2px 0;transform:rotate(45deg)}.checkbox-input label{position:relative;cursor:pointer}
-.sold-by img{height:30px;margin-right:10px;border-radius:50%}.vendor-signup .file>label{height:216px}.file.upload-new .update_pic,.vendor-signup .update_pic{width:100%;height:auto;margin:auto;text-align:center;border:0;border-radius:0}.file--upload>label .plus_icon{height:33px;width:33px;line-height:36px;color:#fff;text-align:center;font-family:"Nunito Sans";font-size:13px;font-weight:700;letter-spacing:0;border-radius:50%;background-color:var(--theme-deafult);box-shadow:0 2px 4px 0 rgb(63 159 255 / 40%);display:block;position:absolute;right:0;left:0;margin:auto;bottom:0;top:0}.file.upload-new>label,.vendor-signup .file>label{width:100%;border:1px solid #ddd;padding:30px 0;height:192px}.file--upload>label{margin-bottom:0;display:inline-block;position:relative;cursor:pointer;outline:0}form label{font-size:14px;margin:0 0 5px}
+.sold-by img{height:30px;width:30px;margin-right:10px;border-radius:50%}.vendor-signup .file>label{height:216px}.file.upload-new .update_pic,.vendor-signup .update_pic{width:100%;height:auto;margin:auto;text-align:center;border:0;border-radius:0}.file--upload>label .plus_icon{height:33px;width:33px;line-height:36px;color:#fff;text-align:center;font-family:"Nunito Sans";font-size:13px;font-weight:700;letter-spacing:0;border-radius:50%;background-color:var(--theme-deafult);box-shadow:0 2px 4px 0 rgb(63 159 255 / 40%);display:block;position:absolute;right:0;left:0;margin:auto;bottom:0;top:0}.file.upload-new>label,.vendor-signup .file>label{width:100%;border:1px solid #ddd;padding:30px 0;height:192px}.file--upload>label{margin-bottom:0;display:inline-block;position:relative;cursor:pointer;outline:0}form label{font-size:14px;margin:0 0 5px}
 
 .al_advanced_details{margin-bottom:10px}.menu-navigation.alThreeMenu li.al_main_category:hover ul.al_main_category_list{display:block}.al_body_template_three .vendor-signup .file.file--upload label{border-radius:3px}.vendor-signup h2{background-color:#eee;padding:20px;border-radius:15px 15px 0 0;font-size:20px}span.filter-btn.btn.btn-theme i{margin-right:10px}.filter-main-btn span{border-radius:15px}.product-wrapper-grid .inner_spacing h3{font-size:16px}
 .al_body_template_three .rating-text-box{height:22px;background-color:#409a40;line-height:22px;border-radius:6px;
@@ -47,9 +47,9 @@ body[dir=rtl] .vendors .slick-slider{direction:ltr}body[dir=rtl] .onhover-show-d
 #al_new_design .pixelstrap ul a:hover{border-color:var(--theme-deafult)!important;background:linear-gradient(90deg,#f7ebec 0,rgba(251,246,247,0) 92.47%)}#al_new_design .pixelstrap ul a.highlighted:hover:before,#al_new_design .pixelstrap ul a:active:hover:before,#al_new_design .pixelstrap ul a:focus:hover:before,#al_new_design .pixelstrap ul a:hover:before,#al_new_design .pixelstrap ul a:hover:hover:before{width:0}.al_body_template_three .site-header .nav-cate-img{-webkit-transition:.5s;transition:.5s}.al_body_template_three .site-header.fixed-bar .nav-cate-img{-webkit-transition:.5s;transition:.5s}#al_new_design .pixelstrap li a{-webkit-transform:scale(1);transform:scale(1);letter-spacing:0}.al_body_template_three #myCarousel{border-radius:40px;overflow:hidden}.menu-navigation.alThreeMenu li.al_main_category a .nav-cate-img img{margin:0 auto;border-radius:50%;height:100%;width:auto;-webkit-transition:.1s;transition:.1s}.al_custom_head .al_z_index{z-index:999}.al_body_template_three h2.h2-heading{text-transform:uppercase!important;font-size:26px;letter-spacing:-1px;font-weight:500;color:#777}.footer-theme .sub-title li a:before{display:none}.footer-theme .sub-title .payment-card-bottom li{display:inline-block}.al_box_third_template{padding:12px!important;border-radius:12px!important;background-color:transparent!important;border:1px solid transparent!important}.al_box_third_template .product-image{border-radius:12px}
 .dark.al_body_template_three .address-input-field{ background-color: #2b2b2b;}
 .al_body_template_three .vendors .slick-slide{padding:10px 0 0px;height:auto}
-.al_body_template_three .img-outer-box.position-relative{border-radius:12px;}
+.al_body_template_three .img-outer-box.position-relative{border-radius:12px;padding-bottom: 100%;background-color:#eee}
 .al_body_template_three .slick-slider .img-outer-box.position-relative{border-radius:12px;height:250px}
-.al_body_template_three .img-outer-box.position-relative img{width:100%;margin:0 auto;height:100%;object-fit:cover;transform:none;opacity:1;
+.al_body_template_three .img-outer-box.position-relative img{position: absolute; width:100%;margin:0 auto;height:100%;object-fit:cover;transform:none;opacity:1;
     will-change:transform,opacity;border-radius:inherit;
     filter:unset;padding:0;transition:opacity .25s ease 0s,transform .25s ease 0s}
 .al_body_template_three .add-to-fav{position:absolute;right:15px;top:15px;z-index:1;color:red;width:26px;height:26px;text-align:center;background:#fff;line-height:28px;border-radius:50%;font-size:12px;display:none}.al_body_template_three .add-to-fav input[type=checkbox]{position:absolute;opacity:0}
@@ -200,7 +200,7 @@ body #page-container #footer .footer-theme .sub-title .contact-list li span{padd
 
 
 
-.al_body_template_three div#date_time_set_div9 .slick-slider .slick-prev{left: -25px;z-index: 9;} 
+.al_body_template_three div#date_time_set_div9 .slick-slider .slick-prev{left: -25px;z-index: 9;}
 .al_body_template_three div#date_time_set_div9 .slick-slider .slick-next{right: -25px;}
 
 
@@ -235,6 +235,8 @@ body #page-container #footer .footer-theme .sub-title .contact-list li span{padd
 .cart-main-box,
 .scrollspy-menu{position:sticky;top:203px;width: 100%;}
 .al_body_template_three h2.category-head{position:sticky;top:203px;padding: 15px;background-color: #fff;z-index: 99;}
+.al_body_template_three.dark .al_vendor_product_page a.common-product-box,
+.al_body_template_three.dark h2.category-head{background-color: #242424;}
 
 .scrollspy-menu ul{display:block;list-style:none;text-align:center;}
 

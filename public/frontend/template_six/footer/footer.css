@@ -31,13 +31,52 @@ footer#footer .social-links li a:hover i{-webkit-transform: scale(1);transform: 
 .site-header.fixed-bar .nav-tabs.navigation-tab_al.nav-material .nav-link.active{color: #fff;}
 .site-header.fixed-bar .nav-tabs.navigation-tab_al.nav-material .nav-link,
 .dark .nav-tabs.navigation-tab_al.nav-material .nav-link{color: #fff;}
-body.al_body_template_six.dark,
+body.al_body_template_six.dark{
+    background-color: #232323;
+}
 .dark.al_body_template_six .alSixMainMenu .slick-slide,
 .dark .alFindSec,
 .dark .form-control,
 .dark .vendor_products_tr:hover,
-.dark.al_body_template_six .vendors .product-card-box{background-color: #232323;}
-
+.dark.al_body_template_six .vendors .product-card-box{background-color: #2d2d2d;}
+.dark.al_body_template_six .common-product-box,
+.dark.al_body_template_six .product-card-box{
+    background-color: #2d2d2d;
+}
+.dark.al_body_template_six .product-wrapper-grid .product-card-box{
+    background-color: transparent;
+    box-shadow: none;
+}
+.al_body_template_six.dark .product-box,
+.al_body_template_six.dark .suppliers-box,
+.al_body_template_six.dark .al_custom_brand .render_brands  .brand-box{
+background-color: #2d2d2d;
+}
+.al_body_template_six.dark .collection-filter-block{
+    background-color: #2d2d2d!important;
+}
+.al_body_template_six.dark .product-right .size-box ul.productVariants li{
+    background-color: transparent;
+}
+.dark .sortingFilter.p-1,
+.dark button.btn,
+.dark .alScrollspyProduct select#order_type,
+.dark .cart-main-box-inside,
+.dark .SpasRelatedItems{
+    background-color: #2d2d2d;
+}
+.dark .alScrollspyProduct select#order_type{color: #cfd4da;}
+.product-box{
+    -webkit-transform: scale(.9);
+    transform: scale(.9);
+    -webkit-transition: .5s;
+    transition: .5s;
+    background-color: #fff;
+    padding: 0 0 10px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgb(0 0 0 / 10%);
+    overflow: hidden;
+}
 
 /*============== dark background-color most dark ================== */
 .dark.al_body_template_six .suppliers-img-outer,
@@ -47,7 +86,8 @@ body.al_body_template_six.dark,
 .dark.al_body_template_six .vendors .brand-ing,
 .dark.al_body_template_six .vendors .suppliers-img-outer,
 .dark .outer-box,
-.dark.al_body_template_six .vendors .img-outer-box{background-color: #0C0C0C;}
+.dark.al_body_template_six .vendors .img-outer-box{background-color: #000;}
+
 
 
 
