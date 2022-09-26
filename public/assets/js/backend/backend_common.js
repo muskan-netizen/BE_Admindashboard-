@@ -9,16 +9,15 @@ $(function(){
 /**
  * checkbox attritbute change value
  * @param {*} val 
- * @param {*} className 
+ * @param {*} id 
  */
-function checkobox_action(This,className=""){
-
+function checkobox_action(This,id=""){
+console.log();
     var action_val = 0; 
-    // if($(This).is(":checked")){
-    if(){
+     if($(This).is(":checked")){
         action_val = 1;
     } else {
         action_val = 0;
     }
-    $(This).val(action_val);
+    $(`#${id}`).val(action_val);
 }
