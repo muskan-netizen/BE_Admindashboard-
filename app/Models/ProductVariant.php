@@ -126,10 +126,10 @@ class ProductVariant extends Model
             return $incTaxPrice = ($value + (($value*$vendor->taxCategory->taxRate[0]->tax_rate)/100));
              //dd($value);
         }
-        $checkMarkup = Vendor::where('id',$vendor)->value('add_markup_price');
+        $checkMarkup = Vendor::where('id',$vendor->vendor_id)->value('add_markup_price');
         //if vendor price add with markup price
            if(auth()->user() !=null && auth()->user()->is_admin == 1){
-            $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor)->first();
+            $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor->vendor_id)->first();
             if($userVendor){
                 return $value;
             }
