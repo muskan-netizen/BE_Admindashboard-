@@ -12,10 +12,10 @@
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="javascript: void(0);">UBold</a></li>
                             <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
-                            <li class="breadcrumb-item active">Shopping Cart</li>
+                            <li class="breadcrumb-item active">{{ __("Shopping Cart") }}</li>
                         </ol>
                     </div>
-                    <h4 class="page-title">Shopping Cart</h4>
+                    <h4 class="page-title">{{ __("Shopping Cart") }}</h4>
                 </div>
             </div>
         </div>     
@@ -32,8 +32,8 @@
                                         <thead class="thead-light">
                                             <tr>
                                                 <th>Product</th>
-                                                <th>Price</th>
-                                                <th>Quantity</th>
+                                                <th>{{ __('Price') }}</th>
+                                                <th>{{ __('Quantity') }}</th>
                                                 <th>Total</th>
                                                 <th style="width: 50px;"></th>
                                             </tr>
@@ -163,7 +163,7 @@
 
                             <div class="col-lg-4">
                                 <div class="border p-3 mt-4 mt-lg-0 rounded">
-                                    <h4 class="header-title mb-3">Order Summary</h4>
+                                    <h4 class="header-title mb-3">{{ __('Order Summary') }}</h4>
 
                                     <div class="table-responsive">
                                         <table class="table mb-0">

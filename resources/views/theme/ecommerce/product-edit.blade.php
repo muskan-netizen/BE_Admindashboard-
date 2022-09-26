@@ -81,7 +81,7 @@
                     </div>
 
                     <div class="form-group mb-3">
-                        <label for="product-price">Price <span class="text-danger">*</span></label>
+                        <label for="product-price">{{ __('Price') }} <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="product-price" placeholder="Enter amount">
                     </div>
 
