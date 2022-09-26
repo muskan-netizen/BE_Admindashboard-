@@ -22,7 +22,7 @@ $(function(){
         
 //     } else{
 //         console.log(cart_product_id);
-//         agent.slotings.forEach(function(data) {
+//         agent.slotings.forEach(function(data) {  
 //             // code
 //             html+=`<div class="item"><input type="radio" value='${data.value}' name='agent_id' id='time${data.value}_${cart_product_id}'/>          
 //                     <label for='time${data.value}_${cart_product_id}'><span class="customCheckbox selected-time" aria-hidden="true" data-agent_id='${agent_id}'  data-value='${data.value}' data-cart_product_id='${cart_product_id}'>${data.name}</span></label></div>`;
@@ -33,9 +33,9 @@ $(function(){
 //     initSlideDrag();
 // }
 
-initSlideDrag();
-function initSlideDrag(){
-    const slider = document.querySelector('.items');
+
+function initSlideDrag(Id="",className="items"){
+    const slider = document.querySelector(`.${className}`);
     let isDown = false;
     let startX;
     let scrollLeft;
@@ -85,8 +85,8 @@ async  function showDispatchDriver(driver_ids,cart_product_id,selected_agent='')
   
    var html=`<div class="grid-item main alCustomHomeServiceAgentRadio d-flex justify-content-center radios agentS_${cart_product_id}">`;
     agentData.forEach(function(data,index) {
-
-        if(driverIdArray.includes(String(data.id)) || driverIdArray.includes(data.id)){
+// driverIdArray.includes(String(data.id)) ||
+        if( driverIdArray.includes(data.id)){
             let Selectedclass =  (index==0)? 'selected_agent': '';
             if(selected_agent !='' && selected_agent != undefined ){
                  Selectedclass = selected_agent === data.id  ? 'selected_agent' : '';
