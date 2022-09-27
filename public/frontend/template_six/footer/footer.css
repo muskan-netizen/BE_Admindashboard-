@@ -58,6 +58,10 @@ background-color: #2d2d2d;
 .al_body_template_six.dark .product-right .size-box ul.productVariants li{
     background-color: transparent;
 }
+.al_body_template_six.homeHeader.dark .product-bottom-bar{
+    background-color: #232323;
+}
+.dark .coupon_box{background:#2d2d2d;}
 .dark .sortingFilter.p-1,
 .dark button.btn,
 .dark .alScrollspyProduct select#order_type,
@@ -65,18 +69,23 @@ background-color: #2d2d2d;
 .dark .SpasRelatedItems{
     background-color: #2d2d2d;
 }
-.dark .alScrollspyProduct select#order_type{color: #cfd4da;}
-.product-box{
-    -webkit-transform: scale(.9);
-    transform: scale(.9);
-    -webkit-transition: .5s;
-    transition: .5s;
-    background-color: #fff;
-    padding: 0 0 10px;
-    border-radius: 15px;
-    box-shadow: 0px 4px 10px rgb(0 0 0 / 10%);
-    overflow: hidden;
+.dark .alScrollspyProduct h2.category-head,
+.dark .cart-box-outer.al_white_bg_round.product_row,
+.dark .scrollspy-menu ul li.active, .dark .scrollspy-menu ul li:hover{
+    background-color: #2d2d2d;
+    border-bottom: 0 !important;
 }
+.dark .scrollspy-menu ul li{
+    background-color: #232323;
+}
+.dark .scrollspy-menu ul li:before{
+    border-left: 30px solid #2d2d2d;
+}
+.categories-product-list .number input.input-number {
+    background-color: transparent;
+}
+.dark .alScrollspyProduct select#order_type{color: #cfd4da;}
+
 
 /*============== dark background-color most dark ================== */
 .dark.al_body_template_six .suppliers-img-outer,
