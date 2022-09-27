@@ -6,9 +6,9 @@
     </div>
     <div class="col-4 vendor_slot_cart">
         <input type="hidden" class="custom-control-input check" id="tasknow" name="task_type" value='schedule' >
-        <input type="date" class="form-control vendor_product_schedule_datetime" placeholder="Inline calendar" data-schedule_type="date" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" data-product_id="{{$vendor_product->product->id}}"    value="{{(($vendor_product->scheduled_date_time != '')?$vendor_product->scheduled_date_time : $product->delay_date ) }}"  min="{{(($vendor_product->vendorStartDate != '0') ? $vendor_product->vendorStartDate : $product->delay_date) }}" id="vendor_schedule_date_{{$product->cart_product_id }}" >
+        <input type="date" class="form-control vendor_product_schedule_datetime" placeholder="Inline calendar" data-schedule_type="date" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$vendor_product->id}}" data-product_id="{{$vendor_product->product->id}}"    value="{{(($vendor_product->scheduled_date_time != '')?$vendor_product->scheduled_date_time : $product->delay_date ) }}"  min="{{(($vendor_product->vendorStartDate != '0') ? $vendor_product->vendorStartDate : $product->delay_date) }}" id="vendor_schedule_date_{{$vendor_product->id}}" >
        
-            <select  class="form-control vendor_product_schedule_slot " id="vendor_schedule_slot_selecter_{{$product->cart_product_id }}" data-schedule_type="time"  data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" >
+            <select  class="form-control vendor_product_schedule_slot " id="vendor_schedule_slot_selecter_{{$vendor_product->id }}" data-schedule_type="time"  data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$vendor_product->id}}" >
                 @if((isset($vendor_product->dispatchAgents)) && (isset($vendor_product->dispatchAgents->slots)) && (count((array)$vendor_product->dispatchAgents->slots) > 0) )
                     <option value="">{{__("Select Slot")}} </option>
                     @foreach($vendor_product->dispatchAgents->slots as $slot)

@@ -208,21 +208,16 @@
                                                 $dura = getHoursMinutes($vendor_product->total_booking_time);
                                             @endphp
                                             <p>{{$dura}}</p>
-                                            {{-- <span class="input-group-prepend">
-                                                <button type="button" class="btn incremental-left-minus" data-type="minus" data-field=""><i class="ti-angle-left"></i>
-                                                </button>
-                                            </span> --}}
-                                            {{-- <input  readonly  step="{{@$vendor_product->product->additional_increments.'.'.@$vendor_product->product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs p-0 border"  value="{{$vendor_product->additional_increments_hrs_min }}" data-incremental_hrs={{@$vendor_product->product->additional_increments}}> --}}
-                                            {{-- <span class="input-group-prepend quant-plus">
-                                                <button type="button" class="btn incremental-right-plus" data-type="plus" data-field=""  data-incremental_hrs={{@$vendor_product->product->additional_increments}}>
-                                                    <i class="ti-angle-right"></i>
-                                                </button>
-                                            </span> --}}
+                                           
                                         </div>
                                     </div>
                                 
                                 </div>
                                
+                            </div>
+                            @elseif( $serviceType ==  'appointment')
+                            <div class="col-10 col-md-4 text-md-center order-md-3">
+                                
                             </div>
                             @else
                                 <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -366,7 +361,7 @@
                            </div>
                            @else
                            {{-- Dispatch sloat shoty --}}
-                           @include('frontend.cart.dispatchSlots');
+                           @include('frontend.cart.dispatchSlots')
                           
                            @endif
                            @endif

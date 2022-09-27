@@ -712,8 +712,11 @@ trait cartManager{
                 $show_dispatcher_agent = $prod->product->is_show_dispatcher_agent ;
                 $last_mile_check       = $prod->product->Requires_last_mile  ;
                 $cateTypeId = $prod->product->productcategory->type_id ; 
-                $getSlotingDate = $prod->scheduled_date_time ? $vendorStartDate : Carbon::new();
-              
+                
+                $getSlotingDate = $prod->scheduled_date_time ;
+                if( ($prod->scheduled_date_time =='') || ( strtotime($prod->scheduled_date_time) < strtotime($vendorStartDate) ) ){
+                    $prod->scheduled_date_time = $getSlotingDate = $vendorStartDate ;
+                }
                 $prod->dispatchAgents = [];
                 if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
                     $Dispatch =  $this->getDispatchAppointmentDomain();
