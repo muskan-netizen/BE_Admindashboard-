@@ -12,11 +12,21 @@ use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
-use App\Models\{VendorSlot, ClientCurrency, Order,Type};
+use App\Models\{VendorSlot, ClientCurrency, Order,Type, ClientPreferenceAdditional};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 
-
+if (!function_exists('getAdditionalPreference')) {
+    function getAdditionalPreference($key){
+        $user = ClientData::first();
+        $return = [];
+        $result = ClientPreferenceAdditional::where(['client_code' => $user->code])->whereIn('key_name',$key)->get();
+        foreach ($result as $variable) {
+            $return[$variable->key_name] = $variable->key_value;
+        } 
+        return $return;
+    }
+}
 
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date,$date_format){
@@ -538,10 +548,10 @@ if (!function_exists('showSlot')) {
             })->get();
         } else {
             $slots = VendorSlot::where('vendor_id', $vid)
-        ->whereHas('days', function ($q) use ($mytime, $type) {
-            return $q->where('day', $mytime)->where($type, '1');
-        })
-        ->get();
+                    ->whereHas('days', function ($q) use ($mytime, $type) {
+                        return $q->where('day', $mytime)->where($type, '1');
+                    })
+                    ->get();
         }
 
         // check if vendor has added slots. if not added then no need to execute this.
@@ -746,6 +756,10 @@ if (!function_exists('findSlot')) {
             $time = explode(' - ', $slots[0]['value']);
 
             if ($api != 'api') {
+                if($api == 'webFormet'){ // webFormet for geting date and time 
+                    return ['date'=>$myDate,
+                            'time'=>$time[0]];
+                }
                 return date('d M, Y h:i:A', strtotime($myDate.'T'.$time[0]));
             } else {
                 return date('Y-m-d', strtotime($myDate.'T'.$time[0]));

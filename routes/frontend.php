@@ -462,6 +462,8 @@ Route::group(['middleware' => ['domain']], function () {
 	//cities
 	Route::get('cities/{slug}','Front\VendorCitiesController@getCities')->name('city.getCities');
 
+	Route::post('getSlotFromDispatchDemand', 'Front\FrontController@getSlotFromDispatchDemand')->name('getSlotFromDispatchDemand');
+
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
