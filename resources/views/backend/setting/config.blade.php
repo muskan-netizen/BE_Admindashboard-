@@ -1195,7 +1195,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </label>
                         <label for="" class="mr-3">{{ __("Enable") }}</label>
                         <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable" class="form-control checkbox_change" data-className="is_hubspot_enable_hidden" data-color="#43bee1" 
-                        @if($getAdditionalPreference['is_hubspot_enable'] == '1') checked='checked' value="1"  @endif>
+                        @if(@$getAdditionalPreference['is_hubspot_enable'] == '1') checked='checked' value="1"  @endif>
                         <input type="hidden"  @if(isset($getAdditionalPreference['is_hubspot_enable']) == 1) value="1" @else value="0" @endif  name="is_hubspot_enable"  id="is_hubspot_enable_hidden"/>
       
                         {{-- @if((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1')) checked='checked' @endif> --}}
