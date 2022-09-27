@@ -15,14 +15,45 @@ use App\Models\ShowSubscriptionPlanOnSignup;
 use App\Models\{VendorSlot, ClientCurrency, Order,Type, ClientPreferenceAdditional};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
+// Returns the values of the additional preferences.
+if (!function_exists('getAdditionalPreference')) {    
+  /** check if column exits in table
+     * @param string $tableName
+     * @param string @columnName
+     * @return boolean true or false
+     * @author sudhanshu sharma
+     */
+    function checkColumnExists($tableName, $columnName){
+        if (Schema::hasColumn($tableName, $columnName)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+}
 
-if (!function_exists('getAdditionalPreference')) {
-    function getAdditionalPreference($key){
+if (!function_exists('getAdditionalPreference')) {    
+    /**
+     * getAdditionalPreference
+     *
+     * @param  mixed $key
+     * @return void
+     */
+    function getAdditionalPreference($key=array()){
         $user = ClientData::first();
         $return = [];
-        $result = ClientPreferenceAdditional::where(['client_code' => $user->code])->whereIn('key_name',$key)->get();
-        foreach ($result as $variable) {
-            $return[$variable->key_name] = $variable->key_value;
+        if(sizeof($key)){
+            $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::whereIn('key_name',$key)->where(['client_code' => $user->code])->get() : [];
+            foreach ($key as $i => $variable) {
+                    $value = '';
+                    if(sizeof($result)){
+                        if(@$result[$i]->key_name == $variable){
+                            $value = $result[$i]->key_value;
+                        }
+                    }
+                    $return[$variable] = $value;
+            } 
         } 
         return $return;
     }
@@ -758,7 +789,9 @@ if (!function_exists('findSlot')) {
             if ($api != 'api') {
                 if($api == 'webFormet'){ // webFormet for geting date and time 
                     return ['date'=>$myDate,
-                            'time'=>$time[0]];
+                            'time'=>$time[0],
+                            'datetime'=>date('d M, Y h:i:A', strtotime($myDate.'T'.$time[0]))
+                        ];
                 }
                 return date('d M, Y h:i:A', strtotime($myDate.'T'.$time[0]));
             } else {

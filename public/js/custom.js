@@ -943,7 +943,7 @@ $(document).ready(function () {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
-                text: 'kindly select the scheduled slot!',
+                text: 'kindly select a slot!',
                 //footer: '<a href="">Why do I have this issue?</a>'
             })
             return false;

@@ -183,6 +183,7 @@ class ClientPreferenceController extends BaseController{
              } 
             return redirect()->back()->with('success', 'Client settings updated successfully!');
         } catch (\Throwable $th) {
+           // pr($th->getMessage());
             return redirect()->back()->with('error', 'Something went wrong!!');
         }
       

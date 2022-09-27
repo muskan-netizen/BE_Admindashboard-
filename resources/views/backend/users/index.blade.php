@@ -163,7 +163,7 @@
                 <div class="al_new_export_table royo_customber_btn table_customber_add">
                     <div class="position-absolute mb-2">
                         @if($hub_key==1)
-                            <button class="btn btn-info waves-effect waves-light text-sm-right sync_hubspot" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Sync with hubspot') }}
+                            <button class="btn btn-info waves-effect waves-light text-sm-right sync_hubspot" userId="0"><i class="mdi mdi-sync mr-1"></i>{{ __('Sync with hubspot') }}
                             </button>
                         @endif
                         <button class="btn btn-info waves-effect waves-light text-sm-right importUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}

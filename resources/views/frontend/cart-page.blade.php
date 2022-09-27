@@ -208,21 +208,16 @@
                                                 $dura = getHoursMinutes($vendor_product->total_booking_time);
                                             @endphp
                                             <p>{{$dura}}</p>
-                                            {{-- <span class="input-group-prepend">
-                                                <button type="button" class="btn incremental-left-minus" data-type="minus" data-field=""><i class="ti-angle-left"></i>
-                                                </button>
-                                            </span> --}}
-                                            {{-- <input  readonly  step="{{@$vendor_product->product->additional_increments.'.'.@$vendor_product->product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs p-0 border"  value="{{$vendor_product->additional_increments_hrs_min }}" data-incremental_hrs={{@$vendor_product->product->additional_increments}}> --}}
-                                            {{-- <span class="input-group-prepend quant-plus">
-                                                <button type="button" class="btn incremental-right-plus" data-type="plus" data-field=""  data-incremental_hrs={{@$vendor_product->product->additional_increments}}>
-                                                    <i class="ti-angle-right"></i>
-                                                </button>
-                                            </span> --}}
+                                           
                                         </div>
                                     </div>
                                 
                                 </div>
                                
+                            </div>
+                            @elseif( $serviceType ==  'appointment')
+                            <div class="col-10 col-md-4 text-md-center order-md-3">
+                                
                             </div>
                             @else
                                 <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -365,43 +360,9 @@
                                </div>
                            </div>
                            @else
+                           {{-- Dispatch sloat shoty --}}
+                           @include('frontend.cart.dispatchSlots')
                           
-                           <div class="row mb-1 d-flex align-items-center " style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
-                                <div class="col-5 offset-3 text-lg-right">
-                                    <label class="m-0 radio">
-                                        {{__('Scheduled Slot')}} :</label>
-                                </div>
-                            <div class="col-4 vendor_slot_cart">
-                                <input type="hidden" class="custom-control-input check" id="tasknow" name="task_type" value='schedule' >
-                                @if((isset($vendor_product->dispatchAgents)) && (isset($vendor_product->dispatchAgents->slots)) && (count((array)$vendor_product->dispatchAgents->slots) > 0) )
-                              {{-- @php
-                              pr($product->delay_date);
-                              @endphp --}}
-                                    <input type="date" class="form-control vendor_product_schedule_datetime" placeholder="Inline calendar" data-schedule_type="date" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" data-product_id="{{$vendor_product->product->id}}"    value="{{(($vendor_product->scheduled_date_time != '')?$vendor_product->scheduled_date_time : $product->delay_date ) }}"  min="{{(($vendor_product->vendorStartDate != '0') ? $vendor_product->vendorStartDate : $product->delay_date) }}" id="vendor_schedule_date_{{$product->cart_product_id }}" >
-                                    <select  class="form-control vendor_product_schedule_slot " id="vendor_schedule_slot_selecter_{{$product->cart_product_id }}" data-schedule_type="time"  data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" >
-                                            <option value="">{{__("Select Slot")}} </option>
-                                            @foreach($vendor_product->dispatchAgents->slots as $slot)
-
-                                                <option value="{{$slot->value}}" {{$slot->value == $product->schedule_slot ? "selected" : ""}}  data-show_agent="{{ json_encode($slot->agent_id,TRUE)}}" >{{$slot->name }}</option>
-                                            @endforeach
-                                    </select>
-                                  
-    
-                                @endif
-                                    
-                            </div>
-                        </div>
-                           {{-- <div class="row align-items-md-center alVendorDispatchDate">
-                            <div class="col-6"></div>
-                               <div class="col-3">
-                                   <h6 class="m-0 pl-0">{{ __('Booking Date') }}</h6>
-                                   <p class="m-0">{{date("m/d/Y ", strtotime($vendor_product->scheduled_date_time))}}</p>
-                               </div>
-                               <div class="col-3">
-                                   <h6 class="m-0 pl-0">{{ __('Slot') }}</h6>
-                                   <p class="m-0">{{$product->schedule_slot}}</p>
-                               </div>
-                           </div> --}}
                            @endif
                            @endif
                         @endif
