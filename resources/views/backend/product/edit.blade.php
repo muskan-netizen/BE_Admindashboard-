@@ -572,18 +572,18 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                          @endif   
                             <div class="col-md-6 d-flex justify-content-between mb-2">
                                 {!! Form::label('title', __('Mode Of Service'),['class' => 'control-label']) !!}
-                                <select class="selectize-select1 form-control" name="mode_of_service" required>
+                                <select class="selectize-select1 form-control" name="mode_of_service" id="mode_of_service" required>
                                     <option value="instant" @if($product->mode_of_service == 'instant') selected="selected" @endif>{{ __('Instant') }}</option>
                                     <option value="schedule" @if($product->mode_of_service == 'schedule') selected="selected" @endif>{{ __('Schedule') }}</option>
                                 </select>
                             </div>
                             @if($product->Requires_last_mile == 1 )
                             @if($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12 )
-                                <div class="col-md-6 d-flex justify-content-between mb-2">
+                                <div class="col-md-6 d-flex justify-content-between mb-2 dispatch_Agent">
                                     {!! Form::label('title', __('Sloting from Dispatch'),['class' => 'control-label']) !!}
                                     <input type="checkbox" id="is_slot_from_dispatch" data-plugin="switchery" name="is_slot_from_dispatch" class="chk_box" data-color="#43bee1" @if($product->is_slot_from_dispatch == 1) checked @endif>
                                 </div>
-                                <div class="col-md-6 d-flex justify-content-between mb-2">
+                                <div class="col-md-6 d-flex justify-content-between mb-2 dispatch_Agent">
                                     {!! Form::label('title', __('Show Dispatch Agent'),['class' => 'control-label']) !!}
                                     <input type="checkbox" id="is_show_dispatcher_agent" data-plugin="switchery" name="is_show_dispatcher_agent" class="chk_box" data-color="#43bee1" @if($product->is_show_dispatcher_agent == 1) checked @endif>
                                 </div>
@@ -1869,6 +1869,18 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
             }
          });
       });
+    
+      $('#mode_of_service').change(function(){
+           var selected_value =$(this).val();
+          // console.log(selected_value);
+            if(selected_value == 'schedule'){
+                $('.dispatch_Agent').removeClass('d-none')
+                $('.dispatch_Agent').addClass('d-flex ')
+            } else {
+                $('.dispatch_Agent').removeClass('d-flex')
+               $('.dispatch_Agent').addClass('d-none ')
+            }
+        })
 
     </script>
 
