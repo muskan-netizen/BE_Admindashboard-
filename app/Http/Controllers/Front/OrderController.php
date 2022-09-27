@@ -1508,7 +1508,7 @@ class OrderController extends FrontController
                 ],
                 "priority" => "high"
             ];
-           
+           Log::info('data for notification '.json_encode($data));
             if(!empty($from)){
                 // helper function
                 sendFcmCurlRequest($data);
