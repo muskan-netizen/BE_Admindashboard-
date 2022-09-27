@@ -24,14 +24,10 @@ class CreateClientPreferenceAdditionalTable extends Migration
                 $table->string('is_private')->nullable();
                 $table->string('is_boolean')->nullable();
                 $table->timestamps();
-<<<<<<< HEAD
-                //$table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
-=======
-               
->>>>>>> pre_dev
+
             });
-            
-            
+
+
         }
 
     /**
