@@ -2262,8 +2262,10 @@ $sms_crendential = json_decode($preference->sms_credentials);
       var dispatcherDiv = $('#need_dispacher_ride');
       var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
       var laundry_service = $('#need_laundry_service');
+      
+      var laundry_service = $('#need_laundry_service');
 
-      var need_inventory_service = $('#need_inventory_service');
+      var is_hubspot_enable = $('#is_hubspot_enable');
 
       if(laundry_service.length > 0){
          laundry_service[0].onchange = function() {
@@ -2272,6 +2274,16 @@ $sms_crendential = json_decode($preference->sms_credentials);
                $('.laundryServiceFields').hide();
             } else {
                $('.laundryServiceFields').show();
+            }
+         }
+      }
+      if(is_hubspot_enable.length > 0){
+         is_hubspot_enable[0].onchange = function() {
+
+            if ($('#is_hubspot_enable:checked').length != 1) {
+               $('.hub_row').hide();
+            } else {
+               $('.hub_row').show();
             }
          }
       }
