@@ -2281,7 +2281,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          is_hubspot_enable[0].onchange = function() {
 
             if ($('#is_hubspot_enable:checked').length != 1) {
-               $('.hub_row').hide();
+               $('.hub_row').addClass('d-none');
             } else {
                $('.hub_row').show();
             }
