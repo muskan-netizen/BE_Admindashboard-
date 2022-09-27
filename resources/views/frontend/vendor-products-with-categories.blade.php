@@ -528,6 +528,7 @@
 
                             }
                         %>
+
                         <span class="ellips"><%= vendor_product.quantity %>x <%=
                         vendor_product.product.translation_one ? translationOneTitle :  vendor_product.product.sku %></span>
                         <span>
