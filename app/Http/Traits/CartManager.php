@@ -399,14 +399,10 @@ trait cartManager{
 
                 $slots = (object)$slotsRes['slots'];
                 // this variable for get slot from dispatc
-                $vendorStartDate = $slotsdate = $slotsRes['date'];
-                $vendorStartTime = '';
+                $slotsdate = $slotsRes['date'];
+              
                 $slotcount =count((array)$slots);
-                if (isset($slots) &&  $slotcount >0) {
-                    $firstSlot = (array)$slots;
-                    $time = explode(' - ', $firstSlot[0]['value']);
-                    $vendorStartTime = $time[0];
-                }
+               
                 $vendor_latitude = $vendorData->vendor->latitude ?? 30.71728880;
                 $vendor_longitude =  $vendorData->vendor->longitude ?? 76.80350870;
               
@@ -473,7 +469,11 @@ trait cartManager{
                 $total_markup_fee_tax = 0;
                 /* Getting in Vendor product loop and setting product values*/
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
-        
+                  $slotsDate = findSlot('',$vendorData->vendor->id,'','webFormet');
+                 
+                  $vendorData->delaySlot = (($slotsDate)? ( $slotsDate['datetime']?  $slotsDate['datetime'] : '' ):'');
+                  $vendorStartDate =  (($slotsDate)? ( $slotsDate['date'] ?  $slotsDate['date'] : '' ):'');
+                  $vendorStartTime =  (($slotsDate)? ( $slotsDate['time'] ?  $slotsDate['time'] : '' ):'');
                 if($prod->pvariant)   {
                     
                     $cart_product_ids[] = $prod->product_id;    
@@ -868,8 +868,7 @@ trait cartManager{
                 //$payable_amount = $payable_amount + $deliver_charge;
                 //Start applying service fee on vendor products total
               
-                // $slotsDate = findSlot('',$vendorData->vendor->id,'');
-                // $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
+                
                     
                 $vendor_service_fee_percentage_amount = 0;
                 if($vendorData->vendor->service_fee_percent > 0){
@@ -897,8 +896,8 @@ trait cartManager{
                 $vendorData->isDeliverable = 1;
                 $vendorData->promo_free_deliver = $PromoFreeDeliver;
                 $vendorData->is_vendor_closed = $is_vendor_closed;
-                $slotsDate = findSlot('',$vendorData->vendor->id,'');
-                $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
+                // $slotsDate = findSlot('',$vendorData->vendor->id,'');
+                // $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
                 $vendorData->closed_store_order_scheduled = (($slotsDate)?$product->vendor->closed_store_order_scheduled:0);
                 $vendorData->delOptions = $select;
 

@@ -814,13 +814,13 @@ class FrontController extends Controller
             $show_dispatcher_agent = $product ? $product->is_show_dispatcher_agent  : '';
             $last_mile_check       = $product ? $product->Requires_last_mile  : '';
             $vendorStartDate       = $vendorStartTime  = '';
-           
+            $html = "";
             if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
                 
                 $Dispatch =  $this->getDispatchAppointmentDomain();
                 $dispatchAgents = [];
                 $cart_product_id = $request->cart_product_id??0;
-                $html = "";
+               
                 if($Dispatch){
                   
                    $vendor_latitude =  $product->vendor ? $product->vendor->latitude : 30.71728880;
@@ -847,18 +847,18 @@ class FrontController extends Controller
                 }
                 
                 if((isset($dispatchAgents)) && (isset($dispatchAgents['slots'])) && ( count($dispatchAgents['slots']) > 0 ) ){
-                   
                       $html .= "<option value=''>".__('Select Slot')." </option>";
-                   
                       foreach($dispatchAgents['slots'] as $slot){
                       
                           $html .= "<option value='".$slot['value']."'  data-show_agent='".json_encode($slot['agent_id'],TRUE)."' >".$slot['name'].`"</option>"`;
                       }
-
+                }else{
+                    $html .= "<option value=''>".__('No Slot Available')." </option>";
                 }
                 return response()->json(['status'=>'Success','html'=>$html, 'message'=>'get slots']);
             }
-            return response()->json(['status'=>'Success','html'=>'', 'message'=>"get slots"]);
+            $html .= "<option value=''>".__('No Slot Available')." </option>";
+            return response()->json(['status'=>'Success','html'=>$html, 'message'=>"get slots"]);
           
     }
 

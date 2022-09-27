@@ -789,7 +789,9 @@ if (!function_exists('findSlot')) {
             if ($api != 'api') {
                 if($api == 'webFormet'){ // webFormet for geting date and time 
                     return ['date'=>$myDate,
-                            'time'=>$time[0]];
+                            'time'=>$time[0],
+                            'datetime'=>date('d M, Y h:i:A', strtotime($myDate.'T'.$time[0]))
+                        ];
                 }
                 return date('d M, Y h:i:A', strtotime($myDate.'T'.$time[0]));
             } else {
