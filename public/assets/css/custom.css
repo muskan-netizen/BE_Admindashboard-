@@ -4526,7 +4526,7 @@ body[dir="rtl"] .dataTables_filter {
   body .content-page .btn.btn-info.alAddProductBtn{max-width: 120px;}
   body .content-page button.btn.btn-info.openVendorSectionModal{max-width: 140px;}
   body .dataTables_wrapper .dataTables_paginate .paginate_button {min-width: auto;padding: .5em 0em;}
-
+  .al_new_export_table .sync_hubspot {max-width: 150px !important;}
   }
 @media(max-width:767px){
 .al_order_sec .order_head h4 {opacity: 1}
@@ -4557,6 +4557,10 @@ body div.dataTables_wrapper div.dataTables_filter input {width: 100%;margin: 0;}
 #ProductPerformanceReport .table-responsive.mt-2{height: 200px;margin-bottom: 20px;}
 .apexcharts-inner {display: none;}
 .order-list-view .ellips {max-width: calc(100% - 100px);}
+.main-customer-page .al_new_export_table .position-absolute.mb-2{top: -40px;text-align: left !important;}
+.al_new_export_table .sync_hubspot {max-width: 130px !important;}
+.main-customer-page .position-absolute .btn.btn-info{margin-bottom: 4px;}
+.main-customer-page .al_new_export_table .position-absolute{margin-bottom: 4px;}
 
 
 }

@@ -10,11 +10,13 @@ function syncHubspotData(){
     spinnerJS.showSpinner();
     axios.post(`/client/hubspot/create-contact`)
     .then(async response => {
-        console.log(response)
+        console.log(response.data.status)
         if(response.data.status){
             spinnerJS.hideSpinner();
+            sweetAlert.success('Success',response.data.message)
         } else {
             spinnerJS.hideSpinner();
+            sweetAlert.error('Oops...',response.data.message)
         }
     })
     .catch(e => {
