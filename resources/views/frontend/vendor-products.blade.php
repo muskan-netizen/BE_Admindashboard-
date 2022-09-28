@@ -30,7 +30,12 @@
                                                 </label>
                                             </div>
                                             <div class="name_location d-block py-0">
-                                                <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4>
+                                                <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4> 
+                                                <a href="javascript:void(0)" onclick="copyToClipboard('#p1')" >
+                                                    <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
+                                                    <span class="copied_txt" id="show_copy_msg_on_click_copied" style="display:none;">{{ __('Copied') }}</span>
+                                                </a>
+                                                <span id="p1" style="display:none;">{{url()->current()}}</span>
                                             </div>
 
                                                 <div class="">
@@ -44,7 +49,7 @@
                                                     @endif
                                                     @endif
                                                     @if($vendor->instagram_url)
-                                                        <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>
+                                                        <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-user-o"></i></a>
                                                     @endif
                                                 </div>
                                                 @if ($vendor->is_show_vendor_details == 1 && $vendor->order_min_amount > 0)
@@ -388,6 +393,20 @@
     $(document).on('change','.sortingFilter',function(){
         filterProducts();
     });
+
+    function copyToClipboard(element) {
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($(element).text()).select();
+        document.execCommand("copy");
+        $temp.remove();
+        $("#show_copy_msg_on_click_copy").hide();
+        $("#show_copy_msg_on_click_copied").show();
+        setTimeout(function() {
+            $("#show_copy_msg_on_click_copied").hide();
+            $("#show_copy_msg_on_click_copy").show();
+        }, 1000);
+    }
 
     function filterProducts() {
         var brands = [];
