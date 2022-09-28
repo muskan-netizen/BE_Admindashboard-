@@ -149,7 +149,7 @@ article#page-container{position: relative;min-height: 100vh;}
     justify-content:center;-webkit-box-align:center;align-items:center;
     border-radius:6.6rem;color:#fff;background:var(--theme-deafult);
     border:1px solid var(--theme-deafult);padding:0;cursor:pointer;
-    position:fixed;bottom:60px;z-index:111;margin:0 auto;left:auto;right:0}.manu-bars{width:1.1rem;height:1rem;margin-right:5px;position:relative;transform:rotate(0);transition:transform .15s ease-in-out 0s;cursor:pointer}
+    position:fixed;bottom:110px;z-index:111;margin:0 auto;left:auto;right:0}.manu-bars{width:1.1rem;height:1rem;margin-right:5px;position:relative;transform:rotate(0);transition:transform .15s ease-in-out 0s;cursor:pointer}
 .manu-bars .bar-line{
 transform-origin:left center;display:block;position:absolute;cursor:pointer;height:2px;width:100%;border-radius:0;opacity:1;left:0;
 background-color:#fff;transform:rotate(0);
@@ -227,8 +227,8 @@ body #page-container #footer .footer-theme .sub-title .contact-list li span{padd
 /* cab booking code end */
 .cart-main-box,
 .scrollspy-menu{position:sticky;top:203px;width: 100%;}
-.al_body_template_three h2.category-head{position:sticky;top:203px;padding: 15px;background-color: #fff;z-index: 99;}
-
+.al_body_template_three h2.category-head{position:sticky;top:203px;padding: 15px;background-color: #fff;z-index: 9;}
+.dark.al_body_template_three h2.category-head{background-color:#232323;}
 .scrollspy-menu ul{display:block;list-style:none;text-align:center;}
 
 .scrollspy-menu li{display:block}
@@ -475,6 +475,7 @@ footer#footer{
     body.al_body_template_three.dark .sm-horizontal{
         background-color: transparent;
     }
+    .al_body_template_three h2.category-head{top:135px;    }
     body[dir=rtl] .al_footer_template_three ul {
         text-align: right;
     }
