@@ -242,7 +242,7 @@
                                                                                     if (count($data->addOn) > 0) {
                                                                                         $isAddonExist = 1;
                                                                                     }
-                                                                                   // dd($data->variant);
+                                                                                   //pr($data->toArray());
                                                                                 @endphp
 
                                                                                 @foreach ($data->variant as $var)
@@ -297,6 +297,7 @@
                                                                                             ({{ $minimum_order_count }})
                                                                                         @endif
                                                                                     </a>
+                                                                                    @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
                                                                                     <div class="number"
                                                                                         id="show_plus_minus{{ $cartProductId }}">
                                                                                         <span
@@ -335,6 +336,9 @@
                                                                                                 aria-hidden="true"></i>
                                                                                         </span>
                                                                                     </div>
+                                                                                    @else
+                                                                                    <a class="btn btn-solid " id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                                    @endif
                                                                                 @else
                                                                                     @if ($prod->has_inventory == 0 || ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1))
                                                                                         {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
@@ -352,40 +356,44 @@
                                                                                                 ({{ $minimum_order_count }})
                                                                                             @endif
                                                                                         </a>
-                                                                                        <div class="number"
-                                                                                            style="display:none;"
-                                                                                            id="ashow_plus_minus{{ $data->id }}">
-                                                                                            <span
-                                                                                                class="minus qty-minus-product"
-                                                                                                data-parent_div_id="show_plus_minus{{ $data->id }}"
-                                                                                                data-id="{{ $data->id }}"
-                                                                                                data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
-                                                                                                data-vendor_id="{{ $data->vendor_id }}"
-                                                                                                data-batch_count="{{ $batch_count }}"
-                                                                                                data-minimum_order_count="{{ $minimum_order_count }}">
-                                                                                                <i class="fa fa-minus"
-                                                                                                    aria-hidden="true"></i>
-                                                                                            </span>
-                                                                                            <input
-                                                                                                style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
-                                                                                                id="quantity_ondemand_d{{ $data->id }}"
-                                                                                                readonly
-                                                                                                placeholder="{{ $minimum_order_count }}"
-                                                                                                type="text"
-                                                                                                value="{{ $minimum_order_count }}"
-                                                                                                class="input-number input_qty"
-                                                                                                step="0.01">
-                                                                                            <span
-                                                                                                class="plus qty-plus-product"
-                                                                                                data-id=""
-                                                                                                data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
-                                                                                                data-vendor_id="{{ $data->vendor_id }}"
-                                                                                                data-batch_count="{{ $batch_count }}"
-                                                                                                data-minimum_order_count="{{ $minimum_order_count }}">
-                                                                                                <i class="fa fa-plus"
-                                                                                                    aria-hidden="true"></i>
-                                                                                            </span>
-                                                                                        </div>
+                                                                                        @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
+                                                                                            <div class="number"
+                                                                                                style="display:none;"
+                                                                                                id="ashow_plus_minus{{ $data->id }}">
+                                                                                                <span
+                                                                                                    class="minus qty-minus-product"
+                                                                                                    data-parent_div_id="show_plus_minus{{ $data->id }}"
+                                                                                                    data-id="{{ $data->id }}"
+                                                                                                    data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
+                                                                                                    data-vendor_id="{{ $data->vendor_id }}"
+                                                                                                    data-batch_count="{{ $batch_count }}"
+                                                                                                    data-minimum_order_count="{{ $minimum_order_count }}">
+                                                                                                    <i class="fa fa-minus"
+                                                                                                        aria-hidden="true"></i>
+                                                                                                </span>
+                                                                                                <input
+                                                                                                    style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
+                                                                                                    id="quantity_ondemand_d{{ $data->id }}"
+                                                                                                    readonly
+                                                                                                    placeholder="{{ $minimum_order_count }}"
+                                                                                                    type="text"
+                                                                                                    value="{{ $minimum_order_count }}"
+                                                                                                    class="input-number input_qty"
+                                                                                                    step="0.01">
+                                                                                                <span
+                                                                                                    class="plus qty-plus-product"
+                                                                                                    data-id=""
+                                                                                                    data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
+                                                                                                    data-vendor_id="{{ $data->vendor_id }}"
+                                                                                                    data-batch_count="{{ $batch_count }}"
+                                                                                                    data-minimum_order_count="{{ $minimum_order_count }}">
+                                                                                                    <i class="fa fa-plus"
+                                                                                                        aria-hidden="true"></i>
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        @else
+                                                                                            <a class="btn btn-solid "  style="display:none;" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                                        @endif
                                                                                     @else
                                                                                         <span
                                                                                             class="text-danger">{{ __('Out of stock') }}</span>
