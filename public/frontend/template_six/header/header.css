@@ -28,6 +28,7 @@ body{margin: 0;background-color: #fff;font-family: 'MontserratRegular' !importan
 .nav-tabs.navigation-tab_al.nav-material .nav-link.active{background-color: var(--theme-deafult);color: #fff;}
 .logo a.navbar-brand{padding: 0;margin-bottom: 5px;}
 .logo a.navbar-brand img{height: 100%;}
+.menu-navigation_al .pixelstrap  li.al_main_category:hover ul.al_main_category_list{display: block;}
 .vendor_mods_section{order: 2;}
 .rightHead{order: 3;}
 .al_body_template_six .viewAllProductSec ul li{margin-bottom: 0;text-align: right;}

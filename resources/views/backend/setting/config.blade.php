@@ -1182,22 +1182,22 @@ $sms_crendential = json_decode($preference->sms_credentials);
       <input type="hidden" name="send_to" id="send_to" value="configure">
       @csrf
       <div class="row">
-         <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
+         <div class="col-xl-3 col-lg-6 mb-3">
             <!-- HubSpot card start -->
             <div class="card-box h-100">
                <div class="row">
                   <div class="col-12">
                      <div class="form-group mb-0 switchery-demo">
                         <label for="fb_login" class="d-flex align-items-center justify-content-between">
-                           <h5 class="social_head"><i class="fab fa-facebook-f"></i> <span>{{ __("Hubspot") }}</span></h5>
+                           <h5 class="social_head"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg> <span>{{ __("Hubspot") }}</span></h5>
 
                            <button class="btn btn-info btn-block save_btn" name="hubspot_submit" type="submit"> {{ __("Save") }} </button>
                         </label>
                         <label for="" class="mr-3">{{ __("Enable") }}</label>
-                        <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable" class="form-control checkbox_change" data-className="is_hubspot_enable_hidden" data-color="#43bee1" 
+                        <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable" class="form-control checkbox_change" data-className="is_hubspot_enable_hidden" data-color="#43bee1"
                         @if(@$getAdditionalPreference['is_hubspot_enable'] == '1') checked='checked' value="1"  @endif>
                         <input type="hidden"  @if(isset($getAdditionalPreference['is_hubspot_enable']) == 1) value="1" @else value="0" @endif  name="is_hubspot_enable"  id="is_hubspot_enable_hidden"/>
-      
+
                         {{-- @if((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1')) checked='checked' @endif> --}}
                      </div>
                   </div>
@@ -1300,7 +1300,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   @endif
-                  
+
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                         <label for="subscription_tab_taxi" class="mr-2 mb-0">{{ __("Subscription Tab") }}<small class="d-block pr-5">Enable subscription tab for taxi/cab.</small></label>
@@ -1520,7 +1520,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          <!-- Custom Mods end -->
       </div>
    </div>
-   
+
    <div class="row">
       {{--<div class="col-lg-6">
          <div class="page-title-box">
@@ -2262,7 +2262,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       var dispatcherDiv = $('#need_dispacher_ride');
       var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
       var laundry_service = $('#need_laundry_service');
-      
+
       var laundry_service = $('#need_laundry_service');
 
       var is_hubspot_enable = $('#is_hubspot_enable');
