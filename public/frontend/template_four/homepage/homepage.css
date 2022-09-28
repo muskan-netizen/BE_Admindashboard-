@@ -389,7 +389,50 @@ body.dark .iti--separate-dial-code .iti__selected-flag{background-color: #232323
 .dark .iti__country-list,
 .dark .list-box{background-color: #242424;}
 
-
+/* arabic css */
+body[dir="rtl"] ul.header-dropdown.ml-auto.d-lg-block.d-none{
+margin-left: 0 !important;
+margin-right: auto !important;
+}
+body[dir=rtl] .vendors .slick-slider{
+direction: ltr;
+}
+body[dir=rtl] .offset-lg-1{
+margin-left: 0;
+margin-right: 8.3333333333%;
+}
+body[dir=rtl] .vendors .slick-prev{
+left: 0;
+right: 00;
+}
+body[dir=rtl] .vendors .slick-next{
+right: 70px;
+left: 30px;
+}
+body[dir=rtl] .footer-title.mt-0{
+  text-align: right;
+}
+body[dir=rtl] .footer-theme .sub-title .contact-list li{
+  padding-left: 0px !important;
+  padding-right: 25px !important;
+}
+body[dir=rtl] ul.contact-list.al{
+  float: right;
+  text-align: right;
+}
+body[dir=rtl] .footer-theme .sub-title .contact-list i{
+  left: auto;
+  right: 0;
+}
+body[dir=rtl] .d-inline-flex.al_searchType.border.align-items-center.justify-content-start.px-xl-2.px-lg-1.position-relative{
+  margin: 0 20px;
+}
+body[dir=rtl] .location-bar.d-inline-flex.align-items-center.position-relative.mr-xl-3.mr-lg-1{
+  margin-right: 0 !important;
+}
+body[dir=rtl] .alFourThLogo{
+  float: right;
+}
 
 /* responsive css start */
 @media(max-width:1450px){.product-m .slick-slide{margin: 0;}}
