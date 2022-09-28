@@ -241,7 +241,7 @@ span.pagingInfo{position:absolute;top:-80px;right:35px;color:#fff}ol.breadcrumb{
 .regular-nav .slick-slide{margin:0 20px}
 .regular{margin-bottom:15px;width:100%}
 .regular div{overflow:hidden;position: relative;min-height: 550px;}
-.regular img {width: 100%;height: 100%;position: absolute;object-fit: cover;}
+.regular img{width: 100%;height: 100%;position: absolute;object-fit: cover;}
 .regular-nav .slick-slide{opacity:1;-webkit-transition:all .3s ease;transition:all .3s ease;}
 .regular-nav .slick-slide.slick-active,.regular-nav .slick-slide:hover{opacity:1;}
 #product__slider{max-width:100%;width:100%;margin:0 auto;padding-bottom:50px;}
@@ -352,13 +352,18 @@ section.home-serivces .card-box{background-color: transparent;padding: 0;box-sha
 
 /*===================== login page css start here ==================== */
 .login-section{position: relative;}
+body.dark  .iti--separate-dial-code .iti__selected-flag{background-color: #232323;}
+body .iti__country-list{max-width: 300px;}
+body.dark .iti__country-list{background-color: #232323;}
+body .flag-container li, body .iti__flag-container li{display: block;}
 img.LoginAreaBG{position: absolute;left: 0;right: 0;width: 100%;top: 0;object-fit: cover;height: 100%;z-index: 0;}
 article.bgFourPage img.LoginAreaBG{opacity: .7;}
 #login-section{background-color: #fff;height: 100%;width: 100%;background-position: center;background-size: cover;border-radius: 50px;position: relative;overflow: hidden;box-shadow: 0 0 10px rgb(0 0 0 / 20%);}
 #login-section .LoginLogoBG{position:relative;z-index: 2;text-align: center;}
 #login-section::before,#login-section::after{position: absolute;content:"";height:100%;width:50%;top:0;right:0;background-color:#fff;z-index: 0;}
-.bgFourPage{background-color: var(--theme-deafult);height: 100vh;position:fixed;width:100%;filter: blur(10px);}
+.bgFourPage{background-color: var(--theme-deafult);height: 100vh;position:fixed;width:100%;filter: blur(10px);top: 0;}
 #login-section::before, #login-section::after{z-index: 1;}
+.dark #login-section::before{background-color: #232323;}
 #login-section::after{background-color: var(--theme-deafult);right: auto;left: 0;opacity: 0.7;}
 .LogoInArea label,
 #register label{text-transform: capitalize;font-size: 12px;margin-top: 10px !important;}
@@ -375,7 +380,10 @@ body.al_body_template_four .login_continue_btn{font-weight: 700;font-size: 14px 
 .registerLink a{font-weight: bold;color: var(--theme-deafult);}
 .ALdivider_line{height: 1px;width: 100%;opacity: 1;background-color: #ccc;position: relative;margin: 40px 0 !important;}
 .ALdivider_line span{height: auto;line-height: normal;border: 0;box-shadow: 0 0 4px 0 rgb(0, 0, 0 / 5%);font-size: 14px;font-weight: 400;border-radius: 0;text-align: center;display: inline-block;background: #fff;position: absolute;top: -10px;left: 0;right: 0;max-width: 130px;margin: 0 auto;}
+.dark .ALdivider_line span{background-color: #232323;}
 .LogoInArea .social-links li a{height: 50px;width: 50px;line-height: 50px;border-radius: 10px;display: block;background-color: #fff;box-shadow: 0 0 5px rgb(0 0 0 / 10%);margin: 0 4px;}
+.dark .LogoInArea .social-links li a{background-color: #323232;}
+.dark button.btn.btn-solid.w-100.login_continue_btn.my-2:hover{color: #fff !important;}
 .LogoInArea label{margin-bottom:0;text-align: left;}
 .hide{display: none;}
 .checkbox-input label{position: relative;padding-left: 25px;font-size: 12px;}
