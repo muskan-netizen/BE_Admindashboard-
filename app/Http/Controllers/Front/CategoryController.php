@@ -654,7 +654,7 @@ class CategoryController extends FrontController{
         $today = $dates->format('Y-m-d');
 
         if($today < $request->cur_date){
-            $curr_time = "00:00";
+            $curr_time = date('Y-m-d 00:00');
         }else{
             $daten = new DateTime("now", new DateTimeZone($timezone) );
             $curr_time = $daten->format('h:i');
@@ -665,24 +665,33 @@ class CategoryController extends FrontController{
         }else{
             $date = $today;
         }
-
+        
         $slots = showSlot($date,$request->product_vendor_id,'delivery');
 
-        $start_time = new DateTime("now", new  DateTimeZone($timezone) );
-        $start_time = $start_time->format('Y-m-d H:m');
-        $end_time = date('Y-m-d 23:59');
+      
 
         $time_slots = [];
         if(!empty($slots)){
-            $i = 0;
-            foreach($slots as $slot){
-                $newSlot = explode('-', $slot['value']);
-                $time_slots[$i++] = trim($newSlot[0]);
-            }
+            $time_slots = $slots;
+            // $i = 0;
+            // foreach($slots as $slot){
+            //     $newSlot = explode('-', $slot['value']);
+            //     $time_slots[$i++] = trim($newSlot[0]);
+            // }
         }else{
-        $time_slots = $this->SplitTime($start_time, $end_time, "60"); // this is for static slots 
+            $end_time = date('Y-m-d 23:59');
+            $timing   = $this->SplitTime($curr_time, $end_time, "60");
+            foreach ($timing as $k=> $slt) {
+                if($k+1 < count($timing)){
+                    $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
+                    $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
+                    $time_slots[] =  $viewSlot;
+                }
+            }
+          //$time_slots  // this is for static slots 
         }
 
+        //pr($time_slots);
         $cart_product_id = $request->cart_product_id??0;
         if ($request->ajax()) {
            return \Response::json(\View::make('frontend.ondemand.time-slots-for-date', array('time_slots' => $time_slots,'cart_product_id'=> $cart_product_id))->render());

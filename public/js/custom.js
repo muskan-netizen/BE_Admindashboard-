@@ -3801,7 +3801,7 @@ $(document).ready(function () {
 
     $(document).on('click', '.selected-time', function () {
 
-        let selected_time   =  $(this).html();
+        let selected_time   =  $(this).data("value");
         let cart_product_id = $(this).data("cart_product_id");
         let dispatch_agent_id = '';
         let agent_ids = $(this).data("agent_ids");
