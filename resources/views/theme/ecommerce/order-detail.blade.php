@@ -82,8 +82,8 @@
                                     <tr>
                                         <th>Product name</th>
                                         <th>Product</th>
-                                        <th>Quantity</th>
-                                        <th>Price</th>
+                                        <th>{{ __('Quantity') }}</th>
+                                        <th>{{ __('Price') }}</th>
                                         <th>Total</th>
                                     </tr>
                                 </thead>

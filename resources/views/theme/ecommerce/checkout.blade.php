@@ -50,7 +50,7 @@
                                 </div>  
 
                                 <div class="border mt-4 rounded">
-                                    <h4 class="header-title p-2 mb-0">Order Summary</h4>
+                                    <h4 class="header-title p-2 mb-0">{{ __('Order Summary') }}</h4>
 
                                     <div class="table-responsive">
                                         <table class="table table-centered table-nowrap mb-0">
@@ -440,7 +440,7 @@
                                                 <div class="row mt-4">
                                                     <div class="col-sm-6">
                                                         <a href="{{route('second', ['ecommerce', 'cart'])}}" class="btn btn-secondary">
-                                                            <i class="mdi mdi-arrow-left"></i> Back to Shopping Cart </a>
+                                                            <i class="mdi mdi-arrow-left"></i> {{ __("Back to Shopping Cart") }} </a>
                                                     </div> <!-- end col -->
                                                     <div class="col-sm-6">
                                                         <div class="text-sm-right mt-2 mt-sm-0">
@@ -526,7 +526,7 @@
                                             <div class="row mt-4">
                                                 <div class="col-sm-6">
                                                     <a href="{{route('second', ['ecommerce', 'cart'])}}" class="btn btn-secondary">
-                                                        <i class="mdi mdi-arrow-left"></i> Back to Shopping Cart </a>
+                                                        <i class="mdi mdi-arrow-left"></i> {{ __("Back to Shopping Cart") }} </a>
                                                 </div> <!-- end col -->
                                                 <div class="col-sm-6">
                                                     <div class="text-sm-right mt-2 mt-sm-0">
@@ -616,7 +616,7 @@
                                             <div class="row mt-4">
                                                 <div class="col-sm-6">
                                                     <a href="{{route('second', ['ecommerce', 'cart'])}}" class="btn btn-secondary">
-                                                        <i class="mdi mdi-arrow-left"></i> Back to Shopping Cart </a>
+                                                        <i class="mdi mdi-arrow-left"></i> {{ __("Back to Shopping Cart") }} </a>
                                                 </div> <!-- end col -->
                                                 <div class="col-sm-6">
                                                     <div class="text-sm-right mt-2 mt-sm-0">
