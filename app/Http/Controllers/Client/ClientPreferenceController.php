@@ -351,7 +351,6 @@ class ClientPreferenceController extends BaseController{
             $preference->view_get_estimation_in_category = ($request->has('view_get_estimation_in_category') && $request->view_get_estimation_in_category == 'on') ? 1 : 0; //Added by ovi
             $preference->max_safety_mod = ($request->has('max_safety_mod') && $request->max_safety_mod == 'on') ? 1 : 0;
 
-            $preference->address_is_car = ($request->has('address_is_car') && $request->address_is_car == 'on') ? 1 : 0;
             $preference->hide_order_address = ($request->has('hide_order_address') && $request->hide_order_address == 'on') ? 1 : 0;
             $preference->auto_implement_5_percent_tip = ($request->has('auto_implement_5_percent_tip') && $request->auto_implement_5_percent_tip == 'on') ? 1 : 0;
             $preference->subscription_tab_taxi = ($request->has('subscription_tab_taxi') && $request->subscription_tab_taxi == 'on') ? 1 : 0;

@@ -40,12 +40,12 @@
             <div class="row border-bottom">
                         <div class="col-6">
                             <div class="single_cart_heading">
-                                    <h3>Shopping Cart</h3>
+                                    <h3>{{ __("Shopping Cart") }}</h3>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="item-show-cart text-right">
-                                <h4>{{$cart_details->totalQuantity}}  Items</h4>
+                                <h4>{{$cart_details->totalQuantity}}  {{ __("Items") }}</h4>
                             </div>
                         </div>
             </div>
