@@ -8,6 +8,7 @@ jQuery(document).ready(function () {
     jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
     jQuery("#content-wrap").css('padding-bottom', footer_height);
 
+    jQuery("h2.category-head, .scrollspy-menu, .cart-main-box").css('top', header_height);
 
     jQuery(window).scroll(function () {
         var scroll = jQuery(window).scrollTop();
@@ -905,14 +906,14 @@ $(document).ready(function () {
       $returnVal = 1;
       var product_schedule_slot = document.getElementsByClassName("vendor_product_schedule_slot");
       await $.each(product_schedule_slot, function(index,value) {
-           
+
             var sel_val = $(value).val();
             if(sel_val == ''){
                  $returnVal = 0;
                 return false;
-                
-            } 
-            
+
+            }
+
         });
         return $returnVal;
 
@@ -929,8 +930,8 @@ $(document).ready(function () {
             success_error_alert('error', 'Product order form is required! kindly fill the details.', ".cart_response");
             return false;
         }
-        
-       
+
+
         //$("input[name='category_kyc_ids']").length > 0 ||
         if( ($("input[name='without_category_kyc']").val() !=1 ) ){
             success_error_alert('error', 'User Place Order is required! kindly fill the details.', ".cart_response");
@@ -938,7 +939,7 @@ $(document).ready(function () {
 
         }
 
-        var returnData = await checkSlotValidation(); 
+        var returnData = await checkSlotValidation();
         if(returnData==0){
             Swal.fire({
                 icon: 'error',
@@ -2185,14 +2186,14 @@ $(document).ready(function () {
                     //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
-                  
+
                     if (cart_details!= undefined && cart_details!= null) {
                         if (cart_details.products.length > 0) {
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
 
                              let header_cart_template = _.template($('#header_cart_template').html());
-                             
+
                              $("#header_cart_main_ul").append(header_cart_template(headerCartData));
                             if (response.cart_details.totalQuantity>0) {
                                 $('#expected_vendors').html('');
@@ -2787,7 +2788,7 @@ $(document).ready(function () {
 
 
     function addToCart() {
-     
+
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
 
@@ -2926,10 +2927,10 @@ $(document).ready(function () {
         var quantity = $(this).attr('data-quantity');
         var vendor_id = $(this).attr('data-vendor_id');
         var start_date = $(this).attr('data-start_time');
-        var end_date = $(this).attr('data-end_time'); 
+        var end_date = $(this).attr('data-end_time');
         var incremental_hrs = $(this).attr('data-incremental_hrs');
         var total_booking_time =  $(this).attr('data-total_hrs');
-       
+
         if ($(this).attr('data-page') == 'productDetail') {
             submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time);
         } else if ($(this).attr('data-page') == 'vendorProducts') {
@@ -3714,7 +3715,7 @@ $(document).ready(function () {
                     url: check_schedule_slots,
                     data: { date: schedule_dt, vendor_id: vendor_id },
                     success: function (response) {
-                    
+
                         if (response.status == "Success") {
                             $('#vendor_schedule_slot_'+vendor_id).html(response.data);
                         } else {
@@ -3737,8 +3738,8 @@ $(document).ready(function () {
                     return false;
                 }
             }
-        }    
-      
+        }
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -3759,7 +3760,7 @@ $(document).ready(function () {
     // Check Slot Availability
     async function checkSlotAvailability(obj)
     {
-      
+
         var schedule_datetime = $(obj).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
         var schedule_slot = $(obj).val();
         var vendor_id = $(obj).data('vendor_id');
@@ -3797,7 +3798,7 @@ $(document).ready(function () {
         });
         return res;
     }
-    
+
 
     $(document).on('click', '.selected-time', function () {
 
@@ -3806,10 +3807,10 @@ $(document).ready(function () {
         let dispatch_agent_id = '';
         let agent_ids = $(this).data("agent_ids");
         let show_agent = $(this).data("show_agent");
-       
+
         //&& (show_agent != undefined && show_agent !='' )
         if((agent_ids != undefined && agent_ids !='' )  ){
-          
+
             dispatch_agent_id = agent_ids[0] ;
         }
         if((show_agent != undefined && show_agent ==1  ) && (agent_ids != undefined && agent_ids !='' )  ){
@@ -4428,7 +4429,7 @@ $(document).ready(function () {
                 paymentViaTelr('', payment_option_id, '');
             break;
             case 47:
-                paymentViaKhalti('', ''); 
+                paymentViaKhalti('', '');
             break;
         }
 
@@ -5099,7 +5100,7 @@ $(document).ready(function () {
                 paymentViaTelr('', payment_option_id, '');
                 break;
             case 47:
-                paymentViaKhalti('', ''); 
+                paymentViaKhalti('', '');
                 break;
         }
     }
