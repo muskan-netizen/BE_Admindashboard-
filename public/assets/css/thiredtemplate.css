@@ -308,7 +308,7 @@ body .footer-theme .sub-title .contact-list i {margin-right: 5px;font-size: 14px
     .col-md-3.alOrderStatus {display: flex;justify-content: space-between;align-items: center;}
     .status_box li { margin: 0;}
     .tab-product .tab-content.nav-material p {font-size: 10px;}
-    footer#footer{margin-bottom: 100px;padding-top: 20px;}
+    footer#footer{margin-bottom: 100px;padding-top: 0;}
     #content-wrap .al_new_wrapper_design { margin-bottom: 150px;}
     .container.mb-md-5.shimmer_effect {margin-top: 0;}
     .container.mb-md-5.shimmer_effect .col-12.cards { margin-bottom: 0;}
