@@ -21,31 +21,37 @@ $checkSlot = findSlot('', $vendor->id, '');
                 <div class="row">
                     <div class="slider regular">
                         @if (!empty($vendor->banner))
-                            <div><img src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}" alt=""></div>
+                            <div><img src="{{ $vendor->banner['image_fit'] . '1920/550' . $vendor->banner['image_path'] }}" alt=""></div>
                         @endif
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
+                        @foreach ($vendorMultiBanner['banner'] as $key =>$multiBanner )
+                         <div><img src="{{$multiBanner->image['proxy_url'] . '1920/550' . $multiBanner->image['image_path']}}" alt=""></div>
+                        @endforeach
+                        {{-- <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
                         <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
                         <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
                         <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
                         <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
                         <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
                         <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
+                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div> --}}
                     </div>
 
 
                     <div class="slider regular-nav">
                         @if (!empty($vendor->banner))
-                        <div><img src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}" alt=""></div>
+                        <div><img src="{{ $vendor->banner['image_fit'] . '1920/550' . $vendor->banner['image_path'] }}" alt=""></div>
                     @endif
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
+                    @foreach ($vendorMultiBanner['banner'] as $key =>$multiBanner )
+                         <div><img src="{{$multiBanner->image['proxy_url'] . '1920/550' . $multiBanner->image['image_path']}}" alt=""></div>
+                    @endforeach
+                        {{-- <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
                         <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
                         <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
                         <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
                         <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
                         <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
                         <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
+                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div> --}}
                     </div>
                  </div>
             </div>
@@ -111,7 +117,7 @@ $checkSlot = findSlot('', $vendor->id, '');
 				<!-- Spa and hotel facilities start -->
 				<div class="row py-5 border-bottom">
 					<div class="col-lg-12 hotelFacilities">
-						<h3 class="mb-4">{{ getNomenclatureName('vendors', false).' ' . __('facilities') }} </h3>
+						<h3 class="mb-4">{{ getNomenclatureName('Vendors', false).' ' . __('Facilities') }} </h3>
 						<ul class="p-0 m-0 d-flex align-items-center">
                             @php
                              $total_facilty =count($vendor->facilty);
@@ -583,6 +589,7 @@ $checkSlot = findSlot('', $vendor->id, '');
     <script src="{{ asset('front-assets/js/my-sliders.js') }}"></script>
     <script>
         var update_cart_product_schedule = "{{route('cart.updateProductSchedule')}}";
+        var update_cart_product_schedule_agnet = "{{route('cart.updateDispatcherAgent')}}";
         // @if(!empty($vendor->banner))
         //     $(document).ready(function() {
         //         $("body").addClass("homeHeader");

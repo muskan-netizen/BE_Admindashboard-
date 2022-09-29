@@ -18,6 +18,7 @@ use Redirect;
 use Log;
 class CategoryController extends FrontController{
     private $field_status = 2;
+    use \App\Http\Traits\DispatcherSlot;
 
     /**
      * Display product and vendor list By Category id
@@ -200,9 +201,6 @@ class CategoryController extends FrontController{
                     abort(404);
                 }
         }
-    }
-    public function getTimeSlotsForOndemand_step2(Request $request){
-        pr($request->all());
     }
 
     public function listData($langId, $category_id, $type = ''){
@@ -604,9 +602,51 @@ class CategoryController extends FrontController{
     // ***********   getTimeSlotsForOndemand ************** /////////////////
     public function getTimeSlotsForOndemand(Request $request){
 
-        
-       // pr($request->all());
-      
+        // get slot from dispatcher by harbans :)
+        if($request->has('product_category_type') &&  $request->has('product_id')){
+            $product = $this->productDetail($request->product_id);
+          
+            $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';
+            $is_slot_from_dispatch = $product ? $product->is_slot_from_dispatch  : '';
+            $show_dispatcher_agent = $product ? $product->is_show_dispatcher_agent  : '';
+            $last_mile_check       = $product ? $product->Requires_last_mile  : '';
+            $vendorStartDate       = $vendorStartTime  = '';
+            $slotsDate = findSlot('',$product->vendor_id,'','webFormet');
+            if($slotsDate){
+                $vendorStartDate = (($slotsDate)?$slotsDate['date']:'');
+                $vendorStartTime = (($slotsDate)?$slotsDate['time']:'');
+            }
+            // ch
+            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
+                $Dispatch =  $this->getDispatchAppointmentDomain();
+                $dispatchAgents = [];
+                $cart_product_id = $request->cart_product_id??0;
+                if($Dispatch){
+                   $vendor_latitude =  $product->vendor ? $product->vendor->latitude : 30.71728880;
+                   $vendor_longitude =  $product->vendor ? $product->vendor->longitude : 76.80350870;
+                    $location[] = array(
+                        'latitude' =>   $vendor_longitude,
+                        'longitude' =>  $vendor_longitude
+                    );
+                    $dispatchData=[
+                        'service_key'      => $Dispatch->appointment_service_key,
+                        'service_key_code' => $Dispatch->appointment_service_key_code,
+                        'service_key_url'  => $Dispatch->appointment_service_key_url,
+                        'service_type'     => 'appointment',
+                        'tags'             => $product->tags,
+                        'latitude'         => $vendor_latitude,
+                        'longitude'        => $vendor_longitude,
+                        'service_time'     => $product->minimum_duration_min,
+                        'schedule_date'    => $request->cur_date,
+                        'slot_start_time'  => $vendorStartTime
+                    ];
+                    $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
+                }
+                if ($request->ajax()) {
+                    return \Response::json(\View::make('frontend.ondemand.dispatcher_agent_slots', array('dispatch_agents' => $dispatchAgents,'cart_product_id'=> $cart_product_id,'show_dispatcher_agent'=>$show_dispatcher_agent))->render());
+                }
+            }
+        }
         $user = Auth::user();
         $timezone = $user->timezone ?? 'Asia/Kolkata';
 

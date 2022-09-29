@@ -1,0 +1,153 @@
+$(function(){
+    initSlideDrag();
+    showSelectedAgent()
+})
+// $(document).on('click','.dispatch_agent',function(){
+
+//     var agent_id = $(this).data('agent_id');
+//     var cart_product_id = $(this).data('cart_product_id');
+//     var agentData = dispatch_agents.agent;
+//     var agent = agentData.find(item => item.id === agent_id);
+//     console.log(agent);
+//    // initSlots(agent,agent_id,cart_product_id);
+
+// })
+//document.querySelectorAll('.checked_item').focus();
+// function initSlots(agent,agent_id,cart_product_id){
+//     var html=`<div class="grid-item main radios agent_${agent.id}">`;
+//     html+=`<div class="alCustomHomeServiceRadio items">`;
+//     if(agent.slotings.length < 0) {
+//         html+='<span>No available slot found !!</span></div>';
+//         html+=`</div>`;
+        
+//     } else{
+//         console.log(cart_product_id);
+//         agent.slotings.forEach(function(data) {  
+//             // code
+//             html+=`<div class="item"><input type="radio" value='${data.value}' name='agent_id' id='time${data.value}_${cart_product_id}'/>          
+//                     <label for='time${data.value}_${cart_product_id}'><span class="customCheckbox selected-time" aria-hidden="true" data-agent_id='${agent_id}'  data-value='${data.value}' data-cart_product_id='${cart_product_id}'>${data.name}</span></label></div>`;
+//         });
+//     }
+//     html+='</div>';
+//     $(`.agent_slots${cart_product_id}`).html(html);
+//     initSlideDrag();
+// }
+
+
+function initSlideDrag(Id="",className="items"){
+    const slider = document.querySelector(`.${className}`);
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    slider.scrollTo(slider.scrollLeft + 1, 0);
+    slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.classList.add('active');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+    slider.addEventListener('mouseleave', () => {
+        isDown = false;
+        slider.classList.remove('active');
+    });
+    slider.addEventListener('mouseup', () => {
+        isDown = false;
+        slider.classList.remove('active');
+    });
+    slider.addEventListener('mousemove', (e) => {
+        if(!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 3; //scroll-fast
+            slider.scrollLeft = scrollLeft - walk;
+    });
+}
+showSelectedAgent()
+function showSelectedAgent(){
+   var selectedSlotDiv =  $('input[type=radio][name=booking_time]:checked').parent('div');
+   if(selectedSlotDiv.length>0){
+        let selectedSpan =  selectedSlotDiv.find('.selected-time');
+        let agent_ids = selectedSpan.data("agent_ids");
+        let show_agent = selectedSpan.data("show_agent");
+        let cart_product_id = selectedSpan.data("cart_product_id");
+      
+        let selected_agent = selectedSpan.data("selected_agnet_id");
+        if((show_agent != undefined && show_agent ==1  ) && (agent_ids != undefined && agent_ids !='' )   ){
+            showDispatchDriver(agent_ids,cart_product_id,selected_agent);
+        }
+   }
+
+}
+
+async  function showDispatchDriver(driver_ids,cart_product_id,selected_agent=''){
+    var driverIdArray = driver_ids;
+    var agentData = dispatch_agents.agent;
+  
+   var html=`<div class="grid-item main alCustomHomeServiceAgentRadio d-flex justify-content-center radios agentS_${cart_product_id}">`;
+    agentData.forEach(function(data,index) {
+// driverIdArray.includes(String(data.id)) ||
+        if( driverIdArray.includes(data.id)){
+            let Selectedclass =  (index==0)? 'selected_agent': '';
+            if(selected_agent !='' && selected_agent != undefined ){
+                 Selectedclass = selected_agent === data.id  ? 'selected_agent' : '';
+            }
+            html +=`<div class="agent_slot">
+            <div>
+                <a class="agentInfo d-block dispatch_agent ${Selectedclass} black-box"  data-cart_product_id="${cart_product_id}" data-agent_id="${data.id}" href="javascript:void(0)">
+                    <div class="brand-ing">
+                        <img class="agentImg" src="${data.image_url}" alt="${data.name}" title="">
+                    </div>
+                    <h6>${data.name}</h6>
+                </a>
+            </div>
+         </div>`
+        }
+        
+    });
+   
+    html +=`</div>`;
+    $(`.agent_slots${cart_product_id}`).html(html);
+}
+
+
+
+$(document).on('click','.dispatch_agent',function(){
+    $('.dispatch_agent').removeClass('selected_agent');
+    $(this).addClass('selected_agent');
+    
+    var agent_id = $(this).data('agent_id');
+    var cart_product_id = $(this).data('cart_product_id');
+    console.log(agent_id);
+    console.log(cart_product_id);
+    console.log(update_cart_product_schedule_agnet);
+    var formData ={
+        "dispatch_agent_id" : agent_id,
+        "cart_product_id" : cart_product_id
+    }
+    axios.post(update_cart_product_schedule_agnet, formData)
+        .then(async response => {
+         console.log(response);
+            if(response.data.status == "Success"){
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.data.message,
+                })
+            } else{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops',
+                    text: response.data.message,
+                })
+            }
+        })
+        .catch(e => {
+            console.log(e);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong, try again later!',
+            })
+        })  
+
+})

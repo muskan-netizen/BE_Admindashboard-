@@ -232,6 +232,7 @@ class HomeController extends BaseController
 
             return $this->successResponse($homeData);
         } catch (Exception $e) {
+            \Log::info($e->getMessage());
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
