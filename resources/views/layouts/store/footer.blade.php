@@ -108,6 +108,9 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @endif
 
 @yield('js-script')
+<script>
+    var Alltranslations = {!! \Cache::get('translations') !!};
+ </script>
 
 @if (Auth::check() && Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
 <script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
