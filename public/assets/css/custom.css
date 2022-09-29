@@ -4565,3 +4565,4 @@ body div.dataTables_wrapper div.dataTables_filter input {width: 100%;margin: 0;}
 .card.changeIcon {
   box-shadow: none !important;
 }
+.dark .navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect::before{color: #acbfd2;}

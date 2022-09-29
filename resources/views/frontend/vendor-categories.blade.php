@@ -151,7 +151,7 @@
                 </div>
                 <div class="collection-content col-lg-9">
                     <div class="page-main-content">
-                        <div class="row">
+                        <div class="col-12">
                             <div class="collection-product-wrapper">
                                 <div class="product-top-filter">
                                     <div class="row">
