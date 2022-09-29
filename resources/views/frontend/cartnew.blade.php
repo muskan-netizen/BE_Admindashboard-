@@ -26,6 +26,19 @@
 .vendor_cart-check label {display: inline-block;}
 /*-------cart page design css  start here---------*/
 .items-details p{font-size: 12px;}
+.dark .new_cart,
+.dark .cart-summary,
+.dark .new_cart .add-address i,
+.dark .shoping_cart {background-color: #232323;box-shadow: 10px 16px 14px 10px #0000001c;border: 1px solid #4645458c;}
+.dark .item-show-cart h4,
+.dark .cart-summary h5.order_text,
+.dark .new_cart .page-title,
+.dark .cart-summary .alFourSpecificInstructions span,
+.dark .shoping_cart .order-md-4 .items-price,
+.dark .cart-summary .cart-price .text-right b,
+.dark .single_cart_heading h3{color: #cfd4da;}
+.dark .alFourSpecificInstructions input{background-color: #c9c3c3;}
+.dark .delivery_box.cart_delivery{border-color: #4645458c; }
 .single_cart_heading h3 {font-weight: 600;color: #000;}
 .cart-summary h5.order_text{font-size: 22px;font-weight: 600;color:#000;}
 .item-show-cart h4 {font-size: 20px !important;font-weight: 600;color: #000;}

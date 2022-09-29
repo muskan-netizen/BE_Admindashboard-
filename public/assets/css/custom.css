@@ -4692,3 +4692,4 @@ border: 1px solid #424e5a;
 .dark .selectize-input {
   border: 1px solid #424e5a;
 }
+.dark .navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect::before{color: #acbfd2;}
