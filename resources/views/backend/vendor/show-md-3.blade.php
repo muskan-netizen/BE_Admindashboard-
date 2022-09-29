@@ -43,6 +43,9 @@
             @endif
 
             @endif
+            <div class="for_pickup_delivery_service_only">
+                <a href="javascript:void(0)" class="openSocialMedia btn btn-info bg-info text-white">{{ __("Manage Social Media URLs") }}</a>
+            </div>
         </div>
     </div>
     <div class="text-left mt-0 p-3">
@@ -996,6 +999,8 @@ $( document ).ready(function() {
                                 '<td><a href="'+res.message.url+'" class="social-media-url-'+res.message.icon+'" target="_blank">'+res.message.url+'</a></td>'+
                                 '<td><div><div class="inner-div"><button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="'+res.message.media+'"><i class="mdi mdi-delete"></i></button></div></div></td></tr>');
                     }
+
+                    $('#social_url').val('');
                 
 
                 }else{
@@ -1032,6 +1037,7 @@ $( document ).ready(function() {
             backdrop: 'static',
             keyboard: false
         });
+        $('#social_url').val('');
     });
     $(document).on('click', '.addUrlRow-Add', function(e) {
         var rowCount = $('#social-media-list tr').length;
