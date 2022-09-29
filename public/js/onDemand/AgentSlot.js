@@ -120,17 +120,17 @@ $(document).on('click','.dispatch_agent',function(){
         .then(async response => {
          console.log(response);
             if(response.data.status == "Success"){
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: response.data.message,
-                })
+                // Swal.fire({
+                //     icon: 'success',
+                //     title: 'Success',
+                //     text: response.data.message,
+                // })
             } else{
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops',
-                    text: response.data.message,
-                })
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Oops',
+                //     text: response.data.message,
+                // })
             }
         })
         .catch(e => {

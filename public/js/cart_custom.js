@@ -17,20 +17,14 @@ $(function(){
             if(response.data.status == "Success"){
                 $(`#vendor_schedule_slot_selecter_${cart_product_id}`).html(response.data.html);
             } else{
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops',
-                    text: response.data.message,
-                })
+                sweetAlert.error('Oops...',response.data.message);
+                
             }
         })
         .catch(e => {
             console.log(e);
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Something went wrong, try again later!',
-            })
+            sweetAlert.error();
+           
         }) 
     });
     $(document).on('click', '.vendor_product_schedule_slot', function () {
@@ -66,26 +60,8 @@ $(function(){
         })
         .catch(e => {
             console.log(e);
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Something went wrong, try again later!',
-            })
+            sweetAlert.error();
         }) 
-        // $.ajax({
-        //     type: "POST",
-        //     dataType: 'json',
-        //     url: update_cart_product_schedule,
-        //     data: { task_type: task_type, schedule_dt: schedule_dt,schedule_time:selected_time,cart_product_id: cart_product_id,dispatch_agent_id:dispatch_agent_id },
-        //     success: function (response) {
-        //         if (response.status == "Success") {
-        //         }
-        //     },
-        //     error: function (error) {
-        //         var response = $.parseJSON(error.responseText);
-        //         success_error_alert('error', response.message, ".cart_response");
-        //     }
-        // });
 
     });
 })
