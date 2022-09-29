@@ -133,7 +133,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="field-3" class="control-label">QUANTITY</label>
+                            <label for="field-3" class="control-label">{{ __('Quantity') }}</label>
                             <select class="selectpicker" data-style="btn-light">
                                 <option>1</option>
                                 <option>2</option>

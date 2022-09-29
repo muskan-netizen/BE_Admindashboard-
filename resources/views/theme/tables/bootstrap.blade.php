@@ -831,7 +831,7 @@
                             <th data-field="id" data-sortable="true" data-formatter="invoiceFormatter">Order ID</th>
                             <th data-field="name" data-sortable="true">Name</th>
                             <th data-field="date" data-sortable="true" data-formatter="dateFormatter">Order date</th>
-                            <th data-field="amount" data-align="center" data-sortable="true" data-sorter="priceSorter">Price</th>
+                            <th data-field="amount" data-align="center" data-sortable="true" data-sorter="priceSorter">{{ __('Price') }}</th>
                             <th data-field="status" data-align="center" data-sortable="true" data-formatter="statusFormatter">Status</th>
                         </tr>
                         </thead>
@@ -987,7 +987,7 @@
                             <th data-field="id" data-sortable="true" data-formatter="invoiceFormatter">Order ID</th>
                             <th data-field="name" data-sortable="true">Name</th>
                             <th data-field="date" data-sortable="true" data-formatter="dateFormatter">Order Date</th>
-                            <th data-field="amount" data-align="center" data-sortable="true" data-sorter="priceSorter">Price</th>
+                            <th data-field="amount" data-align="center" data-sortable="true" data-sorter="priceSorter">{{ __('Price') }}</th>
                             <th data-field="status" data-align="center" data-sortable="true" data-formatter="statusFormatter">Status</th>
 
                         </tr>
@@ -1150,7 +1150,7 @@
                             <th data-field="id" data-sortable="true" data-formatter="invoiceFormatter">Order ID</th>
                             <th data-field="name" data-sortable="true">Name</th>
                             <th data-field="date" data-sortable="true" data-formatter="dateFormatter">Order Date</th>
-                            <th data-field="amount" data-align="center" data-sortable="true" data-sorter="priceSorter">Price</th>
+                            <th data-field="amount" data-align="center" data-sortable="true" data-sorter="priceSorter">{{ __('Price') }}</th>
                             <th data-field="status" data-align="center" data-sortable="true" data-formatter="statusFormatter">Status</th>
                         </tr>
                         </thead>

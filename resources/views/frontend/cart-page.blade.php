@@ -40,22 +40,22 @@
             <div class="row border-bottom">
                         <div class="col-6">
                             <div class="single_cart_heading">
-                                    <h3>Shopping Cart</h3>
+                                    <h3>{{ __("Shopping Cart") }}</h3>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="item-show-cart text-right">
-                                <h4>{{$cart_details->totalQuantity}}  Items</h4>
+                                <h4>{{$cart_details->totalQuantity}}  {{ __("Items") }}</h4>
                             </div>
                         </div>
             </div>
             <div class="row border-bottom product_title_add py-1 no-gutters">
                     <div class="col-md-4 col">
-                        <span>Product Details</span>
+                        <span>{{ __('Product Details') }}</span>
                     </div>
 
                     <div class="col-md-2 col text-center">
-                        <span>Price</span>
+                        <span>{{ __('Price') }}</span>
                     </div>
                     @if($serviceType ==  'rental')
                         <div class="col-md-2 text-center">
@@ -63,7 +63,7 @@
                         </div>
                     @else
                     <div class="col-md-2 text-center">
-                        <span>Quantity</span>
+                        <span>{{ __('Quantity') }}</span>
                     </div>
                     @endif
                     <div class="col-md-4 text-center">
@@ -535,7 +535,7 @@
         <div class="row m-0">
          <div class="cart-summary p-2 pb-4">
             <div class="col-12 mb-2">
-                <h5 class="order_text">Order Summary</h5>
+                <h5 class="order_text">{{ __('Order Summary') }}</h5>
             </div>
         <input type="hidden" name="without_category_kyc" value="{{$cart_details->without_category_kyc}}">
         @if($client_preference_detail->category_kyc_documents ==1)
