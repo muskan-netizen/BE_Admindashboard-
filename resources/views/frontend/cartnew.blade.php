@@ -8,105 +8,24 @@
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 
 <style type="text/css">
-.swal2-title {
-    margin: 0px;
-    font-size: 26px;
-    font-weight: 400;
-    margin-bottom: 28px;
-}
-
-.discard_price {
-    text-decoration: line-through;
-    color: #6c757d;
-}
-
-#category_kyc_form_in_cart .file--upload>label {
-    width: 100%;
-    height: 200px;
-    border: 1px solid #eee;
-    border-radius: 15px;
-}
-
-#category_kyc_form_in_cart .file .update_pic {
-    width: 100%;
-    height: auto;
-    margin: auto;
-    text-align: center;
-    border: 0;
-    border-radius: 0;
-}
-
-#category_kyc_form_in_cart .file .update_pic img {
-    height: 130px;
-    width: auto;
-}
-
-.time {
-    display: inline-block;
-    font-size: 26px;
-    padding: 5px;
-    text-align: center;
-    width: 94px;
-    margin-top: 5px;
-}
-#applepay-btn {
-    width: 100%;
-    height: 50px;
-    display: none;
-    border-radius: 5px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 20px;
-    background-image: -webkit-named-image(apple-pay-logo-white);
-    background-position: 50% 50%;
-    background-color: black;
-    background-size: 60%;
-    background-repeat: no-repeat;
-    color: #FFF !important;
-}
-
-#save_prescription_form .modal-footer {
-display: block;
-}
-.al_body_template_two .show-prescription-doc {
-overflow: auto;
-white-space: nowrap;
-overflow-y: hidden;
-width: 100%;
-}
-.show-prescription-close {
-    position: relative;
-    display: inline-block;
-}
-.show-prescription-close i {
-    position: absolute;
-    right: -2px;
-    top: 0px;
-    font-size: 11px;
-    background: #eee;
-    padding: 1px 2px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.al_body_template_two .show-prescription-doc img{
-    margin:2px;
-}
+.swal2-title {margin: 0px;font-size: 26px;font-weight: 400;margin-bottom: 28px;}
+.discard_price {text-decoration: line-through;color: #6c757d;}
+#category_kyc_form_in_cart .file--upload>label {width: 100%;height: 200px;border: 1px solid #eee;border-radius: 15px;}
+#category_kyc_form_in_cart .file .update_pic {width: 100%;height: auto;margin: auto;text-align: center;border: 0;border-radius: 0;}
+#category_kyc_form_in_cart .file .update_pic img {height: 130px;width: auto;}
+.time {display: inline-block;font-size: 26px;padding: 5px;text-align: center;width: 94px;margin-top: 5px;}
+#applepay-btn {width: 100%;height: 50px;display: none;border-radius: 5px;margin-left: auto;margin-right: auto;margin-top: 20px;background-image: -webkit-named-image(apple-pay-logo-white);background-position: 50% 50%;background-color: black;background-size: 60%;background-repeat: no-repeat;color: #FFF !important;}
+#save_prescription_form .modal-footer {display: block;}
+.al_body_template_two .show-prescription-doc {overflow: auto;white-space: nowrap;overflow-y: hidden;width: 100%;}
+.show-prescription-close {position: relative;display: inline-block;}
+.show-prescription-close i {position: absolute;right: -2px;top: 0px;font-size: 11px;background: #eee;padding: 1px 2px;border-radius: 10px;cursor: pointer;}
+.al_body_template_two .show-prescription-doc img{margin:2px;}
 .al_body_template_one .vendor_slot_cart input {display: inline-block;width: 52%;}
 .al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
-
-
 .grn_popop-total_amt label{  font-size: 12px !important;text-align:left;}
-
 .vendor_cart-check label {display: inline-block;}
-
-
-
-
 /*-------cart page design css  start here---------*/
-.items-details p {
-    font-size: 12px;
-}
+.items-details p{font-size: 12px;}
 .single_cart_heading h3 {font-weight: 600;color: #000;}
 .cart-summary h5.order_text{font-size: 22px;font-weight: 600;color:#000;}
 .item-show-cart h4 {font-size: 20px !important;font-weight: 600;color: #000;}
@@ -115,11 +34,7 @@ width: 100%;
 #specific_instructions::-moz-input-placeholder { color:#fff; }
 .dark .new_cart .add-address i ,
 .dark .cart_delivery,
-.dark .alert-danger {
-    background: #242424;
-    border: 1px solid #242424;
-    box-shadow: 5px 6px 4px #0000001a;
-}
+.dark .alert-danger {background: #242424;border: 1px solid #242424;box-shadow: 5px 6px 4px #0000001a;}
 .dark .cart-summary,
 .dark .new_cart,
 .dark .shoping_cart{background-color: #0c0c0c;box-shadow: none;border: 0px;}
@@ -129,9 +44,7 @@ width: 100%;
 .dark .cart-summary .alFourSpecificInstructions span,
 .dark .cart-summary .cart-price .text-right b,
 .dark .shoping_cart .order-md-4 .items-price,
-.dark .single_cart_heading h3 {
-    color: #fff;
-}
+.dark .single_cart_heading h3 {color: #fff;}
 .cart-design .card-box {padding: 0px;}
 .cart-summary{background-color: #f5f5f6;border: 1px solid#efefef;box-shadow: 6px 13px 30px #1615152b;border-radius: 4px;width: 100%;}
 .cart-summary .alFourSpecificInstructions span {font-size: 18px;color: #000;display: block;}
@@ -156,8 +69,8 @@ display: flex;align-items: center;justify-content: center;border: 1px solid#eee;
 .cart_delivery:hover a.deleteAddress{right: 10px;}
 .new_cart .add-address i {background: #fff;border: 1px solid#eee; padding: 16px;border-radius: 100%;height: 40px;width: 40px;display: flex;align-items: center;
 justify-content: center;font-size: 20px;box-shadow: 5px 6px 4px #eee;color: #ff3f3f;}
-.cart-checkout_btn button{width:100%;}.cart-checkout_btn #order_placed_btn {
-padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
+.cart-checkout_btn button{width:100%;}
+.cart-checkout_btn #order_placed_btn {padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .cart_delivery a i {font-weight: 600;font-size: 16px;}
 .schedule_btn ul li label.taskschedulebtn {padding: 6px 10px !important;font-size: 10px !important;}
 .cart-page-layout .alFourTemplateCartPage .add_head h6{color:#000;font-size: 14px;}
@@ -178,43 +91,24 @@ padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 /* 2 template cart checkbox css */
 .tip_radio:checked+.tip_label {background: var(--theme-deafult);box-shadow: 0 0 5px var(--theme-deafult);}
 .tip_radio:checked+.tip_label h5, .tip_radio:checked+.tip_label p {color: #fff;}
-
 .al_body_template_four .text-danger {font-size: 16px;}
 .al_body_template_four .clproduct_cart_order_form.btn.btn-solid {padding: 8px 0px;font-size: 12px;}
 .al_body_template_two .shoping_cart .alFourTemplateCartPage #product_faq_dev_42 .btn-product-order-form-div button {
 font-size: 12px;padding: 6.7px 10px;}
 .add_address_btn .btn-solid{font-size: 12px;padding: 6.7px 10px;}
-#add_new_address_form_modal button.close{
-position: absolute;
-right: 20px;
-}
-
-
-
-
-
-
+#add_new_address_form_modal button.close{position: absolute;right: 20px;}
+.cart-design .product-img img{border-radius: 15px;overflow: hidden;}
+.dark .coupon_box img.blur-up.lazyloaded{background-color: #fff;opacity: 1;padding: 0 4px;border-radius: 25px;}
 .login-form #schedule_div input{display:block;}
-
 /*------cart page css end here------ */
 
-
-
-
 @media (max-width:576px){
-    .al_body_template_two .show-prescription-doc {
-   width:100%;
-}
+.al_body_template_two .show-prescription-doc {width:100%;}
 .item-show-cart h4 {font-size:14px !important;}
-.product_title_add span {
-    font-size: 12px;
-}
-
+.product_title_add span {font-size: 12px;}
 }
 
 /*cart page responsive css */
-
-
 @media only screen and (min-width:1367px) and (max-width:1429px){
 .cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;height:auto;}
 }

@@ -695,7 +695,7 @@ class FrontController extends Controller
             $addresses = collect();
         }
         if ($cart) {
-            $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+            $cartData = CartProduct::with('vendor')->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
         }
         
         $navCategories = $this->categoryNav($langId);
@@ -722,20 +722,34 @@ class FrontController extends Controller
             $timezone = 'Asia/Kolkata';
 
         foreach($cartData as $key => $data){
-           
+         
 
             $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($timezone)->format('Y-m-d');
             $cartData[$key]->scheduled_date_time = $selectedDate;
             $cartData[$key]->is_dispatch_slot = 0 ;
             $vendorStartDate =  $vendorStartTime  ='';
-            $slotsDate = findSlot('',$data->vendor_id,'','webFormet');
             $cartData[$key]->period = [];
-            if($slotsDate){
-                $vendorStartDate = (($slotsDate)?$slotsDate['date']:'');
-                $vendorStartTime = (($slotsDate)?$slotsDate['time']:'');
-                $vendorEndDate = Date('Y-m-d', strtotime($vendorStartDate. '+13 days'));
-                $cartData[$key]->period = CarbonPeriod::create($vendorStartDate, $vendorEndDate);
+             if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
+                $time_slots = []; 
+                $start_date = new DateTime("now", new  DateTimeZone($timezone) );
+                $start_date = $start_date->format('Y-m-d');
+                $end_date   = Date('Y-m-d', strtotime('+13 days'));
+        
+               
+                $period = CarbonPeriod::create($start_date, $end_date);
+               
+                $cartData[$key]->period = $period;
+            }else{
+                
+                $slotsDate = findSlot('',$data->vendor_id,'','webFormet');
+                if($slotsDate){
+                    $vendorStartDate = (($slotsDate)?$slotsDate['date']:'');
+                    $vendorStartTime = (($slotsDate)?$slotsDate['time']:'');
+                    $vendorEndDate = Date('Y-m-d', strtotime($vendorStartDate. '+13 days'));
+                    $cartData[$key]->period = CarbonPeriod::create($vendorStartDate, $vendorEndDate);
+                }
             }
+            
             // check product 
             $productDetail = $this->productDetail($data->product_id);
             $cateTypeId = $productDetail ? ($productDetail->productcategory ? $productDetail->productcategory->type_id : '') : '';
@@ -770,15 +784,33 @@ class FrontController extends Controller
                 $cartData[$key]->dispatchAgents = $dispatchAgents;
                 $cartData[$key]->is_dispatch_slot = 1 ;
              }else{
-                $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
-                $slots = (object)$slotsRes['slots'];
-                //$slots = showSlot($selectedDate,$data->vendor_id,'delivery');
                 $time_slots = [];
-                $i = 0;
-                foreach($slots as $slot){
-                    $newSlot = explode('-', $slot['value']);
-                    $time_slots[$i++] = trim($newSlot[0]);
+                if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
+                    $start_time = new DateTime("now", new  DateTimeZone($timezone) );
+                    $start_time = $start_time->format('Y-m-d H:m');
+                    $end_time = date('Y-m-d 23:59');
+                    $timing   = $this->SplitTime($start_time, $end_time, "60");
+                    foreach ($timing as $k=> $slt) {
+                        if($k+1 < count($timing)){
+                            $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
+                            $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
+                            $time_slots[] =  $viewSlot;
+                        }
+                    }
+                }else{
+                    $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
+                    $slots = (object)$slotsRes['slots'];
+                    //$slots = showSlot($selectedDate,$data->vendor_id,'delivery');
+                    $time_slots =  $slots;
+                    // $i = 0;
+                    // foreach($slots as $slot){
+                    //     $newSlot = explode('-', $slot['value']);
+                    //     $time_slots[$i++] = trim($newSlot[0]);
+                    // }
+
                 }
+
+                
                 $cartData[$key]->timeSlots = $time_slots;
                 $cartData[$key]->dispatchAgents = [];
             }

@@ -14,7 +14,7 @@ trait DispatcherSlot{
     public function getSlotFeeDispatcher($data)
     {
       
-        //try {
+        try {
                 $postdata =  [ 
                                 "latitude"  => $data['latitude'], 
                                 "longitude" => $data['longitude'], 
@@ -24,7 +24,6 @@ trait DispatcherSlot{
                                 "slot_start_time" => $data['slot_start_time'] ?? "30"
                             ];
                 
-              //pr($postdata);
                 $client = new GClient([
                     'headers' => [
                         'personaltoken' => $data['service_key'],
@@ -38,19 +37,17 @@ trait DispatcherSlot{
                     $url . '/api/agent/check_slot',
                     ['form_params' => ($postdata)]
                 );
-                //pr($res->getBody());
                 $response = json_decode($res->getBody(), true);
                 
-          //pr($response['data']['slots']);
                 if ($response && $response['message'] == 'success') {
                     $agets =count($response['data']['agents']) > 0 ? $response['data']['agents'] : [];
                     return $response['data'];
                 }
                
-        // } catch (\Exception $e) {
-        //     pr($e);
-           
-        // }
+        } catch (\Exception $e) {
+            Log::info($e->getMessage());
+            return [];
+        }
     }
     
 }

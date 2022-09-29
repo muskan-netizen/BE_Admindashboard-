@@ -1,9 +1,5 @@
 @section('customcss')
-<style>
-    .radio-btns input[type="radio"].ondemand_checked + label span{background: var(--theme-deafult);
-    color: #fff;}
-
-</style>
+<link defer type="text/css" href="{{asset('css/ondemand.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
 @endsection
 <section class="home-serivces" id="alSixHomeServices">
     <div class="container">
@@ -586,7 +582,19 @@
                                                     @include('frontend.ondemand.dispatcher_agent_slots')
                                                 </div>
                                             @else
-                                                <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
+                                                @php
+                                                $time_slots = [];
+                                                $cart_product_id = $cart_data->id;
+                                                $schedule_slot = $cart_data->schedule_slot;
+                                                if(!empty($cart_data->timeSlots)){
+                                                    $time_slots = $cart_data->timeSlots;
+                                                }
+                                                @endphp
+                                                <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" ">
+                                                    {{-- style="@if($cart_data->schedule_slot != '')  @else display: none; @endif   --}}
+                                                    @include('frontend.ondemand.time-slots-for-date')
+                                                </div>
+                                                {{-- <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
                                                     <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
 
                                                     <div class="booking-time radio-btns long-radio mb-0">
@@ -618,7 +626,7 @@
                                                         @endforeach
                                                     </div>
                                                     <P id="message_of_time{{$cart_data->id}}"></P>
-                                                </div>
+                                                </div> --}}
                                             @endif
 
                                             <input type="hidden" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" checked>
@@ -847,3 +855,6 @@
         </div>
     </div>
 </section>
+@section('custom-js')
+<script src="{{ asset('js/onDemand/AgentSlot.js') }}"></script>
+@endsection

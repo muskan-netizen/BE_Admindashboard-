@@ -25,8 +25,8 @@ class CreateClientPreferenceAdditionalTable extends Migration
                 $table->string('is_boolean')->nullable();
                 $table->timestamps();
             });
-            
-            
+
+
         }
 
     /**

@@ -323,3 +323,19 @@ body.al_body_template_one table.table.wishlist-table.border{background-color: #2
 .al_body_template_one .product-order.py-3{position: relative;}
 .al_body_template_one .product-order.py-3:before{position: absolute;content: "";border-right:1px solid #eee;height:100%;right: -10px;}
 /* Order Placed css end */
+
+
+/* arabic css */
+body[dir="rtl"] .navigation-tab-item,
+body[dir="rtl"] .navigation-tab-overlay{
+    width: 120px;
+}
+body[dir="rtl"] .navigation-tab-item .nav-link{
+    padding: 5px 10px;
+}
+body[dir="rtl"] .footer-contant .store-btn.mb-3.d-flex.align-items-center.justify-content-center{
+        justify-content: start !important;
+}
+body[dir="rtl"] .al_template_one.site-topbar .location-bar h2{
+    padding-right: 25px;
+}
