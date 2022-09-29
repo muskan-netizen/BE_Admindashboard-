@@ -2643,7 +2643,16 @@ button.update-status {
 .order_data_box {
   height: 100%;
   overflow-y: auto;
-  padding: 0 12px 0 20px
+  padding: 0 12px 0 20px;
+  position: relative;
+}
+.order_data_box .error-msg {
+  font-size: 20px;
+  position: relative;
+  width: 100%;
+  top: 0;
+  -webkit-transform: translate(0px, 0);
+  transform: translate(0px, 0);
 }
 
 .bg-soft-warning.text-warning {
