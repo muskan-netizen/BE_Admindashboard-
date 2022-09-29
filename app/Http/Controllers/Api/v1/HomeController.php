@@ -236,77 +236,6 @@ class HomeController extends BaseController
         }
     }
 
-
-    public function vendorProductsV2($venderIds, $langId, $currency = '', $where = '', $type)
-    {
-        $products = Product::byProductCategoryServiceType($type)->with([
-            'category.categoryDetail.translation' => function ($q) use ($langId) {
-                $q->where('category_translations.language_id', $langId);
-            },
-            'vendor' => function ($q) use ($type) {
-                $q->where($type, 1);
-            },
-            'media' => function ($q) {
-                $q->groupBy('product_id');
-            }, 'media.image',
-            'translation' => function ($q) use ($langId) {
-                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
-            },
-            'variant' => function ($q) use ($langId) {
-                $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
-                $q->groupBy('product_id');
-            },
-        ])
-            ->whereHas('category.categoryDetail', function ($q) {
-                $q->whereNull('categories.deleted_at');
-            })
-            ->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
-        if ($where !== '') {
-            $products = $products->where($where, 1);
-        }
-        $pndCategories = Category::where('type_id', 7)->pluck('id');
-        if (is_array($venderIds)) {
-            $products = $products->whereIn('vendor_id', $venderIds);
-        }
-        if ($pndCategories) {
-            $products = $products->whereNotIn('category_id', $pndCategories);
-        }
-        $products = $products->whereNotNull('category_id')->where('is_live', 1)->take(10)->inRandomOrder()->get();
-        $new_products = array();
-       
-        if (!empty($products)) {
-            foreach ($products as $key => $value) {
-                // foreach ($value->variant as $k => $v) {
-                //     $value->variant[$k]->multiplier = $currency ? $currency->doller_compare : 1;
-                // }
-                 $value->variant->map(function($da) use($currency) {
-                    $da->multiplier = $currency ? $currency->doller_compare : 1;
-                    return $da;
-                });
-               
-                
-                $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
-                $image_url = $value->media->first() && !is_null($value->media->first()->image) ? $value->media->first()->image->path['image_fit'] . '600/600' . $value->media->first()->image->path['image_path'] : '';
-                $multiply = $value->variant->first() ? $value->variant->first()->multiplier : 1;
-                $vprice1 = (isset($value->variant->first()->price)?$value->variant->first()->price * $multiply:0);
-                $new_products[] = array(
-                    'id' => $value->id,
-                    'image_url' => $image_url,
-                    'sku' => $value->sku,
-                    'title' => $title,
-                    'url_slug' => $value->url_slug,
-                    'averageRating' => number_format($value->averageRating, 1, '.', ''),
-                    'inquiry_only' => $value->inquiry_only,
-                    'vendor_name' => $value->vendor ? $value->vendor->name : '',
-                    'price' => decimal_format($vprice1),
-                    'category' => ($value->category->categoryDetail->translation->first()) ? $value->category->categoryDetail->translation->first()->name : $value->category->categoryDetail->slug
-                );
-            }
-        }
-       
-        return $new_products;
-    }
-
     /** return dashboard content like categories, vendors, brands, products     */
     public function homepage(Request $request)
     {
@@ -339,10 +268,10 @@ class HomeController extends BaseController
            
             $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                 $q->whereIn('type_id',$categoryTypes);
-            })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_closed' ,'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+            })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 
 
-          
+            $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
 
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
@@ -354,7 +283,6 @@ class HomeController extends BaseController
                         cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
                         sin( radians(' . $latitude . ') ) *
                         sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
-                $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
                 $vendorData = $vendorData->whereIn('id', $ses_vendors);
                 //if($venderFilternear && ($venderFilternear == 1) ){
                     //->orderBy('vendorToUserDistance', 'ASC')
@@ -367,26 +295,8 @@ class HomeController extends BaseController
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
             $allVendorData = clone $vendorData;
-            $client = Client::first();
-            $mytime = Carbon::now()->setTimezone($client->timezone);
-            $current_time = $mytime->toTimeString();
-            $sortBy = "sortBy";
-            if($venderFilterClose && ($venderFilterClose == 1) ){
-                $sortBy = "sortByDesc";
-            }
-            if($venderFilterOpen && ($venderFilterOpen == 1) ){
-                $sortBy =  "sortBy";
-            }
-            //$vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->get()->$sortBy('is_vendor_close')->take(5);
-            
-            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->get()->$sortBy('is_vendor_closed')->take(5);
-            //pr($vendorData->toArray());
-            // $vendorData = $vendorData->whereHas('slot', function($query) use ($current_time) {
-            //     //$query->where('start_time', '<', $current_time)->where('end_time', '>', $current_time);
-            // })->where('status', 1)->get();
-            //pr($vendorData->toArray());
-            $venderIds  = $allVendorData->where('status', 1)->pluck('id');
-           
+            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->limit(100)->get();
+            $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
             
             // \Log::info($vendorData->toSql());
             // \Log::info($venderIds);
@@ -398,24 +308,25 @@ class HomeController extends BaseController
             $start_date =  $start_date->format('Y-m-d');
             $end_date = Date('Y-m-d', strtotime('+13 days'));
             
-          
-            foreach ($vendorData as $vendor) {
 
-                // $vendor->is_vendor_closed = 0;
-                // if ($vendor->show_slot == 0) {
-                //     if (($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty())) {
-                //         $vendor->is_vendor_closed = 1;
-                //     } else {
-                //         $vendor->is_vendor_closed = 0;
-                //         if ($vendor->slotDate->isNotEmpty()) {
-                //             $vendor->opening_time = Carbon::parse($vendor->slotDate->first()->start_time)->format('g:i A');
-                //             $vendor->closing_time = Carbon::parse($vendor->slotDate->first()->end_time)->format('g:i A');
-                //         } elseif ($vendor->slot->isNotEmpty()) {
-                //             $vendor->opening_time = Carbon::parse($vendor->slot->first()->start_time)->format('g:i A');
-                //             $vendor->closing_time = Carbon::parse($vendor->slot->first()->end_time)->format('g:i A');
-                //         }
-                //     }
-                // }
+            foreach ($vendorData as $vendor) {
+                unset($vendor->products);
+
+                $vendor->is_vendor_closed = 0;
+                if ($vendor->show_slot == 0) {
+                    if (($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty())) {
+                        $vendor->is_vendor_closed = 1;
+                    } else {
+                        $vendor->is_vendor_closed = 0;
+                        if ($vendor->slotDate->isNotEmpty()) {
+                            $vendor->opening_time = Carbon::parse($vendor->slotDate->first()->start_time)->format('g:i A');
+                            $vendor->closing_time = Carbon::parse($vendor->slotDate->first()->end_time)->format('g:i A');
+                        } elseif ($vendor->slot->isNotEmpty()) {
+                            $vendor->opening_time = Carbon::parse($vendor->slot->first()->start_time)->format('g:i A');
+                            $vendor->closing_time = Carbon::parse($vendor->slot->first()->end_time)->format('g:i A');
+                        }
+                    }
+                }
 
                 $slotsDate = 0;
                 $vendor->date_with_slots = [];
@@ -446,7 +357,6 @@ class HomeController extends BaseController
 
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4) ? 1 : 0;
 
-                // Returns a comma - separated list of categories for a given vendor.
                 $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $vendor->id)->where('status', 1)->get();
                 $categoriesList = '';
                 foreach ($vendorCategories as $key => $category) {
@@ -466,25 +376,23 @@ class HomeController extends BaseController
                 }
 
             }
-         
             //filter vendor
-            // if($venderFilterClose && ($venderFilterClose == 1) ){
-            //     $vendorData =   $vendorData->where('is_vendor_closed',1)->values();
-            // }
-            // if($venderFilterOpen && ($venderFilterOpen == 1) ){
-            //     $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
-            // }
-           
-
-
-            if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                $vendorData = $vendorData->sortBy('lineOfSightDistance')->values()->all();
+            if($venderFilterClose && ($venderFilterClose == 1) ){
+                $vendorData =   $vendorData->where('is_vendor_closed',1)->values();
             }
+            if($venderFilterOpen && ($venderFilterOpen == 1) ){
+                $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
+            }
+           
+            $vendorData =   $vendorData->take(5);
 
-            $on_sale_product_details = $this->vendorProductsV2($vends, $langId, $clientCurrency, '', $type);
-            $new_product_details     = $this->vendorProductsV2($vends, $langId, $clientCurrency, 'is_new', $type);
-            $feature_product_details = $this->vendorProductsV2($vends, $langId, $clientCurrency, 'is_featured', $type);
-           // pr($vendorData->toArray());
+            // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+            //     $vendorData = $vendorData->sortBy('lineOfSightDistance')->values()->all();
+            // }
+
+            $on_sale_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, '', $type);
+            $new_product_details    = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type);
+            $feature_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_featured', $type);
             // foreach ($new_product_details as  $new_product_detail) {
             //     $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
             //     $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
@@ -559,9 +467,8 @@ class HomeController extends BaseController
                 }
             }
             $mobile_banners = $mobile_banners->orderBy('sorting', 'asc')->get();
-          
             if ($mobile_banners) {
-                $cities = $mobile_banners->map(function($value) {
+                foreach ($mobile_banners as $key => $value) {
                     $bannerLink = '';
                     $is_show_category = null;
                     $vendor_name = null;
@@ -572,7 +479,7 @@ class HomeController extends BaseController
                             $value->redirect_name = (($categoryData) && ($categoryData->translation_one)) ? $categoryData->translation_one->name : '';
                         }
                     }
-                    elseif (!empty($value->link) && $value->link == 'vendor') {
+                    if (!empty($value->link) && $value->link == 'vendor') {
                         $bannerLink = $value->redirect_vendor_id;
                         if ($bannerLink) {
                             $vendorDataSingle = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude')->where('status', 1)->where('id', $value->redirect_vendor_id)->first();
@@ -587,39 +494,9 @@ class HomeController extends BaseController
                     }
                     $value->redirect_to = ucwords($value->link);
                     $value->redirect_id = $bannerLink;
-                    
-                    return $value;
-                });
-               
-                // foreach ($mobile_banners as $key => $value) {
-                //     $bannerLink = '';
-                //     $is_show_category = null;
-                //     $vendor_name = null;
-                //     if (!empty($value->link) && $value->link == 'category') {
-                //         $bannerLink = $value->redirect_category_id;
-                //         if ($bannerLink) {
-                //             $categoryData = Category::where('status', 1)->where('id', $value->redirect_category_id)->with('translation_one')->first();
-                //             $value->redirect_name = (($categoryData) && ($categoryData->translation_one)) ? $categoryData->translation_one->name : '';
-                //         }
-                //     }
-                //     if (!empty($value->link) && $value->link == 'vendor') {
-                //         $bannerLink = $value->redirect_vendor_id;
-                //         if ($bannerLink) {
-                //             $vendorDataSingle = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude')->where('status', 1)->where('id', $value->redirect_vendor_id)->first();
-                //             if ($vendorDataSingle) {
-                //                 $vendorDataSingle->is_show_category = ($vendorDataSingle->vendor_templete_id == 2 || $vendorDataSingle->vendor_templete_id == 4) ? 1 : 0;
-                //             }
-                //             $is_show_category = (($vendorDataSingle) && ($vendorDataSingle->vendor_templete_id == 1)) ? 0 : 1;
-                //             $value->is_show_category = $is_show_category;
-                //             $value->redirect_name = $vendorDataSingle->name ?? '';
-                //             $value->vendor = $vendorDataSingle;
-                //         }
-                //     }
-                //     $value->redirect_to = ucwords($value->link);
-                //     $value->redirect_id = $bannerLink;
-                //     unset($value->redirect_category_id);
-                //     unset($value->redirect_vendor_id);
-                // }
+                    unset($value->redirect_category_id);
+                    unset($value->redirect_vendor_id);
+                }
             }
            
 
@@ -628,7 +505,7 @@ class HomeController extends BaseController
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
             $homeData['reqData'] = $request->all();
-            $homeData['mobile_banners'] = $mobile_banners;
+            //$homeData['mobile_banners'] = $mobile_banners;
             $homeData['on_sale_products'] = $on_sale_product_details;
             $homeData['new_products'] = $new_product_details;
             $homeData['featured_products'] = $feature_product_details;
