@@ -295,7 +295,7 @@ class HomeController extends BaseController
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
             $allVendorData = clone $vendorData;
-            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
+            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->get()->take(20);
             $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
             
             // \Log::info($vendorData->toSql());
