@@ -11,7 +11,7 @@ class EstimateAddonSet extends Model
     public function translation(){
 	    return $this->hasMany('App\Models\EstimateAddonSetTranslation' , 'estimate_addon_id', 'id')
 	    ->join('client_languages', 'estimate_addon_set_translations.language_id', 'client_languages.language_id')
-	    ->select('estimate_addon_set_translations.title', 'estimate_addon_set_translations.addon_id', 'estimate_addon_set_translations.language_id')->where('client_languages.is_active', 1); 
+	    ->select('estimate_addon_set_translations.title', 'estimate_addon_set_translations.estimate_addon_id', 'estimate_addon_set_translations.language_id')->where('client_languages.is_active', 1); 
 	}
 
 	  public function primary(){
@@ -36,4 +36,12 @@ class EstimateAddonSet extends Model
 			'title' => $addOn->title
 		])->first();
 	}
+
+	public function estimate_product_addons(){
+        return $this->hasMany('App\Models\EstimateProductAddon', 'estimate_addon_id' );
+    }
+
+	public function estimated_product_addons(){
+        return $this->hasMany('App\Models\EstimatedProductAddons', 'estimated_addon_id' );
+    }
 }

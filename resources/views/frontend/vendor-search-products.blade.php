@@ -1,5 +1,5 @@
 {{--@if($listData->isNotEmpty()) --}}
-<div class="col-sm-4 col-lg-3 border-right al_white_bg_round p-0">
+<div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
     <nav class="scrollspy-menu">
         <ul>
             @forelse($listData as $key => $data)
@@ -22,7 +22,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-5 text-right pl-0"><span > {{ __('Sort By') }} :</span>
+        <div class="col-5 text-right pl-0"><span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span>
             <select name="order_type" id='order_type' class="product_tag_filter p-1">
                 <option value="">{{__('Please Select')}}</option>
                 <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
@@ -277,7 +277,7 @@
                             @endif
 
                             <p class="mb-1 product_price">
-                                {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,2,".",",") }}
+                                {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier) }}
                                 @if ($prod->variant[0]->compare_at_price > 0)
                                     <span
                                         class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
@@ -335,11 +335,11 @@
         @empty
         @endforelse
     @else
-        <h4 class="mt-3 mb-3 text-center">No product found</h4>
+        <h4 class="mt-3 mb-3 text-center">{{__('No product found')}}</h4>
     @endif
 </section>
 @empty
-    <h4 class="mt-3 mb-3 text-center">No product found</h4>
+    <h4 class="mt-3 mb-3 text-center">{{__('No product found')}}</h4>
 @endforelse
 
 

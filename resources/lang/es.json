@@ -31,6 +31,8 @@
    "The term and condition must be accepted.": " Tienes que aceptar, los términos y las condiciones.",
    "Your Cart Is Empty!": " ¡Tu carrito está vacío!",
    "Add items to it now.": " Añádele tus cositas ahora.",
+   "item": "Artículos",
+   "Order Summary": "Resumen de compra",
    "SENDING...": " ENVIANDO...",
    "Full Name": "Nombre y Apellido",
    "On Sale": " En venta",
@@ -783,6 +785,8 @@
    "Order Detail": "Detalle de la Operación",
    "Sellers": "Vendedores",
    "Shopping Cart": "Carrito de compras",
+   "Items": "Elementos",
+   "Back to Shopping Cart": "Volver al carrito de compras",
    "Checkout": "Verificar",
    "Tracking ID": "ID de rastreo",
    "Items from Order": "Desglose de operación",
@@ -1032,6 +1036,7 @@
    "Private": "Privado",
    "Fixed Amount": "Cantidad fija",
    "Service Fee Percent": "Porcentaje de tarifa de servicio",
+   "Service Fee": "Comisión por servicio",
    "Add User": "Agregar usuario",
    "Search User": "Usuario de búsqueda",
    "Where can we pick you up?": "¿Dónde te podemos recoger?",
@@ -1057,5 +1062,8 @@
    "No Result Found":"No se han encontrado resultados",
    "Slot is required" : "Se requiere ranura",
    "Invalid schedule date time" :"Hora de fecha de programación no válida",
-   "Credit/Debit Card (Stripe)"  :  "Tarjeta de crédito/débito (Stripe)"
+   "Credit/Debit Card (Stripe)"  :  "Tarjeta de crédito/débito (Stripe)",
+   "Are you 18 or older?" : "¿Tienes 18 años o más?",
+   "Are you sure you want to continue?" : "¿Estás segura de que quieres continuar?"
+
 }

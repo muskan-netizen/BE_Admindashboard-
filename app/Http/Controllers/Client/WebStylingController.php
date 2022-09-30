@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{ClientPreference, HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory,WebStyling,WebStylingOption};
+use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory,WebStyling,WebStylingOption};
 use Illuminate\Http\Request;
 use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +20,7 @@ class WebStylingController extends BaseController{
     public function index()
     {
         $client_preferences = ClientPreference::first();
-       
+
         switch($client_preferences->business_type){
             case "taxi":
             $home_page_labels = HomePageLabel::whereIn('slug',['dynamic_page','pickup_delivery'])->with('translations')->orderBy('order_by');
@@ -55,6 +55,7 @@ class WebStylingController extends BaseController{
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
         $homepage_style = WebStyling::where('name', 'Home Page Style')->first();
+        $homepage_style_options = [];
         if ($homepage_style) {
             $homepage_style_options = WebStylingOption::where('web_styling_id', $homepage_style->id)->get();
         $themeId = WebStylingOption::where(['web_styling_id'=> $homepage_style->id,'is_selected'=>'1'])->first('id');
@@ -62,8 +63,10 @@ class WebStylingController extends BaseController{
         }
         $user = Auth::user();
         $client = Client::where('code', $user->code)->first();
+        $payment_methods = PaymentMethod::get();
+       // pr( $payment_methods->toArray());
 
-        return view('backend/web_styling/index')->with(['clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'themeId'=>$themeId]);
+        return view('backend/web_styling/index')->with(['clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'payment_methods' => $payment_methods,'themeId'=>$themeId]);
     }
 
 
@@ -127,14 +130,23 @@ class WebStylingController extends BaseController{
             if($request->has('favicon')){
                 $client_preferences->favicon = Storage::disk('s3')->put('favicon', $request->favicon, 'public');
             }
-            if($request->has('deliveryIcon')){
-                $client_preferences->deliveryicon = Storage::disk('s3')->put('deliveryIcon', $request->deliveryIcon, 'public');
+            if($request->has('sign_up_image')){
+                $client_preferences->signup_image = Storage::disk('s3')->put('favicon', $request->sign_up_image, 'public');
             }
-            if($request->has('takewayIcon')){
-                $client_preferences->takewayicon = Storage::disk('s3')->put('takewayIcon', $request->takewayIcon, 'public');
-            }
-            if($request->has('dineinIcon')){
-                $client_preferences->dineinicon = Storage::disk('s3')->put('dineinIcon', $request->dineinIcon, 'public');
+            // if($request->has('deliveryIcon')){
+            //     $client_preferences->deliveryicon = Storage::disk('s3')->put('deliveryIcon', $request->deliveryIcon, 'public');
+            // }
+            // if($request->has('takewayIcon')){
+            //     $client_preferences->takewayicon = Storage::disk('s3')->put('takewayIcon', $request->takewayIcon, 'public');
+            // }
+            // if($request->has('dineinIcon')){
+            //     $client_preferences->dineinicon = Storage::disk('s3')->put('dineinIcon', $request->dineinIcon, 'public');
+            // }
+            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                $iconFiledName     = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+                if($request->has($iconFiledName)){
+                    $client_preferences->$iconFiledName = Storage::disk('s3')->put($iconFiledName, $request->$iconFiledName, 'public');
+                }
             }
 
             $client_preferences->web_color = $request->primary_color;
@@ -144,7 +156,7 @@ class WebStylingController extends BaseController{
             $client_preferences->show_contact_us = $request->show_contact_us == 'on' ? 1 : 0;
             $client_preferences->show_icons = $request->show_icons == 'on' ? 1 : 0;
             $client_preferences->show_wishlist = $request->show_wishlist == 'on' ? 1 : 0;
-            $client_preferences->show_payment_icons = $request->show_payment_icons == 'on' ? 1 : 0;
+           // $client_preferences->show_payment_icons = $request->show_payment_icons == 'on' ? 1 : 0;
             $client_preferences->hide_nav_bar = $request->hide_nav_bar == 'on' ? 1 : 0;
             $client_preferences->header_quick_link = $request->header_quick_link == 'on' ? 1 : 0;
             $client_preferences->show_qr_on_footer = $request->show_qr_on_footer == 'on' ? 1 : 0;
@@ -157,6 +169,30 @@ class WebStylingController extends BaseController{
             'status' => 'success',
             'message' => 'Web Styling Updated Successfully!'
         ]);
+    }
+    public function updatePaymentIcons(Request $request){
+        $client_preferences = ClientPreference::first();
+        $client_preferences->show_payment_icons = $request->show_payment_icons == 'on' ? 1 : 0;
+        $client_preferences->save();
+        return back()->with('success',__('Payment Method Updated Successfully!'));
+
+    }
+    public function updatePaymentMethods(Request $request){
+        $status = $request->has('state') ? $request->state : null;
+        $is_show  = ($status == 'true') ? 1 : 0;
+
+        $Payment_method =  PaymentMethod::where('id',$request->id)->first();
+
+        if($Payment_method){
+            $Payment_method->is_show = $is_show;
+            $Payment_method->save();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Payment Method Updated Successfully!')
+        ]);
+
     }
 
     /**
@@ -347,7 +383,7 @@ class WebStylingController extends BaseController{
 
 
         }
-       
+
         foreach ($request->pickup_labels as $key => $value) {
 
             if(isset($request->is_active[$key]) && !empty($request->is_active[$key]))
@@ -520,7 +556,7 @@ class WebStylingController extends BaseController{
     }
     public function updateContactUs(Request $request){
         $rules = array(
-            'contact_phone_number' => 'required|min:8|max:15'
+            'contact_phone_number' => 'required|min:7|max:15'
         );
         $validation  = Validator::make($request->all(), $rules);
         if ($validation->fails()) {

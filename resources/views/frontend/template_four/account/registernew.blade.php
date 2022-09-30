@@ -2,9 +2,13 @@
 @php
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
 $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'];
+$sign_image = (!empty(Session::get('preferences')) ? Session::get('preferences')->signup_image:'');
+$sign_image_url = $sign_image['image_fit'].'1920/1080'.$sign_image['image_path'];
 @endphp
-@section('css')
+@section('css-links')
 <link rel="stylesheet" href="{{ asset('assets/css/intlTelInput.css') }}">
+@endsection
+@section('css') 
 <style type="text/css">
 .file>label,
 .file.upload-new>label {width: 100%;border: 1px solid #ddd;padding: 30px 0;height: 216px;}
@@ -13,28 +17,31 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
 .update_pic,
 .file.upload-new .update_pic {width: 100%;height: auto;margin: auto;text-align: center;border: 0;border-radius: 0;}
 .file--upload>label {margin-bottom: 0;}
+/* .bgFourPage{background-image : url({{getImageUrl(asset('assets/images/bannerFour.jpg'),'1920/1200')}});}  */
+
 </style>
 @endsection
 @section('content')
-<article class="bgFourPage"></article>
+<article class="bgFourPage"><img class="LoginAreaBG" alt="" src="{{$sign_image_url}}"></article>
 <section class="wrapper-main pt-lg-3 alSectionTop d-flex align-items-center">
     <article class="BGcenter">
         <div class="container">
-            <div class=" col-xl-8 offset-xl-2 p-3" id="login-section">
+            <div class=" col-xl-8 offset-xl-2 py-3" id="login-section">
+                <img class="LoginAreaBG" alt="" src="{{$sign_image_url}}">
                 <div class="row d-flex align-items-center h-100">
                     <div class="col-sm-6">
                         <div class="LoginLogoBG">
                             <img class="LoginLogo" style="height:80px" alt="" src="{{$urlImg}}">
                         </div>
                     </div>
-                    <div class="col-sm-6 text-center px-sm-5 LogoInArea">
+                    <div class="col-sm-6 text-center px-xl-5 px-3 LogoInArea">
                         <h3 class="mb-2">{{ __('Register') }}</h3>
 
                         <div class="row">
-                            <div class="col-sm-12 text-left">
+                            <div class="col-sm-12 text-left ">
                                 <form name="register" id="register" enctype="multipart/form-data" action="{{ route('customer.register') }}"
                                     class="" method="post"> @csrf
-                                    <div class="row form-group mb-0">
+                                    <div class="form-group mb-0">
                                         <div class="col-12 p-0">
                                             <label for="" class="m-0">{{ __('Full Name') }}</label>
                                             <input type="text" class="form-control @error('name') is-invalid @enderror"
@@ -63,9 +70,9 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="row form-group mb-0">
+                                    <div class="form-group mb-0">
                                         <div class="col-12 mb-1 p-0">
-                                            <label for="" class="m-0">{{ __('Email (optinal)') }}</label>
+                                            <label for="" class="m-0">{{ __('Email (Optional)') }}</label>
                                             <input type="email" class="form-control @error('email') is-invalid @enderror"
                                                 placeholder="{{ __('Email') }}" name="email" value="{{ old('email') }}">
                                             @error('email')
@@ -92,7 +99,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                         </div>
                                     </div>
 
-                                    <div class="row form-group" id="alDocumentsSection">
+                                    <div class="form-group" id="alDocumentsSection">
 
                                         @if (count($user_registration_documents) > 0)
                                             <div class="user-info d-block w-100">
@@ -183,7 +190,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                             @endforeach
                                         </div>
                                     </div>
-                                    <div class="row form-group mb-0 align-items-center">
+                                    <div class="form-group mb-0 align-items-center">
                                         <div class="col-12 p-0 checkbox-input">
                                             <input type="checkbox" id="html" name="term_and_condition"
                                                 class="form-control @error('term_and_condition') is-invalid @enderror">
@@ -220,7 +227,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="row mt-3">
+                                    <div class="mt-3">
                                         <div class="col-12 p-0">
                                             <input type="hidden" name="device_type" value="web">
                                             <input type="hidden" name="device_token" value="web">

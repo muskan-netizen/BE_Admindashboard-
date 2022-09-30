@@ -55,7 +55,7 @@ class CategoryKycDocumentController extends BaseController{
             }
            
             DB::commit();
-            return $this->successResponse($category_kyc_document, __('Category KYC Document Added Successfully.'));
+            return $this->successResponse($category_kyc_document, __('User Place Order Document Added Successfully.'));
         } catch (Exception $e) {
             DB::rollback();
             return $this->errorResponse([], $e->getMessage());
@@ -126,7 +126,7 @@ class CategoryKycDocumentController extends BaseController{
                 }
             }
             DB::commit();
-            return $this->successResponse($category_kyc_document, 'Category kyc Document Updated Successfully.');
+            return $this->successResponse($category_kyc_document, 'User Place Order Document Updated Successfully.');
         } catch (Exception $e) {
             DB::rollback();
             return $this->errorResponse([], $e->getMessage());
@@ -146,7 +146,7 @@ class CategoryKycDocumentController extends BaseController{
             CategoryKycDocuments::where('id', $request->category_kyc_document_id)->delete();
             CategoryKycDocumentMapping::where('category_kyc_document_id',$request->category_kyc_document_id)->delete();
             CategoryKycDocumentTranslation::where('category_kyc_document_id', $request->category_kyc_document_id)->delete();
-            return $this->successResponse([], 'Category Kyc Document Deleted Successfully.');
+            return $this->successResponse([], 'User Place Order Document Deleted Successfully.');
         } catch (Exception $e) {
             return $this->errorResponse([], $e->getMessage());
         }

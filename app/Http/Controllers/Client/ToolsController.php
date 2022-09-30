@@ -114,8 +114,10 @@ class ToolsController extends BaseController
                     }
 
                     foreach ($from_products as $from_product) {
-                        $product_slug = createSlug(!is_null($from_product->title) ? $from_product->title : $from_product->url_slug);
-                        $product_sku = $sku_url . '.' . $product_slug;
+                        // $product_slug = createSlug(!is_null($from_product->title) ? $from_product->title : $from_product->url_slug);
+                        // $product_sku = $sku_url . '.' . $product_slug;
+                        $product_slug = !is_null($from_product->title) ? $from_product->title : $from_product->url_slug;
+                        $product_sku = $sku_url . '.' . remove_special_chars($product_slug);
                         $check_product = $this->productObj->getProductBySku($product_sku);
                         if ($check_product) {
                             $this->deleteProduct($check_product->id);
@@ -240,6 +242,23 @@ class ToolsController extends BaseController
             $new_addOn->product_id = $product->id;
             $new_addOn->addon_id = $addOn_id;
             $new_addOn->save();
+        }
+
+          //Product Faq Questions
+          foreach ($from_product->ProductFaq as $faq) {
+            $new_faq = $faq;
+            $new_faq = $new_faq->replicate();
+            $new_faq->product_id = $product->id;
+            $new_faq->save();
+
+                //Faq transalations
+                foreach ($faq->translations as $faqTran) {
+                    $new_faqTran = $faqTran;
+                    $new_faqTran = $new_faqTran->replicate();
+                    $new_faqTran->product_faq_id = $new_faq->id;
+                    $new_faqTran->save();
+                }
+            
         }
 
         foreach ($from_product->celebrities as $celebrity) {

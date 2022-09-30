@@ -107,9 +107,9 @@
 
         <div class="row mb-2" >
             <div class="col-md-4">
-                <div class="form-group mb-3" id="pincode">
+                <div class="form-group mb-3" >
                     {!! Form::label('title', __('Pincode'),['class' => 'control-label']) !!}
-                    <input type="text" name="pincode" placeholder="Pincode" class="form-control" value="{{@$vendor->pincode}}">
+                    <input type="text" name="pincode" id="pincode" placeholder="Pincode" class="form-control" value="{{@$vendor->pincode}}">
                     @if($errors->has('Pincode'))
                     <span class="text-danger" role="alert">
                         <strong>{{ $errors->first('Pincode') }}</strong>
@@ -120,7 +120,7 @@
             <div class="col-md-4">
                 <div class="form-group mb-3">
                     {!! Form::label('title', __('City'),['class' => 'control-label']) !!}
-                    <input type="text" name="city" placeholder="City" class="form-control" value="{{$vendor->city}}">
+                    <input type="text" name="city" id="city" placeholder="City" class="form-control" value="{{$vendor->city}}">
                     @if($errors->has('city'))
                     <span class="text-danger" role="alert">
                         <strong>{{ $errors->first('city') }}</strong>
@@ -131,7 +131,7 @@
             <div class="col-md-4">
                 <div class="form-group mb-3">
                     {!! Form::label('title', __('State'),['class' => 'control-label']) !!}
-                    <input type="text" name="state" placeholder="State" class="form-control" value="{{$vendor->state}}">
+                    <input type="text" name="state" id="state" placeholder="State" class="form-control" value="{{$vendor->state}}">
                     @if($errors->has('state'))
                     <span class="text-danger" role="alert">
                         <strong>{{ $errors->first('state') }}</strong>
@@ -142,7 +142,7 @@
             <div class="col-md-4">
                 <div class="form-group mb-3">
                     {!! Form::label('title', __('Country'),['class' => 'control-label']) !!}
-                    <input type="text" name="country" placeholder="Country" class="form-control" value="{{$vendor->country}}">
+                    <input type="text" name="country" id="country" placeholder="Country" class="form-control" value="{{$vendor->country}}">
                     @if($errors->has('country'))
                     <span class="text-danger" role="alert">
                         <strong>{{ $errors->first('country') }}</strong>
@@ -187,7 +187,25 @@
 
             <div class="col-md-6">
                 <div class="row">
-                    <div class="col-md-4">
+                @php
+                $typeArray = getCategoryTypes();
+                @endphp
+                   @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                        @php
+                            $clientVendorTypes = $vendor_typ_key.'_check';
+                            $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                        @endphp
+                        @if(($client_preferences->$clientVendorTypes == 1) && (in_array($vendor_typ_key, $typeArray)) )
+                        <div class="col-md-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="{{$VendorTypesName}}" class="mr-3 mb-0">{{getDynamicTypeName($vendor_typ_value)}}</label>
+                                <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control editSwitchery {{$VendorTypesName}}" data-color="#43bee1" @if($vendor->$VendorTypesName == 1) checked @endif>
+                                
+                            </div>
+                        </div>
+                        @endif
+                    @endforeach
+                    <!-- <div class="col-md-4">
                         <div class="form-group" @if($client_preferences->dinein_check == 0) style="display: none;" @endif >
                             {!! Form::label('title', getNomenclatureName('Dine-In', true) ,['class' => 'control-label']) !!}
                             <div>
@@ -210,7 +228,7 @@
                                 <input type="checkbox" data-plugin="switchery" name="delivery" class="form-control delivery" data-color="#43bee1" @if($vendor->delivery == 1) checked @endif>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

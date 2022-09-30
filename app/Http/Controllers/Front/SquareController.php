@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, WalletController, FrontController};
 use Auth, Log, Redirect;
-use App\Models\{PaymentOption, Cart, CaregoryKycDoc,SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User,OrderProduct};
+use App\Models\{PaymentOption,OrderProductAddon,OrderTax,VendorOrderStatus,OrderVendor,OrderProductPrescription, Cart, SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User,OrderProduct};
 
 class SquareController extends FrontController
 {

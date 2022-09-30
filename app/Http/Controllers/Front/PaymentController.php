@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\{Order, User, Cart, ClientCurrency, CartProduct};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController,EasebuzzController,VnpayController, PayUGatewayController};
+use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController,EasebuzzController,VnpayController, PayUGatewayController, MyCashGatewayController,UseRedePaymentController,OpenpayPaymentController};
 
 class PaymentController extends FrontController{
 
@@ -48,8 +48,8 @@ class PaymentController extends FrontController{
                     if(!empty($vendor_cart_product->addon)){
                         foreach ($vendor_cart_product->addon as $ck => $addon) {
                             $opt_quantity_price = 0;
-                            $opt_price_in_currency = $addon->option->price;
-                            $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                            $opt_price_in_currency = $addon->option->price??0;
+                            $opt_price_in_doller_compare = $opt_price_in_currency * $dollar_compare;
                             $opt_quantity_price = $opt_price_in_doller_compare * $vendor_cart_product->quantity;
                             $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
                         }
@@ -79,8 +79,22 @@ class PaymentController extends FrontController{
                     $payment_option->title = 'Credit/Debit Card (Stripe)';
                 }elseif($payment_option->code == 'kongapay'){
                     $payment_option->title = 'Pay Now';
+                }elseif($payment_option->code == 'mvodafone'){
+                    $payment_option->title = 'Vodafone M-PAiSA';
                 }elseif($payment_option->code == 'mobbex'){
                     $payment_option->title = __('Mobbex');
+                }
+                elseif($payment_option->code == 'offline_manual'){
+                    $json = json_decode($payment_option->credentials);
+                    $payment_option->title = $json->manule_payment_title;
+                }elseif($payment_option->code == 'mycash'){
+                    $payment_option->title = __('Digicel MyCash');
+                }elseif($payment_option->code == 'windcave'){
+                    $payment_option->title = __('Windcave (Debit/Credit card)');
+                }elseif($payment_option->code == 'stripe_ideal'){
+                    $payment_option->title = __('iDEAL');
+                }elseif($payment_option->code == 'authorize_net'){
+                    $payment_option->title = __('Credit/Debit Card');
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
@@ -110,6 +124,69 @@ class PaymentController extends FrontController{
     public function getGatewayReturnResponse(Request $request)
     {
         return view('frontend.account.gatewayReturnResponse');
+    }
+
+    public function verifyPaymentOtp(Request $request, $domain='', $gateway)
+    {
+        if($gateway == 'mycash'){
+            $data = $request->all();
+            return view('frontend.payment_gatway.mycash_otp_verify', compact('data'));
+        }
+    }
+
+    public function verifyPaymentOtpApp(Request $request, $domain='', $gateway)
+    {
+        if($gateway == 'mycash'){
+            $data = $request->all();
+            // \Log::info($data);
+            return view('frontend.payment_gatway.mycash_otp_verify', compact('data'));
+        }
+    }
+
+    public function sendPaymentOtp(Request $request, $domain='', $gateway)
+    {
+        if(!empty($gateway)){
+            $function = 'sendPaymentOtpVia_'.$gateway;
+            if(method_exists($this, $function)) {
+                if(!empty($request->payment_form)){
+                    $response = $this->$function($request); // call related gateway for payment processing
+                    return $response;
+                }
+            }
+            else{
+                return $this->errorResponse("Invalid Gateway Request", 400);
+            }
+        }else{
+            return $this->errorResponse("Invalid Gateway Request", 400);
+        }
+    }
+
+    public function sendPaymentOtpVia_mycash(Request $request){
+        $gateway = new MyCashGatewayController();
+        return $gateway->sendOtp($request);
+    }
+
+    public function verifyPaymentOtpSubmit(Request $request, $domain='', $gateway)
+    {
+        if(!empty($gateway)){
+            $function = 'verifyPaymentOtpVia_'.$gateway;
+            if(method_exists($this, $function)) {
+                if(!empty($request->payment_form)){
+                    $response = $this->$function($request); // call related gateway for payment processing
+                    return $response;
+                }
+            }
+            else{
+                return $this->errorResponse("Invalid Gateway Request", 400);
+            }
+        }else{
+            return $this->errorResponse("Invalid Gateway Request", 400);
+        }
+    }
+
+    public function verifyPaymentOtpVia_mycash(Request $request){
+        $gateway = new MyCashGatewayController();
+        return $gateway->verifyOtp($request);
     }
 
     public function postPayment(Request $request, $domain='', $gateway = ''){
@@ -145,6 +222,19 @@ class PaymentController extends FrontController{
 
     public function postPaymentVia_payu(Request $request){
         $gateway = new PayUGatewayController();
-        return $gateway->payUPurchase($request);
+        return $gateway->purchase($request);
+    }
+
+    public function postPaymentVia_mycash(Request $request){
+        $gateway = new MyCashGatewayController();
+        return $gateway->purchase($request);
+    }
+    public function postPaymentVia_userede(Request $request){
+        $gateway = new UseRedePaymentController();
+        return $gateway->beforePayment($request);
+    }
+    public function postPaymentVia_openpay(Request $request){
+        $gateway = new OpenpayPaymentController();
+        return $gateway->beforePayment($request);
     }
 }

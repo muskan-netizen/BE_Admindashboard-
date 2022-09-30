@@ -11,9 +11,7 @@
     <link rel="stylesheet" href="{{ asset('front-assets/css/easyzoom.css') }}" />
     <link rel="stylesheet" href="{{ asset('front-assets/css/main.css') }}" /> -->
 
-    <link rel="stylesheet" href="https://www.jqueryscript.net/css/jquerysctipttop.css">
-    <link rel="stylesheet" href="https://www.jqueryscript.net/demo/Product-Carousel-Magnifying-Effect-exzoom/jquery.exzoom.css">
-    <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="{{asset('css/jquery.exzoom.css')}}">
 <style type="text/css">
     .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.btn-disabled{opacity:.5;pointer-events:none}.fab{font:normal normal normal 14px/1 FontAwesome;font-size:inherit}
     #number{display:block}#exzoom{display:none}.exzoom .exzoom_btn a.exzoom_next_btn{right:-12px} .exzoom .exzoom_nav .exzoom_nav_inner{-webkit-transition:all .5s;-moz-transition:all .5s;transition:all .5s}
@@ -72,7 +70,7 @@
                             </div>
                         </div>--}}
                         <div class="row">
-                            <div class="col-lg-5 pl-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                            <div class="col-lg-5 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                 {{-- <div class="product__carousel">
                                     <div class="gallery-parent">
                                         @php
@@ -186,6 +184,9 @@
                                     <div class="description_txt mt-3">
                                         <p>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description : ''}}</p>
                                     </div>
+                                    <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
+                                    <input type="hidden" name="start_time" id="start_time" value="">
+                                    <input type="hidden" name="end_time" id="end_time" value="">
                                     <div id="product_variant_wrapper">
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
                                         @if($product->inquiry_only == 0)
@@ -197,6 +198,7 @@
                                             </h3>
                                         @endif
                                     </div>
+                                   
                                     <div id="product_variant_options_wrapper">
                                         @if(!empty($product->variantSet))
                                             @php
@@ -233,7 +235,11 @@
                                     <div id="variant_response">
                                         <span class="text-danger mb-2 mt-2"></span>
                                     </div>
-                                    <div id="product_variant_quantity_wrapper">
+                                    @if($product->category->categoryDetail->type_id == 10)
+                                        @include('frontend.product-part.booking-slot')
+                                    @endif
+                                    
+                                    <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'block'; ?>">
                                         @if($product->inquiry_only == 0)
                                         <div class="product-description border-product pb-0">
                                             <h6 class="product-title mt-0">{{__('Quantity')}}:
@@ -260,7 +266,7 @@
                                                     </span>
                                                     <input type="text" name="quantity"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="quantity" class="form-control input-qty-number quantity_count"  value="{{$product->minimum_order_count??1}}" data-minimum_order_count={{$product->minimum_order_count}}>
                                                     <span class="input-group-prepend quant-plus">
-                                                        <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}>
+                                                        <button type="button" class="btn quantity-right-plus" data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}>
                                                             <i class="ti-angle-right"></i>
                                                         </button>
                                                     </span>
@@ -297,7 +303,7 @@
                                                             }
                                                         @endphp
                                                         @if( ($min_select != '') || ($max_select != '') )
-                                                            <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
+                                                            <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
                                                         @endif
                                                     </h4>
 
@@ -335,7 +341,7 @@
                                                                 }
                                                             @endphp
                                                             @if( ($min_select != '') || ($max_select != '') )
-                                                                <small>({{$min_select.$max_select}} Selections allowed)</small>
+                                                                <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
                                                             @endif
                                                         </h4>
                                                     </td>
@@ -357,7 +363,11 @@
                                     </div>
                                     @endif
                                     @php
-                                    $checkSlot = findSlot('',$product->vendor->id,'');
+                                        // check if vendor is closed or not, if closed then get slots otherwise no need.
+                                        if($vendor_info->is_vendor_closed == 1)
+                                            $checkSlot = findSlot('',$product->vendor->id,'');
+                                        else
+                                            $checkSlot = 0;
                                     @endphp
                                     <div class="product-buttons">
                                         @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
@@ -414,7 +424,7 @@
                         </div>
                     </div>
                     @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                    <section class="tab-product m-0">
+                    <section class="tab-product mb-3">
                         <div class="row">
                             <div class="col-sm-12 col-lg-12">
                                 <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
@@ -544,7 +554,7 @@
     <input type="hidden" name="variant_id" id="prod_variant_id" value="<%= variant.id %>">
     <% if(variant.product.inquiry_only == 0) { %>
         <h3 id="productPriceValue" class="mb-md-3">
-            <b class="mr-1"><span class="product_fixed_price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(variant.productPrice) %></span></b>
+            <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price"><%= Helper.formatPrice(variant.productPrice) %></span></b>
             <% if(variant.compare_at_price > 0 ) { %>
                 <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price"><%= Helper.formatPrice(variant.compare_at_price) %></span></span>
             <% } %>
@@ -611,38 +621,38 @@
         </div>
     </div>
     <div class="container pb-md-4">
-        <div class="product-4 product-m  related-products pb-2">
+        <div class="product-4 product-m  related-products pb-2 d-flex">
             @forelse($product->related_products as $related_product)
             <div>
-				<a class="common-product-box scale-effect text-center"
-						href="{{route('productDetail',[$related_product->vendor->slug,$related_product->url_slug])}}">
-					<div class="img-outer-box position-relative">
-						<img class="img-fluid blur-up lazyload" data-src="{{ $related_product->image_url }}" alt="">
-						<!-- <div class="pref-timing">
-							<span>5-10 min</span>
-						</div> -->
-						<!-- <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i> -->
-					</div>
-					<div class="media-body align-self-center">
-						<div class="inner_spacing px-0">
-							<div class="product-description">
-								<div class="d-flex align-items-center justify-content-between">
-									<h6 class="card_title ellips">{{ $related_product->translation_title }}</h6>
-								</div>
-								<p>{{ $related_product->vendor_name }}</p>
-								<p class="border-bottom pb-1">In {{$related_product->category_name}}</p>
-								<div class="d-flex align-items-center justify-content-between">
-									<b>
-										@if($related_product->inquiry_only == 0)
-										{{ Session::get('currencySymbol') . $related_product->variant_price }}
-										@endif
-									</b>
-								</div>
-							</div>
-						</div>
-					</div>
-				</a>
-			</div>
+                <a class="common-product-box scale-effect text-center"
+                        href="{{route('productDetail',[$related_product->vendor->slug,$related_product->url_slug])}}">
+                    <div class="img-outer-box position-relative">
+                        <img class="img-fluid blur-up lazyload" data-src="{{ $related_product->image_url }}" alt="">
+                        <!-- <div class="pref-timing">
+                            <span>5-10 min</span>
+                        </div> -->
+                        <!-- <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i> -->
+                    </div>
+                    <div class="media-body align-self-center">
+                        <div class="inner_spacing px-0">
+                            <div class="product-description">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <h6 class="card_title ellips">{{ $related_product->translation_title }}</h6>
+                                </div>
+                                <p>{{ $related_product->vendor_name }}</p>
+                                <p class="border-bottom pb-1">In {{$related_product->category_name}}</p>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <b>
+                                        @if($related_product->inquiry_only == 0)
+                                        {{ Session::get('currencySymbol') . $related_product->variant_price }}
+                                        @endif
+                                    </b>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
             @empty
             @endforelse
         </div>
@@ -723,11 +733,12 @@
 @section('js-script')
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
-<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
 @endsection
 @section('script')
 <script>
+    var maximumquantitylert = "{{__('Quantity is not available in stock')}}";
+    var minimumquantitylert = "{{__('Minimum Quantity count is')}}";
     $(document).on('click', '.submitInquiryForm', function(e) {
         e.preventDefault();
         var formData = new FormData(document.getElementById("inquiry-form"));
@@ -848,6 +859,15 @@
                     $("#variant_response span").html('');
                     var response = resp.data;
                     if(response.variant != ''){
+                        if(vendor_type == 'rental'){
+                            // $('.incremental_hrs').val(0);
+                            // $('.base_hours_min').val();
+                            $('.incremental_hrs').val(0);
+                            $('#incremental_hrs_hidden').val(base_hours_min);
+                            $('.incremental-left-minus').click();
+                            //$('#blocktime, #blocktime2').change();
+                        }
+                        
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);

@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{VerificationOption, UserVerfication, UserVerificationResource};  
+use App\Models\{VerificationOption, UserVerfication, UserVerificationResource,User};  
 use Log, Auth; 
 
-class PassbaseController extends BaseController
+class PassbaseController extends BaseController 
 {
 	use \App\Http\Traits\PassbaseManager;
 	use \App\Http\Traits\ApiResponser;
@@ -20,17 +20,16 @@ class PassbaseController extends BaseController
 	{
 		$this->userVerificationObj = $userVerfication;
         $this->resourceObj = $resource;
-		$passbase_creds = VerificationOption::select('credentials','test_mode')->where('code','passbase')->where('status',1)->first();
-        $creds_arr = json_decode($passbase_creds->credentials);
-	    $this->publish_key = $creds_arr->publish_key ?? '';
-	    $this->secret_key = $creds_arr->secret_key ?? '';
 	}
-    public function storeAuthkey(Request $request)
+    public function storeAuthkey(Request $request) 
     {
+        Log::info('Passbase Data');
+        Log::info($request->all());
     	$response = $this->getIdentity($request->identityAccessKey);
+        $user = User::where('auth_token',$request->header('authorization'))->first();
     	$add = $this->userVerificationObj->addVerification([
     		'verification_option_id' => 1,
-    		'user_id' => $request->user_id??12,
+    		'user_id' => $user->id??12,
     		'response_id' => $response['id'],
     		'status' => $response['status']
     	]);
@@ -42,6 +41,6 @@ class PassbaseController extends BaseController
                 'datapoints' => json_encode($resource['datapoints'])
             ]);
         }
-    	return $this->successResponse($response); 
+    	return $this->successResponse($response);
     }
 }

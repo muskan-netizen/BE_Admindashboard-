@@ -176,7 +176,7 @@ class RazorpayGatewayController extends FrontController
                     $payment->order_id = $order->id;
                     $payment->transaction_id = $transactionId;
                     $payment->balance_transaction = $amount;
-                    $payment->type = 'pickup delivery';
+                    $payment->type = 'pickup_delivery';
                     $payment->save();
                 }
             }

@@ -24,11 +24,15 @@ class Order extends Model implements Auditable
     }
     public function user()
     {
-        return $this->hasOne('App\Models\User', 'id', 'user_id');
+        return $this->hasOne('App\Models\User', 'id', 'user_id')->withTrashed();
     }
     public function address()
     {
         return $this->hasOne('App\Models\UserAddress', 'id', 'address_id');
+    }
+    public function orderLocation()
+    {
+        return $this->hasOne('App\Models\OrderLocations', 'order_id', 'id');
     }
     public function paymentOption()
     {

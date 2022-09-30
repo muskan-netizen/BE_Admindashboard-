@@ -202,7 +202,7 @@ class VendorController extends BaseController{
                                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                             },
                             'variant' => function($q) use($langId){
-                                $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price')->orderBy('quantity', 'desc');
+                                $q->select('id','sku', 'product_id', 'quantity', 'price','markup_price', 'barcode', 'compare_at_price')->orderBy('quantity', 'desc');
                                 // $q->groupBy('product_id');
                             },'variant.checkIfInCartApp', 'checkIfInCartApp',
                              'tags.tag.translations' => function ($q) use ($langId) {
@@ -300,7 +300,7 @@ class VendorController extends BaseController{
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
                         'variant' => function($q) use($langId){
-                            $q->select('id','sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
+                            $q->select('id','sku', 'product_id', 'title', 'quantity', 'price','markup_price', 'barcode');
                             // $q->groupBy('product_id');
                         }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                         'tags.tag.translations' => function ($q) use ($langId) {
@@ -464,7 +464,7 @@ class VendorController extends BaseController{
                                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                             },
                             'variant' => function ($q) use ($langId) {
-                                $q->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price')->orderBy('quantity', 'desc');
+                                $q->select('id', 'sku', 'product_id', 'quantity', 'price','markup_price', 'barcode', 'compare_at_price')->orderBy('quantity', 'desc');
                             // $q->groupBy('product_id');
                             },'variant.checkIfInCartApp', 'checkIfInCartApp',
                         ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
@@ -558,7 +558,7 @@ class VendorController extends BaseController{
                                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                             },
                             'variant' => function ($q) use ($langId) {
-                                $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
+                                $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price','markup_price', 'barcode');
                             // $q->groupBy('product_id');
                             }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                         ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
@@ -810,7 +810,7 @@ class VendorController extends BaseController{
                                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                             },
                             'variant' => function ($q) use ($langId, $variantIds) {
-                                $q->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price')->orderBy('quantity', 'desc');
+                                $q->select('id', 'sku', 'product_id', 'quantity', 'price','markup_price', 'barcode', 'compare_at_price')->orderBy('quantity', 'desc');
                             // $q->groupBy('product_id');
                                 if (!empty($variantIds)) {
                                     $q->whereIn('id', $variantIds);
@@ -819,7 +819,7 @@ class VendorController extends BaseController{
                         ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
                             ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                             ->join('product_translations', 'product_translations.product_id', '=', 'products.id')
-                            ->withCount('OrderProduct'); // Or whatever the join logic is
+                            ->withCount('OrderProduct'); // Or whatever the join logic is (order_product_count)
 
                         $products->where('products.category_id', $category->category_id);
 
@@ -952,7 +952,7 @@ class VendorController extends BaseController{
                                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                             },
                             'variant' => function ($q) use ($langId,$variantIds) {
-                                $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
+                                $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price','markup_price', 'barcode');
                                 if (!empty($variantIds)) {
                                     $q->whereIn('id', $variantIds);
                                 }
@@ -1132,7 +1132,7 @@ class VendorController extends BaseController{
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                             $q->groupBy('language_id','product_id');
                         },'variant' => function($q) use($langId, $variantIds){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
                             if(!empty($variantIds)){
                                 $q->whereIn('id', $variantIds);
                             }
@@ -1497,7 +1497,7 @@ class VendorController extends BaseController{
             ];
             try{
                 dispatch(new \App\Jobs\sendVendorRegistrationEmail($email_data))->onQueue('verify_email');
-                dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
+              //  dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
             }catch(Exception $e) {
 
             }
@@ -1933,7 +1933,7 @@ class VendorController extends BaseController{
                     if ($luxury_option->title == 'takeaway') {
                         $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
                     } elseif ($luxury_option->title == 'dine_in') {
-                        $luxury_option_name = __('Dine-In');
+                        $luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
                     } else {
                         $luxury_option_name = __('Delivery');
                     }
@@ -1975,7 +1975,7 @@ class VendorController extends BaseController{
         $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
         $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
 
-        $type = 'delivery';
+        $type = $request->has('type') ? $request->type : 'delivery';
         if ($request->has('type')) {
             if (empty($request->type)) {
                 $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
@@ -1988,6 +1988,12 @@ class VendorController extends BaseController{
         }
 
         $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
+
+        // get vendor by category typ
+        $categoryTypes = getServiceTypesCategory($type);
+        $vendorData = $vendorData->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+            $q->whereIn('type_id',$categoryTypes);
+        });
 
         if (($preferences) && ($preferences->is_hyperlocal == 1)) {
             $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
@@ -2218,7 +2224,7 @@ class VendorController extends BaseController{
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id','body_html as translation_description')->where('language_id', $langId)->orderBy('id','desc');
                         },
                         'variant' => function($q) use($langId, $multipli){
-                            $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"),)->orderBy('quantity', 'desc');
+                            $q->select('id','sku', 'product_id', 'quantity', 'price','markup_price', 'barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"),)->orderBy('quantity', 'desc');
                             // $q->groupBy('product_id');
                         },'variant.checkIfInCartApp', 'checkIfInCartApp',
                          'tags.tag.translations' => function ($q) use ($langId) {
@@ -2274,7 +2280,7 @@ class VendorController extends BaseController{
                             $q->groupBy('language_id','product_id');
                         },
                         'variant' => function($q) use($langId){
-                            $q->select('id','sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
+                            $q->select('id','sku', 'product_id', 'title', 'quantity', 'price','markup_price', 'barcode');
                             // $q->groupBy('product_id');
                         }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                         'tags.tag.translations' => function ($q) use ($langId) {
@@ -2335,7 +2341,7 @@ class VendorController extends BaseController{
              $limit = $request->has('limit') ? $request->limit : 12;
             $langId = $user->language;
           
-           
+          
          
             $variantSets =  ProductVariantSet::with(['options' => function($zx) use($langId){
                                 $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
@@ -2345,6 +2351,7 @@ class VendorController extends BaseController{
                             ->join('variant_translations as vt','vt.variant_id','vr.id')
                             ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
                             ->where('vt.language_id', $langId)
+                            ->where('vr.status', 1)
                             ->whereIn('product_id', function($qry) use($vid){
                             $qry->select('id')->from('products')
                                 ->where('vendor_id', $vid);
@@ -2493,7 +2500,7 @@ class VendorController extends BaseController{
                             $q->groupBy('language_id','product_id');
                         },
                         'variant' => function($q) use($langId, $multipli,$variantIds){
-                            $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"))->orderBy('quantity', 'desc');
+                            $q->select('id','sku', 'product_id', 'quantity', 'price','markup_price', 'barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"))->orderBy('quantity', 'desc');
                             if (!empty($variantIds)) {
                                 $q->whereIn('id', $variantIds);
                             }
@@ -2603,7 +2610,7 @@ class VendorController extends BaseController{
                                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                             },
                             'variant' => function ($q) use ($langId,$variantIds) {
-                                $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
+                                $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price','markup_price', 'barcode');
                                 if (!empty($variantIds)) {
                                     $q->whereIn('id', $variantIds);
                                 }
@@ -2715,6 +2722,18 @@ class VendorController extends BaseController{
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
         }
+    }
+
+
+
+    /******************    ---- vendor data sync with inventory -----   ******************/
+    public function vendorSyncInventory(Request $request){
+
+        
+        return response()->json([
+        'status' => 200,
+        'message' => 'Connected',
+        'data' => $request->toArray()]);
     }
 
 }

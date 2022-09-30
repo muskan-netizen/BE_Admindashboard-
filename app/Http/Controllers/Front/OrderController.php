@@ -7,6 +7,7 @@ use App\Http\Controllers\DunzoController;
 use DB;
 use Log;
 use Auth;
+use Crypt;
 use Redirect;
 use Carbon\Carbon;
 use Omnipay\Omnipay;
@@ -14,6 +15,7 @@ use App\Models\Cart;
 use App\Models\User;
 use App\Models\Page;
 use App\Models\Order;
+use App\Models\RescheduleOrder;
 use GuzzleHttp\Client;
 use App\Models\Payment;
 use App\Models\Vendor;
@@ -40,7 +42,7 @@ use App\Models\OrderProductPrescription;
 use App\Models\SubscriptionInvoicesUser;
 use App\Models\UserRegistrationDocuments;
 use App\Models\DriverRegistrationDocument;
-use App\Models\VendorOrderDispatcherStatus;
+use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption};
 
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -48,6 +50,7 @@ use App\Models\PaymentOption;
 use App\Models\CartDeliveryFee;
 use App\Models\ClientPreference;
 use App\Http\Traits\ApiResponser;
+use App\Models\AddonOption;
 use App\Models\ProductVariantSet;
 use GuzzleHttp\Client as GCLIENT;
 use App\Models\AutoRejectOrderCron;
@@ -128,7 +131,7 @@ class OrderController extends FrontController
                 foreach ($vendor->products as $product) {
                     if ( isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
                         $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
-                    } elseif ($product->media->isNotEmpty()) {
+                    } elseif ($product->media->isNotEmpty() && !is_null($product->media->first()->image)) {
                         $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
                     } else {
                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
@@ -156,9 +159,11 @@ class OrderController extends FrontController
                 $vendor->vendor_dispatcher_status = $vendor->vendor_dispatcher_status->get();
                 $vendor->vendor_dispatcher_status_count = 6;
                 $vendor->dispatcher_status_icons = [asset('assets/icons/driver_1_1.png'),asset('assets/icons/driver_2_1.png'),asset('assets/icons/driver_4_1.png'),asset('assets/icons/driver_3_1.png'),asset('assets/icons/driver_4_2.png'),asset('assets/icons/driver_5_1.png')];
-
+                // $dispatcher_status_options =VendorOrderDispatcherStatus::where(['order_id'=> $order->id,'vendor_id'=>$vendor->vendor->id,'dispatcher_status_option_id'=>'2'])->first();
+                // $vendor->driver_chat =  $dispatcher_status_options ? 1 : 0 ;
             }
         }
+      //  pr($activeOrders->toArray());exit();
        // return $pastOrders;
         foreach ($pastOrders as $order) {
             foreach ($order->vendors as $vendor) {
@@ -266,7 +271,7 @@ class OrderController extends FrontController
         //   dd($activeOrders->toArray());
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-        return view('frontend/account/orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee]);
+        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee]);
     }
 
     public function getOrderSuccessPage(Request $request)
@@ -274,10 +279,10 @@ class OrderController extends FrontController
         $currency_id = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
-        $order = Order::with(['products.pvariant.vset', 'products.pvariant.translation_one', 'address'])->findOrfail($request->order_id);
-        // dd($order->toArray());
+        $order = Order::with(['products.vendor','products.pvariant.vset', 'products.pvariant.translation' => function ($q) use ($langId) {
+            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+            $q->where('language_id', $langId);}, 'address'])->findOrfail($request->order_id);
 
-        $langId = Session::get('customerLanguage');
         $fixedFeeNomenclatures = $this->fixedFee($langId);
         $order_vendors =  OrderVendor::where('order_id', $request->order_id)->whereNotNull('dispatch_traking_url')->get();
         if (count($order_vendors)) {
@@ -286,8 +291,12 @@ class OrderController extends FrontController
                 return Redirect::route('front.booking.details', $order->order_number);
             }
         }
-
-
+        $total_other_taxes=0.00;
+        foreach(explode(":",$order->total_other_taxes) as $row){
+            $total_other_taxes+=(float)$row;
+        }
+        $order->total_other_taxes_amount=$total_other_taxes;
+        // dd($order);
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFeeNomenclatures'));
     }
@@ -477,6 +486,10 @@ class OrderController extends FrontController
             'vendorProducts.addon.set' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
+            'vendorProducts.product.categoryName' => function ($q) use ($langId) {
+                $q->select('category_id', 'name');
+                $q->where('language_id', $langId);
+            },
             'vendorProducts.addon.option' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
@@ -517,7 +530,7 @@ class OrderController extends FrontController
             foreach ($cartData as $ven_key => $vendorData) {
                 $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
-                foreach ($vendorData->vendorProducts as $ven_key => $prod) {
+                foreach ($vendorData->vendorProducts as $ven_key => $prod) { 
                     $quantity_price = 0;
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                     $price_in_currency = $prod->pvariant->price / $divider;
@@ -596,7 +609,7 @@ class OrderController extends FrontController
                 $vendorData->payable_amount = number_format($payable_amount, 2);
                 $vendorData->discount_amount = number_format($discount_amount, 2);
                 $vendorData->discount_percent = number_format($discount_percent, 2);
-                $vendorData->taxable_amount = number_format($taxable_amount, 2);
+                $vendorData->taxable_amount = number_format($taxable_amount, 2); 
                 $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount), 2);
                 if (!empty($subscription_features)) {
                     $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount - $subscription_discount), 2);
@@ -656,7 +669,7 @@ class OrderController extends FrontController
 
     public function placeOrder(Request $request, $domain = '')
     {
-
+        //dd($request->other_taxes_string);
         //$stock = $this->ProductVariantStock('18');
 
         // dd($request->all());
@@ -682,11 +695,17 @@ class OrderController extends FrontController
     public function orderSave($request, $paymentStatus)
     {
         try {
-           
+            $latitude = '';
+            $longitude = '';
+            $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
+            if($action == 'takeaway' || $action == 'dine_in'){
+                $latitude = Session::get('latitude') ?? '';
+                $longitude = Session::get('longitude') ?? '';
+            }
+
             $fixed_fee_amount=$request->total_fixed_fee_amount??0.00;
             DB::beginTransaction();
-            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code')->first();
-            $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
+            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area','stop_order_acceptance_for_users')->first();
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (!empty($request->user_id))) {
@@ -704,6 +723,11 @@ class OrderController extends FrontController
                     return $this->errorResponse('Transaction has already been done', 400);
                 }
             }
+
+            if(isset($preferences->stop_order_acceptance_for_users) && ($preferences->stop_order_acceptance_for_users == 1)){
+                return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
+            }
+
             $loyalty_amount_saved = 0;
             $redeem_points_per_primary_currency = '';
             $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -713,6 +737,8 @@ class OrderController extends FrontController
             $currency_id = Session::get('customerCurrency');
             $language_id = Session::get('customerLanguage');
             $cart = Cart::where('user_id', $user->id)->first();
+            
+            /* Count loyalty points */
             $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
             if ($order_loyalty_points_earned_detail) {
                 $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
@@ -720,17 +746,31 @@ class OrderController extends FrontController
                     $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
                 }
             }
+
+            /* Get Currencies of client and customer */
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+            
+            /* Generate order object */
             $order = new Order;
             $order->user_id = $user->id;
             $order->order_number = generateOrderNo();
+
+            /* Get Client Address */
             if (($request->has('address_id')) && ($request->address_id > 0)) {
                 $order->address_id = $request->address_id;
+                $cus_address = UserAddress::find($request->address_id);
+                $latitude = $cus_address->latitude ?? Session::get('latitude');
+                $longitude = $cus_address->longitude ?? Session::get('longitude');
             }else{
                 $order->address_id = $cart->address_id??null;
+                $latitude = Session::get('latitude');
+                $longitude = Session::get('longitude');
             }
+
+            /* Uodating client other details in order object */
             $order->payment_option_id = $request->payment_option_id;
+            $order->total_other_taxes = $request->other_taxes_string;
             $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
             $order->comment_for_dropoff_driver = $cart->comment_for_dropoff_driver ?? null;
             $order->comment_for_vendor = $cart->comment_for_vendor ?? null;
@@ -739,7 +779,13 @@ class OrderController extends FrontController
             $order->fixed_fee_amount = $fixed_fee_amount;
             $order->specific_instructions = $cart->specific_instructions ?? null;
             $order->is_gift = $request->is_gift ?? 0;
+            $order->user_latitude = $latitude ? $latitude : null;
+            $order->user_longitude = $longitude ? $longitude : null;
+            
+            /* Save initial details of order */
             $order->save();
+
+            /* Updating order prescription if any */
             $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
             foreach ($cart_prescriptions as $cart_prescription) {
                 $order_prescription = new OrderProductPrescription();
@@ -749,6 +795,8 @@ class OrderController extends FrontController
                 $order_prescription->prescription = $cart_prescription->getRawOriginal('prescription');
                 $order_prescription->save();
             }
+
+            /* Getting subscripton details */
             $subscription_features = array();
             if ($user) {
                 $now = Carbon::now()->toDateTimeString();
@@ -763,33 +811,62 @@ class OrderController extends FrontController
                 //     }
                 // }
             }
-            $cart_products = CartProduct::select('*')->with(['vendor', 'product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
+
+            /* Get all products blongs to cart */
+            $cart_products = CartProduct::select('*')->with(['vendor', 'vendor.slot.geos.serviceArea', 'vendor.slotDate.geos.serviceArea',  'product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
                 $query->where('cart_id', $cart->id);
             }, 'coupon.promo', 'product.addon'])->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+            
+            /* Initialize empty data */
             $total_amount = 0;
             $total_discount = 0;
             $taxable_amount = 0;
+            $total_taxable_amount = 0;
             $payable_amount = 0;
             $tax_rate = 0;
             $tax_category_ids = [];
             $vendor_ids = [];
             $total_service_fee = 0;
             $total_delivery_fee = 0;
+            $fixed_fee_amount = 0.00;
             $total_subscription_discount = 0;
             $total_container_charges = 0;
             $vendor_total_container_charges = 0;
             $new_vendor_taxable_amount = 0;
             $rate=0;
+            $addon_amount=0;
+            $total_other_taxes=0.00;
+            $additionalPrice=0.00;
+            $totalAdditionalPrice = 0.00;
+
+            /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
+            if(!empty($request->other_taxes_string)){
+                foreach(explode(":",$request->other_taxes_string) as $row){
+                    $total_other_taxes+=(float)$row;
+                }
+            }
+
+
+            /* Loop through evey cart product to get desired data for order */
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
                 $delivery_fee = 0;
-                $deliver_charge = $ptaxable_amount =$total_taxable_amount = $delivery_fee_charges = 0.00;
+                $delivery_duration = 0;
+                $delivery_distance = 0;
+                $deliver_charge = $ptaxable_amount =$delivery_fee_charges = 0.00;
                 $delivery_count = 0;
                 $vendor_payable_amount = 0;
+                $vendor_markup_amount = 0;
                 $vendor_discount_amount = 0;
                 $product_taxable_amount = 0;
                 $vendor_products_total_amount = 0;
                 $vendor_taxable_amount = 0;
+                $is_restricted = 0;
+                $additionalPrice=0.00;
+
+                $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
+
+                /* Update details related to order vendor */
                 $OrderVendor = new OrderVendor();
                 $OrderVendor->status = 0;
                 $OrderVendor->user_id = $user->id;
@@ -803,10 +880,35 @@ class OrderController extends FrontController
                 $vendorProductIds = array();
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
+                    if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                        if (!empty($latitude) && !empty($longitude)) {
+                            if(($preferences->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)){
+                                $serviceArea = $vendor_cart_product->vendor->where(function($query) use ($latitude, $longitude) {
+                                    $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                        $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                    })
+                                    ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                        $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                    });
+                                })->where('id', $vendor_id)->get();
+
+                                if($serviceArea->isEmpty()){
+                                    return $this->errorResponse(__('Products for this vendor are not deliverable at your area. Please change address or remove product.'), 400);
+                                }
+                            }
+                        }
+                    }
+
+                    if($is_restricted == 0 && $passbase_check && isset($vendor_cart_product->product) && $vendor_cart_product->product->age_restriction == 1)
+                    {
+                        $is_restricted = 1;
+                    }
+                    $rate=0;
                     $variant = $vendor_cart_product->product->variants->where('id', $vendor_cart_product->variant_id)->first();
                     $quantity_price = 0;
                     $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                     $price_in_currency = $variant->price / $divider;
+                    //Find item price here  ==  + $variant->price;
                     $container_charges_in_currency = $variant->container_charges / $divider;
                     $price_container_charges = $variant->container_charges;
                     $price_in_dollar_compare = $price_in_currency * $clientCurrency->doller_compare;
@@ -817,53 +919,54 @@ class OrderController extends FrontController
 
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $price_container_charges;
                     // $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
+                    $vendor_markup_amount = $vendor_markup_amount + $variant->markup_price;
                     $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
                     $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
-                    $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges+$fixed_fee_amount;
-                    
+                    //echo  "<br>payable_amount: ".$payable_amount."+ quantity_price: ".$quantity_price ;
+                    $payable_amount = $payable_amount + $quantity_price ;
+                   
                     //$payable_amount = $payable_amount + $quantity_price;
                     //$vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     //$vendor_payable_amount = $vendor_payable_amount + $quantity_price;
                     
-                    if (isset($vendor_cart_product->product->taxCategory)) {
-                        foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
-                            if (!in_array($tax_rate_detail->id, $tax_category_ids)) {
-                                $tax_category_ids[] = $tax_rate_detail->id;
-                            }
-                            $rate = round($tax_rate_detail->tax_rate);
-                            $tax_amount = ($price_in_dollar_compare * $rate) / 100;
-                            $product_tax = $quantity_price * $rate / 100;
-                            $product_taxable_amount += $product_tax;
-                            $payable_amount = $payable_amount + $product_tax;
-                        }
-                    }
-
-
-
-                    if ($action == 'delivery') {
+                    $OrderVendor->schedule_slot = !empty($vendor_cart_product->schedule_slot)? $vendor_cart_product->schedule_slot : '';
+                    $OrderVendor->scheduled_date_time = !empty($vendor_cart_product->scheduled_date_time)? $vendor_cart_product->scheduled_date_time : '';
+                    $deliver_Vendor_type = ['delivery','appointment','on_demand']; // pass vendor type for delivery option
+                    if ( in_array($action, $deliver_Vendor_type) ) {
                         $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                         if (((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) || isset($deliver_fee_data)) {
                             $OrderVendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type??'D';
                             $OrderVendor->courier_id = $deliver_fee_data->courier_id??0;
 
 
-                            if($deliver_fee_data)
-                            $delivery_fee  = $deliver_fee_data->delivery_fee??0.00;
+                            if($deliver_fee_data):
+                                $delivery_fee       = $deliver_fee_data->delivery_fee??0.00;
+                                $delivery_duration  = $deliver_fee_data->delivery_duration??0;
+                                $delivery_distance  = $deliver_fee_data->delivery_distance??0.00;
+                            endif;
 
                             if (!empty($delivery_fee) && $delivery_count == 0) {
+                                $total_delivery_fee+=$delivery_fee;
                                 $delivery_count = 1;
                                 $vendor_cart_product->delivery_fee = number_format($delivery_fee, 2);
                                 // $payable_amount = $payable_amount + $delivery_fee;
                                 $delivery_fee_charges = $delivery_fee;
 
                                 if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                                    $latitude = Session::get('latitude');
-                                    $longitude = Session::get('longitude');
+                                    if($order->address_id)
                                     $vendor_cart_product->vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor_cart_product->vendor, $preferences);
                                     $OrderVendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
                                     $timeofLineOfSightDistance = ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) ? $vendor_cart_product->vendor->timeofLineOfSightDistance : 0;
-                                    if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
+                                    if ($delivery_duration > 0) {
+                                        $OrderVendor->user_to_vendor_time = intval($delivery_duration);
+                                    }
+                                    else if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
                                         $OrderVendor->user_to_vendor_time = intval($timeofLineOfSightDistance) - intval($OrderVendor->order_pre_time);
+                                    }
+                                }else{
+                                    $OrderVendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
+                                    if ($delivery_duration > 0) {
+                                        $OrderVendor->user_to_vendor_time = intval($delivery_duration);
                                     }
                                 }
                             }
@@ -874,14 +977,29 @@ class OrderController extends FrontController
                     $taxable_amount = $product_taxable_amount;
                     $vendor_taxable_amount = $taxable_amount;
 
-                  //  pr($vendor_taxable_amount);
                     $total_amount += $vendor_cart_product->quantity * $variant->price;
                     $order_product = new OrderProduct;
                     $order_product->order_id = $order->id;
                     $order_product->price = $variant->price;
+                    $order_product->markup_price = $variant->markup_price;
+                    $order_product->additional_increments_hrs_min = @$vendor_cart_product->additional_increments_hrs_min;
+                    $order_product->start_date_time = $vendor_cart_product->start_date_time;
+                    $order_product->end_date_time = $vendor_cart_product->end_date_time;
+                    /**
+                     * for rental case total_booking_time as a total time 
+                     * for on_demand and appointment total booking time as single service duration time as per service for get totel service time multiply by quantity
+                     */
+                    $order_product->total_booking_time = @$vendor_cart_product->total_booking_time; 
+                    
                     $order_product->container_charges = $variant->container_charges;
                     $order_product->order_vendor_id = $OrderVendor->id;
                     $order_product->taxable_amount = $product_taxable_amount;
+                    if ($variant->incremental_price_per_min !='' && $variant->incremental_price_per_min > 0) {
+                        $additionalPrice += ($vendor_cart_product->additional_increments_hrs_min / $variant->incremental_price_per_min);
+
+                        $order_product->incremental_price = ($vendor_cart_product->additional_increments_hrs_min / $variant->incremental_price_per_min);
+                    }
+
                     $order_product->quantity = $vendor_cart_product->quantity;
                     $order_product->vendor_id = $vendor_cart_product->vendor_id;
                     $order_product->product_id = $vendor_cart_product->product_id;
@@ -929,18 +1047,42 @@ class OrderController extends FrontController
                     $order_product->product_dispatcher_tag = $vendor_cart_product->product->tags;
                     $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
                     $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
+                    $order_product->schedule_slot = !empty($vendor_cart_product->schedule_slot)? $vendor_cart_product->schedule_slot : '';
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }
+                    // added some columen for rental case 
+                    $order_product->start_date_time = $vendor_cart_product->start_date_time;
+                    $order_product->end_date_time = $vendor_cart_product->end_date_time;
+                    $order_product->additional_increments_hrs_min = $vendor_cart_product->additional_increments_hrs_min;
+
                     $order_product->save();
+                    // book for rental 
+                    if($luxury_option->id==4){
+                       
+                        $data   =   [
+                                        'memo' =>  __('Booked for order #').$order->order_number,
+                                        'variant_id' => $order_product->variant_id,
+                                        'product_id' => $order_product->product_id,
+                                        'start_date' => $order_product->start_date_time,
+                                        'order_user_id' =>$order->user_id,
+                                        'order_vendor_id' =>$order_product->vendor_id,
+                                        'end_date' => $order_product->end_date_time
+                                    ];                 
+                        //pr($data);     
+                        $res =   $this->bookingSlot($data);
+                       //pr($res);
+                    }
+                   // pr($order_product);
                     if (!empty($vendor_cart_product->addon)) {
                         
                         foreach ($vendor_cart_product->addon as $ck => $addon) {
                             $opt_quantity_price = 0;
-                            $opt_price_in_currency = $addon->option->price;
+                            $opt_price_in_currency = $addon->option->price??0;
                             $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                             $opt_quantity_price = $opt_price_in_doller_compare * $order_product->quantity;
                             $total_amount = $total_amount + $opt_quantity_price;
+                            //echo  "opt_quantity_price: ".$opt_quantity_price;
                             $payable_amount = $payable_amount + $opt_quantity_price;
                             $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
                             // if(!in_array($vendor_cart_product->vendor_id, $addonArray)){
@@ -948,85 +1090,152 @@ class OrderController extends FrontController
                             // }
                         }
                     }
+                   
+                $vendor_service_fee_percentage_amount = 0;
+                if ($vendor_cart_product->vendor->service_fee_percent > 0) {
+                    $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                    $payable_amount += $vendor_service_fee_percentage_amount;
+                }
+
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
                     if ($cart_addons) {
                         foreach ($cart_addons as $cart_addon) {
                             $orderAddon = new OrderProductAddon;
                             $orderAddon->addon_id = $cart_addon->addon_id;
                             $orderAddon->option_id = $cart_addon->option_id;
+                            $addon_amount=AddonOption::find($cart_addon->option_id)->price??0;
                             $orderAddon->order_product_id = $order_product->id;
                             $orderAddon->save();
                         }
-                     //   CartAddon::where('cart_product_id', $vendor_cart_product->id)->delete();
+
+                     //   $addon_amount CartAddon::where('cart_product_id', $vendor_cart_product->id)->delete();
                     }
                     // array_push($addonArray, $vendor_cart_product->vendor_id);
+                    if (isset($vendor_cart_product->product->taxCategory)) {
+                        foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
+                        //         if (!in_array($tax_rate_detail->id, $tax_category_ids)) {
+                        //             $tax_category_ids[] = $tax_rate_detail->id;
+                        //         }
+                            $rate = $tax_rate_detail->tax_rate;
+                            
+                        //         $tax_amount = ($price_in_dollar_compare * $rate) / 100;
+                        //         $product_tax = $quantity_price * $rate / 100;
+                        //         $product_taxable_amount += $product_tax;
+                        //         $payable_amount = $payable_amount + $product_tax;
+                    }
+                   
                 }
+        //        $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
+                //echo  "    payable_amount==".$payable_amount;
+                }
+                $payable_amount+= $vendor_total_container_charges;
+            
+                //echo "vendor_total_container_charges: ".$vendor_total_container_charges."payable_amount: ".$payable_amount."<br>";
+                
                 $coupon_id = null;
                 $coupon_name = null;
                 $actual_amount = $vendor_payable_amount;
                 if ($vendor_cart_product->coupon) {
                     $coupon_id = $vendor_cart_product->coupon->promo->id;
+
+                    if($vendor_cart_product->coupon->promo->paid_by_vendor_admin == 0){
+                        $coupon_paid_by = 0;
+                    }
+
                     $coupon_name = $vendor_cart_product->coupon->promo->name;
+                    if ($vendor_cart_product->coupon->promo->allow_free_delivery) {
+                        $total_discount += $delivery_fee;
+                        $vendor_payable_amount -= $delivery_fee;
+                        $vendor_discount_amount += $delivery_fee;
+                    }
+
+
                     if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
                         $amount = round($vendor_cart_product->coupon->promo->amount);
                         $total_discount += $amount;
                         $vendor_payable_amount -= $amount;
                         $vendor_discount_amount += $amount;
                     } else {
-                        $gross_amount = number_format(($payable_amount - $taxable_amount), 2);
-                        $percentage_amount = ($gross_amount * $vendor_cart_product->coupon->promo->amount / 100);
+
+                        $percentage_amount = ($vendor_payable_amount * $vendor_cart_product->coupon->promo->amount / 100);
                         $total_discount += $percentage_amount;
                         $vendor_payable_amount -= $percentage_amount;
                         $vendor_discount_amount += $percentage_amount;
                     }
+                    // add delivery fee in coupon if coupon has free delicery
+                    if($vendor_cart_product->coupon->promo->allow_free_delivery == 1){
+                        $vendor_discount_amount = $vendor_discount_amount +  $delivery_fee;
+                        $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
+                        $total_discount += $delivery_fee;
+                    }
                 }
-                //Start applying service fee on vendor products total
-                $vendor_service_fee_percentage_amount = 0;
-                if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                    // $vendor_service_fee_percentage_amount = ($vendor_products_total_amount * $vendor_cart_product->vendor->service_fee_percent) / 100;
-                    $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100;
-                    $vendor_payable_amount += $vendor_service_fee_percentage_amount;
-                    $payable_amount += $vendor_service_fee_percentage_amount;
-                }
+
+
                 //End applying service fee on vendor products total
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
-               
                 $OrderVendor->service_fee_percentage_amount = $vendor_service_fee_percentage_amount;
+                //echo  "total_service_fee: ".$total_service_fee." | ";
 
-                $total_delivery_fee += $delivery_fee;
+                //$total_delivery_fee += $delivery_fee;
+                $vendor_payable_amount += $additionalPrice;
                 $vendor_payable_amount += $delivery_fee;
                 $vendor_payable_amount += $vendor_taxable_amount;
 
+                $payable_amount+= $additionalPrice;
+                $totalAdditionalPrice+= $additionalPrice;
+
+
                 $OrderVendor->coupon_id = $coupon_id;
+                $OrderVendor->coupon_paid_by = $coupon_paid_by??1;
                 $OrderVendor->coupon_code = $coupon_name;
                 $OrderVendor->order_status_option_id = 1;
                 $OrderVendor->delivery_fee = $delivery_fee;
                 $OrderVendor->subtotal_amount = $actual_amount;
                 $OrderVendor->discount_amount = $vendor_discount_amount;
                 $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
+                $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);
+                $new_vendor_taxable_amount = floatval($new_vendor_taxable_amount);
+                $total_taxable_amount+=$new_vendor_taxable_amount;
                 // $OrderVendor->taxable_amount   = $vendor_taxable_amount;
-                $OrderVendor->taxable_amount = $new_vendor_taxable_amount;
+
+              
+                $fixedFeeAmount=0.00;
+                if(isset($vendor_cart_product->vendor->fixed_fee_amount)){
+                    $fixedFeeAmount=$vendor_cart_product->vendor->fixed_fee_amount;
+                }
+                $OrderVendor->fixed_fee = $fixedFeeAmount; 
+                $OrderVendor->additional_price = $additionalPrice; 
+                $OrderVendor->taxable_amount = $new_vendor_taxable_amount; 
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->payable_amount = $vendor_payable_amount;
+                $OrderVendor->total_markup_price = $vendor_markup_amount;
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
+                $OrderVendor->is_restricted = $is_restricted;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
                     if (($vendor_info->commission_percent) != null && $actual_amount > 0) {
-                        $OrderVendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($actual_amount / 100), 2);
+                        $actual_amountComm = $actual_amount - $vendor_markup_amount;
+                        $OrderVendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($actual_amountComm / 100), 2);
                     }
                     if (($vendor_info->commission_fixed_per_order) != null && $actual_amount > 0) {
                         $OrderVendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                     }
+                    if($vendor_info->fixed_fee_amount > 0){
+                        $fixed_fee_amount = $fixed_fee_amount + $vendor_info->fixed_fee_amount;
+                    }
                 }
                 $OrderVendor->save();
+                //pr($OrderVendor->toArray());
                 $order_status = new VendorOrderStatus();
                 $order_status->order_id = $order->id;
                 $order_status->vendor_id = $vendor_id;
                 $order_status->order_vendor_id = $OrderVendor->id;
                 $order_status->order_status_option_id = 1;
                 $order_status->save();
-            }
 
+                
+            }//End cart product loop
+            //echo "loop end";
             $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
 
             // calculate subscription discount
@@ -1045,13 +1254,14 @@ class OrderController extends FrontController
             // if (in_array(1, $subscription_features)) {
             //     $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
             // }
+            //echo "total_discount:" .$total_discount." total_subscription_discount: " .$total_subscription_discount;
             $total_discount = $total_discount + $total_subscription_discount;
 
             $order->total_amount = $total_amount;
             $order->total_discount = $total_discount;
              // $order->taxable_amount = $taxable_amount;
-            $new_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
-            $order->taxable_amount = $new_taxable_amount;
+            //$new_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
+            $order->taxable_amount = $total_taxable_amount; 
             $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
             if ($loyalty_amount_saved > 0) {
                 if ($loyalty_amount_saved > $payable_amount) {
@@ -1059,7 +1269,8 @@ class OrderController extends FrontController
                     $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                 }
             }
-            $payable_amount = $payable_amount - $loyalty_amount_saved;
+            $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
+            $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
             $wallet_amount_used = 0;
             if ($user) {
                 if ($user->balanceFloat > 0) {
@@ -1069,7 +1280,8 @@ class OrderController extends FrontController
                         $wallet_amount_used = $payable_amount;
                     }
                     $order->wallet_amount_used = $wallet_amount_used;
-                    if ($wallet_amount_used > 0) {
+                    // Deduct wallet amount if payable amount is successfully done on gateway
+                    if ( ($wallet_amount_used > 0) && (!in_array($request->payment_option_id, $ex_gateways_wallet)) ) {
                         $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                     }
                 }
@@ -1077,34 +1289,49 @@ class OrderController extends FrontController
             $payable_amount = $payable_amount - $wallet_amount_used;
             $tip_amount = 0;
             if (isset($request->tip)) {
+                $request->tip = str_replace(',', '', $request->tip);
                 $tip_amount = floatval($request->tip);
                 if( ($tip_amount != '') && ($tip_amount > 0) ){
                     $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                     $order->tip_amount = $tip_amount;
                 }
+                
             }
-            $payable_amount = $payable_amount + $tip_amount;
+            //echo  " Total payable_amount1=".$payable_amount."; <br>";
+            //echo  " tip_amount=".$tip_amount." fixed_fee_amount=".$fixed_fee_amount." total_taxable_amount=".$total_taxable_amount."; <br>";
+
+            
+            // $payable_amount = $payable_amount + $tip_amount + $total_taxable_amount+$total_other_taxes;
+            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
+            //echo  " Total payable_amount2=".$payable_amount."; <br>";
             $order->total_service_fee = $total_service_fee;
             $order->total_delivery_fee = $total_delivery_fee;
             $order->loyalty_points_used = $loyalty_points_used;
             $order->loyalty_amount_saved = $loyalty_amount_saved;
             $order->subscription_discount = $total_subscription_discount;
+            //echo " total_subscription_discount=".$total_subscription_discount."; <br>";
             $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
             $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
+            //echo  " total_service_fee=".$total_service_fee." total_delivery_fee=".$total_delivery_fee;
+            //echo  " Total payable_amount 3=".$payable_amount."; <br>";
 
 
             $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
             $order->scheduled_slot = (($cart->scheduled_slot)?$cart->scheduled_slot:null);
+            $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
             $order->luxury_option_id = $luxury_option->id;
             $order->payable_amount = $payable_amount;
+            $order->fixed_fee_amount = $fixed_fee_amount;
+            $order->additional_price = $totalAdditionalPrice;
             $order->total_container_charges = $total_container_charges;
             if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                 $order->payment_status = 1;
             }
+            //dd("order:".$order);
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
            
-            $ex_gateways = [4,7,8,9,10,12,13,15,17,18,19,20,21,23,24,25,26,28,29,30,31]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu
+            $ex_gateways = [4,5,7,8,9,10,12,13,15,17,18,19,20,21,23,24,25,26,28,29,30,31,32,34,35,36,37,39,40,41,42,43,44,45,47]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash,Stipre_oxxo,stripe_ideal 
            
             if (!in_array($request->payment_option_id, $ex_gateways)) {
 
@@ -1147,7 +1374,7 @@ class OrderController extends FrontController
                     'type' => 'cart'
                 ]);
             }
-            $order = $order->with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
+            $order = $order->with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id', 'vendors.vendor', 'products'])->where('order_number', $order->order_number)->first();
             if (!in_array($request->payment_option_id, $ex_gateways)) {
                 if (!empty($order->vendors)) {
                     foreach ($order->vendors as $vendor_value) {
@@ -1160,20 +1387,40 @@ class OrderController extends FrontController
                         $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
                         $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
                     }
+                }else{
+                    $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
+
+                    $getAllVendorAdmin = Order::join('order_vendors as ov', 'ov.order_id', 'orders.id')
+                                        ->leftjoin('user_vendors as uv', 'uv.vendor_id', 'ov.vendor_id')
+                                        ->where('order_number', $order->order_number)
+                                        ->pluck('uv.user_id');
+        
+                    $super_admin = User::where('is_superadmin', 1)->pluck('id');
+
+                    if(!empty($getAllVendorAdmin)){
+                        $admins = $super_admin->merge($getAllVendorAdmin);
+                        $super_admin = $admins->all();
+                    }
+
+                    $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+
+
+                    // $user_admins = User::where(function ($query) {
+                    //     $query->where(['is_superadmin' => 1]);
+                    // })->pluck('id')->toArray();
+                    // $user_vendors = [];
+                    // if (!empty($order->user_vendor) && count($order->user_vendor) > 0) {
+                    //     $user_vendors = $order->user_vendor->pluck('user_id')->toArray();
+                    // }
+                    // $order->admins = array_unique(array_merge($user_admins, $user_vendors));
+                    // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id]);
                 }
-                $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
-                $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
-                // $user_admins = User::where(function ($query) {
-                //     $query->where(['is_superadmin' => 1]);
-                // })->pluck('id')->toArray();
-                // $user_vendors = [];
-                // if (!empty($order->user_vendor) && count($order->user_vendor) > 0) {
-                //     $user_vendors = $order->user_vendor->pluck('user_id')->toArray();
-                // }
-                // $order->admins = array_unique(array_merge($user_admins, $user_vendors));
-                // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id]);
             }
+           
+            // if(){
+            //     $this->bookingSlot($vendor_cart_products);
+            // }
+            
             DB::commit();
             //$this->sendSuccessSMS($request, $order);
 
@@ -1231,46 +1478,53 @@ class OrderController extends FrontController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData)
     {
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-        //    Log::info($devices);
-        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+      
+        $from = '';
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon', 'vendor_fcm_server_key')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
-            $notification_content = NotificationTemplate::where('id', 4)->first();
-            if ($notification_content) {
-                $headers = [
-                    'Authorization: key=' . $from,
-                    'Content-Type: application/json',
-                ];
-                $data = [
-                    "registration_ids" => $devices,
-                    "notification" => [
-                        'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
-                        'sound' => "notification.wav",
-                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                        'click_action' => route('order.index'),
-                        "android_channel_id" => "sound-channel-id"
-                    ],
-                    "data" => [
-                        'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
-                        'data' => $orderData,
-                        'type' => "order_created"
-                    ],
-                    "priority" => "high"
-                ];
-                //    Log::info(json_encode($data));
-                $dataString = $data;
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                $result = curl_exec($ch);
-                curl_close($ch);
+        }
+
+        $notification_content = NotificationTemplate::where('id', 4)->first();
+        if ($notification_content) {
+            $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
+            $data = [
+                "registration_ids" => $devices,
+                "notification" => [
+                    'title' => $notification_content->subject,
+                    'body'  => $body_content,
+                    'sound' => "notification.wav",
+                    "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                    'click_action' => route('order.index'),
+                    "android_channel_id" => "sound-channel-id"
+                ],
+                "data" => [
+                    'title' => $notification_content->subject,
+                    'body'  => $notification_content->content,
+                    'data' => $orderData,
+                    'order_id' => $orderData->id,
+                    'type' => "order_created"
+                ],
+                "priority" => "high"
+            ];
+           
+            if(!empty($from)){
+                // helper function
+                curlJsonRequest($from, $data);
+            }
+
+            // Individual Vendor App User Token
+            $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+            
+           
+            if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
+                
+                $from = $client_preferences->vendor_fcm_server_key;
+                $data['registration_ids'] = $vendorAppUserDevices;
+               
+                $result = curlJsonRequest($from, $data);
+                Log::info($result);
             }
         }
     }
@@ -1413,9 +1667,7 @@ class OrderController extends FrontController
                 $vendor_order_status->save();
 
                 if ($request->status_option_id == 2) {
-
                     if ($request->shipping_delivery_type=='D') {
-                    //             Log::info($request->status_option_id);
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
                     if ($order_dispatch && $order_dispatch == 1) {
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
@@ -1440,10 +1692,7 @@ class OrderController extends FrontController
                 DB::commit();
                 $this->sendSuccessNotification($user->id, $request->vendor_id);
             }
-            // } catch(\Exception $e){
-            // DB::rollback();
-            // Log::info($e->getMessage());
-            // }
+            
         }
     }
 
@@ -1562,7 +1811,6 @@ class OrderController extends FrontController
         $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
         if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
             $ondemand = 0;
-            //    Log::info($dispatch_domain_ondemand);
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                 if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
                     $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
@@ -1624,7 +1872,7 @@ class OrderController extends FrontController
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
-            if ($order->payment_method == 1) {
+            if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
@@ -1634,6 +1882,7 @@ class OrderController extends FrontController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name',  'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -1674,17 +1923,20 @@ class OrderController extends FrontController
                 'email'       => $customer->email ?? null,
                 'phone_number' => ($customer->dial_code . $customer->phone_number ) ?? null,
             );
-
             if ($customer->dial_code == "971") {
-                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                $customerno = "0" . $customer->phone_number;
             } else {                
-                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+           
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                'customer_dial_code' => $customer->dial_code ?? null,
                 'customer_email' => $customer->email ?? null,
                 'recipient_phone' => $customerno ?? rand(111111, 11111),
                 'recipient_email' => $customer->email ?? null,
@@ -1696,8 +1948,20 @@ class OrderController extends FrontController
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks
+                'task' => $tasks,
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
 
 
             $client = new GCLIENT([
@@ -1736,14 +2000,11 @@ class OrderController extends FrontController
     public function placeRequestToDispatchOnDemand($order, $vendor, $dispatch_domain)
     {
         try {
-            //    Log::info($order);
-            //    Log::info($vendor);
-            //    Log::info($dispatch_domain);
             $order = Order::find($order);
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
-            if ($order->payment_method == 1) {
+            if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
@@ -1753,6 +2014,7 @@ class OrderController extends FrontController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -1787,15 +2049,18 @@ class OrderController extends FrontController
             );
 
             if ($customer->dial_code == "971") {
-                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                $customerno = "0" . $customer->phone_number;
             } else {                
-                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                'customer_dial_code' => $customer->dial_code ?? null,
                 'customer_email' => $customer->email ?? null,
                 'recipient_phone' => $customerno ?? rand(111111, 11111),
                 'recipient_email' => $customer->email ?? null,
@@ -1806,8 +2071,20 @@ class OrderController extends FrontController
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks
+                'task' => $tasks,
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
 
 
             $client = new GCLIENT([
@@ -1850,7 +2127,7 @@ class OrderController extends FrontController
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
-            if ($order->payment_method == 1) {
+            if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
@@ -1862,11 +2139,13 @@ class OrderController extends FrontController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'phone_no', 'email', 'longitude', 'address')->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
-
+            $rtype = 'P';
             $unique = Auth::user()->code;
             if ($colm == 1) {     # 1 for pickup from customer drop to vendor
+                $rtype = 'P';
                 $desc = $order->comment_for_pickup_driver ?? null;
                 $tasks[] = array(
                     'task_type_id' => 1,
@@ -1904,6 +2183,7 @@ class OrderController extends FrontController
 
 
             if ($colm == 2) { # 1 for pickup from vendor drop to customer
+                $rtype = 'D';
                 $desc = $order->comment_for_dropoff_driver ?? null;
                 $tasks[] = array(
                     'task_type_id' => 1,
@@ -1942,16 +2222,19 @@ class OrderController extends FrontController
             }
 
             if ($customer->dial_code == "971") {
-                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                $customerno = "0" . $customer->phone_number;
             } else {                
-                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
 
-
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                'customer_dial_code' => $customer->dial_code ?? null,
                 'customer_email' => $customer->email ?? null,
                 'recipient_phone' => $customerno ?? rand(111111, 11111),
                 'recipient_email' => $customer->email ?? null,
@@ -1963,8 +2246,21 @@ class OrderController extends FrontController
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks
+                'task' => $tasks,
+                'request_type'=> $rtype,
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'dbname' => $client->database_name,
+                'order_vendor_id' => $order_vendor->id,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
 
 
             $client = new Client([
@@ -2151,27 +2447,32 @@ class OrderController extends FrontController
 
                 $data = json_decode($this->driverDocuments());
                 $driver_registration_documents = $data->documents;
-
                 $rules_array = [
                     'name' => 'required',
-                    'phone_number' => 'required',
+                    'phonenumber' => 'required',
                     'type' => 'required',
                     'team' => 'required'
                 ];
                 foreach ($driver_registration_documents as $driver_registration_document) {
                     if($driver_registration_document->is_required == 1){
                         $name = str_replace(" ", "_", $driver_registration_document->name);
+                        $name = preg_replace('/[^A-Za-z0-9\-]/', '', $name);
                         $rules_array[$name] = 'required';
                     }
                 }
-                $validator = Validator::make($request->all(), $rules_array, [
+                $requestAllData = [];
+                foreach($request->all() as $key => $requestData){
+                    $newKey =  preg_replace('/[^A-Za-z0-9\-]/', '', $key);
+                    $requestAllData[$newKey] =  $requestData;
+                }
+                $validator = Validator::make($requestAllData, $rules_array, [
                     "name.required" => __('The name field is required.'),
-                    "phone_number.required" => __('The phone number field is required.'),
+                    "phonenumber.required" => __('The phone number field is requiredfff.'),
                     "type.required" => __('The type field is required.'),
                     "vehicle_type_id.required" => __('The transport type is required.'),
                     "make_model.required" => __('The transport details field is required.'),
                     "uid.required" => __('The UID field is required.'),
-                    "plate_number.required" => __('The licence plate field is required.'),
+                    "platenumber.required" => __('The licence plate field is required.'),
                     "color.required" => __('The color field is required.'),
                     "team.required" => __('The team field is required.')
                 ]);
@@ -2469,6 +2770,162 @@ class OrderController extends FrontController
             }
         } else {
             return $this->errorResponse('Invalid User', 400);
+        }
+    }
+
+    /**
+     * Post Route
+     * Save Rescheduled Order
+     * Added by Ovi
+     */
+    public function rescheduleOrder(Request $request)
+    {
+        $order_id = Crypt::decrypt($request->order_id);
+        $order = Order::find($order_id);
+        $vendor_id = $request->vendor_id;
+        $vendor = Vendor::where('id', $vendor_id)->first();
+        $user = Auth::user();
+        $currency_id = Session::get('customerCurrency');
+        $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+        $schedule_pickup_compare = Carbon::parse($order->schedule_pickup);
+        $schedule_dropoff_compare = Carbon::parse($order->schedule_dropoff);
+        // $pickup_schedule_datetime_compare = Carbon::parse($request->pickup_schedule_datetime);
+        // $dropoff_schedule_datetime_compare = Carbon::parse($request->dropoff_schedule_datetime);
+        $pickup_schedule_datetime_compare  = date('Y-m-d');
+        $dropoff_schedule_datetime_compare = date('Y-m-d');
+        
+        // If the rescheduling of pickup and dropoff is done on current dates.
+        if($dropoff_schedule_datetime_compare == $schedule_dropoff_compare->format('Y-m-d') && $pickup_schedule_datetime_compare == $schedule_pickup_compare->format('Y-m-d')){
+            $totalCharges = $vendor->pickup_cancelling_charges+$vendor->rescheduling_charges;
+            if($user->balanceFloat >= $totalCharges){
+                $this->chargeForPickupRescheduling($user, $vendor, $order);
+                $this->chargeForDropoffRescheduling($user, $vendor, $order);
+            }else{
+                Session::flash('error', 'Insufficient wallet balance, required rescheduling charges are '.$clientCurrency->currency->symbol.$totalCharges.'. Please recharge your wallet.');
+                return redirect()->back();
+            }
+           
+        }
+        // If the rescheduling is done on the day of pickup, then a rescheduling fee will apply.
+        elseif($pickup_schedule_datetime_compare == $schedule_pickup_compare->format('Y-m-d')){ 
+            if($vendor->pickup_cancelling_charges > 0){
+                $result = $this->chargeForPickupRescheduling($user, $vendor, $order);
+                if($result == false){
+                    Session::flash('error', 'Insufficient wallet balance, required rescheduling charges are '.$clientCurrency->currency->symbol.$vendor->pickup_cancelling_charges.'. Please recharge your wallet.');
+                    return redirect()->back();
+                }
+            }
+           
+        }
+        // If the rescheduling is done on the day of delivery, then a rescheduling fee will apply.
+        elseif($dropoff_schedule_datetime_compare == $schedule_dropoff_compare->format('Y-m-d')){ 
+            if($vendor->pickup_cancelling_charges > 0){
+                $result = $this->chargeForDropoffRescheduling($user, $vendor, $order);
+                if($result == false){
+                    Session::flash('error', 'Insufficient wallet balance, required rescheduling charges are '.$clientCurrency->currency->symbol.$vendor->rescheduling_charges.'. Please recharge your wallet.');
+                    return redirect()->back();
+                }
+            }   
+        }
+        
+
+        $schedule_pickup_slot = explode(" - ", $request->schedule_pickup_slot); 
+        $pickup_schedule_datetime = Carbon::createFromFormat('Y-m-d H:i:s',  $request->pickup_schedule_datetime .' '. $schedule_pickup_slot[0].':00');
+
+        $schedule_dropoff_slot = explode(" - ", $request->schedule_dropoff_slot); 
+        $dropoff_schedule_datetime = Carbon::createFromFormat('Y-m-d H:i:s',  $request->dropoff_schedule_datetime .' '. $schedule_dropoff_slot[0].':00');
+
+        $rescheduleOrder = new RescheduleOrder();
+        $rescheduleOrder->reschedule_by = $user->id;
+        $rescheduleOrder->order_id = $order_id;
+        $rescheduleOrder->vendor_id = $vendor_id;
+        $rescheduleOrder->prev_schedule_pickup = $order->schedule_pickup;
+        $rescheduleOrder->prev_schedule_dropoff = $order->schedule_dropoff;
+        $rescheduleOrder->prev_scheduled_slot = $order->scheduled_slot;
+        $rescheduleOrder->prev_dropoff_scheduled_slot = $order->dropoff_scheduled_slot;
+        $rescheduleOrder->new_schedule_pickup = Carbon::parse($pickup_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+        $rescheduleOrder->new_schedule_dropoff = Carbon::parse($dropoff_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+        $rescheduleOrder->new_scheduled_slot = $request->schedule_pickup_slot;
+        $rescheduleOrder->new_dropoff_scheduled_slot = $request->schedule_dropoff_slot;
+        $rescheduleOrder->save();
+
+        $order->schedule_pickup  =  Carbon::parse($pickup_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+        $order->schedule_dropoff =  Carbon::parse($dropoff_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+        $order->scheduled_slot   =  $request->schedule_pickup_slot;
+        $order->dropoff_scheduled_slot = $request->schedule_dropoff_slot;
+        $order->save();
+
+        // Send Rescheduling Request to Dispatcher - Added by Ovi
+        $orderVendor = OrderVendor::where('order_id', $order->id)->first();
+       
+        $postdata =  [
+            'order_unique_id' => substr($orderVendor->dispatch_traking_url, strrpos($orderVendor->dispatch_traking_url, '/') + 1),  // To get order unique id after slash (/).
+            'order_number' => $orderVendor->orderDetail->order_number,
+            'schedule_pickup' => $orderVendor->orderDetail->schedule_pickup,
+            'schedule_dropoff' => $orderVendor->orderDetail->schedule_dropoff,
+        ];
+        
+        // Call API Here
+        $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
+        
+        $client = new GCLIENT([
+            'headers' => [
+                'personaltoken' => $dispatch_domain_laundry->laundry_service_key,
+                'shortcode' => $dispatch_domain_laundry->laundry_service_key_code,
+                'content-type' => 'application/json'
+            ]
+        ]);
+
+        $url = $dispatch_domain_laundry->laundry_service_key_url;
+        $res = $client->post(
+            $url . '/api/order/reschedule',
+            ['form_params' => ($postdata)]
+        );
+
+        $response = json_decode($res->getBody(), true);
+        if($response['status'] == 'success'){
+            Session::flash('success', 'Your order has been rescheduled successfully.');
+        }else{
+            Session::flash('error', 'Something went wrong!');
+        }
+        return redirect()->back();
+    }
+
+    public function chargeForPickupRescheduling($user, $vendor, $order)
+    {
+        if ($user) {
+            if ($user->balanceFloat > 0) {
+                $wallet = $user->wallet;
+                $wallet_amount_used = $user->balanceFloat;
+                $payable_amount_for_pickup     = $vendor->pickup_cancelling_charges;
+                if ($wallet_amount_used >= $payable_amount_for_pickup) {
+                    if ($wallet_amount_used > 0) {
+                        $wallet->withdrawFloat($payable_amount_for_pickup, ['Wallet has been <b>debited</b> for rescheduling the order on pickup day under order number <b>' . $order->order_number . '</b>']);
+                        return true;
+                    }
+                }
+            }else{
+                return false;
+            }
+        }
+    }
+
+    public function chargeForDropoffRescheduling($user, $vendor, $order)
+    {
+        if ($user) {
+            if ($user->balanceFloat > 0) {
+                $wallet = $user->wallet;
+                $wallet_amount_used = $user->balanceFloat;
+                $payable_amount     = $vendor->rescheduling_charges;
+                if ($wallet_amount_used >= $payable_amount) {
+                    if ($wallet_amount_used > 0) {
+                        $wallet->withdrawFloat($payable_amount, ['Wallet has been <b>debited</b> for rescheduling the order on dropoff day under order number <b>' . $order->order_number . '</b>']);
+                        return true;
+                    }
+                }
+            }else{
+                return false;
+            }
         }
     }
 }

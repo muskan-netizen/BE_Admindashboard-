@@ -51,9 +51,10 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-5">
+            <div class="row mb-5 homepageSix">
                 <div class="collection-filter col-lg-3">
                     <!-- side-bar colleps block stat -->
+                    @if( count($category->brands) > 0 || count($variantSets) > 0 )
                     <div class="collection-filter-block bg-transparent p-0 m-0">
                         <!-- <div class="collection-mobile-back">
                             <span class="filter-back d-lg-none d-inline-block">
@@ -110,6 +111,7 @@
                           @endforeach
                         @endif
                     </div>
+                    @endif
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
@@ -258,7 +260,7 @@
                                     <div class="displayProducts" id="category_products_filter">
                                         <div class="col-12 text-right mt-2">
                                             <select name="order_type" id='order_type' class="sortingFilter p-1">
-                                                <option value="">{{__('Please Select')}}</option>
+                                                <option value="">{{__('Sort By')}}</option>
                                                 <option value="featured">{{_('Featured')}}</option>
                                                 <option value="a_to_z">{{_('A to Z')}}</option>
                                                 <option value="z_to_a">{{_('Z to A')}}</option>
@@ -281,7 +283,7 @@
                                                     $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                 }*/ ?>
                                                 <div class="col-xl-3 col-md-3 col-6 mt-3">
-                                                    <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" class="product-box scale-effect mt-0">
+                                                    <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="product-box scale-effect mt-0">
                                                         <div class="product-image p-0"  style="height:200px">
                                                             <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
                                                         </div>
@@ -336,6 +338,13 @@
 @section('script')
 <script src="{{asset('front-assets/js/rangeSlider.min.js')}}"></script>
 <script src="{{asset('front-assets/js/my-sliders.js')}}"></script>
+<script>
+    @if(!empty($category->image) && $category->image['is_original'])
+    $(document).ready(function() {
+        $("body").addClass("homeHeader");
+    });
+    @endif
+</script>
 <script>
     $('.js-range-slider').ionRangeSlider({
         type: 'double',

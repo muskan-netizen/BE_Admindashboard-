@@ -7,10 +7,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption};
+use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
+use Session;
+
 class ClientPreferenceController extends BaseController{
     use \App\Http\Traits\ClientPreferenceManager;
     use ApiResponser;
@@ -47,7 +49,18 @@ class ClientPreferenceController extends BaseController{
 
         $tags = Tag::with('primary')->get();
         $slots = ClientSlot::get();
-        $accounting = ThirdPartyAccounting::where('code','xero')->first();
+       
+        $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
+
+        $nomenclature = Nomenclature::where('label','Product Order Form')->first();
+        $nomenclatureProductOrderForm = "Product Order Form";
+        if(!empty($nomenclature)){
+            $nomenclatureTranslation = NomenclatureTranslation::where(['nomenclature_id'=>$nomenclature->id,'language_id'=>$langId])->first();
+            if($nomenclatureTranslation){
+                $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
+            }
+        }
+
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
                                                 'slots'=>$slots,
@@ -62,8 +75,13 @@ class ClientPreferenceController extends BaseController{
                                                 'vendor_registration_documents' => $vendor_registration_documents,
                                                 'driver_registration_documents' => $driver_registration_documents, 
                                                 'file_types_driver' => $file_types_driver,
-                                                'accounting' => $accounting
+                                                'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm
+                                                
                                             ]);
+    }
+
+    public function customModVerification(Request $request){
+        pr($request->all());die;
     }
 
     public function getCustomizePage(ClientPreference $clientPreference){
@@ -72,6 +90,7 @@ class ClientPreferenceController extends BaseController{
         $reffer_by = "";
         $reffer_to = "";
         $cli_currs = [];
+        $laundry_teams = [];
         $client = Auth::user();
         $social_media_details = SocialMedia::get();
         $webTemplates = Template::where('for', '1')->get();
@@ -85,6 +104,11 @@ class ClientPreferenceController extends BaseController{
         $ClientPreference = ClientPreference::where('client_code', $client->code)
         // ->with('language', 'primarylang', 'domain', 'currency.currency', 'primary.currency')->select('client_code', 'theme_admin', 'distance_unit', 'date_format', 'time_format', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'verify_email', 'verify_phone', 'web_template_id', 'app_template_id', 'primary_color', 'secondary_color', 'reffered_by_amount', 'reffered_to_amount')
         ->first();
+        if(isset($ClientPreference) && $ClientPreference->need_laundry_service == '1') {
+            $laundry_teams = $this->getLaundryTeams();
+
+        }
+
         $preference = $ClientPreference ? $ClientPreference : new ClientPreference();
         $nomenclature_value = Nomenclature::first();
         foreach ($preference->currency as $value) {
@@ -109,16 +133,18 @@ class ClientPreferenceController extends BaseController{
         }else{
             $reffer_to = $preference->reffered_to_amount;
         }
-        $verify_codes = array('passbase');
+        $verify_codes   = array('passbase');
         $verify_options = VerificationOption::whereIn('code', $verify_codes)->get();
-        //pr($category_kyc_documents->first()->toArray() ); //
+        $accounting     = ThirdPartyAccounting::where('code','xero')->first();
+        $staticDropoff  = StaticDropoffLocation::get();
+       
+        //pr($facilties->first()->toArray() ); //
         $client_languages = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
                     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
                     ->where('client_languages.client_code', Auth::user()->code)
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
-                    
-        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options'));
+        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting','staticDropoff','laundry_teams'));
     }
 
     public function referandearnUpdate(Request $request, $code){
@@ -147,8 +173,7 @@ class ClientPreferenceController extends BaseController{
             $preference = new ClientPreference();
             $preference->client_code = $code;
         }
-        $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id', 'subscription_tab_taxi');
-     
+        $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','need_inventory_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id', 'subscription_tab_taxi',"sos","sos_police_contact",'sos_ambulance_contact' ,'sos_enable','is_static_dropoff','is_vendor_tags', 'slotting_and_scheduling','appointment_submit_btn','need_appointment_service','appointment_service_key_url','appointment_service_key_code','appointment_service_key');
 
         foreach ($request->all() as $key => $value) {
             if(!in_array($key, $keyShouldNot)){
@@ -194,24 +219,14 @@ class ClientPreferenceController extends BaseController{
             }
             $preference->sms_credentials = json_encode($sms_credentials);
         }
-
-        /* Hyperlocal update */
-        if($request->has('hyperlocals') && $request->hyperlocals == '1'){
-            $preference->is_hyperlocal = ($request->has('is_hyperlocal') && $request->is_hyperlocal == 'on') ? 1 : 0;
-
-
-            if($request->has('is_hyperlocal') && $request->is_hyperlocal == 'on'){
-                if( (!$request->has('Default_location_name')) || ($request->Default_location_name == '')
-                    || (!$request->has('Default_latitude')) || ($request->Default_latitude == '')
-                    || (!$request->has('Default_longitude')) || ($request->Default_longitude == '')
-                ){
-                    return redirect()->route('configure.index')->with('error', 'Invalid Hyperlocal Data');
-                }
-                $preference->Default_location_name = $request->Default_location_name;
-                $preference->Default_latitude = $request->Default_latitude;
-                $preference->Default_longitude = $request->Default_longitude;
+  
+        /* SOS update */
+        if($request->has('sos_enable') && $request->sos_enable == '1'){
+            $preference->sos = ($request->has('sos') && $request->sos == 'on') ? 1 : 0;
+            if($request->has('sos') && $request->sos == 'on'){
+                $preference->sos_police_contact = $request->sos_police_contact;
+                $preference->sos_ambulance_contact = $request->sos_ambulance_contact;
             }
-
         }
 
         /* Xero Configuration */
@@ -220,7 +235,7 @@ class ClientPreferenceController extends BaseController{
             if($request->has('xero_status') && $request->xero_status == 'on')
             {
                 if( ((!$request->has('xero_client_id')) || ($request->xero_client_id == '')) || ((!$request->has('xero_secret_id')) || ($request->xero_secret_id == ''))){
-                    return redirect()->route('configure.index')->with('error', 'Invalid Xero Configuration Data');
+                    return redirect()->route('configure.customize')->with('error', 'Invalid Xero Configuration Data');
                 }   
             }
             $json_creds = json_encode(array(
@@ -246,6 +261,7 @@ class ClientPreferenceController extends BaseController{
         if($request->has('verify_config') && $request->verify_config == '1'){
             $preference->verify_email = ($request->has('verify_email') && $request->verify_email == 'on') ? 1 : 0;
             $preference->verify_phone = ($request->has('verify_phone') && $request->verify_phone == 'on') ? 1 : 0;
+            $preference->concise_signup = (!empty($request->concise_signup) && $request->concise_signup == 'on')? 1 : 0;
             $preference->age_restriction_on_product_mode = ($request->has('age_restriction_on_product_mode') && $request->age_restriction_on_product_mode == 'on') ? 1 : 0;
             $this->updateVerificationOption([
                 'method_id' => $request->method_id, 'method_name' => $request->method_name, 'active'=>$request->active,
@@ -255,14 +271,34 @@ class ClientPreferenceController extends BaseController{
         }
         if($request->has('verify_vendor_type') && $request->verify_vendor_type == '1')
         {
-            if((!$request->has('dinein_check') && !$request->dinein_check == 'on')
-                && (!$request->has('takeaway_check') && !$request->dinein_check == 'on')
-                && (!$request->has('delivery_check') && !$request->dinein_check == 'on')){
-                    return redirect()->route('configure.customize')->with('error', 'One Option must be acitve');
+            $roles = [
+                'dinein_check'   => 'required_without_all:takeaway_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check',
+                'takeaway_check' => 'required_without_all:dinein_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check',
+                'delivery_check' => 'required_without_all:dinein_check,takeaway_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check',
+                'rental_check'   => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check,appointment_check',
+                'pick_drop_check'=> 'required_without_all:dinein_check,takeaway_check,delivery_check,rental_check,on_demand_check,laundry_check,appointment_check',
+                'on_demand_check'=> 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,rental_check,laundry_check,appointment_check',
+                'laundry_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,rental_check,appointment_check',
+                'appointment_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check,rental_check',
+        
+            ];
+            // atleast one is required
+            $validator = Validator::make($request->all(), $roles);
+            if ($validator->fails()) {
+                return redirect()->route('configure.customize')->with('error', __('Atleast one vendor type will be active'));
             }
-            $preference->dinein_check = ($request->has('dinein_check') && $request->dinein_check == 'on') ? 1 : 0;
-            $preference->takeaway_check = ($request->has('takeaway_check') && $request->takeaway_check == 'on') ? 1 : 0;
-            $preference->delivery_check = ($request->has('delivery_check') && $request->delivery_check == 'on') ? 1 : 0;
+            // save vendor mode in client preference table
+            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                $vendor_typ_name = $vendor_typ_key."_check";
+                $preference->$vendor_typ_name = ($request->has($vendor_typ_name) && $request->$vendor_typ_name == 'on') ? 1 : 0;
+            }
+            // if((!$request->has('dinein_check') && !$request->dinein_check == 'on') && (!$request->has('takeaway_check') && !$request->dinein_check == 'on') && (!$request->has('delivery_check') && !$request->dinein_check == 'on')){
+            //     return redirect()->route('configure.customize')->with('error', 'One Option must be acitve');
+            // }
+            
+            // $preference->dinein_check = ($request->has('dinein_check') && $request->dinein_check == 'on') ? 1 : 0;
+            // $preference->takeaway_check = ($request->has('takeaway_check') && $request->takeaway_check == 'on') ? 1 : 0;
+            // $preference->delivery_check = ($request->has('delivery_check') && $request->delivery_check == 'on') ? 1 : 0;
         }
         if($request->has('custom_mods_config') && $request->custom_mods_config == '1'){
             $preference->enquire_mode = ($request->has('enquire_mode') && $request->enquire_mode == 'on') ? 1 : 0;
@@ -271,16 +307,17 @@ class ClientPreferenceController extends BaseController{
             $preference->subscription_mode = ($request->has('subscription_mode') && $request->subscription_mode == 'on') ? 1 : 0;
             $preference->tip_before_order = ($request->has('tip_before_order') && $request->tip_before_order == 'on') ? 1 : 0;
             $preference->tip_after_order = ($request->has('tip_after_order') && $request->tip_after_order == 'on') ? 1 : 0;
-            $preference->delay_order = ($request->has('delay_order') && $request->delay_order == 'on') ? 1 : 0;
             $preference->product_order_form = ($request->has('product_order_form') && $request->product_order_form == 'on') ? 1 : 0;
-            $preference->off_scheduling_at_cart = ($request->has('off_scheduling_at_cart') && $request->off_scheduling_at_cart == 'on') ? 1 : 0;
             $preference->isolate_single_vendor_order = ($request->has('isolate_single_vendor_order') && $request->isolate_single_vendor_order == 'on') ? 1 : 0;
             $preference->gifting = ($request->has('gifting') && $request->gifting == 'on') ? 1 : 0;
             $preference->pickup_delivery_service_area = ($request->has('pickup_delivery_service_area') && $request->pickup_delivery_service_area == 'on') ? 1 : 0;
             $preference->minimum_order_batch = ($request->has('minimum_order_batch') && $request->minimum_order_batch == 'on') ? 1 : 0;
             $preference->static_delivey_fee = ($request->has('static_delivey_fee') && $request->static_delivey_fee == 'on') ? 1 : 0;
             $preference->get_estimations = ($request->has('get_estimations') && $request->get_estimations == 'on') ? 1 : 0;
+            $preference->is_scan_qrcode_bag = ($request->has('is_scan_qrcode_bag') && $request->is_scan_qrcode_bag == 'on') ? 1 : 0;
+            $preference->view_get_estimation_in_category = ($request->has('view_get_estimation_in_category') && $request->view_get_estimation_in_category == 'on') ? 1 : 0; //Added by ovi
             $preference->max_safety_mod = ($request->has('max_safety_mod') && $request->max_safety_mod == 'on') ? 1 : 0;
+
             $preference->address_is_car = ($request->has('address_is_car') && $request->address_is_car == 'on') ? 1 : 0;
             $preference->hide_order_address = ($request->has('hide_order_address') && $request->hide_order_address == 'on') ? 1 : 0;
             $preference->auto_implement_5_percent_tip = ($request->has('auto_implement_5_percent_tip') && $request->auto_implement_5_percent_tip == 'on') ? 1 : 0;
@@ -290,6 +327,13 @@ class ClientPreferenceController extends BaseController{
             $preference->third_party_accounting = ($request->has('third_party_accounting') && $request->third_party_accounting == 'on') ? 1 : 0;
             $preference->hide_order_prepare_time = ($request->has('hide_order_prepare_time') && $request->hide_order_prepare_time == 'on') ? 1 : 0;
             $preference->is_cancel_order_user = ($request->has('is_cancel_order_user') && $request->is_cancel_order_user == 'on') ? 1 : 0;
+            $preference->enable_inventory_service = ($request->has('enable_inventory_service') && $request->enable_inventory_service == 'on') ? 1 : 0;
+            $preference->book_for_friend = ($request->has('book_for_friend') && $request->book_for_friend == 'on') ? 1 : 0;
+            $preference->is_static_dropoff = ($request->has('is_static_dropoff') && $request->is_static_dropoff == 'on') ? 1 : 0;
+            $preference->is_vendor_tags = ($request->has('is_vendor_tags') && $request->is_vendor_tags == 'on') ? 1 : 0;
+            $preference->is_service_area_for_banners = ($request->has('is_service_area_for_banners') && $request->is_service_area_for_banners == 'on') ? 1 : 0;
+            $preference->stop_order_acceptance_for_users = ($request->has('stop_order_acceptance_for_users') && $request->stop_order_acceptance_for_users == 'on') ? 1 : 0;
+            $preference->map_on_search_screen = ($request->has('map_on_search_screen') && $request->map_on_search_screen == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
@@ -383,6 +427,29 @@ class ClientPreferenceController extends BaseController{
             $preference->admin_email = $request->admin_email ;
         }
 
+
+        //Adding Code by inder bcz ididn't found this code here
+        if(isset($request->hyperlocals) && !empty($request->hyperlocals))
+        {
+            if(isset($request->is_hyperlocal) && !empty($request->is_hyperlocal)){
+                $preference->is_hyperlocal = ($request->has('is_hyperlocal') && $request->is_hyperlocal == 'on') ? 1 : 0; 
+                $preference->Default_location_name = $request->Default_location_name;
+                $preference->Default_latitude = $request->Default_latitude;
+                $preference->Default_longitude = $request->Default_longitude;
+            }else{
+                $preference->is_hyperlocal = ($request->has('is_hyperlocal') && $request->is_hyperlocal == 'on') ? 1 : 0; 
+            }
+        }
+
+        // Check if the request is coming from customize page
+        if($request->has('slotting_and_scheduling') && $request->slotting_and_scheduling == 1){
+            $preference->delay_order = ($request->has('delay_order') && $request->delay_order == 'on') ? 1 : 0; // Moved by ovi
+            $preference->off_scheduling_at_cart = ($request->has('off_scheduling_at_cart') && $request->off_scheduling_at_cart == 'on') ? 1 : 0; // Moved by ovi
+            $preference->scheduling_with_slots = ($request->has('scheduling_with_slots') && $request->scheduling_with_slots == 'on') ? 1 : 0; //Added by ovi
+            $preference->same_day_delivery_for_schedule = ($request->has('same_day_delivery_for_schedule') && $request->same_day_delivery_for_schedule == 'on') ? 1 : 0;  //Added by ovi
+            $preference->same_day_orders_for_rescheduing = ($request->has('same_day_orders_for_rescheduing') && $request->same_day_orders_for_rescheduing == 'on') ? 1 : 0; //Added by ovi
+            $preference->slots_with_service_area = ($request->has('slots_with_service_area') && $request->slots_with_service_area == 'on') ? 1 : 0;
+        }
         $preference->save();
 
 
@@ -420,10 +487,19 @@ class ClientPreferenceController extends BaseController{
                     $res = $client->post($url.'/api/check-dispatcher-keys');
                     $response = json_decode($res->getBody(), true);
                     if($response && $response['status'] == 400){
-                        return redirect()->route('configure.index')->with('error', 'laundry Keys incorrect !');
+                        if($request->has('send_to') && $request->send_to == 'customize'){
+                            return redirect()->route('configure.customize')->with('error', 'laundry Keys incorrect !');
+                        }else{
+                            return redirect()->route('configure.customize')->with('error', 'laundry Keys incorrect !');
+                        }
                     }
                 }catch(\Exception $e){
-                    return redirect()->route('configure.index')->with('error', 'Invalid laundry Dispatcher URL !');
+                    if($request->has('send_to') && $request->send_to == 'customize'){
+                        return redirect()->route('configure.customize')->with('error', 'Invalid laundry Dispatcher URL !');
+                    }else{
+                        return redirect()->route('configure.customize')->with('error', 'Invalid laundry Dispatcher URL !');
+                    }
+                   
                 }
                 $preferenceset->need_laundry_service = ($request->has('need_laundry_service') && $request->need_laundry_service == 'on') ? 1 : 0;
                 $preferenceset->laundry_service_key_url = $request->laundry_service_key_url;
@@ -445,10 +521,19 @@ class ClientPreferenceController extends BaseController{
                     $res = $client->post($url.'/api/check-dispatcher-keys');
                     $response = json_decode($res->getBody(), true);
                     if ($response && $response['status'] == 400) {
-                        return redirect()->route('configure.index')->with('error', 'Pickup & Delivery Keys incorrect !');
+                        if($request->has('send_to') && $request->send_to == 'customize'){
+                            return redirect()->route('configure.customize')->with('error', 'Pickup & Delivery Keys incorrect !');
+                        }else{
+                            return redirect()->route('configure.customize')->with('error', 'Pickup & Delivery Keys incorrect !');
+                        }
                     }
                 } catch (\Exception $e) {
-                    return redirect()->route('configure.index')->with('error', 'Invalid Pickup & Delivery Dispatcher URL !');
+                    if($request->has('send_to') && $request->send_to == 'customize'){
+                        return redirect()->route('configure.customize')->with('error', 'Invalid Pickup & Delivery Dispatcher URL !');
+                    }else{
+                        return redirect()->route('configure.customize')->with('error', 'Invalid Pickup & Delivery Dispatcher URL !');
+                    }
+                 
                 }
                 $preferenceset->need_dispacher_ride = ($request->has('need_dispacher_ride') && $request->need_dispacher_ride == 'on') ? 1 : 0;
                 $preferenceset->pickup_delivery_service_key_url = $request->pickup_delivery_service_key_url;
@@ -473,10 +558,19 @@ class ClientPreferenceController extends BaseController{
                 $res = $client->post($url.'/api/check-dispatcher-keys');
                 $response = json_decode($res->getBody(), true);
                 if($response && $response['status'] == 400){
-                    return redirect()->route('configure.index')->with('error', 'On Demand Services Keys incorrect !');
+                    if($request->has('send_to') && $request->send_to == 'customize'){
+                        return redirect()->route('configure.customize')->with('error', 'On Demand Services Keys incorrect!');
+                    }else{
+                        return redirect()->route('configure.customize')->with('error', 'On Demand Services Keys incorrect!');
+                    }
+                    
                 }
             }catch(\Exception $e){
-                    return redirect()->route('configure.index')->with('error', 'Invalid On Demand Services Dispatcher URL !');
+                if($request->has('send_to') && $request->send_to == 'customize'){
+                    return redirect()->route('configure.customize')->with('error', 'Invalid On Demand Services Dispatcher URL !');
+                }else{
+                    return redirect()->route('configure.customize')->with('error', 'Invalid On Demand Services Dispatcher URL !');
+                }
             }
             $preferenceset->need_dispacher_home_other_service = ($request->has('need_dispacher_home_other_service') && $request->need_dispacher_home_other_service == 'on') ? 1 : 0;
             $preferenceset->dispacher_home_other_service_key_url = $request->dispacher_home_other_service_key_url;
@@ -485,6 +579,66 @@ class ClientPreferenceController extends BaseController{
         }else{
             $preferenceset->need_dispacher_home_other_service = ($request->has('need_dispacher_home_other_service') && $request->need_dispacher_home_other_service == 'on') ? 1 : 0;
         }
+        }
+
+
+        # inventory service 
+        if(isset($request->need_inventory_service_submit_btn) && !empty($request->need_inventory_service_submit_btn))
+        {
+
+            if(isset($request->need_inventory_service) && !empty($request->need_inventory_service))
+            {
+                try {
+                    $client = new GClient(['headers' => ['shortcode' => $request->inventory_service_key_code,
+                                                                'content-type' => 'application/json']
+                                                                    ]);
+                    $url = $request->inventory_service_key_url;
+                    $res = $client->post($url.'/api/v1/check-inventory-keys');
+                    $response = json_decode($res->getBody(), true);
+                    if($response && $response['status'] == 400){
+                        return redirect()->route('configure.index')->with('error', 'Inventory Services Keys incorrect !');
+                    }
+                }catch(\Exception $e){
+                        return redirect()->route('configure.index')->with('error', 'Invalid Inventory Services Dispatcher URL !');
+                }
+                $preferenceset->need_inventory_service = ($request->has('need_inventory_service') && $request->need_inventory_service == 'on') ? 1 : 0;
+                $preferenceset->inventory_service_key_url = $request->inventory_service_key_url;
+                $preferenceset->inventory_service_key_code = $request->inventory_service_key_code;
+                $preferenceset->inventory_service_key = $request->inventory_service_key??null;
+            }else{
+                $preferenceset->need_inventory_service = ($request->has('need_inventory_service') && $request->need_inventory_service == 'on') ? 1 : 0;
+            }
+        }
+        
+        if (isset($request->appointment_submit_btn) && !empty($request->appointment_submit_btn)) {
+            if (isset($request->need_appointment_service) && !empty($request->need_appointment_service)) {
+                try {
+                    $client = new GClient(['headers' => ['personaltoken' => $request->appointment_service_key,'shortcode' => $request->appointment_service_key_code,'content-type' => 'application/json']]);
+                    $url = $request->appointment_service_key_url;
+                    $res = $client->post($url.'/api/check-dispatcher-keys');
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['status'] == 400) {
+                        if($request->has('send_to') && $request->send_to == 'customize'){
+                            return redirect()->route('configure.customize')->with('error', 'Appointment Keys incorrect!');
+                        }else{
+                            return redirect()->route('configure.customize')->with('error', 'Appointment Keys incorrect!');
+                        }
+                    }
+                } catch (\Exception $e) {
+                    if($request->has('send_to') && $request->send_to == 'customize'){
+                        return redirect()->route('configure.customize')->with('error', 'Invalid Appointment Dispatcher URL !');
+                    }else{
+                        return redirect()->route('configure.customize')->with('error', 'Invalid Appointment Dispatcher URL !');
+                    }
+                    
+                }
+                $preferenceset->need_appointment_service = ($request->has('need_appointment_service') && $request->need_appointment_service == 'on') ? 1 : 0;
+                $preferenceset->appointment_service_key_url = $request->appointment_service_key_url;
+                $preferenceset->appointment_service_key_code = $request->appointment_service_key_code;
+                $preferenceset->appointment_service_key = $request->appointment_service_key;
+            } else {
+                $preferenceset->need_appointment_service = ($request->has('need_appointment_service') && $request->need_appointment_service == 'on') ? 1 : 0;
+            }
         }
 
         $preferenceset->save();
@@ -596,29 +750,32 @@ class ClientPreferenceController extends BaseController{
     {
         $method_id_arr = $data['method_id'];
         $method_name_arr = $data['method_name'];
-        $active_arr = $data['active'];
-        foreach ($method_id_arr as $key => $id) {
-            $saved_creds = VerificationOption::select('credentials')->where('id', $id)->first();
-            if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
-                $json_creds = $saved_creds->credentials;
-            } else {
-                $json_creds = NULL;
-            }
-
-            $status = 0;
-            $test_mode = 0;
-            if ((isset($active_arr[$id])) && ($active_arr[$id] == 'on')) {
-                $status = 1;
-
-                if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'passbase')) {
-                    $json_creds = json_encode(array(
-                        'publish_key' => $data['passbase_publish_key'],
-                        'secret_key'  => $data['passbase_secret_key'],
-                    ));
+        $active_arr = $data['active'];                  
+        if(!empty($method_id_arr)){
+            foreach ($method_id_arr as $key => $id) {
+                $saved_creds = VerificationOption::select('credentials')->where('id', $id)->first();
+                if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
+                    $json_creds = $saved_creds->credentials;
+                } else {
+                    $json_creds = NULL;
                 }
-                
+    
+                $status = 0;
+                $test_mode = 0;
+                if ((isset($active_arr[$id])) && ($active_arr[$id] == 'on')) {
+                    $status = 1;
+    
+                    if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'passbase')) {
+                        $json_creds = json_encode(array(
+                            'publish_key' => $data['passbase_publish_key'],
+                            'secret_key'  => $data['passbase_secret_key'],
+                        ));
+                    }
+                    
+                }
+                VerificationOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
             }
-            VerificationOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
         }
+        
     }
 }

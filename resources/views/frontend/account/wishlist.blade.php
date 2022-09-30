@@ -76,7 +76,7 @@ $timezone = Auth::user()->timezone;
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">
-                            <h2>{{ getNomenclatureName('Wishlist', true) }}</h2>
+                            <h2>{{__(getNomenclatureName('Wishlist', true)) }}</h2>
                         </div>
                         <div class="box-account box-info mt-md-3 mt-2">
                             <div class="row">
@@ -141,7 +141,7 @@ $timezone = Auth::user()->timezone;
                                                             <span>{{__('Not In Stock')}}</span>
                                                         @endif
                                                     @else
-                                                        <span class="text-danger">This product no longer exists</span>
+                                                        <span class="text-danger">{{__('This product no longer exists')}}</span>
                                                     @endif
                                                 </td>
                                                 <td><a href="{{ route('removeWishlist', $wish['product']['sku']) }}" class="icon me-3"><i class="ti-close"></i> </a></td>

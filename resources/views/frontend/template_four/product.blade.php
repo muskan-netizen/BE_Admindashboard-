@@ -11,9 +11,7 @@
     <link rel="stylesheet" href="{{ asset('front-assets/css/easyzoom.css') }}" />
     <link rel="stylesheet" href="{{ asset('front-assets/css/main.css') }}" /> -->
 
-    <link rel="stylesheet" href="https://www.jqueryscript.net/css/jquerysctipttop.css">
-    <link rel="stylesheet" href="https://www.jqueryscript.net/demo/Product-Carousel-Magnifying-Effect-exzoom/jquery.exzoom.css">
-    <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="{{asset('css/jquery.exzoom.css')}}">
 <style type="text/css">
     .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.btn-disabled{opacity:.5;pointer-events:none}.fab{font:normal normal normal 14px/1 FontAwesome;font-size:inherit}
     #number{display:block}#exzoom{display:none}.exzoom .exzoom_btn a.exzoom_next_btn{right:-12px} .exzoom .exzoom_nav .exzoom_nav_inner{-webkit-transition:all .5s;-moz-transition:all .5s;transition:all .5s}
@@ -27,7 +25,6 @@
 @endsection
 
 @section('content')
-
 @if(!empty($category))
 @include('frontend.included_files.products_breadcrumb')
 @endif
@@ -39,7 +36,9 @@
       Some text inside the toast body
     </div>
   </div> -->
-
+@php
+$checkSlot = findSlot('',$product->vendor->id,'');
+@endphp
 <section class="section-b-space FiveTemplate alSingleProducts">
     <div class="collection-wrapper al">
         <div class="container">
@@ -71,8 +70,8 @@
                                 </div>
                             </div>
                         </div>--}}
-                        <div class="row">
-                            <div class="col-lg-5 pl-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                        <div class="row no-gutters">
+                            <div class="col-lg-5 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                 {{-- <div class="product__carousel">
                                     <div class="gallery-parent">
                                         @php
@@ -224,6 +223,9 @@
                                     <div class="description_txt mt-3">
                                         <p>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description : ''}}</p>
                                     </div>
+                                    <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
+                                    <input type="hidden" name="start_time" id="start_time" value="">
+                                    <input type="hidden" name="end_time" id="end_time" value="">
                                     <div id="product_variant_wrapper">
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
                                         @if($product->inquiry_only == 0)
@@ -256,7 +258,7 @@
                                                             $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
                                                             ?>
                                                             <label class="radio d-inline-block txt-14 mr-2">{{$optn->title}}
-                                                                <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
+                                                                <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}} data-cartCheck="{{(($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($optn->quantity <= $product_quantity_in_cart && $product->has_inventory) || ($optn->quantity < $product->minimum_order_count)) ? 1 : 0}}">
                                                                 <span class="checkround"></span>
                                                             </label>
                                                             @endforeach
@@ -318,7 +320,7 @@
                                                             }
                                                         @endphp
                                                         @if( ($min_select != '') || ($max_select != '') )
-                                                            <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
+                                                            <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
                                                         @endif
                                                     </h4>
 
@@ -359,7 +361,7 @@
                                                                 }
                                                             @endphp
                                                             @if( ($min_select != '') || ($max_select != '') )
-                                                                <small>({{$min_select.$max_select}} Selections allowed)</small>
+                                                                <small>({{__($min_select).__($$max_select)}} {{ __('Selections Allowed')}})</small>
                                                             @endif
                                                         </h4>
                                                     </td>
@@ -380,9 +382,6 @@
                                         </table>--}}
                                     </div>
                                     @endif
-                                    @php
-                                    $checkSlot = findSlot('',$product->vendor->id,'');
-                                    @endphp
                                     <div class="product-buttons">
                                         @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                         @if($is_inwishlist_btn && $is_available)
@@ -402,8 +401,8 @@
 
 
                                         @endphp
-                                        @if($is_available == 1)
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}"><i class="ti-shopping-cart"></i> {{__('Add To Cart')}}</a>
+                                        @if($is_available == 1 )
+                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory) || ($product->variant[0]->quantity < $product->minimum_order_count)) ? 'btn-disabled' : '' }}" ><i class="ti-shopping-cart"></i> {{__('Add To Cart')}}</a>
                                         @endif
 
                                             @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
@@ -419,73 +418,73 @@
                             </div>
 
                             <div class="col-12 pl-0">
-                            @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                    <section class="tab-product m-0">
-                        <div class="row">
-                            <div class="col-sm-12 col-lg-12">
-                                <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
-                                    <!-- <li class="nav-item"><a class="nav-link active" id="top-home-tab" data-toggle="tab" href="#top-home" role="tab" aria-selected="true"><i class="icofont icofont-ui-home"></i>{{__('Description')}}</a>
-                                        <div class="material-border"></div>
-                                    </li> -->
-                                    <!-- <li class="nav-item"><a class="nav-link" id="profile-top-tab" data-toggle="tab"
-                                            href="#top-profile" role="tab" aria-selected="false"><i
-                                                class="icofont icofont-man-in-glasses"></i>Details</a>
-                                        <div class="material-border"></div>
-                                    </li> -->
-                                    @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                                    <li class="nav-item"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
-                                        <div class="material-border"></div>
-                                    </li>
-                                    @endif
-                                </ul>
-                                <div class="tab-content nav-material" id="top-tabContent">
-                                    <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
-                                        <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
-                                            $product->translation[0]->body_html : ''!!}</p>
-                                    </div>
-                                    <div class="tab-pane fade" id="top-profile" role="tabpanel" aria-labelledby="profile-top-tab">
-                                        <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
-                                            $product->translation[0]->body_html : ''!!}</p>
-                                    </div>
-                                    <div class="tab-pane show active" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
-                                        @forelse ($rating_details as $rating)
-                                        <div v-for="item in list" class="w-100 d-flex justify-content-between mb-3">
-                                            <div class="review-box">
+                                @if($client_preference_detail && $client_preference_detail->rating_check == 1)
+                                <section class="tab-product m-0">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-lg-12">
+                                            <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
+                                                <!-- <li class="nav-item"><a class="nav-link active" id="top-home-tab" data-toggle="tab" href="#top-home" role="tab" aria-selected="true"><i class="icofont icofont-ui-home"></i>{{__('Description')}}</a>
+                                                    <div class="material-border"></div>
+                                                </li> -->
+                                                <!-- <li class="nav-item"><a class="nav-link" id="profile-top-tab" data-toggle="tab"
+                                                        href="#top-profile" role="tab" aria-selected="false"><i
+                                                            class="icofont icofont-man-in-glasses"></i>Details</a>
+                                                    <div class="material-border"></div>
+                                                </li> -->
+                                                @if($client_preference_detail && $client_preference_detail->rating_check == 1)
+                                                <li class="nav-item"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
+                                                    <div class="material-border"></div>
+                                                </li>
+                                                @endif
+                                            </ul>
+                                            <div class="tab-content nav-material" id="top-tabContent">
+                                                <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
+                                                    <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
+                                                        $product->translation[0]->body_html : ''!!}</p>
+                                                </div>
+                                                <div class="tab-pane fade" id="top-profile" role="tabpanel" aria-labelledby="profile-top-tab">
+                                                    <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
+                                                        $product->translation[0]->body_html : ''!!}</p>
+                                                </div>
+                                                <div class="tab-pane show active" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
+                                                    @forelse ($rating_details as $rating)
+                                                    <div v-for="item in list" class="w-100 d-flex justify-content-between mb-3">
+                                                        <div class="review-box">
 
-                                                <div class="review-author mb-1">
-                                                    <p><strong>{{$rating->user->name??'NA'}}</strong> - <i class="fa fa-star{{ $rating->rating >= 1 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                        <i class="fa fa-star{{ $rating->rating >= 2 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                        <i class="fa fa-star{{ $rating->rating >= 3 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                        <i class="fa fa-star{{ $rating->rating >= 4 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                        <i class="fa fa-star{{ $rating->rating >= 5 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                    </p>
-                                                </div>
-                                                <div class="review-comment">
-                                                    <p>{{$rating->review??''}}</p>
-                                                </div>
-                                                <div class="row review-wrapper">
-                                                    @if(isset($rating->reviewFiles))
-                                                    @foreach ($rating->reviewFiles as $files)
-                                                    <a target="_blank" href="{{$files->file['image_fit'].'900/900'.$files->file['image_path']}}" class="col review-photo mt-2 lightBoxGallery" data-gallery="">
-                                                        <img class="blur-up lazyload" data-src="{{$files->file['image_fit'].'300/300'.$files->file['image_path']}}">
-                                                    </a>
-                                                    @endforeach
-                                                    @endif
-                                                </div>
-                                                <div class="review-date mt-2">
-                                                    <time> {{ $rating->time_zone_created_at->diffForHumans();}} </time>
+                                                            <div class="review-author mb-1">
+                                                                <p><strong>{{$rating->user->name??'NA'}}</strong> - <i class="fa fa-star{{ $rating->rating >= 1 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                    <i class="fa fa-star{{ $rating->rating >= 2 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                    <i class="fa fa-star{{ $rating->rating >= 3 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                    <i class="fa fa-star{{ $rating->rating >= 4 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                    <i class="fa fa-star{{ $rating->rating >= 5 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                </p>
+                                                            </div>
+                                                            <div class="review-comment">
+                                                                <p>{{$rating->review??''}}</p>
+                                                            </div>
+                                                            <div class="row review-wrapper">
+                                                                @if(isset($rating->reviewFiles))
+                                                                @foreach ($rating->reviewFiles as $files)
+                                                                <a target="_blank" href="{{$files->file['image_fit'].'900/900'.$files->file['image_path']}}" class="col review-photo mt-2 lightBoxGallery" data-gallery="">
+                                                                    <img class="blur-up lazyload" data-src="{{$files->file['image_fit'].'300/300'.$files->file['image_path']}}">
+                                                                </a>
+                                                                @endforeach
+                                                                @endif
+                                                            </div>
+                                                            <div class="review-date mt-2">
+                                                                <time> {{ $rating->time_zone_created_at->diffForHumans();}} </time>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @empty
+                                                    <p>{{__('No Result Found')}}</p>
+                                                    @endforelse
                                                 </div>
                                             </div>
                                         </div>
-                                        @empty
-                                        <p>{{__('No Result Found')}}</p>
-                                        @endforelse
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                    @endif
+                                </section>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -621,7 +620,7 @@
         </div>
     </div>
     <div class="container pb-md-4">
-        <div class="product-4 product-m  related-products pb-2">
+        <div class="product-4 product-m  related-products pb-2 d-flex">
             @forelse($product->related_products as $related_product)
             <div>
 				<a class="common-product-box scale-effect text-center"
@@ -733,11 +732,12 @@
 @section('js-script')
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
-<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
 @endsection
 @section('script')
 <script>
+    var maximumquantitylert = "{{__('Quantity is not available in stock')}}";
+    var minimumquantitylert = "{{__('Minimum Quantity count is')}}";
     $(document).on('click', '.submitInquiryForm', function(e) {
         e.preventDefault();
         var formData = new FormData(document.getElementById("inquiry-form"));
@@ -826,6 +826,12 @@
     var add_to_cart_url = "{{ route('addToCart') }}";
     $('.changeVariant').click(function() {
         updatePrice();
+        $('.addToCart').removeClass('btn-disabled');
+        var check = $(this).attr('data-cartCheck');
+        if(check == 1 ||check == '1')
+        {
+            $('.addToCart').addClass('btn-disabled');
+        }
     });
     function updatePrice()
     {

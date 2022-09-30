@@ -1,6 +1,10 @@
 @php
     \Session::forget('success');
 @endphp
+@include('backend.modal.modalPopup')
+
+@yield('popup-js')
+<div class="d-none" id ="nearmap">
 <!-- Footer Start -->
 <footer class="footer">
     <div class="container-fluid">

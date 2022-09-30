@@ -8,7 +8,7 @@
 @section('content')
 
 <!-- Start Content-->
-<div class="container-fluid">
+<div class="container-fluid alpaymentOptionPage">
 
     <!-- start page title -->
     <div class="row">
@@ -41,15 +41,11 @@
         @csrf
         @method('POST')
         <div class="row align-items-center">
-            <div class="col-sm-8">
-                <div class="text-sm-left">
-                    <div class="page-title-box">
-                        <h4 class="page-title">{{ __("Payment Options") }}</h4>
-                    </div>
+            <div class="col-sm-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="page-title">{{ __("Payment Options") }}</h4>
+                    <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
                 </div>
-            </div>
-            <div class="col-sm-4 text-right">
-                <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
             </div>
         </div>
         <div class="row">
@@ -103,6 +99,19 @@
                 $easebuzz_Sub_merchant = (isset($creds->easebuzz_Sub_merchant)) ? $creds->easebuzz_Sub_merchant : '';
                 $vnpay_website_id = (isset($creds->vnpay_website_id)) ? $creds->vnpay_website_id : '';
                 $vnpay_server_key = (isset($creds->vnpay_server_key)) ? $creds->vnpay_server_key : '';
+                $merchant_phone = (isset($creds->merchant_phone)) ? $creds->merchant_phone : '';
+                $manule_payment_title = (isset($creds->manule_payment_title)) ? $creds->manule_payment_title : '';
+                $userede_Rede_PV = (isset($creds->userede_Rede_PV)) ? $creds->userede_Rede_PV : '';
+                $userede_Rede_token = (isset($creds->userede_Rede_token)) ? $creds->userede_Rede_token : '';
+                $openpay_merchant_id = (isset($creds->openpay_merchant_id)) ? $creds->openpay_merchant_id : '';
+                $openpay_private_key = (isset($creds->openpay_private_key)) ? $creds->openpay_private_key : '';
+                $openpay_public_key = (isset($creds->openpay_public_key)) ? $creds->openpay_public_key : '';
+                $openpay_verification_key = (isset($creds->openpay_verification_key)) ? $creds->openpay_verification_key : '';
+
+                $company_token = (isset($creds->company_token)) ? $creds->company_token : '';
+                $service_type = (isset($creds->service_type)) ? $creds->service_type : '';
+                $aes_key = (isset($creds->aes_key)) ? $creds->aes_key : '';
+                $uuid_key = (isset($creds->uuid_key)) ? $creds->uuid_key : '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -116,7 +125,7 @@
                                 <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
                             </div>
                         </div>
-                        @if ( (strtolower($opt->code) != 'cod') &&  (strtolower($opt->code) != 'razorpay') &&  (strtolower($opt->code) != 'simplify') && (strtolower($opt->code)!= 'kongapay'))
+                        @if ( (strtolower($opt->code) != 'dpo') &&  (strtolower($opt->code) != 'cod') &&  (strtolower($opt->code) != 'razorpay') &&  (strtolower($opt->code) != 'simplify') && (strtolower($opt->code)!= 'kongapay') && (strtolower($opt->code)!= 'windcave') && (strtolower($opt->code)!= 'payphone') && (strtolower($opt->code)!= 'offline_manual') && (strtolower($opt->code) != 'khalti'))
                         <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label>
@@ -602,10 +611,14 @@
                     @endif
                     @if ( (strtolower($opt->code) == 'easebuzz') )
                     <div class="mt-2" id="easebuzz_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                    <h6 class="mt-3">
+                        <span>{{ __('Webhook Url') }} : </span>
+                        <a href="javascript:;" class="webhook_url"><span id="pwd_spn" class="password-span">{{route('payment.easebuzz.easybuzzNotify')}}</span></a>
+                    </h6>
                         <div class="row">
                         <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="easebuzz_merchant_key" class="mr-3">{{ __("Easebuzz Sub Merchant") }}</label>
+                                    <label for="easebuzz_merchant_key" class="mr-3">{{ __("Sub Merchant") }}</label>
                                     <input type="checkbox"   data-plugin="switchery" name="easebuzz_Sub_merchant" class="chk_box" data-color="#43bee1" @if($easebuzz_Sub_merchant == 1) checked @endif>
                                 </div>
                             </div>
@@ -696,7 +709,7 @@
                                     <input type="password" name="mvodafone_secret_key" id="mvodafone_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                     @endif
@@ -723,7 +736,7 @@
                                     <input type="password" name="flutterwave_enc_key" id="flutterwave_enc_key" class="form-control" value="{{$enc_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                     @endif
@@ -807,6 +820,274 @@
                     </div>
                     @endif
 
+                    @if ( (strtolower($opt->code) == 'windcave'))
+                    <div class="mt-2" id="windcave_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="windcave_id" class="mr-3">{{ __("User ID") }}</label>
+                                    <input type="text" name="windcave_id" id="windcave_id" class="form-control" value="{{$app_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="windcave_key" class="mr-3">{{ __("User Key") }}</label>
+                                    <input type="text" name="windcave_key" id="windcave_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'paytech'))
+                    <div class="mt-2" id="paytech_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="paytech_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="text" name="paytech_key" id="windcave_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="paytech_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="text" name="paytech_secret_key" id="paytech_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'mycash'))
+                    <div class="mt-2" id="mycash_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mycash_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="text" name="mycash_api_key" id="mycash_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mycash_username" class="mr-3">{{ __("Username") }}</label>
+                                    <input type="text" name="mycash_username" id="mycash_username" class="form-control" value="{{$username}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mycash_password" class="mr-3">{{ __("Password") }}</label>
+                                    <input type="password" name="mycash_password" id="mycash_password" class="form-control" value="{{$password}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mycash_merchant_phone" class="mr-3">{{ __("Mobile Number") }}</label>
+                                    <input type="text" name="mycash_merchant_phone" id="mycash_merchant_phone" class="form-control" value="{{$merchant_phone}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'stripe_oxxo') )
+                    <div class="mt-2" id="stripe_oxxo_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="stripe_oxxo_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="stripe_oxxo_secret_key" id="stripe_oxxo_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="stripe_oxxo_publishable_key" class="mr-3">{{ __("Publishable Key") }}</label>
+                                    <input type="password" name="stripe_oxxo_publishable_key" id="stripe_oxxo_publishable_key" class="form-control" value="{{$publishable_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'stripe_ideal') )
+                    <div class="mt-2" id="stripe_ideal_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="stripe_ideal_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="stripe_ideal_secret_key" id="stripe_ideal_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="stripe_ideal_publishable_key" class="mr-3">{{ __("Publishable Key") }}</label>
+                                    <input type="password" name="stripe_ideal_publishable_key" id="stripe_ideal_publishable_key" class="form-control" value="{{$publishable_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'offline_manual') )
+                    <div class="mt-2" id="offline_manual_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="manule_payment_title" class="mr-3">{{ __("Manual payment title") }}</label>
+                                    <input type="text" name="manule_payment_title" id="manule_payment_title" class="form-control" value="{{$manule_payment_title}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'userede') )
+                    <div class="mt-2" id="userede_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="userede_Rede_PV" class="mr-3">{{ __("Rede PV") }}</label>
+                                    <input type="text" name="userede_Rede_PV" id="userede_Rede_PV" class="form-control" value="{{$userede_Rede_PV}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="userede_Rede_token" class="mr-3">{{ __("Rede token") }}</label>
+                                    <input type="text" name="userede_Rede_token" id="userede_Rede_token" class="form-control" value="{{$userede_Rede_token}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'openpay') )
+                    <div class="mt-2" id="openpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                    <h6 class="mt-3">
+                        <span>{{ __('Webhook Url') }} : </span>
+                        <a href="javascript:;" class="webhook_url"><span id="pwd_spn" class="password-span">{{route('payment.webhook.opnepay')}}</span></a>
+                    </h6>
+                    <div class="row">
+                            <div class="col-12">
+                                <div class="col-12">
+                                    <div class="form-group mb-2">
+                                        <label for="openpay_verification_key" class="mr-3">{{ __("Webhook Verification") }}</label>
+                                        <input type="text" name="openpay_verification_key" id="openpay_verification_key" class="form-control" value="{{$openpay_verification_key}}" >
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="openpay_merchant_id" class="mr-3">{{ __("Merchant Id") }}</label>
+                                    <input type="text" name="openpay_merchant_id" id="openpay_merchant_id" class="form-control" value="{{$openpay_merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="openpay_private_key" class="mr-3">{{ __("Private Key") }}</label>
+                                    <input type="text" name="openpay_private_key" id="openpay_private_key" class="form-control" value="{{$openpay_private_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="openpay_public_key" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="text" name="openpay_public_key" id="openpay_public_key" class="form-control" value="{{$openpay_public_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'dpo') )
+                    <div class="mt-2" id="dpo_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="company_token" class="mr-3">{{ __("Company Token") }}</label>
+                                    <input type="text" name="company_token" id="company_token" class="form-control" value="{{$company_token}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="service_type" class="mr-3">{{ __("Service Type") }}</label>
+                                    <input type="text" name="service_type" id="service_type" class="form-control" value="{{$service_type}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'upay') )
+                    <div class="mt-2" id="upay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="company_token" class="mr-3">{{ __("UIDD") }}</label>
+                                    <input type="text" name="uuid_key" id="uuid_key" class="form-control" value="{{$uuid_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="service_type" class="mr-3">{{ __("AES Key") }}</label>
+                                    <input type="text" name="aes_key" id="aes_key" class="form-control" value="{{$aes_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'conekta') )
+                    <div class="mt-2" id="conekta_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="company_token" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="text" name="conekta_public_key" id="conekta_public_key" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="service_type" class="mr-3">{{ __("Private Key") }}</label>
+                                    <input type="password" name="conekta_private_key" id="conekta_private_key" class="form-control" value="{{$private_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'telr') )
+                    <div class="mt-2" id="telr_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="telr_merchant_id" class="mr-3">{{ __("Store ID") }}</label>
+                                    <input type="text" name="telr_merchant_id" id="telr_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="telr_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="text" name="telr_api_key" id="telr_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'khalti') )
+                    <div class="mt-2" id="khalti_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="khalti_public_key" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="text" name="khalti_public_key" id="khalti_public_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="khalti_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="khalti_secret_key" id="khalti_secret_key" class="form-control" value="{{$api_secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                 </div>
             </div>
             @endforeach
@@ -817,20 +1098,16 @@
         @csrf
         @method('POST')
         <div class="row align-items-center">
-            <div class="col-sm-8">
-                <div class="text-sm-left">
-                    <div class="page-title-box">
-                        <h4 class="page-title">{{ __("Payout Options") }}</h4>
-                    </div>
+            <div class="col-sm-12">
+                <div class="page-title-box  d-flex align-items-center justify-content-between">
+                    <h4 class="page-title">{{ __("Payout Options") }}</h4>
+                    <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
                 </div>
-            </div>
-            <div class="col-sm-4 text-right">
-                <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
             </div>
         </div>
         <div class="row">
             @foreach($payoutOption as $key => $opt)
-            <div class="col-md-2 mb-3">
+            <div class="col-6 col-md-3 col-xl-2 mb-3">
 
                 <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
                 <input type="hidden" name="method_name[]" id="{{$opt->code}}" value="{{$opt->code}}">
@@ -918,6 +1195,8 @@
                         </div>
                     </div>
                     @endif
+
+
                 </div>
             </div>
             @endforeach

@@ -63,7 +63,7 @@ if(session()->has('applocale')){
                                     @if($client_preference_detail->show_wishlist == 1)
                                     <li class="onhover-dropdown_al mobile-wishlist_al">
                                         <a href="{{route('user.wishlists')}}">
-                                            Wishlists
+                                        {{__('Wishlists')}}
                                         </a>
                                     </li>
                                     @endif
@@ -71,7 +71,7 @@ if(session()->has('applocale')){
                                     @if($client_preference_detail->cart_enable == 1)
                                     <li class="onhover-dropdown_al onhover-div mobile-cart">
                                         <a href="{{route('showCart')}}" style="position: relative">
-                                            Viewcart
+                                        {{__('Viewcart')}}
                                             <span class="cart_qty_cls" style="display:none"></span>
                                         </a>
                                         <ul class="show-div shopping-cart"></ul>
@@ -115,7 +115,9 @@ if(session()->has('applocale')){
                                         <ul class="onhover-show-div">
                                             @foreach($languageList as $key => $listl)
                                                 <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                                                        ({{$listl->language->nativeName}})
+                                                        @endif </a>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -203,7 +205,26 @@ if(session()->has('applocale')){
 
             @if($mod_count > 1)
             <ul class="row nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods d-flex justify-content-around" id="top-tab" role="tablist">
-                @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
+            @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                @php
+                $clientVendorTypes = $vendor_typ_key.'_check';
+                $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+                @endphp
+
+                @if($client_preference_detail->$clientVendorTypes == 1)
+                <li class="col navigation-tab-item pr-lg-3" role="presentation"> <a
+                class=" nav-link {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
+                id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
+                aria-controls="profile" aria-selected="false">
+                        <span><img src="{{$client_preference_detail->deliveryicon ? $client_preference_detail->deliveryicon['proxy_url'].'36/26'.$client_preference_detail->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" alt=""></span>
+                        {{$NomenclatureName}}
+                    </a>
+                </li>
+                
+                @endif
+            @endforeach   
+            <!-- @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
                 <li class="col navigation-tab-item pr-lg-3" role="presentation">
                     <a class="nav-link al_delivery {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
                         <span><img src="{{asset('images/al_custom3.png')}}" alt=""></span>
@@ -225,7 +246,7 @@ if(session()->has('applocale')){
                         {{$Takeaway}}
                     </a>
                 </li>
-                @endif
+                @endif -->
             </ul>
             @endif
 

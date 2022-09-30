@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Api\v1;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Validator;
+use GuzzleHttp\Client as GCLIENT;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, ProductVariantImage, UserWishlist};
+use Illuminate\Pagination\Paginator;
+use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist};
+
 
 class StoreController extends BaseController{
     use ApiResponser;
@@ -58,7 +61,7 @@ class StoreController extends BaseController{
 						->with(['media.image', 'translation' => function($q) use($langId){
                         	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     	},'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
                             $q->groupBy('product_id');
                     	},
                     ])->where('category_id', $is_selected_category_id);
@@ -93,9 +96,9 @@ class StoreController extends BaseController{
 						   $query->where('vendor_id', $is_selected_vendor_id);
 						})
 						->where(function ($q1) {
-							$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+							$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
 							$q1->orWhere(function ($q2) {
-								$q2->where('payment_option_id', 1);
+								$q2->whereIn('payment_option_id',[1,38]);
 							});
 						})
 						->orderBy('id', 'DESC')->paginate($paginate);
@@ -149,10 +152,13 @@ class StoreController extends BaseController{
 					$luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
 					if($luxury_option->title == 'takeaway'){
 						$luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
-					}elseif($luxury_option->title == 'dine_in'){
-						$luxury_option_name = __('Dine-In');
-					}else{
-						$luxury_option_name = __('Delivery');
+					}elseif ($luxury_option->title == 'dine_in') {
+						$luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+					}elseif ($luxury_option->title == 'on_demand') {
+						$luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
+					} else {
+						//$luxury_option_name = 'Delivery';
+						$luxury_option_name = getNomenclatureName($luxury_option->title);
 					}
 				}
 				$order->luxury_option_name = $luxury_option_name;
@@ -191,9 +197,9 @@ class StoreController extends BaseController{
 		try {
     		$user = Auth::user();
 			$orders = Order::where(function ($q1) {
-				$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+				$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
 				$q1->orWhere(function ($q2) {
-					$q2->where('payment_option_id', 1);
+					$q2->whereIn('payment_option_id', [1,38]);
 				});
 			});
 			
@@ -225,9 +231,34 @@ class StoreController extends BaseController{
     	}
 	}
 
-	public function getMyStoreVendorOrders(Request $request, $vendor_id){
+	public function clearBagOrders(Request $request,$qrcode,$order_number=''){
     	try {
+			$orderIds = OrderQrcodeLinks::where('code',$qrcode);
+			if($order_number){
+				$orderIds = $orderIds->where('order_id',$order_number);
+			}
+			if(empty($orderIds->get()->toArray()))
+			{
+				return $this->errorResponse(__('No order is found.'), 400);
+			}
+			$orderIds->delete();
+			return $this->successResponse(__('Order is removed.'));
+		}catch(\Exception $e)
+		{
+			\Log::info($e->getMessage());
+		}
+	}
+
+	public function getMyStoreVendorBagOrders(Request $request, $qrcode){
+    	try {
+			$orderIds = OrderQrcodeLinks::where('code',$request->qr_code??$qrcode)->pluck('order_id')->toArray();
+			if(empty($orderIds))
+			{
+				return $this->successResponse([], '', 200);
+			}
+			//dd($orderIds);
     		$user = Auth::user();
+			$langId = $user->language;
             $limit = $request->has('limit') ? $request->limit : 12;
 			$page = $request->has('page') ? $request->page : 1;
 			$type = $request->has('type') ? $request->type : '';
@@ -244,17 +275,22 @@ class StoreController extends BaseController{
 			}elseif($type == 'completed'){
 				$status_ids = [6];
 			}
-			$order_list = Order::select('*')->with(['vendors', 'user', 'orderStatusVendor', 'products'])
-			->whereHas('vendors', function($query) use ($vendor_id, $status_ids){
-				$query->where('vendor_id', $vendor_id)->whereIn('order_status_option_id', $status_ids);
+			$order_list = Order::select('*')->with(['vendors', 'user', 'orderStatusVendor', 'products',
+            'products.product.categoryName' => function ($q) use ($langId) {
+                $q->select('category_id', 'name');
+                $q->where('language_id', $langId);
+            }])
+			->whereHas('vendors', function($query) use ($status_ids){
+				$query->whereIn('order_status_option_id', $status_ids);
 			})
 			->where(function ($q1) {
-				$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+				$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
 				$q1->orWhere(function ($q2) {
-					$q2->where('payment_option_id', 1);
+					$q2->whereIn('payment_option_id',  [1,38]);
 				});
-			})
+			})->whereIn('id',$orderIds)
 			->orderBy('id', 'DESC')->paginate($limit, $page);
+			//dd($order_list);
 			foreach ($order_list as $order) {
 				$order_status = [];
 				$product_details = [];
@@ -263,9 +299,26 @@ class StoreController extends BaseController{
 				$order->user_image = $order->user->image;
 				$order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
 				$order->date_time = date("d-M-Y h:i A", strtotime($order->date_time));
+				// set payment option dynamic name
+				if($order->paymentOption->code == 'stripe'){
+					$order->paymentOption->title = __('Credit/Debit Card (Stripe)');
+				}elseif($order->paymentOption->code == 'kongapay'){
+					$order->paymentOption->title = 'Pay Now';
+				}elseif($order->paymentOption->code == 'mvodafone'){
+					$order->paymentOption->title = 'Vodafone M-PAiSA';
+				}
+				elseif($order->paymentOption->code == 'mobbex'){
+					$order->paymentOption->title = __('Mobbex');
+				}
+				elseif($order->paymentOption->code == 'offline_manual'){
+					$json = json_decode($order->paymentOption->credentials);
+					$order->paymentOption->title = $json->manule_payment_title;
+				}
+				$order->paymentOption->title = __($order->paymentOption->title);
+				
 				$order->payment_option_title = __($order->paymentOption->title);
 				foreach ($order->vendors as $vendor) {
-					$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->where('vendor_id', $vendor_id)->orderBy('id', 'DESC')->first();
+					$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->orderBy('id', 'DESC')->first();
 					if($vendor_order_status){
 						$order_status_option_id = $vendor_order_status->order_status_option_id;
 						$current_status = OrderStatusOption::select('id','title')->find($order_status_option_id);
@@ -286,7 +339,7 @@ class StoreController extends BaseController{
 				}
 				foreach ($order->products as $product) {
     				$order_item_count += $product->quantity;
-    				if($vendor_id == $product->vendor_id){
+    				if($product->vendor_id){
 	    				$product_details[]= array(
 	    					'image_path' => $product->media->first() ? $product->media->first()->image->path : $product->image,
 	    					'price' => $product->price,
@@ -294,6 +347,7 @@ class StoreController extends BaseController{
 							'category_type' => $product->product->category->categoryDetail->type->title ?? '',
 							'product_id' => $product->product_id,
 							'title' => $product->product_name,
+							'category_name' => (!empty($product->product->categoryName->name))?$product->product->categoryName->name:'',
 	    				);
     				}
 				}
@@ -305,19 +359,171 @@ class StoreController extends BaseController{
 					$luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
 					if($luxury_option->title == 'takeaway'){
 						$luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
-					}elseif($luxury_option->title == 'dine_in'){
-						$luxury_option_name = __('Dine-In');
-					}else{
-						$luxury_option_name = __('Delivery');
+					}elseif ($luxury_option->title == 'dine_in') {
+						$luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+					}elseif ($luxury_option->title == 'on_demand') {
+						$luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
+					} else {
+						//$luxury_option_name = 'Delivery';
+						$luxury_option_name = getNomenclatureName($luxury_option->title);
 					}
 				}
 				$order->luxury_option_name = $luxury_option_name;
 				$order->product_details = $product_details;
 				$order->item_count = $order_item_count;
+
+				
 				unset($order->user);
 				unset($order->products);
 				unset($order->paymentOption);
 				unset($order->payment_option_id);
+			}
+            return $this->successResponse($order_list, '', 200);
+    	} catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+    	}
+    }
+
+	public function getMyStoreVendorOrders(Request $request, $vendor_id){
+    	try {
+    		$user = Auth::user();
+			$langId = $user->language;
+            $limit = $request->has('limit') ? $request->limit : 12;
+			$page = $request->has('page') ? $request->page : 1;
+			$type = $request->has('type') ? $request->type : '';
+			if($type == ''){
+				$this->errorResponse(__('Missing Required parameters'), 400);
+			}
+			$status_ids = [];
+			if($type == 'pending'){
+				$status_ids = [1];
+			}elseif($type == 'active'){
+				$status_ids = [2,4,5];
+			}elseif($type == 'cancelled'){
+				$status_ids = [3];
+			}elseif($type == 'completed'){
+				$status_ids = [6];
+			}
+			$order_list = Order::select('*')->with(['vendors', 'user', 'orderStatusVendor', 'products',
+            'products.product.categoryName' => function ($q) use ($langId) {
+                $q->select('category_id', 'name');
+                $q->where('language_id', $langId);
+            }])
+			->whereHas('vendors', function($query) use ($vendor_id, $status_ids){
+				$query->where('vendor_id', $vendor_id)->whereIn('order_status_option_id', $status_ids);
+			})
+			->where(function ($q1) {
+				$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+				$q1->orWhere(function ($q2) {
+					$q2->whereIn('payment_option_id',  [1,38]);
+				});
+			})
+			->orderBy('id', 'DESC')->paginate($limit, $page);
+				
+			foreach ($order_list as $order) {
+				$order_status = [];
+				$product_details = [];
+				$order_item_count = 0;
+				$order->user_name = $order->user->name;
+				$order->user_image = $order->user->image;
+				$order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
+				$order->date_time = date("d-M-Y h:i A", strtotime($order->date_time));
+				// set payment option dynamic name
+			
+				if($order->paymentOption->code == 'stripe'){
+					$order->paymentOption->title = __('Credit/Debit Card (Stripe)');
+				}elseif($order->paymentOption->code == 'kongapay'){
+					$order->paymentOption->title = 'Pay Now';
+				}elseif(@$order->paymentOption->code == 'mvodafone'){
+					$order->paymentOption->title = 'Vodafone M-PAiSA';
+				}
+				elseif($order->paymentOption->code == 'mobbex'){
+					$order->paymentOption->title = __('Mobbex');
+				}
+				elseif($order->paymentOption->code == 'offline_manual'){
+					$json = json_decode($order->paymentOption->credentials);
+					$order->paymentOption->title = $json->manule_payment_title;
+				}
+				$order->paymentOption->title = __($order->paymentOption->title);
+				
+				$order->payment_option_title = __($order->paymentOption->title);
+				$total_markup_Price = 0;
+				foreach ($order->vendors as $vendor) {
+					$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->where('vendor_id', $vendor_id)->orderBy('id', 'DESC')->first();
+					if($vendor_order_status){
+						$order_status_option_id = $vendor_order_status->order_status_option_id;
+						$current_status = OrderStatusOption::select('id','title')->find($order_status_option_id);
+						if($order_status_option_id == 2){
+							$upcoming_status = OrderStatusOption::select('id','title')->where('id', '>', 3)->first();
+						}elseif ($order_status_option_id == 3) {
+							$upcoming_status = null;
+						}elseif ($order_status_option_id == 6) {
+							$upcoming_status = null;
+						}else{
+							$upcoming_status = OrderStatusOption::select('id','title')->where('id', '>', $order_status_option_id)->first();
+						}
+						$order->order_status = [
+							'current_status' => $current_status,
+							'upcoming_status' => $upcoming_status,
+						];
+					}
+					if(auth()->user()->is_admin){
+						$vendor->subtotal_amount = $vendor->subtotal_amount  - $vendor->total_markup_price;
+					}else{
+						$vendor->subtotal_amount = $vendor->subtotal_amount  - $vendor->total_markup_price;
+					}
+				}
+				foreach ($order->products as $product) {
+    				$order_item_count += $product->quantity;
+    				if($vendor_id == $product->vendor_id){
+	    				$product_details[]= array(
+	    					'image_path' => $product->media->first() ? $product->media->first()->image->path : $product->image,
+	    					'price' => $product->price,
+	    					'qty' => $product->quantity,
+							'category_type' => $product->product->category->categoryDetail->type->title ?? '',
+							'product_id' => $product->product_id,
+							'title' => $product->product_name,
+							'category_name' => (!empty($product->product->categoryName->name))?$product->product->categoryName->name:'',
+	    				);
+
+						$total_markup_Price += $product->markup_price;
+    				}
+				}
+				if(!empty($order->scheduled_date_time)){
+					$order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
+				}
+				$luxury_option_name = '';
+				if($order->luxury_option_id > 0){
+					$luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
+					if($luxury_option->title == 'takeaway'){
+						$luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
+					}elseif ($luxury_option->title == 'dine_in') {
+						$luxury_option_name = $this->getNomenclatureName('Dine-In', $user->language, false);
+					}elseif ($luxury_option->title == 'on_demand') {
+						$luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
+					} else {
+						//$luxury_option_name = 'Delivery';
+						$luxury_option_name = $this->getNomenclatureName($luxury_option->title, $user->language, false);
+					}
+				}
+				$order->luxury_option_name = $luxury_option_name;
+				$order->product_details = $product_details;
+				$order->item_count = $order_item_count;
+
+				if(auth()->user()->is_admin){
+					$order->total_amount = $order->total_amount  - $total_markup_Price;
+					$order->payable_amount  = $order->payable_amount  - $total_markup_Price;
+				}else{
+					$order->total_amount = $order->total_amount;
+					$order->payable_amount  = $order->payable_amount;
+				}
+				unset($order->user);
+				unset($order->products);
+				unset($order->paymentOption);
+				unset($order->payment_option_id);
+
+				
+
 			}
             return $this->successResponse($order_list, '', 200);
     	} catch (Exception $e) {
@@ -1229,7 +1435,7 @@ class StoreController extends BaseController{
 						->with(['media.image', 'categoryName', 'translation' => function($q) use($langId){
                         	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     	},'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
                             $q->groupBy('product_id');
                     	},
                     ])->orderBy('id', 'DESC');
@@ -1273,24 +1479,37 @@ class StoreController extends BaseController{
 			$vendor_categories = VendorCategory::with(['category.translation' => function($q) use($langId){
 				$q->where('category_translations.language_id', $langId)->groupBy('category_translations.category_id');
 			}])
-			->whereHas('category', function($query) {
-				$query->whereIn('type_id', [1]);
+			->whereHas('category', function($q) use($langId){
+				$q->whereNull('deleted_at')->orWhere('deleted_at', '');
 			})
 			->select('category_id')->where('vendor_id', $vendor_id)->where('status', 1)->paginate($limit, $page);
+
+			$p_categories = collect();
+			$product_categories_hierarchy = '';
 			
 			foreach ($vendor_categories as $vendor_category) {
-				$category_name = '';
-				if($vendor_category->category){
-					$category_name = $vendor_category->category->translation->first() ? $vendor_category->category->translation->first()->name : $vendor_category->category->slug;
-				}
-				$vendor_category->id = $vendor_category->category_id;
-				$vendor_category->name = $category_name;
-				$vendor_category->cat_image = $vendor_category->category->image ?? '';
-				$vendor_category->type_id = $vendor_category->category->type_id;
-				unset($vendor_category->category);
-				unset($vendor_category->category_id);
+				$p_categories->push($vendor_category->category);
+				// $category_name = '';
+				// if($vendor_category->category){
+				// 	$category_name = $vendor_category->category->translation->first() ? $vendor_category->category->translation->first()->name : $vendor_category->category->slug;
+				// }
+				// $vendor_category->id = $vendor_category->category_id;
+				// $vendor_category->name = $category_name;
+				// $vendor_category->cat_image = $vendor_category->category->image ?? '';
+				// $vendor_category->type_id = $vendor_category->category->type_id;
+				// unset($vendor_category->category);
+				// unset($vendor_category->category_id);
 			}
-            return $this->successResponse($vendor_categories, '', 200);
+			$product_categories_build = $this->buildTree(array_filter($p_categories->toArray()));
+			$product_categories_hierarchy = $this->getCategoryOptionsHeirarchy($product_categories_build, $langId);
+			foreach($product_categories_hierarchy as $k => $cat){
+                $myArr = array(1,3,7,8,9);
+                if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
+                    unset($product_categories_hierarchy[$k]);
+                }
+            }
+            $data = new Paginator(array_values($product_categories_hierarchy), $limit, $page);
+			return $this->successResponse($data, '', 200);
     	} catch (Exception $e) {
     		return $this->errorResponse($e->getMessage(), $e->getCode());
     	}
@@ -1311,7 +1530,7 @@ class StoreController extends BaseController{
 						->with(['media.image', 'categoryName', 'translation' => function($q) use($langId){
                         	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     	},'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price', 'markup_price','barcode');
                             $q->groupBy('product_id');
                     	},
                     ])->orderBy('id', 'DESC');
@@ -1428,5 +1647,196 @@ class StoreController extends BaseController{
         }
         return $result;
     }
+
+
+	 /**
+     * Post Route
+     * Save Rescheduled Order
+     */
+    public function rescheduleOrder(Request $request, $domain='')
+    {
+	try{
+		$request->schedule_pickup_slot = $request->pickup_reschdule_slot??'';
+		$request->pickup_schedule_datetime = $request->pickup_reschdule_date??'';
+
+		$request->schedule_dropoff_slot = $request->drop_reschdule_slot??'';
+		$request->dropoff_schedule_datetime = $request->drop_reschdule_date??'';
+
+        $order_id = $request->order_id;
+        $order = Order::find($order_id);
+        $vendor_id = $request->vendor_id;
+        $vendor = Vendor::where('id', $vendor_id)->first();
+        $user = Auth::user();
+        $currency_id = $request->currency_id;
+        $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+        $schedule_pickup_compare = Carbon::parse($order->schedule_pickup??'');
+        $schedule_dropoff_compare = Carbon::parse($order->schedule_dropoff??'');
+        // $pickup_schedule_datetime_compare = Carbon::parse($request->pickup_schedule_datetime);
+        // $dropoff_schedule_datetime_compare = Carbon::parse($request->dropoff_schedule_datetime);
+        $pickup_schedule_datetime_compare  = date('Y-m-d');
+        $dropoff_schedule_datetime_compare = date('Y-m-d');
+        
+        // If the rescheduling of pickup and dropoff is done on current dates.
+        if($dropoff_schedule_datetime_compare == $schedule_dropoff_compare->format('Y-m-d') && $pickup_schedule_datetime_compare == $schedule_pickup_compare->format('Y-m-d')){
+            $totalCharges = $vendor->pickup_cancelling_charges+$vendor->rescheduling_charges;
+            if($user->balanceFloat >= $totalCharges){
+                $this->chargeForPickupRescheduling($user, $vendor, $order);
+                $this->chargeForDropoffRescheduling($user, $vendor, $order);
+            }else{
+				return $this->errorResponse('Insufficient wallet balance, required rescheduling charges are '.$clientCurrency->currency->symbol.$totalCharges.'. Please recharge your wallet.','400');
+            }
+           
+        }
+        // If the rescheduling is done on the day of pickup, then a rescheduling fee will apply.
+        elseif($pickup_schedule_datetime_compare == $schedule_pickup_compare->format('Y-m-d')){ 
+            if($vendor->pickup_cancelling_charges > 0){
+                $result = $this->chargeForPickupRescheduling($user, $vendor, $order);
+                if($result == false){
+					return $this->errorResponse('Insufficient wallet balance, required rescheduling charges are '.$clientCurrency->currency->symbol.$vendor->pickup_cancelling_charges.'. Please recharge your wallet.','400');
+                }
+            }
+           
+        }
+        // If the rescheduling is done on the day of delivery, then a rescheduling fee will apply.
+        elseif($dropoff_schedule_datetime_compare == $schedule_dropoff_compare->format('Y-m-d')){ 
+            if($vendor->pickup_cancelling_charges > 0){
+                $result = $this->chargeForDropoffRescheduling($user, $vendor, $order);
+                if($result == false){
+					return $this->errorResponse('Insufficient wallet balance, required rescheduling charges are '.$clientCurrency->currency->symbol.$vendor->rescheduling_charges.'. Please recharge your wallet.','400');
+                }
+            }   
+        }
+
+		$pickup_schedule_datetime =null;
+		if($request->schedule_pickup_slot){
+        	$schedule_pickup_slot = explode(" - ", $request->schedule_pickup_slot); 
+        	$pickup_schedule_datetime = Carbon::createFromFormat('Y-m-d H:i:s',  $request->pickup_schedule_datetime .' '. $schedule_pickup_slot[0].':00');
+		}
+		
+		$dropoff_schedule_datetime =null;
+		if($request->schedule_dropoff_slot){
+			$schedule_dropoff_slot = explode(" - ", $request->schedule_dropoff_slot); 
+			$dropoff_schedule_datetime = Carbon::createFromFormat('Y-m-d H:i:s',  $request->dropoff_schedule_datetime .' '. $schedule_dropoff_slot[0].':00');
+		}
+
+        $rescheduleOrder = new RescheduleOrder();
+        $rescheduleOrder->reschedule_by = $user->id;
+        $rescheduleOrder->order_id = $order_id;
+        $rescheduleOrder->vendor_id = $vendor_id;
+        $rescheduleOrder->prev_schedule_pickup = $order->schedule_pickup;
+        $rescheduleOrder->prev_schedule_dropoff = $order->schedule_dropoff;
+        $rescheduleOrder->prev_scheduled_slot = $order->scheduled_slot;
+        $rescheduleOrder->prev_dropoff_scheduled_slot = $order->dropoff_scheduled_slot;
+        $rescheduleOrder->new_schedule_pickup = (($pickup_schedule_datetime)?Carbon::parse($pickup_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s'):Null);
+        $rescheduleOrder->new_schedule_dropoff = (($dropoff_schedule_datetime)?Carbon::parse($dropoff_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s'):NULL);
+        $rescheduleOrder->new_scheduled_slot = $request->schedule_pickup_slot??NUll;
+        $rescheduleOrder->new_dropoff_scheduled_slot = $request->schedule_dropoff_slot??Null;
+        $rescheduleOrder->save();
+
+		if($request->schedule_pickup_slot){
+        	$order->schedule_pickup  =  Carbon::parse($pickup_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+        	$order->scheduled_slot   =  $request->schedule_pickup_slot;
+		}
+		if($request->schedule_dropoff_slot){
+        	$order->dropoff_scheduled_slot = $request->schedule_dropoff_slot;
+			$order->schedule_dropoff =  Carbon::parse($dropoff_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+		}
+        $order->save();
+
+       // Send Rescheduling Request to Dispatcher if order is already accepted
+        $orderVendor = OrderVendor::where('order_id', $order->id)->first();
+       if(!empty($orderVendor->dispatch_traking_url)){
+			$postdata =  [
+				'order_unique_id'=>substr($orderVendor->dispatch_traking_url, strrpos($orderVendor->dispatch_traking_url, '/') + 1),  // To get order unique id after slash (/).
+				'order_number'=>$orderVendor->orderDetail->order_number,
+				'schedule_pickup' =>(($pickup_schedule_datetime)?$orderVendor->orderDetail->schedule_pickup:null),
+				'schedule_dropoff' =>(($dropoff_schedule_datetime)?$orderVendor->orderDetail->schedule_dropoff:null),
+			];
+        
+        // Call API Here
+        $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
+       
+        $client = new GCLIENT([
+            'headers' => [
+                'personaltoken' => $dispatch_domain_laundry->laundry_service_key,
+                'shortcode' => $dispatch_domain_laundry->laundry_service_key_code,
+                'content-type' => 'application/json'
+            ]
+        ]);
+
+        $url = $dispatch_domain_laundry->laundry_service_key_url;
+        $res = $client->post(
+            $url . '/api/order/reschedule',
+            ['form_params' => ($postdata)]
+        );
+        $response = json_decode($res->getBody(), true);
+	
+	}else{
+        $response['status'] = 'success';
+	}
+
+		if($response['status'] == 'success'){
+				return $this->successResponse([], 'Order reschedule is done', 200);
+			}else{
+				return $this->errorResponse('Something went wrong!','400');
+			}
+
+		}catch(\Exception $e)
+		{
+			return $this->errorResponse($e->getMessage(),'400');
+		}
+    }
+
+
+	 # get prefereance if laundry in config
+     public function getDispatchLaundryDomain()
+     {
+         $preference = ClientPreference::first();
+         if ($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url)) {
+             return $preference;
+         } else {
+             return false;
+         }
+     }
+
+    public function chargeForPickupRescheduling($user, $vendor, $order)
+    {
+        if ($user) {
+            if ($user->balanceFloat > 0) {
+                $wallet = $user->wallet;
+                $wallet_amount_used = $user->balanceFloat;
+                $payable_amount_for_pickup     = $vendor->pickup_cancelling_charges;
+                if ($wallet_amount_used >= $payable_amount_for_pickup) {
+                    if ($wallet_amount_used > 0) {
+                        $wallet->withdrawFloat($payable_amount_for_pickup, ['Wallet has been <b>debited</b> for rescheduling the order on pickup day under order number <b>' . $order->order_number . '</b>']);
+                        return true;
+                    }
+                }
+            }else{
+                return false;
+            }
+        }
+    }
+
+    public function chargeForDropoffRescheduling($user, $vendor, $order)
+    {
+        if ($user) {
+            if ($user->balanceFloat > 0) {
+                $wallet = $user->wallet;
+                $wallet_amount_used = $user->balanceFloat;
+                $payable_amount     = $vendor->rescheduling_charges;
+                if ($wallet_amount_used >= $payable_amount) {
+                    if ($wallet_amount_used > 0) {
+                        $wallet->withdrawFloat($payable_amount, ['Wallet has been <b>debited</b> for rescheduling the order on dropoff day under order number <b>' . $order->order_number . '</b>']);
+                        return true;
+                    }
+                }
+            }else{
+                return false;
+            }
+        }
+    }
+
+	
 
 }

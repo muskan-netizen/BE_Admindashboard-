@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Validator;
@@ -20,7 +20,11 @@ use Illuminate\Support\Facades\Http;
 class PickupDeliveryController extends BaseController{
 
     use ApiResponser;
-
+    private $riderObj;
+    public function __construct()
+    {
+        $this->riderObj = new Rider();
+    }
 
 
     # get all vehicles category by vendor
@@ -30,7 +34,18 @@ class PickupDeliveryController extends BaseController{
             if($vid == 0){
                 return response()->json(['error' => __('No record found.')], 404);
             }
-            $userid = Auth::user()->id;
+            //$userid = Auth::user()->id;
+
+            $user = Auth::user();
+            $userid = $user->id;
+            
+            $schedule_datetime_del = '';
+            if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+            }else{
+                $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
+            }
+
             $paginate = $request->has('limit') ? $request->limit : 12;
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $langId = Auth::user()->language;
@@ -67,7 +82,7 @@ class PickupDeliveryController extends BaseController{
 
             if(!empty($products)){
                 foreach ($products as $key => $product) {
-                    $product->tags_price = $this->getDeliveryFeeDispatcher($request,$product);
+                    $product->tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->price = $product->tags_price;
@@ -112,6 +127,15 @@ class PickupDeliveryController extends BaseController{
             }
             $userid = Auth::user()->id;
             $langId = Auth::user()->language;
+
+            $user = Auth::user();
+            $schedule_datetime_del = '';
+            if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+            }else{
+                $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
+            }
+
             $category = Category::with(['tags','type'  => function($q){
                             $q->select('id', 'title as redirect_to');
                         },
@@ -131,7 +155,7 @@ class PickupDeliveryController extends BaseController{
                 return response()->json(['error' => 'No record found.'], 200);
             }
             $response['category'] = $category;
-            $response['listData'] = $this->listData($langId, $cid, $category->type->redirect_to, $userid,$request);
+            $response['listData'] = $this->listData($langId, $cid, $category->type->redirect_to, $userid,$request, $schedule_datetime_del);
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -139,10 +163,10 @@ class PickupDeliveryController extends BaseController{
 
     }
 
-    public function listData($langId, $category_id, $type = '', $userid,$request){
+    public function listData($langId, $category_id, $type = '', $userid,$request, $schedule_datetime_del=''){
         if ($type == 'Pickup/Delivery') {
             $category_details = [];
-            $deliver_charge = $this->getDeliveryFeeDispatcher($request);
+            $deliver_charge = $this->getDeliveryFeeDispatcher($request, null, $schedule_datetime_del);
             $deliver_charge = $deliver_charge??0.00;
             $category_list = Category::where('parent_id', $category_id)->get();
             foreach ($category_list as $category) {
@@ -164,12 +188,12 @@ class PickupDeliveryController extends BaseController{
 
 
      # get delivery fee from dispatcher
-     public function getDeliveryFeeDispatcher($request,$product=null){
+     public function getDeliveryFeeDispatcher($request, $product=null, $schedule_datetime_del=''){
         try {
                 $dispatch_domain = $this->checkIfPickupDeliveryOn();
                 if ($dispatch_domain && $dispatch_domain != false) {
                             $all_location = array();
-                            $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??''];
+                            $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del];
                             $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                                                         'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                         'content-type' => 'application/json']
@@ -209,32 +233,39 @@ class PickupDeliveryController extends BaseController{
         DB::beginTransaction();
         try {
             $order_place = $this->orderPlaceForPickupDelivery($request);
-            if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
-                $data = [];
-                $order = $order_place['data'];
-                $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
+            if($order_place && $order_place['status'] == 200){
+                if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
+                    $data = [];
+                    $order = $order_place['data'];
+                    $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
                     if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
-                        DB::commit();
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
-                        return  $order_place;
+
+                        //Send message if ride is booked for friend
+                        if($request->bookingType == 1 && isset($request->friendPhoneNumber))
+                        {
+                            $msg = "Hi ".$request->friendName??'User'.", ".$user->name." has booked a ride for you.";
+                            $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
+                        }
                     }else{
                         DB::rollback();
                         return $request_to_dispatch;
                     }
-            }else{
+                }
                 DB::commit();
                 return $order_place;
             }
-
-
+            else{
+                DB::rollback();
+                return $order_place;
             }
-            catch(\Exception $e){
+        }
+        catch(\Exception $e){
             DB::rollback();
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
             ]);
-
         }
 
     }
@@ -248,6 +279,8 @@ class PickupDeliveryController extends BaseController{
         $taxable_amount = 0;
         $payable_amount = 0;
         $user = Auth::user();
+        $action = 'pick_drop';
+        $luxury_option = LuxuryOption::where('title', $action)->first();
         $request->address_id = $request->address_id ??null;
         $request->payment_option_id = $request->payment_option_id ??1;
         if ($user) {
@@ -297,8 +330,29 @@ class PickupDeliveryController extends BaseController{
                 $order->order_number = generateOrderNo();
                 $order->address_id = $request->address_id;
                 $order->payment_option_id = $payment_option;
-                $order->scheduled_date_time = $request->schedule_time??NULL;
+                /*book for a friend*/
+                $order->type = $request->bookingType ?? 0;
+                $order->friend_name = $request->friendName;
+                $order->friend_phone_number = $request->friendPhoneNumber;
+                $order->luxury_option_id = $luxury_option->id;
+
+                $schedule_datetime_del = NULL;
+                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
+                    $schedule_datetime_del = Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                }
+                $order->scheduled_date_time = $schedule_datetime_del??NULL;
                 $order->save();
+
+                // save pickup delivery task 
+                $order_location = new OrderLocations();
+                $order_location->order_id = $order->id;
+                $order_location->product_id = $request->product_id;
+                $order_location->vendor_id = $request->vendor_id;
+                $order_location->phone_number = $request->phone_number ?? null;
+                $order_location->email = $request->email ?? null;
+                $order_location->tasks = json_encode($request->tasks );
+                $order_location->save();
+
                 $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                 $vendor = Vendor::whereHas('product', function ($q) use ($request) {
                     $q->where('id', $request->product_id);
@@ -524,49 +578,68 @@ class PickupDeliveryController extends BaseController{
                 //     $request->task_type = 'now';
                 //     $request->schedule_time = null;
                 // }
+                $schedule_datetime_del = NULL;
+                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
+                    $schedule_datetime_del = Carbon::parse($request->schedule_time, $customer->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                }
 
                 if(isset($request->task_type) && !empty($request->task_type))
                 {
                     $request->task_type = $request->task_type;
-                    $request->schedule_time = null;
+                    $schedule_datetime_del = null;
 
                     // $tasktype = ($request->task_type=='later')?'schedule':$request->task_type;
                     // $request->task_type = $tasktype;                    
-                    $request->order_time = $request->schedule_time;
+                    $request->order_time = $schedule_datetime_del;
                 }else{
                     $request->task_type = 'schedule';
-                    $request->scheduled_date_time = $request->schedule_time;
-                    $request->order_time = $request->schedule_time;
+                    $request->scheduled_date_time = $schedule_datetime_del;
+                    $request->order_time = $schedule_datetime_del;
                 }
-
                 $dynamic = uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
-                $call_back_url = "https://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic;
+
+                if(!empty($client_do->custom_domain)){
+                    $domain = $client_do->custom_domain;
+                }else{
+                    $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
+                }
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
+                //$call_back_url = "https://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic;
                 $tasks = array();
                 $meta_data = '';
                 $team_tag = $unique."_".$vendor;
                 $product = Product::find($request->product_id);
                 $order_agent_tag = $product->tags??'';
+                $type = $request->bookingType ?? 0;
+                $friendName=$request->friendName?? null;
+                $friendPhoneNumber=$request->friendPhoneNumber?? null;
+                if(empty($friendPhoneNumber)){
+                    $type=0;
+                }
 
                 
                 if ($customer->dial_code == "971") {
-                    $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                    // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                    $customerno = "0" . $customer->phone_number;
                 } else {                
-                    $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                    // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                    $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
-                
+                $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
                             'customer_phone_number' => $customerno??rand(111111,11111),
+                            'customer_dial_code' => $customer->dial_code ?? null,
                             'customer_email' => $customer->email ?? '',
                             'recipient_phone' => $request->phone_number ?? $customerno,
                             'recipient_email' => $request->email ?? $customer->email,
                             'task_description' => $request->task_description??null,
                             'allocation_type' => 'a',
                             'task_type' => $request->task_type,
-                            'schedule_time' => $request->schedule_time ?? null,
+                            'schedule_time' => $schedule_datetime_del ?? null,
                             'cash_to_be_collected' => $payable_amount??0.00,
                             'barcode' => '',
                             'call_back_url' => $call_back_url??null,
@@ -574,8 +647,17 @@ class PickupDeliveryController extends BaseController{
                             'order_agent_tag' => $order_agent_tag,
                             'task' => $request->tasks,
                             'order_time_zone' => $request->order_time_zone??null,
-                            'images_array' => $request->images_array??null
-                            ];
+                            'images_array' => $request->images_array??null,
+                            'type'=>$type,
+                            'friend_name'=>$friendName,
+                            'friend_phone_number'=>$friendPhoneNumber,
+                            'vendor_id' => $vendor,
+                            'order_vendor_id' => $order_vendor->id,
+                            'dbname' => $client_do->database_name,
+                            'order_id' => $order->id,
+                            'customer_id' => $order->user_id,
+                            'user_icon' => $customer->image
+                        ];
 
 
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
@@ -598,15 +680,19 @@ class PickupDeliveryController extends BaseController{
                     $response['dispatch_traking_url'] = $dispatch_traking_url;
 
 
-                    $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
+                    $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->with(['vendor'])->first();
+                    
+                    if($or_ids->vendor->auto_accept_order==1):
+                        $update_vendor = VendorOrderStatus::updateOrCreate([
+                            'order_id' =>  $order->id,
+                            'order_status_option_id' => 2,
+                            'vendor_id' =>  $vendor,
+                            'order_vendor_id' =>  $or_ids->id]);
 
-                    $update_vendor = VendorOrderStatus::updateOrCreate([
-                        'order_id' =>  $order->id,
-                        'order_status_option_id' => 2,
-                        'vendor_id' =>  $vendor,
-                        'order_vendor_id' =>  $or_ids->id]);
-
-                    OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
+                        OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
+                    else:
+                        OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['dispatcher_status_option_id' => 1]);
+                    endif;
 
                     $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
                     'order_id' =>  $order->id,
@@ -632,7 +718,58 @@ class PickupDeliveryController extends BaseController{
 
     }
 
+      /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAgents(Request $request){
 
+        try{
+            $validator = Validator::make(request()->all(), [
+                'latitude' => 'required',
+                'longitude' => 'required',
+            ]);
+
+            if($validator->fails()){
+                return $this->errorResponse($validator->messages(), 422);
+            }
+
+            $postdata = [
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude
+            ];
+
+            if(!empty($request->tag)){
+                $postdata['tag'] = $request->tag;
+            }
+
+            $dispatch_domain = $this->checkIfPickupDeliveryOn();
+                      
+            $header = ['headers' => ['personaltoken' => !empty($dispatch_domain->delivery_service_key)? $dispatch_domain->delivery_service_key : $dispatch_domain->pickup_delivery_service_key,
+                'shortcode' => !empty($dispatch_domain->delivery_service_key_code)? $dispatch_domain->delivery_service_key_code : $dispatch_domain->pickup_delivery_service_key_code,
+                'content-type' => 'application/json']
+            ];
+
+            $client = new GClient($header);
+            $url    = !empty($dispatch_domain->delivery_service_key_url)? $dispatch_domain->delivery_service_key_url.'/api/get/agents' : $dispatch_domain->pickup_delivery_service_key_url.'/api/get/agents';
+            $res = $client->post(
+                $url,
+                ['form_params' => (
+                        $postdata
+                    )]
+            );
+            $response = json_decode($res->getBody(), true);
+            return $response;
+
+        }catch(\Exception $e){
+            $data = [];
+            $data['status'] = 400;
+            $data['message'] =  $e->getMessage();
+            return $data;
+        }
+
+    }
 
 
       /**
@@ -746,6 +883,8 @@ class PickupDeliveryController extends BaseController{
 
 
     public function getOrderTrackingDetails(Request $request){
+        // Log::info("Order Track Detail");
+        // Log::info($request->all());
         $user = Auth::user();
         $langId = $user->language ?? 1;
         $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)
@@ -753,13 +892,18 @@ class PickupDeliveryController extends BaseController{
             $q->where('category_translations.language_id', $langId);
         }])
         ->select('*','dispatcher_status_option_id as dispatcher_status')->first();
-        $response = Http::get($request->new_dispatch_traking_url);
+
+        $dispatch_traking_url = ($request->has('new_dispatch_traking_url') && !empty($request->new_dispatch_traking_url)) ? $request->new_dispatch_traking_url : $order->dispatch_traking_url;
+        $dispatch_traking_url = str_replace('/order/', '/order-details/', $dispatch_traking_url);
+        $response = Http::get($dispatch_traking_url);
         if($response->status() == 200){
             $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order->order_id ,'vendor_id' =>$order->vendor_id ])->latest()->first();
             $order->dispatcher_status_type=  $type ?  $type->type :1;
            $response = $response->json();
            $response['order_details'] = $order->toArray();
            return $this->successResponse($response);
+        }else{
+            return $this->errorResponse('', 400, $response);
         }
     }
 
@@ -844,6 +988,16 @@ class PickupDeliveryController extends BaseController{
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+    }
+    public function getAllRiders(Request $request)
+    {
+        $data = $request->all();
+        $data['user_id'] = Auth::user()->id;
+        if($request->isMethod('post')){
+            $add = $this->riderObj->createRider($data);
+        }
+        $all_riders = $this->riderObj->getAllByUserId($data['user_id']);
+        return response()->json(['riders' => $all_riders],200);
     }
 
 }

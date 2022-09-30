@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, CategoryKycDocuments,Banner, Category, Brand, Product, Celebrity, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet, ServiceArea, UserAddress,Country,Cart,CartProduct,SubscriptionInvoicesUser,ClientPreference,LoyaltyCard,Order,CaregoryKycDoc};
+use App\Models\{Currency, CategoryKycDocuments,Banner, Category, Brand, Product, Celebrity, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet, ServiceArea, UserAddress,Country,Cart,CartProduct,SubscriptionInvoicesUser,ClientPreference,LoyaltyCard,Order,CaregoryKycDoc,Rider};
 use Redirect;
 use Log;
 class CategoryController extends FrontController{
@@ -26,6 +26,7 @@ class CategoryController extends FrontController{
      */
     public function categoryProduct(Request $request, $domain = '', $slug = 0)
     {
+        
         $preferences = Session::get('preferences');
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
@@ -33,7 +34,7 @@ class CategoryController extends FrontController{
             $q->where('brand_translations.language_id', $langId);
         },
         'type'  => function($q){
-            $q->select('id', 'title as redirect_to');
+            $q->select('id', 'title as redirect_to' ,'service_type' );
         },
         'childs.translation'  => function($q) use($langId){
             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
@@ -44,13 +45,13 @@ class CategoryController extends FrontController{
             ->where('category_translations.language_id', $langId);
         },
         'allParentsAccount'])
-        ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id')
+        ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id', 'sub_cat_banners')
         ->where('slug', $slug)->firstOrFail();
         $category->translation_name = ($category->translation->first()) ? $category->translation->first()->name : $category->slug;
         foreach($category->childs as $key => $child){
             $child->translation_name = ($child->translation->first()) ? $child->translation->first()->name : $child->slug;
         }
-
+        $service_type = $category->type->service_type;
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && (isset($category->type_id)) && !in_array($category->type_id,[4,5]) ){
             $latitude = Session::get('latitude');
             $longitude = Session::get('longitude');
@@ -130,7 +131,7 @@ class CategoryController extends FrontController{
                     ->groupBy('product_variant_sets.variant_type_id')->get();
                  //   pr($variantSets);
         $redirect_to = $category->type->redirect_to;
-
+        
         $listData = $this->listData($langId, $category->id, $redirect_to);
       //  pr($listData);
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
@@ -147,14 +148,14 @@ class CategoryController extends FrontController{
             if(!Auth::user()){
                 return redirect()->route('customer.login');
             }else{
-
-                $user_addresses = UserAddress::get();
+                $user_addresses = UserAddress::whereNotNull('latitude')->whereNotNull('longitude')->get();
                 $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
                 $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
+                $riders = Rider::where('user_id',Auth::user()->id)->orderBy('id','DESC')->get();
 
-                return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category]);
+                return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders]);
             }
-        }elseif($page == 'on demand service'){
+        }elseif($page == 'on demand service' || $page == 'appointment'){
 
             $cartDataGet = $this->getCartOnDemand($request);
             if($request->step == 2 && empty($request->addons) && empty($request->dataset)){
@@ -189,14 +190,15 @@ class CategoryController extends FrontController{
             return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
         }else{
 
-            if($page == 'laundry')
-            $page = 'product';
+            if($page == 'laundry' || $service_type == 'rental_service')
+                $page = 'product';
 
-            if(view()->exists('frontend/cate-'.$page.'s')){
-                return view('frontend/cate-'.$page.'s')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets]);
-            }else{
-                abort(404);
-            }
+                if(view()->exists('frontend/cate-'.$page.'s')){
+                    return view('frontend/cate-'.$page.'s')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets]);
+                }else{
+                
+                    abort(404);
+                }
         }
     }
     public function getTimeSlotsForOndemand_step2(Request $request){
@@ -212,8 +214,8 @@ class CategoryController extends FrontController{
             $preferences= ClientPreference::first();
             $vendorData = Vendor::with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $latitude = Session::get('latitude') ?? '';
-                $longitude = Session::get('longitude') ?? '';
+                $latitude = Session::get('latitude') ?? $preferences->Default_latitude;
+                $longitude = Session::get('longitude') ?? $preferences->Default_longitude;
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 //3961 for miles and 6371 for kilometers
                 $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
@@ -638,7 +640,7 @@ class CategoryController extends FrontController{
                 $time_slots[$i++] = trim($newSlot[0]);
             }
         }else{
-        $time_slots = $this->SplitTime($start_time, $end_time, "60");
+        $time_slots = $this->SplitTime($start_time, $end_time, "60"); // this is for static slots 
         }
 
         $cart_product_id = $request->cart_product_id??0;

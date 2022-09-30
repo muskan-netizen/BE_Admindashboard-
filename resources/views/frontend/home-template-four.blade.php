@@ -19,19 +19,19 @@
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos">
-	<div class="container-fliud mb-5 shimmer_effect al_tabsShimmer">
+	<div class="container-fliud mb-md-5 mb-2 shimmer_effect main_shimer al_tabsShimmer">
 		<div class="row">
-			<div class="col-md-10 offset-md-1 cards">
+			<div class="col-lg-10 offset-lg-1 cards">
 				<div class="cardbanner loading"></div>
 			</div>
 		</div>
 	</div>
-	<div class="container-fliud mb-5 shimmer_effect px-3">
+	<div class="container-fliud mb-5 shimmer_effect main_shimer px-md-3">
 		<div class="row">
-			<div class="col-md-10 offset-md-1 cards">
+			<div class="col-lg-10 offset-lg-1 cards">
 				<h2 class="h2-heading loading mb-3"></h2> </div>
 		</div>
-		<div class="col-md-10 offset-md-1">
+		<div class="col-lg-10 offset-lg-1">
 			<div class="grid-row grid-4-4">
 				<div class="cards">
 					<div class="card_image loading"></div>
@@ -143,7 +143,7 @@
 	<section class="home-slider-wrapper"  >
 		<div class="container-fluid d-flex justify-content-center">
 
-			<div class="col-sm-10">
+			<div class="col-lg-10 p-0">
 				<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 				<div class="carousel-inner">
 
@@ -167,7 +167,7 @@
 				</a>
 			</div>
 
-			<div id="myMobileCarousel" class="carousel slide al_mobile_banner" data-ride="carousel" style="display:none;">
+			<div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;">
 				<div class="carousel-inner">
 
 					@foreach($mobile_banners as $key => $banner)
@@ -195,14 +195,20 @@
 
 		</div>
 	</section>
+	@else
+	<section class="home-slider-wrapper">
+		<div class="container-fulid">
+			<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel"></div>
+			<div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;"></div>
+		</div>
+	</section>
+	@endif
 
 </article><!-- gradinet sec start -->
 
- @endif
-
 
 <!-- no-store-wrapper start -->
-<section class="no-store-wrapper mb-3 d-none" >
+<section class="no-store-wrapper mb-3" style="display:none;">
 	<div class="container"> @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
 		<div class="row">
 			<div class="col-12 text-center"> <img class="no-store-image mt-2 mb-2 blur-up lazyload" data-src="{{getImageUrl(asset('images/no-stores.svg'),'250/250')}}" style="max-height: 250px;"> </div>
@@ -212,12 +218,81 @@
 				<h4>{{__('There are no stores available in your area currently.')}}</h4> </div>
 		</div> @endif </div>
 </section><!-- no-store-wrapper end -->
+
+<script type="text/template" id="desktop_banners_template">
+	<div class="carousel-inner">
+	   <% _.each(banners, function(banner, k){%>
+		  <%
+		  var url='#';
+		  if(banner.link == 'category'){
+			 if(banner.category != null){
+				url = "{{route('categoryDetail')}}" + "/" + banner.category.slug;
+			 }
+		  }
+          else if(banner.link == 'vendor'){
+			 if(banner.vendor != null){
+				url = "{{route('vendorDetail')}}" + "/" + banner.vendor.slug;
+			 }
+		  }
+		  %>
+		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
+			 <a class="banner-img-outer" href="<%= url %>">
+				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1920/400<%= banner.image.image_path %>" />
+				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>1920/400<%= banner.image.image_path %>">
+			 </a>
+		  </div>
+	   <% }); %>
+	</div>
+	<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="sr-only">Previous</span>
+	</a>
+	<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="sr-only">Next</span>
+	</a>
+</script>
+
+<script type="text/template" id="mobile_banners_template">
+	<div class="carousel-inner">
+	   <% _.each(banners, function(banner, k){%>
+		  <%
+		  var url='#';
+		  if(banner.link == 'category'){
+			 if(banner.category != null){
+				url = "{{route('categoryDetail')}}" + "/" + banner.category.slug;
+			 }
+		  }
+          else if(banner.link == 'vendor'){
+			 if(banner.vendor != null){
+				url = "{{route('vendorDetail')}}" + "/" + banner.vendor.slug;
+			 }
+		  }
+		  %>
+		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
+			 <a class="banner-img-outer" href="<%= url %>">
+				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1920/400<%= banner.image.image_path %>" />
+				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>1920/400<%= banner.image.image_path %>">
+			 </a>
+		  </div>
+	   <% }); %>
+	</div>
+	<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="sr-only">Previous</span>
+	</a>
+	<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="sr-only">Next</span>
+	</a>
+</script>
+
  <!-- vendors_template start -->
 <script type="text/template" id="vendors_template" >
 	<% _.each(vendors, function(vendor, k){%>
 		<% if(k < 7){%>
-			<div class="col-sm-3">
-				<div class="product-card-box position-relative text-center al_custom_vendors_sec_al p-3">
+			<div class="col-lg-3 col-md-4 col-6">
+				<div class="product-card-box position-relative text-center al_custom_vendors_sec_al_">
 					<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 						<div class="suppliers-img-outer position-relative " style="height:100px">
 							<% if(vendor.is_vendor_closed==1){%>
@@ -417,6 +492,22 @@
 						<% }); %>
 </script><!-- recent_orders_template end -->
 
+<!-- cities start -->
+<script type="text/template" id="cities_template" >
+	<% _.each(cities, function(city, k){%>
+	   <div class="alSpaListSlider">
+		  <div>
+			 <div class="alSpaListBox">
+				<div class="alSpaCityBox">
+				   <a href="/cities/<%=city.slug %>"><img class="w-100" src="<%=city.image.image_fit %>260/260<%=city.image.image_path %>"></a>
+				</div>
+				<p><%=city.title %></p>
+			 </div>            
+		  </div>
+	   </div>
+		<% }); 
+	%>
+ </script><!-- cities cities end -->
 
 
 <!-- our_vendor_main_div start -->
@@ -448,7 +539,20 @@
 						</div>
 					</div>
 			</div>
-		</section> @elseif($homePageLabel->slug == 'trending_vendors')
+		</section>
+		@elseif($homePageLabel->slug == 'cities')
+		<section class="suppliers-section render_full_{{$homePageLabel->slug}} d-none ">
+			<div class="container mb-0"  >
+				<div class=" top-heading d-flex justify-content-between align-self-center">
+					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
+				</div>
+				<div class="col-12 p-0">
+					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+					</div>
+				</div>
+			</div>
+		</section>
+ 		@elseif($homePageLabel->slug == 'trending_vendors')
 		<section class="suppliers-section" id="homepage_trending_vendors_div">
 			<div class="container"  >
 
@@ -461,13 +565,13 @@
 				</div>
 			</div>
 		</section> @else
-		<section class="container-fliud mb-0 render_full_{{$homePageLabel->slug}} " id="{{$homePageLabel->slug.$key}}"  >
+		<section class="container-fliud mb-0 render_full_{{$homePageLabel->slug}} d-none" id="{{$homePageLabel->slug.$key}}"  >
 
-				<div class=" col-md-10 offset-md-1 top-heading d-flex align-items-center justify-content-between">
+				<div class=" col-lg-10 offset-lg-1 top-heading d-flex align-items-center justify-content-between">
 				<h2 class="h2-heading mb-3 "> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
 
 			<div class="row">
-				<div class="col-md-10 offset-md-1"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
+				<div class="col-lg-10 offset-lg-1"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
 					<div class="product-5 product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@elseif($homePageLabel->slug=='recent_orders')
 					<div class="recent-orders product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@else
 					<div class="al product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@endif </div>
@@ -482,8 +586,8 @@
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
 			<div class="modal-body text-center"> <img style="height: 150px;" class="blur-up lazyload" data-src="{{getImageUrl(asset('assets/images/age-img.svg'),'150/150')}}" alt="" title="">
-				<p class="mb-0 mt-3">{{$client_preference_detail ? $client_preference_detail->age_restriction_title : 'Are you 18 or older?'}}</p>
-				<p class="mb-0">Are you sure you want to continue?</p>
+				<p class="mb-0 mt-3">{{$client_preference_detail ? $client_preference_detail->age_restriction_title : __('Are you 18 or older?')}}</p>
+				<p class="mb-0">{{__('Are you sure you want to continue?')}}</p>
 			</div>
 			<div class="modal-footer d-block">
 				<div class="row no-gutters">

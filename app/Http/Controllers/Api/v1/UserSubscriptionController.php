@@ -87,7 +87,7 @@ class UserSubscriptionController extends BaseController
             else{
                 return response()->json(["status"=>"Error", "message" => "Invalid Data"]);
             }
-            $code = array('stripe', 'stripe_fpx', 'paystack', 'payfast', 'yoco', 'paylink', 'checkout','kongapay','ccavenue', 'cashfree','easebuzz','vnpay','paytab','toyyibpay','flutterwave');
+            $code = array('stripe', 'stripe_fpx', 'dpo', 'paystack', 'payfast', 'yoco', 'paylink', 'checkout','kongapay','ccavenue', 'cashfree','easebuzz','vnpay','paytab','toyyibpay','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','viva_wallet', 'mycash','stripe_ideal','openpay','userede','khalti');
             $ex_codes = array('cod');
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
             foreach ($payment_options as $k => $payment_option) {
@@ -97,8 +97,21 @@ class UserSubscriptionController extends BaseController
                         $payment_option->title = 'Credit/Debit Card (Stripe)';
                     }elseif($payment_option->code == 'kongapay'){
                         $payment_option->title = 'Pay Now';
+                    }elseif($payment_option->code == 'mvodafone'){
+                        $payment_option->title = 'Vodafone M-PAiSA';
                     }elseif($payment_option->code == 'mobbex'){
                         $payment_option->title = __('Mobbex');
+                    }elseif($payment_option->code == 'offline_manual'){
+                        $json = json_decode($payment_option->credentials);
+                        $payment_option->title = $json->manule_payment_title;
+                    }elseif($payment_option->code == 'mycash'){
+                        $payment_option->title = __('Digicel MyCash');
+                    }elseif($payment_option->code == 'windcave'){
+                        $payment_option->title = __('Windcave (Debit/Credit card)');
+                    }elseif($payment_option->code == 'stripe_ideal'){
+                        $payment_option->title = __('iDEAL');
+                    }elseif($payment_option->code == 'authorize_net'){
+                        $payment_option->title = __('Credit/Debit Card');
                     }
                     $payment_option->title = __($payment_option->title);
                     unset($payment_option->credentials);

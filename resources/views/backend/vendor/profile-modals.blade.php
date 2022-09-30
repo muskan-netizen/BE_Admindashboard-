@@ -42,7 +42,19 @@
                             <div class="">
                                 {!! Form::label('title', __('Slot Type'),['class' => 'control-label']) !!}
                             </div>
-                            @if($vendor->dine_in == 1)
+                            @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                                @php
+                                    $clientVendorTypes = $vendor_typ_key.'_check';
+                                    $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                                @endphp
+                                @if(($client_preferences->$clientVendorTypes == 1) && ($vendor->$VendorTypesName == 1) )
+                                    <div class="checkbox checkbox-success form-check pl-1 mb-1">
+                                        <input name="slot_type[]" type="checkbox" id="{{ $VendorTypesName }}" checked value="{{ $VendorTypesName }}">
+                                        <label for="{{ $VendorTypesName }}">{{getDynamicTypeName($vendor_typ_value)}} </label>
+                                    </div>
+                                @endif
+                            @endforeach
+                            {{-- @if($vendor->dine_in == 1)
                                 <div class="checkbox checkbox-success form-check pl-0 mb-1"  @if($client_preferences->dinein_check == 0) style="display: none;" @endif>
                                     <input name="slot_type[]" type="checkbox" id="dine_in" checked value="dine_in">
                                     <label for="dine_in"> {{ __("Dine in") }}</label>
@@ -59,7 +71,7 @@
                                     <input name="slot_type[]" type="checkbox" id="delivery" checked value="delivery">
                                     <label for="delivery"> {{ __("Delivery") }} </label>
                                 </div>
-                            @endif
+                            @endif --}}
                         </div>
                     </div>
                     <div class="row mb-2 weekDays">
@@ -119,6 +131,20 @@
                             </div>
                         </div> -->
                     </div>
+                    @if(($client_preference_detail->slots_with_service_area == 1) && ($vendor->show_slot == 0))
+                    <div class="row">
+                        <div class="col-md-12" >
+                            <div class="form-group">
+                                <label class="control-label">{{ __("Service Area") }}</label>
+                                <select class="form-control select2-multiple" name="slot_service_area[]" id="add_slot_service_area" data-toggle="select2" multiple="multiple" placeholder="Select Service Area...">
+                                    @foreach($areas as $area)
+                                        <option value="{{$area->id}}">{{$area->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                     <div class="row mt-2">
                         <div class="col-12 d-sm-flex justify-content-between">
                             <button type="button" class="btn btn-light mr-1" data-dismiss="modal">{{ __('Close') }}</button>
@@ -189,7 +215,20 @@
                             <div class="">
                             {!! Form::label('title', __('Slot Type'),['class' => 'control-label']) !!}
                             </div>
-                            @if($vendor->dine_in == 1)
+                         
+                            @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                                @php
+                                    $clientVendorTypes = $vendor_typ_key.'_check';
+                                    $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                                @endphp
+                                @if(($client_preferences->$clientVendorTypes == 1) && ($vendor->$VendorTypesName == 1) )
+                                    <div class="checkbox checkbox-success form-check pl-1 mb-1">
+                                        <input name="slot_type[]" type="checkbox" id="edit_{{ $VendorTypesName }}" checked value="{{ $VendorTypesName }}">
+                                        <label for="edit_dine_in">{{getDynamicTypeName($vendor_typ_value)}} </label>
+                                    </div>
+                                @endif
+                            @endforeach
+                            {{-- @if($vendor->dine_in == 1)
                             <div class="checkbox checkbox-success form-check pl-1 mb-1">
                                 <input name="slot_type[]" type="checkbox" id="edit_dine_in" checked value="dine_in">
                                 <label for="edit_dine_in"> {{ __("Dine in") }} </label>
@@ -206,7 +245,7 @@
                                 <input name="slot_type[]" type="checkbox" id="edit_delivery" checked value="delivery">
                                 <label for="edit_delivery"> {{ __("Delivery") }} </label>
                             </div>
-                            @endif
+                            @endif --}}
                         </div>
                     </div>
                     <!--<div class="row mb-2 weekDaysEdit">
@@ -256,7 +295,20 @@
                             <input name="edit_type_id" type="hidden" id="edit_type_id" value="">
                         </div>
                     </div>
-
+                    @if(($client_preference_detail->slots_with_service_area == 1) && ($vendor->show_slot == 0))
+                    <div class="row">
+                        <div class="col-md-12" >
+                            <div class="form-group">
+                                <label class="control-label">{{ __("Service Area") }}</label>
+                                <select class="form-control select2-multiple" name="edit_slot_service_area[]" id="edit_slot_service_area" data-toggle="select2" multiple="multiple" placeholder="Select Service Area...">
+                                    @foreach($areas as $area)
+                                        <option value="{{$area->id}}">{{$area->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                     <div class="row mt-2">
                         <div class="col-12 mb-2">
                             <button type="button" class="btn btn-danger w-100" id="deleteSlotBtn">{{ __("Delete Slot") }}</button>

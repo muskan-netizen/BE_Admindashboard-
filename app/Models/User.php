@@ -12,20 +12,23 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+
 class User extends Authenticatable implements Wallet, WalletFloat, Auditable
 {
     use Notifiable, AuthenticationLogable;
     use \OwenIt\Auditing\Auditable;
     use HasWallet;
     use HasWalletFloat;
-
+    use SoftDeletes;
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'description', 'phone_number', 'image', 'is_email_verified','email_verified_at', 'is_verified_phone', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone','import_user_id','last_login_at'
+        'name', 'email', 'password', 'description', 'phone_number','dial_code', 'image', 'is_email_verified','email_verified_at', 'is_verified_phone', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone','import_user_id','last_login_at'
     ];
     protected $appends = ['loyalty_name'];
     /**
@@ -67,6 +70,9 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     public function address(){
         return $this->hasMany('App\Models\UserAddress');
      }
+    public function defaultAddress(){
+        return $this->hasOne('App\Models\UserAddress')->where('is_primary',1);
+     }
 
      public function refund(){
         return $this->hasMany('App\Models\OrderRefund', 'user_id', 'id');
@@ -102,7 +108,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
             'name'          => 'required|string|min:3|max:50',
             'email'         => 'required|email|max:50||unique:users',
             'password'      => 'required|string|min:6|max:50',
-            'phone_number'  => 'required|string|min:8|max:15|unique:users',
+            'phone_number'  => 'required|string|min:7|max:15|unique:users',
         );
         $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
         foreach ($user_registration_documents as $user_registration_document) {

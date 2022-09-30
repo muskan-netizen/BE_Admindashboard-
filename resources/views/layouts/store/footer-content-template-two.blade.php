@@ -1,6 +1,7 @@
 @php
 $clientData = \App\Models\Client::where('id', '>', 0)->first();
 $urlImg = $clientData ? $clientData->logo['original'] : ' ';
+$paymentMethod = \App\Models\PaymentMethod::where('is_show',1)->get();
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 @endphp
         </article>
@@ -180,7 +181,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         </section>
         <div class="sub-footer">
             <div class="container">
-                <div class="row">
+                <div class="row d-flex align-items-center">
                     <div class="col-xl-6 col-md-6 col-sm-12">
                         <div class="footer-end">
                             <p><i class="fa fa-copyright" aria-hidden="true"></i> 2020-21</p>
@@ -189,22 +190,25 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     @if($client_preference_detail->show_payment_icons == 1)
                     <div class="col-xl-6 col-md-6 col-sm-12">
                         <div class="payment-card-bottom">
-                            <ul>
-                                <li>
+                            <ul class="m-0 pt-2 pb-2">
+                            @foreach($paymentMethod as $payment_method)
+                                    <li>
+                                        <a href="#"><img class="blur-up lazyload" style="height: 40px;" src="{{  getImageUrl($payment_method->image_url,'40/40') }}"></a>
+                                    </li>
+                                    @endforeach
+                                <!-- <li>
                                     <a href="#"><img class="blur-up lazyload" style="height: 40px;" data-src="{{ getImageUrl(asset('assets/images/visa.png'),'40/40') }}"></a>
                                 </li>
                                 <li>
                                     <a href="#"><img class="blur-up lazyload" style="height: 40px;" data-src="{{ getImageUrl(asset('assets/images/mastercard.png'),'40/40') }}"></a>
                                 </li>
-                               <!--  <li>
-                                    <a href="#"><img class="blur-up lazyload" data-src="{{ getImageUrl(asset('assets/images/paypal.png'),'26/26') }}"></a>
-                                </li> -->
+
                                 <li>
                                     <a href="#"><img class="blur-up lazyload" style="height: 40px;" data-src="{{ getImageUrl(asset('assets/images/american-express.png'),'40/40') }}"></a>
                                 </li>
                                 <li>
                                     <a href="#"><img class="blur-up lazyload" style="height: 40px;" data-src="{{ getImageUrl(asset('assets/images/discover.png'),'40/40') }}"></a>
-                                </li>
+                                </li> -->
                             </ul>
                         </div>
                     </div>
@@ -226,7 +230,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 </button>
             </div>
             <div class="modal-body">
-                <h6 class="m-0">{{__('You can only buy products for single vendor. Do you want to remove all your cart products to continue?')}}</h6>
+                <h6 class="m-0">{{__('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>

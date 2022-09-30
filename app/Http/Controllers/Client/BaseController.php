@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\{Client, Category, Product, ClientPreference, UserDevice, UserLoyaltyPoint, Wallet, VendorSavedPaymentMethods, Nomenclature,NomenclatureTranslation};
 use Illuminate\Support\Facades\Storage;
 use Session;
+use GuzzleHttp\Client as GCLIENT;
+
 
 class BaseController extends Controller
 {
@@ -134,6 +136,53 @@ class BaseController extends Controller
         return $this->htmlData;
     }
 
+    public function getParentCategories($child, $langId, $parentCategories=[]){
+        $category = Category::with(['translation' => function($q) use($langId){
+            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')->where('category_translations.language_id', $langId)->groupBy(['category_translations.language_id', 'category_translations.category_id']);
+        }])->where('id', $child)->where('status', 1)->select('id', 'slug', 'parent_id')->first();
+        if($category){
+            $parentCategories[] = $category->translation->first() ? $category->translation->first()->name : $category->slug;
+            if($category->parent_id != 1){                
+                $parentCategories = $this->getParentCategories($category->parent_id, $langId, $parentCategories);
+            }
+        }
+        return $parentCategories;
+    }
+
+    /*      Category options heirarchy      */
+    public function getCategoryOptionsHeirarchy($tree, $langId)
+    {
+        if (!is_null($tree) && count($tree) > 0) {
+            foreach ($tree as $key => $node) {
+
+                // type_id 1 means product in type table
+                if (isset($node['children']) && count($node['children']) > 0) {
+                    
+                    // start including parent category
+                    $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
+
+                    $parentCategories = array_reverse($this->getParentCategories($node['id'], $langId));
+                    $hierarchyName = implode(' > ', $parentCategories);
+
+                    $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'category'=>$category, 'can_add_products'=>$node['can_add_products']);
+                    // end including parent category
+
+                    $this->getCategoryOptionsHeirarchy($node['children'], $langId);
+                }
+                else{
+                    // if ($node['type_id'] == 1 || $node['type_id'] == 3 || $node['type_id'] == 7 || $node['type_id'] == 8) {
+                        $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
+                        $parentCategories = array_reverse($this->getParentCategories($node['id'], $langId));
+                        $hierarchyName = implode(' > ', $parentCategories);
+                        
+                        $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'category'=>$category, 'can_add_products'=>$node['can_add_products']);
+                    // }
+                }
+            }
+        }
+        return $this->categoryOptionData;
+    }
+
     /*      Category options heirarchy      */
     public function printCategoryOptionsHeirarchy($tree, $parentCategory = [])
     {
@@ -178,6 +227,47 @@ class BaseController extends Controller
                 }
             }
         }
+        return $this->categoryOptionData;
+    }
+
+
+    //function created by surendra singh-----------------------------//
+    public function printCategoryOptionsHeirarchy_new($tree, $parentCategory = [])
+    {
+        if (!is_null($tree) && count($tree) > 0) {
+            foreach ($tree as $key => $node) {
+                $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
+                if (!isset($node['children'])) {
+                    if($node['parent_id'] == 1){
+                        $parentCategory = [];
+                        $hierarchyName = $category;
+                    }else{
+                        $hierarchyName = implode(' > ', $parentCategory);
+                        $hierarchyName = $hierarchyName.' > '.$category;
+                    }
+                    $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'category'=>$category, 'can_add_products'=>$node['can_add_products']);
+                }
+            }
+
+            foreach ($tree as $key => $node) { 
+                
+                $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
+                if(isset($node['children']) && count($node['children']) > 0) {
+                    $parentCategory[] = $category;
+                    $hierarchyName = '';
+                    if(count($parentCategory) > 0){
+                        if($node['parent_id'] != 1){ // if category is not parent then make heirarchy
+                            $hierarchyName = implode(' > ', $parentCategory);
+                        }
+                    }
+                    $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'category'=>$category, 'can_add_products'=>$node['can_add_products']);
+                    //$hierarchyName = implode(' > ', $parentCategory);
+                    //$hierarchyName = $hierarchyName.' > '.$category;
+                    $this->printCategoryOptionsHeirarchy_new($node['children'], $parentCategory);
+                }
+            }
+        }
+        
         return $this->categoryOptionData;
     }
 
@@ -350,4 +440,175 @@ class BaseController extends Controller
             return "Fixed Fee Per Order";
         }
     }
-}
+
+
+    # check if inventory system on 
+    public function checkIfInventoryOn()
+    {
+        $preference = ClientPreference::first();
+        if ($preference->need_inventory_service == 1 && !empty($preference->inventory_service_key_url) && !empty($preference->inventory_service_key_code))
+            return $preference;
+        else
+            return false;
+    }
+
+    # get all store list from inventory system 
+    public function getAllStoreListFromInventory(){
+        try {
+
+                $preference_data = $this->checkIfInventoryOn();
+                if($preference_data != false) {
+                    $preference = new GClient(['headers' => ['shortcode' => $preference_data->inventory_service_key_code,
+                    'content-type' => 'application/json']
+                        ]);
+
+                    $url = $preference_data->inventory_service_key_url;
+                    $res = $preference->get(
+                    $url.'/api/v1/order-store-list',
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['status'] == 200) { 
+                        $data = $response;
+                        $data['status'] = 200;
+                        $data['client_preferences'] = $preference_data;
+                        $data['message'] =  'Success';
+                        return $data;
+                    }else{
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  'Error';
+                        return $data;
+                    }
+                }
+                }catch(\Exception $e)
+                    {
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  $e->getMessage();
+                        return $data;
+
+                    }
+
+    }
+    
+
+    # get All Product List From Inventory
+    public function getAllProductListFromInventory($request){
+        try {
+
+                $preference_data = $this->checkIfInventoryOn();
+                if($preference_data != false) {
+                    $preference = new GClient(['headers' => ['shortcode' => $preference_data->inventory_service_key_code,
+                    'content-type' => 'application/json']
+                        ]);
+
+                    $url = $preference_data->inventory_service_key_url;
+                    $res = $preference->get(
+                    $url.'/api/v1/product-list-by-vendor?vendor_id='.$request->vendor_id,
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['status'] == 200) { 
+                        $data = $response;
+                        $data['status'] = 200;
+                        $data['message'] =  'Success';
+                        return $data;
+                    }else{
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  'Error';
+                        return $data;
+                    }
+                }
+                }catch(\Exception $e)
+                    {
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  $e->getMessage();
+                        return $data;
+
+                    }
+
+    }
+    
+
+    # get All Product List From Inventory with product ids
+    public function getAllProductListFromInventoryByIds($productids){
+        try {
+
+                $preference_data = $this->checkIfInventoryOn();
+                if($preference_data != false) {
+                    $postdata =  ['productids' => $productids];
+                    $preference = new GClient(['headers' => ['shortcode' => $preference_data->inventory_service_key_code,
+                    'content-type' => 'application/json']
+                        ]);
+
+                    $url = $preference_data->inventory_service_key_url;
+                    $res = $preference->POST(
+                    $url.'/api/v1/product-list-by-productids',['form_params' => ($postdata)]
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['status'] == 200) { 
+                        $data = $response;
+                        $data['status'] = 200;
+                        $data['message'] =  'Success';
+                        return $data;
+                    }else{
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  'Error';
+                        return $data;
+                    }
+                }
+                }catch(\Exception $e)
+                    {
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  $e->getMessage();
+                        return $data;
+
+                    }
+
+    }
+
+
+    # get All Category List From Inventory By Ids
+    public function getAllCategoryListFromInventoryByIds($productids){
+        try {
+
+                $preference_data = $this->checkIfInventoryOn();
+                if($preference_data != false) {
+                    $postdata =  ['productids' => $productids];
+                    $preference = new GClient(['headers' => ['shortcode' => $preference_data->inventory_service_key_code,
+                    'content-type' => 'application/json']
+                        ]);
+
+                    $url = $preference_data->inventory_service_key_url;
+                    $res = $preference->POST(
+                    $url.'/api/v1/category-list-by-productids',['form_params' => ($postdata)]
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['status'] == 200) { 
+                        $data = $response;
+                        $data['status'] = 200;
+                        $data['message'] =  'Success';
+                        return $data;
+                    }else{
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  'Error';
+                        return $data;
+                    }
+                }
+                }catch(\Exception $e)
+                    {
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  $e->getMessage();
+                        return $data;
+
+                    }
+
+    }
+
+
+    }

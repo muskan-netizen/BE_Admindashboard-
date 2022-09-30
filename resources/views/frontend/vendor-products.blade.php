@@ -4,7 +4,6 @@
 .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}.product-box .product-detail h4,.product-box .product-info h4{font-size:16px}
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
 
@@ -48,6 +47,9 @@
                                                         <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>
                                                     @endif
                                                 </div>
+                                                @if ($vendor->is_show_vendor_details == 1 && $vendor->order_min_amount > 0)
+                                                    <span class="badge badge-danger">{{ __('Minimum order value') }}{{ Session::get('currencySymbol') . decimal_format($vendor->order_min_amount) }}</span>
+                                                @endif
 
                                         </div>
                                         @if($vendor->desc)
@@ -74,12 +76,13 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            @if(1)
+            <div class="row mb-3 homepageSix">
                 <div class="collection-filter col-md-3">
                     <div class="collection-filter-block mb-3 bg-transparent p-0">
                         <div class="collection-mobile-back pt-0 border-0"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
+                        @if(!empty($brands) && count($brands) > 0)
                         <div class="collection-collapse-block open mb-2">
-                            @if(!empty($brands) && count($brands) > 0)
                             <h3 class="collapse-block-title">brand</h3>
                             <div class="collection-collapse-block-content pb-0">
                                 <div class="collection-brand-filter">
@@ -93,8 +96,8 @@
                                     @endforeach
                                 </div>
                             </div>
-                            @endif
                         </div>
+                        @endif
                         @if(!empty($variantSets) && count($variantSets) > 0)
                         @foreach($variantSets as $key => $sets)
                         <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
@@ -145,6 +148,7 @@
                         </div>
                         @endif
                     </div>
+                    @if(!empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
@@ -153,7 +157,7 @@
                             </span> -->
                         </h5>
                             <div class="offer-slider al">
-                                @if(!empty($newProducts) && count($newProducts) > 0)
+
                                 @foreach($newProducts as $newProds)
 
                                     @foreach($newProds as $new)
@@ -213,9 +217,10 @@
                                 </div>
                                 @endforeach
                             @endforeach
-                            @endif
+
                         </div>
                     </div>
+                    @endif
                     <!-- side-bar banner end here -->
                 </div>
                 <div class="collection-content col-lg-9">
@@ -263,9 +268,9 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts px-0">
-                                        <div class="col-12 text-right">{{ __('Sort By:')}}
+                                        <div class="col-12 text-right">
                                             <select name="order_type" id='order_type' class="sortingFilter p-1">
-                                                <option value="">{{__('Please Select')}}</option>
+                                                <option value="">{{__('Sort By')}}</option>
                                                 <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
                                                 <option value="a_to_z" {{isset($input['order_type']) && $input['order_type'] == "a_to_z" ? 'selected' : ''}}>{{__('A to Z')}}</option>
                                                 <option value="z_to_a" {{isset($input['order_type']) && $input['order_type'] == "z_to_a" ? 'selected' : ''}}>{{__('Z to A')}}</option>
@@ -288,8 +293,8 @@
                                                         }
                                                         $imagePath2 = $data->media[$i]->image->path['image_fit'] . '600/600' . $data->media[$i]->image->path['image_path'];
                                                     }*/ ?>
-                                                    <div class="col-md-3 col-6 col-grid-box mt-2">
-                                                        <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" class="common-product-box scale-effect mt-0">
+                                                    <div class="col-md-3 col-6 col-grid-box mt-4">
+                                                        <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="common-product-box scale-effect mt-0">
                                                             <div class="img-outer-box position-relative">
                                                                 <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
                                                                 <div class="pref-timing">
@@ -304,7 +309,7 @@
                                                                         @if($client_preference_detail)
                                                                             @if($client_preference_detail->rating_check == 1)
                                                                                 @if($data->averageRating > 0)
-                                                                                    <span class="rating-number">{{ number_format($data->averageRating, 1, '.', '') }}</span>
+                                                                                    <span class="rating-number"><i class="fa fa-star"></i> {{ number_format($data->averageRating, 1, '.', '') }}</span>
                                                                                 @endif
                                                                             @endif
                                                                         @endif
@@ -348,6 +353,7 @@
                     </div>
                 </div>
             </div>
+            @endif
         </div>
     </div>
 </section>
@@ -355,8 +361,12 @@
 @section('script')
 <script src="{{asset('front-assets/js/rangeSlider.min.js')}}"></script>
 <script src="{{asset('front-assets/js/my-sliders.js')}}"></script>
-<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
+    @if(!empty($vendor->banner))
+    $(document).ready(function() {
+        $("body").addClass("homeHeader");
+    });
+    @endif
     $('.js-range-slider').ionRangeSlider({
         type: 'double',
         grid: false,

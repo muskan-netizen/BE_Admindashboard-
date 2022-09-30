@@ -16,7 +16,7 @@ if(session()->has('applocale')){
         <div class="container">
             <div class="row w-100 d-flex align-items-center">
                 <div class="col-lg-6"   >
-                    <a class="navbar-brand mr-xl-3 mr-0" style="height:60px;" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}"></a>
+                    <a class="navbar-brand mr-xl-3 mr-0" style="height:60px;" href="{{ route('userHome') }}"><img class="logo-image" alt="" src="{{$urlImg}}"></a>
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
@@ -80,7 +80,9 @@ if(session()->has('applocale')){
                             <ul class="onhover-show-div">
                                 @foreach($languageList as $key => $listl)
                                     <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                                            ({{$listl->language->nativeName}})
+                                            @endif </a>
                                     </li>
                                 @endforeach
                             </ul>
@@ -260,7 +262,7 @@ if(session()->has('applocale')){
                         @if($client_preference_detail->show_wishlist == 1)
                         <li class="onhover-dropdown_al mobile-wishlist_al">
                             <a href="{{route('user.wishlists')}}">
-                                Wishlists
+                            {{__('Wishlists')}}
                             </a>
                         </li>
                         @endif
@@ -268,7 +270,7 @@ if(session()->has('applocale')){
                         @if($client_preference_detail->cart_enable == 1)
                         <li class="onhover-dropdown_al onhover-div mobile-cart">
                             <a href="{{route('showCart')}}" style="position: relative">
-                                Viewcart
+                            {{__('Viewcart')}}
                                 <span class="cart_qty_cls" style="display:none"></span>
                             </a>
                             <ul class="show-div shopping-cart"></ul>
@@ -312,7 +314,9 @@ if(session()->has('applocale')){
                             <ul class="onhover-show-div">
                                 @foreach($languageList as $key => $listl)
                                     <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                                            ({{$listl->language->nativeName}})
+                                            @endif </a>
                                     </li>
                                 @endforeach
                             </ul>

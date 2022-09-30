@@ -16,7 +16,6 @@ class VerifyCsrfToken extends Middleware
         'payment/payfast/notify/app',
         'payment/paypal/notify',
         'payment/mobbex/notify',
-        'payment/webhook/stripe_fpx',
         'webhook/lalamove',
         'webhook/ship-rocket',
         'passbase/webhook',
@@ -25,19 +24,22 @@ class VerifyCsrfToken extends Middleware
         'easebuzz_respont',
         'payment/easebuzz/notify',
         'payment/easebuzz/api',
-        
+        'payment/userede/respons',
+
         'ccavenue/success',
         'vnpay_respont',
         'payment/vnpay/api',
         'payment/vnpay/notify', 
         
         'payment/cashfree/notify',
+        'verify/payment/otp/app/*',
 
         /** routes for edit order **/
         'edit-order/*',
         'payment/webhook/*',
         
         'payment/paytab/return',
-        'payment/paytab/callback'
+        'payment/paytab/callback',
+        'dispatch/customer/distance/notification/*'
     ];
 }

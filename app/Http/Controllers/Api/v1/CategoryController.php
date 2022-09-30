@@ -117,8 +117,12 @@ class CategoryController extends BaseController
                         sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
                 $vendorData = $vendorData->whereIn('id', $ses_vendors);
             }
+            $vendorData = $vendorData->whereHas('product',function($q) use( $category_id)
+            {
+                return $q->where('category_id',$category_id);
+            })->where($mod_type, 1)->with('slot')->where('status', 1)->whereIn('id', $vendor_ids)->withAvg('product', 'averageRating')->paginate($limit, $page);
 
-            $vendorData = $vendorData->where($mod_type, 1)->where('status', 1)->whereIn('id', $vendor_ids)->with('slot')->withAvg('product', 'averageRating')->paginate($limit, $page);
+            //$vendorData = $vendorData->where($mod_type, 1)->where('status', 1)->whereIn('id', $vendor_ids)->with('slot')->withAvg('product', 'averageRating')->paginate($limit, $page);
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
                 $vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
@@ -262,7 +266,7 @@ class CategoryController extends BaseController
                     $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                         ->where('category_translations.language_id', $langId);
                 }
-            ])->where('parent_id', $category_id)->get();
+            ])->where('parent_id', $category_id)->orderBy('position', 'ASC')->get();
             foreach ($category_list as $category) {
                 $category_details[] = array(
                     'id' => $category->id,
@@ -404,6 +408,7 @@ class CategoryController extends BaseController
             }
             $langId = Auth::user()->language;
             $curId = Auth::user()->currency;
+            $type = $request->has('type') ? $request->type : 'delivery';
             $setArray = $optionArray = array();
             $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
             if ($request->has('variants') && !empty($request->variants)) {
@@ -447,7 +452,7 @@ class CategoryController extends BaseController
                 }
             }
             $order_type = $request->has('order_type') ? $request->order_type : '';
-            $products = Product::with([
+            $products = Product::byProductCategoryServiceType($type)->with([
                 'category.categoryDetail', 'media.image',
                 'translation' => function ($q) use ($langId) {
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);

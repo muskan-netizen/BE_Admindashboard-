@@ -43,18 +43,30 @@ class ProfileController extends BaseController{
                         $sendto = $SendReferralRequest->email;
                         $mail_from = $client_preference_detail->mail_from;
                         try {
-                            Mail::send(
+                            $email_template_content = '';
+                            $email_template = EmailTemplate::where('id', 8)->first();
+                            if($email_template){
+                                $email_template_content = $email_template->content;
+                                $email_template_content = str_ireplace("{code}", $refferal_code, $email_template_content);
+                                $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
+                            }
+                         
+                           $t = Mail::send(
                                 'email.verify',
                                 [
+                                    'email' => $sendto,
+                                    'mail_from' => $mail_from,
+                                    'client_name' => $client_name,
                                     'code' => $refferal_code,
                                     'logo' => $client->logo['original'],
                                     'customer_name' => "Link from ".$user->name,
                                     'code_text' => 'Register yourself using this referral code below to get bonus offer',
                                     'link' => "http://local.myorder.com/user/register?refferal_code=".$refferal_code,
+                                    'email_template_content' => $email_template_content,
                                 ],
                                 function ($message) use ($sendto, $client_name, $mail_from) {
                                     $message->from($mail_from, $client_name);
-                                    $message->to($sendto)->subject('OTP to verify account');
+                                    $message->to($sendto)->subject('Referral For Registration');
                                 }
                             );
                         } catch (\Exception $e) {
@@ -248,7 +260,7 @@ class ProfileController extends BaseController{
             'country_code'  => 'required|string',
             'name'          => 'required|string|min:3|max:50',
             'email'         => 'required|email|max:50||unique:users,email,'.$usr,
-            'phone_number'  => 'required|string|min:8|max:15|unique:users,phone_number,'.$usr,
+            'phone_number'  => 'required|string|min:7|max:15|unique:users,phone_number,'.$usr,
         ];
         foreach ($user_registration_documents as $user_registration_document) {
             if($user_registration_document->is_required == 1){
@@ -261,7 +273,7 @@ class ProfileController extends BaseController{
         //     'country_code'  => 'required|string',
         //     'name'          => 'required|string|min:3|max:50',
         //     'email'         => 'required|email|max:50||unique:users,email,'.$usr,
-        //     'phone_number'  => 'required|string|min:8|max:15|unique:users,phone_number,'.$usr,
+        //     'phone_number'  => 'required|string|min:7|max:15|unique:users,phone_number,'.$usr,
         // ]);
         if($validator->fails()){
             foreach($validator->errors()->toArray() as $error_key => $error_value){
@@ -284,6 +296,7 @@ class ProfileController extends BaseController{
             $user->phone_token = $phoneCode;
             $user->phone_token_valid_till = $sendTime;
             $user->phone_number = $request->phone_number;
+            $user->dial_code = $request->callingCode??'';
             if(!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)){
                 $to = $request->phone_number;
                 $provider = $prefer->sms_provider;

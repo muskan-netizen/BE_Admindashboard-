@@ -8,11 +8,18 @@ $preference = $client_preference_detail;
 @endphp
 
 <style>
-    .modal-backdrop {
-        z-index: 1;
-    }
+.modal-backdrop {z-index: 1;}
+.cardbanner {height:300px;}
+.shimmer_effect .grid-row .cards {margin-bottom: 20px;}
+.shimmer_effect .grid-row .card_icon{display:none;}
+.shimmer_effect .grid-row .card_image{border-radius:12px;height:200px !important;}
+.alOneTemplate{position: fixed !important; background-color:#fff;width: 100%;top:0;z-index: 999 !important;}
+.top_bar{height:50px;}
+.logoArea_bar{height:164px;margin:5px 0;}
+@media(max-width:767px){.cardbanner {height:120px;}}
 </style>
 
+<!-- shimmer_effect end -->
 <div class="top-header site-topbar al_template_one">
     <div class="container">
         <div class="row align-items-center justify-content-between">
@@ -97,7 +104,11 @@ $preference = $client_preference_detail;
                         <ul class="onhover-show-div">
                             @foreach($languageList as $key => $listl)
                                 <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}
+                                        @if($listl->language->id != 1)
+                                            ({{$listl->language->nativeName}})
+                                        @endif
+                                    </a>
                                 </li>
                             @endforeach
                         </ul>

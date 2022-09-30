@@ -2,12 +2,11 @@
 
 @section('css')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('content')
 
-<section class="wrapper-main py-lg-5 d-flex align-items-center">
+<section class="wrapper-main py-lg-5 py-3 d-flex align-items-center">
     <div class="container">
         <div class="row align-items-center h-100" id="login-section">
             <div class="col-lg-6 mb-lg-0 mb-3 text-center border-right pb-sm-0">
@@ -164,7 +163,6 @@
 @section('script')
 {{-- <script src="https://www.gstatic.com/firebasejs/5.5.9/firebase.js"></script> --}}
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
-<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
     // jQuery(window.document).ready(function () {
     //     jQuery("body").addClass("login_body");

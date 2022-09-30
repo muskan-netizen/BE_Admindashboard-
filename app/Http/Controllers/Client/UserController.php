@@ -25,12 +25,14 @@ use App\Http\Controllers\Client\BaseController;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CustomerExport;
+use App\Http\Traits\ApiResponser;
 use App\Models\UserDevice;
 use Session;
-use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, Role, Transaction,UserDocs,UserRegistrationDocuments};
+use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, Role, Transaction,UserDocs,UserRegistrationDocuments,OrderVendor,VendorOrderStatus, ClientCurrency};
 
 class UserController extends BaseController
 {
+    use ApiResponser;
     private $folderName = '/profile/document';
 
     public function __construct()
@@ -71,8 +73,12 @@ class UserController extends BaseController
     public function getFilterData(Request $request)
     {
         $current_user = Auth::user();
-        $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
-
+        $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
+        if($request->type == 'active'){
+            $users->where('status', 1);
+        }else if($request->type == 'inactive'){
+            $users->where('status', 3);
+        }
         return Datatables::of($users)
             ->addColumn('edit_url', function($users) {
                 return route('customer.new.edit', $users->id);
@@ -82,6 +88,13 @@ class UserController extends BaseController
             })
             ->addColumn('image_url', function($users) {
                 return $users->image['proxy_url'] . '40/40' . $users->image['image_path'];
+            })
+            ->addColumn('user_type', function($users) {
+                if (!empty($users->is_admin) && $users->is_admin == 1) {
+                    return 'Vendor';
+                } else {
+                    return 'Customer';
+                }
             })
             ->addColumn('login_type', function($users) {
                 if (!empty($users->facebook_auth_id)) {
@@ -99,15 +112,15 @@ class UserController extends BaseController
             ->addColumn('is_superadmin', function($users) use($current_user) {
                 return $current_user->is_superadmin;
             })
-            ->addColumn('wallet', function($users) {
-                return $users->wallet;
+            ->addColumn('wallet_id', function($users) {
+                return $users->wallet->id ?? '';
             })
             ->addColumn('signup_date', function($users) {
                 $date = dateTimeInUserTimeZone($users->created_at, $users->timezone);
                 return explode(' ',$date)[0] ; 
             })
-            ->addColumn('last_login', function($users) {
-                return is_null($users->last_login_at) ? ' - ' : dateTimeInUserTimeZone($users->last_login_at, $users->timezone);
+            ->addColumn('last_login', function($users) use($current_user) {
+                return is_null($users->last_login_at) ? ' - ' : dateTimeInUserTimeZone($users->last_login_at, $current_user->timezone);
             })
             ->addColumn('total_order_value', function($users) {
                 return decimal_format($users->orders->sum('total_amount'));
@@ -257,6 +270,7 @@ class UserController extends BaseController
         $user->phone_number = $phone;
         $user->is_email_verified = ($request->has('is_email_verified') && $request->is_email_verified == 'on') ? 1 : 0;
         $user->is_phone_verified = ($request->has('is_phone_verified') && $request->is_phone_verified == 'on') ? 1 : 0;
+        $user->status = 1;
         if ($request->hasFile('image')) {    /* upload logo file */
             $file = $request->file('image');
             $user->image = Storage::disk('s3')->put('/profile', $file, 'public');
@@ -340,8 +354,33 @@ class UserController extends BaseController
         $user_docs = UserDocs::where('user_id', $id)->get();
         $user_registration_documents = UserRegistrationDocuments::get();
         $vendors = Vendor::where('status', 1)->get();
-      //  pr($user_docs);
-        return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions,'user_docs'=>$user_docs,'user_registration_documents'=>$user_registration_documents]);
+        $active_orders = $this->getUserOrders($id,'active');
+        $completed_orders =  $this->getUserOrders($id,'completed');
+        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+        $langId = Session::get('customerLanguage');
+        $fixedFee = $this->fixedFee($langId);
+        return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions,'user_docs'=>$user_docs,'user_registration_documents'=>$user_registration_documents,'active_orders'=>$active_orders,'completed_orders'=>$completed_orders,'clientCurrency'=>$clientCurrency,'fixedFee'=>$fixedFee]);
+    }
+    public function getUserOrders($id,$order_type){
+        $user = Auth::user();
+        if($order_type == 'active'){
+            $order_status_option_id = [2, 4, 5];
+        }elseif($order_type == 'completed'){
+            $order_status_option_id = [3, 6];
+        }
+        $orders = OrderVendor::with('orderDetail','products')->where('user_id',$id)->whereIn('order_status_option_id',$order_status_option_id)->orderBy('id','desc')->get();
+        foreach($orders as $key=>$order){
+            $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
+            $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->order_id)->where('vendor_id', $order->vendor_id)->orderBy('id', 'DESC')->first();
+            $order->order_status = $vendor_order_status ? __($vendor_order_status->OrderStatusOption->title) : '';
+            $product_total_count = 0;
+            foreach ($order->products as $product) {
+                $product_total_count += $product->quantity * $product->price;
+                $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image)? $product->media->first()->image->path : getDefaultImagePath();
+            }
+        }
+        return $orders; 
+
     }
     /**
      * Update the specified resource in storage.
@@ -414,7 +453,7 @@ class UserController extends BaseController
         $client = Client::where('code', $user->code)->firstOrFail();
         $rules = array(
             'name' => 'required|string|max:50',
-            'phone_number' => 'required|min:8|max:15',
+            'phone_number' => 'required|min:7|max:15',
             'company_name' => 'required',
             'company_address' => 'required',
             'country_id' => 'required',
@@ -437,6 +476,16 @@ class UserController extends BaseController
         } else {
             $data['logo'] = $client->getRawOriginal('logo');
         }
+        
+        if ($request->hasFile('dark_logo')) {
+            $file = $request->file('dark_logo');
+            $file_name = 'Clientlogo/' . uniqid() . '.' .  $file->getClientOriginalExtension();
+            $path = Storage::disk('s3')->put($file_name, file_get_contents($file), 'public');
+            $data['dark_logo'] = $file_name;
+        } else {
+            $data['dark_logo'] = $client->getRawOriginal('dark_logo');
+        }
+        // pr($data);
         $client = Client::where('code', $user->code)->first();
         $client->update($data);
         $userdata = array();
@@ -510,31 +559,55 @@ class UserController extends BaseController
     public function filterWalletTransactions(Request $request)
     {
         $pagiNate = 10;
-        $user_transactions = Transaction::where('wallet_id', $request->walletId)->orderBy('id', 'desc')->get();
+        $trans = Transaction::where('wallet_id', $request->walletId)->orderBy('id', 'desc');
+        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         // dd($user_transactions->toArray());
-        foreach ($user_transactions as $key => $trans) {
-            // $user = User::find($trans->payable_id);
-            $trans->serial = $key + 1;
-            $trans->date = Carbon::parse($trans->created_at)->format('M d, Y, H:i A');
-            // $trans->date = convertDateTimeInTimeZone($trans->created_at, $user->timezone, 'l, F d, Y, H:i A');
-            $trans->description = json_decode($trans->meta)[0];
-            $trans->amount = '$' . sprintf("%.2f", ($trans->amount / 100));
-            $trans->type = $trans->type;
-        }
-        return Datatables::of($user_transactions)
+        // foreach ($user_transactions as $key => $trans) {
+        //     // $user = User::find($trans->payable_id);
+        //     $trans->serial = $key + 1;
+        //     $trans->date = Carbon::parse($trans->created_at)->format('M d, Y, H:i A');
+        //     // $trans->date = convertDateTimeInTimeZone($trans->created_at, $user->timezone, 'l, F d, Y, H:i A');
+        //     $reason = json_decode($trans->meta, true);
+        //     $trans->description = $reason['description'] ?? $reason[0];
+        //     $trans->amount = $clientCurrency->currency->symbol . sprintf("%.2f", ($trans->amount / 100));
+        //     $trans->type = $trans->type;
+        // }
+        return Datatables::of($trans)
+            ->addColumn('date', function($trans) {
+                return Carbon::parse($trans->created_at)->format('M d, Y, H:i A');
+            })
+            ->editColumn('amount', function($trans) use($clientCurrency) {
+                return $clientCurrency->currency->symbol . sprintf("%.2f", ($trans->amount / 100));
+            })
+            ->addColumn('description', function($trans) {
+                $reason = json_decode($trans->meta, true);
+                $description = $reason['description'] ?? $reason[0];
+                return $description;
+            })
+            ->addColumn('remarks', function($trans) {
+                $reason = json_decode($trans->meta, true);
+                $remarks = $reason['remarks'] ?? '';
+                return $remarks;
+            })
+            ->addColumn('created_by', function($trans) {
+                $reason = json_decode($trans->meta, true);
+                $created_by = $reason['created_by'] ?? '';
+                if($created_by > 0){
+                    $user = User::find($created_by)->value('name');
+                    return $user;
+                }else{
+                    return '';
+                }
+            })
             ->addIndexColumn()
             ->rawColumns(['description'])
             ->filter(function ($instance) use ($request) {
                 if (!empty($request->get('search'))) {
-                    $instance->collection = $instance->collection->filter(function ($row) use ($request) {
-                        if (Str::contains(Str::lower($row['date']), Str::lower($request->get('search')))) {
-                            return true;
-                        } elseif (Str::contains(Str::lower($row['meta']), Str::lower($request->get('search')))) {
-                            return true;
-                        } elseif (Str::contains(Str::lower($row['amount']), Str::lower($request->get('search')))) {
-                            return true;
-                        }
-                        return false;
+                    $search = $request->get('search');
+                    $instance->where(function($query) use($search){
+                        $query->where('date', 'LIKE', '%'.$search.'%')
+                        ->orWhere('meta', 'LIKE', '%'.$search.'%')
+                        ->orWhere('amount', 'LIKE', '%'.$search.'%');
                     });
                 }
             })->make(true);
@@ -590,6 +663,7 @@ class UserController extends BaseController
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
             $notification_content = NotificationTemplate::where('id', 4)->first();
+            
             if ($notification_content) {
                 if($header_code == ''){
                     $header_code = Client::orderBy('id', 'asc')->first()->code;
@@ -597,6 +671,7 @@ class UserController extends BaseController
                 $code = $header_code;
                 $client = Client::where('code', $code)->first();
                 $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/client/order";
+                $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
                 $headers = [
                     'Authorization: key=' . $from,
                     'Content-Type: application/json',
@@ -605,7 +680,7 @@ class UserController extends BaseController
                     "registration_ids" => $devices,
                     "notification" => [
                         'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
+                        'body'  => $body_content,
                         'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                         'click_action' => $redirect_URL,
@@ -630,6 +705,68 @@ class UserController extends BaseController
                 $result = curl_exec($ch);
                 curl_close($ch);
             }
+        }
+    }
+
+    public function customSearch(Request $request, $domain = '')
+    {
+        $search = $request->search;
+        if (isset($search)) {
+            if ($search == '') {
+                $users = User::orderby('name', 'asc')->select('id', 'name', 'email')->where('status','1')->limit(10)->get();
+            } else {
+                $users = User::orderby('name', 'asc')->select('id', 'name', 'email')->where('status','1')
+                ->where(function($q) use($search){
+                    $q->where('name', 'like', '%'.$search.'%')->orWhere('email', 'like', '%'.$search.'%');
+                })
+                ->limit(10)->get();
+            }
+            $response = array();
+            foreach ($users as $user) {
+                $response[] = array("value" => $user->id, "label" => $user->name . '('.$user->email.')');
+            }
+
+            return response()->json($response);
+        } else {
+            return response()->json([]);
+        }
+    }
+
+    public function payReceive(Request $request, $domain = '')
+    {
+        try{
+            $user_id = $request->cusid;
+            $user = User::where('id', $user_id)->where('status', 1)->first();
+            $amount = $request->amount;
+            $wallet = $user->wallet;
+            if ($amount > 0) {
+                if($request->payment_type == 1){
+                    $wallet->depositFloat($amount, [
+                        'description' => 'Wallet has been <b>Credited</b>',
+                        'remarks' => $request->remarks,
+                        'created_by' => Auth::id()
+                    ]);
+                }
+                elseif($request->payment_type == 2){
+                    if($amount > $user->balanceFloat){
+                        return $this->errorResponse(__('Amount is greater than customer available funds'), 422);
+                    }
+                    $wallet->withdrawFloat($amount, [
+                        'description' => 'Wallet has been <b>Dedited</b>',
+                        'remarks' => $request->remarks,
+                        'created_by' => Auth::id()
+                    ]);
+                }
+                else{
+                    return $this->errorResponse(__('Invalid Data'), 422);
+                }
+                return $this->successResponse('', __('Payment is successfully completed'), 201);
+            }else{
+                return $this->errorResponse(__('Insufficient Amount'), 422);
+            }            
+        }
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
 }

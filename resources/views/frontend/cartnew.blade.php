@@ -6,7 +6,6 @@
 <link href="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.css')}}" rel="stylesheet" type="text/css" />
 
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 
 <style type="text/css">
 .swal2-title {
@@ -65,6 +64,157 @@
     background-repeat: no-repeat;
     color: #FFF !important;
 }
+
+#save_prescription_form .modal-footer {
+display: block;
+}
+.al_body_template_two .show-prescription-doc {
+overflow: auto;
+white-space: nowrap;
+overflow-y: hidden;
+width: 100%;
+}
+.show-prescription-close {
+    position: relative;
+    display: inline-block;
+}
+.show-prescription-close i {
+    position: absolute;
+    right: -2px;
+    top: 0px;
+    font-size: 11px;
+    background: #eee;
+    padding: 1px 2px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.al_body_template_two .show-prescription-doc img{
+    margin:2px;
+}
+.al_body_template_one .vendor_slot_cart input {display: inline-block;width: 52%;}
+.al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
+
+
+.grn_popop-total_amt label{  font-size: 12px !important;text-align:left;}
+
+.vendor_cart-check label {display: inline-block;}
+
+
+
+
+/*-------cart page design css  start here---------*/
+.dark .new_cart,
+.dark .cart-summary,
+.dark .new_cart .add-address i,
+.dark .shoping_cart {background-color: #232323;box-shadow: 10px 16px 14px 10px #0000001c;border: 1px solid #4645458c;}
+.dark .item-show-cart h4,
+.dark .cart-summary h5.order_text,
+.dark .new_cart .page-title,
+.dark .cart-summary .alFourSpecificInstructions span,
+.dark .shoping_cart .order-md-4 .items-price,
+.dark .cart-summary .cart-price .text-right b,
+.dark .single_cart_heading h3{color: #cfd4da;}
+.dark .alFourSpecificInstructions input{background-color: #c9c3c3;}
+.dark .delivery_box.cart_delivery{border-color: #4645458c; }
+.single_cart_heading h3 {font-weight: 600;color: #000;}
+.cart-summary h5.order_text{font-size: 22px;font-weight: 600;color:#000;}
+.item-show-cart h4 {font-size: 20px !important;font-weight: 600;color: #000;}
+.shoping_cart {background: #fff;box-shadow: 10px 16px 14px 10px #eee9;border: 1px solid#eeeeee8c;}
+.cart-design .card-box {padding: 0px;}
+.cart-summary{background-color: #f5f5f6;border: 1px solid#efefef;box-shadow: 6px 13px 30px #1615152b;border-radius: 4px;width: 100%;}
+.cart-summary .alFourSpecificInstructions span {font-size: 18px;color: #000;display: block;}
+.cart-summary .alFourSpecificInstructions input::placeholder {color: #000;font-size: 14px;}
+.cart-summary .cart-price .text-right b {color: #000;font-size: 14px;}
+.cart-summary .cart-price .mb-2{font-size: 18px;color: #000;}
+.cart-page-layout .shoping_cart .product-img img {border-radius: 10px;}
+.shoping_cart .order-md-4 .items-price {color: #000;font-size: 14px;font-weight: 500;}
+.shoping_cart .cart_product_name{font-size: 16px;}
+.shoping_cart .vendor_products_tr h4 strong{font-size: 15px;}
+.shoping_cart .cart-heading h5{font-size: 18px;font-weight: 400;}
+.new_cart {background: #fff;box-shadow: 10px 16px 14px 10px #eee9;border: 1px solid#eeeeee8c;}
+.cart_edit-addre{border-top: 1px solid#eee;}
+.new_cart .page-title {font-size:20px;font-weight: 600;color:#000;}.delivery_box label { color: #666363; font-size: 16px; line-height: 28px;display: block;width:100%;}
+.alFourTemplateCartButtons a.shoping{color:#FA1C0A;}
+.cart_delivery{border-radius: 5px;background-color: #fff;box-shadow: 1px 4px 4px #eee;height:100%;
+display: flex;align-items: center;justify-content: center;border: 1px solid#eee;overflow: hidden;}
+.alFourTemplateCartButtons a.shoping i {font-size: 18px;vertical-align: bottom;padding-right: 5px;}
+.cart_all_address a {text-align: center;width: 100%;font-size: 14px;}
+.cart_delivery a {position: absolute;right: 10px;top: 10px;}
+.cart_delivery a.deleteAddress{position: absolute;right: -50px;top: 50%;color:red;-webkit-transform: translateY(-50%);transform: translateY(-50%);}
+.cart_delivery:hover a.deleteAddress{right: 10px;}
+.new_cart .add-address i {background: #fff;border: 1px solid#eee; padding: 16px;border-radius: 100%;height: 40px;width: 40px;display: flex;align-items: center;
+justify-content: center;font-size: 20px;box-shadow: 5px 6px 4px #eee;color: #ff3f3f;}
+.cart-checkout_btn button{width:100%;}.cart-checkout_btn #order_placed_btn {
+padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
+.cart_delivery a i {font-weight: 600;font-size: 16px;}
+.schedule_btn ul li label.taskschedulebtn {padding: 6px 10px !important;font-size: 10px !important;}
+.cart-page-layout .alFourTemplateCartPage .add_head h6{color:#000;font-size: 14px;}
+.cart-page-layout .alFourTemplateCartPage .items-details p{font-size: 14px;}
+.cart-page-layout .alFourTemplateCartPage .extra-items-price {color: #000;font-size: 14px;}
+.product_title_add span {text-transform: uppercase;font-size: 14px;}
+/* .al_body_template_two .cart-summary {background: #fff;} */
+.shoping_cart .number{width: fit-content;}
+.al_body_template_three .cart-summary .tip_radio_controls label{width:auto;margin:0px;}
+.al_body_template_four .shoping_cart .alFourTemplateCartButtons .btn.shoping i{position: inherit;box-shadow:none;}
+.al_body_template_four .new_cart a.add-address i{position:inherit;}
+.al_body_template_four .new_cart a.add-address{padding-right:0px;}
+.al_body_template_four .cart-summary .cart-checkout_btn .btn-solid{border-radius: 4px;}
+.al_body_template_three .cart-summary .cart-checkout_btn .btn-solid{border-radius: 4px;}
+.al_body_template_four .shoping_cart .prescription_btn{padding: 5px 10px;font-size: 10px;}
+
+/* 2 template cart checkbox css */
+.tip_radio:checked+.tip_label {background: var(--theme-deafult);box-shadow: 0 0 5px var(--theme-deafult);}
+.tip_radio:checked+.tip_label h5, .tip_radio:checked+.tip_label p {color: #fff;}
+
+.al_body_template_four .text-danger {font-size: 16px;}
+.al_body_template_four .clproduct_cart_order_form.btn.btn-solid {padding: 8px 0px;font-size: 12px;}
+.al_body_template_two .shoping_cart .alFourTemplateCartPage #product_faq_dev_42 .btn-product-order-form-div button {
+font-size: 12px;padding: 6.7px 10px;}
+.add_address_btn .btn-solid{font-size: 12px;padding: 6.7px 10px;}
+#add_new_address_form_modal button.close{
+position: absolute;
+right: 20px;
+}
+
+
+
+
+
+
+.login-form #schedule_div input{display:block;}
+
+/*------cart page css end here------ */
+
+
+
+
+@media (max-width:576px){
+    .al_body_template_two .show-prescription-doc {
+   width:100%;
+}
+.item-show-cart h4 {font-size:14px !important;}
+.product_title_add span {
+    font-size: 12px;
+}
+
+}
+
+/*cart page responsive css */
+
+
+@media only screen and (min-width:1367px) and (max-width:1429px){
+.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;height:auto;}
+}
+@media only screen and (max-width:1366px){
+.cart-design .alFourTemplateCartButtons a.shoping i{font-size:17px;vertical-align: middle;}
+.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;vertical-align: middle;text-align:left;height:auto;}
+}
+
+@media (min-width:991px) and (max-width:1200px){
+.cart-design .alFourTemplateCartButtons a.btn.shoping {font-size:10px;display: block;width: 100%;text-align: left;height:auto;}
+.cart-design .alFourTemplateCartButtons a.shoping i{font-size:10px;vertical-align: middle;}
+}
 </style>
 
 @endsection
@@ -85,714 +235,12 @@ $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->fir
 $urlImg = $clientData ? $clientData->logo['original'] : ' ';
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
+$client_preferences = \App\Models\ClientPreference::first();
 @endphp
 
-<script type="text/template" id="address_template">
-    <div class="col-md-12">
-        <div class="delivery_box p-0 mb-3">
-            <label class="radio m-0"><%= address.address %> <%= address.city %><%= address.state %> <%= address.pincode %>
-                <input type="radio" checked="checked" name="address_id" value="<%= address.id %>">
-                <span class="checkround"></span>
-            </label>
-        </div>
-    </div>
-</script>
-<script type="text/template" id="empty_cart_template">
-    <div class="container">
-    <div class="row mt-2 mb-4 mb-lg-5">
-        <div class="col-12 text-center">
-            <div class="cart_img_outer" style="height:200px;">
-                <img class="blur-up lazyload" data-src="{{asset('front-assets/images/empty_cart.png')}}">
-            </div>
-            <h3>{{__('Your Cart Is Empty!')}}</h3>
-            <p>{{__('Add items to it now.')}}</p>
-            <a class="btn btn-solid" href="{{url('/')}}">{{__('Continue Shopping')}}</a>
-        </div>
-    </div>
-</div>
-</script>
-<div class="container">
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <h3 class="page-title text-uppercase mt-sm-4">{{__('Cart')}}</h3>
-            </div>
-            <div class="cart_response mt-3 mb-3 d-none">
-                <div class="alert p-0" role="alert"></div>
-            </div>
-            @if (\Session::has('error'))
-                <div class="alert alert-danger">
-                    <span>{!! \Session::get('error') !!}</span>
-                </div>
-            @endif
-        </div>
-    </div>
-</div>
-
-<script type="text/template" id="cart_template">
-    <%
-    let fixed_fee=0;
-    let fixed_fee_amount=0;
-    let total_fixed_fee_amount=0;
-    let price_bifurcation=0;
-    let total_wallet_amount_used=0;
-    let closed_store= 0;
-
-    /* Getting other taxes */
-    let tax_fixed_fee_percentage=0;
-    let tax_container_charges_percentage=0;
-    let tax_service_charges_percentage=0;
-    let tax_delivery_charges_percentage=0;
-    
-    let product_container_charges_tax_amount=0;
-
-    
-    let other_taxes=0;
-    _.each(cart_details.products, function(product, key){
-        /*console.log(JSON.stringify(product));*/
-       /* if (product.vendor.get_tax_fixed_fee != null) {
-            tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
-        }
-        if (product.vendor.get_tax_container_charges != null) {
-            tax_container_charges_percentage=product.vendor.get_tax_container_charges.tax_rate;
-        }
-        if (product.vendor.get_tax_service_charges != null) {
-            tax_service_charges_percentage=product.vendor.get_tax_service_charges.tax_rate;
-        }
-        if (product.vendor.get_tax_delivery_charges != null) {
-            tax_delivery_charges_percentage=product.vendor.get_tax_delivery_charges.tax_rate;
-        }*/
-        
-        /* --- Vendor Tax Get Percentage ---- */
-        _.each(cart_details.taxRates, function(tax, index){
-            if(product.vendor.fixed_fee_tax_id!=null){
-                if(product.vendor.fixed_fee_tax_id==index){
-                    tax_fixed_fee_percentage=tax.tax_rate;
-                }
-            }
-
-            if(product.vendor.service_charges_tax_id!=null){
-                if(product.vendor.service_charges_tax_id==index){
-                    tax_service_charges_percentage=tax.tax_rate;
-                }
-            }
-
-            if(product.vendor.delivery_charges_tax_id!=null){
-                if(product.vendor.delivery_charges_tax_id==index){
-                    tax_delivery_charges_percentage=tax.tax_rate;
-                }
-            }
-
-            if(product.vendor.container_charges_tax_id!=null){
-                if(product.vendor.container_charges_tax_id==index){
-                    tax_container_charges_percentage=tax.tax_rate;
-                }
-            }
-        });
-
-
-         
-
-        /*console.log(tax_fixed_fee_percentage);
-        if (product.vendor.get_tax_fixed_fee != null) {
-            tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
-        }tax_fixed_fee_percentage,tax_container_charges_percentage,tax_service_charges_percentage,tax_delivery_charges_percentage
-        if (product.vendor.get_tax_container_charges != null) {
-            tax_container_charges_percentage=product.vendor.get_tax_container_charges.tax_rate;
-        }
-        if (product.vendor.get_tax_service_charges != null) {
-            tax_service_charges_percentage=product.vendor.get_tax_service_charges.tax_rate;
-        }
-        if (product.vendor.get_tax_delivery_charges != null) {
-            tax_delivery_charges_percentage=product.vendor.get_tax_delivery_charges.tax_rate;
-        }*/
-
-
-        /*console.log("tax_fixed_fee_percentage"+tax_fixed_fee_percentage);
-        console.log("tax_container_charges_percentage"+tax_container_charges_percentage);
-        console.log("tax_service_charges_percentage"+tax_service_charges_percentage);
-        console.log("tax_delivery_charges_percentage"+tax_delivery_charges_percentage);*/
-        fixed_fee=product.vendor.fixed_fee;
-        fixed_fee_amount=product.vendor.fixed_fee_amount;
-        total_fixed_fee_amount=parseFloat(total_fixed_fee_amount)+parseFloat(product.vendor.fixed_fee_amount);
-        price_bifurcation=product.vendor.price_bifurcation;
-        if ( cart_details.wallet_amount_used > 0  ) {
-            total_wallet_amount_used=parseFloat(total_wallet_amount_used)+parseFloat(cart_details.wallet_amount_used);
-        }
-
-        other_taxes=(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+(parseFloat(cart_details.delivery_charges)*tax_delivery_charges_percentage/100);
-           
-        %>
-        <div id="thead_<%= product.vendor.id %>">
-            <div class="row">
-                <div class="col-12">
-                    <h5 class="m-0"><b><%= product.vendor.name %><%= product.fix_fee_tax %></b></h5>
-                    <input type="hidden" name="category_name" id="category_name" value= "<%= product.vendor.name %>" />
-                </div>
-                <div class="col-12">
-                    <div class="countdownholder alert-danger" id="min_order_validation_error_<%= product.vendor.id %>" style="display:none;">Your cart will be expired in </div>
-                </div>
-                <% if( product.is_vendor_closed == 1 && product.closed_store_order_scheduled == 0 ) {
-                    closed_store= 1; %>
-                    <div class="col-12">
-                        <div class="text-danger">
-                            <i class="fa fa-exclamation-circle"></i>{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}
-                        </div>
-                    </div>
-                <% }else if( product.is_vendor_closed == 1 && product.closed_store_order_scheduled == 1 ){ %>
-                    <div class="col-12">
-                        <div class="text-danger">
-                            <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders right now. You can schedule this for ')}}<%= product.delaySlot %>
-                        </div>
-                    </div>
-                <% } %>
-
-                <% if( (parseFloat(product.vendor.order_min_amount) > 0) &&  (parseFloat(cart_details.total_payable_amount)+parseFloat(total_wallet_amount_used) < parseFloat(product.vendor.order_min_amount)) ) { %>
-                    <div class="col-12" id="MOV_Notification">
-                        <div class="text-danger">
-                            <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders less then ')}} {{Session::get('currencySymbol')}}<%= Helper.formatPrice(product.vendor.order_min_amount) %>
-                        </div>
-
-                    </div>
-                <% } %>
-                <div id="mov" style="display:none;"><%= product.vendor.order_min_amount %> </div>
-                <% if( (product.isDeliverable != undefined) && (product.isDeliverable == 0) ) { %>
-                    <div class="col-12">
-                        <div class="text-danger">
-                            <i class="fa fa-exclamation-circle"></i> Products for this vendor are not deliverable at your area. Please change address or remove product.
-                        </div>
-                    </div>
-                <% } %>
-
-            </div>
-        </div>
-        <hr class="mt-2">
-        <div id="tbody_<%= product.vendor.id %>">
-            <% _.each(product.vendor_products, function(vendor_product, vp){%>
-                <div class="row align-items-md-center vendor_products_tr alFourTemplateCartPage" id="tr_vendor_products_<%= vendor_product.id %>">
-                    <div class="product-img col-3 col-md-2 pr-0">
-                        <% if(vendor_product.pvariant.media_one) { %>
-                            <img class='blur-up lazyload w-100' data-src="<%= vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_one.pimage.image.path.image_path %>">
-                        <% }else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){ %>
-                            <img class='blur-up lazyload w-100' data-src="<%= vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_second.image.path.image_path %>">
-                        <% }else{ %>
-                            <img class='blur-up lazyload w-100' data-src="<%= vendor_product.image_url %>">
-                        <% } %>
-                    </div>
-                    <div class="col-9 col-md-10">
-                        <div class="row align-items-md-center">
-                            <div class="col-md-3">
-                                <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
-                                <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "<%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %>" />
-                                <% _.each(vendor_product.pvariant.vset, function(vset, vs){%>
-                                    <% if(vset.variant_detail.trans) { %>
-                                        <label><span><b><%= vset.variant_detail.trans.title %>:</b></span> <%= vset.option_data.trans.title %></label>
-                                    <% } %>
-                                <% }); %>
-                            </div>
-                            <div class="col-md-2 mb-1 mb-md-0">
-                                <span class="alFourTempTitle">Price</span>
-                                <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></div>
-                            </div>
-                            <div class="col-7 col-md-4 text-md-center">
-                                <div class="number d-flex justify-content-md-center">
-                                    <div class="counter-container d-flex align-items-center">
-                                        <span class="minus qty-minus" data-minimum_order_count="<%= vendor_product.product.minimum_order_count %>"
-                                        data-batch_count="<%= vendor_product.product.batch_count %>" data-id="<%= vendor_product.id %>" data-base_price=" <%= vendor_product.pvariant.price %>" data-vendor_id="<%= vendor_product.vendor_id %>">
-                                            <i class="fa fa-minus" aria-hidden="true"></i>
-                                        </span>
-                                        <input placeholder="1" type="text" data-minimum_order_count="<%= vendor_product.product.minimum_order_count %>"
-                                        data-batch_count="<%= vendor_product.product.batch_count %>" value="<%= vendor_product.quantity %>" class="input-number" step="0.01" id="quantity_<%= vendor_product.id %>" readonly>
-                                        <span class="plus qty-plus" data-minimum_order_count="<%= vendor_product.minimum_order_count %>"
-                                            data-batch_count="<%= vendor_product.product.batch_count %>" data-id="<%= vendor_product.id %>" data-base_price=" <%= vendor_product.pvariant.price %>">
-                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                                <% if(cart_details.pharmacy_check == 1){ %>
-                                    <% if(vendor_product.product.pharmacy_check == 1){ %>
-                                        <button type="button" class="btn btn-solid prescription_btn mt-2" data-product="<%= vendor_product.product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">Add Prescription</button>
-                                    <% } %>
-                                <% } %>
-                            </div>
-
-                            <div class="col-5 col-md-2 text-left">
-                                <span class="alFourTempTitle">Total</span>
-                                <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_price) %></div>
-                            </div>
-                            <div class="col-md-1 text-right text-md-center p-in">
-                                <a class="action-icon d-block remove_product_via_cart" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
-                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                </a>
-                            </div>
-                        </div>
-                        <% if(vendor_product.addon.length != 0) { %>
-                            <hr class="my-2">
-                            <div class="row align-items-md-center">
-                                <div class="col-12">
-                                    <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
-                                </div>
-                            </div>
-                            <% _.each(vendor_product.addon, function(addon, ad){%>
-                            <% if(addon.option){%>
-                                <div class="row">
-                                    <div class="col-md-3 col col-sm-4 items-details">
-                                        <p class="p-0 m-0"><%= addon.option.title %></p>
-                                    </div>
-                                    <div class="col-md-6 col col-sm-4">
-                                        <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.price_in_cart * addon.option.multiplier) %></div>
-                                    </div>
-                                    <div class="col-md-3 col col-sm-4">
-                                        <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
-                                    </div>
-                                </div>
-                            <% } %>
-                            <% }); %>
-                        <% } %>
-
-                        <% if(vendor_product.pvariant.container_charges > 0){%>
-                            <div class="row">
-                                <div class="col-md-3 col-sm-4 items-details text-left">
-                                    <p class="p-0 m-0 alert-danger">{{ __('Container Charges') }} *</p>
-                                </div>
-                                <div class="col-md-2 col-sm-4 text-center">
-                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.container_charges) %> 
-                                    <% 
-                                    
-                                    /* --- Vendor Tax Get Percentage ---- */
-                                    _.each(cart_details.taxRates, function(tax, index){
-                                        if(vendor_product.product.container_charges_tax_id!=null){
-                                            if(vendor_product.product.container_charges_tax_id==index){
-                                                product_container_charges_tax_amount+=parseFloat(vendor_product.pvariant.container_charges)*parseFloat(tax.tax_rate)/100;
-                                            }
-                                        }                         
-                                    });
-                                    console.log("product_container_charges_tax_amount"+product_container_charges_tax_amount);
-                                     %></div>
-                                </div>
-                                <div class="col-md-7 col-sm-4 text-right">
-                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_container_charges) %></div>
-                                </div>
-                            </div>
-                        <% } %>
-                    </div>
-
-                    <% if( (vendor_product.product.delay_order_time.delay_order_hrs != undefined && vendor_product.product.delay_order_time.delay_order_min != undefined ) &&  ((vendor_product.product.delay_order_time.delay_order_hrs != 0) || (vendor_product.product.delay_order_time.delay_order_hrs != 0))) { %>
-                        <div class="col-12">
-                            <div class="text-danger" style="font-size:12px;">
-                                <i class="fa fa-exclamation-circle"></i>Preparation Time is
-                                <% if(vendor_product.product.delay_order_time.delay_order_hrs > 0) { %>
-                                    <%= vendor_product.product.delay_order_time.delay_order_hrs %> Hrs
-                                <% } %>
-                                <% if(vendor_product.product.delay_order_time.delay_order_min > 0) { %>
-                                    <%= vendor_product.product.delay_order_time.delay_order_min %> Minutes
-                                <% } %>
-                            </div>
-                        </div>
-                    <% } %>
-                    <% if( (vendor_product.product_out_of_stock == 1 ) ) { %>
-                        <div class="col-12">
-                            <div class="text-danger" style="font-size:12px;">
-                                <i class="fa fa-exclamation-circle"></i>{{__("This Product is out of stock")}}
-                            </div>
-                        </div>
-                    <% } %>
-                    @if($client_preference_detail->product_order_form ==1)
-                        <% if( (vendor_product.faq_count > 0 ) && (vendor_product.user_product_order_form == '' || vendor_product.user_product_order_form == null ) ) { %>
-                        <div class=" col-3 <%= vendor_product.faq_count %>  " id="product_faq_dev_<%= vendor_product.product_id %>">
-                            <input type="hidden" name="product_faq_ids" value="<%= vendor_product.product_id %>">
-                            <div class="text-center my-3 btn-product-order-form-div">
-                                <button class="clproduct_cart_order_form btn btn-solid w-100" id="add__cart_product_form" data-dev_remove_id="product_faq_dev_<%= vendor_product.product_id %>" data-product_id="<%= vendor_product.product_id %>"  data-vendor_id="<%= vendor_product.vendor_id %>">{{__('Product Order Form')}}</button>
-                            </div>
-                        </div>
-                        <% } %>
-                    @endif
-
-                </div>
-                <input type="hidden" name="cart_product_ids[]" value="<%= vendor_product.id %>">
-
-                <hr class="my-1">
-            <% }); %>
-            <div class="row">
-                 @if(!$guest_user)
-                <div class="col-lg-6 mb-3 mb-lg-0 ">
-                <% if(product.is_promo_code_available > 0) { %>
-                    <div class="coupon_box w-100 d-flex align-content-center">
-                        <img class="blur-up lazyload" data-src="{{ asset('assets/images/discount_icon.svg') }}">
-                        <label class="mb-0 ml-2">
-                            <% if(product.coupon) { %>
-                                <%= product.coupon.promo.name %>
-                            <% }else{ %>
-                                <a href="javascript:void(0)" class="promo_code_list_btn ml-1" data-vendor_id="<%= product.vendor.id %>" data-cart_id="<%= cart_details.id %>" data-amount="<%= product.product_sub_total_amount  %>">{{__('Select a promo code')}}</a>
-                            <% } %>
-                        </label>
-                    </div>
-                    <% if(product.coupon) { %>
-                        <label class="p-1 m-0"><a href="javascript:void(0)" class="remove_promo_code_btn ml-1" data-coupon_id="<%= product.coupon ? product.coupon.promo.id : '' %>" data-cart_id="<%= cart_details.id %>">Remove</a></label>
-                    <% } %>
-                <% } %>
-                </div>
-                @endif
-                <div class="col-lg-6">
-                    <% if(product.delOptions) { %>
-                        <div class="row mb-1 d-flex align-items-center">
-                            <div class="col-5 text-lg-right">
-                                <label class="m-0 radio">
-                                    {{__('Delivery Fee')}} :</label>
-                                </div>
-                            <div class="col-7">
-                                <%= product.delOptions %>
-                            </div>
-                        </div>
-                    <% } %>
-                    <% if(product.vendor.fixed_fee_amount>0) { %>
-                        <div class="row mb-1 d-flex align-items-center">
-                            <div class="col-5 text-lg-right">
-                                <label class="m-0 radio">
-                                    {{__($fixedFee)}} :</label>
-                                </div>
-                            <div class="col-7">
-                            <%= product.vendor.fixed_fee_amount %> 
-                            </div>
-
-                        </div>
-                    <% } %>
-                    <div class="row mb-1">
-                        <div class="col-5 text-lg-right">
-                            <% if(product.coupon_amount_used > 0) { %>
-                                <label class="m-0 radio">{{__('Coupon Discount')}} :</label>
-                            <% } %>
-                        </div>
-                        <div class="col-7 text-right">
-                            <% if(product.coupon_amount_used > 0) { %>
-                                <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.coupon_amount_used) %></p>
-                                <% } %>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <% if(cart_details.vendorCnt>1) { %>
-                            <div class="col-5 text-lg-right">
-                                <label class="m-0 radio">{{__('Sub Total')}} :</label>
-                            </div>
-                            <div class="col-7 text-right">
-                                <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(parseFloat(product.product_total_amount)+parseFloat(product.vendor.fixed_fee_amount)) %></p>
-                            </div>
-
-                            <% } %>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <hr class="my-1">
-    <% }); %>
-    <div class="row">
-    <input type="hidden" name="without_category_kyc" value="<%= cart_details.without_category_kyc %>">
-        @if($client_preference_detail->category_kyc_documents ==1)
-            <% if( (cart_details.category_kyc_count > 0 ) ) { %>
-            <div class=" col-3 <%= cart_details.category_kyc_count %>  " id="category_kyc_dev_<%= cart_details.category_rendem_id %>">
-                <input type="hidden" name="category_kyc_ids" value="<%= cart_details.category_rendem_id %>">
-                <div class="text-center my-3 btn-category_kyc-div">
-                    <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_<%= cart_details.category_rendem_id %>" data-category_id="<%= cart_details.category_ids %>" >{{__('Category KYC')}}</button>
-                </div>
-            </div>
-
-            <% } %>
-        @endif
-        <div class="col-12">
-            @php
-             //dd($data);
-            @endphp
-            @if(isset($cart) && !empty($cart) && $client_preference_detail->business_type == 'laundry')
-            <div class="row">
-                <div class="col-4">{{__('Comment for Pickup Driver ')}}</div>
-                <div class="col-8"><input class="form-control" type="text" placeholder="{{__('Eg. Please reach before time if possible')}}" id="comment_for_pickup_driver" value ="{{$cart->comment_for_pickup_driver??''}}" name="comment_for_pickup_driver"></div>
-            </div>
-            <hr class="my-2">
-            <div class="row">
-                <div class="col-4">{{__('Comment for Dropoff Driver ')}}</div>
-                <div class="col-8"><input class="form-control" type="text" placeholder="{{__('Eg. Do call me before drop off')}}" id="comment_for_dropoff_driver" value ="{{$cart->comment_for_dropoff_driver??''}}"  name="comment_for_dropoff_driver"></div>
-            </div>
-            <hr class="my-2">
-            <div class="row">
-                <div class="col-4">{{__('Comment for Vendor ')}}</div>
-                <div class="col-8"><input class="form-control" type="text"  placeholder="{{__('Eg. Please do the whites separately')}}" id="comment_for_vendor" value ="{{$cart->comment_for_vendor??''}}"  name="comment_for_vendor"></div>
-            </div>
-
-            <hr class="my-2">
-            <% if( closed_store== 0 ) { %>
-            <div class="row">
-                <div class="col-md-6">
-                    <label for="">{{__('Schedule Pickup ')}}</label>
-                    <% if(cart_details.pickup_delay_date != 0) { %>
-                        <!-- <input type="text" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_pickup != '') ? cart_details.schedule_pickup : '') %>" min="<%= ((cart_details.pickup_delay_date != '0') ? cart_details.pickup_delay_date : '') %>"> -->
-                        <input type="date" id="schedule_datetime_pickup_date" onchange="handler(event);"  name="schedule_pickup_date" required/>
-	                        <input class='time durationMinMaxPickup d-none form-control' type='text' id="schedule_datetime_pickup_time"  name="schedule_pickup_time" value="0:00" required/>
-                    <% } else { %>
-                            <!-- <input type="text" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_pickup??'' }}" min="{{ $now }}"> -->
-                            <input type="date" id="schedule_datetime_pickup_date" onchange="handler(event);"  name="schedule_pickup_date"required/>
-	                        <input class='time durationMinMaxPickup d-none form-control' type='text' id="schedule_datetime_pickup_time"  name="schedule_pickup_time" value="0:00" required/>
-                    <% } %>
-                </div>
-                <div class="col-md-6">
-                    <label for="">{{__('Schedule Dropoff ')}} </label>
-                    <% if(cart_details.dropoff_delay_date != 0) { %>
-                        <!-- <input type="text" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_dropoff != '') ? cart_details.schedule_dropoff : '') %>" min="<%= ((cart_details.dropoff_delay_date != '0') ? cart_details.dropoff_delay_date : '') %>"> -->
-                        <input type="date" id="schedule_datetime_dropoff_date" onchange="handler(event);"  name="schedule_dropoff_date"/>
-	                    <input class='time durationMinMaxDropoff d-none form-control' type='text' id="schedule_datetime_dropoff_time"  name="schedule_dropoff_time" value="0:00"/>
-                    <% } else { %>
-                            <!-- <input type="date" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_dropoff??'' }}" min="{{ $now }}"> -->
-                            <input type="date" id="schedule_datetime_dropoff_date" onchange="handler(event);"  name="schedule_dropoff_date"/>
-	                        <input class='time durationMinMaxDropoff d-none form-control' type='text' id="schedule_datetime_dropoff_time"  name="schedule_dropoff_time" value="0:00" />
-                    <% } %>
-
-                </div>
-            </div>
-            <% } %>
-            @else
-            <div class="row">
-
-                <div class="col-12 alFourSpecificInstructions">
-                    {{__('Specific instructions')}}
-                    <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions">
-                </div>
-            </div>
-           @endif
-
-        </div>
-        <div class="offset-lg-5 col-lg-7 offset-xl-6 col-xl-6 mt-3">
-            <% if(cart_details.total_service_fee > 0 && price_bifurcation!=1) { %>
-                <div class="row">
-                    <div class="col-6">{{__('Service Fee')}}</div>
-                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_service_fee) %></b></div>
-                </div>
-                <hr class="my-2">
-            <% } %>
-
-            <% if(total_fixed_fee_amount > 0 && price_bifurcation!=1) { %>
-                <div class="row">
-                    <div class="col-6">{{__($fixedFee)}}</div>
-                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(total_fixed_fee_amount) %></b></div>
-                    <input type="hidden" name="total_fixed_fee_amount" data-curr="{{Session::get('currencySymbol')}}" value="<%= total_fixed_fee_amount %>">
-                </div>
-                <hr class="my-2">
-            <% } %>
-
-            <% if(cart_details.total_container_charges > 0 && price_bifurcation!=1) { %>
-                <div class="row">
-                    <div class="col-6">{{__('Total Container Charges')}}</div>
-                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_container_charges) %></b></div>
-                </div>
-                <hr class="my-2">
-            <% }
-            if(product_container_charges_tax_amount!=0){
-                other_taxes=other_taxes+product_container_charges_tax_amount;
-                console.log('product');
-            }else{
-                console.log('vendor');
-                other_taxes=other_taxes+(parseFloat(cart_details.total_container_charges)*tax_container_charges_percentage/100);
-            }
-            if(price_bifurcation!=1){  %>
-            <div class="row">
-                <div class="col-6">{{__('Tax')}}</div>
-                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_taxable_amount)+other_taxes) %></b></div>
-            </div>
-            <% } if(price_bifurcation!=1){ %>
-            <hr class="my-2">
-            <div class="row">
-                <div class="col-6">{{__('Total')}}</div>
-                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount"><%= Helper.formatPrice(parseFloat(cart_details.gross_amount)+other_taxes) %></b></span>
-                <span id="other_taxes" style="display:none;"><%= other_taxes %></span></div>
-            </div>
-            <% } %>
-            <hr class="my-2">
-            <% if(cart_details.total_subscription_discount != undefined) { %>
-                <div class="row">
-                    <div class="col-6">{{__('Subscription Discount')}}</div>
-                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_subscription_discount) %></b></div>
-                </div>
-                <hr class="my-2">
-            <% } %>
-            <% if(cart_details.loyalty_amount > 0 && price_bifurcation!=1) { %>
-                <div class="row">
-                    <div class="col-6">{{__('Loyalty Amount')}}</div>
-                    <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="loyalty_amount"><%= Helper.formatPrice(cart_details.loyalty_amount) %></span></b></div>
-                </div>
-                <hr class="my-2">
-            <% } %>
-            <% if(cart_details.wallet_amount_used > 0) { %>
-                <div class="row">
-                    <div class="col-6">{{__('Wallet Amount')}}</div>
-                    <div class="col-6 text-right" id="wallet_amount_used"> - {{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.wallet_amount_used)+parseFloat(other_taxes)) %></div>
-                    <div class="col-6 text-right" id="wallet_amount_used_fixed" style="display:none"><%= parseFloat(cart_details.wallet_amount_used)+parseFloat(other_taxes) %></div>
-                    <div class="col-6 text-right" id="wallet_amount_available" style="display:none"><%= cart_details.wallet_amount_available %></div>
-                </div>
-                <hr class="my-2">
-            <% }else{ %>
-                <div class="col-6 text-right" id="wallet_amount_used" style="display:none">0</div>
-                <% } %>
-
-            <% if(client_preference_detail.tip_before_order == 1) { %>
-            <div class="row">
-                <div class="col-12">
-                    <div class="mb-2">@if(getNomenclatureName('Want To Tip', true)!='Want To Tip') {{ getNomenclatureName('Want To Tip', true) }} @else {{__('Do you want to give a tip?')}} @endif</div>
-                    <div class="tip_radio_controls">
-                        <% if(cart_details.total_payable_amount > 0) { %>
-                            <input type="radio" class="tip_radio" id="control_01" name="select" value="<%= cart_details.tip_5_percent %>" <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> checked <% } %>>
-                            <label class="tip_label" for="control_01">
-                                <h5 class="m-0" id="tip_5">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.tip_5_percent)  %></h5>
-                                <p class="m-0">5%</p>
-                            </label>
-
-                            <input type="radio" class="tip_radio" id="control_02" name="select" value="<%= cart_details.tip_10_percent %>" >
-                            <label class="tip_label" for="control_02">
-                                <h5 class="m-0" id="tip_10">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.tip_10_percent) %></h5>
-                                <p class="m-0">10%</p>
-                            </label>
-
-                            <input type="radio" class="tip_radio" id="control_03" name="select" value="<%= cart_details.tip_15_percent %>" >
-                            <label class="tip_label" for="control_03">
-                                <h5 class="m-0" id="tip_15">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.tip_15_percent) %></h5>
-                                <p class="m-0">15%</p>
-                            </label>
-
-                            <input type="radio" class="tip_radio" id="custom_control" name="select" value="custom" >
-                            <label class="tip_label" for="custom_control">
-                                <h5 class="m-0">{{__('Custom')}}<br>{{__('Amount')}}</h5>
-                            </label>
-                        <% } %>
-                    </div>
-                    <div class="custom_tip my-1 <% if(cart_details.total_payable_amount > 0) { %> d-none <% } %>">
-                        <input class="input-number form-control" name="custom_tip_amount" id="custom_tip_amount" placeholder="{{ __('Enter Custom Amount') }}" type="number" value="" step="0.1">
-                    </div>
-                </div>
-            </div>
-            <hr class="my-2">
-
-            <% } %>
-            <% if(client_preference_detail.gifting == 1) { %>
-                <div class="row">
-                    <div class="col-12">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" style="margin-left: 10px;"  id="is_gift" name="is_gift" value="1">
-
-                                <label class="custom-control-label" for="is_gift"><img class="pr-1 align-middle blur-up lazyload" data-src="{{ asset('assets/images/gifts_icon.png') }}" alt=""> <span class="align-middle pt-1"> {{__('Does this include a gift?')}}</span></label>
-                            </div>
-                    </div>
-                </div>
-                <hr class="my-2">
-            <% } %>
-            <div class="row">
-                <div class="col-6">
-                    <p class="total_amt m-0">{{__('Amount Payable')}} <small>(incl. tax)</small> </p>
-                </div>
 
 
 
-
-                <div class="col-6 text-right">
-                    <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
-                        <% if(parseFloat(cart_details.wallet_amount_used) > 0) { %>
-                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)) %></p>
-                        <% } else { %>
-                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes) %></p>
-                        <% } %>
-                        <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
-                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
-                                
-                        <% }else{ %>
-                            <% if(parseFloat(cart_details.wallet_amount_used) > 0) { %>
-                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)) %></p>
-                            <% } else { %>
-                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+other_taxes) %></p>
-                            <% } %>
-                            <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                                    <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+other_taxes %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
-                            <%
-                        } %>
-                        <div>
-                        <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="<%= cart_details.total_payable_amount %>">
-                    </div>
-
-
-                </div>
-            </div>
-            <hr class="my-2">
-
-
-
-        </div>
-
-    </div>
-    {{-- Schedual code Start at down --}}
-
-            <% if(client_preference_detail.off_scheduling_at_cart != 1 && cart_details.vendorCnt==1) { %>
-                @if($client_preference_detail->business_type != 'laundry')
-            <div class="row arabic-lng position-relative mb-2" id="dateredio">
-                <div class=" col-md-12 mb-2 mb-md-0 text-right">
-                    <div class="login-form">
-                        <ul class="list-inline ml-auto d-flex align-items-center justify-content-end">
-                            <li class="d-inline-block mr-1">
-                                <input type="hidden" class="custom-control-input check" id="vendor_id" name="vendor_id" value="<%= cart_details.vendor_id %>" >
-                                <input type="hidden" class="custom-control-input check" id="tasknow" name="task_type" value="<%= ((cart_details.schedule_type == 'schedule') ? 'schedule' : 'now') %>" >
-                           <!-- <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button> -->
-                            </li>
-                            <% if(cart_details.delay_date == 0) { %>
-                            {{-- <li class="d-inline-block mr-1">
-                                <input type="radio" class="custom-control-input check" id="tasknow" name="tasktype" value="now" <%= ((cart_details.schedule_type == 'now' || cart_details.schedule_type == '' || cart_details.schedule_type == null) ? 'checked' : '') %> >
-                                <label class="btn btn-solid" for="tasknow">{{__('Now')}}</label>
-                            </li> --}}
-                            <% } %>
-                            <li class="d-inline-block ">
-                                <input type="radio" class="custom-control-input check taskschedulebtn" id="taskschedule" name="tasktype" value="" <%= ((cart_details.schedule_type == 'schedule' || cart_details.delay_date != 0) ? 'checked' : '') %>  style="<%= ((cart_details.schedule_type != 'schedule') ? '' : 'display:none!important') %>">
-                                <label class="btn btn-solid mb-0 taskschedulebtn" for="taskschedule" style="<%= ((cart_details.schedule_type != 'schedule') ? '' : 'display:none!important') %>">{{__('Schedule')}}</label>
-                            </li>
-                            <% if(cart_details.closed_store_order_scheduled != 1 && cart_details.deliver_status == 0) { %>
-                            <li class="close-window">
-                                <i class="fa fa-window-close cross"  aria-hidden="true"></i>
-                            </li>
-                            <% }else{ %>
-                                <li class="close-window">
-                                    <i class="fa fa-window-close cross" style="display:none!important"  aria-hidden="true"></i>
-                                </li>
-                                <% } %>
-
-                        </ul>
-                        <div class=" col-sm-4 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right" id="schedule_div" style="<%= ((cart_details.schedule_type != 'schedule' ) ? 'display:none!important' : '') %>">
-                    <% if(cart_details.slotsCnt ==0) { %>
-                    <% if(cart_details.delay_date != 0) { %>
-                        <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>"
-                        min="<%= ((cart_details.delay_date != '0') ? cart_details.delay_date : '') %>">
-                        <% } else { %>
-                            <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>"
-                            min="<%= ((cart_details.delay_date != '0') ? cart_details.delay_date : '') %>">
-
-                            <% } %>
-
-                    <% } else { %>
-
-
-                            <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.scheduled_date_time != '')?cart_details.scheduled_date_time : cart_details.delay_date ) %>"  min="<%= cart_details.delay_date %>" >
-                            <input type="hidden" id="checkSlot" value="1">
-                            <select name="slots" id="slot" onchange="checkSlotOrders();" class="form-control">
-                                <option value="">{{__("Select Slot")}} </option>
-                                <% _.each(cart_details.slots, function(slot, sl){%>
-                                <option value="<%= slot.value  %>" <%= slot.value == cart_details.scheduled.slot ? 'selected' : '' %> ><%= slot.name %></option>
-                                <% }) %>
-                            </select>
-                    <% } %>
-
-                </div>
-                    </div>
-                </div>
-
-            </div>
-            @endif
-            <% } %>
-
-            {{-- Schedual code end at down --}}
-</script>
 
 <script type="text/template" id="promo_code_template">
     <% _.each(promo_codes, function(promo_code, key){%>
@@ -821,47 +269,38 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <p>{{__('No Other Coupons Available.')}}</p>
     </div>
 </script>
-<div id="cart_main_page">
+
+<div class="cart-design">
+    <div id="mycart"></div>
     <div class="container">
         @if($cartData)
         <form method="post" action="" id="placeorder_form">
             @csrf
-            <div class="card-box">
-                <div class="row d-flex justify-space-around">
-                    @if(!$guest_user)
-                    <div class="col-lg-4 left_box">
+            <div class="card-box bg-transparent">
+                <!-- <div class="row d-flex justify-space-around"> -->
 
-                    </div>
-                    @endif
-                    <div class="{{ $guest_user ? 'col-md-12' : 'col-lg-8' }}">
-                        <div class="spinner-box">
-                            <div class="circle-border">
-                                <div class="circle-core"></div>
-                            </div>
+
+                    <div class="spinner-box">
+                        <div class="circle-border">
+                            <div class="circle-core"></div>
                         </div>
-
-                        <div class="cart-page-layout" id="cart_table"></div>
-
                     </div>
-                </div>
 
-                <div class="row mb-md-3 alFourTemplateCartButtons">
-                    <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-flex align-items-center justify-content-between">
+                    <div class="row cart-page-layout" id="cart_table"></div>
+
+                <!-- </div> -->
+                <!-- <div class="row mb-md-3 alFourTemplateCartButtons mt-4">
+                    <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
+                        @if(!empty(Auth::user()))
                         <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil" aria-hidden="true"></i> <span>{{ __('Edit') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</span> </a>
-                    </div>
-
-
-
-                    <div class="col-sm-6 col-lg-8 text-sm-right">
-
-                        @if(isset($ageVerify->status) && $ageVerify->status == 1)
-                            {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
                         @endif
-
-                        <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
                     </div>
-                </div>
+
+
+
+
+                </div> -->
             </div>
 
         </form>
@@ -1005,7 +444,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
             <div class="modal-body mt-0 pb-0 pt-4">
                 <div class="row validate_promo_div">
-                    <div class="col-10">
+                    <div class="col-9">
                         <div class="form-group" >
                             <input class="form-control manual_promocode_input" name="name" type="text" placeholder="{{ __('Enter a promocode')}}" >
                             <button class="btn btn-solid apply_promo_code_btn" data-vendor_id="" data-cart_id=""
@@ -1015,7 +454,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </span>
                         </div>
                     </div>
-                    <div class="col-2">
+                    <div class="col-3 p-0">
                         <button class="btn btn-solid validate_promo_code_btn" data-vendor_id="" data-cart_id=""
                             data-coupon_id="" data-amount="" style="cursor: pointer;">Apply</button>
                     </div>
@@ -1038,10 +477,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-center">
                 <input type="hidden" id="vendor_id" value="">
                 <input type="hidden" id="cartproduct_id" value="">
-                <h6 class="m-0">{{__('Are You Sure You Want To Remove This Item?')}}</h6>
+                <h6 class="m-0 px-3">{{__('Are You Sure You Want To Remove This Item?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
@@ -1094,6 +533,21 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <span class="error text-danger" id="stripe_fpx_error"></span>
                             </div>
                         <% } %>
+
+                        <% if(payment_option.slug == 'stripe_ideal' ) { %>
+                            <div class="col-md-12 mt-3 mb-3 stripe_ideal_element_wrapper option-wrapper d-none">
+                                <label for="ideal-bank-element">
+                                    iDEAL Bank
+                                </label>
+                                <div class="form-control">
+                                    <div id="ideal-bank-element">
+                                      <!-- A Stripe Element will be inserted here. -->
+                                    </div>
+                                </div>
+
+                                <span class="error text-danger"id="error-message"></span>
+                            </div>
+                        <% } %>
                         <% if(payment_option.slug == 'yoco') { %>
                             <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper option-wrapper d-none">
                                 <div class="form-control">
@@ -1110,6 +564,12 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <!-- form will be added here -->
                                 </div>
                                 <span class="error text-danger" id="checkout_card_error"></span>
+                            </div>
+                        <% } %>
+
+                        <% if(payment_option.slug == 'payphone') { %>
+                            <div class="col-md-12 mt-3 mb-3">
+                                <div id="pp-button"></div>
                             </div>
                         <% } %>
                     </div>
@@ -1130,7 +590,20 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
             </form>
         </div>
-        <div class="modal-footer d-block text-center">
+        <div class="modal-footer d-block text-center pt-0">
+            <div class="row">
+                <div class="col-12 grn_popop-total_amt">
+                    <label>{{ __('By placing this order I accept the') }}
+                        <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
+                            target="_blank">{{ __('Terms And Conditions') }} </a>
+                        {{ __('and have read the') }}
+                        <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
+                            target="_blank">
+                            {{ __('Privacy Policy') }}.
+                        </a>
+                    </label>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-sm-12 p-0 d-flex flex-fill">
                     <button type="button" style="width:100%;" class="btn btn-solid ml-1 proceed_to_pay">{{__('Place Order')}}
@@ -1348,7 +821,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 </div>
 
 <div id="prescription_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{__('Add Prescription')}}</h4>
@@ -1358,22 +831,29 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 @csrf
                 <div class="modal-body" id="AddCardBox">
                     <div class="row">
-                        <div class="col-sm-6" id="imageInput">
+                        <div class="col-sm-12 position-relative" id="imageInput">
                             <input type="hidden" id="vendor_idd" name="vendor_idd" value="" />
                             <input type="hidden" id="product_id" name="product_id" value="" />
-                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="prescriptions[]" class="dropify" multiple />
-                            <p class="text-muted text-center mt-2 mb-0">{{__('Upload Prescription')}}</p>
+                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="prescriptions[]" class="dropify uploaded-prescription-img" multiple />
+                            <!-- <img id="uploaded-prescription" style="margin-top: 9px;display:none;" src="#"/> -->
+                            <div class="uploaded-prescription"></div>
+                            <p class="text-muted text-center mt-2 mb-0">{{__('Uploaded Prescription(s)')}}</p>
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
+
                         </div>
+
                     </div>
+                        <div class="show-prescription-doc">
+                             </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light submitPrescriptionForm">{{__('Submit')}}</button>
                 </div>
             </form>
         </div>
+
     </div>
 </div>
 <div class="modal fade pick-address" id="pick_address" tabindex="-1" aria-labelledby="pick-addressLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -1534,15 +1014,27 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     //     });
     // }, 2500);
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous">
 </script>
-
+@if(in_array('payphone',$client_payment_options))
+<script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
+@endif
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
-@if(in_array('stripe',$client_payment_options))
+@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options) || in_array('stripe_ideal',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+@endif
+@if(in_array('stripe_oxxo',$client_payment_options))
+<script>
+var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
+</script>
+@endif
+@if(in_array('stripe_ideal',$client_payment_options))
+<script>
+var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
+</script>
 @endif
 @if(in_array('yoco',$client_payment_options))
 <script type="text/javascript" src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
@@ -1559,22 +1051,52 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @if(in_array('paytabs',$client_payment_options))
 <script src="https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"></script>
 @endif
-
+@if(in_array('khalti',$client_payment_options))
+    <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
+@endif
+<script src="{{ asset('assets/libs/dropzone/dropzone.min.js') }}"></script>
+<script src="{{ asset('assets/libs/dropify/dropify.min.js') }}"></script>
 <script type="text/javascript" src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
+<script type="text/javascript">
+    var business_type = "<?= $client_preferences->business_type; ?>";
+    var scheduling_with_slots = "<?= $client_preferences->scheduling_with_slots; ?>";
+    var off_scheduling_at_cart = "<?= $client_preferences->off_scheduling_at_cart; ?>";
+</script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/apple_pay.js')}}"></script>
-
 <script type="text/javascript">
+    $(document).ready(function(){
+        $('.dropify').dropify({
+            messages: {
+                'default': "{{ __('Drag and drop a file here or click')}}",
+                'replace': "{{ __('Drag and drop or click to replace')}}",
+                'remove':  "{{ __('Remove')}}",
+                'error':   "{{ __('Ooops, something wrong happended.')}}"
+            }
+        });
+
+        $('.dropify-clear').click(function(e){
+            e.preventDefault();
+            $(".uploaded-prescription").empty();
+
+        });
+    });
+
     var stripe_fpx = '';
     var fpxBank = '';
+    var idealBank = {};
     var guest_cart = {{ $guest_user ? 1 : 0 }};
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_payphone_url = "{{route('payphone.createHash')}}";
+    var payphone_refund_wallet = "{{route('payphone.refund')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
+    var create_windcave_hash_url = "{{route('windcave.createHash')}}";
+    var create_dpo_tocken_url = "{{route('dpo.createTocken')}}";
+    var create_paytech_hash_url = "{{route('paytech.createHash')}}";
     var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
@@ -1583,19 +1105,26 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
+    var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
+    var payment_create_stripe_ideal_url = "{{url('payment/create/stripe_ideal')}}";
+    var payment_retrive_stripe_ideal_url = "{{url('payment/retrieve/stripe_ideal')}}";
+    var get_product_prescription = "{{url('get/product/prescription')}}";
+    var cart_clear_stripe_oxxo_url = "{{url('payment/stripe_oxxo/clear')}}";
     var user_store_address_url = "{{route('address.store')}}";
     var product_faq_update_url = "{{ route('cart.productfaq') }}";
     var promo_code_remove_url = "{{ route('remove.promocode') }}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
     var payment_success_paypal_url = "{{ route('payment.paypalCompletePurchase') }}";
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
-    var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
+   // var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
     var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
     var payment_mobbex_url = "{{route('payment.mobbexPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
+    var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
+    var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
 
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
@@ -1605,12 +1134,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var update_cart_schedule = "{{route('cart.updateSchedule')}}";
     var verifyaccounturl = "{{route('user.verify')}}";
     var check_schedule_slots = "{{route('cart.check_schedule_slots')}}";
+    var check_pickup_schedule_slots = "{{route('cart.check_pickup_schedule_slots')}}";
+    var check_dropoff_schedule_slots = "{{route('cart.check_dropoff_schedule_slots')}}";
     var login_via_username_url = "{{route('customer.loginViaUsername')}}";
     var forgot_password_url = "{{route('customer.forgotPass')}}";
     var order_success_return_url = "{{route('order.return.success')}}";
     var my_orders_url = "{{route('user.orders')}}";
     var validate_promocode_coupon_url = "{{ route('verify.promocode.validate_code') }}";
-
+    var update_cart_product_schedule = "{{route('cart.updateProductSchedule')}}";
     var post_toyyibpay_via_gateway_url = "{{route('payment.toyyibpay.index')}}";
 
     var latitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
@@ -1948,6 +1479,43 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         $("#error-msg").hide();
     });
 
+    // function readPrescriptionURL(input) {
+    //     if (input.files && input.files[0]) {
+    //         var reader = new FileReader();
+    //         $("#uploaded-prescription").css("display", "block");
+    //         reader.onload = function (e) {
+    //             $('#uploaded-prescription').attr('src', e.target.result).width(120).height(87);
+    //         };
+
+    //         reader.readAsDataURL(input.files[0]);
+    //     }
+    // }
+
+    $(function() {
+        // Multiple images preview in browser
+        var imagesPreview = function(input, placeToInsertImagePreview) {
+
+            if (input.files) {
+                var filesAmount = input.files.length;
+
+                for (i = 0; i < filesAmount; i++) {
+                    var reader = new FileReader();
+
+                    reader.onload = function(event) {
+                        $($.parseHTML('<img>')).attr('src', event.target.result).width(120).height(87).css("margin", '2px').appendTo(placeToInsertImagePreview);
+                    }
+
+                    reader.readAsDataURL(input.files[i]);
+                }
+            }
+
+        };
+
+        $('.uploaded-prescription-img').on('change', function() {
+            imagesPreview(this, 'div.uploaded-prescription');
+        });
+    });
+
     function assignPhoneInput() {
         var input = document.querySelector("#username");
         var country = $('#countryData').val();
@@ -2165,22 +1733,27 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     {
         var url = "{{route('checkSlotOrders')}}"
         var schedule_datetime = $('#schedule_datetime').val();
-        var schedule_slot = $('#slot').val();
+        var schedule_pickup_datetime = $('#pickup_schedule_datetime').val();
+        var schedule_pickup_slot = $('#schedule_pickup_slot').val();
         var vendor_id = $('#vendor_id').val();
+
         $.ajax({
             type: "GET",
             data: {
+                "schedule_pickup_datetime": schedule_pickup_datetime,
                 "schedule_datetime": schedule_datetime,
-                "schedule_slot"    : schedule_slot,
-                "vendor_id"        : vendor_id,
+                "schedule_pickup_slot":     schedule_pickup_slot,
+                "vendor_id":                vendor_id,
             },
             url: url,
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(output) {
-                // Check if orderCount is greater equal to orders_per_slot
-                if(output.orderCount >= output.orders_per_slot){
+                console.log(output.orders_per_slot);
+                console.log(output.orderCount);
+                // Check if orderCount is greaten equal to orders_per_slot
+                if( (output.orderCount >= output.orders_per_slot) && (output.orders_per_slot != 0) ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
                     // Disable the place order button
                     $('#order_placed_btn').attr("disabled", true);
@@ -2223,11 +1796,56 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         }
     }
 
+    // Check Slot Availability
+    function checkSlotAvailability(obj)
+    {
+
+        var url = "{{route('checkSlotOrders')}}"
+        var schedule_datetime = $(obj).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
+        var schedule_slot = $(obj).val();
+        var vendor_id = $(obj).data('vendor_id');
+        $.ajax({
+            type: "GET",
+            data: {
+                "schedule_datetime": schedule_datetime,
+                "schedule_slot":     schedule_slot,
+                "vendor_id":         vendor_id,
+            },
+            url: url,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(output) {
+                // Check if orderCount is greaten equal to orders_per_slot //&& (output.orders_per_slot !=0)
+                if(output.orderCount >= output.orders_per_slot  ){
+                    success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
+                    // Disable the place order button
+                    $('#order_placed_btn').attr("disabled", true);
+                    return false;
+                }else{
+                    // Enable the place order button
+                    $('#order_placed_btn').attr("disabled", false);
+                }
+            },
+            error: function(output) {
+                // console.log(output);
+            },
+        });
+    }
+
+    $(document).delegate('#view_all_address', 'click', function() {
+
+        $("#view_all_address").addClass("d-none");
+        $("#view_all_address_div").removeClass("d-none");
+
+    });
+
     $(document).on('change', '[id^=input_file_logo_]', function(event){
         var rel = $(this).data('rel');
         // $('#plus_icon_'+rel).hide();
         readURL(this, '#upload_logo_preview_'+rel);
     });
+
 </script>
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>

@@ -11,10 +11,87 @@
 .iti.iti--allow-dropdown .phone,
 .flag-container .phone {padding: 17px 0 17px 100px !important;}
 .mdi-icons {color: #43bee1;font-size: 26px;vertical-align: middle;}
+.login-form input[type="radio"]:checked+label {
+    border: 1px solid #6658dd;
+}
+.ui-menu.ui-autocomplete {
+    z-index: 9000 !important;
+}
+.al_new_export_table.royo_customber_btn div.dataTables_wrapper div.dataTables_filter {position: absolute;right: 0;top: -92px;}
+.al_new_export_table.royo_customber_btn .dt-buttons.btn-group.flex-wrap {position: absolute;top: -92px !important;}
+
+.royo_customber_btn .position-absolute {top: 0;right: 32%;}
+.royo_customber_btn .card {background: none !important;box-shadow: none !important;}
+.royo_customber_btn .card-body {background: none !important;box-shadow: none !important;}
+
+
+.table_customber_add.royo_customber_btn div.dataTables_wrapper div.dataTables_filter {position: inherit;top: 0px !important;}
+
+@media  screen and (max-width:1800px){
+.royo_customber_btn .position-absolute {
+    left: 35%;
+}
+
+}
+
+
+@media screen and (max-width:1199px){
+.royo_customber_btn .position-absolute {
+    left: 5%;
+}
+
+}
+
+
+@media screen and (max-width:991px) {
+.royo_customber_btn .position-absolute {
+    left: 0%;
+}
+}
+
+@media screen and (max-width:767px) {
+.al_new_export_table.royo_customber_btn div.dataTables_wrapper div.dataTables_filter label input {
+    width: 100px !important;
+    height: 30px;
+    font-size: 10px;
+}
+.al_new_export_table.royo_customber_btn .dt-buttons.btn-group.flex-wrap{
+    left: 12%;
+}
+.royo_customber_btn .position-absolute .btn.btn-info{
+    font-size:10px;
+}
+.al_new_export_table.royo_customber_btn .dt-buttons.btn-group.flex-wrap .btn-success.waves-effect.waves-light{
+    height: 30px;
+    font-size: 10px;
+}
+.al_new_export_table .position-absolute.mb-2{
+    top: -4px;
+}
+}
+
+
+@media screen and (max-width:520px) {
+.al .sml_royo-responsive {
+    margin-top: 15% !important;
+}
+.al_new_export_table.royo_customber_btn .dt-buttons.btn-group.flex-wrap{
+    left:0px;
+    width:40%;
+    text-align:left;
+}
+.al_new_export_table.royo_customber_btn div.dataTables_wrapper div.dataTables_filter{
+    left:43%;
+}
+.dataTables_filter label{
+    float:left !important;
+}
+
+}
 </style>
 @endsection
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid alCustomersPage">
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
@@ -29,7 +106,7 @@
         <div class="col-12">
             <div class="card-box">
                 <div class="row">
-                    <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
+                    <div class="col-6 col-md-4 mb-3 mb-md-0">
                         <div class="text-center">
                             <h3>
                                 <i class="fa fa-user text-primary mdi-24px"></i>
@@ -38,7 +115,7 @@
                             <p class="text-muted font-15 mb-0">{{ __("Active User Count") }}</p>
                         </div>
                     </div>
-                    <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
+                    <div class="col-6 col-md-4 mb-3 mb-md-0">
                         <div class="text-center">
                             <h3>
                                 <i class="fas fa-user-clock text-primary mdi-24px"></i>
@@ -47,7 +124,7 @@
                             <p class="text-muted font-15 mb-0">{{ __("Inactive User Count") }}</p>
                         </div>
                     </div>
-                    <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
+                    <div class="col-6 col-md-4 mb-3 mb-md-0">
                         <div class="text-center">
                             <h3>
                                 <i class="mdi mdi-login text-primary mdi-24px"></i>
@@ -80,42 +157,126 @@
                         </div>
                     </div>
                 </div>
-                <div class="al_new_export_table">
-                    <div class=" position-absolute mb-2">
+                <div class="al_new_export_table royo_customber_btn table_customber_add">
+                    <div class="position-absolute mb-2">
                         <button class="btn btn-info waves-effect waves-light text-sm-right importUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                         </button>
                         <button class="btn btn-info waves-effect waves-light text-sm-right addUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                         </button>
+                        <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal" data-target="#pay-receive-modal" data-backdrop="static" data-keyboard="false">{{__("Edit Wallet")}}</button>
                     </div>
-                    <div class="table-responsive">
 
-                        <table class="table table-centered table-nowrap table-striped" id="user_datatable" width="100%">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>{{ __('Image')}}</th>
-                                    <th>{{ __('Name')}}</th>
-                                    <th>{{ __('Login Type') }}</th>
-                                    <th>{{ __('Signup Date')}}</th>
-                                    <th>{{ __('Last Login') }}</th>
-                                    <th>{{ __('Email/Auth-id')}}</th>
-                                    <th>{{ __('Phone')}}</th>
-                                    <th>{{ __("Email OTP") }}</th>
-                                    <th>{{ __("Phone OTP") }}</th>
-                                    <th>{{ __('Wallet')}}</th>
-                                    <th>{{ __('Orders')}}</th>
-                                    <th>{{ __('Loyalty Card')}}</th>
-                                    <th>{{ __('Active Orders') }}</th>
-                                    <th>{{ __('Total Order Value') }}</th>
-                                    <th>{{ __('Total Order Discount') }}</th>
-                                    <th>{{ __('Status')}}</th>
-                                    <th>{{ __('Action')}}</th>
-                                </tr>
-                            </thead>
-                            <tbody id="post_list">
 
-                            </tbody>
-                        </table>
+                    <div class="row mt-1 sml_royo-responsive">
+                        <div class="col-sm-12 col-lg-12 tab-product  pt-0">
+                            <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="active-user" data-toggle="tab" href="#active_user" role="tab" aria-selected="false" data-rel="active_user_datatable" data-status="1">
+                                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Active') }}<sup class="total-items" id="active_user_count">({{$active_users}})</sup>
+                                    </a>
+                                    <div class="material-border"></div>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="inactive-user" data-toggle="tab" href="#inactive_user" role="tab" aria-selected="true" data-rel="inactive_user_datatble" data-status="0">
+                                        <i class="icofont icofont-ui-home"></i>{{ __('InActive') }}<sup class="inactive_user_count">({{$inactive_users}})</sup>
+                                    </a>
+                                    <div class="material-border"></div>
+                                </li>
+                            </ul>
+                            <div class="tab-content nav-material pt-0" id="top-tabContent">
+                                <div class="tab-pane fade past-order show active" id="active_user" role="tabpanel" aria-labelledby="active-user">
+                                    <div class="row">
+                                        <div class="col-12">
+
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <form name="saveOrder" id="saveOrder"> @csrf</form>
+
+                                                        <table class="table table-centered table-nowrap table-striped" id="user_datatable" width="100%">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>#</th>
+                                                                    <th>{{ __('Image')}}</th>
+                                                                    <th>{{ __('Name')}}</th>
+                                                                    <th>{{ __('User Type')}}</th>
+                                                                    <th>{{ __('Login Type') }}</th>
+                                                                    <th>{{ __('Signup Date')}}</th>
+                                                                    <th>{{ __('Last Login') }}</th>
+                                                                    <th>{{ __('Email/Auth-id')}}</th>
+                                                                    <th>{{ __('Phone')}}</th>
+                                                                    <th>{{ __("Email OTP") }}</th>
+                                                                    <th>{{ __("Phone OTP") }}</th>
+                                                                    <th>{{ __('Wallet')}}</th>
+                                                                    <th>{{ __('Orders')}}</th>
+                                                                    <th>{{ __('Loyalty Card')}}</th>
+                                                                    <th>{{ __('Active Orders') }}</th>
+                                                                    <th>{{ __('Total Order Value') }}</th>
+                                                                    <th>{{ __('Total Order Discount') }}</th>
+                                                                    <th>{{ __('Status')}}</th>
+                                                                    <th>{{ __('Action')}}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="post_list">
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row address" id="def" style="display: none;">
+                                            <input type="text" id="def-address" name="test" class="autocomplete form-control def_address">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="inactive_user" role="tabpanel" aria-labelledby="inactive-user">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <form name="saveOrder" id="saveOrder"> @csrf</form>
+                                                        <table class="table table-centered table-nowrap table-striped" id="inactive_user_datatable" width="100%">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>#</th>
+                                                                    <th>{{ __('Image')}}</th>
+                                                                    <th>{{ __('Name')}}</th>
+                                                                    <th>{{ __('User Type')}}</th>
+                                                                    <th>{{ __('Login Type') }}</th>
+                                                                    <th>{{ __('Signup Date')}}</th>
+                                                                    <th>{{ __('Last Login') }}</th>
+                                                                    <th>{{ __('Email/Auth-id')}}</th>
+                                                                    <th>{{ __('Phone')}}</th>
+                                                                    <th>{{ __("Email OTP") }}</th>
+                                                                    <th>{{ __("Phone OTP") }}</th>
+                                                                    <th>{{ __('Wallet')}}</th>
+                                                                    <th>{{ __('Orders')}}</th>
+                                                                    <th>{{ __('Loyalty Card')}}</th>
+                                                                    <th>{{ __('Active Orders') }}</th>
+                                                                    <th>{{ __('Total Order Value') }}</th>
+                                                                    <th>{{ __('Total Order Discount') }}</th>
+                                                                    <th>{{ __('Status')}}</th>
+                                                                    <th>{{ __('Action')}}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="post_list">
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row address" id="def" style="display: none;">
+                                            <input type="text" id="def-address" name="test" class="autocomplete form-control def_address">
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -131,7 +292,13 @@
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        initDataTable();
+        initDataTable('user_datatable','active');
+        $(document).on("click","#inactive-user",function() {
+            initDataTable('inactive_user_datatable','inactive');
+        });
+        $(document).on("click","#active-user",function() {
+            initDataTable('user_datatable','active');
+        });
         $(document).on("click", ".delete-vendor", function() {
             var destroy_url = $(this).data('destroy_url');
             var id = $(this).data('rel');
@@ -154,10 +321,11 @@
         });
 
 
-        function initDataTable() {
+        function initDataTable(table,type) {
             try {
-                $('#user_datatable').DataTable({
+                $('#'+table).DataTable({
                     "dom": '<"toolbar">Bfrtip',
+                    "searching": true,
                     "destroy": true,
                     "scrollX": true,
                     "processing": true,
@@ -190,13 +358,14 @@
                             d.date_filter = $('#range-datepicker').val();
                             d.payment_option = $('#payment_option_select_box option:selected').val();
                             d.tax_type_filter = $('#tax_type_select_box option:selected').val();
+                            d.type = type;
                         }
                     },
                     "initComplete": function(settings, json) {
-                        var elems = Array.prototype.slice.call(document.querySelectorAll('.chk_box'));
-                        elems.forEach(function(html) {
-                            var switchery = new Switchery(html);
-                        });
+                        // var elems = Array.prototype.slice.call(document.querySelectorAll('.chk_box'));
+                        // elems.forEach(function(html) {
+                        //     var switchery = new Switchery(html);
+                        // });
                         $('.dataTables_filter input[type="search"]').css({
                             'width': '280px',
                             'display': 'inline-block'
@@ -205,11 +374,15 @@
                             'right': '320px'
                         });
                     },
-                    columns: [{
+                    columns: [
+                        {
                             data: 'id',
                             name: 'id',
                             orderable: false,
-                            searchable: false
+                            searchable: false,
+                            "mRender": function(data, type, nRow, meta) {
+                                return meta.row + meta.settings._iDisplayStart + 1;
+                            }
                         },
                         {
                             data: 'image_url',
@@ -232,6 +405,12 @@
                                 }
                                 return "<a href='" + full.edit_url + "'>" + full.name + "</a>"+ improtId;
                             }
+                        },
+                        {
+                            data: 'user_type',
+                            name: 'user_type',
+                            orderable: false,
+                            searchable: false
                         },
                         {
                             data: 'login_type',
@@ -310,14 +489,18 @@
                             orderable: false,
                             searchable: false,
                             "mRender": function(data, type, full) {
-                                return "<a href='javascript:void(0)' class='customer_wallet_link' data-id='" + full.wallet.id + "'>" + data + "</a>";
+                                return "<a href='javascript:void(0)' class='customer_wallet_link' data-id='" + full.wallet_id + "'>" + data + "</a>";
                             }
                         },
                         {
                             data: 'orders_count',
                             name: 'orders_count',
                             orderable: false,
-                            searchable: false
+                            searchable: false,
+                            "mRender": function(data, type, full) {
+
+                                return "<a href='javascript:void(0)' class='customer_order_link'  data-id='" + full.id + "'>" + data + "</a>";
+                            }
                         },
                          {
                             data: 'loyalty_name',
@@ -370,7 +553,20 @@
                                 }
                             }
                         },
-                    ]
+                    ],
+                    "drawCallback": function (settings, json) {
+                        var elems = Array.prototype.slice.call(document.querySelectorAll('.chk_box'));
+                        elems.forEach(function(html) {
+                            var switchery = new Switchery(html);
+                        });
+                        $('.dataTables_filter input[type="search"]').css({
+                            'width': '280px',
+                            'display': 'inline-block'
+                        });
+                        $("#user_datatable_wrapper").find($(".dt-buttons.btn-group.flex-wrap")).css({
+                            'right': '320px'
+                        });
+                    }
                 });
             } finally {
                 var elems = Array.prototype.slice.call(document.querySelectorAll('.chk_box'));
@@ -418,12 +614,10 @@
                 targets: [1, 3],
                 className: "text-nowrap",
             }],
-            columns: [{
-                    data: 'serial',
-                    name: 'serial',
-                    orderable: false,
-                    searchable: false
-                },
+            columns: [
+                {data: '', name: 'serial', orderable: false, searchable: false, render: function (data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }},
                 {
                     data: 'date',
                     name: 'date',
@@ -448,6 +642,8 @@
                         return '<span class="text-right ' + ((full.type == 'deposit') ? 'text-success' : ((full.type == 'withdraw') ? 'text-danger' : '')) + '">' + data + '</span>';
                     }
                 },
+                {data: 'remarks', name: 'remarks', orderable: false, searchable: false},
+                {data: 'created_by', name: 'created_by', orderable: false, searchable: false}
             ]
         });
     });

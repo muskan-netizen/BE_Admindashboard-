@@ -2,28 +2,53 @@
 @php
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
 $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'];
+$sign_image = (!empty(Session::get('preferences')) ? Session::get('preferences')->signup_image:'');
+$sign_image_url = $sign_image['image_fit'].'1920/1080'.$sign_image['image_path'];
+
 @endphp
 
-@section('css')
+@section('css-links')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+@endsection
+@section('css') 
+<style type="text/css">
+   /* .bgFourPage{ 
+    background-image : url({{getImageUrl(asset('assets/images/bannerFour.jpg'),'1920/1200')}});
+   }  */
+   .login-section{position: relative;}
+   img.LoginAreaBG {
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    top: 0;
+    object-fit: cover;
+    height: 100%;
+    z-index: 0;
+}
+#login-section::before, #login-section::after,
+.LogoInArea {
+    z-index: 1;
+}
+</style>
 @endsection
 
 @section('content')
-<article class="bgFourPage"></article>
+<article class="bgFourPage"><img class="LoginAreaBG" alt="" src="{{$sign_image_url}}"></article>
 <section class="wrapper-main container-fluid">
     <article class="BGcenter">
         <div class="container">
-            <div class=" col-xl-8 offset-xl-2 p-3" id="login-section">
+            <div class=" col-xl-8 offset-xl-2 py-3" id="login-section">
+                <img class="LoginAreaBG" alt="" src="{{$sign_image_url}}">
                 <div class="row d-flex align-items-center h-100">
-                    <div class="col-sm-6">
-                        <div class="LoginLogoBG">
+                    <div class="col-sm-6 ">
+                        <div class="LoginLogoBG h-100">
                             <img class="LoginLogo" style="height:80px" alt="" src="{{$urlImg}}">
                         </div>
                     </div>
-                    <div class="col-sm-6 px-sm-5 LogoInArea">
+                    <div class="col-sm-6 px-xl-5 px-3 LogoInArea">
                         <h3 class="mb-2 text-center">{{ __('Login') }}</h3>
-                        <form id="login-form-new" class="arabic-language" action="">
+                        <form id="login-form-new" class="arabic-language" action="" class="pl-2">
                             @csrf
                                 <input type="hidden" name="device_type" value="web">
                                 <input type="hidden" name="device_token" value="web">
@@ -177,13 +202,12 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
 
     </article>
 </section>
-    
+
 
 @endsection
 @section('script')
 {{-- <script src="https://www.gstatic.com/firebasejs/5.5.9/firebase.js"></script> --}}
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
-<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
     // jQuery(window.document).ready(function () {
     //     jQuery("body").addClass("login_body");

@@ -15,6 +15,10 @@ class VendorCategory extends Model
 		return $this->hasOne('App\Models\Category', 'id', 'category_id');
 	}
 
+	public function products(){
+		return $this->hasMany('App\Models\Product', 'category_id', 'category_id');
+	}
+
 	public function addVendorCategory($to_vendor, $from_vendor)
 	{
 		/* Common categories replicate*/

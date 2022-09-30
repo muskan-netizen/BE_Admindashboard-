@@ -11,7 +11,7 @@ class Vendor extends Model implements Auditable{
   use \OwenIt\Auditing\Auditable;
 
   //use Searchable;
-    protected $fillable = ['name','slug','desc','short_desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','slot_minutes','closed_store_order_scheduled','pincode','return_request','ahoy_location','city','state','country','fixed_fee','fixed_fee_amount','price_bifurcation','instagram_url','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id'];
+    protected $fillable = ['name','slug','desc','short_desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','slot_minutes','closed_store_order_scheduled','pincode','return_request','ahoy_location','city','state','country','fixed_fee','fixed_fee_amount','price_bifurcation','instagram_url','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id', 'cron_for_service_area','markup_price_tax_id'];
 
     public function serviceArea(){
        return $this->hasMany('App\Models\ServiceArea')->select('vendor_id', 'geo_array', 'name');
@@ -19,6 +19,10 @@ class Vendor extends Model implements Auditable{
 
     public function products(){
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id');
+    }
+
+    public function productsLive(){
+      return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_live','1');
     }
 
     public function slot(){
@@ -31,6 +35,15 @@ class Vendor extends Model implements Auditable{
     public function slots(){
       return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id');
     }
+
+    public function slotsForPickup(){
+      return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id')->where('slot_type', '1');
+    }
+    public function slotsForDropoff(){
+      return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id')->where('slot_type', '2');
+    }
+
+    
     public function slotDates(){
       return $this->hasMany('App\Models\VendorSlotDate', 'vendor_id', 'id');
     }
@@ -45,9 +58,13 @@ class Vendor extends Model implements Auditable{
       $current_time = $mytime->toTimeString();
       return $this->hasMany('App\Models\VendorSlotDate', 'vendor_id', 'id')->where('specific_date', '=', $current_date)->where('start_time', '<', $current_time)->where('end_time', '>', $current_time);
     }
-
+    
     public function avgRating(){
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->avg('averageRating');
+    }
+    public function getReviewsCountAttribute(){
+      $reviews_count = OrderProductRating::join('products', 'products.id', '=', 'order_product_ratings.product_id')->join('products','	products.vendor_id', '=', 'vendors.id')->where('vendors.id',$this->id)->count();
+     return $reviews_count;
     }
 
     public function getLogoAttribute($value){
@@ -64,6 +81,8 @@ class Vendor extends Model implements Auditable{
         $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
       }
       $values['image_fit'] = \Config::get('app.FIT_URl');
+
+      $values['image_s3_url'] = \Storage::disk('s3')->url($img);
       return $values;
     }
 
@@ -81,6 +100,8 @@ class Vendor extends Model implements Auditable{
         $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
       }
       $values['image_fit'] = \Config::get('app.FIT_URl');
+
+      $values['image_s3_url'] = \Storage::disk('s3')->url($img);
       return $values;
     }
     public static function getNameById($vendor_id){
@@ -138,5 +159,31 @@ class Vendor extends Model implements Auditable{
   public function getById($id){
     return self::where('id',$id)->first();
   }
+  public function Facilty(){
+     // return $this->hasMany('App\Models\VendorFacilty', 'vendor_id', 'id');
+      return $this->belongsToMany(\App\Models\Facilty::class, 'vendor_facilties', 'vendor_id', 'facilty_id');
+  }
+    public function getIsVendorCloseAttribute()
+    {
+     $value = 0;
+     if($this->show_slot == 1){
+        $value = 0 ;
+     } else {
+            if (($this->slotDate->isEmpty()) && ($this->slot->isEmpty())) {
+              $value = 1;
+            } else {
+              $value = 0;
+              if ($this->slotDate->isNotEmpty()) {
+                  $this->opening_time = Carbon::parse($this->slotDate->first()->start_time)->format('g:i A');
+                  $this->closing_time = Carbon::parse($this->slotDate->first()->end_time)->format('g:i A');
+              } elseif ($this->slot->isNotEmpty()) {
+                  $this->opening_time = Carbon::parse($this->slot->first()->start_time)->format('g:i A');
+                  $this->closing_time = Carbon::parse($this->slot->first()->end_time)->format('g:i A');
+              }
+          }
+     }
+     return $value;
+
+    }
 
 }

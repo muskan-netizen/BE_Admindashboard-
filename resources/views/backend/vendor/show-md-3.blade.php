@@ -28,6 +28,13 @@
             @endif
             </div>
             @endif
+            @if($vendor_for_appointment_delivery > 0 && ($client_preferences->appointment_check == 1) )
+            <div class="for_appointment_delivery_service_only">
+            @if( ($client_preferences->need_appointment_service == 1) && ($vendor->appointment == 1 ) )
+            <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmAppointmentDispatcher" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (Appointment)") }} </button>
+            @endif
+            </div>
+            @endif
 
             @endif
         </div>
@@ -95,21 +102,21 @@
                         <input type="checkbox" data-plugin="switchery" name="closed_store_order_scheduled" class="form-control" data-color="#43bee1" @if($vendor->closed_store_order_scheduled == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
 
-                    
 
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                    <div class="form-group w-100">
-                     {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
-                        <select class="form-control" name="slot_minutes">
-                            <option value="">{{__('Slot Duration')}}</option>
-                            <option value="15" {{$vendor->slot_minutes == '15'? 'selected':''}}>15 {{__(' Minutes')}}</option>
-                            <option value="30" {{$vendor->slot_minutes == '30'? 'selected':''}}>30 {{__(' Minutes')}}</option>
-                            <option value="45" {{$vendor->slot_minutes == '45'? 'selected':''}}>45 {{__(' Minutes')}}</option>
-                            @for($i=1;$i<=8;$i++)
-                                <option value="{{$i*60}}" {{$vendor->slot_minutes == ($i*60)? 'selected':''}}>{{ $i. __(' Hour')}}</option>
-                            @endfor
-                        </select>
-                    </div>
+
+                    <div class="col-md-12 d-flex align-items-center justify-content-between">
+                        <div class="form-group w-100">
+                        {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
+                            <select class="form-control" name="slot_minutes">
+                                <option value="">{{__('Slot Duration')}}</option>
+                                <option value="15" {{$vendor->slot_minutes == '15'? 'selected':''}}>15 {{__(' Minutes')}}</option>
+                                <option value="30" {{$vendor->slot_minutes == '30'? 'selected':''}}>30 {{__(' Minutes')}}</option>
+                                <option value="45" {{$vendor->slot_minutes == '45'? 'selected':''}}>45 {{__(' Minutes')}}</option>
+                                @for($i=1;$i<=8;$i++)
+                                    <option value="{{$i*60}}" {{$vendor->slot_minutes == ($i*60)? 'selected':''}}>{{ $i. __(' Hour')}}</option>
+                                @endfor
+                            </select>
+                        </div>
                     </div>
 
                     <div class="col-md-12 mb-2">
@@ -138,14 +145,17 @@
                         </label>
                         <input type="checkbox" data-plugin="switchery" name="price_bifurcation" class="form-control" data-color="#43bee1" @if($vendor->price_bifurcation == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+                    @endif
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+                    @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Need Container Charges?'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="need_container_charges" class="form-control" data-color="#43bee1" @if($vendor->need_container_charges == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+
                     @if(Auth::user()->is_superadmin == 1 || $client_preference_detail->vendor_return_request == 1)
                         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                             {!! Form::label('title', __('Return Request'),['class' => 'control-label']) !!}
@@ -205,79 +215,28 @@
                         </div>
                     </div>
                     @endif
+                    @if($client_preference_detail->is_vendor_tags == '1')
+                        @if(!empty($facilties))
+                            <div class="col-md-12">
+                                <div class="form-group" id="social_link">
+                                    {!! Form::label('title', 'Vendor Tags',['class' => 'control-label']) !!}
+                                    <select class="form-control select2-multiple" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." id="facilty_list" name="facilty_ids[]">
+                                        @foreach ($facilties as $facilty)
+                                        <option value="{{ $facilty->id }}" {{ in_array($facilty->id, $vendor_facilty_ids) ? "selected" : '' }}>{{ $facilty->primary->name }}</option>
+                                        @endforeach
 
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h4 class="mb-2 "> <span class="">{{ __("Taxes") }}</span></h4>
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
+                    @endif
+                    {{-- <div class="col-md-12">
+                        <div class="form-group" id="social_link">
+                            {!! Form::label('title', 'Dynamic Html',['class' => 'control-label']) !!}
+                            <textarea class="form-control" id="edit_description" rows="9" name="dynamic_html" cols="100">{{$vendor->dynamic_html}}
+                            </textarea>
                         </div>
-                    </div>
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        {!! Form::label('title', __('On Service Charges'),['class' => 'control-label']) !!}
-                        <input type="checkbox" data-plugin="switchery" name="service_charges_tax" class="form-control" data-color="#43bee1" @if($vendor->service_charges_tax == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
-                    </div>
-                    
-                    <div class="form-group w-100" style="display:{{$vendor->service_charges_tax == 0 ? 'none!important' : 'block'}}" id="service_charges_tax_id">
-                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
-                        <select class="form-control" name="service_charges_tax_id">
-                            <option value="">{{__('Select any')}}</option>
-                            @foreach(taxRates() as $row)
-                                <option value="{{$row->id}}" {{$vendor->service_charges_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-
-
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        {!! Form::label('title', __('On Delivery Charges'),['class' => 'control-label']) !!}
-                        <input type="checkbox" data-plugin="switchery" name="delivery_charges_tax" class="form-control" data-color="#43bee1" @if($vendor->delivery_charges_tax == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
-                    </div>
-                    
-                    <div class="form-group w-100" style="display:{{$vendor->delivery_charges_tax == 0 ? 'none!important' : 'block'}}" id="delivery_charges_tax_id">
-                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
-                        <select class="form-control" name="delivery_charges_tax_id">
-                            <option value="">{{__('Select any')}}</option>
-                            @foreach(taxRates() as $row)
-                                <option value="{{$row->id}}" {{$vendor->delivery_charges_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    
-
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        {!! Form::label('title', __('On Container Charges'),['class' => 'control-label']) !!}
-                        <input type="checkbox" data-plugin="switchery" name="container_charges_tax" class="form-control" data-color="#43bee1" @if($vendor->container_charges_tax == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
-                    </div>
-                
-
-                    
-                    <div class="form-group w-100" style="display:{{$vendor->container_charges_tax == 0 ? 'none!important' : 'block'}}" id="container_charges_tax_id">
-                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
-                        <select class="form-control" name="container_charges_tax_id">
-                            <option value="">{{__('Select any')}}</option>
-                            @foreach(taxRates() as $row)
-                                <option value="{{$row->id}}" {{$vendor->container_charges_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
-                            @endforeach
-                        </select>
-                    </div> 
-
-                    
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        {!! Form::label('title', __('On Fixed Fee'),['class' => 'control-label']) !!}
-                        <input type="checkbox" data-plugin="switchery" name="fixed_fee_tax" class="form-control" data-color="#43bee1" @if($vendor->fixed_fee_tax == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
-                    </div>
-                
-                    
-                    <div class="form-group w-100" style="display:{{$vendor->fixed_fee_tax == 0 ? 'none!important' : 'block'}}" id="fixed_fee_tax_id">
-                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
-                        <select class="form-control" name="fixed_fee_tax_id">
-                            <option value="">{{__('Select any')}}</option>
-                            @foreach(taxRates() as $row)
-                                <option value="{{$row->id}}" {{$vendor->fixed_fee_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    </div> --}}
 
 
                     <div class="col-12">
@@ -382,7 +341,7 @@
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
-            <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
+            <form name="config-form" action="{{route('vendor.config.update.profile', $vendor->id)}}" class="needs-validation" method="post">
                 @csrf
                 <div class="row">
                     <div class="col-md-12">
@@ -408,11 +367,113 @@
         <div class="col-md-12">
             <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
                 @csrf
-                <div class="row">
+                {{-- <div class="row">
                     <div class="col-md-12">
                         <h4 class="mb-2"> <span class="">{{ __("Commission") }}</span> ({{ __("Visible For Admin") }})</h4>
                     </div>
+                </div> --}}
+
+                <div class="row">
+
+                    @if(Auth::user()->is_superadmin == 1)
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4 class="mb-2 "> <span class="">{{ __("Commission") }} & {{ __("Taxes") }}</span>   ({{ __("Visible For Admin") }})</span></h4>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('On Service Charges'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="service_charges_tax" class="form-control" data-color="#43bee1" @if($vendor->service_charges_tax == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
+                    <div class="form-group w-100" style="display:{{$vendor->service_charges_tax == 0 ? 'none!important' : 'block'}}" id="service_charges_tax_id">
+                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
+                        <select class="form-control" name="service_charges_tax_id">
+                            <option value="">{{__('Select any')}}</option>
+                            @foreach(taxRates() as $row)
+                                <option value="{{$row->id}}" {{$vendor->service_charges_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Add Markup Price?'),['class' => 'control-label']) !!}({{ __("Visible For Admin") }})
+                        <input type="checkbox" data-plugin="switchery" name="add_markup_price" class="form-control" data-color="#43bee1" @if($vendor->add_markup_price == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('On Delivery Charges'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="delivery_charges_tax" class="form-control" data-color="#43bee1" @if($vendor->delivery_charges_tax == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
+                    <div class="form-group w-100" style="display:{{$vendor->delivery_charges_tax == 0 ? 'none!important' : 'block'}}" id="delivery_charges_tax_id">
+                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
+                        <select class="form-control" name="delivery_charges_tax_id">
+                            <option value="">{{__('Select any')}}</option>
+                            @foreach(taxRates() as $row)
+                                <option value="{{$row->id}}" {{$vendor->delivery_charges_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    @if($vendor->need_container_charges == 1)
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('On Container Charges'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="container_charges_tax" class="form-control" data-color="#43bee1" @if($vendor->container_charges_tax == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
+
+
+                    <div class="form-group w-100" style="display:{{$vendor->container_charges_tax == 0 ? 'none!important' : 'block'}}" id="container_charges_tax_id">
+                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
+                        <select class="form-control" name="container_charges_tax_id">
+                            <option value="">{{__('Select any')}}</option>
+                            @foreach(taxRates() as $row)
+                                <option value="{{$row->id}}" {{$vendor->container_charges_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('On Fixed Fee'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="fixed_fee_tax" class="form-control" data-color="#43bee1" @if($vendor->fixed_fee_tax == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
+
+                    <div class="form-group w-100" style="display:{{$vendor->fixed_fee_tax == 0 ? 'none!important' : 'block'}}" id="fixed_fee_tax_id">
+                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
+                        <select class="form-control" name="fixed_fee_tax_id">
+                            <option value="">{{__('Select any')}}</option>
+                            @foreach(taxRates() as $row)
+                                <option value="{{$row->id}}" {{$vendor->fixed_fee_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    @if($vendor->add_markup_price == 1)
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('On Markup Price'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="markup_fee_tax" class="form-control" data-color="#43bee1" @if($vendor->add_markup_price == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
+
+                    <div class="form-group w-100" style="display:{{$vendor->add_markup_price == 0 ? 'none!important' : 'block'}}" id="markup_price_tax_id">
+                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
+                        <select class="form-control" name="markup_price_tax_id">
+                            <option value="">{{__('Select any')}}</option>
+                            @foreach(taxRates() as $row)
+                                <option value="{{$row->id}}" {{$vendor->markup_price_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
+
+                    @endif
+
                 </div>
+
                 <div class="row mb-2">
 
                     <div class="col-md-12">
@@ -447,6 +508,62 @@
         </div>
     </div>
 </div>
+
+@if($client_preference_detail->business_type == 'laundry')
+<div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Rescheduling Order Charges") }} ({{ __("Visible For Admin") }})</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="form-group" id="rescheduling_chargesInput">
+                            {!! Form::label('title', __('Rescheduling Charges'),['class' => 'control-label']) !!}
+                            <input class="form-control" name="rescheduling_charges" type="text" min="0" maxlength="5" value="{{$vendor->rescheduling_charges}}" onkeypress="return isNumberKey(event)">
+                            <small>(When rescheduling is done on the day of delivery.)</small>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Pickup Cancelling/Rescheduling Charges") }} ({{ __("Visible For Admin") }})</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="form-group" id="rescheduling_chargesInput">
+                            {!! Form::label('title', __('Pickup Cancelling & Rescheduling Charges'),['class' => 'control-label']) !!}
+                            <input class="form-control" name="pickup_cancelling_charges" type="text" min="0" maxlength="5" value="{{$vendor->pickup_cancelling_charges}}" onkeypress="return isNumberKey(event)">
+                            <small>(When cancelling or rescheduling is done on the day of pickup.)</small>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 <style type="text/css">
     #nestable_list_1 ol,
     #nestable_list_1 ul {
@@ -469,11 +586,11 @@
             {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
             <input type="checkbox" data-plugin="switchery" name="can_add_category" class="form-control can_add_category1" data-color="#43bee1" @if($vendor->add_category == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
         </div>
-        <div class="col-md-6 mb-3">
+        <div class="col-md-12">
             {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
         </div>
 
-        <div class="col-md-6 mb-3">
+        <div class="col-md-12 mb-3">
             <select class="selectize-select form-control assignToSelect" id="assignTo" {{$vendor->status == 1 ? '' : 'disabled'}}>
                 @foreach($templetes as $templete)
                     <option value="{{$templete->id}}" {{$vendor->vendor_templete_id == $templete->id ? 'selected="selected"' : ''}}>{{$templete->title}}</option>
@@ -534,24 +651,27 @@
 
     <div class="inbox-widget mt-3" data-simplebar style="max-height: 350px;">
         @foreach($vendor->permissionToUser as $users)
-        <div class="inbox-item pb-0">
-            <div class="inbox-item-img">
-                <img src="{{$users->user ? $users->user->image['proxy_url'].'40/40'.$users->user->image['image_path'] : asset('assets/images/users/user-2.jpg')}}" class="rounded-circle" alt="">
+            @if($users->user)
+                <div class="inbox-item pb-0">
+                    <div class="inbox-item-img">
+                        <img src="{{$users->user ? $users->user->image['proxy_url'].'40/40'.$users->user->image['image_path'] : asset('assets/images/users/user-2.jpg')}}" class="rounded-circle" alt="">
+                    </div>
+                    <p class="inbox-item-author">{{ $users->user->name??'' }}  </p>
+                    <p class="inbox-item-text"><label class="d-block"><i class="fa fa-envelope mr-1" aria-hidden="true"></i> {{ $users->user->email??'' }}
+                        @if($users->user)
+                        </label><label class="d-block"><i class="fa fa-phone mr-1" aria-hidden="true"></i> {{ $users->user->phone_number??'' }}</label> </p>
+                        @endif
+                    </p>
+                    @if($users->user && $users->user->id != Auth::id())
+                    <form class="delete-user position-absolute" method="POST" action="{{route('user.vendor.permission.destroy', $users->id)}}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-primary-outline" onclick="return confirm('Are you sure ?');"> <i class="mdi mdi-delete"></i></button>
 
-                {{-- <img src="{{asset('assets/images/users/user-2.jpg')}}" class="rounded-circle" alt=""> --}}
-            </div>
-            <p class="inbox-item-author">{{ $users->user->name??'' }}  </p>
-            <p class="inbox-item-text"><label class="d-block"><i class="fa fa-envelope mr-1" aria-hidden="true"></i> {{ $users->user->email??'' }}  @if($users->user->phone_number)</label><label class="d-block">  <i class="fa fa-phone mr-1" aria-hidden="true"></i> {{ $users->user->phone_number??'' }}</label> </p> @endif</p>
-            @if($users->user->id != Auth::id())
-            <form class="delete-user position-absolute" method="POST" action="{{route('user.vendor.permission.destroy', $users->id)}}">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-primary-outline" onclick="return confirm('Are you sure ?');"> <i class="mdi mdi-delete"></i></button>
-
-                    </form>
+                            </form>
+                    @endif
+                </div>
             @endif
-        </div>
-
         @endforeach
     </div>
 </div>
@@ -623,7 +743,7 @@
         </div>
     </div>
 </div>
-
+{{-- <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script> --}}
 <script type="text/javascript">
 
 $('.addUsersBtn').click(function() {
@@ -788,12 +908,13 @@ $( document ).ready(function() {
             data: {category_id: category_id, status:status, vendor_id:vendor_id},
             success: function(response) {
                 if (response.status == 'Success') {
-                    console.log(response.data);
-                    $('.cattxt').text('Updated successfully');
-                    $('.catalogupdate').css('display','');                    
+                    // console.log(response.data);
+                    // $('.cattxt').text('Updated successfully');
+                    $.NotificationApp.send("Success", 'Updated successfully', "top-right", "#5ba035", "success");
+                    // $('.catalogupdate').css('display','');
                     setTimeout(function() {
-                        $('.cattxt').text('');
-                        $('.catalogupdate').css('display','none');       
+                        // $('.cattxt').text('');
+                        // $('.catalogupdate').css('display','none');
                     }, 1000);
 
 
@@ -809,6 +930,12 @@ $( document ).ready(function() {
                         $('.for_on_demand_service_only').html('<button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcherOnDemand" data-id="'+response.data.product_categories[0].vendor_id+'">{{__("Login Into Dispatcher (On Demand Services)")}} </button>');
                     }else{
                         $('.for_on_demand_service_only').html('');
+                    }
+                    if(response.data.check_appointment_service == 1)
+                    {
+                        $('.for_appointment_delivery_service_only').html('<button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmAppointmentDispatcher" data-id="'+response.data.product_categories[0].vendor_id+'">{{__("Login Into Dispatcher (On Demand Services)")}} </button>');
+                    }else{
+                        $('.for_appointment_delivery_service_only').html('');
                     }
 
 
@@ -879,6 +1006,14 @@ $( document ).ready(function() {
         }
     })
 
+    $("input[name='markup_fee_tax']").change(function() {
+        if($(this).prop('checked')){
+            $("#markup_fee_tax_id").css("display", "block");
+        } else {
+            $("#markup_fee_tax_id").css("display", "none");
+        }
+    })
+
     $("input[name='need_container_charges']").change(function() {
         if($(this).prop('checked')){
             $("#need_container_charges").css("display", "none");
@@ -887,3 +1022,8 @@ $( document ).ready(function() {
         }
     })
 </script>
+{{-- <script>
+    var dynamic_html = "";
+    CKEDITOR.replace('edit_description');
+    CKEDITOR.config.height = 250;
+</script> --}}

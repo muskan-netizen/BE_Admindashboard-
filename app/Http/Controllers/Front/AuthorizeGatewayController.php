@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, WalletController, FrontController};
+use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, WalletController, FrontController, PickupDeliveryController
+};
 use Auth, Log, Redirect;
-use App\Models\{PaymentOption, Cart, SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User};
+use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, CartDeliveryFee, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, Transaction};
 
 class AuthorizeGatewayController extends FrontController 
 {
@@ -29,6 +30,7 @@ class AuthorizeGatewayController extends FrontController
 	public function beforePayment(Request $request)
     {
     	$data = $request->all();
+        Log::info($data);
         $data['come_from'] = 'app';
         $data['login_id'] = $this->login_id;
         $data['client_key'] = $this->client_key;
@@ -146,9 +148,9 @@ class AuthorizeGatewayController extends FrontController
                  $returnUrl = route('user.orders');
             }
             return $returnUrl;
-        }
+        } 
         elseif($request->payment_from == 'subscription'){
-            $request->request->add(['payment_option_id' => 12, 'transaction_id' => $transactionId]);
+            $request->request->add(['payment_option_id' => 18, 'transaction_id' => $transactionId]);
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
             if($request->come_from == 'app')
@@ -158,7 +160,20 @@ class AuthorizeGatewayController extends FrontController
                 $returnUrl = route('user.subscription.plans');
             }
             return $returnUrl;
+        }elseif($request->payment_from == 'pickup_delivery'){
+            $request->request->add(['payment_option_id' => 18, 'amount' => $request->amount,'order_number' => $request->order_number, 'transaction_id' => $transactionId]);
+            $plaseOrderForPickup = new PickupDeliveryController();
+            $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+            $returnUrl = $request->reload_route;
+            if($request->come_from == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net'.'&status=200&transaction_id='.$transactionId; 
+            }
+            Log::info("Return Url");
+            Log::info($returnUrl);
+            return $returnUrl;
         }
+        Log::info("Ending");
         return Redirect::to(route('order.return.success'));
     }
     public function failedPayment($request, $pamyent)
@@ -183,8 +198,7 @@ class AuthorizeGatewayController extends FrontController
                 $returnUrl = route('showCart');
             }
             return $returnUrl;
-        }
-        elseif($request->payment_from == 'wallet'){
+        }elseif($request->payment_from == 'wallet'){
             if($request->come_from == 'app')
             {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
@@ -192,8 +206,7 @@ class AuthorizeGatewayController extends FrontController
                 $returnUrl = route('user.wallet');
             }
             return $returnUrl;
-        }
-        elseif($request->payment_from == 'tip'){
+        }elseif($request->payment_from == 'tip'){
             if($request->come_from == 'app')
             {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
@@ -201,13 +214,19 @@ class AuthorizeGatewayController extends FrontController
                 $returnUrl = route('user.orders');
             }
             return $returnUrl;
-        }
-        elseif($request->payment_from == 'subscription'){
+        }elseif($request->payment_from == 'subscription'){
             if($request->come_from == 'app')
             {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
             }else{
                 $returnUrl = route('user.subscription.plans');
+            }
+            return $returnUrl;
+        }elseif($request->payment_from == 'pickup_delivery'){
+            $returnUrl = $request->reload_route;
+            if($request->come_from == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
             }
             return $returnUrl;
         }

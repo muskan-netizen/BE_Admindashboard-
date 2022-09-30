@@ -12,7 +12,7 @@ class OrderProductAddon extends Model
        return $this->belongsTo('App\Models\AddonOption', 'option_id', 'id')
        			->join('addon_option_translations as aot', 'addon_options.id', 'aot.addon_opt_id')
 				->select('addon_options.id', 'addon_options.addon_id', 'addon_options.price', 'aot.title', 'aot.language_id')
-				->orderBy('addon_options.position', 'asc'); 
+				->orderBy('addon_options.position', 'asc')->withTrashed(); 
     }
 
     public function set(){

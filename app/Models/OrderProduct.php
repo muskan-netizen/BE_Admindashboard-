@@ -36,7 +36,7 @@ class OrderProduct extends Model{
        return $this->hasMany('App\Models\OrderProductAddon', 'order_product_id', 'id');
     }
     public function product(){
-      return $this->belongsTo('App\Models\Product')->select('id', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id', 'category_id');
+      return $this->belongsTo('App\Models\Product')->select('id', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id', 'category_id','minimum_duration_min');
     }
      public function variant(){
       return $this->hasMany('App\Models\ProductVariant','product_id', 'product_id')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id')->where('status', 1);
@@ -100,5 +100,43 @@ class OrderProduct extends Model{
       $base64 = '';
       return $base64;
       }
+    }
+
+
+    public function getActualPriceAttribute()
+    {
+        //if vendor actual price = price - markup price
+        if(auth()->user() !=null && auth()->user()->is_admin == 1){
+                return $this->price - $this->markup_price??0;
+        }
+                return $this->price;
+    }
+
+   
+    // public function getMarkupPriceAttribute($value)
+    // {
+    //   if(auth()->user() !=null && auth()->user()->is_admin == 1){
+    //             return 0;   
+    //   }  
+    //   return $value;
+    // }
+
+    public function getPriceAttribute($value)
+    {
+        // //if vendor price add with markup price
+        //    if(auth()->user() !=null && auth()->user()->is_admin == 1){
+        //     $vendor = Product::where('id', $this->product_id)->value('vendor_id');
+        //     $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor)->first();
+        //     if($userVendor){
+        //         return $value;
+        //     }
+        //    }
+        //        // return $value + $this->markup_price??0;
+                return $value??0;
+           
+    }
+    // get dispatch route for single product in case of on demand and appointmenet by harbans :)
+    public function Routes(){
+      return $this->hasMany('App\Models\OrderProductDispatchRoute', 'order_vendor_product_id', 'id')->with('DispatchStatus');
     }
 }

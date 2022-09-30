@@ -1,7 +1,7 @@
 <?php
 
 Route::group(['prefix' => 'v1/v2', 'middleware' => ['ApiLocalization']], function () {
-    Route::group(['middleware' => ['dbCheck', 'checkAuth', 'apilogger']], function() {
+    Route::group(['middleware' => ['dbCheck', 'checkAuth']], function() {
 
         Route::get('category/{id?}', 'Api\v1\v2\CategoryController@categoryData');
         Route::post('category/filters/{id?}', 'Api\v1\v2\CategoryController@categoryFilters');
@@ -13,11 +13,11 @@ Route::group(['prefix' => 'v1/v2', 'middleware' => ['ApiLocalization']], functio
         Route::post('vendor/filters/{id?}', 'Api\v1\v2\VendorController@vendorFilters');
         Route::post('vendor/register', 'Api\v1\v2\VendorController@postVendorRegister');
         Route::get('vendor-optimize/{id?}', 'Api\v1\v2\VendorController@productsByVendorOptimize');  
-        Route::get('vendor-optimize-category/{id}', 'Api\v1\v2\VendorController@productsByVendorCategoryOptimize');  
+        Route::match(['get','post'],'vendor-optimize-category/{id}', 'Api\v1\v2\VendorController@productsByVendorCategoryOptimize');  
         Route::post('vendor/vendorProductsFilterOptimize', 'Api\v1\v2\VendorController@vendorProductsFilterOptimize');
 
     });
-    Route::group(['middleware' => ['dbCheck','systemAuth', 'apilogger']], function() {
+    Route::group(['middleware' => ['dbCheck','systemAuth']], function() {
         
     });
 });

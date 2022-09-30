@@ -27,10 +27,6 @@ class ReviewController extends BaseController
                 $query->where('user_id', Auth::user()->id);
             });
         }
-        // echo "<pre>";
-        // print_r($product->toArray());
-        // exit();
-        // $reviews = [];
         if ($request->ajax()) {
             return Datatables::of($product)
                 ->addIndexColumn()

@@ -31,7 +31,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-5">
+            <div class="row mb-5 homepageSix">
                 <div class="collection-filter col-lg-3 al">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
@@ -159,7 +159,7 @@
                                                     @foreach($category->childs->toArray() as $cate)
                                                     <div class="col-md-3 col-6 col-grid-box">
                                                         <a href="{{route('categoryDetail', $cate['slug'])}}"  class="product-box scale-effect m-0" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
-                                                            <div class="product-image p-0"  style="height:200px"><img width="100%" alt="" class="blur-up lazyload" data-icon_two="{{isset($cate['icon_two']) && !is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'500/500'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'500/500'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}500/500{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['proxy_url'] . '500/500' . $cate['icon']['image_path']}}" ></div>
+                                                            <div class="product-image"><img width="100%" alt="" class="blur-up lazyload" data-icon_two="{{isset($cate['icon_two']) && !is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'500/500'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'500/500'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}500/500{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['proxy_url'] . '500/500' . $cate['icon']['image_path']}}" ></div>
                                                             <div class="media-body align-self-center">
                                                                 <div class="inner_spacing w-100">
                                                                     <h3 class="d-flex align-items-center justify-content-between">
@@ -192,6 +192,13 @@
 </section>
 @endsection
 @section('script')
+<script>
+    @if(!empty($category->image) && $category->image['is_original'])
+    $(document).ready(function() {
+        $("body").addClass("homeHeader");
+    });
+    @endif
+</script>
 <script type="text/javascript">
 	function changeImage(image2, check) {
        var image = $(image2).children('.product-image').children("img");

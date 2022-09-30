@@ -31,20 +31,23 @@
                                             <div class="name_location d-block py-0">
                                                 <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4>
                                             </div>
-                                                <div class="">
-                                                    @if($vendor->is_show_vendor_details == 1)
-                                                    @if($vendor->email)
-                                                        <a href="{{$vendor->email}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->email}}"><i class="fa fa-envelope"></i></a>
-                                                    @endif
-                                                    <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->address}}"><i class="fa fa-address-card mx-1"></i></a>
-                                                    @if($vendor->website)
-                                                        <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
-                                                    @endif
-                                                    @endif
-                                                    @if($vendor->instagram_url)
-                                                        <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>
-                                                    @endif
-                                                </div>
+                                            <div class="">
+                                                @if($vendor->is_show_vendor_details == 1)
+                                                @if($vendor->email)
+                                                    <a href="{{$vendor->email}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->email}}"><i class="fa fa-envelope"></i></a>
+                                                @endif
+                                                <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->address}}"><i class="fa fa-address-card mx-1"></i></a>
+                                                @if($vendor->website)
+                                                    <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
+                                                @endif
+                                                @endif
+                                                @if($vendor->instagram_url)
+                                                    <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>
+                                                @endif
+                                            </div>
+                                            @if ($vendor->is_show_vendor_details == 1 && $vendor->order_min_amount > 0)
+                                                <span class="badge badge-danger">{{ __('Minimum order value') }}{{ Session::get('currencySymbol') . decimal_format($vendor->order_min_amount) }}</span>
+                                            @endif
                                         </div>
                                         @if($vendor->desc)
                                             <div class="col-md-12 text-center">
@@ -72,7 +75,7 @@
                     </div>
             </div>
         </div>
-        <div class="container">
+        <div class="container homepageSix">
             <div class="row mb-sm-5 mb-2">
                 <div class="collection-filter col-lg-3">
                     <div class="theme-card">
@@ -148,7 +151,7 @@
                 </div>
                 <div class="collection-content col-lg-9">
                     <div class="page-main-content">
-                        <div class="row">
+                        <div class="col-12">
                             <div class="collection-product-wrapper">
                                 <div class="product-top-filter">
                                     <div class="row">
@@ -234,5 +237,13 @@
     </div>
 </section>
 @endsection
-@section('script')
+
+@section('js-script')
+@if(!empty($vendor->banner))
+<script>
+    $(document).ready(function() {
+        $("body").addClass("homeHeader");
+    });
+</script>
+@endif
 @endsection

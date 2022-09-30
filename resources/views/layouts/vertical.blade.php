@@ -69,9 +69,6 @@
             </div>
 
         @include('layouts.shared/footer')
-        <div class="loader_box" style="display: none;">
-            <div class="spinner-border text-danger m-2 showLoader" role="status" ></div>
-        </div>
 
         </div>
 

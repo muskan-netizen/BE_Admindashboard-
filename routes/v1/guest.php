@@ -1,6 +1,31 @@
 <?php
 Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () {
-    Route::group(['middleware' => ['dbCheck', 'checkAuth', 'apilogger']], function() {
+
+        Route::post('check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromInventory');
+
+        Route::post('vendor-sync-inventory', 'Api\v1\VendorController@vendorSyncInventory')->middleware('ConnectDbFromInventory');
+
+
+  
+   Route::group(['middleware' => ['dbCheck', 'checkAuth']], function() { //apilogger
+
+
+        Route::group(['prefix' => 'estimation'], function () {
+    
+            Route::get('get-product-estimation-with-addons', 'Api\v1\ProductEstimationController@getProductEstimationWithAddons');
+            
+            Route::post('add-estimated-products-in-cart', 'Api\v1\ProductEstimationController@addEstimatedProductInCart');
+            
+            Route::post('remove-products-from-estimated-cart', 'Api\v1\ProductEstimationController@removeProductFromEstimatedCart');
+            Route::post('remove-addons-from-estimated-cart', 'Api\v1\ProductEstimationController@removeAddonsFromEstimatedCart');
+            
+            Route::post('get-estimation', 'Api\v1\ProductEstimationController@getEstimation');
+            Route::post('assign-order-qrcode', 'Api\v1\ProductEstimationController@assingQrcode');
+            
+            Route::post('transfer-estimated-cart-products-to-real-cart', 'Api\v1\ProductEstimationController@transferEstimatedCartProductsToRealCart');
+        
+        });
+
 
         Route::post('sendTestMail', 'Api\v1\BaseController@sendTestMail');
 
@@ -8,9 +33,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('cart/add', 'Api\v1\CartController@add');
         Route::get('cart/list', 'Api\v1\CartController@index');
+        Route::post('upload/prescriptions', 'Api\v1\CartController@uploadPrescriptions');
+        Route::post('delete/prescriptions', 'Api\v1\CartController@deleteProductPrescription');
         Route::post('mfc/stk/push', 'Api\v1\CartController@stkPushRequest');
         Route::get('vendor/slots', 'Api\v1\CartController@checkScheduleSlots');
+        Route::get('vendor/dropoffslots', 'Api\v1\CartController@checkScheduleDropoffSlots'); // Added By Ovi  // To Get Drop Off Slots
         Route::post('homepage', 'Api\v1\HomeController@homepage');
+        Route::post('get/subcategory/vendor', 'Api\v1\HomeController@getSubcategoryVendor');
         Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
         Route::post('header', 'Api\v1\HomeController@headerContent');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
@@ -56,11 +85,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('promo-code-open/list', 'Api\v1\PickupDeliveryController@postPromoCodeListOpen');
         Route::post('order/after/payment', 'Front\PaytabController@after_app_payment');
         //Passbase Store 
-        Route::post('passbase/store','Api\v1\PassbaseController@storeAuthkey');
+        Route::post('passbase/store','Api\v1\PassbaseController@storeAuthkey'); 
 
 
     });
-    Route::group(['middleware' => ['dbCheck','systemAuth', 'apilogger']], function() {
+
+    Route::group(['middleware' => ['dbCheck','systemAuth']], function() { //apilogger
         Route::get('cart/empty', 'Api\v1\CartController@emptyCart');
         Route::get('coupons/{id?}', 'Api\v1\CouponController@list');
         Route::post('cart/remove', 'Api\v1\CartController@removeItem');
@@ -73,5 +103,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('promo-code/vendor_promo_code', 'Api\v1\PromoCodeController@vendorPromoCodeList');
         Route::post('cart/product-schedule/update', 'Api\v1\CartController@updateProductSchedule');
         Route::post('cart/productfaq/update', 'Api\v1\CartController@updateCartProductFaq');
+        Route::post('dropoff-location', 'Api\v1\StaticDropoffController@getStaticLocation');
     });
 });

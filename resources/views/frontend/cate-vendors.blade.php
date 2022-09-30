@@ -28,13 +28,13 @@
                         @endif
 
                         <div class="top-banner-content small-section">
-                            <h4>{{ $category->translation_name }}</h4>
+                            <h4>{{ $category->translation_one->name }}</h4>
 <!-- deleted code -->
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row mb-sm-5">
+            <div class="row mb-sm-5 homepageSix">
                 <div class="collection-filter col-lg-3 al">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
@@ -176,22 +176,22 @@
                                                         $vendor_url = route('vendorDetail', $data->slug);
                                                     }
                                                     @endphp
-                                                    <div class=" col-md-3 col-6 col-grid-box mt-sm-3 mt-1" >
-                                                        <div class="product-card-box position-relative">
+                                                    <div class="col-xl-3 col-lg-4 col-6 col-grid-box mt-sm-3 mt-1" >
+                                                        <div class="product-card-box position-relative alInnerBox">
                                                             <div class="add-to-fav">
                                                                 <input id="fav_pro_one" type="checkbox">
                                                                 {{-- <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label> --}}
                                                             </div>
                                                             <a class="suppliers-box d-block" href="{{$vendor_url}}">
-                                                                <div class="suppliers-img-outer" style="height:200px">
+                                                                <div class="suppliers-img-outer">
                                                                     <img class="w-100 img-fluid mx-auto blur-up lazyload" data-src="{{$imagePath}}" alt="">
                                                                 </div>
                                                                 <div class="supplier-rating">
                                                                     <h6 class="mb-0 ellips">{{$data->name}}</h6>
                                                                     @if($client_preference_detail && $client_preference_detail->rating_check == 1 && $data->vendorRating > 0)
-                                                                    <span class="rating-number">{{$data->vendorRating}}</span>
+                                                                    <span class="rating-number">{{$data->vendorRating}} <i class="fa fa-star"></i> </span>
+                                                                    <!-- <span class="Stars" style="--rating: {{$data->vendorRating}};" aria-label="Rating of this product is {{$data->vendorRating}} out of 5."></span> -->
                                                                     @endif
-
                                                                     <p title="{{$data->categoriesList}}" class="vendor-cate {{ (($client_preference_detail->rating_check ==1) || ($data->is_show_vendor_details == 1) ) ? 'border-bottom' : '' }} pb-0 mb-1 ellips">{{$data->categoriesList}}</p>
                                                                     <!-- <h6 class="mb-1">{{$data->name}}</h6> -->
                                                                     <div class="product-timing">
@@ -269,14 +269,14 @@
                                 </svg></span> {{$data->timeofLineOfSightDistance}}</small>
                                                                                 </li>
                                                                             </ul>
-                                                                            @if($client_preference_detail->max_safety_mod == 1)
-                     <div class="mt-2">
-                        <ul class="timing-box_al">
-                          <li><img height="30px" src="{{asset('images/max-safety.png')}}" alt=""></li>
-                          <li>Follows all Max Safety measures to ensure your food is safe</li>
-                        </ul>
-                     </div>
-                     @endif
+                                    @if($client_preference_detail->max_safety_mod == 1)
+                                    <div class="mt-2">
+                                        <ul class="timing-box_al">
+                                        <li><img height="30px" src="{{asset('images/max-safety.png')}}" alt=""></li>
+                                        <li>Follows all Max Safety measures to ensure your food is safe</li>
+                                        </ul>
+                                    </div>
+                                    @endif
                                                                         @endif
                                                                     </div>
                                                                    {{-- @if($client_preference_detail)
@@ -348,7 +348,13 @@
 @section('script')
 <script src="{{asset('front-assets/js/rangeSlider.min.js')}}"></script>
 <script src="{{asset('front-assets/js/my-sliders.js')}}"></script>
+
 <script>
+    @if(!empty($category->image) && $category->image['is_original'])
+    $(document).ready(function() {
+        $("body").addClass("homeHeader");
+    });
+    @endif
     $('.js-range-slider').ionRangeSlider({
         type: 'double',
         grid: false,
@@ -405,6 +411,7 @@
     }
 
 </script>
+
 
 
 @endsection

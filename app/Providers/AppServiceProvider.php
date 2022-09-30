@@ -49,17 +49,24 @@ class AppServiceProvider extends ServiceProvider
         }
         $client_head = Client::where(['id' => 1])->first();
 
-        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone'];
-        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = '';
+        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone','stripe_oxxo','stripe_ideal','khalti'];
+        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = $stripe_oxxo_publishable_key = $stripe_ideal_publishable_key = $khalti_api_key = '';
         $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
         if($payment_options){
             foreach($payment_options as $option){
+                //\Log::info($option->code);
                 $creds = json_decode($option->credentials);
                 if($option->code == 'stripe'){
                     $stripe_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
                 }
                 if($option->code == 'stripe_fpx'){
                     $stripe_fpx_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
+                }
+                if($option->code == 'stripe_oxxo'){
+                    $stripe_oxxo_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
+                }
+                if($option->code == 'stripe_ideal'){
+                    $stripe_ideal_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
                 }
                 if($option->code == 'yoco'){
                     $yoco_public_key = (isset($creds->public_key) && (!empty($creds->public_key))) ? $creds->public_key : '';
@@ -74,23 +81,29 @@ class AppServiceProvider extends ServiceProvider
                     $payphone_id = $creds->id??'';
                     $payphone_token = $creds->token??'';
                 }
+                if($option->code == 'khalti'){
+                    $khalti_api_key = (isset($creds->api_key) && (!empty($creds->api_key))) ? $creds->api_key : '';
+                }
             }
         }
-        
-
         $count = 0;
         if($client_preference_detail){
-            if($client_preference_detail->dinein_check == 1){$count++;}
-            if($client_preference_detail->takeaway_check == 1){$count++;}
-            if($client_preference_detail->delivery_check == 1){$count++;}
+            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                $clientVendorTypes = $vendor_typ_key.'_check';
+                if($client_preference_detail->$clientVendorTypes == 1){
+                    $count++;
+                }
+            }
+            // if($client_preference_detail->dinein_check == 1){$count++;}
+            // if($client_preference_detail->takeaway_check == 1){$count++;}
+            // if($client_preference_detail->delivery_check == 1){$count++;}
         }
 
         $last_mile_common_set = $this->checkIfLastMileDeliveryOn();
 
         $client_payment_options = PaymentOption::where('status', 1)->pluck('code')->toArray();
-        // $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-
-
+       // $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+     
         view()->share('last_mile_common_set', $last_mile_common_set);
 
         view()->share('favicon', $favicon_url);
@@ -99,6 +112,9 @@ class AppServiceProvider extends ServiceProvider
         view()->share('social_media_details', $social_media_details);
         view()->share('stripe_publishable_key', $stripe_publishable_key);
         view()->share('stripe_fpx_publishable_key', $stripe_fpx_publishable_key);
+        view()->share('stripe_oxxo_publishable_key', $stripe_oxxo_publishable_key);
+        view()->share('stripe_ideal_publishable_key', $stripe_ideal_publishable_key);
+        view()->share('khalti_api_key', $khalti_api_key);
         view()->share('yoco_public_key', $yoco_public_key);
         view()->share('checkout_public_key', $checkout_public_key);
         view()->share('client_preference_detail', $client_preference_detail);
@@ -106,6 +122,7 @@ class AppServiceProvider extends ServiceProvider
         view()->share('cashfree_test_mode', $cashfree_test_mode);
         view()->share('payphone_id', $payphone_id??'');
         view()->share('payPhoneToken', $payphone_token??'');
+       
     }
 
     public function connectDynamicDb($request)

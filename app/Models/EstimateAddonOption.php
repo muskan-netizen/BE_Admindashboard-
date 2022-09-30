@@ -20,4 +20,8 @@ class EstimateAddonOption extends Model
     {
         return $this->hasMany('App\Models\EstimateAddonOptionTranslation', 'estimate_addon_opt_id', 'id');
     }
+
+    public function estimated_product_addon_option(){
+        return $this->hasMany('App\Models\EstimatedProductAddons', 'estimated_addon_option_id' );
+    }
 }

@@ -9,8 +9,8 @@ use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Front\{FrontController, OrderController, WalletController, UserSubscriptionController};
-use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser};
+use App\Http\Controllers\Front\{FrontController, OrderController, WalletController, UserSubscriptionController,PickupDeliveryController};
+use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser,CaregoryKycDoc};
 
 class PaystackGatewayController extends FrontController
 {
@@ -36,22 +36,40 @@ class PaystackGatewayController extends FrontController
     }
 
     public function paystackPurchase(Request $request){
+      // pr($request->all());
         try{
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
             $returnUrlParams = '?amount='.$amount;
+            $returnRoute = route('payment.paystackCompletePurchase');
             if($request->has('tip')){
-                $returnUrlParams = $returnUrlParams.'&tip='.$request->tip.'&gateway=paystack';
+                $returnUrlParams = $returnUrlParams.'&tip='.$request->tip;
             }
             if ($request->has('order_number')) {
                 $returnUrlParams = $returnUrlParams . '&ordernumber=' . $request->order_number;
             }
-            $returnUrlParams = $returnUrlParams.'&gateway=paystack';
+            if ($request->has('payment_form')) {
+                $returnUrlParams = $returnUrlParams . '&payment_form=' . $request->payment_form;
+                if($request->payment_form == 'cart'){
+                    $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+                    $returnUrlParams = $returnUrlParams . '&cart_id=' . $cart->id;
+                }
+            }
+            if ($request->has('reload_route')) {
+                $returnUrlParams = $returnUrlParams . '&reload_route=' . $request->reload_route;
+            }
+            if ($request->has('subscription_id')) {
+                $returnUrlParams = $returnUrlParams . '&subscription_id=' . $request->subscription_id;
+            }
+            
+            $returnUrlParams = $returnUrlParams.'&gateway=paystack&user_id='.$user->id;
+            $returnRoute = $returnRoute .   $returnUrlParams;
+          
             $response = $this->gateway->purchase([
                 'amount' => $amount,
                 'currency' => $this->currency, //'ZAR'
                 'email' => $user->email,
-                'returnUrl' => url($request->returnUrl . $returnUrlParams),
+                'returnUrl' =>  $returnRoute,
                 'cancelUrl' => url($request->cancelUrl),
                 'metadata' => ['user_id' => $user->id],
                 'description' => 'This is a test purchase transaction.',
@@ -73,9 +91,120 @@ class PaystackGatewayController extends FrontController
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }
-
     public function paystackCompletePurchase(Request $request)
     {
+       // pr($request->all());
+        // Once the transaction has been approved, we need to complete it.
+        if($request->has(['reference'])){
+            $amount = $this->getDollarCompareAmount($request->amount);
+            $transaction = $this->gateway->completePurchase(array(
+                'amount'                => $amount,
+                'transactionReference'  => $request->reference
+            ));
+            $response = $transaction->send();
+            if ($response->isSuccessful()){
+                $user_id = $cart_id = $payment_form = $order_number = $subscription_id = '';
+                $transactionId = $response->getTransactionReference();
+                $order_number = $request->ordernumber ;
+                $payment_form =  $request->payment_form;
+                $cart_id = $request->cart_id;
+                $user_id = $request->user_id;
+                if($payment_form == 'cart'){
+                    
+                    $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                    if ($order) {
+                        $order->payment_status = 1;
+                        $order->save();
+                        $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                        if (!$payment_exists) {
+                            $payment = new Payment();
+                            $payment->date = date('Y-m-d');
+                            $payment->order_id = $order->id;
+                            $payment->transaction_id = $transactionId;
+                            $payment->balance_transaction = $amount;
+                            $payment->type = 'cart';
+                            $payment->save();
+    
+                            // Auto accept order
+                            $orderController = new OrderController();
+                            $orderController->autoAcceptOrderIfOn($order->id);
+    
+                            // Remove cart
+                            
+                            CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+                            Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                            CartAddon::where('cart_id', $cart_id)->delete();
+                            CartCoupon::where('cart_id', $cart_id)->delete();
+                            CartProduct::where('cart_id', $cart_id)->delete();
+                            CartProductPrescription::where('cart_id', $cart_id)->delete();
+                            // send success sms
+                            $this->sendSuccessSMS($request, $order);
+                            // Send Notification
+                            if (!empty($order->vendors)) {
+                                foreach ($order->vendors as $vendor_value) {
+                                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                                    $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                                    $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                                }
+                            }
+                            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                            $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                            $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                        }
+                        $returnUrl = route('order.success', $order->id);
+                        return Redirect::to(url($returnUrl))->with('success', __('Transaction has been completed successfully'));
+                        // Send Email
+                        //   $this->successMail();
+                    }
+                } elseif($payment_form == 'wallet'){
+                    $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
+                    $walletController = new WalletController();
+                    $walletController->creditWallet($request);
+
+                    $returnUrl = route('user.wallet');
+                    return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
+                }
+                elseif($payment_form == 'tip'){
+                    $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
+                    $orderController = new OrderController();
+                    $orderController->tipAfterOrder($request);
+                    $returnUrl = route('user.orders');
+                    return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
+                }
+                elseif($payment_form == 'subscription'){
+                    $subscription_id = $request->subscription_id;
+                    $request->request->add(['user_id' => $user_id, 'payment_option_id' => 5, 'amount' => $amount, 'transaction_id' => $transactionId]);
+                    $subscriptionController = new UserSubscriptionController();
+                    $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription_id);
+                    $returnUrl = route('user.subscription.plans');
+                    return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
+                    
+                }
+                elseif($request->payment_form == 'pickup_delivery'){
+                    $request->request->add(['payment_option_id' => 5, 'amount' => $amount,'order_number' => $request->ordernumber, 'transaction_id' => $transactionId]);
+                     // pr($request->all());
+                    $plaseOrderForPickup = new PickupDeliveryController();
+                    $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+                 // pr($request->reload_route);
+                  
+                    $returnUrl = $request->reload_route;
+                    return Redirect::to(url($returnUrl))->with('success', __('Transaction has been completed successfully'));
+                }
+            //    $this->successMail();
+                return $this->successResponse($response->getTransactionReference());
+            } else {
+                $this->failMail();
+                return $this->errorResponse($response->getMessage(), 400);
+            }
+        } else {
+            $this->failMail();
+            return $this->errorResponse('Transaction has been declined', 400);
+        }
+    }
+
+    public function paystackCompletePurchase2(Request $request)
+    {
+       // pr($request-);
         // Once the transaction has been approved, we need to complete it.
         if($request->has(['reference'])){
             $amount = $this->getDollarCompareAmount($request->amount);
@@ -168,6 +297,15 @@ class PaystackGatewayController extends FrontController
                     $request->request->add(['payment_option_id' => 5, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
                     $res = $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
+                } elseif($request->action == 'pickup_delivery'){
+                    $request->request->add(['payment_option_id' => 5, 'amount' => $amount,'order_number' => $request->order_number, 'transaction_id' => $transactionId]);
+                     // pr($request->all());
+                    $plaseOrderForPickup = new PickupDeliveryController();
+                    $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+                 // pr($request->reload_route);
+                  
+                    // $returnUrl = $request->reload_route;
+                    // return Redirect::to(url($returnUrl))->with('success', __('Transaction has been completed successfully'));
                 }
                 return Redirect::to($url);
             } else {

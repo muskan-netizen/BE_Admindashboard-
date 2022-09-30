@@ -267,6 +267,8 @@
                                         <th class="text-nowrap">{{ __('Date') }}</th>
                                         <th>{{ __("Description") }}</th>
                                         <th>{{ __("Credit") }} / {{ __("Debit") }}</th>
+                                        <th>{{ __("Remarks") }}</th>
+                                        <th>{{ __("Created By") }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -331,7 +333,7 @@
                                             <td></td>
                                             @else
                                             <td>{{ __('Errors') }}</td>
-                                            <td class="position-relative text-center">
+                                            <td class="position-relative text-center alTooltipHover">
                                                 <i class="mdi mdi-exclamation-thick"></i>
                                                 <ul class="tooltip_error">
                                                     <?php $error_csv = json_decode($csv->error); ?>
@@ -356,6 +358,67 @@
             </div>
         </div>
     </div>
+
+<div id="pay-receive-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h4 class="modal-title">{{__("Pay") ."/". __("Receive") ." ". __("Money")}}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <form id="submitpayreceive" enctype="">
+                @csrf
+                <div class="row pt-2">
+                    <div class="login-form col-md-12">
+                        <ul class="list-inline d-flex justify-content-center">
+                            <li class="d-inline-block mr-2">
+                                <input type="radio" id="pay_radio" name="payment_type"  value="1" checked>
+                                <label for="pay_radio"><span class="showspan">{{__("Pay")}}</span></label>
+                            </li>
+                            <li class="d-inline-block mr-2">
+                                <input type="radio" id="receive_radio"  name="payment_type" value="2">
+                                <label for="receive_radio"><span class="showspan">{{__("Receive")}}</span></label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="modal-body px-3 py-0">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="customer_search" class="control-label">{{__("Customer")}}</label>
+                                <input type="text" id='customer_search' class="form-control" name="customer_search" placeholder="{{__('Search Customer')}}" value="" required>
+                                <input type="hidden" id='cusid' name="cusid" value="" readonly>
+                                <div id="cus_search_wrapper" style="position:relative"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="field-2" class="control-label">{{__("Amount")}}</label>
+                                <input name="amount" type="text" class="form-control" id="field-2" placeholder="100" required>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="field-3" class="control-label">{{__("Remarks")}}</label>
+                                <textarea name="remarks" class="form-control" id="field-3" placeholder="{{__('Give some remarks')}}" rows="5" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span class="show_all_error invalid-feedback"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="submit" class="btn btn-blue waves-effect waves-light">{{__("Add")}}</button>
+                </div>
+            </form>    
+        </div>
+    </div>
+</div><!-- /.modal -->
 
 
 

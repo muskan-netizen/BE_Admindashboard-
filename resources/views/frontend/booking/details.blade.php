@@ -1,6 +1,5 @@
 @extends('layouts.store', ['title' => 'Booking Details'])
 @section('css')
-<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
 
@@ -153,13 +152,21 @@
             </div>
             <div class="cab-amount-details px-2">
                 <div class="row">
-                    <div class="col-6 mb-2">ETA</div>
+                    <div class="col-6 mb-2">{{__('ETA')}}</div>
                     <div class="col-6 mb-2 text-right" id="distance">--</div>
-                    <div class="col-6 mb-2">Order ID</div>
+                    <div class="col-6 mb-2">{{__('Order ID')}}</div>
                     <div class="col-6 mb-2 text-right" id=""><%= result.order_number %></div>
-                    <div class="col-6 mb-2" >Amount Paid</div>
+                    <% if(result.friend_name != null){%>
+                    <div class="col-6 mb-2">{{__("Rider's Name")}}</div>
+                    <div class="col-6 mb-2 text-right" id=""><%= result.friend_name %></div>
+                    <%}%>
+                    <% if(result.friend_phone_number != null){%>
+                    <div class="col-6 mb-2">{{__("Rider's Contact No.")}}</div>
+                    <div class="col-6 mb-2 text-right" id=""><%= result.friend_phone_number %></div>
+                    <%}%>
+                    <div class="col-6 mb-2" >{{__('Amount Paid')}}</div>
                     <div class="col-6 mb-2 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(result.payable_amount) %></div>
-                    <div class="col-6 mb-2">Status</div>
+                    <div class="col-6 mb-2">{{__('Status')}}</div>
                     <div class="col-6 mb-2 text-right" id="dispatcher_status_show"></div>
                 </div>
             </div>
@@ -181,7 +188,7 @@
                 @if($vendor->vendor_id == $product->vendor_id)
                 @php
                 $pro_rating = $product->productRating->rating??0;
-            @endphp
+                @endphp
             <li class="text-center">
                 <img src="{{ $product->image['proxy_url'].'74/100'.$product->image['image_path'] }}" alt="">
                  <label class="rating-star add_edit_review" data-id="{{$product->productRating->id??0}}"  data-dispatch_order_id ='' data-order_vendor_product_id="{{$product->id??0}}">
