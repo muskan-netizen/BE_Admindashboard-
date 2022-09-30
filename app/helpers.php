@@ -819,122 +819,152 @@ if (!function_exists('GoogleDistanceMatrix')) {
         return $send;
     }
 }
-function getDynamicMail(){
-    $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
-    $config = array(
-        'driver' => $data->mail_driver,
-        'host' => $data->mail_host,
-        'port' => $data->mail_port,
-        'from'       => array('address' => $data->mail_from, 'name' => $data->mail_from),
-        'encryption' => $data->mail_encryption,
-        'username' => $data->mail_username,
-        'password' => $data->mail_password,
-        'sendmail' => '/usr/sbin/sendmail -bs',
-        'pretend' => false,
-    );
-    \Config::set('mail.mailers.smtp', $config);
-    return 2;
+if (!function_exists('getDynamicMail')) {
+    function getDynamicMail()
+    {
+        $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+        $config = array(
+            'driver' => $data->mail_driver,
+            'host' => $data->mail_host,
+            'port' => $data->mail_port,
+            'from'       => array('address' => $data->mail_from, 'name' => $data->mail_from),
+            'encryption' => $data->mail_encryption,
+            'username' => $data->mail_username,
+            'password' => $data->mail_password,
+            'sendmail' => '/usr/sbin/sendmail -bs',
+            'pretend' => false,
+        );
+        \Config::set('mail.mailers.smtp', $config);
+        return 2;
+    }
+}
+if (!function_exists('getDynamicTypeName')) {
+    function getDynamicTypeName($name)
+    {
+        $new_name = getNomenclatureName($name, true);
+        $new_name = ($new_name === $name) ? __($name) : $new_name;
+        return $new_name;
+    }
+} 
+
+if (!function_exists('stripePaymentCredentials')) {
+    function stripePaymentCredentials(){
+        $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
+        $creds_arr = json_decode($stripe_creds->credentials);
+        $response = collect();
+        $response->secret_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
+        $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+        return $response;
+    }
 }
 
-function getDynamicTypeName($name)
-{
-    $new_name = getNomenclatureName($name, true);
-    $new_name = ($new_name === $name) ? __($name) : $new_name;
-    return $new_name;
+if (!function_exists('stripeFPXPaymentCredentials')) {
+    function stripeFPXPaymentCredentials(){
+        $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_fpx')->where('status', 1)->first();
+        $creds_arr = json_decode($stripe_creds->credentials);
+        $response = collect();
+        $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
+        $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+        return $response;
+    }
 }
 
-function stripePaymentCredentials(){
-    $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
-    $creds_arr = json_decode($stripe_creds->credentials);
-    $response = collect();
-    $response->secret_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
-    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
-    return $response;
+
+if (!function_exists('stripeOXXOPaymentCredentials')) {
+    function stripeOXXOPaymentCredentials(){
+        $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_oxxo')->where('status', 1)->first();
+        $creds_arr = json_decode($stripe_creds->credentials);
+        $response = collect();
+        $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
+        $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+        return $response;
+    }
 }
 
-function stripeFPXPaymentCredentials(){
-    $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_fpx')->where('status', 1)->first();
-    $creds_arr = json_decode($stripe_creds->credentials);
-    $response = collect();
-    $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
-    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
-    return $response;
+
+if (!function_exists('stripeDynamicPaymentCredentials')) {
+    function stripeDynamicPaymentCredentials($name){
+        $stripe_creds = PaymentOption::select('credentials')->where('code', $name)->where('status', 1)->first();
+        $creds_arr = json_decode($stripe_creds->credentials);
+        $response = collect();
+        $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
+        $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+        return $response;
+    }
 }
 
-function stripeOXXOPaymentCredentials(){
-    $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_oxxo')->where('status', 1)->first();
-    $creds_arr = json_decode($stripe_creds->credentials);
-    $response = collect();
-    $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
-    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
-    return $response;
-}
 
-function stripeDynamicPaymentCredentials($name){
-    $stripe_creds = PaymentOption::select('credentials')->where('code', $name)->where('status', 1)->first();
-    $creds_arr = json_decode($stripe_creds->credentials);
-    $response = collect();
-    $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
-    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
-    return $response;
-}
-
- function OnLAstMileDelivery()
+if (!function_exists('OnLAstMileDelivery')) {
+    function OnLAstMileDelivery()
     {
         $count = ShippingOption::where('status',1)->count();
         return $count;
     }
+}
 
-function getServerURL(){
-    $client = ClientData::where('id', '>', 0)->first();
-    $domain = '';
-    if(!empty($client->custom_domain)){
-        $domain = $client->custom_domain;
-    }else{
-        $domain = $client->sub_domain.env('SUBMAINDOMAIN');
+
+if (!function_exists('getServerURL')) {
+    function getServerURL(){
+        $client = ClientData::where('id', '>', 0)->first();
+        $domain = '';
+        if(!empty($client->custom_domain)){
+            $domain = $client->custom_domain;
+        }else{
+            $domain = $client->sub_domain.env('SUBMAINDOMAIN');
+        }
+        $server_url = "https://".$domain."/";
+        return $server_url;
     }
-    $server_url = "https://".$domain."/";
-    return $server_url;
 }
 
+
+if (!function_exists('getDollarCompareAmount')) {
 /* doller compare amount */
-function getDollarCompareAmount($amount, $customerCurrency='')
-{
-    $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-    if(empty($customerCurrency)){
-        $clientCurrency = $primaryCurrency;
-    }else{
-        $clientCurrency = ClientCurrency::where('currency_id', $customerCurrency)->first();
+    function getDollarCompareAmount($amount, $customerCurrency='')
+    {
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        if(empty($customerCurrency)){
+            $clientCurrency = $primaryCurrency;
+        }else{
+            $clientCurrency = ClientCurrency::where('currency_id', $customerCurrency)->first();
+        }
+        $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
+        $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
+        $amount = number_format($amount, 2,'.','');
+        return $amount;
     }
-    $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
-    $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
-    $amount = number_format($amount, 2,'.','');
-    return $amount;
 }
 
-/* doller compare amount */
-function getPrimaryCurrencyName()
-{
-    $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-    $currencyName = Currency::find($primaryCurrency->currency_id);
+if (!function_exists('getPrimaryCurrencyName')) {
+    /* doller compare amount */
+    function getPrimaryCurrencyName()
+    {
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        $currencyName = Currency::find($primaryCurrency->currency_id);
 
-    $currencyName = $currencyName->iso_code;
-    return $currencyName;
+        $currencyName = $currencyName->iso_code;
+        return $currencyName;
+    }
 }
 
-// Number Format according to Client preferences
-function decimal_format($number,$format="")
-{
-    $preference = session()->get('preferences');
-    $digits = $preference['digit_after_decimal'] ?? 2;
-    return number_format($number,$digits,'.',$format);
+if (!function_exists('decimal_format')) {
+    // Number Format according to Client preferences
+    function decimal_format($number,$format="")
+    {
+        $preference = session()->get('preferences');
+        $digits = $preference['digit_after_decimal'] ?? 2;
+        return number_format($number,$digits,'.',$format);
+    }
 }
+
 
 if (!function_exists('taxRates')) {
     function taxRates(){
         return App\Models\TaxRate::all();
     }
 }
+
+
 if (!function_exists('getServiceTypesCategory')) {
     /**
      * config('constants.ServiceTypes')
