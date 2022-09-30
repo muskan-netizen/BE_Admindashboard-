@@ -25,7 +25,7 @@ trait ThirdPartyTrait{
             $hubspot = Factory::createWithOAuth2Token($hubkey);
             $endpoint = 'https://api.hubapi.com/contacts/v1/contact/batch';
             $hubclient = $hubspot->getClient();
-            if(isset($post_data['hubspot_last_update'])){
+            if((isset($post_data['hubspot_last_update'])) && (!empty($post_data['hubspot_last_update']))){
                 $lastUpdate =  Carbon::parse($post_data['hubspot_last_update'])->format('Y-m-d h:i:s');
             } else {
                 $lastUpdate =  Carbon::parse($lastUpdate)->format('Y-m-d h:i:s');
