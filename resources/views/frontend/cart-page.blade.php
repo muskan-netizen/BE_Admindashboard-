@@ -1,3 +1,5 @@
+@php $serviceType =  Session::get('vendorType'); @endphp
+
 @if($cart_details->totalQuantity<=0)
     <div class="container" >
         <div class="row mt-2 mb-4 mb-lg-5">
@@ -35,31 +37,35 @@
 
     <div class="col-lg-8" id="cart_template">
         <div class="shoping_cart px-3 py-2">
-            <div class="row mb-2 border-bottom">
+            <div class="row border-bottom">
                         <div class="col-6">
                             <div class="single_cart_heading">
-                                    <h3>Shopping Cart</h3>
+                                    <h3>{{ __("Shopping Cart") }}</h3>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="item-show-cart text-right">
-                                <h4>{{$cart_details->totalQuantity}}  Items</h4>
+                                <h4>{{$cart_details->totalQuantity}}  {{ __("Items") }}</h4>
                             </div>
                         </div>
             </div>
-            <div class="row border-bottom product_title_add py-1">
-                    <div class="col-md-4">
-                        <span>Product Details</span>
+            <div class="row border-bottom product_title_add py-1 no-gutters">
+                    <div class="col-md-4 col">
+                        <span>{{ __('Product Details') }}</span>
                     </div>
 
+                    <div class="col-md-2 col text-center">
+                        <span>{{ __('Price') }}</span>
+                    </div>
+                    @if($serviceType ==  'rental')
+                        <div class="col-md-2 text-center">
+                            <span>Duration By(min)</span>
+                        </div>
+                    @else
                     <div class="col-md-2 text-center">
-                        <span>Price</span>
+                        <span>{{ __('Quantity') }}</span>
                     </div>
-
-                    <div class="col-md-2 text-center">
-                        <span>Quantity</span>
-                    </div>
-
+                    @endif
                     <div class="col-md-4 text-center">
                         <span>Total</span>
                     </div>
@@ -143,62 +149,129 @@
             @foreach($product->vendor_products as $vendor_product)
                 <div class="row align-items-md-center vendor_products_tr alFourTemplateCartPage" id="tr_vendor_products_{{$vendor_product->id}}">
                     <div class="product-img col-3 col-md-2">
-                        @if($vendor_product->pvariant->media_one)
+                        @if(!empty($vendor_product->pvariant->media_one))
                             <img class='blur-up lazyload w-100' data-src="{{$vendor_product->pvariant->media_one->pimage->image->path->proxy_url.'200/200'.$vendor_product->pvariant->media_one->pimage->image->path->image_path}}">
-                        @elseif($vendor_product->pvariant->media_second && $vendor_product->pvariant->media_second->image != null)
+                        @elseif(!empty($vendor_product->pvariant->media_second) && !empty($vendor_product->pvariant->media_second->image))
                             <img class='blur-up lazyload w-100' data-src="{{ $vendor_product->pvariant->media_second->image->path->proxy_url.'200/200'. $vendor_product->pvariant->media_second->image->path->image_path}}">
-                        @else
+                        @elseif(!empty($vendor_product->image_ur))
                             <img class='blur-up lazyload w-100' data-src="{{$vendor_product->image_url}}">
                         @endif
                     </div>
                     <div class="col-9 col-md-10">
                         <div class="row align-items-md-center">
+                          
                             <div class="col-md-3 order-md-1">
                                 <h4 class="cart_product_name">{{$vendor_product->product->category_name->name }}</h4>
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{$vendor_product->product->translation_one ? $vendor_product->product->translation_one->title :  $vendor_product->product->sku }}</strong></h4>
                                 <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "{{$vendor_product->product->translation_one ? $vendor_product->product->translation_one->title :  $vendor_product->product->sku }}" />
+                                @if(isset($vendor_product->pvariant->vset))
                                 @foreach($vendor_product->pvariant->vset as $vset)
                                     @if($vset->variant_detail->trans)
                                         <label><span><b>{{$vset->variant_detail->trans->title }}:</b></span> {{$vset->option_data->trans->title }}</label>
                                     @endif
                                 @endforeach
-                            </div>
-                            <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2">
-                                <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }}</div>
-                            </div>
-                            <div class="col-6 col-md-2 text-left order-md-4">
-                                <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
-                            </div>
-                            <div class="col-10 col-md-4 text-md-center order-md-3">
-                                <div class="number d-flex justify-content-md-center">
-                                    <div class="counter-container d-flex align-items-center">
-                                        <span class="minus qty-minus" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
-                                        data-batch_count="{{$vendor_product->product->batch_count }}" data-id="{{$vendor_product->id }}" data-base_price=" {{$vendor_product->pvariant->price }}" data-vendor_id="{{$vendor_product->vendor_id }}">
-                                            <i class="fa fa-minus" aria-hidden="true"></i>
-                                        </span>
-                                        <input placeholder="1" type="text" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
-                                        data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
-                                        <span class="plus qty-plus" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
-                                            data-batch_count="{{$vendor_product->product->batch_count }}" data-id="{{$vendor_product->id }}" data-base_price=" {{$vendor_product->pvariant->price }}">
-                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                                @if($cart_details->pharmacy_check == 1)
-                                    @if($vendor_product->product->pharmacy_check == 1)
-                                        <button type="button" class="float-left btn btn-solid prescription_btn mt-2" data-cart="{{$vendor_product->cart_id }}" data-product="{{$vendor_product->product->id }}" data-vendor_id="{{$vendor_product->vendor_id }}">{{ __('Add Prescription')}}</button>
-                                        @if($vendor_product->cart_product_prescription > 0)
-                                            <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{$vendor_product->cart_product_prescription }} {{ __('Prescription Added')}}</strong></h4>
-                                        @endif
-                                    @endif
                                 @endif
                             </div>
+                            
+                            @if(isset($vendor_product->pvariant->actual_price))
+                            <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
+                                <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
+                            </div>
+                            @endif
+                            @if(!empty($vendor_product->quantity_price))
+                            <div class="col-6 col-md-2 text-left order-md-4">
+                                @if($serviceType ==  'rental') 
+                                @php
+                                $additionalPrice = 0;
+                                if($vendor_product->pvariant->incremental_price_per_min > 0){
+                                    $additionalPrice = ($vendor_product->additional_increments_hrs_min/ $vendor_product->pvariant->incremental_price_per_min );
+                                }
+                                @endphp
+                                    <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price + ($additionalPrice )) }}</div>
+                                @else
+                                <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
+                                @endif
+                                
+                            </div>
+                            @endif
+                            @if($serviceType ==  'rental')
+                            <div class="col-10 col-md-4 text-md-center order-md-3">
+                                <div class="number d-flex justify-content-md-center">
+                                    <div style="display: none !important;" class="counter-container d-flex align-items-center">
+                                        <input placeholder="1"  type="number" min="0"  data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
+                                        data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
+                                        
+                                    </div>
+                                    <div class="qty-box alCartInput">
+                                        <div class="input-group">
+                                            @php 
+                                                $dura = getHoursMinutes($vendor_product->total_booking_time);
+                                            @endphp
+                                            <p>{{$dura}}</p>
+                                            {{-- <span class="input-group-prepend">
+                                                <button type="button" class="btn incremental-left-minus" data-type="minus" data-field=""><i class="ti-angle-left"></i>
+                                                </button>
+                                            </span> --}}
+                                            {{-- <input  readonly  step="{{@$vendor_product->product->additional_increments.'.'.@$vendor_product->product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs p-0 border"  value="{{$vendor_product->additional_increments_hrs_min }}" data-incremental_hrs={{@$vendor_product->product->additional_increments}}> --}}
+                                            {{-- <span class="input-group-prepend quant-plus">
+                                                <button type="button" class="btn incremental-right-plus" data-type="plus" data-field=""  data-incremental_hrs={{@$vendor_product->product->additional_increments}}>
+                                                    <i class="ti-angle-right"></i>
+                                                </button>
+                                            </span> --}}
+                                        </div>
+                                    </div>
+                                
+                                </div>
+                               
+                            </div>
+                            @else
+                                <div class="col-10 col-md-4 text-md-center order-md-3">
+                                    <div class="number d-flex justify-content-md-center">
+                                        <div class="counter-container d-flex align-items-center">
+                                            <span class="minus qty-minus" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
+                                            data-batch_count="{{$vendor_product->product->batch_count }}" data-id="{{$vendor_product->id }}" data-base_price="{{!empty($vendor_product->pvariant->price)?$vendor_product->pvariant->price:'' }}" data-vendor_id="{{$vendor_product->vendor_id }}">
+                                                <i class="fa fa-minus" aria-hidden="true"></i>
+                                            </span>
+                                            <input placeholder="1" type="text" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
+                                            data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
+                                            <span class="plus qty-plus" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
+                                                data-batch_count="{{$vendor_product->product->batch_count }}" data-id="{{$vendor_product->id }}" data-base_price="{{!empty($vendor_product->pvariant->price)?$vendor_product->pvariant->price:'' }}">
+                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    @if($cart_details->pharmacy_check == 1)
+                                        @if($vendor_product->product->pharmacy_check == 1)
+                                            <button type="button" class="float-left btn btn-solid prescription_btn mt-2" data-cart="{{$vendor_product->cart_id }}" data-product="{{$vendor_product->product->id }}" data-vendor_id="{{$vendor_product->vendor_id }}">{{ __('Add Prescription')}}</button>
+                                            @if($vendor_product->cart_product_prescription > 0)
+                                                <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{$vendor_product->cart_product_prescription }} {{ __('Prescription Added')}}</strong></h4>
+                                            @endif
+                                        @endif
+                                    @endif
+                                </div>
+                            @endif
+
                             <div class="col-2 col-md-1 text-right text-md-center p-in order-md-5">
-                                <a class="action-icon d-block remove_product_via_cart" data-product="{{$vendor_product->id }}" data-vendor_id="{{$vendor_product->vendor_id }}">
+                                <a class="action-icon d-block remove_product_via_cart" style="cursor: pointer;" data-product="{{$vendor_product->id }}" data-vendor_id="{{$vendor_product->vendor_id }}">
                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                 </a>
                             </div>
                         </div>
+                        @if($serviceType ==  'rental')
+                         <hr class="my-2">
+
+                            <div class="row align-items-md-center alRentalStartDate">
+                                <div class="col-3">
+                                    <h6 class="m-0 pl-0">{{ __('Start Date') }}</h6>
+                                    <p>{{date("m/d/Y g:i A", strtotime($vendor_product->start_date_time))}}</p>
+                                </div>
+                                <div class="col-3">
+                                    <h6 class="m-0 pl-0">{{ __('End Date') }}</h6>
+                                    <p>{{date("m/d/Y g:i A", strtotime($vendor_product->end_date_time))}}</p>
+                                </div>
+                            </div>
+                        @endif
+
                        @if(count($vendor_product->addon) != 0)
                             <hr class="my-2">
                             <div class="row align-items-md-center add_head">
@@ -206,6 +279,7 @@
                                     <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                                 </div>
                             </div>
+                            
                             @foreach($vendor_product->addon as $ad=>$addon)
                             @if($addon->option)
                                 <div class="row">
@@ -223,7 +297,7 @@
                             @endforeach
                        @endif
 
-                        @if($vendor_product->pvariant->container_charges > 0)
+                        @if(!empty($vendor_product->pvariant->container_charges) && $vendor_product->pvariant->container_charges > 0)
                             <div class="row">
                                 <div class="col-md-3 col-sm-4 items-details text-left">
                                     <p class="p-0 m-0 alert-danger">{{ __('Container Charges') }} *</p>
@@ -264,7 +338,7 @@
                             </div>
                         </div>
                     @endif
-                    @if($vendor_product->product_out_of_stock == 1)
+                    @if(!empty($vendor_product->product_out_of_stock) && $vendor_product->product_out_of_stock == 1)
                         <div class="col-12">
                             <div class="text-danger" style="font-size:12px;">
                                 <i class="fa fa-exclamation-circle"></i>{{__("This Product is out of stock")}}
@@ -286,6 +360,43 @@
                 <input type="hidden" name="cart_product_ids[]" value="{{$vendor_product->product_id }}">
 
                 <hr class="my-1">
+
+                 {{-- Home Service Schedual code Start at down --}}
+                 @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ( in_array($serviceType ,['appointment','on_demand']) && $vendor_product->product->mode_of_service == "schedule" ))
+                 @if($client_preference_detail->business_type != 'laundry')
+               
+                 <div class="row mb-1 d-flex align-items-center vendor_product_schedule_datetime" style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
+                     <div class="col-5 offset-3 text-lg-right">
+                         <label class="m-0 radio">
+                             {{__('Scheduled Slot')}} :</label>
+                         </div>
+                     <div class="col-4 vendor_slot_cart">
+                        <input type="hidden" class="custom-control-input check" id="tasknow" name="task_type" value='schedule' >
+                        @if($product->slotsCnt != 0)
+                             <input type="date" class="form-control vendor_schedule_datetime" placeholder="Inline calendar" data-schedule_type="date" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" value="{{(($vendor_product->scheduled_date_time != '')?$vendor_product->scheduled_date_time : $product->delay_date ) }}"  min="{{(($product->delay_date != '0') ? $product->delay_date : '') }}" >
+                            <select  class="form-control vendor_product_schedule_slot vendor_schedule_slot " id="vendor_schedule_slot_{{$product->vendor_id }}" data-schedule_type="time" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" >
+                                    <option value="">{{__("Select Slot")}} </option>
+                                    @foreach($product->slots as $slot)
+                                        <option value="{{$slot->value}}" {{$slot->value == $product->schedule_slot ? "selected" : ""}} >{{$slot->name }}</option>
+                                    @endforeach
+                            </select>
+                        @else
+                            @if($cart_details->delay_date != 0)
+                                <input type="datetime-local" id="vendor_schedule_slot_{{$product->vendor_id }}" data-schedule_type="ProductDateTime" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" class="form-control vendor_schedule_datetime" placeholder="Inline calendar" value="{{ (($vendor_product->manual_scheduled_date_time != '')?$vendor_product->manual_scheduled_date_time : $product->delay_date ) }}"
+                                min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}" data-cart_product_id="{{ $vendor_product->id }}">
+                            @else
+                                <input type="datetime-local" id="vendor_schedule_slot_{{$product->vendor_id }}" data-schedule_type="ProductDateTime" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" class="form-control vendor_schedule_datetime" placeholder="Inline calendar" value="{{ (($vendor_product->manual_scheduled_date_time != '')?$vendor_product->manual_scheduled_date_time : $product->delay_date ) }} "
+                                min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}" data-cart_product_id="{{ $vendor_product->id }}">
+
+                            @endif
+
+                        @endif
+                            
+                     </div>
+                 </div>
+                 @endif
+                 @endif
+            
             @endforeach
 
         {{-- End Product Detail Loop --}}
@@ -339,7 +450,7 @@
                        @endif
 
                         {{-- Home Service Schedual code Start at down --}}
-                        @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && $cart_details->vendorCnt > 1)
+                        @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ($cart_details->vendorCnt > 1  && (!in_array($serviceType ,['appointment','on_demand'])) ))
                             @if($client_preference_detail->business_type != 'laundry')
                             <div class="row mb-1 d-flex align-items-center" style="{{(($product->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
                                 <div class="col-5 text-lg-right">
@@ -347,14 +458,17 @@
                                         {{__('Scheduled Slot')}} :</label>
                                     </div>
                                 <div class="col-7 vendor_slot_cart">
+                                   
                                     @if($product->slotsCnt != 0)
+                                    <input type="hidden" class="custom-control-input check" id="tasknow" name="task_type" value='schedule' >
                                         <input type="date" class="form-control vendor_schedule_datetime" placeholder="Inline calendar" data-schedule_type="date" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" value="{{(($product->scheduled_date_time != '')?$product->scheduled_date_time : $product->delay_date ) }}"  min="{{(($product->delay_date != '0') ? $product->delay_date : '') }}" >
-                                        <select onchange="checkSlotAvailability(this);" class="form-control vendor_schedule_slot" id="vendor_schedule_slot_{{$product->vendor_id }}" data-schedule_type="time" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" >
+                                        <select  class="form-control vendor_schedule_slot" id="vendor_schedule_slot_{{$product->vendor_id }}" data-schedule_type="time" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" >
                                             <option value="">{{__("Select Slot")}} </option>
                                             @foreach($product->slots as $slot)
                                                <option value="{{$slot->value}}" {{$slot->value == $product->selected_slot ? "selected" : ""}} >{{$slot->name }}</option>
                                            @endforeach
-                                        </select>
+                                    </select>
+                                    {{-- onchange="checkSlotAvailability(this);" --}}
                                     @endif
                                 </div>
                             </div>
@@ -383,20 +497,20 @@
                                     <label class="m-0 radio">{{__('Sub Total')}} :</label>
                                 </div>
                                 <div class="col-7 text-right">
-                                    <p class="total_amt m-0">{{Session::get('currencySymbol')}} {{decimal_format($product->product_total_amount+$product->vendor->fixed_fee_amount)}}</p>
+                                    <p class="total_amt m-0">{{Session::get('currencySymbol')}} {{decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount)}}</p>
                                 </div>
                             @endif
                         </div>
                 </div>
             </div>
         </div>
-            <hr class="my-1">
+
             @endforeach
 
-            <div class="row mb-md-1 alFourTemplateCartButtons mt-3">
+            <div class="row mb-md-1 alFourTemplateCartButtons mt-2 pt-2 border-top">
                 <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                     <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
-     {{__('Continue Shopping')}}</a>
+                        {{__('Continue Shopping')}}</a>
                 </div>
             </div>
         </div>
@@ -421,7 +535,7 @@
         <div class="row m-0">
          <div class="cart-summary p-2 pb-4">
             <div class="col-12 mb-2">
-                <h5 class="order_text">Order Summary</h5>
+                <h5 class="order_text">{{ __('Order Summary') }}</h5>
             </div>
         <input type="hidden" name="without_category_kyc" value="{{$cart_details->without_category_kyc}}">
         @if($client_preference_detail->category_kyc_documents ==1)
@@ -562,14 +676,25 @@
             }
             @endphp
             <input type="hidden" id="other_taxes_string" value="{{$other_taxes_string}}">
-
+            @if($serviceType ==  'rental')
+                {{-- <div class="row">
+                    <div class="col-6">{{__('Extended Duration')}}</div>
+                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
+                    </div>  
+                </div> --}}
+            @endif
 
             @if($price_bifurcation!=1)
             <!-- <hr class="my-2"> -->
             <div class="row">
                 <div class="col-6">{{__('Total')}}</div>
+                {{-- @if($serviceType ==  'rental')
+                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount+$vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
+                    <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
+                @else  --}}
                 <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount)}}</b></span>
-                <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
+                    <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
+                {{-- @endif --}}
             </div>
             <hr class="my-2">
             @endif
@@ -696,7 +821,7 @@
                     </div>
 
                     {{-- Schedual code Start at down --}}
-            @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && $cart_details->vendorCnt==1)
+            @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && $cart_details->vendorCnt==1 && (!in_array($serviceType ,['appointment','on_demand']) ) )
                 @if($client_preference_detail->business_type != 'laundry')
             <div class="row arabic-lng position-relative my-3" id="dateredio">
                 <div class=" col-md-12 mb-2 mb-md-0 text-right">
@@ -726,17 +851,17 @@
                                 </li>
                                @endif                        </ul>
                         <div class=" col-sm-10 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right mr-1" id="schedule_div" style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
-                    @if($cart_details->slotsCnt == 0)
-                    @if($cart_details->delay_date != 0)
-                        <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
-                        min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
-                       @else
+                        @if($cart_details->slotsCnt == 0)
+                        @if($cart_details->delay_date != 0)
                             <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
                             min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
+                        @else
+                                <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
+                                min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
 
-                            @endif
+                                @endif
 
-                    @else
+                        @else
 
 
                             <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="{{(($cart_details->scheduled_date_time != '')?$cart_details->scheduled_date_time : $cart_details->delay_date ) }}"  min="{{$cart_details->delay_date}}" >

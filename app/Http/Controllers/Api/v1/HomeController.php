@@ -295,7 +295,7 @@ class HomeController extends BaseController
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
             $allVendorData = clone $vendorData;
-            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
+            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->limit(100)->get();
             $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
             
             // \Log::info($vendorData->toSql());
@@ -384,7 +384,7 @@ class HomeController extends BaseController
                 $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
             }
            
-
+            $vendorData =   $vendorData->take(5);
 
             // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
             //     $vendorData = $vendorData->sortBy('lineOfSightDistance')->values()->all();
@@ -393,54 +393,57 @@ class HomeController extends BaseController
             $on_sale_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, '', $type);
             $new_product_details    = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type);
             $feature_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_featured', $type);
-            foreach ($new_product_details as  $new_product_detail) {
-                $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
-                $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
-                $image_url = $new_product_detail->media->first() && !is_null($new_product_detail->media->first()->image) ? $new_product_detail->media->first()->image->path['image_fit'] . '600/600' . $new_product_detail->media->first()->image->path['image_path'] : '';
-                $new_products[] = array(
-                    'image_url' => $image_url,
-                    'sku' => $new_product_detail->sku,
-                    'title' => $title,
-                    'url_slug' => $new_product_detail->url_slug,
-                    'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
-                    'inquiry_only' => $new_product_detail->inquiry_only,
-                    'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
-                    'price' => decimal_format($new_product_detail->variant->first()->price * $multiply),
-                    'category' => ($new_product_detail->category->categoryDetail->translation->first()) ? $new_product_detail->category->categoryDetail->translation->first()->name : $new_product_detail->category->categoryDetail->slug
-                );
-            }
-            foreach ($feature_product_details as  $feature_product_detail) {
-                $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
-                $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
-                $image_url = $feature_product_detail->media->first() &&  !is_null($feature_product_detail->media->first()->image)? $feature_product_detail->media->first()->image->path['image_fit'] . '600/600' . $feature_product_detail->media->first()->image->path['image_path'] : '';
-                $feature_products[] = array(
-                    'image_url' => $image_url,
-                    'sku' => $feature_product_detail->sku,
-                    'title' => $title,
-                    'url_slug' => $feature_product_detail->url_slug,
-                    'averageRating' => number_format($feature_product_detail->averageRating, 1, '.', ''),
-                    'inquiry_only' => $feature_product_detail->inquiry_only,
-                    'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
-                    'price' => decimal_format($feature_product_detail->variant->first()->price * $multiply),
-                    'category' => ($feature_product_detail->category->categoryDetail->translation->first()) ? $feature_product_detail->category->categoryDetail->translation->first()->name : $feature_product_detail->category->categoryDetail->slug
-                );
-            }
-            foreach ($on_sale_product_details as  $on_sale_product_detail) {
-                $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
-                $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
-                $image_url = $on_sale_product_detail->media->first() && !is_null($on_sale_product_detail->media->first()->image) ? $on_sale_product_detail->media->first()->image->path['image_fit'] . '600/600' . $on_sale_product_detail->media->first()->image->path['image_path'] : '';
-                $on_sale_products[] = array(
-                    'image_url' => $image_url,
-                    'sku' => $on_sale_product_detail->sku,
-                    'title' => $title,
-                    'url_slug' => $on_sale_product_detail->url_slug,
-                    'averageRating' => number_format($on_sale_product_detail->averageRating, 1, '.', ''),
-                    'inquiry_only' => $on_sale_product_detail->inquiry_only,
-                    'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
-                    'price' => decimal_format($on_sale_product_detail->variant->first()->price * $multiply),
-                    'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
-                );
-            }
+            // foreach ($new_product_details as  $new_product_detail) {
+            //     $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
+            //     $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
+            //     $image_url = $new_product_detail->media->first() && !is_null($new_product_detail->media->first()->image) ? $new_product_detail->media->first()->image->path['image_fit'] . '600/600' . $new_product_detail->media->first()->image->path['image_path'] : '';
+            //     $vprice1 = (isset($new_product_detail->variant->first()->price)?$new_product_detail->variant->first()->price * $multiply:0);
+            //     $new_products[] = array(
+            //         'image_url' => $image_url,
+            //         'sku' => $new_product_detail->sku,
+            //         'title' => $title,
+            //         'url_slug' => $new_product_detail->url_slug,
+            //         'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
+            //         'inquiry_only' => $new_product_detail->inquiry_only,
+            //         'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
+            //         'price' => decimal_format($vprice1),
+            //         'category' => ($new_product_detail->category->categoryDetail->translation->first()) ? $new_product_detail->category->categoryDetail->translation->first()->name : $new_product_detail->category->categoryDetail->slug
+            //     );
+            // }
+            // foreach ($feature_product_details as  $feature_product_detail) {
+            //     $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
+            //     $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
+            //     $image_url = $feature_product_detail->media->first() &&  !is_null($feature_product_detail->media->first()->image)? $feature_product_detail->media->first()->image->path['image_fit'] . '600/600' . $feature_product_detail->media->first()->image->path['image_path'] : '';
+            //     $vprice = (isset($feature_product_detail->variant->first()->price)?$feature_product_detail->variant->first()->price * $multiply:0);
+            //     $feature_products[] = array(
+            //         'image_url' => $image_url,
+            //         'sku' => $feature_product_detail->sku,
+            //         'title' => $title,
+            //         'url_slug' => $feature_product_detail->url_slug,
+            //         'averageRating' => number_format($feature_product_detail->averageRating, 1, '.', ''),
+            //         'inquiry_only' => $feature_product_detail->inquiry_only,
+            //         'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
+            //         'price' => decimal_format($vprice),
+            //         'category' => ($feature_product_detail->category->categoryDetail->translation->first()) ? $feature_product_detail->category->categoryDetail->translation->first()->name : $feature_product_detail->category->categoryDetail->slug
+            //     );
+            // }
+            // foreach ($on_sale_product_details as  $on_sale_product_detail) {
+            //     $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
+            //     $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
+            //     $image_url = $on_sale_product_detail->media->first() && !is_null($on_sale_product_detail->media->first()->image) ? $on_sale_product_detail->media->first()->image->path['image_fit'] . '600/600' . $on_sale_product_detail->media->first()->image->path['image_path'] : '';
+            //     $vprice2 = (isset($on_sale_product_detail->variant->first()->price)?$on_sale_product_detail->variant->first()->price * $multiply:0);
+            //     $on_sale_products[] = array(
+            //         'image_url' => $image_url,
+            //         'sku' => $on_sale_product_detail->sku,
+            //         'title' => $title,
+            //         'url_slug' => $on_sale_product_detail->url_slug,
+            //         'averageRating' => number_format($on_sale_product_detail->averageRating, 1, '.', ''),
+            //         'inquiry_only' => $on_sale_product_detail->inquiry_only,
+            //         'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
+            //         'price' => decimal_format($vprice2),
+            //         'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
+            //     );
+            // }
            
 
             $isVendorArea = 0;
@@ -502,7 +505,7 @@ class HomeController extends BaseController
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
             $homeData['reqData'] = $request->all();
-            $homeData['mobile_banners'] = $mobile_banners;
+            //$homeData['mobile_banners'] = $mobile_banners;
             $homeData['on_sale_products'] = $on_sale_product_details;
             $homeData['new_products'] = $new_product_details;
             $homeData['featured_products'] = $feature_product_details;
@@ -916,7 +919,7 @@ class HomeController extends BaseController
                 //     // $response[] = $vendor;
                 // }
                // pr($vendorids);
-                $products = Product::byProductCategoryServiceType($type)->with(['category.categoryDetail.translation' => function ($q) use ($langId) {
+                $products = Product::byProductCategoryServiceType($action)->with(['category.categoryDetail.translation' => function ($q) use ($langId) {
                     $q->where('category_translations.language_id', $langId);
                 }, 'media'])->join('product_translations as pt', 'pt.product_id', 'products.id')
                     ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
@@ -937,7 +940,7 @@ class HomeController extends BaseController
                 }
                 return $this->successResponse($response);
             } else {
-                $products = Product::byProductCategoryServiceType($type)->join('product_translations as pt', 'pt.product_id', 'products.id')
+                $products = Product::byProductCategoryServiceType($action)->join('product_translations as pt', 'pt.product_id', 'products.id')
                     ->select('products.id', 'products.sku', 'pt.title', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
                     ->where('pt.language_id', $langId)
                     ->whereHas('vendor', function ($query) use ($action) {

@@ -52,6 +52,7 @@
         margin: auto;
         border-radius: 10px;
         overflow: hidden;
+        padding: 10px;
     }
 
     .pricingtable .pricingtable-header {
@@ -241,17 +242,15 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="row align-items-center mb-3">
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-12 d-flex justify-content-between align-items-center">
                                             <h4 class="mb-2 "><span> {{ __('Vendor Section') }} </span></h4>
-                                        </div>
-                                        <div class="col-sm-6 text-center text-sm-right">
                                             <button class="btn btn-info openVendorSectionModal" > {{ __('Add Vendor Section') }}</button>
                                         </div>
                                     </div>
-                                  
+
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <div class="table-responsive mb-3" style="height: 330px; overflow-y: auto;">
+                                            <div class="table-responsive mb-3" style="max-height:350px; overflow-y: auto;">
                                                 <table class="table table-centered table-nowrap table-striped" id="products-datatable">
                                                     <thead>
                                                         <tr>
@@ -275,7 +274,7 @@
                                                             </td>
 
                                                             <td>
-                                                                
+
 
                                                                 <button type="button" class="btn btn-primary-outline action-icon editSectionBtn" data-id="{{$section->id}}" data-language_id="{{ ($section->primary ??false) ? $section->primary->language_id : '' }}"><i class="mdi mdi-square-edit-outline"></i></button>
 
@@ -293,10 +292,10 @@
                                             </div>
 
 
-                                            
+
 
                                         </div>
-                                       
+
                                     </div>
                                 </div>
                             </div>
@@ -382,10 +381,8 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="row align-items-center mb-3">
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-12 d-flex align-items-center justify-content-between">
                                             <h4 class="mb-2 "><span> {{ __('Service Area') }} </span></h4>
-                                        </div>
-                                        <div class="col-sm-6 text-center text-sm-right">
                                             <button class="btn btn-info openServiceModal"> {{ __('Add Service Area') }}</button>
                                         </div>
                                     </div>
@@ -898,7 +895,7 @@
     $( document ).ready(function() {
         $(".base_url").html(base_url);
     });
-    
+
     $(document).on("click", ".editTablebtn", function() {
         let table_id = $(this).data('id');
         $.ajax({
@@ -1471,8 +1468,8 @@
                 if(ev.event.extendedProps.slot_dine_in == 0){
                     $("#edit_dine_in").prop("checked", false);
                 }
-                
-                // display selected service areas 
+
+                // display selected service areas
                 var service_areas = ev.event.extendedProps.service_area;
                 $("#edit_slot_service_area").val(service_areas).trigger('change');
 

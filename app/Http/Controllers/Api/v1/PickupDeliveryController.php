@@ -599,7 +599,14 @@ class PickupDeliveryController extends BaseController{
                 $dynamic = uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
-                $call_back_url = "https://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic;
+
+                if(!empty($client_do->custom_domain)){
+                    $domain = $client_do->custom_domain;
+                }else{
+                    $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
+                }
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
+                //$call_back_url = "https://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic;
                 $tasks = array();
                 $meta_data = '';
                 $team_tag = $unique."_".$vendor;
@@ -876,8 +883,8 @@ class PickupDeliveryController extends BaseController{
 
 
     public function getOrderTrackingDetails(Request $request){
-        Log::info("Order Track Detail");
-        Log::info($request->all());
+        // Log::info("Order Track Detail");
+        // Log::info($request->all());
         $user = Auth::user();
         $langId = $user->language ?? 1;
         $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)

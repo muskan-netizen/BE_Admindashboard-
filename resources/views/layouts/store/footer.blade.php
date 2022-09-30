@@ -5,9 +5,6 @@
 </div>
 <div class="d-none" id ="nearmap">
 </div>
-  <div class="loader_box" style="display: none;">
-    <div class="spinner-border text-danger m-2 showLoader" role="status"></div>
-  </div>
   <div class="spinner-overlay">
     <div class="page-spinner">
         <div class="circle-border">
@@ -40,6 +37,16 @@
         </div>
     </div>
 </div>
+
+<!-- spinner Start -->
+
+<div class="nb-spinner-main">
+
+    <div class="nb-spinner"></div>
+
+    </div>
+
+    <!-- spinner End -->
 @php
 $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @endphp
@@ -341,6 +348,8 @@ if($showSubscriptionPlanPopUp == 1){
 // is restricted
     var is_age_restricted ="{{$client_preference_detail->age_restriction}}";
     //user lat long
+    // check vendor slot urkl
+    var checkSlotOrdersUrl = "{{route('checkSlotOrders')}}";
 
     var userLatitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
     var userLongitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";

@@ -1,7 +1,5 @@
-#main-menu.menu-slider li.active a{
-    color: var(--theme-deafult);
-    border-bottom: 1px solid var(--theme-deafult);
-}
+#main-menu.menu-slider li.active a{color: var(--theme-deafult);border-bottom: 1px solid var(--theme-deafult);}
+.al_body_template_two .home-slider-wrapper .banner-img-outer img{max-width: 1920px;max-height: 550px;}
 .fa-facebook-square:before, .fa-heart:before, .fa-twitter:before, .fa-user:before, .fa-whatsapp:before{font-family: FontAwesome !important;}
 .al_body_template_two .pixelstrap ul{padding: 5px 0;z-index: 9;}
 .al_body_template_two .common-banner{height: 300px;margin-bottom: 0px;}
@@ -35,7 +33,10 @@ body.al_body_template_two .collection-filter .theme-card .offer-slider img{paddi
 .al_body_template_two .related-products a.common-product-box.scale-effect.text-center:hover{background-color: #fff;}
 .al_body_template_two .top-banner-wrapper.text-center{margin-bottom: 20px;background-color: transparent;box-shadow: none;}
 ul.al_main_category_list{z-index: 99;}
-article#page-container{position: relative;min-height: 100vh;overflow: hidden;}
+article#page-container{position: relative;min-height: 100vh;}
+body .category-head{
+top: 145px;
+}
 @media (max-width: 767px){
 .footer-contant .footer-social ul{margin:unset;text-align:center;margin:0 auto}.al_body_template_two .common-banner{height:150px}.al_body_template_two .al_template_two_content .product-image{height:90px}body.al_body_template_two #page-container .vendors .slick-slider .slick-slide{margin:20px 0 0}body.al_body_template_two .top-header .header-dropdown .mobile-account i:before,body.al_body_template_two .top-header .header-dropdown .mobile-wishlist i:before{font-family:themify!important}body.al_body_template_two .mobile-menu.main-menu{bottom:10px;padding:0 10px;width:97%}body.al_body_template_two #content-wrap .site-header .navbar-brand{padding:0;margin:auto;width:100%;height:auto!important}body.al_body_template_two header{padding:0}body.al_body_template_two .inner_spacing h4{font-size:12px}body.al_body_template_two .shimmer_effect .grid-row .card_image{height:90px!important}
 .footer-theme .footer-logo img.blur-up.lazyloaded{height: 20px;margin-top: 20px;}
@@ -96,6 +97,18 @@ body[dir=rtl] .slick-prev{
     left: 30px !important;
 }
 
+
+
+.al_body_template_four .al_addCart li.onhover-div a span#cart_qty_span {
+    background-color: #ab180c;
+    display: inline-block;
+    width: 20px;
+    border-radius: 50%;
+    height: 20px;
+    margin: 0px;
+    padding: 0px;
+    color: #fff;
+}
 
 
 

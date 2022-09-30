@@ -1,6 +1,6 @@
 @php
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
-$urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'];
+$urlImg = $clientData->logo['image_fit'].'300/100'.$clientData->logo['image_path'];
 
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
@@ -16,7 +16,8 @@ if(session()->has('applocale')){
         <div class="container ">
             <div class="row d-flex align-items-center justify-content-between w-100">
                 <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start"   >
-                    <a class="navbar-brand mr-xl-3 mr-0" style="height:60px;" href="{{ route('userHome') }}"><img class="logo-image" alt="" src="{{$urlImg}}"></a>
+                    <a class="navbar-brand mr-xl-3 mr-0" style="height:60px;display:flex;align-items: center;width:auto;" href="{{ route('userHome') }}">
+                    <img class="logo-image" alt="" src="{{$urlImg}}"></a>
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))

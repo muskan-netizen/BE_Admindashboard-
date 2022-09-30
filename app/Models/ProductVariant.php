@@ -10,7 +10,7 @@ use App\Models\UserVendor;
 
 class ProductVariant extends Model
 {
-	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price'];
+	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price','incremental_price_per_min'];
 
   protected $appends = ['actual_price'];
 
@@ -28,6 +28,7 @@ class ProductVariant extends Model
       $values['image_fit'] = \Config::get('app.FIT_URl');
       return $values;
     }
+  
     public function set(){
 	    return $this->hasMany('App\Models\ProductVariantSet')
 	    		->join('variant_options as opt', 'opt.id', 'product_variant_sets.variant_option_id')
@@ -68,7 +69,7 @@ class ProductVariant extends Model
     }
     public function product()
     {
-        return $this->belongsTo('App\Models\Product', 'product_id', 'id')->select('id', 'sku', 'title', 'averageRating', 'inquiry_only', 'vendor_id', 'has_inventory', 'sell_when_out_of_stock', 'batch_count', 'minimum_order_count','markup_price');
+        return $this->belongsTo('App\Models\Product', 'product_id', 'id')->select('id', 'sku', 'title', 'averageRating', 'inquiry_only', 'vendor_id', 'has_inventory', 'sell_when_out_of_stock', 'batch_count', 'minimum_order_count','markup_price','minimum_duration_min','minimum_duration','additional_increments','buffer_time_duration','is_fix_check_in_time','check_in_time','additional_increments_min','buffer_time_duration_min');
     }
     public function wishlist(){
        return $this->hasOne('App\Models\UserWishlist', 'product_id', 'product_id')->select('product_id', 'user_id');

@@ -263,6 +263,19 @@ function  layoutMode(){
                 { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
             ],
         }),
+        e(".product-4-featured_products").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
+            ],
+        }),
         e(".recent-orders").slick({
             infinite: !0,
             speed: 300,
@@ -730,8 +743,10 @@ function  layoutMode(){
 
                 }
             });
-
-            await layoutMode();
+            if($('body').hasClass('al_body_template_six')){
+                await layoutMode();
+            }
+            
 
 
 })(jQuery),
@@ -768,6 +783,7 @@ function closeCart() {
     document.getElementById("cart_side").classList.remove("open-side");
 }
 body_event.on("click", ".theme-layout-version", function () {
+
     if ($(".theme-layout-version").text() == 'Dark') {
         localStorage['theme_color'] = 'dark';
         $("body").addClass("dark"),
@@ -786,6 +802,7 @@ body_event.on("click", ".theme-layout-version", function () {
         data: { 'theme_color': localStorage['theme_color'] },
         success: function (data) {
             $(".logo-image").attr("src", data.logo);
+            $('#theme-logo').attr("src", data.logo);
         }
     });
     // return (
@@ -817,6 +834,7 @@ body_event.on("click", ".theme-layout-version", function () {
             success: function (data) {
                 if(data.client_preferences.show_dark_mode == 2){
                     if(localStorage['theme_color'] == 'dark'){
+                        //$('.al_body_template_three').addClass('dark');
                         $('<div class="sidebar-btn dark-light-btn" id="dark-light-btn-toggle"><div class="dark-light"><div class="theme-layout-version">Light</div></div></div>').appendTo($("body"));
                     }
                     else{

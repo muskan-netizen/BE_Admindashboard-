@@ -1,4 +1,4 @@
-@extends('layouts.store', ['title' => __('All Vendors')])
+@extends('layouts.store', ['title' => isset($page_title) ? $page_title :__('All Vendors')])
 @section('css-links')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
@@ -9,14 +9,14 @@
    <div class="container">
       <div class="row">
          <div class="col-12" >
-            <h2 class="mb-3 mt-3">{{__('All Vendors')}}</h2>
+            <h2 class="mb-3 mt-3">{{ isset($page_title) ? $page_title :__('All Vendors')}}</h2>
          </div>
       </div>
       <div class="row margin-res">
          @foreach($vendors as $vendor)
          <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-3">
             <a class="suppliers-box d-block" href="{{route('vendorDetail', $vendor->slug)}}">
-               <div class="suppliers-img-outer" style="height:200px">
+               <div class="suppliers-img-outer">
                   <img class="fluid-img mx-auto blur-up lazyload" data-src="{{$vendor->logo['image_fit']}}200/200{{$vendor->logo['image_path']}}" alt="">
 
                </div>

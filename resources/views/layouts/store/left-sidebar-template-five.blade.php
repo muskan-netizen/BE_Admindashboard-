@@ -174,9 +174,9 @@ $pages = \App\Models\Page::with([
                                         <span class="al_textTabsText">{{$NomenclatureName}}</span>
                                     </a>
                                 </li>
-                                
+
                                 @endif
-                            @endforeach    
+                            @endforeach
                             <!-- @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
                                 <li class="navigation-tab-item pr-lg-3" role="presentation">
                                     <a class="nav-link al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
@@ -224,9 +224,9 @@ $pages = \App\Models\Page::with([
                                         <span class="al_textTabsText">{{$NomenclatureName}}</span>
                                     </a>
                                 </li>
-                                
+
                                 @endif
-                            @endforeach     
+                            @endforeach
                             <!-- @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
                                 <li class="navigation-tab-item pr-lg-3" role="presentation">
                                     <a class="nav-link al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
@@ -475,7 +475,7 @@ $pages = \App\Models\Page::with([
         </div>
     </div>
     @if(count($navCategories))
-    <div class="menu-navigation_al">
+    <div class="menu-navigation al">
       <div class="container-fluid">
          <div class="row">
             <div class="col-12">
@@ -597,8 +597,8 @@ $pages = \App\Models\Page::with([
             <h5 class="modal-title" id="remove_cartLabel">{{__('Remove Cart')}}</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
          </div>
-         <div class="modal-body">
-            <h6 class="m-0">{{__('This change will remove all your cart products. Do you really want to continue ?')}}</h6>
+         <div class="modal-body text-center">
+            <h6 class="m-0 px-3">{{__('This change will remove all your cart products. Do you really want to continue ?')}}</h6>
          </div>
          <div class="modal-footer flex-nowrap justify-content-center align-items-center"> <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button> <button type="button" class="btn btn-solid" id="remove_cart_button" data-cart_id="">{{__('Remove')}}</button> </div>
       </div>

@@ -16,9 +16,9 @@
          url('../../../assets/fonts/MontserratRegular.ttf') format('truetype'),
          url('../../../assets/fonts/MontserratRegular.svg#MontserratRegular') format('svg');
 }
-::-webkit-scrollbar{width: 8px;}
+::-webkit-scrollbar{width: 8px;height: 8px;}
 ::-webkit-scrollbar-track{  background: #f1f1f1; }
-::-webkit-scrollbar-thumb{  background: #CAAE73; }
+::-webkit-scrollbar-thumb{  background: var(--theme-deafult); }
 ::-webkit-scrollbar-thumb:hover{  background: #555; }
 body{margin: 0;background-color: #fff;font-family: 'MontserratRegular' !important;overflow-x: hidden;}
 .main-menu{position: relative;left: 0;margin: 0 auto;right: 0;display: inline-block;width: 100%;top: 20px;z-index: 9999;}
@@ -30,7 +30,11 @@ body{margin: 0;background-color: #fff;font-family: 'MontserratRegular' !importan
 .logo a.navbar-brand img{height: 100%;}
 .vendor_mods_section{order: 2;}
 .rightHead{order: 3;}
-.al_body_template_six ul li{margin-bottom: 0;}
+.al_body_template_six .viewAllProductSec ul li{margin-bottom: 0;text-align: right;}
+body .footer-contant ul li{text-align: left;}
+.al_body_template_six .onhover-show-div  li{text-align: center;}}
+.alProductViewPriceMin span{display: block;font-size: 14px;color: #777;border-top: 1px solid #777;font-weight: 100;}
+
 /*================== common css ==============*/
 a:hover{text-decoration: none;color: var(--top-header-color);}li{list-style: none}
 .alBodyText{font-size: 14px;color: #B6B6B6;line-height: 24px;}
@@ -118,10 +122,12 @@ opacity .25s ease-in-out;background: none;font-size: 1.5rem;font-weight: 300;vis
 scrollbar-width: none;-ms-overflow-style: none}
 a.view-cart{font-size: 14px;}
 .ellips{text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
-.supplier-rating{width: 100%;padding: 0 15px;}
+.supplier-rating{width: 100%;padding: 0 15px;min-height: 120px;}
+.product-m .supplier-rating{min-height: auto;}
 div#dark-light-btn-toggle{display: none;}
 .al_body_template_six span.rating-number{position: absolute;top: 5px;right: 10px;padding: 3px 10px;background-color: var(--theme-deafult);color: var(--top-header-color); border-radius: 30px;}
 .al_body_template_six .suppliers-box{position: relative;}
+a.media.flex-shrink-0 img{border-radius: 15px;overflow: hidden;}
 
 /* =========================== day night css============================== */
 .alSwitch{position: fixed;z-index: 9999999;top: 50%;right: 0;cursor: pointer; -webkit-transform: translate(0, -50%);transform: translate(0, -50%);}

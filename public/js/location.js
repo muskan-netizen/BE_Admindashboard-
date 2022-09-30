@@ -26,8 +26,8 @@ $(document).ready( async function () {
         if($("#address-longitude").length > 0){
             longitude = $("#address-longitude").val();
         }
-       //await getHomePageCategoryMenu(latitude, longitude);
-        getHomePage(latitude, longitude);
+       // await getHomePageCategoryMenu(latitude, longitude);
+      //  getHomePage(latitude, longitude);
         // $(document).ready(function () {
         if ($.cookie("age_restriction") != 1) {
             if(is_age_restricted == "1" || is_age_restricted == 1)
@@ -38,6 +38,7 @@ $(document).ready( async function () {
                 $('#age_restriction').modal({backdrop: 'static', keyboard: false});
             }
         }
+        $(".shimmer_effect").hide();
     }
     else{
         $(".shimmer_effect").hide();
@@ -213,6 +214,8 @@ $(document).ready( async function () {
         if($.hasAjaxRunning()){
             return false;
         }
+        
+      
         //$(".navigation-tab-item").removeClass("active");
         $('.vendor_mods').find('.nav-link').removeClass('active');
         $(this).addClass("active");
@@ -229,7 +232,7 @@ $(document).ready( async function () {
         let latitude = "";
         let longitude = "";
         let type = "";
-        var id = $(this).attr('id');
+        //var id = $(this).attr('id');
          type = $(this).attr('VendorType');
         if($("#address-latitude").length > 0){
             latitude = $("#address-latitude").val();
@@ -271,34 +274,9 @@ $(document).ready( async function () {
     })
 
     async function vendorType(latitude, longitude, type = "delivery"){
-        await  getHomePageCategoryMenu(latitude, longitude, type);
-        await  getHomePage(latitude, longitude, type);
-        setTimeout(function(){
-            getcart();
-        }, 3000);
-        // $.ajax({
-        //     type: "get",
-        //     dataType: 'json',
-        //     url: cart_details_url,
-        //     success: function (response) {
-        //         if (response.data != "") {
-        //             let cartProducts = response.data.products;
-        //             if (cartProducts != "") {
-        //                 $("#remove_cart_modal").modal('show');
-        //                 $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
-        //                 $(".nav-tabs.vendor_mods").attr("data-mod", type);
-        //             } else {
-        //                 getHomePageCategoryMenu(latitude, longitude, type);
-        //                 getHomePage(latitude, longitude, type);
-        //             }
-        //         } else {
-        //             getHomePageCategoryMenu(latitude, longitude, type);
-        //             getHomePage(latitude, longitude, type);
-        //         }
-        //     }
-        // });
-    }
-    function getcart(){
+
+        // await  getHomePageCategoryMenu(latitude, longitude, type);
+        // await  getHomePage(latitude, longitude, type);
         $.ajax({
             type: "get",
             dataType: 'json',
@@ -310,11 +288,39 @@ $(document).ready( async function () {
                         $("#remove_cart_modal").modal('show');
                         $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
                         $(".nav-tabs.vendor_mods").attr("data-mod", type);
-                    } 
-                } 
+                    } else {
+                        getHomePageCategoryMenu(latitude, longitude, type);
+                        getHomePage(latitude, longitude, type);
+                    }
+                } else {
+                     getHomePageCategoryMenu(latitude, longitude, type);
+                     getHomePage(latitude, longitude, type);
+                }
             }
         });
-
+    }
+    function getcart(){
+        $.ajax({
+            type: "get",
+            dataType: 'json',
+            url: cart_details_url,
+            success: async function (response) {
+                if (response.data != "") {
+                    let cartProducts = response.data.products;
+                    if (cartProducts != "") {
+                        $("#remove_cart_modal").modal('show');
+                        $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
+                        $(".nav-tabs.vendor_mods").attr("data-mod", type);
+                    } else {
+                        await  getHomePageCategoryMenu(latitude, longitude, type);
+                        await getHomePage(latitude, longitude, type);
+                    }
+                } else {
+                    await getHomePageCategoryMenu(latitude, longitude, type);
+                    await getHomePage(latitude, longitude, type);
+                }
+            }
+        });
     }
 
     async function getHomePage(latitude, longitude, vtype = "") {
@@ -411,11 +417,12 @@ $(document).ready( async function () {
 
                     }
                     else {
-                        location.reload();
-                        if ((latitude) && (longitude) && (selected_address)) {
-                           // window.location.href = home_page_url;
-                           // console.log(home_page_url);
+                        //if ((latitude) && (longitude) && (selected_address)) {
+                        if(!$.hasAjaxRunning()){
+                           window.location.href = home_page_url;
+                           //console.log(home_page_url);
                         }
+                        //}
                     }
                 }
             },
@@ -509,6 +516,9 @@ $(document).ready( async function () {
             case 'dynamic_page':
                 getHomePageDataSingleBySingle(item, index);
                break;
+            case 'cities':
+                getHomePageDataSingleBySingle(item, index);
+               break;
           }
 
         $(".shimmer_effect_"+item).hide();
@@ -590,9 +600,9 @@ $(document).ready( async function () {
                                 }
                             break;
                             case 'vendors':
+                                $(".render_vendors").html('');
                                 if($('.suppliers-slider-vendors').hasClass('slick-initialized')){
                                     $(".suppliers-slider-vendors").slick('destroy');
-                                    $(".render_vendors").html('');
                                 }
                                 let vendors_template = _.template($('#vendors_template').html());
                                 $(".render_vendors").append(vendors_template({ vendors: response.data.vendors , type: vendor_language}));
@@ -768,6 +778,33 @@ $(document).ready( async function () {
                                     $('.render_full_recent_orders').addClass('d-none');
                                 }
                                break;
+                            case 'cities':
+                               if (response.data.cities.length > 0) {
+                                if($('.suppliers-slider-cities').hasClass('slick-initialized')){
+                                    $(".suppliers-slider-cities").slick('destroy');
+                                    $(".render_cities").html('');
+                                }
+                                   let city_template = _.template($('#cities_template').html());
+                                   $(".render_cities").append(city_template({ cities: response.data.cities }));
+                                   $(".suppliers-slider-cities").slick({
+                                       arrows: true,
+                                       dots: false,
+                                       infinite: true,
+                                       speed: 300,
+                                       slidesToShow: 5,
+                                       slidesToScroll: 3,
+                                       responsive: [
+                                           {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},
+                                           {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 1}},
+                                           {breakpoint: 767,settings: {slidesToShow: 3,slidesToScroll: 1}},
+                                           {breakpoint: 360,settings: {slidesToShow: 3,slidesToScroll: 1}}
+                                       ]
+                                   });
+                                   $('.render_full_cities').removeClass('d-none');
+                               } else {
+                                   $('.render_full_cities').addClass('d-none');
+                               }
+                              break;
                           }
 
                           let vendors = response.data.vendors;
@@ -1020,9 +1057,9 @@ $(document).ready( async function () {
 
                 }
                 else {
-                    if ((latitude) && (longitude) && (selected_address)) {
-                        window.location.href = home_page_url;
-                    }
+                    // if ((latitude) && (longitude) && (selected_address)) {
+                    //     window.location.href = home_page_url;
+                    // }
                 }
             }
         },

@@ -505,13 +505,14 @@ class CartController extends BaseController
     /**         *      Cart  Date      *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
+
         try{
         $total_fixed_fee_tax = 0;
         $total_service_fee = 0;
         $deliver_fee_charges = 0;
         $total_markup_fee_tax = 0;
         $total_taxable_amount = 0;
-
+  
         $preferences = ClientPreference::first();
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         if (!$cart) {
@@ -635,8 +636,11 @@ class CartController extends BaseController
             $PromoDelete = 0;
             $couponApplied = 0;
             $total_container_charges = 0 ;
-            $total_markup_charges = 0 ;
 
+            $total_markup_charges = 0 ;
+            $deliver_fee_charges = 0;
+            $total_fixed_fee_tax = 0;
+      
             foreach ($cartData as $ven_key => $vendorData) {
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;

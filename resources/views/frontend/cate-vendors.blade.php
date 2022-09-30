@@ -28,7 +28,7 @@
                         @endif
 
                         <div class="top-banner-content small-section">
-                            <h4>{{ $category->translation_name }}</h4>
+                            <h4>{{ $category->translation_one->name }}</h4>
 <!-- deleted code -->
                         </div>
                     </div>
@@ -183,7 +183,7 @@
                                                                 {{-- <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label> --}}
                                                             </div>
                                                             <a class="suppliers-box d-block" href="{{$vendor_url}}">
-                                                                <div class="suppliers-img-outer" style="height:200px">
+                                                                <div class="suppliers-img-outer">
                                                                     <img class="w-100 img-fluid mx-auto blur-up lazyload" data-src="{{$imagePath}}" alt="">
                                                                 </div>
                                                                 <div class="supplier-rating">

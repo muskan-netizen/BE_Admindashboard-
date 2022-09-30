@@ -523,45 +523,71 @@ if (!function_exists('showSlot')) {
         })
         ->get();
         }
-        $min[] = '';
-        $cart = CartProduct::where('vendor_id', $vid)->get();
-        if (isset($cart) && $cart->count()>0) {
-            foreach ($cart as $product) {
-                $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
-                $delayMin= isset($product->product->delay_order_min) ? ($product->product->delay_order_min) : 0;
-                $min[] = (($delayHr * 60) + $delayMin);
-            }
-        }
 
+        // check if vendor has added slots. if not added then no need to execute this.
         if (isset($slots) && count($slots)>0) {
-            $slotss = [];
-            foreach ($slots as $slott) {
-                if (isset($slott->days->id)) {
-                    $new_slot = SplitTime($myDate, $slott->start_time, $slott->end_time, $duration, max($min));
-                    if (!in_array($new_slot, $slotss)) {
-                        $slotss[] = $new_slot;
-                    }
-                } else {
-                    $slotss[] = [];
+            $min[] = '';
+            $cart = CartProduct::where('vendor_id', $vid)->get();
+            if (isset($cart) && $cart->count()>0) {
+                foreach ($cart as $product) {
+                    $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
+                    $delayMin= isset($product->product->delay_order_min) ? ($product->product->delay_order_min) : 0;
+                    $min[] = (($delayHr * 60) + $delayMin);
                 }
             }
-
-            $arr = array();
-            $count = count($slotss);
-            for ($i=0;$i<$count;$i++) {
-                $arr = array_merge($arr, $slotss[$i]);
-            }
-
-            if (isset($arr)) {
-                foreach ($arr as $k=> $slt) {
-                    $sl = explode(' - ', $slt);
-                    $viewSlot[$k]['name'] = date('h:i:A', strtotime($sl[0])).' - '.date('h:i:A', strtotime($sl[1]));
-                    $viewSlot[$k]['value'] = $slt;
+    
+            if (isset($slots) && count($slots)>0) {
+                $slotss = [];
+                foreach ($slots as $slott) {
+                    if (isset($slott->days->id)) {
+                        $new_slot = SplitTime($myDate, $slott->start_time, $slott->end_time, $duration, max($min));
+                        if (!in_array($new_slot, $slotss)) {
+                            $slotss[] = $new_slot;
+                        }
+                    } else {
+                        $slotss[] = [];
+                    }
+                }
+    
+                $arr = array();
+                $count = count($slotss);
+                for ($i=0;$i<$count;$i++) {
+                    $arr = array_merge($arr, $slotss[$i]);
+                }
+    
+                if (isset($arr)) {
+                    foreach ($arr as $k=> $slt) {
+                        $sl = explode(' - ', $slt);
+                        $viewSlot[$k]['name'] = date('h:i:A', strtotime($sl[0])).' - '.date('h:i:A', strtotime($sl[1]));
+                        $viewSlot[$k]['value'] = $slt;
+                    }
                 }
             }
         }
     
         return $viewSlot;
+    }
+}
+if (!function_exists('getShowSlot')) {
+    function getShowSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
+    {
+        $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        if(count((array)$slots) == 0){
+            $myDate  = date('Y-m-d',strtotime('+1 day'));
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        }
+        if(count((array)$slots) == 0){
+            $myDate  = date('Y-m-d',strtotime('+2 day'));
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        }
+
+        if(count((array)$slots) == 0){
+            $myDate  = date('Y-m-d',strtotime('+3 day'));
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        }
+        $response['slots']=$slots;
+        $response['date']=$myDate;
+        return  $response;
     }
 }
 if (!function_exists('showSlotTemp')) {
@@ -709,204 +735,236 @@ if (!function_exists('findSlot')) {
         }
     }
 }
+if (!function_exists('findSlotNew')) {
+    function findSlotNew($myDate,$vid,$type=0)
+    {
+            $slots = showSlot($myDate,$vid,'delivery', $type);
+                if(count((array)$slots) == 0){
+                    $myDate  = date('Y-m-d',strtotime('+1 day')); 
+                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                }
+            
+                if(count((array)$slots) == 0){
+                    $myDate  = date('Y-m-d',strtotime('+2 day')); 
+                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                }
 
-function findSlotNew($myDate,$vid,$type=0)
-{
-        $slots = showSlot($myDate,$vid,'delivery', $type);
-            if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+1 day')); 
-                $slots = showSlot($myDate,$vid,'delivery', $type);
-            }
-           
-            if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+2 day')); 
-                $slots = showSlot($myDate,$vid,'delivery', $type);
-            }
-
-            if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+3 day')); 
-                $slots = showSlot($myDate,$vid,'delivery', $type);
-            }
-            if(isset($slots)){
-                $slots = $slots;
-                return array('mydate'=>$myDate,'slots'=>$slots);
-            }else{
-                return array('mydate'=>'','slots'=>[]);
-            }
+                if(count((array)$slots) == 0){
+                    $myDate  = date('Y-m-d',strtotime('+3 day')); 
+                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                }
+                if(isset($slots)){
+                    $slots = $slots;
+                    return array('mydate'=>$myDate,'slots'=>$slots);
+                }else{
+                    return array('mydate'=>'','slots'=>[]);
+                }
+    }
 }
-
-function GoogleDistanceMatrix($latitude, $longitude)
-{
-    $send   = [];
-    $client = ClientPreference::where('id', 1)->first();
-    $lengths = count($latitude) - 1;
-    $value = [];
+if (!function_exists('GoogleDistanceMatrix')) {
+    function GoogleDistanceMatrix($latitude, $longitude)
+    {
+        $send   = [];
+        $client = ClientPreference::where('id', 1)->first();
+        $lengths = count($latitude) - 1;
+        $value = [];
+        
+        for ($i = 1; $i<=$lengths; $i++) {
+            $count  = 0;
+            $count1 = 1;
+            $ch = curl_init();
+            $headers = array('Accept: application/json',
+                    'Content-Type: application/json',
+                    );
+            $url =  'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='.$latitude[$count].','.$longitude[$count].'&destinations='.$latitude[$count1].','.$longitude[$count1].'&key='.$client->map_key.'';
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $response = curl_exec($ch);
+            $result = json_decode($response);
+            curl_close($ch); // Close the connection
+            $new =   $result;
+        // dd($result);
+            array_push($value, $result->rows[0]->elements);
+            $count++;
+            $count1++;
+        }
     
-    for ($i = 1; $i<=$lengths; $i++) {
-        $count  = 0;
-        $count1 = 1;
-        $ch = curl_init();
-        $headers = array('Accept: application/json',
-                'Content-Type: application/json',
-                );
-         $url =  'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='.$latitude[$count].','.$longitude[$count].'&destinations='.$latitude[$count1].','.$longitude[$count1].'&key='.$client->map_key.'';
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $response = curl_exec($ch);
-        $result = json_decode($response);
-        curl_close($ch); // Close the connection
-        $new =   $result;
-       // dd($result);
-        array_push($value, $result->rows[0]->elements);
-        $count++;
-        $count1++;
+        if (isset($value)) {
+            $totalDistance = 0;
+            $totalDuration = 0;
+            foreach ($value as $item) {
+                //dd($item);
+                $totalDistance = $totalDistance + $item[0]->distance->value;
+                $totalDuration = $totalDuration + $item[0]->duration->value;
+            }
+        
+        
+            if ($client->distance_unit == 'metric') {
+                $send['distance'] = round($totalDistance/1000, 2);      //km
+            } else {
+                $send['distance'] = round($totalDistance/1609.34, 2);  //mile
+            }
+            //
+            $newvalue = round($totalDuration/60, 2);
+            $whole = floor($newvalue);
+            $fraction = $newvalue - $whole;
+
+            if ($fraction >= 0.60) {
+                $send['duration'] = $whole + 1;
+            } else {
+                $send['duration'] = $whole;
+            }
+        }
+        return $send;
     }
-  
-    if (isset($value)) {
-        $totalDistance = 0;
-        $totalDuration = 0;
-        foreach ($value as $item) {
-            //dd($item);
-            $totalDistance = $totalDistance + $item[0]->distance->value;
-            $totalDuration = $totalDuration + $item[0]->duration->value;
-        }
-       
-       
-        if ($client->distance_unit == 'metric') {
-            $send['distance'] = round($totalDistance/1000, 2);      //km
-        } else {
-            $send['distance'] = round($totalDistance/1609.34, 2);  //mile
-        }
-        //
-        $newvalue = round($totalDuration/60, 2);
-        $whole = floor($newvalue);
-        $fraction = $newvalue - $whole;
-
-        if ($fraction >= 0.60) {
-            $send['duration'] = $whole + 1;
-        } else {
-            $send['duration'] = $whole;
-        }
+}
+if (!function_exists('getDynamicMail')) {
+    function getDynamicMail()
+    {
+        $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+        $config = array(
+            'driver' => $data->mail_driver,
+            'host' => $data->mail_host,
+            'port' => $data->mail_port,
+            'from'       => array('address' => $data->mail_from, 'name' => $data->mail_from),
+            'encryption' => $data->mail_encryption,
+            'username' => $data->mail_username,
+            'password' => $data->mail_password,
+            'sendmail' => '/usr/sbin/sendmail -bs',
+            'pretend' => false,
+        );
+        \Config::set('mail.mailers.smtp', $config);
+        return 2;
     }
-    return $send;
 }
-function getDynamicMail(){
-    $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
-    $config = array(
-        'driver' => $data->mail_driver,
-        'host' => $data->mail_host,
-        'port' => $data->mail_port,
-        'from'       => array('address' => $data->mail_from, 'name' => $data->mail_from),
-        'encryption' => $data->mail_encryption,
-        'username' => $data->mail_username,
-        'password' => $data->mail_password,
-        'sendmail' => '/usr/sbin/sendmail -bs',
-        'pretend' => false,
-    );
-    \Config::set('mail.mailers.smtp', $config);
-    return 2;
+if (!function_exists('getDynamicTypeName')) {
+    function getDynamicTypeName($name)
+    {
+        $new_name = getNomenclatureName($name, true);
+        $new_name = ($new_name === $name) ? __($name) : $new_name;
+        return $new_name;
+    }
+} 
+
+if (!function_exists('stripePaymentCredentials')) {
+    function stripePaymentCredentials(){
+        $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
+        $creds_arr = json_decode($stripe_creds->credentials);
+        $response = collect();
+        $response->secret_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
+        $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+        return $response;
+    }
 }
 
-function getDynamicTypeName($name)
-{
-    $new_name = getNomenclatureName($name, true);
-    $new_name = ($new_name === $name) ? __($name) : $new_name;
-    return $new_name;
+if (!function_exists('stripeFPXPaymentCredentials')) {
+    function stripeFPXPaymentCredentials(){
+        $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_fpx')->where('status', 1)->first();
+        $creds_arr = json_decode($stripe_creds->credentials);
+        $response = collect();
+        $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
+        $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+        return $response;
+    }
 }
 
-function stripePaymentCredentials(){
-    $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
-    $creds_arr = json_decode($stripe_creds->credentials);
-    $response = collect();
-    $response->secret_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
-    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
-    return $response;
+
+if (!function_exists('stripeOXXOPaymentCredentials')) {
+    function stripeOXXOPaymentCredentials(){
+        $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_oxxo')->where('status', 1)->first();
+        $creds_arr = json_decode($stripe_creds->credentials);
+        $response = collect();
+        $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
+        $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+        return $response;
+    }
 }
 
-function stripeFPXPaymentCredentials(){
-    $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_fpx')->where('status', 1)->first();
-    $creds_arr = json_decode($stripe_creds->credentials);
-    $response = collect();
-    $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
-    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
-    return $response;
+
+if (!function_exists('stripeDynamicPaymentCredentials')) {
+    function stripeDynamicPaymentCredentials($name){
+        $stripe_creds = PaymentOption::select('credentials')->where('code', $name)->where('status', 1)->first();
+        $creds_arr = json_decode($stripe_creds->credentials);
+        $response = collect();
+        $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
+        $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+        return $response;
+    }
 }
 
-function stripeOXXOPaymentCredentials(){
-    $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_oxxo')->where('status', 1)->first();
-    $creds_arr = json_decode($stripe_creds->credentials);
-    $response = collect();
-    $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
-    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
-    return $response;
-}
 
-function stripeDynamicPaymentCredentials($name){
-    $stripe_creds = PaymentOption::select('credentials')->where('code', $name)->where('status', 1)->first();
-    $creds_arr = json_decode($stripe_creds->credentials);
-    $response = collect();
-    $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
-    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
-    return $response;
-}
-
- function OnLAstMileDelivery()
+if (!function_exists('OnLAstMileDelivery')) {
+    function OnLAstMileDelivery()
     {
         $count = ShippingOption::where('status',1)->count();
         return $count;
     }
+}
 
-function getServerURL(){
-    $client = ClientData::where('id', '>', 0)->first();
-    $domain = '';
-    if(!empty($client->custom_domain)){
-        $domain = $client->custom_domain;
-    }else{
-        $domain = $client->sub_domain.env('SUBMAINDOMAIN');
+
+if (!function_exists('getServerURL')) {
+    function getServerURL(){
+        $client = ClientData::where('id', '>', 0)->first();
+        $domain = '';
+        if(!empty($client->custom_domain)){
+            $domain = $client->custom_domain;
+        }else{
+            $domain = $client->sub_domain.env('SUBMAINDOMAIN');
+        }
+        $server_url = "https://".$domain."/";
+        return $server_url;
     }
-    $server_url = "https://".$domain."/";
-    return $server_url;
 }
 
+
+if (!function_exists('getDollarCompareAmount')) {
 /* doller compare amount */
-function getDollarCompareAmount($amount, $customerCurrency='')
-{
-    $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-    if(empty($customerCurrency)){
-        $clientCurrency = $primaryCurrency;
-    }else{
-        $clientCurrency = ClientCurrency::where('currency_id', $customerCurrency)->first();
+    function getDollarCompareAmount($amount, $customerCurrency='')
+    {
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        if(empty($customerCurrency)){
+            $clientCurrency = $primaryCurrency;
+        }else{
+            $clientCurrency = ClientCurrency::where('currency_id', $customerCurrency)->first();
+        }
+        $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
+        $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
+        $amount = number_format($amount, 2,'.','');
+        return $amount;
     }
-    $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
-    $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
-    $amount = number_format($amount, 2,'.','');
-    return $amount;
 }
 
-/* doller compare amount */
-function getPrimaryCurrencyName()
-{
-    $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-    $currencyName = Currency::find($primaryCurrency->currency_id);
+if (!function_exists('getPrimaryCurrencyName')) {
+    /* doller compare amount */
+    function getPrimaryCurrencyName()
+    {
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        $currencyName = Currency::find($primaryCurrency->currency_id);
 
-    $currencyName = $currencyName->iso_code;
-    return $currencyName;
+        $currencyName = $currencyName->iso_code;
+        return $currencyName;
+    }
 }
 
-// Number Format according to Client preferences
-function decimal_format($number,$format="")
-{
-    $preference = session()->get('preferences');
-    $digits = $preference['digit_after_decimal'] ?? 2;
-    return number_format($number,$digits,'.',$format);
+if (!function_exists('decimal_format')) {
+    // Number Format according to Client preferences
+    function decimal_format($number,$format="")
+    {
+        $preference = session()->get('preferences');
+        $digits = $preference['digit_after_decimal'] ?? 2;
+        return number_format($number,$digits,'.',$format);
+    }
 }
+
 
 if (!function_exists('taxRates')) {
     function taxRates(){
         return App\Models\TaxRate::all();
     }
 }
+
+
 if (!function_exists('getServiceTypesCategory')) {
     /**
      * config('constants.ServiceTypes')
@@ -928,12 +986,15 @@ if (!function_exists('getServiceTypesCategory')) {
             }elseif($vendorType =="laundry" ){
                 $service_types= ['laundry_service'];
             }
+            elseif($vendorType =="appointment" ){
+                $service_types= ['appointment_service'];
+            }
             if($client_preference->business_type == 'taxi'){
                 $service_types= ['pick_drop_service'];
             }elseif($client_preference->business_type == 'laundry'){
                 $service_types= ['laundry_service'];
             }elseif($client_preference->business_type == 'home_service'){
-                $service_types= ['on_demand_service'];
+                $service_types= ['on_demand_service','appointment_service'];
             }
             if($client_preference->business_type == 'laundry'){
                 $service_types= ['laundry_service'];
@@ -973,7 +1034,7 @@ if (!function_exists('getCategoryTypes')) {
             break;
         
             case "super_app":
-                $typeArray =['delivery','dinein','takeaway','rental','pick_drop','on_demand','laundry','appointment'];
+                $typeArray =['delivery','dinein','takeaway','rental','pick_drop','on_demand','appointment'];
             break;
             default:
             $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];
@@ -981,3 +1042,64 @@ if (!function_exists('getCategoryTypes')) {
         return $typeArray;
     }
 }
+if (!function_exists('getCategoryTypesServices')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getCategoryTypesServices() {
+        $client_preference = ClientPreference::select('business_type')->first();
+        switch($client_preference->business_type){
+            case "taxi":
+                $typeArray =['pick_drop_service'];
+            break;
+            case "food_grocery_ecommerce":
+                $typeArray =['products_service'];
+            break;
+            case "home_service":
+                $typeArray =['on_demand_service','appointment_service'];
+            break;
+            case "laundry":
+                $typeArray =['laundry_service','pick_drop_service'];
+            break;
+            case "rental":
+                $typeArray =['rental_service'];
+            break;
+        
+            case "super_app":
+                $typeArray =['pick_drop_service','on_demand_service','appointment_service','rental_service','products_service'];
+            break;
+            default:
+            $typeArray =['products_service','pick_drop_service','on_demand_service','appointment_service'];
+        }
+        return $typeArray;
+    }
+}
+
+if (!function_exists('getHoursMinutes')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getHoursMinutes($minutes)
+    {
+        $hours = floor($minutes / 60);
+        $min = $minutes - ($hours * 60);
+        return $hours.' hour ' .$min. ' min ';
+
+    }
+}
+
+
+if (!function_exists('getMinutes')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getMinutes($hrs,$minutes)
+    {
+        $minutes = ($hrs*60)+($minutes);
+        return $minutes;
+
+    }
+}
+
+
+

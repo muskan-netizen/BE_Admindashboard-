@@ -2191,13 +2191,19 @@ class VendorController extends BaseController{
                          'tags.tag.translations' => function ($q) use ($langId) {
                             $q->where('language_id', $langId);
                         }
-                    ])
-                    ->select('*',DB::raw("'$multipli' as variant_multiplier"))->withCount(['variantSet','addOn']);
+                    ])->join('product_translations', 'product_translations.product_id', '=', 'products.id')
+                    ->select('products.*',DB::raw("'$multipli' as variant_multiplier"))->withCount(['variantSet','addOn'])
+                    ->orderBy('product_translations.title', 'asc')
+                    ->groupBy('products.id');
                     }]);
                     
                     if(isset($request->category_id))
-                    $vendor_categories = $vendor_categories->where('parent_id',$request->category_id);
-
+                    {
+                       $vendor_categories = $vendor_categories->where(function($q) use ($request)
+                        {
+                            $q->where('id',$request->category_id)->orWhere('parent_id',$request->category_id);
+                        });
+                    }
                  
                     
                     $vendor_categories = $vendor_categories->get()->map(function ($query) {

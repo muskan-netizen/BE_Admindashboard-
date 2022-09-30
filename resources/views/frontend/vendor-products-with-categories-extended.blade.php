@@ -64,7 +64,7 @@ $checkSlot = findSlot('', $vendor->id, '');
 					        <li class="breadcrumb-item pr-3"><a href="javascript:void(0)">{{  $vendor->country ?? '' }}</a></li>
                         @endif
                         @if( $vendor->state)
-					        <li class="breadcrumb-item active pl-4" aria-current="page">{{ $vendor->state ?? '' }}</li>
+					        <li class="breadcrumb-item active" aria-current="page">{{ $vendor->state ?? '' }}</li>
                         @endif
 					  </ol>
 					</nav><!-- breadcrumb end -->
@@ -186,7 +186,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                             <div class="col-12">
                                 <div class="row vendor-products-wrapper">
                                     <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
-                                        <nav class="scrollspy-menu">
+                                        <nav class="scrollspy-menu ">
                                             <ul>
                                                 @forelse($listData as $key => $data)
                                                 <li>
@@ -268,7 +268,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                                             @if ($prod->variant[0]->compare_at_price > 0)
                                                                                 <span
                                                                                     class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
-                                                                            @endif</span><br> <sup>per person (min. 1)</sup></li>
+                                                                            @endif</span><br> <sup>{{ __('per person') }} {{ __('min ') . $prod->minimum_duration_min }}</sup></li>
                                                                     </ul>
                                                                 </div>
                                                                 <div class="productDetails pl-0 pr-lg-5 m-0 position-relative">
@@ -595,7 +595,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         				</div>
         			</div>
                     @endforeach
-        			
+
         		</div>
         	</div>
         </section>
@@ -631,7 +631,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         <!-- Why people visit here end -->
 
         <!-- More spas nearby start -->
-        <section class="moreSpasNearby py-5">
+        <section class="moreSpasNearby pt-5 pb-0">
         	<div class="container">
         		<div class="row">
         			<div class="col-md-12">
@@ -654,7 +654,6 @@ $checkSlot = findSlot('', $vendor->id, '');
         	</div>
         </section>
         <!-- More spas nearby end -->
-
         <!-- sections SpasRelated start -->
         <section class="SpasRelated py-5">
             <div class="container">
@@ -663,20 +662,20 @@ $checkSlot = findSlot('', $vendor->id, '');
                     <div class="Spasslider w-100" id="Spasslider">
                         @foreach($Map_vendors as $key => $value)
                             <div>
-                                <div class="SpasRelatedItems mx-2">
-                                    <div class="SpasRelatedItemsImageBox">
-                                        <img class="rounded" src="{{ $value->banner['image_fit'] . '400/400' . $value->banner['image_path'] }}">
+                                <a class="" href="{{route('vendorDetail')}}/{{  $value->slug }}">
+                                    <div class="SpasRelatedItems mx-2">
+                                        <div class="SpasRelatedItemsImageBox">
+                                            <img class="rounded" src="{{ $value->banner['image_fit'] . '400/400' . $value->banner['image_path'] }}">
+                                        </div>
+                                        <div class="SpasRelatedDetails p-2">
+                                            <p class="text-left m-0">{{ $value->name }}</p>
+                                            {{-- <a href="javascript:void(0)">10 Excellent (2 reviews)</a> --}}
+                                            <p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">{{ $value->state ?? 'NA' }}</span><span>{{ number_format($value->vendorToUserDistance ,2) }} {{ (!empty($client_preference_detail->distance_unit_for_time)) ? ($client_preference_detail->distance_unit_for_time ==  'kilometer' ? 'KM' : 'miles') : 'KM' }} {{ __('away') }}</span></p>
+                                        </div>
                                     </div>
-                                    <div class="SpasRelatedDetails p-2">
-                                        <p class="text-left m-0">{{ $value->name }}</p>
-                                        <a href="javascript:void(0)">10 Excellent (2 reviews)</a>
-                                        <p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">{{ $value->state ?? 'NA' }}</span><span>{{ number_format($value->vendorToUserDistance ,2) }} {{ (!empty($client_preference_detail->distance_unit_for_time)) ? ($client_preference_detail->distance_unit_for_time ==  'kilometer' ? 'KM' : 'miles') : 'KM' }} {{ __('away') }}</span></p>
-                                    </div>
-                                </div>
+                                </a>
                             </div>
                         @endforeach
-
-
                     </div><!-- alSpaListSlider start -->
                 </div>
             </div>
@@ -967,11 +966,11 @@ $checkSlot = findSlot('', $vendor->id, '');
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-center">
                     <input type="hidden" id="vendor_id" value="">
                     <input type="hidden" id="product_id" value="">
                     <input type="hidden" id="cartproduct_id" value="">
-                    <h6 class="m-0">{{ __('Are You Sure You Want To Remove This Item?') }}</h6>
+                    <h6 class="m-0 px-3">{{ __('Are You Sure You Want To Remove This Item?') }}</h6>
                 </div>
                 <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                     <button type="button" class="btn btn-solid black-btn"
@@ -1070,22 +1069,22 @@ $checkSlot = findSlot('', $vendor->id, '');
     <script>
         var get_product_addon_url = "{{ route('vendorProductAddons') }}"
 
-        jQuery(window).scroll(function() {
+        // jQuery(window).scroll(function() {
 
-            var scroll = jQuery(window).scrollTop();
-            var header_height = $('.site-header.fixed-bar').height();
-            var product_section = $('.vendor-products-wrapper').offset().top - header_height;
-            var categories_list_height = $('.vendor-products-wrapper').height() + product_section;
+        //     var scroll = jQuery(window).scrollTop();
+        //     var header_height = $('.site-header.fixed-bar').height();
+        //     var product_section = $('.vendor-products-wrapper').offset().top - header_height;
+        //     var categories_list_height = $('.vendor-products-wrapper').height() + product_section;
 
-            if (scroll >= product_section) {
-                jQuery(".categories-product-list").addClass("fixed-bar");
-            } else {
-                jQuery(".categories-product-list").removeClass("fixed-bar");
-            }
-            if(scroll >= categories_list_height){
-                jQuery(".categories-product-list").removeClass("fixed-bar");
-            }
-        });
+        //     if (scroll >= product_section) {
+        //         jQuery(".categories-product-list").addClass("fixed-bar");
+        //     } else {
+        //         jQuery(".categories-product-list").removeClass("fixed-bar");
+        //     }
+        //     if(scroll >= categories_list_height){
+        //         jQuery(".categories-product-list").removeClass("fixed-bar");
+        //     }
+        // });
 
         var addonids = [];
         var addonoptids = [];
@@ -1294,6 +1293,7 @@ $checkSlot = findSlot('', $vendor->id, '');
             var latitude = "{{ $vendor->latitude }}";
             var longitude = "{{ $vendor->longitude }}";
             var latlng = new google.maps.LatLng(latitude, longitude);
+            var prev_infowindow =false;
 
             map = new google.maps.Map(document.getElementById('vendor-map'), {
                 center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
@@ -1341,6 +1341,13 @@ $checkSlot = findSlot('', $vendor->id, '');
                             map: map,
                         });
                     marker.addListener("click", () => {
+
+                        if( prev_infowindow ) {
+                            prev_infowindow.close();
+                        }
+
+                        prev_infowindow = infowindow;
+
                         infowindow.open(map, marker);
                     });
 

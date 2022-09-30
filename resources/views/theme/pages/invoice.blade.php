@@ -95,7 +95,7 @@
                                 <table class="table mt-4 table-centered">
                                     <thead>
                                     <tr><th>#</th>
-                                        <th>Item</th>
+                                        <th>{{ __('item') }}</th>
                                         <th style="width: 10%">Hours</th>
                                         <th style="width: 10%">Hours Rate</th>
                                         <th style="width: 10%" class="text-right">Total</th>

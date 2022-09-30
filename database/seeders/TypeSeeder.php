@@ -27,7 +27,7 @@ class TypeSeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'service_type' => 'pick_drop_service',
+                'service_type' => 'pick_drop_parent_service',
                 'sequence' => 7,
                 'title' => 'Pickup/Parent',
                 'image' => 'pickup_delivery.png',
@@ -104,6 +104,15 @@ class TypeSeeder extends Seeder
                 'title' => 'Food',
                 'service_type' => 'products_service',
                 'image' => 'home_five.png',
+                'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+                
+            ],
+            [
+                'id' => 12,
+                'sequence' => 11,
+                'title' => 'Appointment',
+                'service_type' => 'appointment_service',
+                'image' => 'appointment.png',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
                 
             ]

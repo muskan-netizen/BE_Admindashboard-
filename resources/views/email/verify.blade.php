@@ -56,12 +56,12 @@
                  <tr>
                     <th style="text-align: center;">
                         <a style="display: block;" href="#">
-                           <img src="{{ $mailData['logo']}}" height="50px" alt="">
+                           <img src="{{ (isset($mailData['logo'])) ? $mailData['logo'] : $logo }}" height="50px" alt="">
                         </a>
                     </th>
                  </tr>
               </thead>
-              {!! $mailData['email_template_content'] !!}
+              {!! (isset($mailData['email_template_content'])) ?  $mailData['email_template_content'] : $email_template_content !!}
             </table>
          </div>
       </section>

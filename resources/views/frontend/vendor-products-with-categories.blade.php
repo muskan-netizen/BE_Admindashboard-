@@ -23,107 +23,102 @@
 
 
                         <div class="product-bottom-bar">
-                            <div class="row ">
-                                <div class="col-12 vendor-details-left px-sm-4 px-2 d-sm-flex align-items-center">
-
-                                    <div class="vender-icon mr-sm-3">
-                                        <div class="vendor-stories">
-                                            <div class="circle-wrapper"></div>
-                                            <a href="" data-toggle="modal" data-target="#vendorStories_">
-                                                <img id="vendorStoriesImg" src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-sm avatar-lg" alt="profile-image">
-                                            </a>
-                                        </div>
-                                        <div class="vendor-reviwes">
-                                            @if ($vendor->vendorRating > 0)
-                                                <div class="rating-text-box ml-sm-auto">
-                                                    <span>{{ $vendor->vendorRating }}</span>
-                                                    <i class="fa fa-star" aria-hidden="true"></i>
-                                                </div>
-                                            @endif
-                                            {{-- <div class="review-text">
-                                                    <div class="reviw-number">409</div>
-                                                    <div class="reviews-text">Delivery Reviews</div>
-                                                </div> --}}
-                                        </div>
-                                        <!-- <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-lg" alt="profile-image"> -->
+                            <div class="col-12 vendor-details-left d-sm-flex align-items-center">
+                                <div class="vender-icon mr-sm-3">
+                                    <div class="vendor-stories">
+                                        <div class="circle-wrapper"></div>
+                                        <a href="" data-toggle="modal" data-target="#vendorStories_">
+                                            <img id="vendorStoriesImg" src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-sm avatar-lg" alt="profile-image">
+                                        </a>
                                     </div>
-                                    <div class="ml-sm-1">
-                                                <h3>{{ $vendor->name }}</h3>
-                                                @if (!empty($vendor->desc))
-                                                    <h4 title="{{ $vendor->desc }}" style="line-height: 24px">
-                                                        {{ substr($vendor->desc, 0, 80) . '...' }}</h4>
-                                                @endif
-                                                <p>{!! $vendor->short_desc !!}</p>
-                                                <ul class="vendor-info">
-                                                    {{-- <li class="d-block food-items">
-                                                            <i class="icon-ic_eat"></i>
-                                                            @forelse($listData as $key => $data)
-                                                                {{ $data->category->translation_one->name . (( $key !=  count($listData)-1 ) ? ',' : '') }}
-                                                            @empty
-                                                            @endforelse
-                                                    </li> --}}
-
-                                                    @if ($vendor->is_show_vendor_details == 1)
-                                                        <li class="d-block vendor-location">
-                                                            <i class="icon-location"></i> {{ $vendor->address }}
-                                                        </li>
-                                                        @if ($vendor->email)
-                                                            <li class="d-block vendor-email">
-                                                                <i class="fa fa-envelope"></i> {{ $vendor->email }}
-                                                            </li>
-                                                        @endif
-                                                        @if ($vendor->website)
-                                                            <li class="d-block vendor-website">
-                                                                <i class="fa fa-home"></i> {{ $vendor->website }}
-                                                            </li>
-                                                        @endif
-                                                    @endif
-                                                    @if($vendor->instagram_url)
-                                                        <li class="d-block vendor-instagram">
-                                                            <i class="fa fa-instagram"></i> <a target="_blank" href="{{$vendor->instagram_url}}">Visit Instagram</a>
-                                                        </li>
-                                                    @endif
-
-
-                                                    @php
-                                                        $checkSlot = findSlot('', $vendor->id, '');
-                                                    @endphp
-
-                                                    <li class="d-block vendor-timing">
-                                                        <i class="icon-time"></i>
-                                                        @if ($vendor->is_vendor_closed == 0 && $vendor->show_slot == 0)
-                                                            {{ $vendor->opening_time }} – {{ $vendor->closing_time }}
-                                                            <span class="badge badge-success">{{ __('Open') }}</span>
-                                                        @elseif($vendor->is_vendor_closed == 0 && $vendor->show_slot == 1)
-                                                            24 x 7 <span class="badge badge-success">{{ __('Open') }}</span>
-                                                        @elseif($vendor->closed_store_order_scheduled == 1 && $checkSlot != 0)
-                                                            <span class="badge badge-danger">{{ __('Closed') }}</span>
-                                                            {{ __('We are not accepting orders right now. You can schedule this for ') . $checkSlot }}.
-                                                        @else
-                                                            <span class="badge badge-danger">{{ __('Closed') }}</span>
-                                                        @endif
-                                                        </span>
-                                                        {{-- <span data-toggle="tooltip" data-placement="right" title="Tooltip on right"><i class="fa fa-exclamation-circle" aria-hidden="true"></i></span>
-                                                                <span class="tooltip-text d-none">Mon-Sun : 11am - 11pm</span> --}}
-                                                        </span>
-
-                                                    </li>
-                                                    @if ($vendor->order_min_amount > 0)
-                                                        <span class="badge badge-danger">{{ __('Minimum order value') }}
-                                                            {{ Session::get('currencySymbol') . decimal_format($vendor->order_min_amount) }}</span>
-                                                    @endif
-
-                                                </ul>
+                                    <div class="vendor-reviwes">
+                                        @if ($vendor->vendorRating > 0)
+                                            <div class="rating-text-box ml-sm-auto">
+                                                <span>{{ $vendor->vendorRating }}</span>
+                                                <i class="fa fa-star" aria-hidden="true"></i>
                                             </div>
+                                        @endif
+                                        {{-- <div class="review-text">
+                                                <div class="reviw-number">409</div>
+                                                <div class="reviews-text">Delivery Reviews</div>
+                                            </div> --}}
+                                    </div>
+                                    <!-- <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-lg" alt="profile-image"> -->
                                 </div>
+                                <div class="ml-sm-1">
+                                            <h3>{{ $vendor->name }}</h3>
+                                            @if (!empty($vendor->desc))
+                                                <h4 title="{{ $vendor->desc }}" style="line-height: 24px">
+                                                    {{ substr($vendor->desc, 0, 80) . '...' }}</h4>
+                                            @endif
+                                            <p>{!! $vendor->short_desc !!}</p>
+                                            <ul class="vendor-info">
+                                                {{-- <li class="d-block food-items">
+                                                        <i class="icon-ic_eat"></i>
+                                                        @forelse($listData as $key => $data)
+                                                            {{ $data->category->translation_one->name . (( $key !=  count($listData)-1 ) ? ',' : '') }}
+                                                        @empty
+                                                        @endforelse
+                                                </li> --}}
+
+                                                @if ($vendor->is_show_vendor_details == 1)
+                                                    <li class="d-block vendor-location">
+                                                        <i class="icon-location"></i> {{ $vendor->address }}
+                                                    </li>
+                                                    @if ($vendor->email)
+                                                        <li class="d-block vendor-email">
+                                                            <i class="fa fa-envelope"></i> {{ $vendor->email }}
+                                                        </li>
+                                                    @endif
+                                                    @if ($vendor->website)
+                                                        <li class="d-block vendor-website">
+                                                            <i class="fa fa-home"></i> {{ $vendor->website }}
+                                                        </li>
+                                                    @endif
+                                                @endif
+                                                @if($vendor->instagram_url)
+                                                    <li class="d-block vendor-instagram">
+                                                        <i class="fa fa-instagram"></i> <a target="_blank" href="{{$vendor->instagram_url}}">Visit Instagram</a>
+                                                    </li>
+                                                @endif
+
+
+                                                @php
+                                                    $checkSlot = findSlot('', $vendor->id, '');
+                                                @endphp
+
+                                                <li class="d-block vendor-timing">
+                                                    <i class="icon-time"></i>
+                                                    @if ($vendor->is_vendor_closed == 0 && $vendor->show_slot == 0)
+                                                        {{ $vendor->opening_time }} – {{ $vendor->closing_time }}
+                                                        <span class="badge badge-success">{{ __('Open') }}</span>
+                                                    @elseif($vendor->is_vendor_closed == 0 && $vendor->show_slot == 1)
+                                                        24 x 7 <span class="badge badge-success">{{ __('Open') }}</span>
+                                                    @elseif($vendor->closed_store_order_scheduled == 1 && $checkSlot != 0)
+                                                        <span class="badge badge-danger">{{ __('Closed') }}</span>
+                                                        {{ __('We are not accepting orders right now. You can schedule this for ') . $checkSlot }}.
+                                                    @else
+                                                        <span class="badge badge-danger">{{ __('Closed') }}</span>
+                                                    @endif
+                                                    </span>
+                                                    {{-- <span data-toggle="tooltip" data-placement="right" title="Tooltip on right"><i class="fa fa-exclamation-circle" aria-hidden="true"></i></span>
+                                                            <span class="tooltip-text d-none">Mon-Sun : 11am - 11pm</span> --}}
+                                                    </span>
+
+                                                </li>
+                                                @if ($vendor->order_min_amount > 0)
+                                                    <span class="badge badge-danger">{{ __('Minimum order value') }}
+                                                        {{ Session::get('currencySymbol') . decimal_format($vendor->order_min_amount) }}</span>
+                                                @endif
+
+                                            </ul>
+                                        </div>
                             </div>
 
-
-
-                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
                 <div class="position-relative container">
                     <div class="categories-product-list mt-sm-4">
 
@@ -137,12 +132,10 @@
                         </a>
 
                         <div class="row">
-                            <div class="col-md-4"></div>
-                            <div class="col-md-8"></div>
                             <div class="col-12">
                                 <div class="row vendor-products-wrapper">
                                     <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
-                                        <nav class="scrollspy-menu">
+                                        <nav class="scrollspy-menu ">
                                             <ul>
                                                 @forelse($listData as $key => $data)
                                                     <li><a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation[0]->name??'' }}({{ $data->products_count }})</a>
@@ -153,10 +146,10 @@
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6 alScrollspyProduct">
-                                            <div class="row mt-2 d-flex align-items-start mb-sm-2 justify-content-center">
-                                                <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
+                                            <div class="row d-flex align-items-start justify-content-center m-0">
+                                                <div class="col-7 vendor-search-bar mb-sm-0 mb-2 p-0">
                                                     <div class="radius-bar w-100">
-                                                        <div class="search_form d-flex align-items-center border">
+                                                        <div class="search_form d-flex align-items-center">
                                                             <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
                                                             <input class="form-control border-0 typeahead" type="search"
                                                                 placeholder="{{ __('Search') }}" id="vendor_search_box">
@@ -165,7 +158,8 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-5 text-right pl-0"><span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span>
+                                                <div class="col-5 text-right pl-0">
+                                                    <!-- <span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span> -->
                                                     <select name="order_type" id='order_type' class="product_tag_filter p-1">
                                                         <option value="featured">{{ __('Featured') }}</option>
                                                         <option value="a_to_z">{{ __('A to Z') }}</option>
@@ -531,13 +525,13 @@
                                                         {{ Session::get('currencySymbol') }}<%=  Helper.formatPrice(vendor_product.quantity_price) %>
 
                                                     </span>
-                                                    <a class="action-icon remove_product_via_cart text-danger" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
+                                                    <a class="action-icon remove_product_via_cart text-danger" style="cursor: pointer;" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                                             <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                         </a>
                                                 </h6>
                                             </div>
                                         </li>
-
+                                        <hr class="my-2">
                                         <% if(vendor_product.addon.length != 0) { %>
                                             <div class="row align-items-md-center">
                                                 <div class="col-12">
@@ -556,6 +550,7 @@
                                                     <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
                                                 </div>
                                             </div>
+                                            <hr class="my-2">
                                             <% }); %>
                                         <% } %>
 
@@ -788,11 +783,11 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-center">
                     <input type="hidden" id="vendor_id" value="">
                     <input type="hidden" id="product_id" value="">
                     <input type="hidden" id="cartproduct_id" value="">
-                    <h6 class="m-0">{{ __('Are You Sure You Want To Remove This Item?') }}</h6>
+                    <h6 class="m-0 px-3">{{ __('Are You Sure You Want To Remove This Item?') }}</h6>
                 </div>
                 <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                     <button type="button" class="btn btn-solid black-btn"
@@ -888,20 +883,20 @@
     <script>
         var get_product_addon_url = "{{ route('vendorProductAddons') }}"
 
-        jQuery(window).scroll(function() {
+        // jQuery(window).scroll(function() {
 
-            var scroll = jQuery(window).scrollTop();
-            var categories_list_height = $('.vendor-products-wrapper').height() +400;
+        //     var scroll = jQuery(window).scrollTop();
+        //     var categories_list_height = $('.vendor-products-wrapper').height() +400;
 
-            if (scroll >= 600) {
-                jQuery(".categories-product-list").addClass("fixed-bar");
-            } else {
-                jQuery(".categories-product-list").removeClass("fixed-bar");
-            }
-            if(scroll >= categories_list_height){
-                jQuery(".categories-product-list").removeClass("fixed-bar");
-            }
-        });
+        //     if (scroll >= 600) {
+        //         jQuery(".categories-product-list").addClass("fixed-bar");
+        //     } else {
+        //         jQuery(".categories-product-list").removeClass("fixed-bar");
+        //     }
+        //     if(scroll >= categories_list_height){
+        //         jQuery(".categories-product-list").removeClass("fixed-bar");
+        //     }
+        // });
 
         var addonids = [];
         var addonoptids = [];

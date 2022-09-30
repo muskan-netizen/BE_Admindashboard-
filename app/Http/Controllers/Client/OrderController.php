@@ -13,7 +13,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet};
+use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet,OrderProductDispatchRoute};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -397,7 +397,11 @@ class OrderController extends BaseController
             
             if($preferences->$clientVendorTypes == 1){
                 $vendorTypeOrders = $VendorTypesName.'_orders';
+
                 $$vendorTypeOrders = clone $orders;
+                $luxury_option_id = config('constants.VendorTypesLuxuryOptions.'.$vendor_typ_key);
+                $$vendorTypeOrders = $$vendorTypeOrders->where('luxury_option_id', $luxury_option_id)->count();
+                $response[$vendorTypeOrders] = $$vendorTypeOrders;
             }
         }
 
@@ -444,48 +448,47 @@ class OrderController extends BaseController
             $query->whereIn('order_status_option_id', $order_status_optionsd);
         })->count();
 
+        // // Delivery orders count
+        // if(isset($delivery_orders)){
+        //     $delivery_orders = $delivery_orders->where('luxury_option_id', 1)->count();
+        //     $response['delivery_orders'] = $delivery_orders;
+        // }
 
-        // Delivery orders count
-        if(isset($delivery_orders)){
-            $delivery_orders = $delivery_orders->where('luxury_option_id', 1)->count();
-            $response['delivery_orders'] = $delivery_orders;
-        }
+        // // Dine in orders count
+        // if(isset($dine_in_orders)){
+        //     $dine_in_orders = $dine_in_orders->where('luxury_option_id', 2)->count();
+        //     $response['dine_in_orders'] = $dine_in_orders;
+        // }
 
-        // Dine in orders count
-        if(isset($dine_in_orders)){
-            $dine_in_orders = $dine_in_orders->where('luxury_option_id', 2)->count();
-            $response['dine_in_orders'] = $dine_in_orders;
-        }
+        // // Takeaway orders count
+        // if(isset($takeaway_orders)){
+        //     $takeaway_orders = $takeaway_orders->where('luxury_option_id', 3)->count();
+        //     $response['takeaway_orders'] = $takeaway_orders;
+        // }
 
-        // Takeaway orders count
-        if(isset($takeaway_orders)){
-            $takeaway_orders = $takeaway_orders->where('luxury_option_id', 3)->count();
-            $response['takeaway_orders'] = $takeaway_orders;
-        }
+        // // Rental orders count
+        // if(isset($rental_orders)){
+        //     $rental_orders = $rental_orders->where('luxury_option_id', 4)->count();
+        //     $response['rental_orders'] = $rental_orders;
+        // }
 
-        // Rental orders count
-        if(isset($rental_orders)){
-            $rental_orders = $rental_orders->where('luxury_option_id', 4)->count();
-            $response['rental_orders'] = $rental_orders;
-        }
+        // // Pick drop orders count
+        // if(isset($pick_drop_orders)){
+        //     $pick_drop_orders = $pick_drop_orders->where('luxury_option_id', 5)->count();
+        //     $response['pick_drop_orders'] = $pick_drop_orders;
+        // }
 
-        // Pick drop orders count
-        if(isset($pick_drop_orders)){
-            $pick_drop_orders = $pick_drop_orders->where('luxury_option_id', 5)->count();
-            $response['pick_drop_orders'] = $pick_drop_orders;
-        }
+        // // On demand orders count
+        // if(isset($on_demand_orders)){
+        //     $on_demand_orders = $on_demand_orders->where('luxury_option_id', 6)->count();
+        //     $response['on_demand_orders'] = $on_demand_orders;
+        // }
 
-        // On demand orders count
-        if(isset($on_demand_orders)){
-            $on_demand_orders = $on_demand_orders->where('luxury_option_id', 6)->count();
-            $response['on_demand_orders'] = $on_demand_orders;
-        }
-
-        // Laundry orders count
-        if(isset($laundry_orders)){
-            $laundry_orders = $laundry_orders->where('luxury_option_id', 7)->count();
-            $response['laundry_orders'] = $laundry_orders;
-        }
+        // // Laundry orders count
+        // if(isset($laundry_orders)){
+        //     $laundry_orders = $laundry_orders->where('luxury_option_id', 7)->count();
+        //     $response['laundry_orders'] = $laundry_orders;
+        // }
 
 
         foreach ($orders as $key => $order) {
@@ -514,7 +517,7 @@ class OrderController extends BaseController
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
                     $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image)? $product->media->first()->image->path : getDefaultImagePath();
-                    if(!is_null($product->product) && ($product->quantity > $product->product->variant[0]->quantity))
+                    if(!is_null($product->product) && ($product->has_inventory != 0) && ($product->quantity > ($product->product->variant->first() ? $product->product->variant[0]->quantity : 0 ) ))
                     {
                         $vendor->isAlert = true;
                         $vendor->alertMessage = __("You are low on stock");
@@ -541,13 +544,16 @@ class OrderController extends BaseController
                     $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
                 } elseif ($luxury_option->title == 'dine_in') {
                     $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
+                }
+                elseif ($luxury_option->title == 'on_demand') {
+                    $luxury_option_name = $this->getNomenclatureName('Services', $langId, false);
                 } else {
                     $luxury_option_name = getNomenclatureName($luxury_option->title, $langId, false);
                     //$luxury_option_name = 'Delivery';
                 }
                 $luxury_option_name = ucwords(str_replace('_', ' ', $luxury_option_name));
             }
-            $order->luxury_option_name = __($luxury_option_name);
+            $order->luxury_option_name = $luxury_option_name;
             if ($order->vendors->count() == 0) {
                 $orders->forget($key);
             }
@@ -634,7 +640,7 @@ class OrderController extends BaseController
         if($order->paymentOption->code == 'stripe'){
             $order->paymentOption->title = __('Credit/Debit Card (Stripe)');
         }elseif($order->paymentOption->code == 'kongapay'){
-            $order->paymentOption->code->title = 'Pay Now';
+            $order->paymentOption->title = 'Pay Now';
         }elseif($order->paymentOption->code == 'mvodafone'){
             $order->paymentOption->title = 'Vodafone M-PAiSA';
         }
@@ -646,12 +652,20 @@ class OrderController extends BaseController
             $order->paymentOption->title = $json->manule_payment_title;
         }
         $order->paymentOption->title = __($order->paymentOption->title);
-
+        $product_schedule_type = '';
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
+                // check vendor product for schedule
+                if($product->schedule_type == 'schedule'){
+                    $product_schedule_type = 'schedule';
+                }
                 $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
+                $product->routes = []; // routes for single product $product->Routes; //
+                if(in_array($order->luxury_option_id, [6,8])){ // for on demand service and appointment service code by harbans :)
+                    $product->routes =  $product->Routes; // OrderProductDispatchRoute::with('DispatchStatus')->where(['order_vendor_product_id'=>$product->id])->get()->toArray();
+                }
                 foreach ($product->addon as $ck => $addons) {
                     $opt_price_in_currency = $addons->option->price??0;
                     $opt_price_in_doller_compare = $addons->option->price??0;
@@ -675,8 +689,10 @@ class OrderController extends BaseController
                 $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
                 $vendor->dineInTableCategory = $vendor->dineInTable->category->title; //$vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
             }
+
         }
-        // dd($order->toArray());
+       // pr($order->vendors->toArray());
+        $order->product_schedule_type = $product_schedule_type;
         $luxury_option_name = '';
         if ($order->luxury_option_id > 0) {
             $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
@@ -684,7 +700,9 @@ class OrderController extends BaseController
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
             } elseif ($luxury_option->title == 'dine_in') {
                 $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
-            } else {
+            }elseif ($luxury_option->title == 'on_demand') {
+                $luxury_option_name = $this->getNomenclatureName('Services', $langId, false);
+            }  else {
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
             }
         }
@@ -718,7 +736,7 @@ class OrderController extends BaseController
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
-        
+           //pr( $order->toArray());
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 
             'order' => $order,
@@ -1121,8 +1139,80 @@ class OrderController extends BaseController
 
     public function checkIfanyProductLastMileon($request)
     {
+       
         $order_dispatchs = 2;
-        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+       // pr( $checkdeliveryFeeAdded);
+        $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
+      
+        /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
+        if ($luxury_option_id == 8) { // only for appointment type 
+            $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
+            if($dispatch_domain_Appointment && $dispatch_domain_Appointment != false){
+                $Appointment = 0;
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                
+                
+                    if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 12) {
+                        $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
+                        //echo $Appointment . 'app';
+                        //echo $checkdeliveryFeeAdded->delivery_fee . '$checkdeliveryFeeAdded->delivery_fee';
+                       
+                        if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
+                          
+                            $dispatch_domain=[
+                                'service_key'      => $dispatch_domain_Appointment->appointment_service_key,
+                                'service_key_code' => $dispatch_domain_Appointment->appointment_service_key_code,
+                                'service_key_url'  => $dispatch_domain_Appointment->appointment_service_key_url,
+                                'service_type'     => 'appointment'
+                            ];
+                            //pr($checkdeliveryFeeAdded);
+                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id,$dispatch_domain ,$request);
+                            if ($order_dispatchs && $order_dispatchs == 1) {
+                                $Appointment = 1;
+                                return 1;
+                            }
+                        }
+                    }
+                    //pr('ad');
+                }
+            }
+        }
+        if ($luxury_option_id == 6) { // only for on_demand type 
+            $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
+        
+            if($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false){
+                $OnDemand = 0;
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                
+              
+                    if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
+                       
+                      //  $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
+                        //echo $Appointment . 'app';
+                       
+                        if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false && $OnDemand == 0  && $checkdeliveryFeeAdded->delivery_fee > 0) {
+                          
+                           
+                    
+                            $dispatch_domain=[
+                                'service_key'      => $dispatch_domain_OnDemand->dispacher_home_other_service_key,
+                                'service_key_code' => $dispatch_domain_OnDemand->dispacher_home_other_service_key_code,
+                                'service_key_url'  => $dispatch_domain_OnDemand->dispacher_home_other_service_key_url,
+                                'service_type'     => 'on_demand'
+                            ];
+                         
+
+                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain ,$request);
+                            if ($order_dispatchs && $order_dispatchs == 1) {
+                                $OnDemand = 1;
+                                return 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
             if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
@@ -1133,28 +1223,26 @@ class OrderController extends BaseController
             if ($order_dispatchs && $order_dispatchs == 1)
                 return 1;
 
-
-            return 2;
         }
 
 
-        $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
-        if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
-            $ondemand = 0;
+        // $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
+        // if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
+        //     $ondemand = 0;
 
-            foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
-                if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
-                    $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
-                    if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false && $ondemand == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0.00) {
-                        $order_dispatchs = $this->placeRequestToDispatchOnDemand($request->order_id, $request->vendor_id, $dispatch_domain_ondemand);
-                        if ($order_dispatchs && $order_dispatchs == 1) {
-                            $ondemand = 1;
-                            return 1;
-                        }
-                    }
-                }
-            }
-        }
+        //     foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+        //         if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
+        //             $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
+        //             if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false && $ondemand == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0.00) {
+        //                 $order_dispatchs = $this->placeRequestToDispatchOnDemand($request->order_id, $request->vendor_id, $dispatch_domain_ondemand);
+        //                 if ($order_dispatchs && $order_dispatchs == 1) {
+        //                     $ondemand = 1;
+        //                     return 1;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
        // \Log::info('getDispatchLaundryDomain');
         /////////////// **************** for laundry accept order *************** ////////////////
         $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
@@ -1305,6 +1393,7 @@ class OrderController extends BaseController
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image
             ];
+            //pr($postdata);
             if($orderVendorDetails->is_restricted == 1)
             {
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -1365,7 +1454,7 @@ class OrderController extends BaseController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
-            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -2045,7 +2134,9 @@ class OrderController extends BaseController
                 $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
             } elseif ($luxury_option->title == 'dine_in') {
                 $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
-            } else {
+            }elseif ($luxury_option->title == 'on_demand') {
+                $luxury_option_name = $this->getNomenclatureName('Services', $langId, false);
+            }  else {
                 //$luxury_option_name = 'Delivery';
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
             }

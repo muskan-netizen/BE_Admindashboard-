@@ -9,6 +9,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 @endphp
 
 <div class="container-fluid custom-toggle al">
+   @if($client_preference_detail->business_type != 'taxi')
    <div class="row">
       <div class="col-12">
          <!-- Configurations start -->
@@ -17,6 +18,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </div><!-- Configurations end -->
       </div>
    </div>
+   @endif
 
    <div class="row">
       <div class="col-12">
@@ -108,7 +110,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          @endif
 
-         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
+         {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
 
             <div class="col-lg-3 col-md-6 mb-3">
                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -164,7 +166,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                </div><!-- On Demand Services section end -->
             </form>
             </div>
-         @endif
+         @endif --}}
 
 
          @if($client_preference_detail->enable_inventory_service == 1)
@@ -217,7 +219,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          @endif
 
-         @if($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app' )
+         {{-- @if($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app' )
 
             <div class="col-lg-3 col-md-6 mb-3">
                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -273,11 +275,11 @@ $sms_crendential = json_decode($preference->sms_credentials);
                </div><!-- Pickup & Delivery section end -->
                </form>
             </div>
-         @endif
+         @endif --}}
 
 
 
-         @if($client_preference_detail->business_type == 'laundry')
+         {{-- @if($client_preference_detail->business_type == 'laundry')
             <div class="col-lg-3 col-md-6 mb-3">
                <!-- laundry section start -->
                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -359,7 +361,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                </div>
                </form>
             </div>
-         @endif
+         @endif --}}
 
 
    </div>
@@ -1237,6 +1239,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   @endif
+                  
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                         <label for="subscription_tab_taxi" class="mr-2 mb-0">{{ __("Subscription Tab") }}<small class="d-block pr-5">Enable subscription tab for taxi/cab.</small></label>
@@ -1274,7 +1277,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div> --}}
                   <div class="col-md-4">
-                     <div class="form-group d-flex justify-content-between mb-3">
+                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                         <label for="product_order_form" class="mr-2 mb-0">{{$nomenclatureProductOrderForm}}<small class="d-block pr-5">{{__('Add a Product Order form. Create Dynamic questions per product.')}}</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="product_order_form" id="product_order_form" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->product_order_form == '1')) checked='checked' @endif>
                      </span>
@@ -1284,6 +1287,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                         <label for="gifting" class="mr-2 mb-0">{{__('Gifting')}}<small class="d-block pr-5">Enable option to mark an Order to be gift wrapped.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="gifting" id="gifting" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->gifting == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                        <label for="pickup_delivery_service_area" class="mr-2 mb-0">{{ __("Pickup Delivery Service Area") }}<small class="d-block pr-5">{{ __('Option to show Pickup Delivery Vendors based on First location restricted to Service Areas only') }}</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="pickup_delivery_service_area" id="pickup_delivery_service_area" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->pickup_delivery_service_area == '1')) checked='checked' @endif>
                      </span>
                      </div>
                   </div>
@@ -1423,16 +1433,23 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                </div>
                <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                      <label for="db_audit_logs" class="mr-2 mb-0">{{__('Service Area For Banners')}}<small class="d-block pr-5">{{__('Enable service area for banners.')}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="is_service_area_for_banners" id="is_service_area_for_banners" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_service_area_for_banners == '1')) checked='checked' @endif>
                      </span>
                   </div>
                </div>
                <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                      <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Stop Order Acceptance')}}<small class="d-block pr-5">{{__('Activate to display a busy message to customers and stop accepting orders.')}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="stop_order_acceptance_for_users" id="stop_order_acceptance_for_users" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->stop_order_acceptance_for_users == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                     <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Show map on search screen')}}<small class="d-block pr-5">{{__("Enable to show activate vendor's in map-view on search screen.")}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="map_on_search_screen" id="map_on_search_screen" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->map_on_search_screen == '1')) checked='checked' @endif>
                      </span>
                   </div>
                </div>

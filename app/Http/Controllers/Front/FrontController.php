@@ -278,6 +278,32 @@ class FrontController extends Controller
         return $vendors;
     }
 
+    public function getServiceAreaVendorsWithoutHyperlocal($latitude, $longitude){
+        $vendorType = Session::get('vendorType');
+        $preferences = Session::has('preferences') ? Session::get('preferences') : ClientPreference::where('id', '>', 0)->first();;
+        $serviceAreaVendors = Vendor::select('id', 'show_slot');
+        $vendors = [];
+        if($vendorType){
+            $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
+        }
+
+        if (!empty($latitude) && !empty($longitude)) {
+            $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                $query->select('vendor_id')
+                ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+            });
+        }
+        $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
+
+
+        if($serviceAreaVendors->isNotEmpty()){
+            foreach($serviceAreaVendors as $value){
+                $vendors[] = $value->id;
+            }
+        }
+        return $vendors;
+    }
+
     public function loadDefaultImage(){
         $proxy_url = \Config::get('app.IMG_URL1');
         $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
@@ -306,7 +332,7 @@ class FrontController extends Controller
                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode')->orderBy('price');
                 $q->groupBy('product_id');
             },
-        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','minimum_order_count','batch_count');
+        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','minimum_order_count','batch_count','minimum_duration_min');
 
         if ($where !== '') {
             $products = $products->where($where, 1);
@@ -691,7 +717,9 @@ class FrontController extends Controller
 
             $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($timezone)->format('Y-m-d');
             $cartData[$key]->scheduled_date_time = $selectedDate;
-            $slots = showSlot($selectedDate,$data->vendor_id,'delivery');
+            $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
+            $slots = (object)$slotsRes['slots'];
+            //$slots = showSlot($selectedDate,$data->vendor_id,'delivery');
             $time_slots = [];
             $i = 0;
             foreach($slots as $slot){
@@ -943,16 +971,10 @@ class FrontController extends Controller
                 $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
 
                 $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
-                \Log::info('sms:--//');
-                \Log::info($smsTemplates);
-                \Log::info('sms:--//');
                 if(!empty($smsTemplates)){
                     $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
                     $smsTemplates = str_replace("{amount}", $currSymbol . $order->payable_amount, $smsTemplates);
                     $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
-                    \Log::info('sms:--');
-                    \Log::info($body);
-                    \Log::info('sms:--');
                 }else{
                     $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . $order->payable_amount . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
                 }

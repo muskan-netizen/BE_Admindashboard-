@@ -70,23 +70,25 @@ class CategoryController extends BaseController
         $vendors = array();
         $category = new Category();
         $preference = ClientPreference::first();
-
-        switch($preference->business_type){
-            case "taxi":
-            $type =Type::where('title','Pickup/Delivery')->orderBY('sequence', 'ASC')->get();
-            break;
-            case "food_grocery_ecommerce":
-            $type =Type::whereNotIn('title',['Pickup/Delivery','On Demand Service','Pickup/Parent','laundry'])->orderBY('sequence', 'ASC')->get();
-            break;
-            case "home_service":
-            $type =Type::whereNotIn('title',['Pickup/Delivery','Pickup/Parent'])->orderBY('sequence', 'ASC')->get();
-            break;
-            case "laundry":
-            $type =Type::whereNotIn('title',['Pickup/Delivery','Pickup/Parent','On Demand Service'])->orderBY('sequence', 'ASC')->get();
-            break;
-            default:
-            $type = Type::where('title', '!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();
-        }
+        $type_service =  getCategoryTypesServices();
+        //pr( $type_service);
+        $type = Type::whereIn('service_type',$type_service)->orderBY('sequence', 'ASC')->get();
+        // switch($preference->business_type){
+        //     case "taxi":
+        //     $type =Type::where('title','Pickup/Delivery')->orderBY('sequence', 'ASC')->get();
+        //     break;
+        //     case "food_grocery_ecommerce":
+        //     $type =Type::whereNotIn('title',['Pickup/Delivery','On Demand Service','Pickup/Parent','laundry'])->orderBY('sequence', 'ASC')->get();
+        //     break;
+        //     case "home_service":
+        //     $type =Type::whereNotIn('title',['Pickup/Delivery','Pickup/Parent'])->orderBY('sequence', 'ASC')->get();
+        //     break;
+        //     case "laundry":
+        //     $type =Type::whereNotIn('title',['Pickup/Delivery','Pickup/Parent','On Demand Service'])->orderBY('sequence', 'ASC')->get();
+        //     break;
+        //     default:
+        //     $type = Type::where('title', '!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();
+        // }
 
 
 

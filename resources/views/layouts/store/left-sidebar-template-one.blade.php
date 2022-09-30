@@ -35,7 +35,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-sm-3 col-md-2">
-                    <a class="navbar-brand mr-0" style="height:60px" href="{{ route('userHome') }}"><img height="60" alt="" src="{{ $urlImg }}"></a>
+                    <a class="navbar-brand mr-0" style="height:60px" href="{{ route('userHome') }}"><img id="theme-logo" height="60" alt="" src="{{ $urlImg }}"></a>
                 </div>
                 <div class="col-sm-9 col-md-10 top-header bg-transparent">
                     <ul class="header-dropdown d-flex align-items-center justify-content-md-end justify-content-center">
@@ -149,6 +149,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
             <div class="container p-0 align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
                     <div class="row mobile-header align-items-center justify-content-between my-sm-2">
+                        {{-- @include('frontend.home_page_1.main_menu') --}}
                         <div class="logo">
                             <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" style="height:60px" href="{{route('userHome')}}"><img alt="" src="{{$urlImg}}"></a>
                         </div>
@@ -252,9 +253,10 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                         <li class="onhover-div pl-0 shake-effect">
                                             @if($client_preference_detail)
                                             @if($client_preference_detail->cart_enable==1)
-                                            <a class="btn btn-solid_al d-flex align-items-center "
+                                            <a class="btn btn-solid_al d-flex align-items-center px-0"
                                                 href="{{route('showCart')}}">
-                                                <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i>
+
+                                                <span class="mr-1"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                                                 <!-- <span>{{__('Cart')}}•</span> -->
                                                 <span id="cart_qty_span"></span>
                                             </a> @endif @endif
@@ -382,13 +384,12 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                             <li class="onhover-div pl-0 shake-effect">
                                                                 @if($client_preference_detail)
                                                                 @if($client_preference_detail->cart_enable==1)
-                                                                <a class="btn btn-solid_al d-flex align-items-center "
+                                                                <a class="btn btn-solid_al d-flex align-items-center px-0"
                                                                     href="{{route('showCart')}}">
-                                                                    <i class="fa fa-shopping-cart mr-1 "
-                                                                        aria-hidden="true"></i>
+                                                                    <span class="mr-1"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+
                                                                     <!-- <span>{{__('Cart')}}</span> -->
-                                                                    <span id="cart_qty_span">
-                                                                    </span>
+                                                                    <span id="cart_qty_span"></span>
                                                                 </a>
                                                                 @endif
                                                                 @endif
@@ -482,6 +483,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                             </div>
                             <div class="col-lg-5 col-9 order-lg-2 order-1 position-initial"> </div>
                         </div>
+
+
                     </div>
                 </div>
             </div>
@@ -489,7 +492,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12">
-
+                                {{-- @include('frontend.home_page_1.sub_menu') --}}
                                 <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
                                     @foreach($navCategories as $cate)
                                     @if($cate['name'])
@@ -497,13 +500,13 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
 
                                         @if ($client_preference_detail->view_get_estimation_in_category == 1 && $client_preference_detail->business_type == "laundry")
                                             <a href="/get-estimation#{{$cate['slug']}}">
-                                                @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
+                                                @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='homeTest'))
                                                 <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
                                                 @endif{{$cate['name']}}
                                             </a>
                                         @else
                                             <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
+                                                @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='homeTest'))
                                                 <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
                                                 @endif{{$cate['name']}}
                                             </a>
@@ -614,8 +617,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
                         aria-hidden="true">×</span> </button>
             </div>
-            <div class="modal-body">
-                <h6 class="m-0">
+            <div class="modal-body text-center">
+                <h6 class="m-0 px-3">
                     {{__('This change will remove all your cart products. Do you really want to continue ?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center"> <button type="button"

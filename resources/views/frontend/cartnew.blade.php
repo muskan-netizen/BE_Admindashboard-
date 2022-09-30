@@ -96,7 +96,7 @@ width: 100%;
 .al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
 
 
-.grn_popop-total_amt label{  font-size: 12px !important;}
+.grn_popop-total_amt label{  font-size: 12px !important;text-align:left;}
 
 .vendor_cart-check label {display: inline-block;}
 
@@ -104,6 +104,19 @@ width: 100%;
 
 
 /*-------cart page design css  start here---------*/
+.dark .new_cart,
+.dark .cart-summary,
+.dark .new_cart .add-address i,
+.dark .shoping_cart {background-color: #232323;box-shadow: 10px 16px 14px 10px #0000001c;border: 1px solid #4645458c;}
+.dark .item-show-cart h4,
+.dark .cart-summary h5.order_text,
+.dark .new_cart .page-title,
+.dark .cart-summary .alFourSpecificInstructions span,
+.dark .shoping_cart .order-md-4 .items-price,
+.dark .cart-summary .cart-price .text-right b,
+.dark .single_cart_heading h3{color: #cfd4da;}
+.dark .alFourSpecificInstructions input{background-color: #c9c3c3;}
+.dark .delivery_box.cart_delivery{border-color: #4645458c; }
 .single_cart_heading h3 {font-weight: 600;color: #000;}
 .cart-summary h5.order_text{font-size: 22px;font-weight: 600;color:#000;}
 .item-show-cart h4 {font-size: 20px !important;font-weight: 600;color: #000;}
@@ -121,13 +134,15 @@ width: 100%;
 .shoping_cart .cart-heading h5{font-size: 18px;font-weight: 400;}
 .new_cart {background: #fff;box-shadow: 10px 16px 14px 10px #eee9;border: 1px solid#eeeeee8c;}
 .cart_edit-addre{border-top: 1px solid#eee;}
-.new_cart .page-title {font-size:20px;font-weight: 600;color:#000;}.delivery_box label { color: #666363; font-size: 16px; line-height: 20px;display: block;width:100%;}
+.new_cart .page-title {font-size:20px;font-weight: 600;color:#000;}.delivery_box label { color: #666363; font-size: 16px; line-height: 28px;display: block;width:100%;}
 .alFourTemplateCartButtons a.shoping{color:#FA1C0A;}
 .cart_delivery{border-radius: 5px;background-color: #fff;box-shadow: 1px 4px 4px #eee;height:100%;
-display: flex;align-items: center;justify-content: center;border: 1px solid#eee;}
+display: flex;align-items: center;justify-content: center;border: 1px solid#eee;overflow: hidden;}
 .alFourTemplateCartButtons a.shoping i {font-size: 18px;vertical-align: bottom;padding-right: 5px;}
 .cart_all_address a {text-align: center;width: 100%;font-size: 14px;}
-.cart_delivery a {position: absolute;right: 4px;top: 8px;}
+.cart_delivery a {position: absolute;right: 10px;top: 10px;}
+.cart_delivery a.deleteAddress{position: absolute;right: -50px;top: 50%;color:red;-webkit-transform: translateY(-50%);transform: translateY(-50%);}
+.cart_delivery:hover a.deleteAddress{right: 10px;}
 .new_cart .add-address i {background: #fff;border: 1px solid#eee; padding: 16px;border-radius: 100%;height: 40px;width: 40px;display: flex;align-items: center;
 justify-content: center;font-size: 20px;box-shadow: 5px 6px 4px #eee;color: #ff3f3f;}
 .cart-checkout_btn button{width:100%;}.cart-checkout_btn #order_placed_btn {
@@ -152,12 +167,15 @@ padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .tip_radio:checked+.tip_label {background: var(--theme-deafult);box-shadow: 0 0 5px var(--theme-deafult);}
 .tip_radio:checked+.tip_label h5, .tip_radio:checked+.tip_label p {color: #fff;}
 
-.al_body_template_four .text-danger { font-size: 16px;}
+.al_body_template_four .text-danger {font-size: 16px;}
 .al_body_template_four .clproduct_cart_order_form.btn.btn-solid {padding: 8px 0px;font-size: 12px;}
 .al_body_template_two .shoping_cart .alFourTemplateCartPage #product_faq_dev_42 .btn-product-order-form-div button {
-    font-size: 12px;padding: 6.7px 10px;}
+font-size: 12px;padding: 6.7px 10px;}
 .add_address_btn .btn-solid{font-size: 12px;padding: 6.7px 10px;}
-
+#add_new_address_form_modal button.close{
+position: absolute;
+right: 20px;
+}
 
 
 
@@ -175,6 +193,27 @@ padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
     .al_body_template_two .show-prescription-doc {
    width:100%;
 }
+.item-show-cart h4 {font-size:14px !important;}
+.product_title_add span {
+    font-size: 12px;
+}
+
+}
+
+/*cart page responsive css */
+
+
+@media only screen and (min-width:1367px) and (max-width:1429px){
+.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;height:auto;}
+}
+@media only screen and (max-width:1366px){
+.cart-design .alFourTemplateCartButtons a.shoping i{font-size:17px;vertical-align: middle;}
+.cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;vertical-align: middle;text-align:left;height:auto;}
+}
+
+@media (min-width:991px) and (max-width:1200px){
+.cart-design .alFourTemplateCartButtons a.btn.shoping {font-size:10px;display: block;width: 100%;text-align: left;height:auto;}
+.cart-design .alFourTemplateCartButtons a.shoping i{font-size:10px;vertical-align: middle;}
 }
 </style>
 
@@ -438,10 +477,10 @@ $client_preferences = \App\Models\ClientPreference::first();
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-center">
                 <input type="hidden" id="vendor_id" value="">
                 <input type="hidden" id="cartproduct_id" value="">
-                <h6 class="m-0">{{__('Are You Sure You Want To Remove This Item?')}}</h6>
+                <h6 class="m-0 px-3">{{__('Are You Sure You Want To Remove This Item?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
@@ -1693,13 +1732,16 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     function checkSlotOrders()
     {
         var url = "{{route('checkSlotOrders')}}"
+        var schedule_datetime = $('#schedule_datetime').val();
         var schedule_pickup_datetime = $('#pickup_schedule_datetime').val();
         var schedule_pickup_slot = $('#schedule_pickup_slot').val();
         var vendor_id = $('#vendor_id').val();
+
         $.ajax({
             type: "GET",
             data: {
                 "schedule_pickup_datetime": schedule_pickup_datetime,
+                "schedule_datetime": schedule_datetime,
                 "schedule_pickup_slot":     schedule_pickup_slot,
                 "vendor_id":                vendor_id,
             },
@@ -1708,6 +1750,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(output) {
+                console.log(output.orders_per_slot);
+                console.log(output.orderCount);
                 // Check if orderCount is greaten equal to orders_per_slot
                 if( (output.orderCount >= output.orders_per_slot) && (output.orders_per_slot != 0) ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
@@ -1755,6 +1799,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     // Check Slot Availability
     function checkSlotAvailability(obj)
     {
+
         var url = "{{route('checkSlotOrders')}}"
         var schedule_datetime = $(obj).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
         var schedule_slot = $(obj).val();
@@ -1764,18 +1809,19 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
             data: {
                 "schedule_datetime": schedule_datetime,
                 "schedule_slot":     schedule_slot,
-                "vendor_id":                vendor_id,
+                "vendor_id":         vendor_id,
             },
             url: url,
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(output) {
-                // Check if orderCount is greaten equal to orders_per_slot
-                if(output.orderCount >= output.orders_per_slot){
+                // Check if orderCount is greaten equal to orders_per_slot //&& (output.orders_per_slot !=0)
+                if(output.orderCount >= output.orders_per_slot  ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
                     // Disable the place order button
                     $('#order_placed_btn').attr("disabled", true);
+                    return false;
                 }else{
                     // Enable the place order button
                     $('#order_placed_btn').attr("disabled", false);

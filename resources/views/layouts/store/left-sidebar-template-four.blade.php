@@ -161,7 +161,7 @@ $pages = \App\Models\Page::with([
                     <div class="row d-flex align-items-center justify-content-between">
                         <div class="col-lg-2">
                             <div class="logo_area d-none d-lg-block">
-                                <a class="navbar-brand m-0" href="{{ route('userHome') }}"><img alt="" class="w-100" src="{{$urlImg}}"></a>
+                                <a class="navbar-brand m-0" href="{{ route('userHome') }}"><img alt="" style="width:100%;max-height:100px;" src="{{$urlImg}}"></a>
                             </div>
                             <div class="col-12 d-block d-lg-none p-0">
                                 <div class="row no-gutters">
@@ -252,7 +252,7 @@ $pages = \App\Models\Page::with([
                                                         <ul class="onhover-show-div">
                                                             @foreach($languageList as $key => $listl)
                                                                 <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                                                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)
                                                                         ({{$listl->language->nativeName}})
                                                                         @endif </a>
                                                                 </li>
@@ -331,7 +331,7 @@ $pages = \App\Models\Page::with([
                                         <li class="onhover-div pl-0 ml-xl-3 ml-lg-1 shake-effect">
                                             @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
                                             <a class="btn btn-solid d-flex align-items-center " href="{{route('showCart')}}">
-                                                <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i>
+                                                <i class="mr-1"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.20853 17.8104L3.46191 17.7393L4.20853 17.8104ZM19.7915 17.8104L20.5381 17.7393L19.7915 17.8104ZM17.8005 19.25C17.3863 19.25 17.0505 19.5858 17.0505 20C17.0505 20.4142 17.3863 20.75 17.8005 20.75V19.25ZM19.0296 9.81038L18.2829 9.88149L19.0296 9.81038ZM4.97043 9.81038L5.71705 9.88149L4.97043 9.81038ZM7.24999 11C7.24999 11.4142 7.58578 11.75 7.99999 11.75C8.41421 11.75 8.74999 11.4142 8.74999 11H7.24999ZM15.25 11C15.25 11.4142 15.5858 11.75 16 11.75C16.4142 11.75 16.75 11.4142 16.75 11H15.25ZM7.99999 8.75C8.41421 8.75 8.74999 8.41421 8.74999 8C8.74999 7.58579 8.41421 7.25 7.99999 7.25V8.75ZM12 7.25C11.5858 7.25 11.25 7.58579 11.25 8C11.25 8.41421 11.5858 8.75 12 8.75V7.25ZM13 20.75C13.4142 20.75 13.75 20.4142 13.75 20C13.75 19.5858 13.4142 19.25 13 19.25V20.75ZM18.2829 9.88149L19.0448 17.8815L20.5381 17.7393L19.7762 9.73928L18.2829 9.88149ZM4.95515 17.8815L5.71705 9.88149L4.22381 9.73928L3.46191 17.7393L4.95515 17.8815ZM6.19952 19.25C5.46234 19.25 4.88526 18.6153 4.95515 17.8815L3.46191 17.7393C3.30815 19.3538 4.57773 20.75 6.19952 20.75V19.25ZM19.0448 17.8815C19.1147 18.6153 18.5376 19.25 17.8005 19.25V20.75C19.4223 20.75 20.6918 19.3538 20.5381 17.7393L19.0448 17.8815ZM17.0386 8.75C17.683 8.75 18.2218 9.23994 18.2829 9.88149L19.7762 9.73928C19.6418 8.32788 18.4563 7.25 17.0386 7.25V8.75ZM6.96142 7.25C5.54364 7.25 4.35823 8.32788 4.22381 9.73928L5.71705 9.88149C5.77815 9.23994 6.31698 8.75 6.96142 8.75V7.25ZM8.74999 7C8.74999 5.20507 10.2051 3.75 12 3.75V2.25C9.37664 2.25 7.24999 4.37665 7.24999 7H8.74999ZM12 3.75C13.7949 3.75 15.25 5.20507 15.25 7H16.75C16.75 4.37665 14.6233 2.25 12 2.25V3.75ZM7.24999 7V11H8.74999V7H7.24999ZM15.25 7V11H16.75V7H15.25ZM6.96142 8.75H7.99999V7.25H6.96142V8.75ZM12 8.75H17.0386V7.25H12V8.75ZM13 19.25H6.19952V20.75H13V19.25Z" fill="#001A72"/></svg></i>
                                                 <span>{{__('Cart')}}</span>
                                                 <span id="cart_qty_span"></span>
                                             </a> @endif @endif
@@ -416,19 +416,19 @@ $pages = \App\Models\Page::with([
                                             langId="{{ $listl->language_id }}">{{ $listl->language->name }}</a>
                                     </li>
                                 @endforeach -->
-                                        
+
 
                                         @if(count($languageList) > 1)
                                         <li class="onhover-dropdown mobile-account pr-2">
                                             <span class="al_BGcolor"><i class="fa fa-globe" aria-hidden="true"></i></span>
                                             {{__('Language')}}
-                                            
+
                                             <ul class="onhover-show-div">
                                                 <li class="{{ session()->get('locale') == $listl->language->sort_code ? 'active' : '' }}">
                                                     <a href="javascript:void(0)" class="customerLang" langId="{{ $listl->language_id }}">{{ $listl->language->name }}</a>
-                                                </li>                                                
+                                                </li>
                                             </ul>
-                                            
+
                                         </li>
                                         @endif
 
@@ -584,8 +584,8 @@ $pages = \App\Models\Page::with([
             <h5 class="modal-title" id="remove_cartLabel">{{__('Remove Cart')}}</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
          </div>
-         <div class="modal-body">
-            <h6 class="m-0">{{__('This change will remove all your cart products. Do you really want to continue ?')}}</h6>
+         <div class="modal-body text-center">
+            <h6 class="m-0 px-3">{{__('This change will remove all your cart products. Do you really want to continue ?')}}</h6>
          </div>
          <div class="modal-footer flex-nowrap justify-content-center align-items-center"> <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button> <button type="button" class="btn btn-solid" id="remove_cart_button" data-cart_id="">{{__('Remove')}}</button> </div>
       </div>

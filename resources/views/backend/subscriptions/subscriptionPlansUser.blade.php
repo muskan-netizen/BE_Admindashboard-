@@ -18,7 +18,7 @@
         color: #000000bd;
     }
     .user_info_icon{position: relative;cursor: pointer;}
-    
+
     .user_info_icon p {
         position: absolute;
         background-color: #000;
@@ -58,7 +58,7 @@
                 line-height: 15px;
                 letter-spacing: 0.1px;
                 color: #000000bd;
-    }   
+    }
     }
 </style>
 @endsection
@@ -67,7 +67,7 @@
 <!-- Start Content-->
 
 
-    <div class="content dashboard-boxes">
+    <div class="content alUserSubscriptionPlansPage">
 
         <!-- Start Content-->
         <div class="container-fluid">
@@ -80,7 +80,7 @@
                     </div>
                 </div>
                 <div class="col-sm-6 text-sm-right">
-                    <button class="btn btn-info waves-effect waves-light text-sm-right" data-toggle="modal" data-target="#add-subscription-plan">
+                    <button class="btn btn-info waves-effect waves-light text-sm-right alAddLongBtn" data-toggle="modal" data-target="#add-subscription-plan">
                         <i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Plan') }}
                     </button>
                 </div>
@@ -118,7 +118,7 @@
                     <div class="card widget-inline">
                         <div class="card-body p-2">
                             <div class="row">
-                                <div class="col-sm-6 col-md-6 mb-3 mb-md-0">
+                                <div class="col-6 col-md-6 mb-3 mb-md-0">
                                     <div class="text-center">
                                         <h3>
                                             <i class="mdi mdi-account-multiple-plus text-primary mdi-24px"></i>
@@ -127,7 +127,7 @@
                                         <p class="text-muted font-15 mb-0">{{ __('Total Subscribed Users') }}</p>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-md-6 mb-3 mb-md-0">
+                                <div class="col-6 col-md-6 mb-3 mb-md-0">
                                     <div class="text-center">
                                         <h3>
                                             <i class="mdi mdi-account-multiple-plus text-primary mdi-24px"></i>
