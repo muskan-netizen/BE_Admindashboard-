@@ -29,7 +29,7 @@
 .single_cart_heading h3 {font-weight: 600;color: #000;}
 .cart-summary h5.order_text{font-size: 22px;font-weight: 600;color:#000;}
 .item-show-cart h4 {font-size: 20px !important;font-weight: 600;color: #000;}
-.shoping_cart {background: #fff;box-shadow: 10px 16px 14px 10px #eee9;border: 1px solid#eeeeee8c;}
+.shoping_cart {background: #fff;box-shadow: 10px 16px 14px 10px #eee9;border: 1px solid #eeeeee8c;}
 #specific_instructions::-webkit-input-placeholder { color:#fff; }
 #specific_instructions::-moz-input-placeholder { color:#fff; }
 .dark .new_cart .add-address i ,
@@ -40,13 +40,16 @@
 .dark .shoping_cart{background-color: #0c0c0c;box-shadow: none;border: 0px;}
 .dark .item-show-cart h4,
 .dark .new_cart .page-title,
+.dark .cart-summary .cart-price .mb-2,
 .dark .cart-summary h5.order_text,
 .dark .cart-summary .alFourSpecificInstructions span,
 .dark .cart-summary .cart-price .text-right b,
 .dark .shoping_cart .order-md-4 .items-price,
 .dark .single_cart_heading h3 {color: #fff;}
+.dark .list-box{background-color: #242424;}
+
 .cart-design .card-box {padding: 0px;}
-.cart-summary{background-color: #f5f5f6;border: 1px solid#efefef;box-shadow: 6px 13px 30px #1615152b;border-radius: 4px;width: 100%;}
+.cart-summary{background-color: #f5f5f6;border: 1px solid #efefef;box-shadow: 6px 13px 30px #1615152b;border-radius: 4px;width: 100%;}
 .cart-summary .alFourSpecificInstructions span {font-size: 18px;color: #000;display: block;}
 .cart-summary .alFourSpecificInstructions input::placeholder {color: #000;font-size: 14px;}
 .cart-summary .cart-price .text-right b {color: #000;font-size: 14px;}

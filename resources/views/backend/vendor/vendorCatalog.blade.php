@@ -467,14 +467,14 @@
                         <div class="col-md-12 text-center">
 
                             <div id="import_csv" class="row align-items-center mb-3">
-                                <div class="col-md-4 text-right mb-2">
+                                <div class="col-md-12 text-center mb-2">
                                     <button class="btn btn-info button" id="csv_button"
                                         type="button">{{ __('Import form Woocommerce') }}</button>
                                 </div>
 
                                 @if($client_preference_detail->enable_inventory_service == 1)
                                 <a href="{{route('get.inventory.import',$vendor->slug)}}">
-                                    <div class="col-12 text-right mb-2">
+                                    <div class="col-12 text-center mb-2">
                                         <button class="btn btn-info button"
                                             type="button">{{ __('Import form Inventory') }}</button>
                                     </div>
@@ -482,12 +482,12 @@
                                 @endif
 
                             @if($client_preference_detail->business_type == 'laundry')
-                                <div class="col-md-4 text-right mb-2">
+                                <div class="col-md-12 text-center mb-2">
                                     <button class="btn btn-info button" id="import_global"
                                         type="button">{{ __('Import Global Product') }}</button>
                                 </div>
 
-                                {{-- <div class="col-md-4 text-right mb-2">
+                                {{-- <div class="col-md-12 text-center mb-2">
                                     <button class="btn btn-info button" id="import_bagqrcode"
                                         type="button">{{ __('Import Bag Qrcode') }}</button>
                                 </div> --}}

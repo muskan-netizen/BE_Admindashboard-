@@ -25,8 +25,6 @@ jQuery(document).ready(function () {
     })
 });
 
-
-
 $(".mobile-account .fa").click(function(){
     $(".onhover-show-div").toggleClass("open");
 });

@@ -64,6 +64,7 @@ color: #777!important;font-size: 14px!important;}
 .card_icon.loading{display: none;}
 .shimmer_effect .card_price{width: 80px;}
 section.section-b-space_.p-0.ratio_asos.banner_shimmer{position: fixed;z-index: 999;width: 100%;top: 0;background-color: #fff;}
+.dark section.section-b-space_.p-0.ratio_asos.banner_shimmer{background-color: #232323;}
 /* #our_vendor_main_div .vendors section.render_full_recent_orders{min-height: 315px;}
 #our_vendor_main_div .vendors section.suppliers-section,
 #our_vendor_main_div .vendors section.popular-brands{min-height: 320px;}
