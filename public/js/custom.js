@@ -2804,14 +2804,14 @@ $(document).ready(function () {
                 if ((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) {
                     $("#single_vendor_remove_cart_btn").attr({
                         'data-product_id': product_id,
-                        'data-variant_id': (vendor_type == 'rental') ? $('#prod_variant_id').val() :$('#available_product_variant').val(),
+                        'data-variant_id': $('#prod_variant_id').val(),
                         'data-quantity': $('.quantity_count').val(),
                         'data-vendor_id': vendor_id,
                         'data-page': 'productDetail'
                     });
                     $("#single_vendor_order_modal").modal('show');
                 } else {
-                    var variant_id =  (vendor_type == 'rental') ? $('#prod_variant_id').val() :$('#available_product_variant').val();
+                    var variant_id = $('#prod_variant_id').val();
                     var start_date =  $('#start_time').val();
                     var end_date =  $('#end_date').val();
                     var quantity = $('.quantity_count').val();
