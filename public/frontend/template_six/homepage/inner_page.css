@@ -460,6 +460,4 @@ span.registerLink{text-align: center;width: 100%;margin-top: 10px;display: block
 .alFourTemplateOrderSucces .order-success-sec  .order-detail li span{color: var(--theme-deafult);font-weight: 400; margin-left: 15px;}
 
 /* ================= dark css ================= */
-.dark .tip_label{
-    background: transparent;
-}
+.dark .tip_label{background: transparent;}

@@ -30,8 +30,9 @@
 .cart-summary h5.order_text{font-size: 22px;font-weight: 600;color:#000;}
 .item-show-cart h4 {font-size: 20px !important;font-weight: 600;color: #000;}
 .shoping_cart {background: #fff;box-shadow: 10px 16px 14px 10px #eee9;border: 1px solid #eeeeee8c;}
-#specific_instructions::-webkit-input-placeholder { color:#fff; }
-#specific_instructions::-moz-input-placeholder { color:#fff; }
+.dark #specific_instructions::-webkit-input-placeholder,
+.dark #specific_instructions::-moz-input-placeholder { color:#fff; }
+.alFourSpecificInstructions input#specific_instructions{background-color: #eee;}
 .dark .new_cart .add-address i ,
 .dark .cart_delivery,
 .dark .alert-danger {background: #242424;border: 1px solid #242424;box-shadow: 5px 6px 4px #0000001a;}
@@ -47,7 +48,9 @@
 .dark .shoping_cart .order-md-4 .items-price,
 .dark .single_cart_heading h3 {color: #fff;}
 .dark .list-box{background-color: #242424;}
-
+.dark .tip_label{background: transparent;}
+.dark .tip_radio:checked+.tip_label p{color: #fff !important;}
+.dark .tip_radio:checked+.tip_label{box-shadow:none;}
 .cart-design .card-box {padding: 0px;}
 .cart-summary{background-color: #f5f5f6;border: 1px solid #efefef;box-shadow: 6px 13px 30px #1615152b;border-radius: 4px;width: 100%;}
 .cart-summary .alFourSpecificInstructions span {font-size: 18px;color: #000;display: block;}
@@ -102,7 +105,8 @@ font-size: 12px;padding: 6.7px 10px;}
 #add_new_address_form_modal button.close{position: absolute;right: 20px;}
 .cart-design .product-img img{border-radius: 15px;overflow: hidden;}
 .dark .coupon_box img.blur-up.lazyloaded{background-color: #fff;opacity: 1;padding: 0 4px;border-radius: 25px;}
-.login-form #schedule_div input{display:block;}
+.login-form #schedule_div input{display:block;width: 100% !important;}
+.login-form #schedule_div input::-webkit-calendar-picker-indicator{color: rgba(0, 0, 0, 0);opacity: 1}
 /*------cart page css end here------ */
 
 @media (max-width:576px){
