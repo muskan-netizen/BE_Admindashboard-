@@ -1,6 +1,13 @@
 @php
-$clientData = \App\Models\Client::where('id', '>', 0)->first();
-$urlImg = $clientData ? $clientData->logo['original'] : ' ';
+$clientData = \App\Models\Client::select('id', 'logo','dark_logo')
+    ->where('id', '>', 0)
+    ->first();
+if(Session::get('config_theme') == 'dark'){
+    $urlImg = $clientData ? $clientData->dark_logo['original'] : ' ';
+}else{
+    $urlImg = $clientData ? $clientData->logo['original'] : ' ';
+}
+
 $paymentMethod = \App\Models\PaymentMethod::where('is_show',1)->get();
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 @endphp
@@ -19,7 +26,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <div class="col-lg-2 d-flex align-items-center justify-content-center justify-content-md-start">
                         <div class="footer-logo mb-0">
                             <a href="{{ route('userHome') }}">
-                                <img class="blur-up lazyload" src="{{$urlImg}}" height="60">
+                                <img class="logo-image" src="{{$urlImg}}" style="height:50px;">
                             </a>
                         </div>
                     </div>

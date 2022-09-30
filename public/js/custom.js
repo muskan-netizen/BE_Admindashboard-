@@ -2185,12 +2185,8 @@ $(document).ready(function () {
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
 
-<<<<<<< HEAD
-                    if (cart_details!= undefined && cart_details!= null) {
-=======
                     if (cart_details!= undefined) {
->>>>>>> pre_dev
-                        if (cart_details.products.length > 0) {
+                         if (cart_details.products.length > 0) {
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
 

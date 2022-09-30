@@ -166,7 +166,7 @@ $pages = \App\Models\Page::with([
 
                                         @if($client_preference_detail->$clientVendorTypes == 1)
                                         <li class="navigation-tab-item pr-lg-2" role="presentation">
-                                        <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
+                                            <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
                                         id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
                                         aria-controls="profile" aria-selected="false">
                                         <span class="al_tabsIcons">
