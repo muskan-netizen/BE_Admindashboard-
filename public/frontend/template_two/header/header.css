@@ -121,3 +121,8 @@
     height: calc(100vh - 340px) !important;
 }
 }
+
+.al_white_bg_round .scrollspy-menu li {
+    display: block;
+    margin-bottom: 10px;
+}

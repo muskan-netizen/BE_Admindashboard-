@@ -931,7 +931,7 @@ class UserhomeController extends FrontController
                                 foreach ($vendor->products as $product) {
                                     if (isset($product->pvariant) && $product->pvariant->media->isNotEmpty()) {
                                         $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
-                                    } elseif ($product->media->isNotEmpty()) {
+                                    } elseif ($product->media->isNotEmpty() && isset($product->media->first()->image)) {
                                         $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
                                     } else {
                                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';

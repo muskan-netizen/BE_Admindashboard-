@@ -78,17 +78,8 @@ class AddressController extends FrontController{
         $address->house_number = $request->house_number??"";
         $address->extra_instruction = $request->extra_instruction??"";
         $address->save();
-        // car check and save
-        // if($client->address_is_car == 1){
-        //     $request->merge(['car_id'=>$address->id]);
-        //     //save car details
-        //     CarDetails::saveCarDetail($request);
-        //     //car images
-        //     if ($request->hasFile('image')) {
-        //         CarImages::saveImage($request);
-        //     }
-        // }
-        $msg = $client->address_is_car == 1 ? __('Car Has Been Added Successfully') : __('Address Has Been Added Successfully');
+       
+        $msg = __('Address Has Been Added Successfully');
         if($request->ajax()){
             return response()->json(['status' => 'success', 'message' => $msg, 'address' => $address]);
         }else{
