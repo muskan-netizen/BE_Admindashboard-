@@ -3866,7 +3866,10 @@ body p:empty {
 .altoggle input:checked+.toggle__bg {
   background-position: 15%;
 }
-
+body[dir="rtl"].light .toggle__sphere{
+  left: -20px;
+}
+body[dir="rtl"] .altoggle input:checked+.toggle__bg .toggle__sphere {left: -20px;}
 .altoggle input:checked+.toggle__bg .toggle__sphere {
   -webkit-transform: translateX(20px) translateY(0px);
   transform: translateX(20px) translateY(0px);

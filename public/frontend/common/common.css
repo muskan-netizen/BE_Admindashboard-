@@ -61,9 +61,9 @@ span.duration p.total_price {
     font-weight: 600;
     color: #000;
 }
-.cab-banner-area.alTaxiBannerStart{
+/* .cab-banner-area.alTaxiBannerStart{
     margin-bottom: 40px !important;
-}
+} */
 /* ============= inner page home services page ============= */
 .booking-time .radios {width: 95%;}
 .radio-btns input[type="checkbox"] {z-index: -1;position: absolute;display: none;}
@@ -220,3 +220,16 @@ a.agentInfo.d-block.black-box {
 body .order-page .order_head {
     text-transform: capitalize;
 }
+body #page-container .vendors {
+    margin-bottom: 0 !important;
+}
+.al_body_template_two .product-box .blur-up.lazyloaded {
+    background-size: cover !important;
+}
+/* =========================== recent order ================================ */
+.order_detail.order_detail_data .price_box_bottom li,
+.order_detail.order_detail_data h5{font-size: 12px;}
+.order_detail.order_detail_data ul.status_box li,
+.order_detail.order_detail_data ul.status_box img,
+.order_detail.order_detail_data ul.status_box a,
+.order_detail.order_detail_data ul.status_box li label{display: inline-block;font-size: 10px;}

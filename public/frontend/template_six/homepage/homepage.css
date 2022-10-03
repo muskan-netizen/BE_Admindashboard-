@@ -196,6 +196,7 @@ body.al_body_template_six.light{visibility: visible;}
 .alFindSecMobile span{position: relative;width: 100%;display: block;}
 .alFindSecMobile span:before{border: solid black;border-width: 0 2px 2px 0;display: inline-block;padding: 3px;transform: rotate(45deg);-webkit-transform: rotate(45deg);position: absolute;content: "";right: 10px;top: 2px;}
 
+
 /* ====================== home product css ========================= */
 .product-description_list.border-bottom{text-align: left;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 .product-description_list.border-bottom p{margin-bottom: 0;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
@@ -255,9 +256,9 @@ a.brand-box.d-block.black-box{text-align: center;}
     color: #fff;
 }
 .recent-orders ul.product_list li img{
-    width: 100%;
+    width: 50px;
     object-fit: cover;
-    height: 100%;
+    height: 50px;
     border-radius: 50px;
 }
 .al_body_template_six.dark .al_custom_brand .render_brands  .brand-box{

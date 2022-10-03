@@ -459,3 +459,12 @@ body.dark {
   background-color: transparent;
   box-shadow: none;
 }
+.order_detail.order_detail_data ul.product_list li img{
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    position: relative;
+}
+.order_detail.order_detail_data ul.product_list li{
+  position: relative;
+}
