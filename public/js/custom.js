@@ -546,80 +546,6 @@ $(document).ready(function () {
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
             subscriptionPaymentOPtions(payment_option_id);
             // $('#subscription_payment').modal('hide');
-<<<<<<< HEAD
-            if (payment_option_id == 4) {
-                stripe.createToken(card).then(function (result) {
-                    if (result.error) {
-                        $('#stripe_card_error').html(result.error.message);
-                        _this.attr("disabled", false);
-                    } else {
-                        $("#card_last_four_digit").val(result.token.card.last4);
-                        $("#card_expiry_month").val(result.token.card.exp_month);
-                        $("#card_expiry_year").val(result.token.card.exp_year);
-                        paymentViaStripe(result.token.id, '', payment_option_id, '', '');
-                    }
-                });
-            } else if (payment_option_id == 3) {
-                paymentViaPaypal('', payment_option_id);
-            } else if (payment_option_id == 8) {
-                inline.createToken().then(function (result) {
-                    if (result.error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: result.error.message,
-                        });
-                        // $('#yoco_card_error').html(result.error.message);
-                        _this.attr("disabled", false);
-                    } else {
-                        const token = result;
-                        paymentViaYoco(token.id, '', '');
-                    }
-                }).catch(function (error) {
-                    // Re-enable button now that request is complete
-                    _this.attr("disabled", false);
-                    //alert("error occured: " + error);
-                    Swal.fire({
-                        // title: "Warning!",
-                        text: "error occured: " + error,
-                        icon: "error",
-                        button: "OK",
-                    });
-                });
-            } else if (payment_option_id == 9) {
-                paymentViaPaylink('', '');
-            } else if (payment_option_id == 10) {
-                paymentViaRazorpay_wallet('', payment_option_id);
-            }
-            else if (payment_option_id == 12) {
-                paymentViaSimplify('', '');
-            }
-            else if (payment_option_id == 13) {
-                paymentViaSquare('', '');
-            } else if (payment_option_id == 14) {
-                paymentViaOzow('', '');
-            } else if (payment_option_id == 15) {
-                paymentViaPagarme('', '');
-            } else if (payment_option_id == 17) {
-                paymentViaCheckout('', '');
-            } else if (payment_option_id == 18) {
-                paymentViaAuthorize('', '');
-            } else if (payment_option_id == 19) {
-                paymentViaStripeFPX('', 19, '');
-            } else if (payment_option_id == 20) {
-                payWithKPG('');
-            }else if (payment_option_id == 21) {
-                payWithVivaWallet('');
-            }else if(payment_option_id == 22) {
-                payWithCcAvenue('');
-            } else if (payment_option_id == 24) {
-                paymentViaCashfree('');
-            } else if (payment_option_id == 26) {
-                paymentViaToyyibPay('');
-            } else if (payment_option_id == 25) {
-                payWithEasebuss('');
-            }
-=======
             // if (payment_option_id == 4) {
             //     stripe.createToken(card).then(function (result) {
             //         if (result.error) {
@@ -694,7 +620,6 @@ $(document).ready(function () {
             // }else if (payment_option_id == 33) {
             //     paymentViaBraintree('');
             // }
->>>>>>> c638230118368971ab9406af40dcd87ae772455a
         } else {
             _this.attr("disabled", false);
             success_error_alert('error', 'Please select any payment option', "#subscription_payment .payment_response");
@@ -2647,18 +2572,11 @@ $(document).ready(function () {
                 $("#wallet_amount_used").text(" - "+currency+ " "+(wallet_amount_used_fixed+tip).toFixed(parseInt(digit_count)));
             }else{
                 /* Paid amount is greater then available wallet amount*/
-<<<<<<< HEAD
-                $("#wallet_amount_used").text(" - "+currency+ " "+parseFloat($('#wallet_amount_available').text()).toFixed(parseInt(digit_count)));
-                var payable_amount=((parseFloat($('#gross_amount').text()) -   parseFloat($('#loyalty_amount').text()))    -    parseFloat($('#wallet_amount_available').text())     +   parseFloat(tip)  );
-                $("#cart_total_payable_amount").html( currency +   payable_amount+other_taxes .toFixed(parseInt(digit_count))   );
-                $("input[name='cart_total_payable_amount']").val(  payable_amount+other_taxes .toFixed(parseInt(digit_count))   );
-=======
                 $("#wallet_amount_used").text(" - "+currency+ " "+wallet_amount_available.toFixed(parseInt(digit_count)));
                 payable_amount=((gross_amount + tip)  - (total_subscription_discount+wallet_amount_available+loyalty_amount));
 
                 $("#cart_total_payable_amount").html( currency +   payable_amount.toFixed(parseInt(digit_count)));
                 $("input[name='cart_total_payable_amount']").val(  payable_amount.toFixed(parseInt(digit_count)));
->>>>>>> c638230118368971ab9406af40dcd87ae772455a
             }
             if(amount_payable+wallet_amount_used_fixed+tip>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
@@ -2670,16 +2588,10 @@ $(document).ready(function () {
                 $("#MOV_Notification").removeClass("d-none");
             }
         }else{
-<<<<<<< HEAD
-            $("#cart_total_payable_amount").html(currency + (parseFloat(amount_payable)+parseFloat(tip)+other_taxes).toFixed(parseInt(digit_count)));
-            $("input[name='cart_total_payable_amount']").val((parseFloat(amount_payable)+parseFloat(tip)+other_taxes).toFixed(parseInt(digit_count)));
-            if(parseFloat(amount_payable)+parseFloat(tip)>=parseFloat($('#mov').text())){
-=======
             payable_amount=((gross_amount + tip + total_taxable_amount)  - (total_subscription_discount+loyalty_amount));
             $("#cart_total_payable_amount").html(currency + payable_amount.toFixed(parseInt(digit_count)));
             $("input[name='cart_total_payable_amount']").val(payable_amount.toFixed(parseInt(digit_count)));
             if(amount_payable >= parseFloat($('#mov').text())){
->>>>>>> c638230118368971ab9406af40dcd87ae772455a
                 $("#order_placed_btn").removeAttr("disabled");
                 $("#order_placed_btn").removeClass("d-none");
                 $("#MOV_Notification").addClass("d-none");
@@ -4836,9 +4748,6 @@ $(document).ready(function () {
                     return false;
                 }
             break;
-<<<<<<< HEAD
-        
-=======
 
             case '32':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
@@ -4979,7 +4888,6 @@ $(document).ready(function () {
                     return false;
                 }
             break;
->>>>>>> c638230118368971ab9406af40dcd87ae772455a
         }
 
     }
@@ -5139,11 +5047,6 @@ $(document).ready(function () {
                     payWithVNpay('', payment_option_id, '');
             break;
 
-<<<<<<< HEAD
-        case 30:
-                payWithFlutterWave('', payment_option_id, '');
-        break;
-=======
             case 29:
                     payWithMvodafone('', payment_option_id, '');
             break;
@@ -5202,7 +5105,6 @@ $(document).ready(function () {
                 paymentViaKhalti('', '');
                 break;
         }
->>>>>>> c638230118368971ab9406af40dcd87ae772455a
     }
 
 });
