@@ -4116,6 +4116,7 @@ ul.nav-second-level.p-0.mx-2 span.mdi.mdi-chat-processing-outline {
   text-shadow: none;
 }
 
+
 .order_data_box .badge.badge-info.badge_1 {
   background-color: #e9f4ff;
 }
@@ -4566,3 +4567,11 @@ body div.dataTables_wrapper div.dataTables_filter input {width: 100%;margin: 0;}
   box-shadow: none !important;
 }
 .dark .navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect::before{color: #acbfd2;}
+.order_data_box .error-msg {
+  font-size: 20px;
+  position: relative;
+  width: 100%;
+  top: 0;
+  -webkit-transform: translate(0px, 0);
+  transform: translate(0px, 0%);
+}
