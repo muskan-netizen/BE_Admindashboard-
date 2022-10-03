@@ -415,9 +415,12 @@ class OrderController extends FrontController
                 }
                 // $res = $this->testOrderMail($email_data);
                 // dd($res);
+                Log::info("Request Cycle with Queues Begins");
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                Log::info("Request Cycle with Queues Ends");
                 $notified = 1;
-            } catch (\Exception $e) {
+            } catch(\Exception $e){
+                return response()->json(['data' => $e->getMessage()]);
             }
         }
     }
@@ -701,8 +704,9 @@ class OrderController extends FrontController
         try {
             $latitude = '';
             $longitude = '';
+           
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
-            if($action == 'takeaway' || $action == 'dine_in'){
+            if($action == 'takeaway' || $action == 'dine_in'|| $action == 'appointment'){
                 $latitude = Session::get('latitude') ?? '';
                 $longitude = Session::get('longitude') ?? '';
             }
@@ -771,6 +775,11 @@ class OrderController extends FrontController
                 $latitude = Session::get('latitude');
                 $longitude = Session::get('longitude');
             }
+         
+            if( $action == 'appointment'){ // no need to check serviceArea in appointment
+                $latitude =  '';
+                $longitude = '';
+            }
 
             /* Uodating client other details in order object */
             $order->payment_option_id = $request->payment_option_id;
@@ -778,7 +787,7 @@ class OrderController extends FrontController
             $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
             $order->comment_for_dropoff_driver = $cart->comment_for_dropoff_driver ?? null;
             $order->comment_for_vendor = $cart->comment_for_vendor ?? null;
-            $order->schedule_pickup = $cart->schedule_pickup ?? null;
+            $order->schedule_pickup  = $cart->schedule_pickup ?? null;
             $order->schedule_dropoff = $cart->schedule_dropoff ?? null;
             $order->fixed_fee_amount = $fixed_fee_amount;
             $order->specific_instructions = $cart->specific_instructions ?? null;
@@ -934,6 +943,7 @@ class OrderController extends FrontController
                     //$vendor_payable_amount = $vendor_payable_amount + $quantity_price;
                     
                     $OrderVendor->schedule_slot = !empty($vendor_cart_product->schedule_slot)? $vendor_cart_product->schedule_slot : '';
+                    
                     $OrderVendor->scheduled_date_time = !empty($vendor_cart_product->scheduled_date_time)? $vendor_cart_product->scheduled_date_time : '';
                     $deliver_Vendor_type = ['delivery','appointment','on_demand']; // pass vendor type for delivery option
                     if ( in_array($action, $deliver_Vendor_type) ) {
@@ -1052,6 +1062,7 @@ class OrderController extends FrontController
                     $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
                     $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
                     $order_product->schedule_slot = !empty($vendor_cart_product->schedule_slot)? $vendor_cart_product->schedule_slot : '';
+                    $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id)? $vendor_cart_product->dispatch_agent_id : null;
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }
@@ -1451,14 +1462,12 @@ class OrderController extends FrontController
         foreach ($devices as $device) {
             $token[] = $device;
         }
-        $token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
-        $from = env('FIREBASE_SERVER_KEY');
+        //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
+        //$from = env('FIREBASE_SERVER_KEY');
         $notification_content = NotificationTemplate::where('id', 1)->first();
-        if ($notification_content) {
-            $headers = [
-                'Authorization: key=' . $from,
-                'Content-Type: application/json',
-            ];
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
+           
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -1466,17 +1475,8 @@ class OrderController extends FrontController
                     'body'  => $notification_content->content,
                 ]
             ];
-            $dataString = $data;
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-            $result = curl_exec($ch);
-            // dd($result);
-            curl_close($ch);
+            
+            sendFcmCurlRequest($data);
         }
     }
 
@@ -1512,10 +1512,10 @@ class OrderController extends FrontController
                 ],
                 "priority" => "high"
             ];
-           
+           Log::info('data for notification '.json_encode($data));
             if(!empty($from)){
                 // helper function
-                curlJsonRequest($from, $data);
+                sendFcmCurlRequest($data);
             }
 
             // Individual Vendor App User Token
@@ -1527,7 +1527,7 @@ class OrderController extends FrontController
                 $from = $client_preferences->vendor_fcm_server_key;
                 $data['registration_ids'] = $vendorAppUserDevices;
                
-                $result = curlJsonRequest($from, $data);
+                $result = sendFcmCurlRequest($data);
                 Log::info($result);
             }
         }
@@ -2353,17 +2353,15 @@ class OrderController extends FrontController
         foreach ($devices as $device) {
             $token[] = $device;
         }
-        $token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
+        //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
         // dd($token);
 
-        $from = env('FIREBASE_SERVER_KEY');
+        //$from = env('FIREBASE_SERVER_KEY');
 
         $notification_content = NotificationTemplate::where('id', 2)->first();
-        if ($notification_content) {
-            $headers = [
-                'Authorization: key=' . $from,
-                'Content-Type: application/json',
-            ];
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
+           
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -2373,16 +2371,7 @@ class OrderController extends FrontController
             ];
             $dataString = $data;
 
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-            $result = curl_exec($ch);
-            // dd($result);
-            curl_close($ch);
+            sendFcmCurlRequest($data);
         }
     }
 

@@ -820,7 +820,7 @@ h1.control-label {
   max-width: 100px;
   width: 100px;
   height: 100px;
-  margin: auto
+  margin: 0;
 }
 
 .home-options-list .select2-container--default .select2-selection--single {
@@ -837,6 +837,7 @@ h1.control-label {
   border-radius: .2rem;
   transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out
 }
+
 
 .home-options-list .select2-container--default .select2-selection--single .select2-selection__rendered {
   padding: 0;
@@ -2642,7 +2643,16 @@ button.update-status {
 .order_data_box {
   height: 100%;
   overflow-y: auto;
-  padding: 0 12px 0 20px
+  padding: 0 12px 0 20px;
+  position: relative;
+}
+.order_data_box .error-msg {
+  font-size: 20px;
+  position: relative;
+  width: 100%;
+  top: 0;
+  -webkit-transform: translate(0px, 0);
+  transform: translate(0px, 0);
 }
 
 .bg-soft-warning.text-warning {
@@ -3391,11 +3401,6 @@ body .menu-title+.nav-second-level>li>a span:first-child {
 .menu-title+.nav-second-level>li>a:hover img {
   filter: grayscale(0)
 }
-
-span.icon-payment-option_s.aldelivery svg {
-  height: 16px
-}
-
 .menu-title+.nav-second-level>li>a:hover .cls-1,
 .menu-title+.nav-second-level>li>a:hover .cls-2 {
   fill: #43bee1
@@ -3731,7 +3736,7 @@ table.al_table_responsive_data tr td input {
 
 span.icon-payment-option_s.aldelivery svg {
   height: 18px;
-  margin-top: 5px;
+  margin-top: 0px;
 }
 
 .txtarea.form-control {
@@ -4094,6 +4099,11 @@ ul.nav-second-level.p-0.mx-2 span.mdi.mdi-chat-processing-outline {
   border-color: #f1ffce;
 }
 
+.tabs_radio_controls label[for="appointment_tab"] {
+  background-color: #f7ceff;
+  border-color: #f7ceff;
+}
+
 .tabs_radio_controls label:hover {
   border-color: #888;
   color: #000;
@@ -4285,7 +4295,7 @@ span.mdibookoutline svg {
   color: #a1a1a1;
 }
 
-.menu-title+.nav-second-level>li>a:hover span svg {
+.menu-title+.nav-second-level>li>a:hover span svg path {
   fill: #43bee1;
 }
 
@@ -4525,7 +4535,7 @@ body[dir="rtl"] .dataTables_filter {
   body .content-page .btn.btn-info.alAddProductBtn{max-width: 120px;}
   body .content-page button.btn.btn-info.openVendorSectionModal{max-width: 140px;}
   body .dataTables_wrapper .dataTables_paginate .paginate_button {min-width: auto;padding: .5em 0em;}
-
+  .al_new_export_table .sync_hubspot {max-width: 150px !important;}
   }
 @media(max-width:767px){
 .al_order_sec .order_head h4 {opacity: 1}
@@ -4556,6 +4566,10 @@ body div.dataTables_wrapper div.dataTables_filter input {width: 100%;margin: 0;}
 #ProductPerformanceReport .table-responsive.mt-2{height: 200px;margin-bottom: 20px;}
 .apexcharts-inner {display: none;}
 .order-list-view .ellips {max-width: calc(100% - 100px);}
+.main-customer-page .al_new_export_table .position-absolute.mb-2{top: -40px;text-align: left !important;}
+.al_new_export_table .sync_hubspot {max-width: 130px !important;}
+.main-customer-page .position-absolute .btn.btn-info{margin-bottom: 4px;}
+.main-customer-page .al_new_export_table .position-absolute{margin-bottom: 4px;}
 
 
 }
@@ -4566,3 +4580,129 @@ body div.dataTables_wrapper div.dataTables_filter input {width: 100%;margin: 0;}
   box-shadow: none !important;
 }
 .dark .navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect::before{color: #acbfd2;}
+.outer-box.border-dashed {
+  border-style: dashed;
+  border-width: 2px;
+  height: 100%;
+  min-height: 80px;
+  border-radius: 7px;
+  overflow: hidden;
+}
+.alProDuctBannerImg {
+  position: relative;
+  padding-bottom: 100%;
+  border-radius: 7px;
+  overflow: hidden;
+}
+.alProDuctBannerImg img.w-100 {
+  position: absolute;
+  left: 0;
+  top: 0;
+  object-fit: cover;
+  height: 100%;
+}
+.alProDuctBannerImg span {
+  position: absolute;
+  z-index: 1;
+  background-color: red;
+  right: 0px;
+  top: 0;
+  height: 20px;
+  width: 20px;
+  border-radius: 20px;
+  line-height: 23px;
+  color: #fff;
+  font-weight: 400;
+}
+.dark .navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect::before {
+  color: #acbfd2;
+}
+.dark .dd-list .dd-item .dd-handle {
+  background: transparent;
+}
+.dark .content h1,
+.dark .content h2,
+.dark .content h3,
+.dark .content h4,
+.dark .content h5 {
+  color: #acbfd2;
+}
+.dark .content .tabs_radio_controls h5{color: #000;}
+.dark #edit_page_content  label.control-label{
+  color: #acbfd2;
+}
+.dark .price_box_bottom li,
+.dark .cms-content .form-control {
+  color: #acbfd2;
+}
+.dark .status_box li img {
+  opacity: 1;
+  background: #ffffff4d;
+  border-radius: 25px;
+}
+.dark .flatpickr-months .flatpickr-month,
+.dark .flatpickr-months .flatpickr-prev-month,
+.dark .flatpickr-months .flatpickr-next-month,
+.dark .flatpickr-day,
+.dark span.flatpickr-weekday {
+  color: #acbfd2;
+  fill: #acbfd2;
+}
+.dark .flatpickr-calendar.open{background: #303841;}
+.dark .flatpickr-day.flatpickr-disabled,
+.dark .flatpickr-day.flatpickr-disabled:hover,
+.dark .flatpickr-day.prevMonthDay,
+.dark .flatpickr-day.nextMonthDay,
+.dark .flatpickr-day.notAllowed,
+.dark .flatpickr-day.notAllowed.prevMonthDay,
+.dark .flatpickr-day.notAllowed.nextMonthDay {
+  color: #6d767f;
+}
+.dark .form-control-light {
+  background-color: #3b4651 !important;
+  border-color: #3b4651!important;
+}
+#alDashboardStyle h5 {
+ text-transform: capitalize;
+}
+.dark .table,
+.dark .progress-w-percent .progress-value {
+  color: #acbfd2;
+}
+.dark .progress {
+  background-color: #303841;
+}
+.dark .dd-list .dd3-content{background: rgba(66, 190, 225, .09);}
+.dark .modal-content {
+  background-color: #424e5a;
+}
+.dark .border-bottom {
+  border-bottom: 1px solid #424e5a !important;
+}
+.dark .modal-content label{
+  color: #acbfd2;
+}
+.dark .modal-content  .form-control{
+color: #94a0ad;
+background-color: #3b4651;
+border: 1px solid #424e5a;
+}
+.dark .close {
+  color: #f7f7f7;
+}
+.dark #alLightBg {
+  background-color: #3b4651;
+}
+#UpdateSubadmin .table-borderless td, #UpdateSubadmin .table-borderless th {
+  padding: 8px 10px 8px 10px !important;
+}
+.dark .dropzone {
+  background: #3b4651;
+}
+.dark .selectize-input {
+  border: 1px solid #424e5a;
+}
+<<<<<<< HEAD
+=======
+.dark .navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect::before{color: #acbfd2;}
+>>>>>>> pre_dev

@@ -5,6 +5,7 @@
 <link href="{{asset('assets/dashboard/css/new_app.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/dashboard/css/new_dashboard.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/dashboard/css/arabic_dashboard.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
 span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #FFC;color: #384F34;display: block;font-weight: bold;margin: 2px auto 14px;padding: 15px !important;text-align: left;}
 </style>

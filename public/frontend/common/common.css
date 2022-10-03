@@ -1,3 +1,20 @@
+ul.exzoom_img_ul {
+        min-height: 550px;
+        position: relative;
+    }
+    ul.exzoom_img_ul img {
+        width: 100%;
+    }
+body[dir="rtl"] .product-order h3,
+body[dir="rtl"] .product-order .total-sec ul li {
+    text-align: right;
+}
+body[dir="rtl"] .product-order .final-total h3 span,
+body[dir="rtl"] .product-order .total-sec ul li span{
+    float: left;
+}
+.alVendorDispatchDate h6{font-size: 12px;color: #777;}
+.alVendorDispatchDate p{font-size: 14px;color: #000;}
 .sm .nav-cate-img.activ_nav {
     margin: 0 auto;
 }
@@ -14,6 +31,9 @@
     color: #777;
     border-left: 1px solid #000;
     padding-left: 5px;
+}
+.alSpaListBox p {
+    text-transform: capitalize;
 }
 .alProductViewPriceMin {display: block;font-size: 14px;color: #777;border-top: 1px solid #777;font-weight: 100;}
 .alSpaCityBox {
@@ -38,7 +58,9 @@ span.duration p.total_price {
     font-weight: 600;
     color: #000;
 }
-
+.cab-banner-area.alTaxiBannerStart{
+    margin-bottom: 40px !important;
+}
 /* ============= inner page home services page ============= */
 .booking-time .radios {width: 95%;}
 .radio-btns input[type="checkbox"] {z-index: -1;position: absolute;display: none;}
@@ -113,7 +135,12 @@ body .iti--separate-dial-code .iti__selected-flag {background-color: #eee;}
 @media only screen and (max-width: 700px){ #vendorStories .modal-content{width: 100%;}} */
 /* vendorStories page css end */
 body section.cab-banner-area {margin: 0 !important;}
-
+.al_body_template_three div#step-2-ondemand .alCustomHomeServiceRadio input{display: none;}
+.al_body_template_three  div#step-2-ondemand .radios .alCustomHomeServiceRadio {text-align: center;}
+.al_body_template_three  div#step-2-ondemand .radios{text-align: center;}
+.al_body_template_three div#step-2-ondemand .radio-btns.long-radio input[type=radio]+label .customCheckbox{
+width: auto;border-radius: 50px;height: auto;line-height: normal;padding: 10px 14px;z-index: 1;color: #1f2431;background: #f3f3f3;overflow: hidden;transition: all .5s;cursor: pointer;display: inline-block;box-sizing: border-box;position: relative;}
+.al_body_template_three div#step-2-ondemand .radio-btns input[type=radio] {z-index: -1;position: absolute;display: none;}
 
 
 
@@ -160,6 +187,28 @@ body[dir="rtl"] .al .col-lg-5.pl-0 {padding-right: 0px;}
 
 .show-subscription-mdl button.close {position: absolute;right: 6px;top: 10px;background: transparent;line-height: 0pc;padding: 0px;font-size: 20px;cursor: pointer;z-index: 999;}
 .show-subscription-mdl .modal-content {border: 1px solid rgba(0,0,0,.2);border-radius: 0.3rem;}
+
+
+/* ================== agent page css===================================== */
+.agentInfo .brand-ing {
+    height: 100px;
+    width: 100px;
+    margin: 0 auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #fff;
+    box-shadow: 0 0 5px rgb(0 0 0 / 20%);
+}
+.agentInfo .brand-ing:hover{box-shadow: 0 0 5px rgb(0 0 0 / 50%);border-color: var(--theme-deafult);}
+a.agentInfo.d-block.black-box {
+    text-align: center;
+    padding-top: 10px;
+}
+.agentInfo .brand-ing img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 .ellipsis{
     text-overflow: ellipsis;
     overflow: hidden;

@@ -112,14 +112,14 @@
                                                     $clientVendorTypes = $vendor_typ_key.'_check';
                                                 @endphp
                                                 @if($client_preference_detail->$clientVendorTypes == 1)
-                                                    <div class="col-md-4 mb-3">
-                                                        <div class="mb-0">
+                                                    <div class="col-md-3 mb-3">
+                                                        <div class="text-left">
                                                             <label>{{getDynamicTypeName($vendor_typ_value)}}{{ __(" Icon") }}</label>
                                                             <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$VendorTypesName ? $client_preferences->$VendorTypesName['proxy_url'].'600/400'.$client_preferences->$VendorTypesName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{ $VendorTypesName }}" class="dropify ss_form_submit" id="image" />
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong></strong>
                                                             </span>
-                                                            <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                                            <label class="logo-size d-block mt-1">{{ __("Icon Size") }} 34x26</label>
                                                         </div>
                                                     </div>
                                                     @endif

@@ -114,8 +114,8 @@
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
 					 <a class="banner-img-outer" href="{{$url??'#'}}">
-                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}" />
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1920/500' . $banner->image['image_path']}}" />
+						<img alt="" title="" class="lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1920/500' . $banner->image['image_path']}}">
 					</a>
 					</div>
 				@endforeach
@@ -139,7 +139,7 @@
 					<div class="carousel-item @if($key == 0) active @endif">
 					 <a class="banner-img-outer" href="{{$url??'#'}}">
                         <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}" />
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}">
+						<img alt="" title="" class=" lazyload w-100" data-src="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}">
 					</a>
 					</div>
 				@endforeach
@@ -165,50 +165,49 @@
    </div>
 </section>
 @endif
-<section class="alSixMainMenu p-0">
-   @if(count($navCategories))
-   <div class="menu-navigation_al">
-   <div class="container-fulid">
-      <div class="row">
-         <div class="col-12">
-            <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider" >
-               @foreach($navCategories as $cate)
-               @if($cate['name'])
-               <li class="al_main_category">
-                  <a href="{{route('categoryDetail', $cate['slug'])}}" class="{{isset($category) && $category->slug == $cate['slug'] ? 'current_category' : ''}}">
-                     @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='categoryDetail') || \Request::route()->getName()=='homeTest')
-                     <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}} " >
-                        <img class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
-                     </div>
-                     @endif
-                     <span class="alCategoryName">{{$cate['name']}}</span>
-                  </a>
-                  @if(!empty($cate['children']))
-                  <ul class="al_main_category_list">
-                     @foreach($cate['children'] as $childs)
-                     <li>
-                        <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a>
-                        @if(!empty($childs['children']))
-                        <ul class="al_main_category_sub_list">
-                           @foreach($childs['children'] as $chld)
-                           <li><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
-                           @endforeach
-                        </ul>
+@if(count($navCategories))
+   <section class="alSixMainMenu p-0">
+      <div class="menu-navigation_al">
+      <div class="container-fulid">
+         <div class="row">
+            <div class="col-12">
+               <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider" >
+                  @foreach($navCategories as $cate)
+                  @if($cate['name'])
+                  <li class="al_main_category">
+                     <a href="{{route('categoryDetail', $cate['slug'])}}" class="{{isset($category) && $category->slug == $cate['slug'] ? 'current_category' : ''}}">
+                        @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='categoryDetail') || \Request::route()->getName()=='homeTest')
+                        <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}} " >
+                           <img class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
+                        </div>
                         @endif
-                     </li>
-                     @endforeach
-                  </ul>
+                        <span class="alCategoryName">{{$cate['name']}}</span>
+                     </a>
+                     @if(!empty($cate['children']))
+                     <ul class="al_main_category_list">
+                        @foreach($cate['children'] as $childs)
+                        <li>
+                           <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a>
+                           @if(!empty($childs['children']))
+                           <ul class="al_main_category_sub_list">
+                              @foreach($childs['children'] as $chld)
+                              <li><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
+                              @endforeach
+                           </ul>
+                           @endif
+                        </li>
+                        @endforeach
+                     </ul>
+                     @endif
+                  </li>
                   @endif
-               </li>
-               @endif
-               @endforeach
-            </ul>
+                  @endforeach
+               </ul>
+            </div>
          </div>
       </div>
-   </div>
-   @endif
-</section>
-
+   </section>
+@endif
 <!-- no-store-wrapper start -->
 <section class="no-store-wrapper mb-3 mt-5 pt-5" style="display: none;">
    <div class="container">
@@ -376,7 +375,7 @@
                </div>
             </div>
          </section>
-      @elseif($homePageLabel->slug == 'cities')
+      @elseif($homePageLabel->slug == 'cities' && count($homePageData[$homePageLabel->slug]) != 0  )
          <section class="container render_full_{{$homePageLabel->slug}}">
             <div class=" top-heading d-flex justify-content-between align-self-center">
                <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
@@ -388,7 +387,7 @@
                         <div>
                            <div class="alSpaListBox">
                               <div class="alSpaCityBox">
-                                 <a href="/cities/{{$cities['slug']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
+                                 <a href="javascript:void(0);" class="cities updateLocationByCity" data-lat="{{$cities['latitude']}}" data-long="{{$cities['longitude']}}" data-place_id="{{$cities['place_id']}}" data-address="{{$cities['address']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
                               </div>
                               <p>{{$cities["title"]}} </p>
                            </div>            
@@ -726,13 +725,11 @@
 <!-- footer code in layouts.store/footercontent-template-two -->
 @endsection
 @section('home-page')
-<script type="text/javascript" src="{{asset('front-assets/js/homepage-six.js')}}"></script>
+ {{-- <script type="text/javascript" src="{{asset('front-assets/js/homepage-six.js')}}"></script> --}}
+ <script type="text/javascript" src="{{asset('assets/js/template/commonFunction.js')}}"></script>
+ <script type="text/javascript" src="{{asset('assets/js/template/template-six/templateFunction.js')}}"></script>
 @endsection
-@section('js-script')
-{{--<script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
-@endsection
+
 @section('script')
 <script type="text/javascript">
     @if(count($banners))
@@ -740,35 +737,6 @@
         $("body").addClass("homeHeader");
     });
     @endif
-   // AOS.init();
-   function changeImage(image, check) {
-      var  icon = $(image).attr('data-icon');
-      var  icon_two = $(image).attr('data-icon_two');
-      if(check == 1)
-      {
-        setTimeout(function () {
-            $(image).attr('data-src',icon_two);
-            $(image).attr('src',icon_two);
-        },200);
-      }else if(check == 0){
-           setTimeout(function () {
-               $(image).attr('data-src',icon);
-               $(image).attr('src',icon);
-           },200);
 
-      }
-   }
-</script>
-
-<script>
-   $(window).scroll(function() {
-       var scroll = $(window).scrollTop();
-
-       if (scroll >= 100) {
-           $(".header").addClass("darkHeader");
-       } else {
-           $(".header").removeClass("darkHeader");
-       }
-   });
 </script>
 @endsection

@@ -33,17 +33,8 @@
 			</div>
 		</div>
         <div class="row">
-            <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
-                <div class="card_image loading"></div>
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="card_title loading"></div>
-                </div>
-                <div class="card_content loading mt-0 w-75"></div>
-                <div class="card_content loading mt-0 w-50"></div>
-                <div class="card_line loading"></div>
-                <div class="card_price loading"></div>
-            </div>
-            <div class="col-sm-10">
+
+            <div class="col-sm-12">
                 <div class="grid-row grid-4-4">
                     <div class="cards">
                         <div class="card_image loading"></div>
@@ -56,6 +47,17 @@
                         <div class="card_line loading"></div>
                         <div class="card_price loading"></div>
                     </div>
+					<div class="cards">
+                        <div class="card_image loading"></div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="card_title loading"></div>
+                            <div class="card_icon loading"></div>
+                        </div>
+                        <div class="card_content loading mt-0 w-75"></div>
+                        <div class="card_content loading mt-0 w-50"></div>
+                        <div class="card_line loading"></div>
+                        <div class="card_price loading"></div>
+                    </div>
                     <div class="cards">
                         <div class="card_image loading"></div>
                         <div class="d-flex align-items-center justify-content-between">
@@ -90,17 +92,6 @@
                         <div class="card_price loading"></div>
                     </div>
                 </div>
-            </div>
-            <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
-                <div class="card_image loading"></div>
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="card_title loading"></div>
-                    <div class="card_icon loading"></div>
-                </div>
-                <div class="card_content loading mt-0 w-75"></div>
-                <div class="card_content loading mt-0 w-50"></div>
-                <div class="card_line loading"></div>
-                <div class="card_price loading"></div>
             </div>
         </div>
 
@@ -112,17 +103,8 @@
 			</div>
 		</div>
         <div class="row">
-            <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
-                <div class="card_image loading"></div>
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="card_title loading"></div>
-                </div>
-                <div class="card_content loading mt-0 w-75"></div>
-                <div class="card_content loading mt-0 w-50"></div>
-                <div class="card_line loading"></div>
-                <div class="card_price loading"></div>
-            </div>
-            <div class="col-sm-10">
+
+            <div class="col-sm-12">
                 <div class="grid-row grid-4-4">
                     <div class="cards">
                         <div class="card_image loading"></div>
@@ -170,7 +152,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
+            <!-- <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="card_title loading"></div>
@@ -180,7 +162,7 @@
                 <div class="card_content loading mt-0 w-50"></div>
                 <div class="card_line loading"></div>
                 <div class="card_price loading"></div>
-            </div>
+            </div> -->
         </div>
 
 	</div>
@@ -191,17 +173,8 @@
 			</div>
 		</div>
         <div class="row">
-            <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
-                <div class="card_image loading"></div>
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="card_title loading"></div>
-                </div>
-                <div class="card_content loading mt-0 w-75"></div>
-                <div class="card_content loading mt-0 w-50"></div>
-                <div class="card_line loading"></div>
-                <div class="card_price loading"></div>
-            </div>
-            <div class="col-sm-10">
+
+            <div class="col-sm-12">
                 <div class="grid-row grid-4-4">
                     <div class="cards">
                         <div class="card_image loading"></div>
@@ -249,7 +222,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
+            <!-- <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="card_title loading"></div>
@@ -259,7 +232,7 @@
                 <div class="card_content loading mt-0 w-50"></div>
                 <div class="card_line loading"></div>
                 <div class="card_price loading"></div>
-            </div>
+            </div> -->
         </div>
 
 	</div>
@@ -355,7 +328,7 @@
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
@@ -389,7 +362,7 @@
 <script type="text/template" id="mobile_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
@@ -618,20 +591,20 @@
 				<a href="/cities/<%=city.slug %>"><img class="w-100" src="<%=city.image.image_fit %>260/260<%=city.image.image_path %>"></a>
 			</div>
 			<p><%=city.title %></p>
-			</div>            
+			</div>
 		</div>
 	</div>
-	<% }); 
+	<% });
 %>
 </script><!-- cities cities end -->
 
 <!-- our_vendor_main_div start -->
 <section class="section-b-space ratio_asos pt-0 mt-0 pb-0 {{isset($client_preference_detail) && $client_preference_detail->business_type == 'taxi' ? 'taxi' : ''}}" id="our_vendor_main_div" >
 
-	<div class="vendors"> @foreach($homePageLabels as $key => $homePageLabel) 
-		@if($homePageLabel->slug == 'pickup_delivery') 
-		@if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif 
-		@elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page') 
+	<div class="vendors"> @foreach($homePageLabels as $key => $homePageLabel)
+		@if($homePageLabel->slug == 'pickup_delivery')
+		@if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif
+		@elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page')
 		@elseif($homePageLabel->slug == 'brands' && (count($homePageData['brands']) != 0))
 			<section class="container popular-brands left-shape_ position-relative ">
 				<div class="al_top_heading d-flex justify-content-between">
@@ -640,15 +613,15 @@
 				</div>
 				<div class="row">
 					<div class=" col-12 al_custom_brand p-0">
-					<div class=" brand-slider render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> 
+					<div class=" brand-slider render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
                         @foreach ($homePageData[$homePageLabel->slug] as $brand )
 						@include('frontend.home_page_2.brands')
                         @endforeach
 					</div>
 					</div>
 				</div>
-			</section> 
-		@elseif($homePageLabel->slug == 'cities' && (count($homePageData['vendors']) != 0))
+			</section>
+		@elseif($homePageLabel->slug == 'cities' && (count($homePageData['cities']) != 0))
 			<section class="suppliers-section container render_full_{{$homePageLabel->slug}}">
 				<div class=" top-heading d-flex justify-content-between align-self-center">
 					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
@@ -660,10 +633,10 @@
                            <div>
                               <div class="alSpaListBox">
                                  <div class="alSpaCityBox">
-                                    <a href="/cities/{{$cities['slug']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
+                                    <a href="javascript:void(0);" class="cities updateLocationByCity" data-lat="{{$cities['latitude']}}" data-long="{{$cities['longitude']}}" data-place_id="{{$cities['place_id']}}" data-address="{{$cities['address']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
                                  </div>
                                  <p>{{$cities["title"]}} </p>
-                              </div>            
+                              </div>
                            </div>
                         </div>
                         @endforeach
@@ -685,30 +658,30 @@
 						</div>
 					</div>
 				</div>
-			</section> 
+			</section>
 		@elseif($homePageLabel->slug == 'trending_vendors' && (count($homePageData['trending_vendors']) != 0))
 			<section class="suppliers-section container" id="homepage_trending_vendors_div">
 				<div class=" top-heading ">
 					<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
 				<div class="row">
 						<div class="col-12 p-0">
-							<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> 
+							<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 								@foreach ($homePageData[$homePageLabel->slug] as $vendor )
 								@include('frontend.home_page_3.vendor')
 								@endforeach
 							</div>
 						</div>
 				</div>
-			</section> 
-		@elseif($homePageLabel->slug == 'recent_orders' && count($homePageData['recent_orders']) != 0 ) 
+			</section>
+		@elseif($homePageLabel->slug == 'recent_orders' && count($homePageData['recent_orders']) != 0 )
 			<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
 				<div class="top-heading d-flex justify-content-between">
-					<h2 class="h2-heading"> @php 
+					<h2 class="h2-heading"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");
-					@endphp </h2> 
+					@endphp </h2>
 				</div>
 				<div class="row">
-					<div class="col-12"> 
+					<div class="col-12">
 						<div class="recent-orders product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 							@foreach ($homePageData[$homePageLabel->slug] as $order )
 							@include('frontend.home_page_3.recent_order')
@@ -716,16 +689,16 @@
 						</div>
 					</div>
 				</div>
-			</section> 
+			</section>
 		@elseif($homePageLabel->slug == 'best_sellers' && (count($homePageData['best_sellers']) != 0))
 			<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
 				<div class="top-heading d-flex justify-content-between">
-					<h2 class="h2-heading"> @php 
+					<h2 class="h2-heading"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
-					@endphp </h2> 
+					@endphp </h2>
 				</div>
 				<div class="row">
-					<div class="col-12"> 
+					<div class="col-12">
 						<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 							@foreach ($homePageData[$homePageLabel->slug] as $vendor )
 							@include('frontend.home_page_3.vendor')
@@ -733,17 +706,17 @@
 						</div>
 					</div>
 				</div>
-			</section> 
+			</section>
 		@else
 			@if(count($homePageData[$homePageLabel->slug]) != 0)
 				<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
 						<div class="top-heading d-flex justify-content-between">
-							<h2 class="h2-heading"> @php 
+							<h2 class="h2-heading"> @php
 								echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
-							@endphp </h2> 
+							@endphp </h2>
 						</div>
 					<div class="row">
-						<div class="col-12"> 
+						<div class="col-12">
 							<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 								@foreach ($homePageData[$homePageLabel->slug] as $product )
 								@include('frontend.home_page_3.product')
@@ -751,9 +724,9 @@
 							</div>
 						</div>
 					</div>
-				</section> 
+				</section>
 			@endif
-		@endif @endforeach 
+		@endif @endforeach
 	</div>
 </section><!-- our_vendor_main_div end -->
 
@@ -783,7 +756,9 @@
 
 <!-- footer code in layouts.store/footercontent-template-two -->
 @section('home-page')
-<script type="text/javascript" src="{{asset('front-assets/js/homepage-three.js')}}"></script>
+{{-- <script type="text/javascript" src="{{asset('front-assets/js/homepage-three.js')}}"></script> --}}
+<script type="text/javascript" src="{{asset('assets/js/template/commonFunction.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/js/template/template-three/templateFunction.js')}}"></script>
 @endsection
 @endsection
 @section('js-script')
@@ -792,24 +767,4 @@
 <script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
 @endsection
 @section('script')
-<script type="text/javascript">
-    // AOS.init();
-	function changeImage(image, check) {
-       var  icon = $(image).attr('data-icon');
-       var  icon_two = $(image).attr('data-icon_two');
-       if(check == 1)
-       {
-	        setTimeout(function () {
-	            $(image).attr('data-src',icon_two);
-	            $(image).attr('src',icon_two);
-	        },200);
-       }else if(check == 0){
-            setTimeout(function () {
-                $(image).attr('data-src',icon);
-                $(image).attr('src',icon);
-            },200);
-
-       }
-    }
-</script>
 @endsection
