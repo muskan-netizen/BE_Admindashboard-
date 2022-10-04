@@ -324,7 +324,13 @@ class OrderController extends FrontController
     // }
 
 
-
+    
+    /**
+     * getOrderSuccessReturnPage
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function getOrderSuccessReturnPage(Request $request)
     {
         $currency_id = Session::get('customerCurrency');
@@ -334,6 +340,16 @@ class OrderController extends FrontController
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success-return', compact('navCategories', 'clientCurrency'));
     }
+
+    
+    /**
+     * sendSuccessEmail
+     *
+     * @param  mixed $request
+     * @param  mixed $order
+     * @param  mixed $vendor_id
+     * @return void
+     */
     public function sendSuccessEmail($request, $order, $vendor_id = '')
     {
         if ((isset($request->user_id)) && (!empty($request->user_id))) {
@@ -345,111 +361,114 @@ class OrderController extends FrontController
         }
         $client = CP::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->where('id', '>', 0)->first();
-        $message = __('An otp has been sent to your email. Please check.');
-        $otp = mt_rand(100000, 999999);
         if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
-            $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
-            if ($vendor_id == "") {
-                $sendto =  $user->email;
-            } else {
-                $vendor = Vendor::where('id', $vendor_id)->first();
-                if ($vendor) {
-                    $sendto =  $vendor->email;
-                }
-            }
+            $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);  
             $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
             $client_name = 'Sales';
             $mail_from = $data->mail_from;
             try {
                 $email_template_content = '';
+                $address ='';
                 $email_template = EmailTemplate::where('id', 5)->first();
-                $address = UserAddress::where('id', $request->address_id)->first();
-                if ($user) {
-                    $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
-                } else {
-                    $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
-                }
-                if ($cart) {
-                    $cartDetails = $this->getCart($cart);
-                }
-
-                if ($email_template) {
-                    $email_template_content = $email_template->content;
-                    if ($vendor_id == "") {
-                        $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol])->render();
+                if(!empty($email_template)){
+                    if ($user) {
+                        $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
                     } else {
-                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
+                        $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
                     }
-                    //pr($returnHTML);
-
+                    if ($cart) {
+                        $cartDetails = $this->getCart($cart);
+                    }
+                    
+                    $email_template_content = $email_template->content;
+                    //     if ($vendor_id == "") {
+                        $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol])->render();
+                    //     } else {
+                            //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
+                    // }
+                    
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
-                    if(!empty($address)){
-                        $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
-                    }else{
-                        $email_template_content = str_ireplace("{address}", '', $email_template_content);
+                    
+                    if(UserAddress::where('id', $request->address_id)->exists()){
+                        $address_arr = UserAddress::where('id', $request->address_id)->first();
+                        $email_template_content = str_ireplace("{address}", $address_arr->address . ', ' . $address_arr->state . ', ' . $address_arr->country . ', ' . $address_arr->pincode, $email_template_content);
+                        $address = str_ireplace("{address}", $address_arr->address . ', ' . $address_arr->state . ', ' . $address_arr->country . ', ' . $address_arr->pincode, $email_template_content);
                     }
-                }
-                $email_data = [
-                    'code' => $otp,
-                    'link' => "link",
-                    'email' => $sendto,
-                    'mail_from' => $mail_from,
-                    'client_name' => $client_name,
-                    'logo' => $client->logo['original'],
-                    'subject' => $email_template->subject,
-                    'customer_name' => ucwords($user->name),
-                    'email_template_content' => $email_template_content,
-                    'cartData' => $cartDetails,
-                    'user_address' => $address,
-                ];
-                if (!empty($data['admin_email'])) {
-                    $email_data['admin_email'] = $data['admin_email'];
-                }
-                if ($vendor_id == "") {
-                    $email_data['send_to_cc'] = 1;
-                }else{
-                    $email_data['send_to_cc'] = 0;
-                }
-                // $res = $this->testOrderMail($email_data);
-                // dd($res);
-                Log::info("Request Cycle with Queues Begins");
-                dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
-                Log::info("Request Cycle with Queues Ends");
-                $notified = 1;
-            } catch(\Exception $e){
-                return response()->json(['data' => $e->getMessage()]);
+                    
+                    /* -- Sending email to vendor -- */
+                    $email_data = [
+                        'link' => "link",
+                        'mail_from' => $mail_from,
+                        'client_name' => $client_name,
+                        'logo' => $client->logo['original'],
+                        'subject' => $email_template->subject,
+                        'customer_name' => ucwords($user->name),
+                        'email_template_content' => $email_template_content,
+                        'cartData' => $cartDetails,
+                        'user_address' => $address,
+                    ];
+                    if (!empty($data['admin_email'])) {
+                        $email_data['admin_email'] = $data['admin_email'];
+                    }
+                    $vendor_id == ""? $email_data['send_to_cc'] = 1 : $email_data['send_to_cc'] = 0;
+                    
+                    
+                    /* -- Sending email to vendor -- */
+                    $vendor = Vendor::where('id', $vendor_id)->first();
+                    if(!empty($vendor)){
+                        $email_data['email'] = $vendor->email;
+                        dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email'); 
+                    }
+                    
+                    /* -- Sending email to customer -- */
+                    $email_data['email'] = $user->email;
+                    dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                } 
+            }
+            catch (\Exception $e) {
+                \Log::error($e->getMessage());
             }
         }
     }
-    // public function sendSuccessSMS($request, $order, $vendor_id = '')
-    // {
-    //     try {
-    //         $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
 
-    //         $currId = Session::get('customerCurrency');
-    //         $currSymbol = Session::get('currencySymbol');
-    //         $customerCurrency = ClientCurrency::where('currency_id', $currId)->first();
-    //         $user = User::where('id', $order->user_id)->first();
-    //         if ($user) {
-    //             if ($user->dial_code == "971") {
-    //                 $to = '+' . $user->dial_code . "0" . $user->phone_number;
-    //             } else {
-    //                 $to = '+' . $user->dial_code . $user->phone_number;
-    //             }
-    //             $provider = $prefer->sms_provider;
-    //             $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
-    //             $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . $order->payable_amount . " for order number " . $order->order_number . " has been placed successfully.";
-    //         //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
-    //             if (!empty($prefer->sms_provider)) {
-    //                 $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-    //             }
-    //         }
-    //     } catch (\Exception $ex) {
-    //     }
-    // }
+        
+    /**
+     * sendSuccessSMS
+     *
+     * @param  mixed $request
+     * @param  mixed $order
+     * @param  mixed $vendor_id
+     * @return void
+     */
+    public function sendSuccessSMS($request, $order, $vendor_id = '')
+    {
+        try {
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
+
+            $currId = Session::get('customerCurrency');
+            $currSymbol = Session::get('currencySymbol');
+            $customerCurrency = ClientCurrency::where('currency_id', $currId)->first();
+            $user = User::where('id', $order->user_id)->first();
+            if ($user) {
+                if ($user->dial_code == "971") {
+                    $to = '+' . $user->dial_code . "0" . $user->phone_number;
+                } else {
+                    $to = '+' . $user->dial_code . $user->phone_number;
+                }
+                $provider = $prefer->sms_provider;
+                $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
+                $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . $order->payable_amount . " for order number " . $order->order_number . " has been placed successfully.";
+            //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+                if (!empty($prefer->sms_provider)) {
+                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                }
+            }
+        } catch (\Exception $ex) {
+        }
+    }
     /**
      * Get Cart Items
      *
@@ -1437,7 +1456,7 @@ class OrderController extends FrontController
             // }
             
             DB::commit();
-            //$this->sendSuccessSMS($request, $order);
+            $this->sendSuccessSMS($request, $order);
 
             return $this->successResponse($order);
         } catch (Exception $e) {
@@ -1528,7 +1547,7 @@ class OrderController extends FrontController
                 $data['registration_ids'] = $vendorAppUserDevices;
                
                 $result = sendFcmCurlRequest($data);
-                Log::info($result);
+                //Log::info($result);
             }
         }
     }
