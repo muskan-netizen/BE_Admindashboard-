@@ -462,6 +462,8 @@ Route::group(['middleware' => ['domain']], function () {
 	//cities
 	Route::get('cities/{slug}','Front\VendorCitiesController@getCities')->name('city.getCities');
 
+	Route::post('getSlotFromDispatchDemand', 'Front\FrontController@getSlotFromDispatchDemand')->name('getSlotFromDispatchDemand');
+
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
@@ -577,3 +579,23 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
 
 });
+Route::get('js/translations.js', function (Request $request) {
+    $lang = config('app.locale');
+    $strings = \Illuminate\Support\Facades\Cache::rememberForever('lang_'.$lang.'.js', function () use($lang) {
+        $files = [
+            resource_path('lang/' . $lang . '/common.php'),
+            resource_path('lang/' . $lang . '/validation.php'),
+        ];
+        $strings = [];
+
+        foreach ($files as $file) {
+            $name = basename($file, '.php');
+            $strings[$name] =  $file;
+        }
+
+        return $strings;
+    });
+    header('Content-Type: text/javascript');
+    echo('window.i18n = ' . json_encode($strings) . ';');
+    exit();
+})->name('translations');

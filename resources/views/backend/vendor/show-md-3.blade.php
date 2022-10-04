@@ -133,7 +133,7 @@
                     </div>
 
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between" style="display:{{$vendor->show_slot == 1 ? 'none!important' : 'block'}}" id="sch_vendor_close">
-                        {!! Form::label('title', __('Scheduled order if vendor closed?'),['class' => 'control-label']) !!}
+                        {!! Form::label('title', __('Schedule order if vendor closed?'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="closed_store_order_scheduled" class="form-control" data-color="#43bee1" @if($vendor->closed_store_order_scheduled == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
 

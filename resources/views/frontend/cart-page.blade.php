@@ -40,22 +40,22 @@
             <div class="row border-bottom">
                         <div class="col-6">
                             <div class="single_cart_heading">
-                                    <h3>Shopping Cart</h3>
+                                    <h3>{{ __("Shopping Cart") }}</h3>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="item-show-cart text-right">
-                                <h4>{{$cart_details->totalQuantity}}  Items</h4>
+                                <h4>{{$cart_details->totalQuantity}}  {{ __("Items") }}</h4>
                             </div>
                         </div>
             </div>
             <div class="row border-bottom product_title_add py-1 no-gutters">
                     <div class="col-md-4 col">
-                        <span>Product Details</span>
+                        <span>{{ __('Product Details') }}</span>
                     </div>
 
                     <div class="col-md-2 col text-center">
-                        <span>Price</span>
+                        <span>{{ __('Price') }}</span>
                     </div>
                     @if($serviceType ==  'rental')
                         <div class="col-md-2 text-center">
@@ -63,7 +63,7 @@
                         </div>
                     @else
                     <div class="col-md-2 text-center">
-                        <span>Quantity</span>
+                        <span>{{ __('Quantity') }}</span>
                     </div>
                     @endif
                     <div class="col-md-4 text-center">
@@ -208,21 +208,16 @@
                                                 $dura = getHoursMinutes($vendor_product->total_booking_time);
                                             @endphp
                                             <p>{{$dura}}</p>
-                                            {{-- <span class="input-group-prepend">
-                                                <button type="button" class="btn incremental-left-minus" data-type="minus" data-field=""><i class="ti-angle-left"></i>
-                                                </button>
-                                            </span> --}}
-                                            {{-- <input  readonly  step="{{@$vendor_product->product->additional_increments.'.'.@$vendor_product->product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs p-0 border"  value="{{$vendor_product->additional_increments_hrs_min }}" data-incremental_hrs={{@$vendor_product->product->additional_increments}}> --}}
-                                            {{-- <span class="input-group-prepend quant-plus">
-                                                <button type="button" class="btn incremental-right-plus" data-type="plus" data-field=""  data-incremental_hrs={{@$vendor_product->product->additional_increments}}>
-                                                    <i class="ti-angle-right"></i>
-                                                </button>
-                                            </span> --}}
+                                           
                                         </div>
                                     </div>
                                 
                                 </div>
                                
+                            </div>
+                            @elseif( $serviceType ==  'appointment')
+                            <div class="col-10 col-md-4 text-md-center order-md-3">
+                                
                             </div>
                             @else
                                 <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -327,7 +322,11 @@
                       
 
                         {{-- Home Service Schedual code Start at down --}}
+                        {{-- @php
+                       pr($cart_details->closed_store_order_scheduled);
+                        @endphp --}}
                         @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ( in_array($serviceType ,['appointment','on_demand']) && $vendor_product->product->mode_of_service == "schedule" ))
+                        
                         <hr class="my-1">
                            @if($client_preference_detail->business_type != 'laundry')
                            @if($vendor_product->product->is_slot_from_dispatch !=1 || ($vendor_product->product->Requires_last_mile !=1) )
@@ -361,17 +360,9 @@
                                </div>
                            </div>
                            @else
-                           <div class="row align-items-md-center alVendorDispatchDate">
-                            <div class="col-6"></div>
-                               <div class="col-3">
-                                   <h6 class="m-0 pl-0">{{ __('Booking Date') }}</h6>
-                                   <p class="m-0">{{date("m/d/Y ", strtotime($vendor_product->scheduled_date_time))}}</p>
-                               </div>
-                               <div class="col-3">
-                                   <h6 class="m-0 pl-0">{{ __('Slot') }}</h6>
-                                   <p class="m-0">{{$product->schedule_slot}}</p>
-                               </div>
-                           </div>
+                           {{-- Dispatch sloat shoty --}}
+                           @include('frontend.cart.dispatchSlots')
+                          
                            @endif
                            @endif
                         @endif
@@ -552,7 +543,7 @@
         <div class="row m-0">
          <div class="cart-summary p-2 pb-4">
             <div class="col-12 mb-2">
-                <h5 class="order_text">Order Summary</h5>
+                <h5 class="order_text">{{ __('Order Summary') }}</h5>
             </div>
         <input type="hidden" name="without_category_kyc" value="{{$cart_details->without_category_kyc}}">
         @if($client_preference_detail->category_kyc_documents ==1)

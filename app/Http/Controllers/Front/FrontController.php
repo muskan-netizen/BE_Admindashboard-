@@ -34,8 +34,8 @@ class FrontController extends Controller
                 if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
                     $client = new TwilioClient($client_preference->sms_key, $client_preference->sms_secret);
                     $send =  $client->messages->create($to, ['from' => $client_preference->sms_from, 'body' => $body]);
-                    Log::info('SMS twilio respons');
-                    Log::info($send);
+                    // Log::info('SMS twilio respons');
+                    // Log::info($send);
                 }else{
                     return 2;
                 }
@@ -64,8 +64,8 @@ class FrontController extends Controller
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
                     $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
-                    Log::info('SMS twilio respons');
-                    Log::info($send);
+                    // Log::info('SMS twilio respons');
+                    // Log::info($send);
                 }else{
                     return 2;
                 }
@@ -73,8 +73,8 @@ class FrontController extends Controller
             //return $send;
         }
         catch(\Exception $e){
-            Log::info('SMS logs');
-            Log::info($e->getMessage());
+            // Log::info('SMS logs');
+            // Log::info($e->getMessage());
             return '2';
         }
         return '1';
@@ -695,7 +695,7 @@ class FrontController extends Controller
             $addresses = collect();
         }
         if ($cart) {
-            $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+            $cartData = CartProduct::with('vendor')->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
         }
         
         $navCategories = $this->categoryNav($langId);
@@ -722,11 +722,34 @@ class FrontController extends Controller
             $timezone = 'Asia/Kolkata';
 
         foreach($cartData as $key => $data){
-           
+         
 
             $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($timezone)->format('Y-m-d');
             $cartData[$key]->scheduled_date_time = $selectedDate;
             $cartData[$key]->is_dispatch_slot = 0 ;
+            $vendorStartDate =  $vendorStartTime  ='';
+            $cartData[$key]->period = [];
+             if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
+                $time_slots = []; 
+                $start_date = new DateTime("now", new  DateTimeZone($timezone) );
+                $start_date = $start_date->format('Y-m-d');
+                $end_date   = Date('Y-m-d', strtotime('+13 days'));
+        
+               
+                $period = CarbonPeriod::create($start_date, $end_date);
+               
+                $cartData[$key]->period = $period;
+            }else{
+                
+                $slotsDate = findSlot('',$data->vendor_id,'','webFormet');
+                if($slotsDate){
+                    $vendorStartDate = (($slotsDate)?$slotsDate['date']:'');
+                    $vendorStartTime = (($slotsDate)?$slotsDate['time']:'');
+                    $vendorEndDate = Date('Y-m-d', strtotime($vendorStartDate. '+13 days'));
+                    $cartData[$key]->period = CarbonPeriod::create($vendorStartDate, $vendorEndDate);
+                }
+            }
+            
             // check product 
             $productDetail = $this->productDetail($data->product_id);
             $cateTypeId = $productDetail ? ($productDetail->productcategory ? $productDetail->productcategory->type_id : '') : '';
@@ -751,26 +774,49 @@ class FrontController extends Controller
                         'latitude'         => $vendor_latitude,
                         'longitude'        => $vendor_longitude,
                         'service_time'     => $productDetail->minimum_duration_min,
-                        'schedule_date'    => $selectedDate
+                        'schedule_date'    => $selectedDate,
+                        'slot_start_time'  => $vendorStartTime
                     ];
+                      
                     $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
                 }
                 $cartData[$key]->timeSlots = [];
                 $cartData[$key]->dispatchAgents = $dispatchAgents;
                 $cartData[$key]->is_dispatch_slot = 1 ;
              }else{
-                $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
-                $slots = (object)$slotsRes['slots'];
-                //$slots = showSlot($selectedDate,$data->vendor_id,'delivery');
                 $time_slots = [];
-                $i = 0;
-                foreach($slots as $slot){
-                    $newSlot = explode('-', $slot['value']);
-                    $time_slots[$i++] = trim($newSlot[0]);
+                if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
+                    $start_time = new DateTime("now", new  DateTimeZone($timezone) );
+                    $start_time = $start_time->format('Y-m-d H:m');
+                    $end_time = date('Y-m-d 23:59');
+                    $timing   = $this->SplitTime($start_time, $end_time, "60");
+                    foreach ($timing as $k=> $slt) {
+                        if($k+1 < count($timing)){
+                            $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
+                            $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
+                            $time_slots[] =  $viewSlot;
+                        }
+                    }
+                }else{
+                    $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
+                    $slots = (object)$slotsRes['slots'];
+                    //$slots = showSlot($selectedDate,$data->vendor_id,'delivery');
+                    $time_slots =  $slots;
+                    // $i = 0;
+                    // foreach($slots as $slot){
+                    //     $newSlot = explode('-', $slot['value']);
+                    //     $time_slots[$i++] = trim($newSlot[0]);
+                    // }
+
                 }
+
+                
                 $cartData[$key]->timeSlots = $time_slots;
                 $cartData[$key]->dispatchAgents = [];
             }
+          
+           
+           
         }
 
         
@@ -788,6 +834,65 @@ class FrontController extends Controller
         return ['time_slots' => $time_slots,'period' => $period,'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user];
     }
 
+
+    // get slot fron dispatcher
+    public function getSlotFromDispatchDemand(Request $request)
+    {
+       
+           $product = $this->productDetail($request->product_id);
+        
+            $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';
+            $is_slot_from_dispatch = $product ? $product->is_slot_from_dispatch  : '';
+            $show_dispatcher_agent = $product ? $product->is_show_dispatcher_agent  : '';
+            $last_mile_check       = $product ? $product->Requires_last_mile  : '';
+            $vendorStartDate       = $vendorStartTime  = '';
+            $html = "";
+            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
+                
+                $Dispatch =  $this->getDispatchAppointmentDomain();
+                $dispatchAgents = [];
+                $cart_product_id = $request->cart_product_id??0;
+               
+                if($Dispatch){
+                  
+                   $vendor_latitude =  $product->vendor ? $product->vendor->latitude : 30.71728880;
+                   $vendor_longitude =  $product->vendor ? $product->vendor->longitude : 76.80350870;
+                    $location[] = array(
+                        'latitude' =>   $vendor_longitude,
+                        'longitude' =>  $vendor_longitude
+                    );
+                    $dispatchData=[
+                        'service_key'      => $Dispatch->appointment_service_key,
+                        'service_key_code' => $Dispatch->appointment_service_key_code,
+                        'service_key_url'  => $Dispatch->appointment_service_key_url,
+                        'service_type'     => 'appointment',
+                        'tags'             => $product->tags,
+                        'latitude'         => $vendor_latitude,
+                        'longitude'        => $vendor_longitude,
+                        'service_time'     => $product->minimum_duration_min,
+                        'schedule_date'    => $request->cur_date,
+                        'slot_start_time'  => $vendorStartTime
+                    ];
+                   
+                    $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
+                   
+                }
+                
+                if((isset($dispatchAgents)) && (isset($dispatchAgents['slots'])) && ( count($dispatchAgents['slots']) > 0 ) ){
+                      $html .= "<option value=''>".__('Select Slot')." </option>";
+                      foreach($dispatchAgents['slots'] as $slot){
+                      
+                          $html .= "<option value='".$slot['value']."'  data-show_agent='".json_encode($slot['agent_id'],TRUE)."' >".$slot['name'].`"</option>"`;
+                      }
+                }else{
+                    $html .= "<option value=''>".__('No Slot Available')." </option>";
+                }
+                return response()->json(['status'=>'Success','html'=>$html, 'message'=>'get slots']);
+            }
+            $html .= "<option value=''>".__('No Slot Available')." </option>";
+            return response()->json(['status'=>'Success','html'=>$html, 'message'=>"get slots"]);
+          
+    }
 
     /////////// ***************    get all time slots *******************************  /////////////////////
     function SplitTime($StartTime, $EndTime, $Duration="30"){
@@ -1015,16 +1120,10 @@ class FrontController extends Controller
                 $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
 
                 $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
-                \Log::info('sms:--//');
-                \Log::info($smsTemplates);
-                \Log::info('sms:--//');
                 if(!empty($smsTemplates)){
                     $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
                     $smsTemplates = str_replace("{amount}", $currSymbol . $order->payable_amount, $smsTemplates);
                     $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
-                    \Log::info('sms:--');
-                    \Log::info($body);
-                    \Log::info('sms:--');
                 }else{
                     $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . $order->payable_amount . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
                 }

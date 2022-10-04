@@ -17,7 +17,7 @@ class VendorCategory extends Model
 
 	public function products(){
 		return $this->hasMany('App\Models\Product', 'category_id', 'category_id');
-	  }
+	}
 
 	public function addVendorCategory($to_vendor, $from_vendor)
 	{

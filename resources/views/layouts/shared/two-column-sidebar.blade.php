@@ -80,7 +80,7 @@
                                             <a href="{{route('second', ['ecommerce', 'dashboard'])}}">Dashboard</a>
                                         </li>
                                         <li>
-                                            <a href="{{route('second', ['ecommerce', 'products'])}}">Products</a>
+                                            <a href="{{route('second', ['ecommerce', 'products'])}}">{{ __('Products') }}</a>
                                         </li>
                                         <li>
                                             <a href="{{route('second', ['ecommerce', 'product-detail'])}}">Product Detail</a>
@@ -101,7 +101,7 @@
                                             <a href="{{route('second', ['ecommerce', 'sellers'])}}">Sellers</a>
                                         </li>
                                         <li>
-                                            <a href="{{route('second', ['ecommerce', 'cart'])}}">Shopping Cart</a>
+                                            <a href="{{route('second', ['ecommerce', 'cart'])}}">{{ __("Shopping Cart") }}</a>
                                         </li>
                                         <li>
                                             <a href="{{route('second', ['ecommerce', 'checkout'])}}">Checkout</a>
@@ -663,10 +663,10 @@
                                                 <div class="collapse" id="sidebarMultilevel2">
                                                     <ul class="nav-second-level">
                                                         <li>
-                                                            <a href="javascript: void(0);">Item 1</a>
+                                                            <a href="javascript: void(0);">{{ __('item') }} 1</a>
                                                         </li>
                                                         <li>
-                                                            <a href="javascript: void(0);">Item 2</a>
+                                                            <a href="javascript: void(0);">{{ __('item') }} 2</a>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -679,19 +679,19 @@
                                                 <div class="collapse" id="sidebarMultilevel3">
                                                     <ul class="nav-second-level">
                                                         <li>
-                                                            <a href="javascript: void(0);">Item 1</a>
+                                                            <a href="javascript: void(0);">{{ __('item') }} 1</a>
                                                         </li>
                                                         <li>
                                                             <a href="#sidebarMultilevel4" data-toggle="collapse">
-                                                                Item 2 <span class="menu-arrow"></span>
+                                                                {{ __('item') }} 2 <span class="menu-arrow"></span>
                                                             </a>
                                                             <div class="collapse" id="sidebarMultilevel4">
                                                                 <ul class="nav-second-level">
                                                                     <li>
-                                                                        <a href="javascript: void(0);">Item 1</a>
+                                                                        <a href="javascript: void(0);">{{ __('item') }} 1</a>
                                                                     </li>
                                                                     <li>
-                                                                        <a href="javascript: void(0);">Item 2</a>
+                                                                        <a href="javascript: void(0);">{{ __('item') }} 2</a>
                                                                     </li>
                                                                 </ul>
                                                             </div>

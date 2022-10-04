@@ -28,6 +28,7 @@ class ProductVariant extends Model
       $values['image_fit'] = \Config::get('app.FIT_URl');
       return $values;
     }
+  
     public function set(){
 	    return $this->hasMany('App\Models\ProductVariantSet')
 	    		->join('variant_options as opt', 'opt.id', 'product_variant_sets.variant_option_id')

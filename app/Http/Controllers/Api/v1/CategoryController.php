@@ -124,8 +124,8 @@ class CategoryController extends BaseController
             {
                 return $q->where('category_id',$category_id);
             })->where($mod_type, 1)->with('slot')->where('status', 1)->whereIn('id', $vendor_ids)->withAvg('product', 'averageRating')->paginate($limit, $page);
-            //return $vendorData;
 
+            //$vendorData = $vendorData->where($mod_type, 1)->where('status', 1)->whereIn('id', $vendor_ids)->with('slot')->withAvg('product', 'averageRating')->paginate($limit, $page);
             foreach ($vendorData as $vendor) {
 
                 unset($vendor->products);

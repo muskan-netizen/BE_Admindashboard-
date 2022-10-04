@@ -1,9 +1,5 @@
 @section('customcss')
-<style>
-    .radio-btns input[type="radio"].ondemand_checked + label span{background: var(--theme-deafult);
-    color: #fff;}
-
-</style>
+<link defer type="text/css" href="{{asset('css/ondemand.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
 @endsection
 <section class="home-serivces" id="alSixHomeServices">
     <div class="container">
@@ -208,6 +204,30 @@
                                                                     <div class="productDetails pl-0 pr-lg-5 m-0 position-relative">
                                                                         <p class="position-relative px-3 py-2">{!! $prod->translation_description !!} </p>
                                                                     </div>
+                                                                    {{-- <div class=" pt-3 m-0 position-relative row">
+                                                                        <div class="col-md-9 col-sm-8 pr-md-2 productDetails">
+                                                                        <p class="position-relative px-3 py-2">{!! $prod->translation_description !!} </p>
+                                                                        </div>
+                                                                        <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
+                                                                         
+                                                                            <?php $imagePath = $imagePath2 = '';
+                                                                            $mediaCount = count($prod->media);
+                                                                            for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
+                                                                                if($i == 0){
+                                                                                    $imagePath = $prod->media[$i]->image->path['proxy_url'].'300/300'.$prod->media[$i]->image->path['image_path'];
+                                                                                }
+                                                                                $imagePath2 = $prod->media[$i]->image->path['proxy_url'].'300/300'.$prod->media[$i]->image->path['image_path'];
+                                                                            } ?>
+                                                                        <div class="class_img">
+                                                                            @if($imagePath != '')
+                                                                            <img src="{{$imagePath}}" alt="">
+                                                                            @else
+    
+                                                                            @endif
+    
+                                                                        </div>
+                                                                    </div>
+                                                                </div> --}}
                                                                     {{-- <ul class="productDetails pl-0 pr-lg-5 m-0 position-relative">
                                                                         <li class="position-relative px-3 py-2">
                                                                             <p class="m-0">One night bed and breakfast</p>
@@ -562,7 +582,19 @@
                                                     @include('frontend.ondemand.dispatcher_agent_slots')
                                                 </div>
                                             @else
-                                                <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
+                                                @php
+                                                $time_slots = [];
+                                                $cart_product_id = $cart_data->id;
+                                                $schedule_slot = $cart_data->schedule_slot;
+                                                if(!empty($cart_data->timeSlots)){
+                                                    $time_slots = $cart_data->timeSlots;
+                                                }
+                                                @endphp
+                                                <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" ">
+                                                    {{-- style="@if($cart_data->schedule_slot != '')  @else display: none; @endif   --}}
+                                                    @include('frontend.ondemand.time-slots-for-date')
+                                                </div>
+                                                {{-- <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
                                                     <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
 
                                                     <div class="booking-time radio-btns long-radio mb-0">
@@ -594,7 +626,7 @@
                                                         @endforeach
                                                     </div>
                                                     <P id="message_of_time{{$cart_data->id}}"></P>
-                                                </div>
+                                                </div> --}}
                                             @endif
 
                                             <input type="hidden" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" checked>
@@ -790,10 +822,10 @@
                         </div>
                         <div class="footer-card">
                             @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && empty(app('request')->input('addons')))
-                                <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid float-right">Next</span></a>
+                                <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid float-right">{{__('Next')}}</span></a>
                                 @elseif(app('request')->input('step') == '1' && app('request')->input('addons') == '1')
                                     <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
-                                    <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid float-right">Next</span></a>
+                                    <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid float-right">{{__('Next')}}</span></a>
                                 @elseif(app('request')->input('step') == '2' && empty(app('request')->input('addons')))
                                     <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
                                     @if(Auth::guest())
@@ -823,3 +855,6 @@
         </div>
     </div>
 </section>
+@section('custom-js')
+<script src="{{ asset('js/onDemand/AgentSlot.js') }}"></script>
+@endsection

@@ -407,6 +407,7 @@ class UserhomeController extends FrontController
     }
     public function index(Request $request, $domain='')
     {
+        
         try {
             $home = array();
             $vendor_ids = array();
@@ -420,10 +421,15 @@ class UserhomeController extends FrontController
             $langId = Session::get('customerLanguage');
             $client_config = Session::get('client_config');
             $selectedAddress = Session::get('selectedAddress');
+            $_REQUEST['request_from'] = 1;
+           
             $navCategories = $this->categoryNav($langId);
+           
             Session::put('navCategories', $navCategories);
             $clientPreferences = ClientPreference::first();
-            
+            $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
+
+           
             $count = 0;
             if ($clientPreferences) {
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
@@ -439,13 +445,11 @@ class UserhomeController extends FrontController
                 }
 
             }
-            $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
-
-            if((count($navCategories) > 0 ) && ($vendor_type =='pick_drop') &&  $count!=1 ){
+            if(count($navCategories) > 0 && ($vendor_type =='pick_drop') &&  ($count!=1) ){
                 $categoriesSlug = $navCategories[0]->slug;
                 return redirect()->route('categoryDetail',$categoriesSlug); 
             }
-           
+
             $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
             ->where(function ($q) {
                 $q->whereNull('start_date_time')->orWhere(function ($q2) {
@@ -535,7 +539,7 @@ class UserhomeController extends FrontController
                 $view_page = "home-template-test-six";
             }
             //pr($set_template->toArray());exit();
-
+            //pr(Session::get('latitude'));
             return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData]);
 
         } catch (Exception $e) {
@@ -555,15 +559,16 @@ class UserhomeController extends FrontController
      */
     public function setHyperlocalAddress(Request $request)
     {
-        $latitude        = $request->latitude;
+        $latitude        =  $request->latitude;
         $longitude       =  $request->longitude;
         $selectedAddress =  $request->address;
-        if ((!empty($latitude)) && (!empty($longitude)) && (!empty($selectedAddress))) {
+        $selectedPlaceId =  $request->place_id;
+        //if ((!empty($latitude)) && (!empty($longitude)) && (!empty($selectedAddress))) {
             Session::put('latitude', $latitude);
             Session::put('longitude', $longitude);
             Session::put('selectedAddress', $selectedAddress);
-        }
-       
+            Session::put('selectedPlaceId', $selectedPlaceId);
+       // }
         return redirect()->route('userHome');
     } 
     /**
@@ -574,7 +579,7 @@ class UserhomeController extends FrontController
      */
     public function postHomePageData(Request $request)
     {
-        
+       
         $vendor_ids = [];
         $new_products = [];
         $feature_products = [];
@@ -586,18 +591,18 @@ class UserhomeController extends FrontController
         }elseif(isset($set_template)  && $set_template->template_id == 2){
             $p_dim = '260/180';
         }
-        if($request->has('latitude')){
+        $latitude = Session::get('latitude');
+        $longitude = Session::get('longitude');
+        
+        //pr($latitude);
+        if($request->has('latitude') ){
             $latitude = $request->latitude;
             Session::put('latitude', $latitude);
-        } else{
-            $latitude = Session::get('latitude');
-        }
+        } 
         if ($request->has('longitude')) {
             $longitude = $request->longitude;
             Session::put('longitude', $longitude);
-        } else {
-            $longitude = Session::get('longitude');
-        }
+        } 
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'): ClientPreference::first();
@@ -640,7 +645,7 @@ class UserhomeController extends FrontController
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
         $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1);
-        if ($preferences) {
+        if ($preferences) {    
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                 $selectedAddress = $preferences->Default_location_name;
                 $latitude = $preferences->Default_latitude??null;
@@ -649,11 +654,12 @@ class UserhomeController extends FrontController
                 Session::put('longitude', $longitude);
                 Session::put('selectedAddress', $selectedAddress);
             } else {
-
                 if ($preferences && ($latitude == $preferences->Default_latitude) && ($longitude == $preferences->Default_longitude)) {
                     Session::put('selectedAddress', $preferences->Default_location_name);
                 }
             }
+         
+           
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
 
                 if (!empty($latitude) && !empty($longitude)) {
@@ -926,7 +932,7 @@ class UserhomeController extends FrontController
                                 foreach ($vendor->products as $product) {
                                     if (isset($product->pvariant) && $product->pvariant->media->isNotEmpty()) {
                                         $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
-                                    } elseif ($product->media->isNotEmpty()) {
+                                    } elseif ($product->media->isNotEmpty() && isset($product->media->first()->image)) {
                                         $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
                                     } else {
                                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';

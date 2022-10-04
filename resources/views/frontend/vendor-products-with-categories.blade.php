@@ -242,7 +242,7 @@
                                                                                     if (count($data->addOn) > 0) {
                                                                                         $isAddonExist = 1;
                                                                                     }
-                                                                                   // dd($data->variant);
+                                                                                   //pr($data->toArray());
                                                                                 @endphp
 
                                                                                 @foreach ($data->variant as $var)
@@ -297,6 +297,7 @@
                                                                                             ({{ $minimum_order_count }})
                                                                                         @endif
                                                                                     </a>
+                                                                                    @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
                                                                                     <div class="number"
                                                                                         id="show_plus_minus{{ $cartProductId }}">
                                                                                         <span
@@ -335,6 +336,9 @@
                                                                                                 aria-hidden="true"></i>
                                                                                         </span>
                                                                                     </div>
+                                                                                    @else
+                                                                                    <a class="btn btn-solid " id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                                    @endif
                                                                                 @else
                                                                                     @if ($prod->has_inventory == 0 || ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1))
                                                                                         {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
@@ -352,40 +356,44 @@
                                                                                                 ({{ $minimum_order_count }})
                                                                                             @endif
                                                                                         </a>
-                                                                                        <div class="number"
-                                                                                            style="display:none;"
-                                                                                            id="ashow_plus_minus{{ $data->id }}">
-                                                                                            <span
-                                                                                                class="minus qty-minus-product"
-                                                                                                data-parent_div_id="show_plus_minus{{ $data->id }}"
-                                                                                                data-id="{{ $data->id }}"
-                                                                                                data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
-                                                                                                data-vendor_id="{{ $data->vendor_id }}"
-                                                                                                data-batch_count="{{ $batch_count }}"
-                                                                                                data-minimum_order_count="{{ $minimum_order_count }}">
-                                                                                                <i class="fa fa-minus"
-                                                                                                    aria-hidden="true"></i>
-                                                                                            </span>
-                                                                                            <input
-                                                                                                style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
-                                                                                                id="quantity_ondemand_d{{ $data->id }}"
-                                                                                                readonly
-                                                                                                placeholder="{{ $minimum_order_count }}"
-                                                                                                type="text"
-                                                                                                value="{{ $minimum_order_count }}"
-                                                                                                class="input-number input_qty"
-                                                                                                step="0.01">
-                                                                                            <span
-                                                                                                class="plus qty-plus-product"
-                                                                                                data-id=""
-                                                                                                data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
-                                                                                                data-vendor_id="{{ $data->vendor_id }}"
-                                                                                                data-batch_count="{{ $batch_count }}"
-                                                                                                data-minimum_order_count="{{ $minimum_order_count }}">
-                                                                                                <i class="fa fa-plus"
-                                                                                                    aria-hidden="true"></i>
-                                                                                            </span>
-                                                                                        </div>
+                                                                                        @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
+                                                                                            <div class="number"
+                                                                                                style="display:none;"
+                                                                                                id="ashow_plus_minus{{ $data->id }}">
+                                                                                                <span
+                                                                                                    class="minus qty-minus-product"
+                                                                                                    data-parent_div_id="show_plus_minus{{ $data->id }}"
+                                                                                                    data-id="{{ $data->id }}"
+                                                                                                    data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
+                                                                                                    data-vendor_id="{{ $data->vendor_id }}"
+                                                                                                    data-batch_count="{{ $batch_count }}"
+                                                                                                    data-minimum_order_count="{{ $minimum_order_count }}">
+                                                                                                    <i class="fa fa-minus"
+                                                                                                        aria-hidden="true"></i>
+                                                                                                </span>
+                                                                                                <input
+                                                                                                    style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
+                                                                                                    id="quantity_ondemand_d{{ $data->id }}"
+                                                                                                    readonly
+                                                                                                    placeholder="{{ $minimum_order_count }}"
+                                                                                                    type="text"
+                                                                                                    value="{{ $minimum_order_count }}"
+                                                                                                    class="input-number input_qty"
+                                                                                                    step="0.01">
+                                                                                                <span
+                                                                                                    class="plus qty-plus-product"
+                                                                                                    data-id=""
+                                                                                                    data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
+                                                                                                    data-vendor_id="{{ $data->vendor_id }}"
+                                                                                                    data-batch_count="{{ $batch_count }}"
+                                                                                                    data-minimum_order_count="{{ $minimum_order_count }}">
+                                                                                                    <i class="fa fa-plus"
+                                                                                                        aria-hidden="true"></i>
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        @else
+                                                                                            <a class="btn btn-solid "  style="display:none;" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                                        @endif
                                                                                     @else
                                                                                         <span
                                                                                             class="text-danger">{{ __('Out of stock') }}</span>
@@ -501,289 +509,290 @@
     </section>
     <script type="text/template" id="header_cart_template_ondemand">
         <ul class="pl-2 pr-2 pb-2 pt-0 ">
-                                <% _.each(cart_details.products, function(product, key){%>
-                                    <li class="p-0">
-                                        <h6 class="d-flex justify-content-center badge badge-light font-14"><b><%= product.vendor.name %></b></h6>
-                                    </li>
+            <% _.each(cart_details.products, function(product, key){%>
+            <li class="p-0">
+                <h6 class="d-flex justify-content-center badge badge-light font-14"><b><%= product.vendor.name %></b></h6>
+            </li>
 
-                                    <% if( (product.isDeliverable != undefined) && (product.isDeliverable == 0) ) { %>
-                                        <li class="border_0">
-                                            <th colspan="7">
-                                                <div class="text-danger">
-                                                    {{ __('Products for this vendor are not deliverable at your area. Please change address or remove product.') }}
-                                                </div>
-                                            </th>
-                                        </li>
-                                        <% } %>
-                                    <% _.each(product.vendor_products, function(vendor_product, vp){%>
-                                        <li class="p-0" id="cart_product_<%= vendor_product.id %>" data-qty="<%= vendor_product.quantity %>">
-                                            <div class='media-body'>
-                                                <h6 class="d-flex align-items-center justify-content-between m-0">
+            <% if( (product.isDeliverable != undefined) && (product.isDeliverable == 0) ) { %>
+            <li class="border_0">
+                <th colspan="7">
+                    <div class="text-danger">
+                        {{ __('Products for this vendor are not deliverable at your area. Please change address or remove product.') }}
+                    </div>
+                </th>
+            </li>
+            <% } %>
+            <% _.each(product.vendor_products, function(vendor_product, vp){%>
+            <li class="p-0" id="cart_product_<%= vendor_product.id %>" data-qty="<%= vendor_product.quantity %>">
+                <div class='media-body'>
+                    <h6 class="d-flex align-items-center justify-content-between">
+                        <%
+                            translationOneTitle = '';
+                            count = 20;
+                            if(vendor_product.product.translation_one != ''){
+                                title = vendor_product.product.translation_one.title;
+                                translationOneTitle = title.slice(0, count) + (title.length > count ? "..." : "");
 
-                                                    <% 
-                                                        translationOneTitle = '';
-                                                        count = 20;
-                                                        if(vendor_product.product.translation_one != ''){
-                                                            title = vendor_product.product.translation_one.title;
-                                                            translationOneTitle = title.slice(0, count) + (title.length > count ? "..." : "");
-                                                            
-                                                        }
-                                                    %>
+                            }
+                        %>
 
-                                                    <span class="ellips"><%= vendor_product.quantity %>x <%= 
-                                                    vendor_product.product.translation_one ? translationOneTitle :  vendor_product.product.sku %></span>
-                                                    <span>
+                        <span class="ellips"><%= vendor_product.quantity %>x <%=
+                        vendor_product.product.translation_one ? translationOneTitle :  vendor_product.product.sku %></span>
+                        <span>
 
-                                                        {{ Session::get('currencySymbol') }}<%=  Helper.formatPrice(vendor_product.quantity_price) %>
+                            {{ Session::get('currencySymbol') }}<%=  Helper.formatPrice(vendor_product.quantity_price) %>
 
-                                                    </span>
-                                                    <a class="action-icon remove_product_via_cart text-danger" style="cursor: pointer;" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
-                                                            <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                                        </a>
-                                                </h6>
-                                            </div>
-                                        </li>
-                                        <hr class="my-2">
-                                        <% if(vendor_product.addon.length != 0) { %>
-                                            <div class="row align-items-md-center">
-                                                <div class="col-12">
-                                                    <h6 class="m-0 font-12"><b>{{ __('Add Ons') }}</b></h6>
-                                                </div>
-                                            </div>
-                                            <% _.each(vendor_product.addon, function(addon, ad){%>
-                                            <div class="row mb-1">
-                                                <div class="col-md-6 col-sm-4 items-details text-left">
-                                                    <p class="m-0 font-14 p-0"><%= vendor_product.quantity %>x <%= addon.option.title %></p>
-                                                </div>
-                                                <div class="col-md-3 col-sm-4 text-center">
-                                                    <div class="extra-items-price font-14">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.price_in_cart) %></div>
-                                                </div>
-                                                <div class="col-md-3 col-sm-4 text-right">
-                                                    <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
-                                                </div>
-                                            </div>
-                                            <hr class="my-2">
-                                            <% }); %>
-                                        <% } %>
+                        </span>
+                        <a class="action-icon remove_product_via_cart text-danger" style="cursor: pointer;" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                            </a>
+                    </h6>
+                </div>
+            </li>
+            <!--  -->
+            <% if(vendor_product.addon.length != 0) { %>
+                <hr class="my-2">
+                <div class="row align-items-md-center">
+                    <div class="col-12">
+                        <h6 class="m-0 font-12"><b>{{ __('Add Ons') }}</b></h6>
+                    </div>
+                </div>
+                <% _.each(vendor_product.addon, function(addon, ad){%>
+                <div class="row mb-1">
+                    <div class="col-md-6 col-sm-4 items-details text-left">
+                        <p class="m-0 font-14 p-0"><%= vendor_product.quantity %>x <%= addon.option.title %></p>
+                    </div>
+                    <div class="col-md-3 col-sm-4 text-center">
+                        <div class="extra-items-price font-14">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.price_in_cart) %></div>
+                    </div>
+                    <div class="col-md-3 col-sm-4 text-right">
+                        <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
+                    </div>
+                </div>
+                <!-- <hr class="my-2"> -->
+                <% }); %>
+            <% } %>
 
-                                    <% }); %>
-                                    <% if(cart_details.delivery_charges > 0) { %>
-                                        <div class="row justify-content-between">
-                                            <div class="col-md-6 col-sm-6 text-left">
-                                                <h6 class="m-0 font-14">{{ __('Delivery fee') }}</h6>
-                                            </div>
-                                            <div class="col-md-6 col-sm-6 text-right">
-                                                <div class="font-14 mr-xl-2">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.delivery_charges) %></div>
-                                            </div>
-                                        </div>
-                                    <% } %>
-                                    <hr class="my-2">
-                                <% }); %>
+            <% }); %>
+            <% if(cart_details.delivery_charges > 0) { %>
+                <hr class="my-2">
+                <div class="row justify-content-between">
+                    <div class="col-md-6 col-sm-6 text-left">
+                        <h6 class="m-0 font-14">{{ __('Delivery fee') }}</h6>
+                    </div>
+                    <div class="col-md-6 col-sm-6 text-right">
+                        <div class="font-14 mr-xl-2">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.delivery_charges) %></div>
+                    </div>
+                </div>
+            <% } %>
 
-                                <h5 class="d-flex align-items-center justify-content-between pb-2">{{ __('PRICE DETAILS') }} </h5>
-                                <li class="p-0 alSixCart">
-                                    <div class='media-body'>
-                                        <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Total') }}</span>
-                                            <span >{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.gross_amount) %></span>
-                                        </h6>
-                                    </div>
-                                </li>
+            <% }); %>
 
-                                <li class="p-0 alSixCart">
-                                    <div class='media-body'>
-                                        <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Tax') }}</span>
-                                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_taxable_amount %></span>
-                                        </h6>
-                                    </div>
-                                </li>
+            <h5 class="d-flex align-items-center justify-content-between pb-2">{{ __('PRICE DETAILS') }} </h5>
+            <li class="p-0 alSixCart">
+                <div class='media-body'>
+                    <h6 class="d-flex align-items-center justify-content-between">
+                        <span class="ellips">{{ __('Total') }}</span>
+                        <span >{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.gross_amount) %></span>
+                    </h6>
+                </div>
+            </li>
 
-                                <% if(cart_details.total_subscription_discount != undefined) { %>
-                                 <li class="p-0 alSixCart">
-                                    <div class='media-body'>
-                                        <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips"> {{ __('Subscription Discount') }}</span>
-                                             <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
-                                        </h6>
-                                    </div>
-                                </li>
-                                <% } %>
+            <li class="p-0 alSixCart">
+                <div class='media-body'>
+                    <h6 class="d-flex align-items-center justify-content-between">
+                        <span class="ellips">{{ __('Tax') }}</span>
+                        <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_taxable_amount %></span>
+                    </h6>
+                </div>
+            </li>
 
-                                <% if(cart_details.loyalty_amount > 0) { %>
-                                <li class="p-0 alSixCart">
-                                    <div class='media-body'>
-                                        <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips"> {{ __('Loyalty Amount') }} </span>
-                                             <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
-                                        </h6>
-                                    </div>
-                                </li>
-                                <% } %>
+            <% if(cart_details.total_subscription_discount != undefined) { %>
+                <li class="p-0 alSixCart">
+                <div class='media-body'>
+                    <h6 class="d-flex align-items-center justify-content-between">
+                        <span class="ellips"> {{ __('Subscription Discount') }}</span>
+                            <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
+                    </h6>
+                </div>
+            </li>
+            <% } %>
 
-                                <% if(cart_details.wallet_amount_used > 0) { %>
-                                <li class="p-0 alSixCart">
-                                    <div class='media-body'>
-                                        <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips"> {{ __('Wallet Amount') }} </span>
-                                             <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
-                                        </h6>
-                                    </div>
-                                </li>
-                                <% } %>
-                                </ul>
-                                <div class="cart-sub-total d-flex align-items-center justify-content-between">
-                                    <span>{{ __('Total') }}</span>
-                                    <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_payable_amount %></span>
-                                </div>
-                                <a class="checkout-btn text-center d-block" href="{{ route('showCart') }}">{{ __('Checkout') }}</a>
-                            </script>
+            <% if(cart_details.loyalty_amount > 0) { %>
+            <li class="p-0 alSixCart">
+                <div class='media-body'>
+                    <h6 class="d-flex align-items-center justify-content-between">
+                        <span class="ellips"> {{ __('Loyalty Amount') }} </span>
+                            <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
+                    </h6>
+                </div>
+            </li>
+            <% } %>
+
+            <% if(cart_details.wallet_amount_used > 0) { %>
+            <li class="p-0 alSixCart">
+                <div class='media-body'>
+                    <h6 class="d-flex align-items-center justify-content-between">
+                        <span class="ellips"> {{ __('Wallet Amount') }} </span>
+                            <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
+                    </h6>
+                </div>
+            </li>
+            <% } %>
+        </ul>
+        <div class="cart-sub-total d-flex align-items-center justify-content-between">
+            <span>{{ __('Total') }}</span>
+            <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_payable_amount %></span>
+        </div>
+        <a class="checkout-btn text-center d-block" href="{{ route('showCart') }}">{{ __('Checkout') }}</a>
+    </script>
     <script type="text/template" id="empty_cart_template">
         <div class="row">
-                                    <div class="col-12 text-center pb-3">
-                                        <img class="w-50 pt-3 pb-1" src="{{ asset('front-assets/images/ic_emptycart.svg') }}" alt="">
-                                        <h5>{{ __('Your cart is empty') }}<br/>{{ __('Add an item to begin') }}</h5>
-                                    </div>
-                                </div>
-                            </script>
+            <div class="col-12 text-center pb-3">
+                <img class="w-50 pt-3 pb-1" src="{{ asset('front-assets/images/ic_emptycart.svg') }}" alt="">
+                <h5>{{ __('Your cart is empty') }}<br/>{{ __('Add an item to begin') }}</h5>
+            </div>
+        </div>
+    </script>
     <script type="text/template" id="variant_image_template">
         <img src="<%= media.image_fit %>300/300<%= media.image_path %>" alt="">
                             </script>
     <script type="text/template" id="variant_template">
         <% if(variant.product.inquiry_only == 0) { %>
-                                    <%= variant.productPrice %>
-                                    <% if(variant.compare_at_price > 0 ) { %>
-                                        <span class="org_price ml-1 font-14">{{ Session::get('currencySymbol') }}<%= variant.compare_at_price %></span>
-                                    <% } %>
-                                <% } %>
-                            </script>
+            <%= variant.productPrice %>
+            <% if(variant.compare_at_price > 0 ) { %>
+                <span class="org_price ml-1 font-14">{{ Session::get('currencySymbol') }}<%= variant.compare_at_price %></span>
+            <% } %>
+        <% } %>
+    </script>
     <script type="text/template" id="variant_quantity_template">
         <% if(variant.quantity > 0){ %>
-                                    <%
-                                    var is_customizable = false;
-                                    if(variant.isAddonExist > 0){
-                                        is_customizable = true;
-                                    }
-                                    %>
-                                    <% if(variant.check_if_in_cart != '') { %>
-                                        {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
-                                        <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href<%= variant.check_if_in_cart.id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" href="javascript:void(0)">{{ __('Add') }}</a>
-                                        <div class="number" id="show_plus_minus<%= variant.check_if_in_cart.id %>">
-                                            <span class="minus qty-minus-product <% if(is_customizable){ %> remove-customize <% } %>"  data-parent_div_id="show_plus_minus<%= variant.check_if_in_cart.id %>" data-id="<%= variant.check_if_in_cart.id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" data-cart="<%= variant.check_if_in_cart.cart_id %>">
-                                                <i class="fa fa-minus" aria-hidden="true"></i>
-                                            </span>
-                                            <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="<%= variant.check_if_in_cart.quantity %>" class="input-number" step="0.01" id="quantity_ondemand_<%= variant.check_if_in_cart.id %>" readonly>
-                                            <span class="plus qty-plus-product <% if(is_customizable){ %> repeat-customize <% } %>"  data-id="<%= variant.check_if_in_cart.id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" data-cart="<%= variant.check_if_in_cart.cart_id %>">
-                                                <i class="fa fa-plus" aria-hidden="true"></i>
-                                            </span>
-                                        </div>
-                                    <% }else{ %>
-                                        {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
-                                        <a class="add-cart-btn add_vendor_product" id="aadd_button_href<%= variant.product_id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.product.vendor_id %>" data-product_id="<%= variant.product_id %>" data-addon="<%= variant.isAddonExist %>" href="javascript:void(0)">{{ __('Add') }}</a>
-                                        <div class="number" style="display:none;" id="ashow_plus_minus<%= variant.product_id %>">
-                                            <span class="minus qty-minus-product"  data-parent_div_id="show_plus_minus<%= variant.product_id %>" readonly data-id="<%= variant.product_id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
-                                                <i class="fa fa-minus" aria-hidden="true"></i>
-                                            </span>
-                                            <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d<%= variant.product_id %>" readonly placeholder="1" type="text" value="2" class="input-number input_qty" step="0.01">
-                                            <span class="plus qty-plus-product"  data-id="" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
-                                                <i class="fa fa-plus" aria-hidden="true"></i>
-                                            </span>
-                                        </div>
-                                    <% } %>
-                                    <% if(is_customizable){ %>
-                                        <div class="customizable-text">customizable</div>
-                                    <% } %>
-                                <% }else{ %>
-                                    <span class="text-danger">{{ __('Out of stock')}}</span>
-                                <% } %>
-                            </script>
+            <%
+            var is_customizable = false;
+            if(variant.isAddonExist > 0){
+                is_customizable = true;
+            }
+            %>
+            <% if(variant.check_if_in_cart != '') { %>
+                {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
+                <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href<%= variant.check_if_in_cart.id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" href="javascript:void(0)">{{ __('Add') }}</a>
+                <div class="number" id="show_plus_minus<%= variant.check_if_in_cart.id %>">
+                    <span class="minus qty-minus-product <% if(is_customizable){ %> remove-customize <% } %>"  data-parent_div_id="show_plus_minus<%= variant.check_if_in_cart.id %>" data-id="<%= variant.check_if_in_cart.id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" data-cart="<%= variant.check_if_in_cart.cart_id %>">
+                        <i class="fa fa-minus" aria-hidden="true"></i>
+                    </span>
+                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="<%= variant.check_if_in_cart.quantity %>" class="input-number" step="0.01" id="quantity_ondemand_<%= variant.check_if_in_cart.id %>" readonly>
+                    <span class="plus qty-plus-product <% if(is_customizable){ %> repeat-customize <% } %>"  data-id="<%= variant.check_if_in_cart.id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" data-cart="<%= variant.check_if_in_cart.cart_id %>">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                    </span>
+                </div>
+            <% }else{ %>
+                {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
+                <a class="add-cart-btn add_vendor_product" id="aadd_button_href<%= variant.product_id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.product.vendor_id %>" data-product_id="<%= variant.product_id %>" data-addon="<%= variant.isAddonExist %>" href="javascript:void(0)">{{ __('Add') }}</a>
+                <div class="number" style="display:none;" id="ashow_plus_minus<%= variant.product_id %>">
+                    <span class="minus qty-minus-product"  data-parent_div_id="show_plus_minus<%= variant.product_id %>" readonly data-id="<%= variant.product_id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
+                        <i class="fa fa-minus" aria-hidden="true"></i>
+                    </span>
+                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d<%= variant.product_id %>" readonly placeholder="1" type="text" value="2" class="input-number input_qty" step="0.01">
+                    <span class="plus qty-plus-product"  data-id="" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                    </span>
+                </div>
+            <% } %>
+            <% if(is_customizable){ %>
+                <div class="customizable-text">customizable</div>
+            <% } %>
+        <% }else{ %>
+            <span class="text-danger">{{ __('Out of stock')}}</span>
+        <% } %>
+    </script>
     <script type="text/template" id="addon_template">
         <% if(addOnData != ''){ %>
-                                    <% if(addOnData.product_image){ %>
-                                        <div class="d-flex" style="height:200px">
-                                            <img class="w-100" src="<%= addOnData.product_image %>" alt=""  style="object-fit:cover">
-                                        </div>
-                                    <% } %>
-                                    <div class="modal-header">
-                                        <div class="d-flex flex-column">
-                                            <h5 class="modal-title" id="product_addonLabel"><%= addOnData.translation_title %></h5>
-                                            <% if(addOnData.averageRating > 0){ %>
-                                            <div class="rating-text-box justify-content-start" style="width: max-content;">
-                                                <span><%= addOnData.averageRating %></span>
-                                                <i class="fa fa-star" aria-hidden="true"></i>
-                                            </div>
-                                            <% } %>
-                                            <span><small><%= addOnData.translation_description %></small></span>
-                                        </div>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
+        <% if(addOnData.product_image){ %>
+            <div class="d-flex" style="height:200px">
+                <img class="w-100" src="<%= addOnData.product_image %>" alt=""  style="object-fit:cover">
+            </div>
+        <% } %>
+        <div class="modal-header">
+            <div class="d-flex flex-column">
+                <h5 class="modal-title" id="product_addonLabel"><%= addOnData.translation_title %></h5>
+                <% if(addOnData.averageRating > 0){ %>
+                <div class="rating-text-box justify-content-start" style="width: max-content;">
+                    <span><%= addOnData.averageRating %></span>
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                </div>
+                <% } %>
+                <span><small><%= addOnData.translation_description %></small></span>
+            </div>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body p-0">
+            <% _.each(addOnData.add_on, function(addon, key1){ %>
+                <div class="border-product border-top">
+                    <div class="addon-product" style="padding: 16px;">
+                        <h4 addon_id="<%= addon.addon_id %>" class="header-title productAddonSet mb-0"><%= addon.title %></h4>
+                        <div class="addonSetMinMax mb-2">
+                            <%
+                                var min_select = '';
+                                if(addon.min_select > 0){
+                                    min_select = "{{ __('Minimum')}} " + addon.min_select;
+                                }
+                                var max_select = '';
+                                if(addon.max_select > 0){
+                                    max_select = "{{ __('Maximum')}} " + addon.max_select;
+                                }
+                                if( (min_select != '') && (max_select != '') ){
+                                    min_select = min_select + " {{ __('and')}} ";
+                                }
+                            %>
+                            <% if( (min_select != '') || (max_select != '') ) { %>
+                                <small><%=min_select + max_select %> {{ __('Selections Allowed')}}</small>
+                            <% } %>
+                        </div>
+                        <div class="productAddonSetOptions" data-min="<%= addon.min_select %>" data-max="<%= addon.max_select %>" data-addonset-title="<%= addon.title %>">
+                            <% _.each(addon.setoptions, function(option, key2){ %>
+                                <% if(key2 == '5')  { %>
+                                    <div class="d-flex justify-content-end">
+                                        <a class="show_subet_addeon" data-div_id_show="subOption<%= addon.addon_id  %>_<%= key2  %>"  href="javascript:void(0)">{{ __('Show more') }}</a>
                                     </div>
-                                    <div class="modal-body p-0">
-                                        <% _.each(addOnData.add_on, function(addon, key1){ %>
-                                            <div class="border-product border-top">
-                                                <div class="addon-product" style="padding: 16px;">
-                                                    <h4 addon_id="<%= addon.addon_id %>" class="header-title productAddonSet mb-0"><%= addon.title %></h4>
-                                                    <div class="addonSetMinMax mb-2">
-                                                        <%
-                                                            var min_select = '';
-                                                            if(addon.min_select > 0){
-                                                                min_select = "{{ __('Minimum')}} " + addon.min_select;
-                                                            }
-                                                            var max_select = '';
-                                                            if(addon.max_select > 0){
-                                                                max_select = "{{ __('Maximum')}} " + addon.max_select;
-                                                            }
-                                                            if( (min_select != '') && (max_select != '') ){
-                                                                min_select = min_select + " {{ __('and')}} ";
-                                                            }
-                                                        %>
-                                                        <% if( (min_select != '') || (max_select != '') ) { %>
-                                                            <small><%=min_select + max_select %> {{ __('Selections Allowed')}}</small>
-                                                        <% } %>
-                                                    </div>
-                                                    <div class="productAddonSetOptions" data-min="<%= addon.min_select %>" data-max="<%= addon.max_select %>" data-addonset-title="<%= addon.title %>">
-                                                        <% _.each(addon.setoptions, function(option, key2){ %>
-                                                            <% if(key2 == '5')  { %>
-                                                                <div class="d-flex justify-content-end">
-                                                                    <a class="show_subet_addeon" data-div_id_show="subOption<%= addon.addon_id  %>_<%= key2  %>"  href="javascript:void(0)">{{ __('Show more') }}</a>
-                                                                </div>
-                                                                <div class="more-subset d-none" id="subOption<%= addon.addon_id %>_<%= key2 %>" >
-                                                            <% } %>
-                                                            <div class="checkbox-success d-flex mb-1 " <%= key2  %> >
-                                                                <label class="pr-2 mb-0 flex-fill font-14" for="inlineCheckbox_<%= key1 %>_<%= key2 %>">
-                                                                    <%= option.title %>
-                                                                </label>
-                                                                <div>
-                                                                    <span class="addon_price mr-1 font-14">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(option.price) %></span>
-                                                                    <input type="checkbox" id="inlineCheckbox_<%= key1 %>_<%= key2 %>" class="product_addon_option" name="addonData[<%= key1 %>][]" addonId="<%= addon.addon_id %>" addonOptId="<%= option.id %>" addonPrice="<%= option.price %>">
-                                                                </div>
-                                                            </div>
-                                                            <% if((key2 > 5) && (key2 == (_.size(addon.setoptions) - 1 )) ){ %>
-                                                            </div>
-                                                            <% } %>
-                                                        <% }); %>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        <% }); %>
-                                        <div class="addon_response text-danger font-14 d-none" style="padding:0 16px"></div>
-                                    </div>
-                                    <div class="modal-footer flex-nowrap align-items-center">
-                                        <div class="counter-container d-flex align-items-center">
-                                            <span class="minus qty-action" >
-                                                <i class="fa fa-minus" aria-hidden="true"></i>
-                                            </span>
-                                            <input style="text-align:center; width:60px; height:24px; padding-bottom: 3px; border:none" placeholder="1" type="text" value="1" class="addon-input-number" step="1" readonly>
-                                            <span class="plus qty-action" >
-                                                <i class="fa fa-plus" aria-hidden="true"></i>
-                                            </span>
-                                        </div>
-                                        <input type="hidden" id="addonVariantPriceVal" value="<%= addOnData.variant_price %>">
-                                        <a class="btn btn-solid add-cart-btn flex-fill add_vendor_addon_product" id="add_vendor_addon_product" href="javascript:void(0)" data-variant_id="<%= addOnData.variant[0].id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= addOnData.vendor_id %>" data-product_id="<%= addOnData.id %>">{{ __('Add') }} {{ Session::get('currencySymbol') }}<span class="addon_variant_price"><%= addOnData.variant_price %></span></a>
-                                    </div>
+                                    <div class="more-subset d-none" id="subOption<%= addon.addon_id %>_<%= key2 %>" >
                                 <% } %>
-                            </script>
+                                <div class="checkbox-success d-flex mb-1 " <%= key2  %> >
+                                    <label class="pr-2 mb-0 flex-fill font-14" for="inlineCheckbox_<%= key1 %>_<%= key2 %>">
+                                        <%= option.title %>
+                                    </label>
+                                    <div>
+                                        <span class="addon_price mr-1 font-14">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(option.price) %></span>
+                                        <input type="checkbox" id="inlineCheckbox_<%= key1 %>_<%= key2 %>" class="product_addon_option" name="addonData[<%= key1 %>][]" addonId="<%= addon.addon_id %>" addonOptId="<%= option.id %>" addonPrice="<%= option.price %>">
+                                    </div>
+                                </div>
+                                <% if((key2 > 5) && (key2 == (_.size(addon.setoptions) - 1 )) ){ %>
+                                </div>
+                                <% } %>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+            <div class="addon_response text-danger font-14 d-none" style="padding:0 16px"></div>
+        </div>
+        <div class="modal-footer flex-nowrap align-items-center">
+            <div class="counter-container d-flex align-items-center">
+                <span class="minus qty-action" >
+                    <i class="fa fa-minus" aria-hidden="true"></i>
+                </span>
+                <input style="text-align:center; width:60px; height:24px; padding-bottom: 3px; border:none" placeholder="1" type="text" value="1" class="addon-input-number" step="1" readonly>
+                <span class="plus qty-action" >
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                </span>
+            </div>
+            <input type="hidden" id="addonVariantPriceVal" value="<%= addOnData.variant_price %>">
+            <a class="btn btn-solid add-cart-btn flex-fill add_vendor_addon_product" id="add_vendor_addon_product" href="javascript:void(0)" data-variant_id="<%= addOnData.variant[0].id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= addOnData.vendor_id %>" data-product_id="<%= addOnData.id %>">{{ __('Add') }} {{ Session::get('currencySymbol') }}<span class="addon_variant_price"><%= addOnData.variant_price %></span></a>
+        </div>
+    <% } %>
+</script>
     <div class="modal fade remove-item-modal" id="remove_item_modal" data-backdrop="static" data-keyboard="false"
         tabindex="-1" aria-labelledby="remove_itemLabel" aria-hidden="true"
         style="background-color: rgba(0,0,0,0.8); z-index: 1051">

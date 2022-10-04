@@ -155,7 +155,7 @@ class CustomDomain{
                     }
               }
           }
-
+         // pr(Session::get('latitude'));
           if(empty(Session::get('vendorType'))){
               Session::put('vendorType', $single_vendor_type);
           }

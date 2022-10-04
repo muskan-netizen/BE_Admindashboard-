@@ -106,6 +106,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('customize', 'Client\ClientPreferenceController@getCustomizePage')->name('configure.customize')->middleware('onlysuperadmin');
         Route::post('configUpdate/{code}', 'Client\ClientPreferenceController@update')->name('configure.update');
         Route::post('configUpdate', 'Client\ClientPreferenceController@updateTaxInclusivePrice')->name('configure.taxinclusive');
+        Route::post('additionalUpdate', 'Client\ClientPreferenceController@additionalupdate')->name('additional.update');
+        Route::post('configUpdateAdditional/{code}', 'Client\ClientPreferenceController@updateAdditional')->name('configure.updateAdditional');
 
         Route::post('custom/mod/verification', 'Client\ClientPreferenceController@customModVerification')->name('custom.mod.verification');
 
@@ -475,7 +477,13 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         // vendor multi banner for t6 :)
         Route::post('vendor_banner/store', 'Client\VendorMultiBannerController@store')->name("vendor_banner.store");
         Route::get('vendor_banner/destroy/{id}', 'Client\VendorMultiBannerController@destroy')->name("vendor_banner.destroy");
-        
+
+
+        /**  Hubspot Create a contact.
+         * 
+         */
+        Route::post('/hubspot/create-contact', 'Hubspot\HubspotApiController@create');
+        /** end */
     });
 });
 

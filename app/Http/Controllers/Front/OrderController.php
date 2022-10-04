@@ -386,7 +386,11 @@ class OrderController extends FrontController
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
-                    $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
+                    if(!empty($address)){
+                        $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
+                    }else{
+                        $email_template_content = str_ireplace("{address}", '', $email_template_content);
+                    }
                 }
                 $email_data = [
                     'code' => $otp,
@@ -691,7 +695,7 @@ class OrderController extends FrontController
                 # if vendor selected auto accept
                 $autoaccept = $this->autoAcceptOrderIfOn($response->data->id);
             }
-            return $this->successResponse($response->data, 'Order placed successfully.', 201);
+            return $this->successResponse($response->data, __('Order placed successfully.'), 201);
         } else {
             return $this->errorResponse($response->message, 400);
         }
@@ -1513,7 +1517,7 @@ class OrderController extends FrontController
                 ],
                 "priority" => "high"
             ];
-           
+           Log::info('data for notification '.json_encode($data));
             if(!empty($from)){
                 // helper function
                 sendFcmCurlRequest($data);

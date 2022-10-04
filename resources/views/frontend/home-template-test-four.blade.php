@@ -159,11 +159,11 @@
 				</div>
 				<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
 					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-					<span class="sr-only">Previous</span>
+					<span class="sr-only">{{__('Previous')}}</span>
 				</a>
 				<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
 					<span class="carousel-control-next-icon" aria-hidden="true"></span>
-					<span class="sr-only">Next</span>
+					<span class="sr-only">{{__('Next')}}</span>
 				</a>
 			</div>
 
@@ -182,11 +182,11 @@
 				</div>
 				<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
 					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-					<span class="sr-only">Previous</span>
+					<span class="sr-only">{{__('Previous')}}</span>
 				</a>
 				<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
 					<span class="carousel-control-next-icon" aria-hidden="true"></span>
-					<span class="sr-only">Next</span>
+					<span class="sr-only">{{__('Next')}}</span>
 				</a>
 			</div>
 				</div>
@@ -331,7 +331,7 @@
 							   <div>
 								  <div class="alSpaListBox">
 									 <div class="alSpaCityBox">
-										<a href="/cities/{{$cities['slug']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
+										<a href="javascript:void(0);" class="cities updateLocationByCity" data-lat="{{$cities['latitude']}}" data-long="{{$cities['longitude']}}" data-place_id="{{$cities['place_id']}}" data-address="{{$cities['address']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
 									 </div>
 									 <p>{{$cities["title"]}} </p>
 								  </div>            
@@ -414,11 +414,11 @@
 	</div>
 	<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
 		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-		<span class="sr-only">Previous</span>
+		<span class="sr-only">{{__('Previous')}}</span>
 	</a>
 	<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
 		<span class="carousel-control-next-icon" aria-hidden="true"></span>
-		<span class="sr-only">Next</span>
+		<span class="sr-only">{{__('Next')}}</span>
 	</a>
 </script>
 
@@ -448,11 +448,11 @@
 	</div>
 	<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
 		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-		<span class="sr-only">Previous</span>
+		<span class="sr-only">{{__('Previous')}}</span>
 	</a>
 	<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
 		<span class="carousel-control-next-icon" aria-hidden="true"></span>
-		<span class="sr-only">Next</span>
+		<span class="sr-only">{{__('Next')}}</span>
 	</a>
 </script>
 

@@ -65,7 +65,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             <div class="float-right">
                                 <i class="mdi mdi-cart-plus widget-icon"></i>
                             </div>
-                            <h5 class="" title="Number of Orders">Orders</h5>
+                            <h5 class="" title="Number of Orders">{{ __('Orders') }}</h5>
                             <h3 class="mt-3 mb-3" id="total_orders">0</h3>
                             <p class="mb-0" id="orders_change">
                                 <!-- <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 1.08%</span> -->
@@ -117,7 +117,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 <!-- month wise data shown start here  -->
                 <div class="card-body alRevenueBox">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h4 class="header-title">Revenue Monthly</h4>
+                        <h4 class="header-title">{{ __('Revenue Monthly') }}</h4>
                         <!-- <div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
@@ -147,7 +147,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 <div class="card-body">
                     <!-- total revenue title start here -->
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h4 class="header-title">Revenue Weekly</h4>
+                        <h4 class="header-title">{{ __('Revenue Weekly') }}</h4>
                         <!-- <div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop " data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
@@ -175,7 +175,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
 
                             <!-- Previous week data start here -->
                             <div class="col-sm-6">
-                                <p class="text-muted mb-0 mt-3">Previous Week</p>
+                                <p class="text-muted mb-0 mt-3">{{ __('Previous Week') }}</p>
                                 <h2 class="fw-normal mb-3">
                                     <small class="mdi mdi-checkbox-blank-circle text-success align-middle me-1"></small>
                                     <span id="revenueLastWeek">0</span>
@@ -209,7 +209,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
             <div class="card alRevenueByLocation">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="header-title">Revenue By Location</h4>
+                        <h4 class="header-title">{{ __('Revenue By Location') }}</h4>
                         <!-- <div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
@@ -284,11 +284,11 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">$79.49</h5>
-                                            <span class="text-muted font-13">Price</span>
+                                            <span class="text-muted font-13">{{ __('Price') }}</span>
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">82</h5>
-                                            <span class="text-muted font-13">Quantity</span>
+                                            <span class="text-muted font-13">{{ __('Quantity') }}</span>
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">$6,518.18</h5>
@@ -302,11 +302,11 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">$128.50</h5>
-                                            <span class="text-muted font-13">Price</span>
+                                            <span class="text-muted font-13">{{ __('Price') }}</span>
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">37</h5>
-                                            <span class="text-muted font-13">Quantity</span>
+                                            <span class="text-muted font-13">{{ __('Quantity') }}</span>
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">$4,754.50</h5>
@@ -320,11 +320,11 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">$39.99</h5>
-                                            <span class="text-muted font-13">Price</span>
+                                            <span class="text-muted font-13">{{ __('Price') }}</span>
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">64</h5>
-                                            <span class="text-muted font-13">Quantity</span>
+                                            <span class="text-muted font-13">{{ __('Quantity') }}</span>
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">$2,559.36</h5>
@@ -338,11 +338,11 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">$20.00</h5>
-                                            <span class="text-muted font-13">Price</span>
+                                            <span class="text-muted font-13">{{ __('Price') }}</span>
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">184</h5>
-                                            <span class="text-muted font-13">Quantity</span>
+                                            <span class="text-muted font-13">{{ __('Quantity') }}</span>
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">$3,680.00</h5>
@@ -356,11 +356,11 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">$28.49</h5>
-                                            <span class="text-muted font-13">Price</span>
+                                            <span class="text-muted font-13">{{ __('Price') }}</span>
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">69</h5>
-                                            <span class="text-muted font-13">Quantity</span>
+                                            <span class="text-muted font-13">{{ __('Quantity') }}</span>
                                         </td>
                                         <td>
                                             <h5 class="font-14 my-1 fw-normal">$1,965.81</h5>
