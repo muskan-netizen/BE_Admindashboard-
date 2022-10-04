@@ -66,7 +66,7 @@ class VendorRegistrationDocumentController extends BaseController{
             }
 
             DB::commit();
-            return $this->successResponse($vendor_registration_document, 'Vendor Registration Document Added Successfully.');
+            return $this->successResponse($vendor_registration_document, __('Vendor Registration Document Added Successfully.'));
         } catch (Exception $e) {
             DB::rollback();
             return $this->errorResponse([], $e->getMessage());
