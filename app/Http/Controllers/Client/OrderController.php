@@ -791,6 +791,7 @@ class OrderController extends BaseController
                         //Create Shipping request for dispatcher
                        // \Log::info('11');
                         $order_dispatch = $this->checkIfanyProductLastMileon($request);
+                    //  pr($order_dispatch);
                         if ($order_dispatch && $order_dispatch == 1){
                             $stats = $this->insertInVendorOrderDispatchStatus($request);
                             $orderPlaced = true;
@@ -996,16 +997,10 @@ class OrderController extends BaseController
             $token[] = $device;
         }
         //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
-        // dd($token);
-
-        $from = env('FIREBASE_SERVER_KEY');
 
         $notification_content = NotificationTemplate::where('id', 2)->first();
-        if ($notification_content) {
-            $headers = [
-                'Authorization: key=' . $from,
-                'Content-Type: application/json',
-            ];
+        
+        if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -1013,18 +1008,7 @@ class OrderController extends BaseController
                     'body'  => $notification_content->content,
                 ]
             ];
-            $dataString = $data;
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-            $result = curl_exec($ch);
-            // dd($result);
-            curl_close($ch);
+            sendFcmCurlRequest($data);
         }
     }
     /// ******************  check If any Product Last Mile on   ************************ ///////////////
@@ -1309,16 +1293,15 @@ class OrderController extends BaseController
             $tasks = array();
             $meta_data = '';
 
-            $team_tag = null;
-            if (!empty($dispatch_domain->last_mile_team))
-                $team_tag = $dispatch_domain->last_mile_team;
+            $unique = Auth::user()->code;
+            $team_tag = $unique . "_" . $vendor;
 
-                if (isset($order->scheduled_date_time) && !empty($order->scheduled_date_time)) {
-                    $task_type = 'schedule';
-                    $schedule_time = $order->scheduled_date_time ?? null;
-                } else {
-                    $task_type = 'now';
-                }
+            if (isset($order->scheduled_date_time) && !empty($order->scheduled_date_time)) {
+                $task_type = 'schedule';
+                $schedule_time = $order->scheduled_date_time ?? null;
+            } else {
+                $task_type = 'now';
+            }
                
             $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
             if(!empty($orderVendorDetails->scheduled_date_time) && $orderVendorDetails->scheduled_date_time > 0){
@@ -1927,8 +1910,7 @@ class OrderController extends BaseController
 
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            $from = $client_preferences->fcm_server_key;
-            if ($order_status_id == 2) {
+           if ($order_status_id == 2) {
                 $notification_content = NotificationTemplate::where('id', 5)->first();
             } elseif ($order_status_id == 3) {
                 $notification_content = NotificationTemplate::where('id', 6)->first();
@@ -1940,10 +1922,6 @@ class OrderController extends BaseController
                 $notification_content = NotificationTemplate::where('id', 9)->first();
             }
             if ($notification_content) {
-                $headers = [
-                    'Authorization: key=' . $from,
-                    'Content-Type: application/json',
-                ];
                 $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
                 $data = [
                     "registration_ids" => $devices,
@@ -1962,17 +1940,7 @@ class OrderController extends BaseController
                     ],
                     "priority" => "high"
                 ];
-                $dataString = $data;
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                $result = curl_exec($ch);
-
-                curl_close($ch);
+                sendFcmCurlRequest($data);
             }
         }
     }

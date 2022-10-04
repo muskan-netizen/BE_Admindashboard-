@@ -520,13 +520,9 @@ class DispatcherController extends FrontController
 
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
 
-            $from = $client_preferences->fcm_server_key;
-                $title = "test notification";
+               $title = "test notification";
                 $body =  "test";
-                $headers = [
-                    'Authorization: key=' . $from,
-                    'Content-Type: application/json',
-                ];
+               
                 //pr($title);
                 //pr($body);
                 $data = [
@@ -548,19 +544,7 @@ class DispatcherController extends FrontController
                     "priority" => "high"
                 ];
                 //    Log::info(json_encode($data));
-                $dataString = $data;
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                $result = curl_exec($ch);
-                //    Log::info($result);
-                curl_close($ch);
-                pr( $result);
-               // return $result;
+                sendFcmCurlRequest($data);
         }
     }
     /******************    ---- send notification to user -----   ******************/
@@ -581,14 +565,9 @@ class DispatcherController extends FrontController
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
 
             if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-
-                $from = $client_preferences->fcm_server_key;
                     $title = __('Order Status : #').($orderNumber ?  $orderNumber->order_number : '');
                     $body =  $OrderStatus ? ($OrderStatus->status_data ? $OrderStatus->status_data['driver_status'] : '') : '';
-                    $headers = [
-                        'Authorization: key=' . $from,
-                        'Content-Type: application/json',
-                    ];
+                    
                     //pr($title);
                     //pr($body);
                     $data = [
@@ -610,20 +589,7 @@ class DispatcherController extends FrontController
                         "priority" => "high"
                     ];
                     //    Log::info(json_encode($data));
-                    $dataString = $data;
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                    curl_setopt($ch, CURLOPT_POST, true);
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                    $result = curl_exec($ch);
-                    //    Log::info($result);
-                    curl_close($ch);
-                    \Log::info($result);
-                    return $result;
-
+                    sendFcmCurlRequest($data);
             }
         }
 
@@ -648,13 +614,10 @@ class DispatcherController extends FrontController
  
              if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
  
-                 $from = $client_preferences->fcm_server_key;
+                 
                      $title = __('Order Status : #').($orderNumber ?  $orderNumber->order_number : '');
                      $body =  $OrderStatus ? ($OrderStatus->status_data ? $OrderStatus->status_data['driver_status'] : '') : '';
-                     $headers = [
-                         'Authorization: key=' . $from,
-                         'Content-Type: application/json',
-                     ];
+                     
                      //pr($title);
                      //pr($body);
                      $data = [
@@ -675,20 +638,7 @@ class DispatcherController extends FrontController
                          ],
                          "priority" => "high"
                      ];
-                     //    Log::info(json_encode($data));
-                     $dataString = $data;
-                     $ch = curl_init();
-                     curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                     curl_setopt($ch, CURLOPT_POST, true);
-                     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                     $result = curl_exec($ch);
-                     //    Log::info($result);
-                     curl_close($ch);
-                     \Log::info($result);
-                     return $result;
+                     sendFcmCurlRequest($data);
  
              }
          }
@@ -750,13 +700,9 @@ class DispatcherController extends FrontController
         //    Log::info($devices);
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            $from = $client_preferences->fcm_server_key;
             $notification_content = NotificationTemplate::where('id', 13)->first();
             if ($notification_content) {
-                $headers = [
-                    'Authorization: key=' . $from,
-                    'Content-Type: application/json',
-                ];
+                
                 $body =  str_replace('{order_id}', $orderData->order_number, $notification_content->content);
                 $data = [
                     "registration_ids" => $devices,
@@ -776,17 +722,7 @@ class DispatcherController extends FrontController
                     ],
                     "priority" => "high"
                 ];
-                //    Log::info(json_encode($data));
-                $dataString = $data;
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                $result = curl_exec($ch);
-                curl_close($ch);
+                sendFcmCurlRequest($data);
             }
         }
     }
@@ -794,16 +730,13 @@ class DispatcherController extends FrontController
     /******************----Send--To--Customer--Push--Notification--Per--Distance---From---Dispatcher-----******************/
     public function dispatchCustomerDetails(Request $request, $domain = '', $web_hook_code)
     {
-        
-        DB::beginTransaction();
         $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();
         
         if(!empty($checkiftokenExist)){
             $devices = UserDevice::whereNotNull('device_token')->where('user_id', $checkiftokenExist->user_id)->pluck('device_token');
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
             if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-                    $from  = $client_preferences->fcm_server_key;
-                    $title = $request->notificationTitle;
+                   $title = $request->notificationTitle;
                     $body  =  $request->notificationDiscription;
                     $data = [
                         "registration_ids" => $devices,
@@ -824,31 +757,10 @@ class DispatcherController extends FrontController
                         "priority" => "high"
                     ];
 
-                    $data = json_encode($data);
-
-                    //FCM API end-point
-                    $url = 'https://fcm.googleapis.com/fcm/send';
                     
-                    //header with content_type api key
-                    $headers = array(
-                        'Content-Type:application/json',
-                        'Authorization:key='.$client_preferences->fcm_server_key
-                    );
-
+                    
                     //CURL request to route notification to FCM connection server (provided by Google)
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $url);
-                    curl_setopt($ch, CURLOPT_POST, true);
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-                    $result = curl_exec($ch);
-                    if ($result === FALSE) {
-                        die('Oops! FCM Send Error: ' . curl_error($ch));
-                    }
-                    curl_close($ch);
+                    $result=sendFcmCurlRequest($data);
 
                     \Log::info($result);
             }

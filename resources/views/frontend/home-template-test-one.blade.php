@@ -297,11 +297,11 @@ $preference = $client_preference_detail;
          </div>
          <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-         <span class="sr-only">Previous</span>
+         <span class="sr-only">{{__('Previous')}}</span>
          </a>
          <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-         <span class="sr-only">Next</span>
+         <span class="sr-only">{{__('Next')}}</span>
          </a>
       </div>
       <div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;">
@@ -318,11 +318,11 @@ $preference = $client_preference_detail;
          </div>
          <a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-         <span class="sr-only">Previous</span>
+         <span class="sr-only">{{__('Previous')}}</span>
          </a>
          <a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-         <span class="sr-only">Next</span>
+         <span class="sr-only">{{__('Next')}}</span>
          </a>
       </div>
       <!-- <div class="shimmer_effect">
@@ -404,7 +404,7 @@ $preference = $client_preference_detail;
                         <div>
                            <div class="alSpaListBox">
                               <div class="alSpaCityBox">
-                                 <a href="/cities/{{$cities['slug']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
+                                 <a href="javascript:void(0);" class="cities updateLocationByCity" data-lat="{{$cities['latitude']}}" data-long="{{$cities['longitude']}}" data-place_id="{{$cities['place_id']}}" data-address="{{$cities['address']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
                               </div>
                               <p>{{$cities["title"]}} </p>
                            </div>            
@@ -556,11 +556,11 @@ $preference = $client_preference_detail;
 	</div>
 	<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
 		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-		<span class="sr-only">Previous</span>
+		<span class="sr-only">{{__('Previous')}}</span>
 	</a>
 	<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
 		<span class="carousel-control-next-icon" aria-hidden="true"></span>
-		<span class="sr-only">Next</span>
+		<span class="sr-only">{{__('Next')}}</span>
 	</a>
 </script>
 
@@ -590,11 +590,11 @@ $preference = $client_preference_detail;
 	</div>
 	<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
 		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-		<span class="sr-only">Previous</span>
+		<span class="sr-only">{{__('Previous')}}</span>
 	</a>
 	<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
 		<span class="carousel-control-next-icon" aria-hidden="true"></span>
-		<span class="sr-only">Next</span>
+		<span class="sr-only">{{__('Next')}}</span>
 	</a>
 </script>
 
@@ -791,7 +791,9 @@ $preference = $client_preference_detail;
 
 @endsection
 @section('home-page')
-<script type="text/javascript" src="{{asset('front-assets/js/homepage.js')}}"></script>
+{{-- <script type="text/javascript" src="{{asset('front-assets/js/homepage.js')}}"></script> --}}
+<script type="text/javascript" src="{{asset('assets/js/template/commonFunction.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/js/template/template-one/templateFunction.js')}}"></script>
 @endsection
 @section('js-script')
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
@@ -800,39 +802,6 @@ $preference = $client_preference_detail;
 {{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
 @endsection
 @section('script')
-<script type="text/javascript">
-function showKeycode(e) {
-   if(e.code == 'KeyZ'){
-      alert(e.keyCode);
-   }
-}
-
-document.addEventListener('keydown',showKeycode);
-   // AOS.init();
-   // 	$('.center').slick({
-   //   centerMode: true,
-   //   centerPadding: '60px',
-   //   slidesToShow: 2,
-   //   responsive: [
-   //     {breakpoint: 768, settings: { arrows: false, centerMode: true, centerPadding: '40px', slidesToShow: 2}},
-   //     {breakpoint: 480, settings: { arrows: false, centerMode: true, centerPadding: '40px', slidesToShow: 1}}
-   //   ]
-   // });
-   function changeImage(image, check) {
-     var  icon = $(image).attr('data-icon');
-     var  icon_two = $(image).attr('data-icon_two');
-     if(check == 1)
-     {
-       setTimeout(function () {
-           $(image).attr('data-src',icon_two);
-           $(image).attr('src',icon_two);
-       },200);
-     }else if(check == 0){
-          setTimeout(function () {
-              $(image).attr('data-src',icon);
-              $(image).attr('src',icon);
-          },200);
-     }
-   }
-</script>
+@endsection
+@section('script-bottom')
 @endsection
