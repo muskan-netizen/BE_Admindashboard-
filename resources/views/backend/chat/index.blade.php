@@ -54,7 +54,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">{{ getNomenclatureName('User/Vendsor', true) }}</h4>
+                    <h4 class="page-title">{{ getNomenclatureName('User/Vendor', true) }}</h4>
                 </div>
             </div>
         </div>
@@ -94,7 +94,7 @@
       $rePre = 'client/chat/user';
       $fetchDe = 'fetchAllRoom';
 
-      
+
   @endphp
 @endsection
 @section('script-bottom')
@@ -107,7 +107,7 @@
     var apiPre = `<?php echo $apiPre; ?>`;
     var rePre = `<?php echo $rePre; ?>`;
     var fetchDe = `<?php echo $fetchDe; ?>`;
-    
+
 </script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 {{-- <script src="{{asset('assets/js/chat/chat.js')}}"></script> --}}
