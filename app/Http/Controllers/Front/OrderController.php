@@ -349,14 +349,14 @@ class OrderController extends FrontController
         $otp = mt_rand(100000, 999999);
         if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
             $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
-            if ($vendor_id == "") {
-                $sendto =  $user->email;
-            } else {
+            // if ($vendor_id == "") {
+                $sendtoUser =  $user->email;
+            // } else {
                 $vendor = Vendor::where('id', $vendor_id)->first();
                 if ($vendor) {
                     $sendto =  $vendor->email;
                 }
-            }
+            // }
             $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
             $client_name = 'Sales';
             $mail_from = $data->mail_from;
@@ -392,6 +392,7 @@ class OrderController extends FrontController
                         $email_template_content = str_ireplace("{address}", '', $email_template_content);
                     }
                 }
+                /* -- Sending email to vendor -- */
                 $email_data = [
                     'code' => $otp,
                     'link' => "link",
@@ -413,9 +414,12 @@ class OrderController extends FrontController
                 }else{
                     $email_data['send_to_cc'] = 0;
                 }
-                // $res = $this->testOrderMail($email_data);
-                // dd($res);
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+
+                /* -- Sending email to customer -- */
+                $email_data['email'] = $sendtoUser;
+                dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+
                 $notified = 1;
             } catch (\Exception $e) {
             }
