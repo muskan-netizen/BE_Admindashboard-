@@ -1373,8 +1373,6 @@
     @include('backend.vendor.modals')
 @endsection
 @section('script')
-
-
 <script src="{{asset('js/adminVendor.js')}}"></script>
     @include('backend.vendor.pagescript')
     <script>
