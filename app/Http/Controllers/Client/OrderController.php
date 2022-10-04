@@ -1293,16 +1293,15 @@ class OrderController extends BaseController
             $tasks = array();
             $meta_data = '';
 
-            $team_tag = null;
-            if (!empty($dispatch_domain->last_mile_team))
-                $team_tag = $dispatch_domain->last_mile_team;
+            $unique = Auth::user()->code;
+            $team_tag = $unique . "_" . $vendor;
 
-                if (isset($order->scheduled_date_time) && !empty($order->scheduled_date_time)) {
-                    $task_type = 'schedule';
-                    $schedule_time = $order->scheduled_date_time ?? null;
-                } else {
-                    $task_type = 'now';
-                }
+            if (isset($order->scheduled_date_time) && !empty($order->scheduled_date_time)) {
+                $task_type = 'schedule';
+                $schedule_time = $order->scheduled_date_time ?? null;
+            } else {
+                $task_type = 'now';
+            }
                
             $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
             if(!empty($orderVendorDetails->scheduled_date_time) && $orderVendorDetails->scheduled_date_time > 0){
