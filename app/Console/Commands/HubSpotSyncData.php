@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Client as ClientData;
 use App\Models\ClientPreferenceAdditional;
+use App\Http\Traits\ValidatorTrait;
 
 use Log;
 use Config;
@@ -16,6 +17,7 @@ use Carbon\Carbon;
 class HubSpotSyncData extends Command
 {
     use ThirdPartyTrait;
+    use ValidatorTrait;
     /**
      * The name and signature of the console command.
      *
@@ -76,7 +78,7 @@ class HubSpotSyncData extends Command
                
                 //$client_preferences = ClientPreference::on($database_name)->first();
                 $arr = ['hubspot_access_token','is_hubspot_enable','hubspot_last_update'];
-                $ClientPreference = ClientPreferenceAdditional::on($database_name)->getQuery();  
+                $ClientPreference = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::on($database_name)->getQuery(): [];
                 $ClientData = ClientData::on($database_name);
                 $User = User::on($database_name)->getQuery();
                 $ClientPreferenceAdditional =clone $ClientPreference;

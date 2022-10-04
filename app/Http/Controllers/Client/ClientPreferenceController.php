@@ -11,11 +11,13 @@ use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvide
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
+use App\Http\Traits\ValidatorTrait;
 use Session;
 
 class ClientPreferenceController extends BaseController{
     use \App\Http\Traits\ClientPreferenceManager;
     use ApiResponser;
+    use ValidatorTrait;
     public $client_preference_fillable_key = ['hubspot_access_token', 'is_hubspot_enable', 'gtag_id', 'fpixel_id'];
 
     public function index(){
@@ -177,9 +179,9 @@ class ClientPreferenceController extends BaseController{
            
             foreach($validated_keys as $key => $value){ 
               
-                ClientPreferenceAdditional::updateOrCreate(
+                $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::updateOrCreate(
                     ['key_name' => $key, 'client_code' => $client->code],
-                    ['key_name' => $key, 'key_value' => $value,'client_code' => $client->code,'client_id'=> $client->id]);
+                    ['key_name' => $key, 'key_value' => $value,'client_code' => $client->code,'client_id'=> $client->id]): [];
              } 
             return redirect()->back()->with('success', 'Client settings updated successfully!');
         } catch (\Throwable $th) {
