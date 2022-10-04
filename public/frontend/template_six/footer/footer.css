@@ -20,7 +20,10 @@ footer#footer .social-links li{display: inline-block;margin-right: 10px}
 footer#footer .social-links li a i{-webkit-transform: scale(.8);transform: scale(.8);font-size: 30px;-webkit-transition: 0.3s;transition: 0.3s;color: var(--top-header-color);}
 footer#footer .social-links li a:hover i{-webkit-transform: scale(1);transform: scale(1);}
 .al_footer_template_six ul li a:hover{color: var(--top-header-color)}
-.al_footer_template_six ul li{margin-bottom: 10px;}
+.al_footer_template_six ul li{margin-bottom: 0;}
+.al_footer_template_six ul li,
+.al_footer_template_six ul li a{color: #fff;}
+.payment-card-bottom li{display: inline-block;}
 .al_footer_template_six ul.social-links li span{display: none;}
 .footer-theme .sub-title li{padding-top: 0;}
 

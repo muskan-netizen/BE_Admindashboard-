@@ -546,7 +546,7 @@
 						{{-- <a class="" href="">See All</a> --}}
 				</div>
 				<div class="row">
-					<div class=" col-12 al_custom_brand p-0">
+					<div class=" col-12 al_custom_brand">
 					<div class=" brand-slider render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
                         @foreach ($homePageData[$homePageLabel->slug] as $brand )
 						@include('frontend.home_page_2.brands')
@@ -560,7 +560,7 @@
 				<div class=" top-heading d-flex justify-content-between align-self-center">
 					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
 				</div>
-				<div class="col-12 p-0">
+				<div class="col-12">
 					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						@foreach ($homePageData[$homePageLabel->slug] as $cities )
                         <div class="alSpaListSlider">
@@ -584,7 +584,7 @@
 					<a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a>
 				</div>
 				<div class="row">
-					<div class="col-12 p-0">
+					<div class="col-12">
 						<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 							@foreach ($homePageData[$homePageLabel->slug] as $vendor )
 							@include('frontend.home_page_3.vendor')

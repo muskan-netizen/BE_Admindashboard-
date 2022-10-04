@@ -21,7 +21,7 @@
 .dark.al_body_template_three .search_bar .icon-nav .btn.btn-solid span#cart_qty_span:empty{display:none}.dark.al_body_template_three .name_location{box-shadow:none}.dark.al_body_template_three .name_location h4{color:#fff}.dark.al_body_template_three .al_t2_suppliers-slider .product-card-box:hover{border:1px solid transparent!important}.dark.al_body_template_three .al_vendor_product_page a.common-product-box{background-color:transparent}.dark.al_body_template_three .al_vendor_product_page .offer-slider .common-product-box{border:1px solid transparent!important}.dark.al_body_template_three .al_vendor_product_page .offer-slider .common-product-box:hover{border:1px solid #fff!important;box-shadow:none}.dark.al_body_template_three .ratio_asos .top-banner-wrapper .top-banner-content h4{color:#fff}.al_body_template_three .section-b-space{padding:20px 0!important}.dark .top-header .header-dropdown .onhover-dropdown .onhover-show-div li a{color:#fff!important}.dark .top-header .header-dropdown .onhover-dropdown .onhover-show-div li:hover a{color:#232323!important}
 .dark.al_body_template_three .sm-horizontal{background-color:#232323}.dark .al_menu-drawer{background-color:#232323}.card-box.al_inner_card{margin-bottom:0}.dark.al_body_template_three .top-header .al_menu-drawer .header-dropdown .onhover-dropdown .onhover-show-div li{background-color:#000}.dark.al_body_template_three,body.dark,html .dark{overflow-x:hidden}.top-header .header-dropdown .onhover-dropdown .onhover-show-div li a{width:100%!important}.dark .al_count_tabs_new_design.al_tab_mobile{background-color:#232323}.dark .vendor-signup .al_details_vendor,.dark .vendor-signup .al_vendor_signup,.dark .vendor-signup h2{background-color:#232323;border:1px solid #232323}.dark .dd-list .dd3-content{background:#404040}.dark .file.upload-new>label,.dark .vendor-signup .file>label{border:1px solid #404040}body.dark .switchery{background-color:#363636!important}.dark.al_body_template_three .order_detail.order_detail_data.card-box{background-color:#363636}.dark.al_body_template_three .grand_total label,.dark.al_body_template_three .grand_total span{color:#fff}.dark.al_body_template_three select{color:#2d2d2d}.dark .delivery_box .radio{color:#fff}.dark .timing-box_al li{color:#fff}.al_body_template_three .collection-filter .inner_spacing{width:100%!important}.product-wrapper-grid.list-view .supplier-rating{display:inline-block;width:calc(100% - 250px)}.product-wrapper-grid.list-view .suppliers-img-outer{display:inline-block;vertical-align:top;margin-right:20px}
 .dark #al_new_design .pixelstrap ul a:hover{color:#000;background: linear-gradient(90deg,#000 0,rgba(251,246,247,0) 92.47%);}
-.dark #al_new_design .pixelstrap ul{background-color: #242424;    box-shadow: 0 1px 6px 0 #242424;}
+.dark #al_new_design .pixelstrap ul{background-color: #242424;box-shadow: 0 1px 6px 0 #232323;}
 .dark.al_body_template_three .toggle-password, .dark .toggle-password+.font-14{color: #a3a3a3 !important;}
 .dark li.grand_total.d-flex.align-items-center.justify-content-between span,
 .dark li.grand_total.d-flex.align-items-center.justify-content-between label.m-0{color: #fff;}
@@ -105,7 +105,8 @@ top: 0;
 .vendor-products-wrapper .col-5.text-right.pl-0 span{display: none;}
 .fixed .menu-navigation_al li.al_main_category {margin: 0 10px;}
 .menu-navigation_al li.al_main_category{margin:0 00px}
-.recent-orders{padding:12px 0 0;}.al_desktop_banner{display:none}.al_mobile_banner{display:block!important;height:120px;overflow: hidden; border-radius: 20px;}.sm.slick-initialized .slick-slide div{width:max-content}.al_menu-drawer.open li.onhover-dropdown ul.onhover-show-div li{display:block;padding:10px 30px}.al_menu-drawer.open li.onhover-dropdown ul.onhover-show-div li a{font-size:12px}#al_new_design .pixelstrap a,#al_new_design .pixelstrap a:active,#al_new_design .pixelstrap a:hover,
+.recent-orders{padding:12px 0 0;}.al_desktop_banner{display:none}.al_mobile_banner{display:block!important;height:120px;overflow: hidden; border-radius: 20px;}
+.sm.slick-initialized .slick-slide div{width:max-content;margin: 0 auto;}.al_menu-drawer.open li.onhover-dropdown ul.onhover-show-div li{display:block;padding:10px 30px}.al_menu-drawer.open li.onhover-dropdown ul.onhover-show-div li a{font-size:12px}#al_new_design .pixelstrap a,#al_new_design .pixelstrap a:active,#al_new_design .pixelstrap a:hover,
 #al_new_design .pixelstrap li a{font-size:12px;line-height: normal;}
 body .royo_whatsapp_img{bottom:7%}body .tap-top.top-cls{display: none !important;}
 select#order_type {font-size: 12px;height: 30px;padding: 0 5px !important;margin-bottom: 14px;width: 100%;}
@@ -161,6 +162,7 @@ padding-bottom: 5px;}
 
 
 @media(max-width:767px){
+    .menu-navigation.alThreeMenu li.al_main_category a .nav-cate-img img{width:50px !important;height: 50px !important;}
     .al_body_template_three .btn.btn-solid{font-size: 12px;}
     .al_body_template_three ul.timing-box li small{margin-right: 2px;font-size: 10px;}
     .timing-box_al{display: block;}
@@ -174,7 +176,7 @@ padding-bottom: 5px;}
     .collection-filter .theme-card h5.title-border{font-size:14px}.theme-card span.filter-back{font-size:12px;text-transform:capitalize;font-weight:300;color:var(--theme-deafult)}.al_body_template_three .small-section{padding:0}.al_new_wrapper_design .top-banner-wrapper.text-center .common-banner img{width:100%;height:100%;object-fit:cover}
     i.fa.fa-solid.fa-angles-up {margin-top: 0;}#cart_table .number .input-number {margin: 0 10px;width: auto;max-width: 50px;}
     #cart_main_page hr{margin: 5px 0;}
-    a.navbar-brand.mr-xl-3.mr-0 {height: 35px !important;padding-top: 2px;}
+
     .al_body_template_three .slick-slider .img-outer-box.position-relative {height: 100px;}
     .al_body_template_three .slick-next, .al_body_template_three .slick-prev{display: none !important;}
     .al_body_template_three .vendors .slick-slide {padding: 0;}
@@ -220,7 +222,6 @@ padding-bottom: 5px;}
     ul.status_box.mt-1.pl-0 {margin-top: 0 !important;margin-bottom: 10px;}
     .order_detail.order_detail_data.card-box {padding: 20px 20px 10px !important;}
     .al_body_template_three span.rating-number{top: 0;}
-    .al_custom_vendors_sec .suppliers-img-outer {height: 80px;width: 80px;margin-bottom: 0;}
 .al_body_template_three .al_custom_brand .brand-box h6 {font-size: 14px;}.slick-track {margin-left: 0;}
 .suppliers-slider-trending_vendors {margin-top: 5px;}
 .footer-theme .sub-title li {padding: 0;margin-bottom: 0;}
