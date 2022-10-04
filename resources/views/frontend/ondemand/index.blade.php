@@ -127,6 +127,7 @@ use Illuminate\Support\Arr;
     var getTimeSlotsForOndemand = "{{route('getTimeSlotsForOndemand')}}";
     var update_cart_schedule = "{{route('cart.updateSchedule')}}";
     var update_cart_product_schedule = "{{route('cart.updateProductSchedule')}}";
+    var update_cart_product_schedule_agnet = "{{route('cart.updateDispatcherAgent')}}";
     var showCart = "{{route('showCart')}}";
     var update_addons_in_cart = "{{route('addToCartAddons')}}";
     var addonids = [];
@@ -172,9 +173,12 @@ use Illuminate\Support\Arr;
           scrollThreshold: 0.2, // Adjust if Navigation highlights too early or too late
           scrollOffset: 75 //Height of Navigation Bar
         });
-
+        var top = 0;
         // Sticky Header - http://jqueryfordesigners.com/fixed-floating-elements/
-        var top = $('#main-nav').offset().top - parseFloat($('#main-nav').css('margin-top').replace(/auto/, 0));
+
+        if( $( "#mydiv").length > 0){
+          top = $('#main-nav').offset().top - parseFloat($('#main-nav').css('margin-top').replace(/auto/, 0));
+        }
 
         $(window).scroll(function (event) {
           // what the y position of the scroll is

@@ -7,25 +7,24 @@
     <div class="modal-body" >
         <div class="row">
             <div class="col-md-12">
-                <div class="row mb-2">
-                    <div class="col-md-12">
-                        <label>{{ __('Upload Image') }}</label>
-                        <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{ $plan->image['proxy_url'].'100/100'.$plan->image['image_path'] }}" />
-                    </div> 
-                </div>
-
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
-                            {!! Form::label('title', __('Enable'),['class' => 'control-label']) !!} 
+                            <label>{{ __('Upload Image') }}</label>
+                            <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{ $plan->image['proxy_url'].'100/100'.$plan->image['image_path'] }}" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('title', __('Enable'),['class' => 'control-label']) !!}
                             <div class="mt-md-1">
                                 <input type="checkbox" data-plugin="switchery" name="status" class="form-control status" data-color="#43bee1" {{($plan->status == 1) ? 'checked' : ''}}>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
-                            {!! Form::label('title', __('On Request'),['class' => 'control-label']) !!} 
+                            {!! Form::label('title', __('On Request'),['class' => 'control-label']) !!}
                             <div class="mt-md-1">
                                 <input type="checkbox" data-plugin="switchery" name="on_request" class="form-control on_request" data-color="#43bee1" {{($plan->on_request == 1) ? 'checked' : ''}}>
                             </div>
@@ -33,7 +32,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group" id="nameInput">
-                            {!! Form::label('title', __('Title'),['class' => 'control-label']) !!} 
+                            {!! Form::label('title', __('Title'),['class' => 'control-label']) !!}
                             {!! Form::text('title', $plan->title, ['class'=>'form-control', 'required'=>'required']) !!}
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
@@ -74,7 +73,7 @@
                     </div><?php */ ?>
                     <div class="col-md-12">
                         <div class="form-group">
-                            {!! Form::label('title', __('Description'),['class' => 'control-label']) !!} 
+                            {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}
                             {!! Form::textarea('description', $plan->description, ['class' => 'form-control', 'rows' => '3']) !!}
                         </div>
                     </div>

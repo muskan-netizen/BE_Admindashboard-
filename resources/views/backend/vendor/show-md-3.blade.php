@@ -1,3 +1,8 @@
+<style>
+    a.deleteMultiBanner {
+        color: #fff;
+    }
+</style>
 <div class="card-box text-center p-0 overflow-hidden" style="">
     <div class="background pt-3 pb-2 px-2" style="background:url({{$vendor->banner['proxy_url'] . '200/100' . $vendor->banner['image_path']}}) no-repeat center center;background-size:cover;">
         <div class="vendor_text">
@@ -44,6 +49,36 @@
             {{$vendor->desc}}
         </p>
     </div>
+    @if($vendorMultiBanner['webStyleId'] == 6)
+    <div class="Upload_meltipat_banner row m-0">
+        <div class="col-md-4 text-center mb-2">
+            <a class="outer-box border-dashed d-flex align-items-center justify-content-center addBannner-btns" href="javascript:void(0)" data-toggle="modal" data-target="#addBannner-form">
+                <i class="fa fa-plus-circle d-block mr-1" aria-hidden="true"></i>
+                <h6 class="m-0">banner</h6>
+            </a>
+        </div>
+        @foreach ($vendorMultiBanner['banner'] as $key =>$multiBanner )
+        <div class="col-md-4 text-center mb-2">
+            <div class="alProDuctBannerImg">
+                <img src="{{$multiBanner->image['proxy_url'] . '200/100' . $multiBanner->image['image_path']}}" alt="" class="w-100">
+                <span class=""><a class='deleteMultiBanner' data-banner_id="{{$multiBanner->id }}" href="javascript:void(0)"><i class="fa fa-times "  ></i></a></span>    
+            </div> 
+        </div>
+        @endforeach
+        {{-- <div class="col-md-4 text-center mb-2">
+            <div class="alProDuctBannerImg">
+                <img src="https://images.royoorders.com/insecure/fill/200/100/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/vendor/bDZm2MWRNof7IyTlie6E9aQYWUsL1YI7DLCB9dJb.jpg@webp" alt="" class="w-100">
+                <span class=""><i class="fa fa-times"></i></span>    
+            </div> 
+        </div>
+        <div class="col-md-4 text-center mb-2">
+            <div class="alProDuctBannerImg">
+                <img src="https://images.royoorders.com/insecure/fill/200/100/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/vendor/bDZm2MWRNof7IyTlie6E9aQYWUsL1YI7DLCB9dJb.jpg@webp" alt="" class="w-100">
+                <span class=""><i class="fa fa-times"></i></span>    
+            </div> 
+        </div> --}}
+    </div>
+    @endif
 </div>
 <!-- <div class="card-box">
     <div class="row text-left">
@@ -98,7 +133,7 @@
                     </div>
 
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between" style="display:{{$vendor->show_slot == 1 ? 'none!important' : 'block'}}" id="sch_vendor_close">
-                        {!! Form::label('title', __('Scheduled order if vendor closed?'),['class' => 'control-label']) !!}
+                        {!! Form::label('title', __('Schedule order if vendor closed?'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="closed_store_order_scheduled" class="form-control" data-color="#43bee1" @if($vendor->closed_store_order_scheduled == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
 
@@ -673,6 +708,33 @@
                 </div>
             @endif
         @endforeach
+    </div>
+</div>
+
+<div id="addBannner-form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __("Add Banner Image") }} </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+
+
+            <form id="save_multi_banner_form" method="post" enctype="multipart/form-data">
+                @csrf
+              <input type="hidden" name="vendor_id" value="{{ $vendor->id }}">
+                <div class="modal-body" id="editCardBox">
+                    <div class="">
+                        <label>{{ __('Upload Banner') }}</label>
+                        <input type="file" accept="image/*" data-plugins="dropify" name="banner_image" class="dropify" />
+                        
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info waves-effect waves-light submitMultibannerForm">{{ __("Submit") }}</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

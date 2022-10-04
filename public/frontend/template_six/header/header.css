@@ -94,8 +94,8 @@ div#formatsSection{position: relative;}
 .alChooseDate:before,
 .alLocation:before{border: solid #0C0C0C;border-width: 0 2px 2px 0;display: inline-block;padding: 3px;transform: rotate(45deg);-webkit-transform: rotate(45deg);position: absolute;content: "";right: 7px;top: 13px;opacity: .5;z-index: 1;}
 .alLocation:before{top: 7px;right: 4px;}
-.alFindGo .btn{background-color: var(--theme-deafult);padding: 0;height: 40px;width: 40px;border-radius: 30px;color: #fff;}
-.alFindGo .btn:hover{background-color: var(--top-header-color);}
+.alFindGo .btn{background-color: var(--theme-deafult) !important;padding: 0;height: 40px;width: 40px;border-radius: 30px;color: #fff;}
+.alFindGo .btn:hover{background-color: var(--top-header-color) !important;}
 #address-map-container #address-map{  width: 100%;    height: 100%;}
 #address-map-container{width: 100%;height: 300px;}
 .address-input-field{border: 1px solid #777;border-radius: 10px;overflow: hidden;padding-left: 10px;padding-right: 10px;}
@@ -151,3 +151,4 @@ body .royo_whatsapp_img{bottom: 11%;}
 .royo_whatsapp_img img{width: 50px;}
 .royo_whatsapp_img{position: fixed;z-index: 99999;bottom:7%;left: 1%;}
 /*================== date picker ============================ */
+
