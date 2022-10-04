@@ -1,31 +1,39 @@
 $(function(){
     var longTermServiceTable = '' ;
     initServiceDataTable();
-$(document).on("click",".addServiceBtn",function() {
-    $('#add-service').modal({
-        keyboard: false
+    $(document).on("click",".addServiceBtn",function() {
+        $('#add-service').modal({
+            keyboard: false
+        });
     });
-});
 
-function setServiceSkuFromName(event,getVal,setVal) {
-   
-    var n1 = $('#'+getVal).val()
-    n1 = n1.replace(/[.*+?^${}()/|[\]\\]+/g, '-');
-    var total_sku = sku_start+ n1;
-    $('#'+setVal).val( n1);
-    $('#'+setVal).val(n1.split(' ').join(''));
-    var string =  $('#'+setVal).val();
-    var slug = string.toString().trim().toLowerCase().replace(/\s+/g, "-").replace(/[^\w\-]+/g, "").replace(
-        /\-\-+/g, "-").replace(/^-+/, "").replace(/-+$/, "");
-    $('#'+setVal).val(slug);
-}
-$(document).on("change","#service_product_list",function() {
-    var product_id = $(this).val();
-    if(product_id !='' && product_id !=undefined ){
-        setProductVariant(product_id)
-    }
-});
 
+    $(document).on("change","#service_product_list",function() {
+        var product_id = $(this).val();
+        if(product_id !='' && product_id !=undefined ){
+            setProductVariant(product_id)
+        }
+    });
+
+
+
+    $(document).on('click', '.submitServiceProduct', function(e) {
+        e.preventDefault();
+        var form = document.getElementById('save_service_form');
+        var formData = new FormData(form);
+        var url = `/client/long_term_service/store`;
+    
+        saveServiceData(formData, url);
+
+    });
+    $(document).on('click', '.edit_service', function(e) {
+        e.preventDefault();
+        var service_id = $(this).data('service_id');
+        GetServiceData(service_id);
+    
+    });
+
+});
 function setProductVariant(product_id,selected_variant=''){
     axios.post(`/client/product/getVariant`, {product_id: product_id})
     .then(async response => {
@@ -52,22 +60,6 @@ function setProductVariant(product_id,selected_variant=''){
     }) 
 }
 
-
-$(document).on('click', '.submitServiceProduct', function(e) {
-    e.preventDefault();
-    var form = document.getElementById('save_service_form');
-    var formData = new FormData(form);
-    var url = `/client/long_term_service/store`;
-   
-    saveServiceData(formData, url);
-
-});
-$(document).on('click', '.edit_service', function(e) {
-    e.preventDefault();
-    var service_id = $(this).data('service_id');
-    GetServiceData(service_id);
- 
-});
 function GetServiceData(service_id) {
 
     axios.get(`/client/long_term_service/edit/${service_id}`)
@@ -103,8 +95,6 @@ function GetServiceData(service_id) {
       
 
 }
-
-
 function saveServiceData(formData, data_uri) {
 
     axios.post(data_uri,formData )
@@ -144,7 +134,17 @@ function saveServiceData(formData, data_uri) {
         })  
 
 }
-
+function setServiceSkuFromName(event,getVal='',setVal='') {
+    var n1 = $('#'+getVal).val()
+    n1 = n1.replace(/[.*+?^${}()/|[\]\\]+/g, '-');
+    var total_sku = sku_start+ n1;
+    $('#'+setVal).val( n1);
+    $('#'+setVal).val(n1.split(' ').join(''));
+    var string =  $('#'+setVal).val();
+    var slug = string.toString().trim().toLowerCase().replace(/\s+/g, "-").replace(/[^\w\-]+/g, "").replace(
+        /\-\-+/g, "-").replace(/^-+/, "").replace(/-+$/, "");
+    $('#'+setVal).val(slug);
+}
 function initServiceDataTable(){
   
   
@@ -173,4 +173,3 @@ function initServiceDataTable(){
        
     });
 }
-});

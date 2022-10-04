@@ -993,7 +993,7 @@
                                             <td> <a href="{{ $csv->storage_url }}">{{ __('Download') }}</a> </td>
                                         </tr>
                                         @empty
-                                        <tr><td>No record found.</td></tr>
+                                        <tr><td>{{ __('No record found.') }}</td></tr>
                                     @endforelse
                                     </tbody>
                                 </table>
@@ -1008,9 +1008,10 @@
 
     <!--- End popup qrcode -->
 
-
+    <script src="{{asset('js/adminVendor.js')}}"></script>
     <script type="text/javascript">
     var  sku_start = "{{ $sku_url }}" + ".";
+    
         $(".all-product_check").click(function() {
             if ($(this).is(':checked')) {
                 $("#action_product_button").css("display", "block");
@@ -1373,7 +1374,7 @@
     @include('backend.vendor.modals')
 @endsection
 @section('script')
-<script src="{{asset('js/adminVendor.js')}}"></script>
+
     @include('backend.vendor.pagescript')
     <script>
         var vendor_id = `{{ $vendor->id }}`;
