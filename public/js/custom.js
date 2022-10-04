@@ -4195,6 +4195,7 @@ $(document).ready(function () {
         });
     }
 
+    // *****************************  End tip after order place ****************************///
 
     $(document).on('click', '.validate_promo_code_btn', function () {
         let amount = $(this).attr('data-amount');

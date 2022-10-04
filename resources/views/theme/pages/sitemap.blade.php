@@ -53,7 +53,7 @@
                                                 <li><a href="javascript: void(0);">eCommerce</a>
                                                     <ul>
                                                         <li><a href="javascript: void(0);">Dashboard</a></li>
-                                                        <li><a href="javascript: void(0);">Products</a></li>
+                                                        <li><a href="javascript: void(0);">{{ __('Products') }}</a></li>
                                                         <li><a href="javascript: void(0);">Product Detail</a></li>
                                                         <li><a href="javascript: void(0);">Product Edit</a></li>
                                                         <li><a href="javascript: void(0);">Orders</a></li>
