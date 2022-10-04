@@ -209,6 +209,17 @@ class OrderController extends BaseController
                                 }
                     $order->taxable_amount = $total_taxes;
                     $order->save();
+
+                    /* Updating order prescription if any */
+                    $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
+                    foreach ($cart_prescriptions as $cart_prescription) {
+                        $order_prescription = new OrderProductPrescription();
+                        $order_prescription->order_id = $order->id;
+                        $order_prescription->vendor_id = $cart_prescription->vendor_id;
+                        $order_prescription->product_id = $cart_prescription->product_id;
+                        $order_prescription->prescription = $cart_prescription->getRawOriginal('prescription');
+                        $order_prescription->save();
+                    }
                   
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
