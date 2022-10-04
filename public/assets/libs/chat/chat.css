@@ -29,7 +29,7 @@ margin: 0;
 content: "󰝥";
 }
 .chat-box-wrapper {
-    max-height: 480px;
+    max-height: 580px;
     overflow-y: auto;
     position: relative;
 }
@@ -156,7 +156,8 @@ line-height: inherit;
 .chat-list-container {
     background: #969ea312;
     padding-right: 0px !important;
-    max-height: 480px;
+    min-height: 780px;
+    max-height: 780px;
     overflow-y: auto;
     height: 100%;
 }
@@ -200,8 +201,20 @@ line-height: inherit;
 
 
 @media(max-width:1499px){
-    .chat-box-wrapper {
-        max-height: 350px;
+    .chat-box-wrapper{min-height: 390px;
+        max-height: 390px;}
+    .chat-list-container {
+        min-height: 590px;
+        max-height: 590px;
+    }
+}
+
+@media(max-width:1299px){
+    .chat-box-wrapper{min-height: 340px;
+        max-height: 340px;}
+    .chat-list-container {
+        min-height: 540px;
+        max-height: 540px;
     }
 }
 
