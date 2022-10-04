@@ -581,11 +581,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             @if($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12 )
                                 <div class="col-md-6 d-flex justify-content-between mb-2 dispatch_Agent">
                                     {!! Form::label('title', __('Sloting from Dispatch'),['class' => 'control-label']) !!}
-                                    <input type="checkbox" id="is_slot_from_dispatch" data-plugin="switchery" name="is_slot_from_dispatch" class="chk_box" data-color="#43bee1" @if($product->is_slot_from_dispatch == 1) checked @endif>
+                                    <input type="checkbox" id="is_slot_from_dispatch" data-plugin="switchery" name="is_slot_from_dispatch" class="chk_box" data-color="#43bee1" @if(@$product->is_slot_from_dispatch == 1) checked @endif>
                                 </div>
                                 <div class="col-md-6 d-flex justify-content-between mb-2 dispatch_Agent">
                                     {!! Form::label('title', __('Show Dispatch Agent'),['class' => 'control-label']) !!}
-                                    <input type="checkbox" id="is_show_dispatcher_agent" data-plugin="switchery" name="is_show_dispatcher_agent" class="chk_box" data-color="#43bee1" @if($product->is_show_dispatcher_agent == 1) checked @endif>
+                                    <input type="checkbox" id="is_show_dispatcher_agent" data-plugin="switchery" name="is_show_dispatcher_agent" class="chk_box" data-color="#43bee1" @if(@$product->is_show_dispatcher_agent == 1) checked @endif>
                                 </div>
                             @endif
                             @endif
