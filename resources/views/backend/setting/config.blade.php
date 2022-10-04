@@ -1189,7 +1189,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="col-12">
                      <div class="form-group mb-0 switchery-demo">
                         <label for="fb_login" class="d-flex align-items-center justify-content-between">
-                           <h5 class="social_head"><i class="fab fa-facebook-f"></i> <span>{{ __("Hubspot") }}</span></h5>
+                           <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-hubspot"></i> <span>{{ __("Hubspot") }}</span></h5>
 
                            <button class="btn btn-info btn-block save_btn" name="hubspot_submit" type="submit"> {{ __("Save") }} </button>
                         </label>
