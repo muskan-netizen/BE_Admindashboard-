@@ -1189,7 +1189,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="col-12">
                      <div class="form-group mb-0 switchery-demo">
                         <label for="fb_login" class="d-flex align-items-center justify-content-between">
-                           <h5 class="social_head"><i class="fab fa-facebook-f"></i> <span>{{ __("Hubspot") }}</span></h5>
+                           <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-hubspot"></i> <span>{{ __("Hubspot") }}</span></h5>
 
                            <button class="btn btn-info btn-block save_btn" name="hubspot_submit" type="submit"> {{ __("Save") }} </button>
                         </label>
@@ -1253,7 +1253,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      @if($client_preference_detail->business_type != 'laundry')
                      <div class="col-md-4">
                         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                           <label for="celebrity_check" class="mr-2 mb-0"> {{ __("Influencer Mod") }} <small class="d-block pr-5">Leverage the Influencer era by adding Influencers and associate product with them to create curated lists of products.</small></label>
+                           <label for="celebrity_check" class="mr-2 mb-0"> {{ __("Influencer Mod") }} <small class="d-block pr-5">{{ __('Leverage the Influencer era by adding Influencers and associate product with them to create curated lists of products') }}.</small></label>
                           <span> <input type="checkbox" data-plugin="switchery" name="celebrity_check" id="celebrity_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->celebrity_check == '1')) checked='checked' @endif></span>
                         </div>
                      </div>
@@ -1265,7 +1265,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                      <div class="col-md-4">
                         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                           <label for="enquire_mode" class="mr-2 mb-0">{{ __("Inquiry Mod") }}<small class="d-block pr-5">Set products to be only available for Inquiry and hide the price.</small></label>
+                           <label for="enquire_mode" class="mr-2 mb-0">{{ __("Inquiry Mod") }}<small class="d-block pr-5">{{ _('Set products to be only available for Inquiry and hide the price.') }}</small></label>
                            <span><input type="checkbox" data-plugin="switchery" name="enquire_mode" id="	enquire_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->enquire_mode == '1')) checked='checked' @endif></span>
                         </div>
                      </div>
@@ -1286,7 +1286,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}<small class="d-block pr-5">Enable the option to create Subscriptions for Customers and Vendors.</small></label>
+                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}<small class="d-block pr-5">{{__('Enable the option to create Subscriptions for Customers and Vendors.')}}</small></label>
                         <span> <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
                         </span>
                      </div>
@@ -1294,7 +1294,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   @elseif($client_preference_detail->subscription_tab_taxi == 1)
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}<small class="d-block pr-5">Enable the option to create Subscriptions for Customers and Vendors.</small></label>
+                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}<small class="d-block pr-5">{{__('Enable the option to create Subscriptions for Customers and Vendors.')}}</small></label>
                         <span> <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
                         </span>
                      </div>
@@ -1303,14 +1303,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="subscription_tab_taxi" class="mr-2 mb-0">{{ __("Subscription Tab") }}<small class="d-block pr-5">Enable subscription tab for taxi/cab.</small></label>
+                        <label for="subscription_tab_taxi" class="mr-2 mb-0">{{ __("Subscription Tab") }}<small class="d-block pr-5">{{ __('Enable subscription tab for taxi/cab.') }}</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="subscription_tab_taxi" id="subscription_tab_taxi" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_tab_taxi == '1')) checked='checked' @endif>
                      </span>
                      </div>
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Pre Order Tips')}}<small class="d-block pr-5">Manage the option to Tip before the Order.</small></label>
+                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Pre Order Tips')}}<small class="d-block pr-5">{{ __('Manage the option to Tip before the Order') }}.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="tip_before_order" id="tip_before_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_before_order == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1318,7 +1318,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="tip_after_order" class="mr-2 mb-0">{{__('Post Order Tips')}}<small class="d-block pr-5">Manage the option to Tip after the Order.</small></label>
+                        <label for="tip_after_order" class="mr-2 mb-0">{{__('Post Order Tips')}}<small class="d-block pr-5">{{ __('Manage the option to Tip after the Order.') }}</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="tip_after_order" id="tip_after_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_after_order == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1346,7 +1346,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="gifting" class="mr-2 mb-0">{{__('Gifting')}}<small class="d-block pr-5">Enable option to mark an Order to be gift wrapped.</small></label>
+                        <label for="gifting" class="mr-2 mb-0">{{__('Gifting')}}<small class="d-block pr-5">{{ __('Enable option to mark an Order to be gift wrapped.') }}</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="gifting" id="gifting" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->gifting == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1362,14 +1362,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="minimum_order_batch" class="mr-2 mb-0">{{__('Minimum Order/Increment')}}<small class="d-block pr-5"> Set the minimum order and minimum increment per product.</small></label>
+                        <label for="minimum_order_batch" class="mr-2 mb-0">{{__('Minimum Order/Increment')}}<small class="d-block pr-5"> {{ __('Set the minimum order and minimum increment per product') }}.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="minimum_order_batch" id="minimum_order_batch" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->minimum_order_batch == '1')) checked='checked' @endif>
                      </span>
                      </div>
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="static_delivey_fee" class="mr-2 mb-0">{{__('Static Delivery fee')}}<small class="d-block pr-5">Set a static Delivery Price per vendor based on Minimum Order Value.</small></label>
+                        <label for="static_delivey_fee" class="mr-2 mb-0">{{__('Static Delivery fee')}}<small class="d-block pr-5">{{ __('Set a static Delivery Price per vendor based on Minimum Order Value.') }}</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="static_delivey_fee" id="static_delivey_fee" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->static_delivey_fee == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1394,7 +1394,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   @endif
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="max_safety_mod" class="mr-2 mb-0">{{__('Max Safety')}}<small class="d-block pr-5">Enable to give max safety option to vendors.</small></label>
+                        <label for="max_safety_mod" class="mr-2 mb-0">{{__('Max Safety')}}<small class="d-block pr-5">{{ __('Enable to give max safety option to vendors.') }}</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="max_safety_mod" id="max_safety_mod" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->max_safety_mod == '1')) checked='checked' @endif>
                         </span>
                      </div>

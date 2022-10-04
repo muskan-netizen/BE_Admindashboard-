@@ -79,7 +79,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="form-group" id="Inputsearch">
-                        <a href="#" class="add-sub-task-btn">Previous</a>
+                        <a href="#" class="add-sub-task-btn">{{__('Previous')}}</a>
 
                     </div>
 

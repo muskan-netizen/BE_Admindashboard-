@@ -156,7 +156,7 @@
                                         <li class="page-item">
                                             <a class="page-link" href="#" aria-label="Previous">
                                                 <span aria-hidden="true">«</span>
-                                                <span class="sr-only">Previous</span>
+                                                <span class="sr-only">{{__('Previous')}}</span>
                                             </a>
                                         </li>
                                         <li class="page-item"><a class="page-link" href="#">1</a></li>
@@ -167,7 +167,7 @@
                                         <li class="page-item">
                                             <a class="page-link" href="#" aria-label="Next">
                                                 <span aria-hidden="true">»</span>
-                                                <span class="sr-only">Next</span>
+                                                <span class="sr-only">{{__('Next')}}</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -289,7 +289,7 @@
                                 <li class="page-item">
                                     <a class="page-link" href="#" aria-label="Previous">
                                         <span aria-hidden="true">«</span>
-                                        <span class="sr-only">Previous</span>
+                                        <span class="sr-only">{{__('Previous')}}</span>
                                     </a>
                                 </li>
                                 <li class="page-item"><a class="page-link" href="#">1</a></li>
@@ -300,7 +300,7 @@
                                 <li class="page-item">
                                     <a class="page-link" href="#" aria-label="Next">
                                         <span aria-hidden="true">»</span>
-                                        <span class="sr-only">Next</span>
+                                        <span class="sr-only">{{__('Next')}}</span>
                                     </a>
                                 </li>
                             </ul>

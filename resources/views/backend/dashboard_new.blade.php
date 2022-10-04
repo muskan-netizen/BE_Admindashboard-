@@ -54,7 +54,7 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                 <h3 class="mt-3 mb-3">36,254</h3>
                                 <p class="mb-0">
                                     <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> 5.27%</span>
-                                    <span class="text-nowrap">Since last month</span>
+                                    <span class="text-nowrap">{{ __('Since last month') }}</span>
                                 </p>
                             </div>
                         </div><!-- Customer box end here -->
@@ -66,11 +66,11 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                 <div class="float-right">
                                     <i class="mdi mdi-cart-plus widget-icon"></i>
                                 </div>
-                                <h5 class="" title="Number of Orders">Orders</h5>
+                                <h5 class="" title="Number of Orders">{{ __('Orders') }}</h5>
                                 <h3 class="mt-3 mb-3">36,254</h3>
                                 <p class="mb-0">
                                     <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 1.08%</span>
-                                    <span class="text-nowrap">Since last month</span>
+                                    <span class="text-nowrap">{{ __('Since last month') }}</span>
                                 </p>
                             </div>
                         </div><!-- Orders box end here -->
@@ -89,7 +89,7 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                 <h3 class="mt-3 mb-3">$6,254</h3>
                                 <p class="mb-0">
                                     <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 5.27%</span>
-                                    <span class="text-nowrap">Since last month</span>
+                                    <span class="text-nowrap">{{ __('Since last month') }}</span>
                                 </p>
                             </div>
                         </div><!-- Revenue box end here -->
@@ -101,11 +101,11 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                                 <div class="float-right">
                                     <i class="mdi mdi-pulse widget-icon"></i>
                                 </div>
-                                <h5 class="" title="Number of Growth">Products</h5>
+                                <h5 class="" title="Number of Growth">{{ __('Products') }}</h5>
                                 <h3 class="mt-3 mb-3">+ 3056</h3>
                                 <p class="mb-0">
                                     <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> 4.08%</span>
-                                    <span class="text-nowrap">Since last month</span>
+                                    <span class="text-nowrap">{{ __('Since last month') }}</span>
                                 </p>
                             </div>
                         </div><!-- Growth box end here -->
@@ -175,7 +175,7 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                             <div class="row text-center">
                                 <!-- current week data start here -->
                                 <div class="col-sm-6">
-                                    <p class="text-muted mb-0 mt-3">Current Week</p>
+                                    <p class="text-muted mb-0 mt-3">{{ __('Current Week') }}</p>
                                     <h2 class="fw-normal mb-3">
                                         <small class="mdi mdi-checkbox-blank-circle text-primary align-middle me-1"></small>
                                         <span>$58,254</span>
@@ -184,7 +184,7 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
 
                                 <!-- Previous week data start here -->
                                 <div class="col-sm-6">
-                                    <p class="text-muted mb-0 mt-3">Previous Week</p>
+                                    <p class="text-muted mb-0 mt-3">{{ __('Previous Week') }}</p>
                                     <h2 class="fw-normal mb-3">
                                         <small class="mdi mdi-checkbox-blank-circle text-success align-middle me-1"></small>
                                         <span>$69,524</span>
@@ -217,7 +217,7 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="header-title">Revenue By Location</h4>
+                            <h4 class="header-title">{{ __('Revenue By Location') }}</h4>
                             <div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
