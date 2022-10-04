@@ -356,6 +356,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] ==1)
                             <div class="card-box">
                                 <div class="row">
                                     <div class="col-md-6">
@@ -387,6 +388,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -396,6 +398,7 @@
     <div class="row address" id="def" style="display: none;">
         <input type="text" id="def-address" name="test" class="autocomplete form-control def_address">
     </div>
+    @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] ==1)
     <div id="add-service" class="modal fade add_service" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-dialog-centered">
@@ -527,6 +530,7 @@
             </div>
         </div>
     </div>
+    @endif
     <div id="add-product" class="modal fade add_product" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-dialog-centered">
@@ -1007,8 +1011,9 @@
     </div>
 
     <!--- End popup qrcode -->
-
-    <script src="{{asset('js/adminVendor.js')}}"></script>
+    @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] ==1)
+      <script src="{{asset('js/adminVendor.js')}}"></script>
+    @endif
     <script type="text/javascript">
     var  sku_start = "{{ $sku_url }}" + ".";
     

@@ -25,15 +25,41 @@ $(function(){
     
         saveServiceData(formData, url);
 
-    });
+    }); 
     $(document).on('click', '.edit_service', function(e) {
         e.preventDefault();
         var service_id = $(this).data('service_id');
         GetServiceData(service_id);
     
     });
+    $(document).on('click', '.delete_service', function(e) {
+        e.preventDefault();
+        var service_id = $(this).data('service_id');
+        deleteService(service_id);
+    
+    });
 
 });
+async function deleteService(id){
+        
+    axios.get(`/client/long_term_service/delete/${id}`)
+    .then(async response => {
+     console.log(response);
+        if(response.data.success){
+            sweetAlert.success('Success',response.data.message);
+        } else{
+            sweetAlert.error('',response.data.message);
+        }
+        setTimeout(() => {
+            $('#add-service').modal('hide');
+        },1000);
+    })
+    .catch(e => {
+        sweetAlert.error();
+    })    
+
+}
+
 function setProductVariant(product_id,selected_variant=''){
     axios.post(`/client/product/getVariant`, {product_id: product_id})
     .then(async response => {

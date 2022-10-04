@@ -74,15 +74,8 @@ class LongTermServiceController extends BaseController
                         class="mdi mdi-square-edit-outline"></i></a>
             </div>
             <div class="inner-div">
-                <form id="deletService_'.$LongTermService->id.'" method="POST"
-                    action="'. $delete_url.'">
-                    <input type="hidden" name="_token" value="' . csrf_token() . '" />
-                    <input type="hidden" name="_method" value="DELETE">
-                    <div class="form-group">
-                        <button type="button" class="btn btn-primary-outline action-icon delete-service" data-destroy_url="'. $delete_url.'" data-rel="'.$LongTermService->id.'"><i class="mdi mdi-delete"></i></button>
-                        
-                    </div>
-                </form>
+                <a class="action-icon delete_service" data-service_id="'.$LongTermService->id.'"  href="'.$edit_url.'" ><i class="mdi mdi-delete"></i></a>
+                
             </div>
         </div>';
             
@@ -194,14 +187,13 @@ class LongTermServiceController extends BaseController
     public function edit(Request $request,$domain = '', $id)
     {
       
-        //try {
+        try {
         
             $LongTermService = LongTermService::with('translations','product')->where(['id' => $id])->firstOrFail();
-          //pr($LongTermService);
             return $this->successResponse($LongTermService, '');
-        // } catch (Exception $e) {
-        //     return $this->errorResponse([], $e->getMessage());
-        // }
+        } catch (Exception $e) {
+            return $this->errorResponse([], $e->getMessage());
+        }
     }
 
     /**
@@ -222,8 +214,13 @@ class LongTermServiceController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request,$domain = '', $id)
     {
-        //
+        try {
+            LongTermService::where('id',$id)->delete();
+            return response()->json(array('success' => true,'message'=>__('Deleted successfully.')));
+        } catch (Exception $e) {
+            return $this->errorResponse([], $e->getMessage());
+        }
     }
 }
