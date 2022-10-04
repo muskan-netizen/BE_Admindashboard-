@@ -572,9 +572,9 @@
                                             
                                                 $dispatch_agents = $cart_data->dispatchAgents ?? [];
                                                 $cart_product_id = $cart_data->id;
-                                                $dispatch_agent_id = $cart_data->dispatch_agent_id;
-                                                $show_dispatcher_agent = $cart_data->product->is_show_dispatcher_agent;
-                                                $selected_agent_id = $cart_data->dispatch_agent_id;
+                                              
+                                                $show_dispatcher_agent = @$cart_data->product->is_show_dispatcher_agent;
+                                                $selected_agent_id = @$cart_data->dispatch_agent_id;
                                                 $schedule_slot = $cart_data->schedule_slot;
                                                 
                                                 @endphp
