@@ -572,9 +572,9 @@
                                             
                                                 $dispatch_agents = $cart_data->dispatchAgents ?? [];
                                                 $cart_product_id = $cart_data->id;
-                                                $dispatch_agent_id = $cart_data->dispatch_agent_id;
-                                                $show_dispatcher_agent = $cart_data->product->is_show_dispatcher_agent;
-                                                $selected_agent_id = $cart_data->dispatch_agent_id;
+                                              
+                                                $show_dispatcher_agent = @$cart_data->product->is_show_dispatcher_agent;
+                                                $selected_agent_id = @$cart_data->dispatch_agent_id;
                                                 $schedule_slot = $cart_data->schedule_slot;
                                                 
                                                 @endphp
@@ -822,10 +822,10 @@
                         </div>
                         <div class="footer-card">
                             @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && empty(app('request')->input('addons')))
-                                <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid float-right">Next</span></a>
+                                <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid float-right">{{__('Next')}}</span></a>
                                 @elseif(app('request')->input('step') == '1' && app('request')->input('addons') == '1')
                                     <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
-                                    <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid float-right">Next</span></a>
+                                    <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid float-right">{{__('Next')}}</span></a>
                                 @elseif(app('request')->input('step') == '2' && empty(app('request')->input('addons')))
                                     <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
                                     @if(Auth::guest())

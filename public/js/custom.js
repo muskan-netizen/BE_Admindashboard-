@@ -2845,7 +2845,7 @@ $(document).ready(function () {
                     var total_booking_time =  $('#total_hrs').val();
                     $("#single_vendor_remove_cart_btn").attr({
                         'data-product_id': product_id,
-                        'data-variant_id': (vendor_type == 'rental') ? $('#prod_variant_id').val() :$('#available_product_variant').val(),
+                        'data-variant_id': $('#prod_variant_id').val(),
                         'data-quantity': $('.quantity_count').val(),
                         'data-vendor_id': vendor_id,
                         'data-page': 'productDetail',
@@ -2856,7 +2856,7 @@ $(document).ready(function () {
                     });
                     $("#single_vendor_order_modal").modal('show');
                 } else {
-                    var variant_id =  (vendor_type == 'rental') ? $('#prod_variant_id').val() :$('#available_product_variant').val();
+                    var variant_id = $('#prod_variant_id').val();
                     var start_date =  $('#start_time').val();
                     var end_date =  $('#end_time').val();
                     var quantity = $('.quantity_count').val();
@@ -4195,6 +4195,7 @@ $(document).ready(function () {
         });
     }
 
+    // *****************************  End tip after order place ****************************///
 
     $(document).on('click', '.validate_promo_code_btn', function () {
         let amount = $(this).attr('data-amount');

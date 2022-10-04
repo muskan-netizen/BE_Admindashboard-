@@ -115,7 +115,7 @@
                             <th>
                                 ID
                             </th>
-                            <th>Requested By</th>
+                            <th>{{ __('Requested By') }}</th>
                             <th>Subject</th>
                             <th>Assignee</th>
                             <th>Priority</th>
