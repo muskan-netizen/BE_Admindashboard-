@@ -427,6 +427,9 @@ class UserhomeController extends FrontController
            
             Session::put('navCategories', $navCategories);
             $clientPreferences = ClientPreference::first();
+            $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
+
+           
             $count = 0;
             if ($clientPreferences) {
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
@@ -442,13 +445,11 @@ class UserhomeController extends FrontController
                 }
 
             }
-            $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
-
-            if((count($navCategories) > 0 ) && ($vendor_type =='pick_drop') &&  $count!=1 ){
+            if(count($navCategories) > 0 && ($vendor_type =='pick_drop') &&  ($count!=1) ){
                 $categoriesSlug = $navCategories[0]->slug;
                 return redirect()->route('categoryDetail',$categoriesSlug); 
             }
-           
+
             $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
             ->where(function ($q) {
                 $q->whereNull('start_date_time')->orWhere(function ($q2) {
