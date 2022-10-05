@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Hubspot;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Front\FrontController;
+use App\Http\Traits\ValidatorTrait;
 use App\Http\Traits\ThirdPartyTrait;
 use App\Models\{Client as ClientData, ClientPreferenceAdditional,User};
 
 class HubspotApiController extends FrontController{
 use ThirdPartyTrait;
+use ValidatorTrait;
 /**
  * create batch records for hubspot api
  *
@@ -20,7 +22,7 @@ public function create(Request $r)
         
         try {
             $hub_key = @getAdditionalPreference(['hubspot_access_token','is_hubspot_enable','hubspot_last_update']);
-            $ClientPreference = ClientPreferenceAdditional::getQuery();  
+            $ClientPreference = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::getQuery(): [];
             $ClientData =  ClientData::getQuery();  
             $User = User::getQuery();
             $post_data = [

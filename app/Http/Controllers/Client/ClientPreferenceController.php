@@ -11,6 +11,7 @@ use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvide
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
+use App\Http\Traits\ValidatorTrait;
 use Session;
 
 class ClientPreferenceController extends BaseController{

@@ -13,6 +13,8 @@ use App\Models\ProductFaqTranslation;
 
 class ProductFaqController extends BaseController{
     use ApiResponser;
+
+
     public function store(Request $request){
         try {
             $this->validate($request, [
@@ -27,7 +29,10 @@ class ProductFaqController extends BaseController{
             DB::beginTransaction();
             $product_faq = new ProductFaq();
             $product_faq->is_required = $request->is_required;
+            
+            if(checkColumnExists('product_faqs','file_type'))
             $product_faq->file_type = $request->file_type;
+
             $product_faq->product_id = $request->product_id;
             $product_faq->save();
             $language_id = $request->language_id;
@@ -84,11 +89,14 @@ class ProductFaqController extends BaseController{
         try {
             $product_faq = ProductFaq::with(['translations'])->where(['id' => $request->product_faq_id])->firstOrFail();
 
-            if($product_faq->file_type == 'selector'){
-                $product_faq->options = ProductFaqSelectOption::with(['translations'])
-                                                            ->where(['product_faq_id' => $request->product_faq_id])
-                                                            ->get();
+            if(checkColumnExists('product_faqs','file_type')){
+                if($product_faq->file_type == 'selector'){
+                    $product_faq->options = ProductFaqSelectOption::with(['translations'])
+                                                                ->where(['product_faq_id' => $request->product_faq_id])
+                                                                ->get();
+                }
             }
+
             return $this->successResponse($product_faq, '');
         } catch (Exception $e) {
             return $this->errorResponse([], $e->getMessage());
@@ -129,7 +137,7 @@ class ProductFaqController extends BaseController{
 
             $delete_option = [];
 
-            if($request->has('option_name')){
+            if($request->has('option_name') && checkColumnExists('product_faqs','file_type')){
                 foreach($request->option_name as $key =>$value){
                     if(isset($value[0]) && !empty($value[0])){
                         $data = [

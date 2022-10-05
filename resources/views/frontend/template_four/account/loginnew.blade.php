@@ -1,7 +1,7 @@
 @extends('layouts.store', ['title' => __('Login')])
 @php
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
-$urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'];
+$urlImg = @$clientData->logo['image_fit'].'150/60'.@$clientData->logo['image_path'];
 $sign_image = (!empty(Session::get('preferences')) ? Session::get('preferences')->signup_image:'');
 $sign_image_url = $sign_image['image_fit'].'1920/1080'.$sign_image['image_path'];
 

@@ -16,13 +16,14 @@ use App\Models\{VendorSlot, ClientCurrency, Order,Type, ClientPreferenceAddition
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+
+
 // Returns the values of the additional preferences.
-if (!function_exists('getAdditionalPreference')) {    
+if (!function_exists('checkColumnExists')) {    
   /** check if column exits in table
      * @param string $tableName
      * @param string @columnName
      * @return boolean true or false
-     * @author sudhanshu sharma
      */
     function checkColumnExists($tableName, $columnName){
         if (Schema::hasColumn($tableName, $columnName)){
