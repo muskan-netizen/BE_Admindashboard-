@@ -9,7 +9,7 @@
             $randemNo = rand(10,100);
             @endphp
                 <div class="item  driver_slot {{ ($slot['value'] ==@$schedule_slot) ? 'checked_item': ''  }}">
-                    <input type="radio" value='{{ $slot['value'] }}' name='booking_time' {{ ($slot['value'] ==@$schedule_slot) ? 'checked': ''  }} id='time{{$cart_product_id}}{{$slot['value']}}{{$randemNo  }}'/>  
+                    <input type="radio" value='{{ $slot['value'] }}' name='booking_time_{{$cart_product_id}}' {{ ($slot['value'] ==@$schedule_slot) ? 'checked': ''  }} id='time{{$cart_product_id}}{{$slot['value']}}{{$randemNo  }}' class="booking_time"/>  
                     <label for='time{{$cart_product_id}}{{$slot['value']}}{{$randemNo }}'>
                         <span class="customCheckbox selected-time" aria-hidden="true"  data-show_agent="{{ $show_dispatcher_agent }}" data-selected_agnet_id="{{ @$selected_agent_id  }}" data-agent_ids="{{ json_encode($slot['agent_id'],TRUE)}}" data-value='{{$slot['value']}}' data-cart_product_id='{{$cart_product_id}}' >{{$slot['name']}}</span>
                     </label>

@@ -740,7 +740,6 @@ class FrontController extends Controller
                
                 $cartData[$key]->period = $period;
             }else{
-                
                 $slotsDate = findSlot('',$data->vendor_id,'','webFormet');
                 if($slotsDate){
                     $vendorStartDate = (($slotsDate)?$slotsDate['date']:'');
@@ -783,13 +782,20 @@ class FrontController extends Controller
                 $cartData[$key]->timeSlots = [];
                 $cartData[$key]->dispatchAgents = $dispatchAgents;
                 $cartData[$key]->is_dispatch_slot = 1 ;
-             }else{
+            }else{
                 $time_slots = [];
                 if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
                     $start_time = new DateTime("now", new  DateTimeZone($timezone) );
+                    $today = $start_time->format('Y-m-d');
+                    if($today < $selectedDate){
+                        $curr_time = date('Y-m-d 00:00');
+                    }else{
+                        $daten = new DateTime("now", new DateTimeZone($timezone) );
+                        $curr_time = $daten->format('Y-m-d h:i');
+                    }
                     $start_time = $start_time->format('Y-m-d H:m');
                     $end_time = date('Y-m-d 23:59');
-                    $timing   = $this->SplitTime($start_time, $end_time, "60");
+                    $timing   = $this->SplitTime($curr_time, $end_time, "60");
                     foreach ($timing as $k=> $slt) {
                         if($k+1 < count($timing)){
                             $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
@@ -800,13 +806,8 @@ class FrontController extends Controller
                 }else{
                     $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
                     $slots = (object)$slotsRes['slots'];
-                    //$slots = showSlot($selectedDate,$data->vendor_id,'delivery');
                     $time_slots =  $slots;
-                    // $i = 0;
-                    // foreach($slots as $slot){
-                    //     $newSlot = explode('-', $slot['value']);
-                    //     $time_slots[$i++] = trim($newSlot[0]);
-                    // }
+                  
 
                 }
 
