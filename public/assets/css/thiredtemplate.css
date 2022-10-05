@@ -63,9 +63,8 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0{color
 .product-icon.w-100 {text-align: left;justify-content: left;}
 .cardbanner,
 .al_desktop_banner{height: 160px;border-radius: 30px;}
-.grid-row.grid-4-4 {    grid-template-columns: repeat(2,1fr);    grid-gap: 40px;}
-.al_body_template_three .shimmer_effect .grid-row .cards:nth-child(3),
-.al_body_template_three .shimmer_effect .grid-row .cards:nth-child(4){display: none;}
+.grid-row.grid-4-4 {grid-template-columns: repeat(2,1fr);grid-gap: 40px;}
+.al_body_template_three .shimmer_effect .grid-row .cards:nth-child(5){display: none;}
 
 /*-----arbic language responsive issue----*/
 body[dir="rtl"].al_body_template_three .al_new_cart{margin:10px;}
@@ -143,7 +142,8 @@ padding-bottom: 5px;}
 .number input{max-width: 40px;}
 #cart_main_page .card-box{padding: 0 0 10px 0;}
 .radio{font-size: 15px;}
-.al_count_tabs_new_design.al_tab_mobile li a.nav-link .al_tabsIcons{display:block;margin-bottom:0;width:40px;height:40px;line-height:40px}.product-m.slick-slider .slick-slide>div{margin:0}.royo_whatsapp_img img{width:35px}
+.al_count_tabs_new_design.al_tab_mobile li a.nav-link .al_tabsIcons{display:block;margin-bottom:0;width:30px;height:30px;line-height:30px}
+.product-m.slick-slider .slick-slide>div{margin:0}.royo_whatsapp_img img{width:35px}
 
 .al_body_template_three .cab-banner-area.alTaxiBannerStart .container {
     padding: 10px !important;
@@ -225,6 +225,10 @@ padding-bottom: 5px;}
 .al_body_template_three .al_custom_brand .brand-box h6 {font-size: 14px;}.slick-track {margin-left: 0;}
 .suppliers-slider-trending_vendors {margin-top: 5px;}
 .footer-theme .sub-title li {padding: 0;margin-bottom: 0;}
+.footer-theme ul.social-links{display: block !important;}
+.al_body_template_three footer .social-links li{margin: 10px 0 10px 0;}
+.footer-theme .payment-card-bottom ul li{display: inline-block;}
+.al_body_template_three .cab-banner-area .cab-footer .btn{margin-bottom: 5px;}
 .footer-theme .sub-title li a, .footer-theme .sub-title li span {font-size: 14px;line-height: 1.2;}
 .store-btn.mb-3.d-flex.align-items-center.justify-content-start {margin: 0 0 10px 0 !important;}
 body .footer-theme .sub-title .contact-list i {margin-right: 5px;font-size: 14px !important;top: 0 !important;}

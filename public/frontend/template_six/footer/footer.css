@@ -10,6 +10,7 @@ footer#footer{position: absolute;bottom: 0;width: 100%;margin: 0;}
 article#page-container{position: relative;min-height: 100vh;}
 .al_footer_template_six .sub-footer{background-color: transparent;}
 .al_footer_template_six .footer-end{border-top: 1px solid #B6B6B6;}
+.al_footer_template_six .footer-end p{margin: 0;padding: 10px 0;}
 .al_footer_template_six  .footer-theme .sub-title .contact-list li{padding: 0;}
 .al_footer_template_six  .footer-theme .sub-title li a:before{display: none;}
 body .footer-theme .sub-title h4,
