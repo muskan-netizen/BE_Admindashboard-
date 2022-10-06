@@ -398,23 +398,6 @@
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h4 class="mb-2"> <span class="">{{ __("Manage Social Media URLs") }}</span></h4>
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-12">
-                        <button class="btn btn-info waves-effect waves-light w-100 openSocialMedia" >{{ __("View") }}</button>
-                    </div>
-                </div>
-        </div>
-    </div>
-</div>
-
-<div class="card-box">
-    <div class="row text-left">
-        <div class="col-md-12">
             <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
                 @csrf
                 {{-- <div class="row">

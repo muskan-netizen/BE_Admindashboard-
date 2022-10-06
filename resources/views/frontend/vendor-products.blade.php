@@ -55,7 +55,7 @@
                                                     @endif
                                                     @endif
                                                     @if(!empty($socialMediaUrls))
-                                                        <a class="open-social-medialinks" href="javascript:void(0)"><i class="fa fa-globe"></i></a>
+                                                        <a class="open-social-medialinks" data-toggle="tooltip" title="Social Media Links" href="javascript:void(0)"><i class="fa fa-globe"></i></a>
                                                     @endif
                                                 </div>
                                                 @if ($vendor->is_show_vendor_details == 1 && $vendor->order_min_amount > 0)
