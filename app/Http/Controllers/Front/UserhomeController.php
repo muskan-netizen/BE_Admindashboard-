@@ -242,13 +242,8 @@ class UserhomeController extends FrontController
                 }])->whereHas('translations', function ($q) use($langId) {
                     $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
                 })->first();
-                //pr($page_detail->faqs_details->toArray());
-                // if($server == 'local')
-                // {
-                    return view('frontend.extrapageNew', compact('page_detail','templetes','VendorCategory','builds','navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
-                // }else{
-                //     return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
-                // }
+                return view('frontend.extrapageNew', compact('page_detail','templetes','VendorCategory','builds','navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
+                
         }else {
                 $tag = [];
                     $showTag = implode(',', $tag);
@@ -304,27 +299,7 @@ class UserhomeController extends FrontController
                     $latitude = $clientPreferences->Default_latitude;
                     $longitude = $clientPreferences->Default_longitude;
                 }
-
-                // if ($clientPreferences->dinein_check == 1) {
-                //     $count++;
-                // }
-                // if ($clientPreferences->takeaway_check == 1) {
-                //     $count++;
-                // }
-                // if ($clientPreferences->delivery_check == 1) {
-                //     $count++;
-                // }
             }
-            // if ($preferences) {
-            //     if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
-            //         $selectedAddress = $preferences->Default_location_name;
-            //         $latitude = $preferences->Default_latitude;
-            //         $longitude = $preferences->Default_longitude;
-            //         Session::put('latitude', $latitude);
-            //         Session::put('longitude', $longitude);
-            //         Session::put('selectedAddress', $selectedAddress);
-            //     }
-            // }
             $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
             ->where(function ($q) {
                 $q->whereNull('start_date_time')->orWhere(function ($q2) {
@@ -427,6 +402,9 @@ class UserhomeController extends FrontController
            
             Session::put('navCategories', $navCategories);
             $clientPreferences = ClientPreference::first();
+            $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
+
+           
             $count = 0;
             if ($clientPreferences) {
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
@@ -442,13 +420,11 @@ class UserhomeController extends FrontController
                 }
 
             }
-            $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
-
-            if((count($navCategories) > 0 ) && ($vendor_type =='pick_drop') &&  $count!=1 ){
+            if(count($navCategories) > 0 && ($vendor_type =='pick_drop') &&  ($count!=1) ){
                 $categoriesSlug = $navCategories[0]->slug;
                 return redirect()->route('categoryDetail',$categoriesSlug); 
             }
-           
+
             $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
             ->where(function ($q) {
                 $q->whereNull('start_date_time')->orWhere(function ($q2) {
@@ -931,7 +907,7 @@ class UserhomeController extends FrontController
                                 foreach ($vendor->products as $product) {
                                     if (isset($product->pvariant) && $product->pvariant->media->isNotEmpty()) {
                                         $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
-                                    } elseif ($product->media->isNotEmpty()) {
+                                    } elseif ($product->media->isNotEmpty() && isset($product->media->first()->image)) {
                                         $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
                                     } else {
                                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';

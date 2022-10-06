@@ -109,8 +109,8 @@
                                     <div class="form-group">
                                         <label for="password" class="control-label">Provide Admin Access</label>
                                          <select name="is_admin" class="form-control">
-                                            <option value="0" @if($subadmin->is_admin==0) selected @endif>No</option>
-                                            <option value="1" @if($subadmin->is_admin==1) selected @endif>Yes</option>
+                                            <option value="0" @if($subadmin->is_admin==0) selected @endif>{{ __('No') }}</option>
+                                            <option value="1" @if($subadmin->is_admin==1) selected @endif>{{ __('Yes') }}</option>
                                            
                                         </select>                                        
                                     </div>

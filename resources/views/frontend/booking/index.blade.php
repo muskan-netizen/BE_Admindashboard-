@@ -173,7 +173,7 @@
                     </div> 
                 </div>
                 <div class="col-md-12" id="product_rider_div" style="display:none;">
-                    <button class="btn btn-solid w-100" id="submit_product_rider_button">Next</button> 
+                    <button class="btn btn-solid w-100" id="submit_product_rider_button">{{__('Next')}}</button> 
                 </div>
 
 

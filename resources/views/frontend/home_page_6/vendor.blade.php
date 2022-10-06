@@ -1,7 +1,7 @@
 <div class="product-card-box position-relative text-center al_custom_vendors_sec"  >
 	<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/{{ $vendor->slug }}">
 	   <div class="suppliers-img-outer position-relative ">
-		  @if($vendor->is_vendor_closed==1) 
+		  @if($vendor->is_vendor_closed==1)
 			 <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="{{ $vendor->logo['image_fit'] }}200/200{{ $vendor->logo['image_path'] }}" alt="" title="">
 		  @else
 			 <img  class="fluid-img mx-auto blur-up lazyload" data-src="{{ $vendor->logo['image_fit'] }}200/200{{ $vendor->logo['image_path'] }}" alt="" title="">

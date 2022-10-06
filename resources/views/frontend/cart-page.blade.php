@@ -40,12 +40,12 @@
             <div class="row border-bottom">
                         <div class="col-6">
                             <div class="single_cart_heading">
-                                    <h3>Shopping Cart</h3>
+                                    <h3>{{ __("Shopping Cart") }}</h3>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="item-show-cart text-right">
-                                <h4>{{$cart_details->totalQuantity}}  Items</h4>
+                                <h4>{{$cart_details->totalQuantity}}  {{ __("Items") }}</h4>
                             </div>
                         </div>
             </div>
@@ -329,7 +329,7 @@
                         
                         <hr class="my-1">
                            @if($client_preference_detail->business_type != 'laundry')
-                           @if($vendor_product->product->is_slot_from_dispatch !=1 || ($vendor_product->product->Requires_last_mile !=1) )
+                           @if(@$vendor_product->product->is_slot_from_dispatch !=1 || ($vendor_product->product->Requires_last_mile !=1) )
                            <div class="row mb-1 d-flex align-items-center vendor_product_schedule_datetime" style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
                                <div class="col-5 offset-3 text-lg-right">
                                    <label class="m-0 radio">

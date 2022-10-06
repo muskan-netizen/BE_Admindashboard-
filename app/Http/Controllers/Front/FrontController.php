@@ -740,7 +740,6 @@ class FrontController extends Controller
                
                 $cartData[$key]->period = $period;
             }else{
-                
                 $slotsDate = findSlot('',$data->vendor_id,'','webFormet');
                 if($slotsDate){
                     $vendorStartDate = (($slotsDate)?$slotsDate['date']:'');
@@ -783,13 +782,20 @@ class FrontController extends Controller
                 $cartData[$key]->timeSlots = [];
                 $cartData[$key]->dispatchAgents = $dispatchAgents;
                 $cartData[$key]->is_dispatch_slot = 1 ;
-             }else{
+            }else{
                 $time_slots = [];
                 if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
                     $start_time = new DateTime("now", new  DateTimeZone($timezone) );
+                    $today = $start_time->format('Y-m-d');
+                    if($today < $selectedDate){
+                        $curr_time = date('Y-m-d 00:00');
+                    }else{
+                        $daten = new DateTime("now", new DateTimeZone($timezone) );
+                        $curr_time = $daten->format('Y-m-d h:i');
+                    }
                     $start_time = $start_time->format('Y-m-d H:m');
                     $end_time = date('Y-m-d 23:59');
-                    $timing   = $this->SplitTime($start_time, $end_time, "60");
+                    $timing   = $this->SplitTime($curr_time, $end_time, "60");
                     foreach ($timing as $k=> $slt) {
                         if($k+1 < count($timing)){
                             $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
@@ -800,13 +806,8 @@ class FrontController extends Controller
                 }else{
                     $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
                     $slots = (object)$slotsRes['slots'];
-                    //$slots = showSlot($selectedDate,$data->vendor_id,'delivery');
                     $time_slots =  $slots;
-                    // $i = 0;
-                    // foreach($slots as $slot){
-                    //     $newSlot = explode('-', $slot['value']);
-                    //     $time_slots[$i++] = trim($newSlot[0]);
-                    // }
+                  
 
                 }
 
@@ -842,8 +843,8 @@ class FrontController extends Controller
            $product = $this->productDetail($request->product_id);
         
             $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';
-            $is_slot_from_dispatch = $product ? $product->is_slot_from_dispatch  : '';
-            $show_dispatcher_agent = $product ? $product->is_show_dispatcher_agent  : '';
+            $is_slot_from_dispatch = checkColumnExists('products', 'is_slot_from_dispatch') ? ($product ? $product->is_slot_from_dispatch  : '') : '';
+            $show_dispatcher_agent = checkColumnExists('products', 'is_slot_from_dispatch') ? ($product ? $product->is_show_dispatcher_agent  : '') :' ';
             $last_mile_check       = $product ? $product->Requires_last_mile  : '';
             $vendorStartDate       = $vendorStartTime  = '';
             $html = "";
@@ -1120,16 +1121,10 @@ class FrontController extends Controller
                 $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
 
                 $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
-                \Log::info('sms:--//');
-                \Log::info($smsTemplates);
-                \Log::info('sms:--//');
                 if(!empty($smsTemplates)){
                     $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
                     $smsTemplates = str_replace("{amount}", $currSymbol . $order->payable_amount, $smsTemplates);
                     $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
-                    \Log::info('sms:--');
-                    \Log::info($body);
-                    \Log::info('sms:--');
                 }else{
                     $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . $order->payable_amount . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
                 }

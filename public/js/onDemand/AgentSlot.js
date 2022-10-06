@@ -1,6 +1,7 @@
 $(function(){
     initSlideDrag();
     showSelectedAgent()
+    var slotValidater = 2;
   
 })
 
@@ -101,6 +102,38 @@ async  function showDispatchDriver(driver_ids,cart_product_id,selected_agent='')
     $(`.agent_slots${cart_product_id}`).html(html);
 }
 
+//checkSlotTimeSelecedValidation for ondeman continue to cart on prees next-button-ondemand-3
+async function checkSlotTimeSelecedValidation(){
+     slotValidater = 2;
+    const selected_booking_date = document.getElementsByClassName(`booking_date_section`); 
+    $( selected_booking_date ).each(function( index,booking_date ) {
+        // check booking date is selected or not
+        var Dateinput =  booking_date.getElementsByClassName('booking_date');
+        if(Dateinput.length > 0)
+        {
+            var inputName = Dateinput[0].name;
+            var schedule_date = $(`input[name='${inputName}']:checked`).val();
+            if(schedule_date == '' || schedule_date === undefined ){
+                slotValidater =1;
+                return slotValidater;
+            }
+        }
+        // check booking time is selected or not
+        var Timeinput =  booking_date.getElementsByClassName('booking_time');
+        if(Timeinput.length > 0)
+        {
+            var inputTimeName = Timeinput[0].name;
+            var schedule_time = $(`input[name='${inputTimeName}']:checked`).val();
+            if(schedule_time == '' || schedule_time== undefined ){
+                slotValidater =1;
+                return slotValidater;
+            }
+        }
+    }); 
+    console.log(slotValidater);
+    return slotValidater;
+   
+}
 
 
 $(document).on('click','.dispatch_agent',function(){
@@ -120,17 +153,17 @@ $(document).on('click','.dispatch_agent',function(){
         .then(async response => {
          console.log(response);
             if(response.data.status == "Success"){
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: response.data.message,
-                })
+                // Swal.fire({
+                //     icon: 'success',
+                //     title: 'Success',
+                //     text: response.data.message,
+                // })
             } else{
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops',
-                    text: response.data.message,
-                })
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Oops',
+                //     text: response.data.message,
+                // })
             }
         })
         .catch(e => {
