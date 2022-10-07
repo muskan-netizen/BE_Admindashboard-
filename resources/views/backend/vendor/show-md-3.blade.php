@@ -65,21 +65,21 @@
         <div class="col-md-4 text-center mb-2">
             <div class="alProDuctBannerImg">
                 <img src="{{$multiBanner->image['proxy_url'] . '200/100' . $multiBanner->image['image_path']}}" alt="" class="w-100">
-                <span class=""><a class='deleteMultiBanner' data-banner_id="{{$multiBanner->id }}" href="javascript:void(0)"><i class="fa fa-times "  ></i></a></span>    
-            </div> 
+                <span class=""><a class='deleteMultiBanner' data-banner_id="{{$multiBanner->id }}" href="javascript:void(0)"><i class="fa fa-times "  ></i></a></span>
+            </div>
         </div>
         @endforeach
         {{-- <div class="col-md-4 text-center mb-2">
             <div class="alProDuctBannerImg">
                 <img src="https://images.royoorders.com/insecure/fill/200/100/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/vendor/bDZm2MWRNof7IyTlie6E9aQYWUsL1YI7DLCB9dJb.jpg@webp" alt="" class="w-100">
-                <span class=""><i class="fa fa-times"></i></span>    
-            </div> 
+                <span class=""><i class="fa fa-times"></i></span>
+            </div>
         </div>
         <div class="col-md-4 text-center mb-2">
             <div class="alProDuctBannerImg">
                 <img src="https://images.royoorders.com/insecure/fill/200/100/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/vendor/bDZm2MWRNof7IyTlie6E9aQYWUsL1YI7DLCB9dJb.jpg@webp" alt="" class="w-100">
-                <span class=""><i class="fa fa-times"></i></span>    
-            </div> 
+                <span class=""><i class="fa fa-times"></i></span>
+            </div>
         </div> --}}
     </div>
     @endif
@@ -240,7 +240,7 @@
                     </div>
                     @endif
 
-                    
+
                     @if(EasebuzzSubMerchent() == 1)
                     <div class="col-md-12">
                         <div class="form-group" id="social_link">
@@ -776,42 +776,43 @@
                             @php
                             $mediaIcons = [];
                             @endphp
-                            
-                            @forelse($socialMediaUrls as $socialMediaUrl)
-                            
-                            <tr align="center">
-                            @php
-                            $mediaIcons[] = $socialMediaUrl->icon;
-                            @endphp
-                                <td>
-                                    <i class="fab fa-{{$socialMediaUrl->icon}}  social-media-{{$socialMediaUrl->icon}}" aria-hidden="true"></i>
-                                </td>
-                                <td>
-                                    <a href="{{$socialMediaUrl->url}}" class="social-media-url-{{$socialMediaUrl->icon}}" target="_blank">{{$socialMediaUrl->url}}</a>
-                                </td>
-                                <td>
-                                    <div>
-                                        <div class="inner-div">
-                                            <button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
-                                                <i class="mdi mdi-delete"></i>
-                                            </button>
+
+                            @if (isset($socialMediaUrls))
+                                @forelse($socialMediaUrls as $socialMediaUrl)
+
+                                <tr align="center">
+                                @php
+                                $mediaIcons[] = $socialMediaUrl->icon;
+                                @endphp
+                                    <td>
+                                        <i class="fab fa-{{$socialMediaUrl->icon}}  social-media-{{$socialMediaUrl->icon}}" aria-hidden="true"></i>
+                                    </td>
+                                    <td>
+                                        <a href="{{$socialMediaUrl->url}}" class="social-media-url-{{$socialMediaUrl->icon}}" target="_blank">{{$socialMediaUrl->url}}</a>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <div class="inner-div">
+                                                <button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
+                                                    <i class="mdi mdi-delete"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr align="center">
-                                <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
-                            </tr>
-                            @endforelse
-                                
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr align="center">
+                                    <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                                </tr>
+                                @endforelse
+                            @endif
                             </tbody>
                         </table>
                         <input type="hidden" id="added-icons" value="{{ json_encode($mediaIcons) }}">
                     </div>
                 </div>
-            
-            
+
+
         </div>
     </div>
 </div>
@@ -832,7 +833,7 @@
                     <div class="">
                         <label>{{ __('Upload Banner') }}</label>
                         <input type="file" accept="image/*" data-plugins="dropify" name="banner_image" class="dropify" />
-                        
+
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -971,9 +972,9 @@ $( document ).ready(function() {
                 if(res.status == 'Success'){
                     var icon = "success";
                     var addedIcon = 'social-media-' + res.message.icon;
-                    
+
                     console.log('addedIcon', addedIcon);
-                    if ( $('.'+addedIcon).length ) {   
+                    if ( $('.'+addedIcon).length ) {
                         var addedurl = 'social-media-url-'+ res.message.icon;
                         $("."+addedurl).text(res.message.url);
                         $("."+addedurl).attr('href', res.message.url);
@@ -984,7 +985,7 @@ $( document ).ready(function() {
                     }
 
                     $('#social_url').val('');
-                
+
 
                 }else{
                     var icon = "error";
@@ -995,7 +996,7 @@ $( document ).ready(function() {
                     icon: icon,
                     button: "OK",
                 });
-                
+
             },
             error: function(data) {
                 $('#error-msg').text(data.message);
@@ -1010,7 +1011,7 @@ $( document ).ready(function() {
     //     var addedIcons = $('#added-icons').val();
     //     var socialIcon = $('#social_icon').val();
     //     var socialUrl = $('#social_url').val();
-        
+
     //     var ajaxUrl = "{{route('vendor.social.media.urls')}}";
 
     // });
@@ -1024,7 +1025,7 @@ $( document ).ready(function() {
     });
     $(document).on('click', '.addUrlRow-Add', function(e) {
         var rowCount = $('#social-media-list tr').length;
-        
+
         if(rowCount == 12){
             console.log('rowCount', rowCount);
             return false;
@@ -1035,11 +1036,11 @@ $( document ).ready(function() {
         $clone.find('.lasttd').html('<a href="javascript:void(0);" class="action-icon deleteUrlRow"> <i class="mdi mdi-delete"></i></a>');
         $('.urlTableAdd').append($clone);
     });
-    
+
     $("#manageSocialMedia").on('click', '.deleteUrlRow', function() {
         $(this).closest('tr').remove();
     });
-    
+
     // search users for set permission
     $('#id_search_user_for_permission').keyup(function(){
         var query = $(this).val();
