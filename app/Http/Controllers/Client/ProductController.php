@@ -507,23 +507,8 @@ class ProductController extends BaseController
 
                             // pr($request->all());
                             $variantData->title             = @$request->variant_titles[$key];
-
-                            if($getAdditionalPreference['is_price_by_role'] == '1'){
-                                if($roles){
-                                    foreach($roles as $_role){
-                                        if ($_role->id == 1){
-                                            $variantData->price   = $request->has('price') ? ($request->price['buyer'] != 0 ? $request->price['buyer'] : 0.00) : 0.00;
-                                            $variantData->role_id = $request->has('price') ? ($request->price['buyer'] != 0 ? $_role->id : 1) : 1;
-                                        }elseif ($_role->id == 2){
-                                            $variantData->price   = $request->has('price') ? ($request->price['seller']!= 0 ? $request->price['buyer'] : 0.00) : 0.00;
-                                            $variantData->role_id = $request->has('price') ? ($request->price['seller']!= 0 ? $_role->id : 1) : 1;
-                                        }
-                                    }
-                                }
-                            }else{
-                                $variantData->price             = @$request->variant_price[$key];
-                                $variantData->role_id           = 1;
-                            }
+                            $variantData->price             = @$request->variant_price[$key];
+                            $variantData->role_id           = 1;
                             $variantData->incremental_price             = @$request->variant_incremental_price[$key]??0;
                             $variantData->incremental_price_per_min             = @$per_min;
                             $variantData->markup_price      = @$request->markup_price[$key];
@@ -541,7 +526,6 @@ class ProductController extends BaseController
                 } else {
 
                     if($getAdditionalPreference['is_price_by_role'] == '1'){
-
                         if($roles){
                             foreach($roles as $_role){
                                 if ($_role->id == 1){
@@ -549,13 +533,13 @@ class ProductController extends BaseController
                                     if (!$variantData) {
                                         $variantData = new ProductVariant();
                                         $variantData->product_id    = $product->id;
-                                        $variantData->sku           = $product->sku;
-                                        $variantData->title         = $product->sku;
+                                        $variantData->sku           = $product->sku.'_'.$_role->id;
+                                        $variantData->title         = $product->sku.'_buyer_'.$_role->id;
                                         $variantData->barcode       = $this->generateBarcodeNumber();
                                     }
-                                    $variantData->price   = $request->has('price') ? ($request->price['buyer'] != 0 ? $request->price['buyer'] : 0.00) : 0.00;
-                                    $variantData->role_id = $request->has('price') ? ($request->price['buyer'] != 0 ? $_role->id : 1) : 1;
-                                    $variantData->markup_price      = $request->markup_price;
+                                    $variantData->price   = $request->has('role_price') ? ($request->role_price['buyer'] != 0 ? $request->role_price['buyer'] : 0.00) : 0.00;
+                                    $variantData->role_id = $request->has('role_price') ? ($request->role_price['buyer'] != 0 ? $_role->id : 1) : 1;
+                                    $variantData->markup_price      = $request->markup_price ?? 0.00;
                                     $variantData->compare_at_price  = $request->compare_at_price;
                                     $variantData->container_charges  = $request->container_charges;
                                     $variantData->cost_price        = $request->cost_price;
@@ -567,13 +551,13 @@ class ProductController extends BaseController
                                     if (!$variantData) {
                                         $variantData = new ProductVariant();
                                         $variantData->product_id    = $product->id;
-                                        $variantData->sku           = $product->sku;
-                                        $variantData->title         = $product->sku;
+                                        $variantData->sku           = $product->sku.'_'.$_role->id;
+                                        $variantData->title         = $product->sku.'_seller_'.$_role->id;
                                         $variantData->barcode       = $this->generateBarcodeNumber();
                                     }
-                                    $variantData->price   = $request->has('price') ? ($request->price['seller']!= 0 ? $request->price['seller'] : 0.00) : 0.00;
-                                    $variantData->role_id = $request->has('price') ? ($request->price['seller']!= 0 ? $_role->id : 1) : 1;
-                                    $variantData->markup_price      = $request->markup_price;
+                                    $variantData->price   = $request->has('role_price') ? ($request->role_price['seller']!= 0 ? $request->role_price['seller'] : 0.00) : 0.00;
+                                    $variantData->role_id = $request->has('role_price') ? ($request->role_price['seller']!= 0 ? $_role->id : 1) : 1;
+                                    $variantData->markup_price      = $request->markup_price ?? 0.00;
                                     $variantData->compare_at_price  = $request->compare_at_price;
                                     $variantData->container_charges = $request->container_charges;
                                     $variantData->cost_price        = $request->cost_price;
@@ -610,7 +594,7 @@ class ProductController extends BaseController
             return redirect()->back()->with('toaster', $toaster);
         } catch (\Exception $e) {
             DB::rollback();
-
+            dd($e->getMessage());
             $toaster = $this->errorToaster(__('ERROR'),$e->getMessage() );
             return redirect()->back()->with('toaster', $toaster);
 
