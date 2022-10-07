@@ -25,6 +25,19 @@ body .create_box a.btn.btn-solid.mt-2{padding: 5px 40px !important;}.user-info.d
 .fa-facebook-square:before,.fa-heart:before,.fa-twitter:before,.fa-user:before,.fa-whatsapp:before{font-family:FontAwesome}
 span.fa.fa-eye-slash.toggle-password.eye::before{content:"\f06e"}
 
+
+.al_body_template_three .add-on-main-div .radio-btns input[type="radio"] {display: none;}
+.al_body_template_three  .add-on-main-div .radio-btns.long-radio input[type="radio"]:checked+label .customCheckbox {background: var(--theme-deafult);color: #fff;}
+.al_body_template_three  .add-on-main-div .radio-btns.long-radio input[type="radio"]+label .customCheckbox {width: auto;vertical-align: middle;white-space: nowrap;border-radius: 50px;height: auto;line-height: normal;padding: 10px 14px;}
+.al_body_template_three  .add-on-main-div .radio-btns input[type="radio"] + label span {
+display: inline-block;box-sizing: border-box;position: relative;width: 49px;height: 49px;line-height: 49px;text-align: center;padding: 0;border-radius: 50%;z-index: 1;color: #1f2431;
+background: #f3f3f3;overflow: hidden;transition: all .5s;-webkit-transition: all .5s;cursor: pointer;}
+.al_body_template_three .add-on-main-div  .slick-slider .slick-prev{left:-25px;top:20px;}
+.al_body_template_three .add-on-main-div  .slick-slider .slick-next{right:-25px;top:20px;}
+
+
+
+
 .hide{right:0;opacity:0;z-index:-1}#social-links li{margin-right:20px}.checkbox-input input[type=checkbox]{padding:0;height:initial;width:initial;margin-bottom:0;display:none;cursor:pointer}.checkbox-input label:before{content:'';-webkit-appearance:none;background-color:transparent;border:2px solid var(--theme-deafult);box-shadow:0 1px 2px rgb(0,0%,0 / 5%),inset 0 -15px 10px -12px rgb(0,0%,0 / 5%);padding:5px;display:inline-block;position:relative;vertical-align:middle;cursor:pointer;margin-right:6px;margin-top:-3px;border-radius:2px}.checkbox-input input:checked+label:after{content:'';display:block;position:absolute;top:6px;left:4px;width:5px;height:8px;border:solid var(--theme-deafult);border-width:0 2px 2px 0;transform:rotate(45deg)}.checkbox-input label{position:relative;cursor:pointer}
 .sold-by img{height:30px;width:30px;margin-right:10px;border-radius:50%}.vendor-signup .file>label{height:216px}.file.upload-new .update_pic,.vendor-signup .update_pic{width:100%;height:auto;margin:auto;text-align:center;border:0;border-radius:0}.file--upload>label .plus_icon{height:33px;width:33px;line-height:36px;color:#fff;text-align:center;font-family:"Nunito Sans";font-size:13px;font-weight:700;letter-spacing:0;border-radius:50%;background-color:var(--theme-deafult);box-shadow:0 2px 4px 0 rgb(63 159 255 / 40%);display:block;position:absolute;right:0;left:0;margin:auto;bottom:0;top:0}.file.upload-new>label,.vendor-signup .file>label{width:100%;border:1px solid #ddd;padding:30px 0;height:192px}.file--upload>label{margin-bottom:0;display:inline-block;position:relative;cursor:pointer;outline:0}form label{font-size:14px;margin:0 0 5px}
 

@@ -51,7 +51,7 @@ class WebStylingOptionSeeder extends Seeder
                     }
                 }
             }
-            WebStylingOption::where('template_id', '5')->delete();
+
         }
     }
 }

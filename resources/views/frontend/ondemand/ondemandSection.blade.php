@@ -370,7 +370,7 @@
                                       @endphp
 
 
-                                        <div  id="date_time_set_div{{$cart_data->id}}" > 
+                                        <div  id="date_time_set_div{{$cart_data->id}}" class="booking_date_section"> 
 
                                             <h4 class="mb-2" ><b>{{ __('When would you like your service?')}}</b></h4>
                                             @if(count($cart_data->period)>0)
@@ -388,8 +388,8 @@
                                                         @endphp
                                                         <div class="radios">
                                                             <p>{{date('D', strtotime($date))}}</p>
-                                                            <div class="alCustomHomeServiceRadio">
-                                                                <input type="radio" class="check-time-slots ondemand-time-slots ondemand_{{ $checked }}" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" data-product_id ="{{$cart_data->product->id}}" data-product_tag ="{{$cart_data->product->tags}}" data-product_category_type ="{{$cart_data->product->productcategory->type_id}}"  value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}{{ $dateRandNo }}' {{$checked }} @if(($key == 0 && $checked == "")) checked @endif />
+                                                            <div class="alCustomHomeServiceRadio ">
+                                                                <input type="radio"  class="check-time-slots booking_date ondemand-time-slots ondemand_{{ $checked }}" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" data-product_id ="{{$cart_data->product->id}}" data-product_tag ="{{$cart_data->product->tags}}" data-product_category_type ="{{$cart_data->product->productcategory->type_id}}"  value='{{date('Y-m-d', strtotime($date))}}' name='booking_date_{{$cart_data->id}}' id='radio{{$cd}}{{$key}}{{ $dateRandNo }}' {{$checked }} @if(($key == 0 && $checked == "")) checked @endif />
                                                                 <label for='radio{{$cd}}{{$key}}{{$dateRandNo  }}'>
                                                                 <span class="customCheckbox" aria-hidden="true" >{{date('d', strtotime($date))}}</span>
                                                                 </label>
