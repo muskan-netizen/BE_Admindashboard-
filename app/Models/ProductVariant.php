@@ -10,7 +10,7 @@ use App\Models\UserVendor;
 
 class ProductVariant extends Model
 {
-	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price','incremental_price_per_min'];
+	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price','incremental_price_per_min','role_id'];
 
   protected $appends = ['actual_price'];
 
@@ -28,7 +28,7 @@ class ProductVariant extends Model
       $values['image_fit'] = \Config::get('app.FIT_URl');
       return $values;
     }
-  
+
     public function set(){
 	    return $this->hasMany('App\Models\ProductVariantSet')
 	    		->join('variant_options as opt', 'opt.id', 'product_variant_sets.variant_option_id')
@@ -132,9 +132,9 @@ class ProductVariant extends Model
            if($checkMarkup){
                 return $value + $this->markup_price??0;
             }
-        
-            return $value;  
-           
+
+            return $value;
+
     }
 
     public function getMarkupPriceAttribute($value)
@@ -146,9 +146,9 @@ class ProductVariant extends Model
            if($checkMarkup){
                 return $value;
             }
-        
-            return 0;  
-           
+
+            return 0;
+
     }
 
 }

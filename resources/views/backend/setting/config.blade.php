@@ -1514,7 +1514,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         <span>
                             <input type="checkbox" data-plugin="switchery" name="is_price_by_role_switch" id="is_price_by_role_switch" class="form-control checkbox_change" data-className="is_price_by_role" data-color="#43bee1" @if( $getAdditionalPreference['is_price_by_role'] == '1') checked='checked' @endif>
                             <input type="hidden" @if($getAdditionalPreference['is_price_by_role'] == 1) value="1" @else value="0" @endif name="is_price_by_role" id="is_price_by_role"/>
-                            {{-- <input type="checkbox" data-plugin="switchery" name="price_by_role" id="price_by_role" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->price_by_role == '1')) checked='checked' @endif> --}}
                         </span>
                     </div>
                 </div>

@@ -230,13 +230,24 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Pricing Information") }}</h5>
                     @if($product->has_variant == 0)
                     <div class="row mb-2">
-                        <div class="col-4 mb-2">
-                            {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
-                            @include('backend.primary_currency')
+                        @if($getAdditionalPreference['is_price_by_role'] == '1')
+                            @if ($roles)
+                                @foreach ($roles as $_role)
+                                <div class="col-4 mb-2">
+                                    {!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}
+                                    <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKeyMax(event)" placeholder="0" name="price[{{lcfirst($_role['role'])}}]" value="0.00">
+                                    {{-- {!!Form::input('number', ['min' => '0','class'=>'form-control', 'id' => 'minimum_duration_minss', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!} --}}
+                                </div>
+                                @endforeach
+                            @endif
+                        @else
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                {!! Form::text('price', decimal_format($product->variant[0]->actual_price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        @endif
 
-                            {!! Form::text('price', decimal_format($product->variant[0]->actual_price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
-
-                        </div>
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
                             @include('backend.primary_currency')
@@ -267,17 +278,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', 'Cost Price (Optional)', ['class' => 'control-label']) !!}
                             {!! Form::text('cost_price', $product->variant[0]->cost_price, ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div> --}}
-                        @if((isset($configData) && $configData->price_by_role == '1'))
-                            @if ($roles)
-                                @foreach ($roles as $_role)
-                                <div class="col-4 mb-2">
-                                    {!! Form::label('title', $_role['role'].' '. __('price'), ['class' => 'control-label']) !!}
-                                    <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKeyMax(event)" placeholder="0" name="price[{{lcfirst($_role['role'])}}]" value="0.00">
-                                    {{-- {!!Form::input('number', ['min' => '0','class'=>'form-control', 'id' => 'minimum_duration_minss', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!} --}}
-                                </div>
-                                @endforeach
-                            @endif
-                        @endif
                     </div>
                     @endif
                     <div class="row mb-2">

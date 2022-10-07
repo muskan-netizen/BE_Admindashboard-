@@ -279,7 +279,9 @@ class ProductController extends BaseController
             }
         }
         $roles = Role::where('status',1)->get();
-        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles ]);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
+        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference ]);
     }
 
     /**
@@ -307,6 +309,7 @@ class ProductController extends BaseController
                 return redirect()->back()->withInput()->withErrors($validation);
             }
             $roles = Role::where('status',1)->get();
+            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
             $check_url_slug = Product::where('id','!=',$id)->where('vendor_id',$request->vendor_id)->where('url_slug',$request->url_slug)->first();
             if(!is_null($check_url_slug))
             {
@@ -504,16 +507,22 @@ class ProductController extends BaseController
 
                             // pr($request->all());
                             $variantData->title             = @$request->variant_titles[$key];
-                            $variantData->price             = @$request->variant_price[$key];
 
-                            if($roles){
-                                foreach($roles as $_role){
-                                    if ($_role->id == 1){
-                                        $variantData->price = $request->has('price') ? ($request->price['buyer'] != 0 ? $request->price['buyer'] : 0.00) : 0.00;
-                                    }elseif ($_role->id == 2){
-                                        $variantData->price = $request->has('price') ? ($request->price['seller']!= 0 ? $request->price['buyer'] : 0.00) : 0.00;
+                            if($getAdditionalPreference['is_price_by_role'] == '1'){
+                                if($roles){
+                                    foreach($roles as $_role){
+                                        if ($_role->id == 1){
+                                            $variantData->price   = $request->has('price') ? ($request->price['buyer'] != 0 ? $request->price['buyer'] : 0.00) : 0.00;
+                                            $variantData->role_id = $request->has('price') ? ($request->price['buyer'] != 0 ? $_role->id : 1) : 1;
+                                        }elseif ($_role->id == 2){
+                                            $variantData->price   = $request->has('price') ? ($request->price['seller']!= 0 ? $request->price['buyer'] : 0.00) : 0.00;
+                                            $variantData->role_id = $request->has('price') ? ($request->price['seller']!= 0 ? $_role->id : 1) : 1;
+                                        }
                                     }
                                 }
+                            }else{
+                                $variantData->price             = @$request->variant_price[$key];
+                                $variantData->role_id           = 1;
                             }
                             $variantData->incremental_price             = @$request->variant_incremental_price[$key]??0;
                             $variantData->incremental_price_per_min             = @$per_min;
@@ -530,22 +539,69 @@ class ProductController extends BaseController
                         $delOpt = ProductVariant::whereNotIN('id', $existv)->where('product_id', $product->id)->whereNull('title')->delete();
                     }
                 } else {
-                    $variantData = ProductVariant::where('product_id', $product->id)->first();
-                    if (!$variantData) {
-                        $variantData = new ProductVariant();
-                        $variantData->product_id    = $product->id;
-                        $variantData->sku           = $product->sku;
-                        $variantData->title         = $product->sku;
-                        $variantData->barcode       = $this->generateBarcodeNumber();
+
+                    if($getAdditionalPreference['is_price_by_role'] == '1'){
+
+                        if($roles){
+                            foreach($roles as $_role){
+                                if ($_role->id == 1){
+                                    $variantData = ProductVariant::where('product_id', $product->id)->where('role_id', $_role->id)->first();
+                                    if (!$variantData) {
+                                        $variantData = new ProductVariant();
+                                        $variantData->product_id    = $product->id;
+                                        $variantData->sku           = $product->sku;
+                                        $variantData->title         = $product->sku;
+                                        $variantData->barcode       = $this->generateBarcodeNumber();
+                                    }
+                                    $variantData->price   = $request->has('price') ? ($request->price['buyer'] != 0 ? $request->price['buyer'] : 0.00) : 0.00;
+                                    $variantData->role_id = $request->has('price') ? ($request->price['buyer'] != 0 ? $_role->id : 1) : 1;
+                                    $variantData->markup_price      = $request->markup_price;
+                                    $variantData->compare_at_price  = $request->compare_at_price;
+                                    $variantData->container_charges  = $request->container_charges;
+                                    $variantData->cost_price        = $request->cost_price;
+                                    $variantData->quantity          = $request->quantity;
+                                    $variantData->tax_category_id   = $request->tax_category;
+                                    $variantData->save();
+                                }elseif ($_role->id == 2){
+                                    $variantData = ProductVariant::where('product_id', $product->id)->where('role_id', $_role->id)->first();
+                                    if (!$variantData) {
+                                        $variantData = new ProductVariant();
+                                        $variantData->product_id    = $product->id;
+                                        $variantData->sku           = $product->sku;
+                                        $variantData->title         = $product->sku;
+                                        $variantData->barcode       = $this->generateBarcodeNumber();
+                                    }
+                                    $variantData->price   = $request->has('price') ? ($request->price['seller']!= 0 ? $request->price['seller'] : 0.00) : 0.00;
+                                    $variantData->role_id = $request->has('price') ? ($request->price['seller']!= 0 ? $_role->id : 1) : 1;
+                                    $variantData->markup_price      = $request->markup_price;
+                                    $variantData->compare_at_price  = $request->compare_at_price;
+                                    $variantData->container_charges = $request->container_charges;
+                                    $variantData->cost_price        = $request->cost_price;
+                                    $variantData->quantity          = $request->quantity;
+                                    $variantData->tax_category_id   = $request->tax_category;
+                                    $variantData->save();
+                                }
+                            }
+                        }
+                    }else{
+                        $variantData = ProductVariant::where('product_id', $product->id)->first();
+                        if (!$variantData) {
+                            $variantData = new ProductVariant();
+                            $variantData->product_id    = $product->id;
+                            $variantData->sku           = $product->sku;
+                            $variantData->title         = $product->sku;
+                            $variantData->barcode       = $this->generateBarcodeNumber();
+                        }
+                        $variantData->price             = $request->price;
+                        $variantData->role_id           = 1;
+                        $variantData->markup_price      = $request->markup_price;
+                        $variantData->compare_at_price  = $request->compare_at_price;
+                        $variantData->container_charges = $request->container_charges;
+                        $variantData->cost_price        = $request->cost_price;
+                        $variantData->quantity          = $request->quantity;
+                        $variantData->tax_category_id   = $request->tax_category;
+                        $variantData->save();
                     }
-                    $variantData->price             = $request->price;
-                    $variantData->markup_price      = $request->markup_price;
-                    $variantData->compare_at_price  = $request->compare_at_price;
-                    $variantData->container_charges  = $request->container_charges;
-                    $variantData->cost_price        = $request->cost_price;
-                    $variantData->quantity          = $request->quantity;
-                    $variantData->tax_category_id   = $request->tax_category;
-                    $variantData->save();
                 }
             }
             DB::commit();
