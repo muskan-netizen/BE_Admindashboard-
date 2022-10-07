@@ -136,7 +136,7 @@
                                 <h4 class="header-title">{{ __("Home Page Style") }}</h4>
                                 <div class="row mt-3">
                                     @foreach($homepage_style_options as $homepage_style)
-                                    <div class="col-xl-4 col-md-4 mb-3 alThemeDemoSec">
+                                    <div class="col-xl-4 col-lg-6 col-md-6 mb-3 alThemeDemoSec">
                                         <div class="card mb-0">
                                             <div class="card-body p-0">
                                                 <div class="col-sm-12 custom-control custom-radio radio_new p-0">

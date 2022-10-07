@@ -252,8 +252,8 @@
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
 					 <a class="banner-img-outer" href="{{$url??'#'}}">
-                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}" />
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '0/300' . $banner->image['image_path']}}" />
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '0/300' . $banner->image['image_path']}}">
 					</a>
 					</div>
 				@endforeach
@@ -542,7 +542,7 @@
 		@elseif($homePageLabel->slug == 'brands' && (count($homePageData['brands']) != 0))
 			<section class="container popular-brands left-shape_ position-relative ">
 				<div class="al_top_heading d-flex justify-content-between">
-					<h2 class="h2-heading text-capitalize">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
+					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
 						{{-- <a class="" href="">See All</a> --}}
 				</div>
 				<div class="row">
