@@ -1175,7 +1175,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
    </div>
 
    @php
-   $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable']);
+   $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable','is_price_by_role']);
    @endphp
    <form method="POST" action="{{route('additional.update')}}">
       <input type="hidden" name="crm" id="crm" value="1">
@@ -1194,10 +1194,10 @@ $sms_crendential = json_decode($preference->sms_credentials);
                            <button class="btn btn-info btn-block save_btn" name="hubspot_submit" type="submit"> {{ __("Save") }} </button>
                         </label>
                         <label for="" class="mr-3">{{ __("Enable") }}</label>
-                        <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable" class="form-control checkbox_change" data-className="is_hubspot_enable_hidden" data-color="#43bee1" 
+                        <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable" class="form-control checkbox_change" data-className="is_hubspot_enable_hidden" data-color="#43bee1"
                         @if(@$getAdditionalPreference['is_hubspot_enable'] == '1') checked='checked' value="1"  @endif>
                         <input type="hidden"  @if(isset($getAdditionalPreference['is_hubspot_enable']) == 1) value="1" @else value="0" @endif  name="is_hubspot_enable"  id="is_hubspot_enable_hidden"/>
-      
+
                         {{-- @if((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1')) checked='checked' @endif> --}}
                      </div>
                   </div>
@@ -1300,7 +1300,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   @endif
-                  
+
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                         <label for="subscription_tab_taxi" class="mr-2 mb-0">{{ __("Subscription Tab") }}<small class="d-block pr-5">{{ __('Enable subscription tab for taxi/cab.') }}</small></label>
@@ -1399,7 +1399,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </span>
                      </div>
                   </div>
-                 
+
                   <div class="col-md-4">
                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                        <label for="hide_order_address" class="mr-2 mb-0">{{__('Hide customer details')}}<small class="d-block pr-5">{{__('Enable to hide customer details from order.')}}</small></label>
@@ -1508,13 +1508,24 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </span>
                   </div>
                </div>
+                <div class="col-md-4">
+                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                        <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Price By Role')}}<small class="d-block pr-5">{{__("Enable to show price by role on edit's vendor screen.")}}</small></label>
+                        <span>
+                            <input type="checkbox" data-plugin="switchery" name="is_price_by_role_switch" id="is_price_by_role_switch" class="form-control checkbox_change" data-className="is_price_by_role" data-color="#43bee1" @if( $getAdditionalPreference['is_price_by_role'] == '1') checked='checked' @endif>
+                            <input type="hidden" @if($getAdditionalPreference['is_price_by_role'] == 1) value="1" @else value="0" @endif name="is_price_by_role" id="is_price_by_role"/>
+                            {{-- <input type="checkbox" data-plugin="switchery" name="price_by_role" id="price_by_role" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->price_by_role == '1')) checked='checked' @endif> --}}
+                        </span>
+                    </div>
+                </div>
+
                </div>
             </div>
          </form>
          <!-- Custom Mods end -->
       </div>
    </div>
-   
+
    <div class="row">
       {{--<div class="col-lg-6">
          <div class="page-title-box">
@@ -2256,7 +2267,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       var dispatcherDiv = $('#need_dispacher_ride');
       var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
       var laundry_service = $('#need_laundry_service');
-      
+
       var laundry_service = $('#need_laundry_service');
 
       var is_hubspot_enable = $('#is_hubspot_enable');

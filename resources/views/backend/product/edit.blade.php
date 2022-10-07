@@ -77,7 +77,7 @@
     }
 </style>
 @endsection
-@php 
+@php
 $lastmileShow = array('7','10','11');
 
 $brandNotShow = array('7','8','12');
@@ -233,7 +233,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
                             @include('backend.primary_currency')
-                            
+
                             {!! Form::text('price', decimal_format($product->variant[0]->actual_price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
 
                         </div>
@@ -242,7 +242,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             @include('backend.primary_currency')
                             {!! Form::text('compare_at_price', decimal_format($product->variant[0]->compare_at_price), ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
-                      
+
                         @if($product->vendor->need_container_charges == 1)
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Container Charges (Optional)'), ['class' => 'control-label']) !!}
@@ -252,7 +252,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         @endif
                         @if($product->vendor->add_markup_price == 1 && Auth::user()->is_superadmin == 1)
                         <div class="col-4 mb-2">
-                            {!! Form::label('title', __('Markup Price'), ['class' => 'control-label']) !!} 
+                            {!! Form::label('title', __('Markup Price'), ['class' => 'control-label']) !!}
                             @include('backend.primary_currency') ({{ __("Visible For Admin") }})
                             {!! Form::text('markup_price', $product->variant[0]->markup_price, ['class'=>'form-control', 'id' => 'markup_price', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
@@ -267,6 +267,17 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', 'Cost Price (Optional)', ['class' => 'control-label']) !!}
                             {!! Form::text('cost_price', $product->variant[0]->cost_price, ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div> --}}
+                        @if((isset($configData) && $configData->price_by_role == '1'))
+                            @if ($roles)
+                                @foreach ($roles as $_role)
+                                <div class="col-4 mb-2">
+                                    {!! Form::label('title', $_role['role'].' '. __('price'), ['class' => 'control-label']) !!}
+                                    <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKeyMax(event)" placeholder="0" name="price[{{lcfirst($_role['role'])}}]" value="0.00">
+                                    {{-- {!!Form::input('number', ['min' => '0','class'=>'form-control', 'id' => 'minimum_duration_minss', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!} --}}
+                                </div>
+                                @endforeach
+                            @endif
+                        @endif
                     </div>
                     @endif
                     <div class="row mb-2">
@@ -292,7 +303,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 </div>
                                 @endif
 
-                                
+
                                 @if($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8)
                                 {{-- <div class="col-sm-4">
                                     {!! Form::label('title', 'Need Price From Dispatcher',['class' => 'control-label']) !!} <br />
@@ -303,7 +314,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </div>
                         </div>
                     </div>
-                    
+
 
                     @if(  in_array( $product->category->categoryDetail->type_id , [10]) )
                         <div class="row col-md-12 mb-2">
@@ -333,7 +344,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
                                     {!! Form::input('number','additional_increments_min', $product->additional_increments_min, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'additional_increments_min', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
                                 </div>
-                            
+
                             </div>
                             <div class="col-4 mb-2 row">
                                 <div class="col-12">
@@ -349,10 +360,10 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 </div>
 
                             </div>
-                           
+
                         </div>
                         {{-- <div class="row mb-2">
-                           
+
                         </div> --}}
                         @if($product->category->categoryDetail->type_id  ==  10)
                             <div class="row mb-2" style="display: none;">
@@ -364,14 +375,14 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     {!! Form::label('title', __('Check in time'), ['class' => 'control-label']) !!}
                                     {!! Form::text('check_in_time', $product->check_in_time, ['class'=>'form-control', 'id' => 'range-datepicker', 'placeholder' => '00:00']) !!}
                                 </div>
-                            
+
                             </div>
                         @endif
                     @endif
 
                 </div>
                 @endif
-                
+
                 @if($product->category->categoryDetail->type_id == 10)
                     @include('backend.product.popup.scheduleTableRows')
                     {{-- @include('backend.product.popup.addBlockTimeTablePopup') --}}
@@ -556,7 +567,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </select>
                         </div>
                         @endif
-                       
+
                         @if(($configData->need_dispacher_home_other_service == 1 && ($product->category->categoryDetail->type_id == 8)) || ($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12 ) )
                         @if($product->Requires_last_mile == 1 )
                             <div class="col-md-6 d-flex justify-content-between mb-2">
@@ -569,7 +580,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     @endif
                                 </select>
                             </div>
-                         @endif   
+                         @endif
                             <div class="col-md-6 d-flex justify-content-between mb-2">
                                 {!! Form::label('title', __('Mode Of Service'),['class' => 'control-label']) !!}
                                 <select class="selectize-select1 form-control" name="mode_of_service" id="mode_of_service" required>
@@ -644,17 +655,17 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     {!! Form::label('title', __('Minimum Increment'),['class' => 'control-label']) !!}
                                     {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                 </div>
-                    </div>            
+                    </div>
                     {{--@endif--}}
 
-                    
+
 
                     {{--
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Service Charges'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="service_charges_tax" class="chk_box" data-color="#43bee1" @if($product->service_charges_tax == 1) checked @endif>
                     </div>
-                    
+
                     <div class="form-group w-100" style="display:{{$product->service_charges_tax == 0 ? 'none!important' : 'block'}}" id="service_charges_tax_id">
                      {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
                         <select class="form-control" name="service_charges_tax_id">
@@ -671,7 +682,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         {!! Form::label('title', __('On Delivery Charges'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="delivery_charges_tax" class="form-control" data-color="#43bee1" @if($product->delivery_charges_tax == 1) checked @endif>
                     </div>
-                    
+
                     <div class="form-group w-100" style="display:{{$product->delivery_charges_tax == 0 ? 'none!important' : 'block'}}" id="delivery_charges_tax_id">
                      {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
                         <select class="form-control" name="delivery_charges_tax_id">
@@ -683,12 +694,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     </div>
 
 
-                     
+
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Fixed Fee'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="fixed_fee_tax" class="form-control" data-color="#43bee1" @if($product->fixed_fee_tax == 1) checked @endif>
                     </div>
-                
+
                     <div class="form-group w-100" style="display:{{$product->fixed_fee_tax == 0 ? 'none!important' : 'block'}}" id="fixed_fee_tax_id">
                      {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
                         <select class="form-control" name="fixed_fee_tax_id">
@@ -704,12 +715,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Taxes") }}</h5>
                         </div>
                     </div> --}}
-                   
+
                     {{-- <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Container Charges'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="container_charges_tax" class="form-control" data-color="#43bee1" @if($product->container_charges_tax == 1) checked @endif>
                     </div> --}}
-                
+
 
                     @if($product->vendor->need_container_charges)
                     <div class="form-group w-100" id="container_charges_tax_id">
@@ -720,7 +731,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 <option value="{{$row->id}}" {{$product->container_charges_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
                             @endforeach
                         </select>
-                    </div> 
+                    </div>
                     @endif
 
                     @if($configData->delay_order == 1 || $product->delay_order_hrs > 0 || $product->delay_order_min > 0)
@@ -837,7 +848,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </select>
                         </div>
                     </div> -->
-                    
+
                 </div>
 
                 <div class="card-box">
@@ -1062,7 +1073,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                            </div>
                         </div>
                      </div>
-                     
+
                       <!--- Start -->
 
                       <div class="col-md-12 selector-option-al ">
@@ -1074,20 +1085,20 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 @endforeach
                                 <th></th>
                             </tr>
-                            <tbody id="table_body">                                                     
+                            <tbody id="table_body">
                                     <tr>
                                 @foreach($languages as $key => $vendor_langs)
                                     <td>
                                         <input class="form-control" name="language_id[{{$key}}]" type="hidden" value="{{$vendor_langs->langId}}">
                                         <input class="form-control" name="name[{{$key}}]" type="text" id="product_faq_name_{{$vendor_langs->langId}}">
-                                    </td>                                       
+                                    </td>
                                 @endforeach
                                 <td class="lasttd"></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                
+
                     <div id="selector_div" class="col-md-12 d-none">
                         <div class="card">
                         <div class="card-box mb-0 ">
@@ -1220,7 +1231,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
         $('#add_vendor_registration_document_modal').modal('show');
         $('#add_vendor_registration_document_modal #standard-modalLabel').html('Add Vendor Registration Document');
     });
-    
+
     $('#requiredShipping').change(function() {
         var val = $(this).prop('checked');
         if (val == true) {
@@ -1297,7 +1308,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     $(".addExistRow").css('display','none');
                     $('.addExistRow').last().show();
                     Swal.fire('Deleted!', 'Row has been deleted!', 'success')
-                } 
+                }
               });
         } else {
             var is_product_delete = 0;
@@ -1312,7 +1323,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     $(".addExistRow").css('display','none');
                     $('.addExistRow').last().show();
                     Swal.fire('Deleted!', 'Row has been deleted!', 'success')
-                }   
+                }
               });
         }
     });
@@ -1789,7 +1800,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
       $(document).on("click", ".edit_product_faq_btn", function() {
         let product_faq_id = $(this).data('product_faq_id');
-       
+
         editProductOrderForm(product_faq_id);
     });
     function editProductOrderForm(product_faq_id){
@@ -1869,7 +1880,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
             }
          });
       });
-    
+
       $('#mode_of_service').change(function(){
            var selected_value =$(this).val();
           // console.log(selected_value);
