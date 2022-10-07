@@ -1136,9 +1136,13 @@ class ProductController extends BaseController
     }
 
     # check if last mile delivery on
-    public function getProductFaq(Request $request){
-        pr($request->all());
-
+    public function getProductVariant(Request $request){
+        $ProductVariants =   ProductVariant::where('product_id',$request->product_id)->get();
+        $options = [];
+        foreach($ProductVariants as $key => $variant){
+            $options[] = "<option value=".$variant['id'].">".($variant['title'] ?? $variant['sku'])."</option>";
+        }
+        return $this->successResponse($options, '');
     }
 
 

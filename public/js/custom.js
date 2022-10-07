@@ -1,4 +1,5 @@
 jQuery(document).ready(function () {
+    var slotValidater = 2;
     var footer_height = jQuery('.footer-light').height();
     var header_height = jQuery('.site-header').height();
     var window_height = jQuery(window).height();
@@ -3442,7 +3443,15 @@ $(document).ready(function () {
 
     $(document).on("click", "#next-button-ondemand-3", function () {
         $('.alert-danger').html('');
-       //window.location.href = showCart;
+       
+       var valid =  checkSlotTimeSelecedValidation();
+     
+       if(slotValidater == 1  ){ // some date or time not selected
+         sweetAlert.error('Oops...','Schedule date time is required');
+         return false;
+       }
+       
+       
 
         var task_type = 'schedule';
         var schedule_date = $("input[name='booking_date']:checked").val();
@@ -3462,7 +3471,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: update_cart_schedule,
-            data: { task_type: task_type, schedule_dt: schedule_dt ,specific_instructions:specific_instructions,productid:productid,schedule_time:schedule_time},
+            data: { task_type: task_type ,specific_instructions:specific_instructions,productid:productid}, //, schedule_dt: schedule_dt,schedule_time:schedule_time
             success: function (response) {
                 if (response.status == "Success") {
                     window.location.href = showCart;
@@ -3826,14 +3835,14 @@ $(document).ready(function () {
         //var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date" + cart_product_id + "']:checked").val();
 
         //var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date']:checked").val();
-        var schedule_date = $("input[name='booking_date']:checked").val();
+        var schedule_date = $(`input[name='booking_date_${cart_product_id}']:checked`).val();// $("input[name='booking_date']:checked").val();
        // var schedule_time = $(this).data("value");
         //var specific_instructions = $("#specific_instructions").val();
        // alert(specific_instructions);
 
         //var schedule_dt = schedule_date + ' ' + schedule_time;
         var schedule_dt = schedule_date;
-        if ((task_type == 'schedule') && (schedule_dt == '')) {
+        if ((task_type == 'schedule') && (schedule_dt == '' || schedule_dt== undefined) ) {
             success_error_alert('error', 'Schedule date time is required', ".cart_response");
             return false;
         }

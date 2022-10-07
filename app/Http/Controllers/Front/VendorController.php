@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout,ProductTag,Facilty,WebStylingOption,VendorSection};
+use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, VendorSocialMediaUrls, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout,ProductTag,Facilty,WebStylingOption,VendorSection};
 use Log;
 class VendorController extends FrontController
 {
@@ -316,8 +316,8 @@ class VendorController extends FrontController
         $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
         $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();
 
-         // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';vendor-products-with-categories-extended
-        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed,'cartData'=>$cartData,'period' => $period ,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors,'vendorMultiBanner'=>$vendorMultiBanner]);
+        $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
+        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'socialMediaUrls'=>$socialMediaUrls, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed,'cartData'=>$cartData,'period' => $period ,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors,'vendorMultiBanner'=>$vendorMultiBanner]);
     }
 
     /**
