@@ -75,6 +75,10 @@ class ProductVariant extends Model
        return $this->hasOne('App\Models\UserWishlist', 'product_id', 'product_id')->select('product_id', 'user_id');
     }
 
+    public function productVariantByRole(){
+		return $this->hasOne('App\Models\ProductVariantByRole', 'product_variant_id', 'id');
+	}
+
     public function checkIfInCart()
     {
         $user = Auth::user();
