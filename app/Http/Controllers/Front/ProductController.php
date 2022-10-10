@@ -333,7 +333,10 @@ class ProductController extends FrontController{
                         if($request->options[$key]){
                             $variantSet = ProductVariantSet::whereIn('variant_type_id', $request->variants)
                             ->whereIn('variant_option_id', $request->options)
-                            ->where('product_variant_id', $variant->product_variant_id)->get();
+                            ->where('product_variant_id', $variant->product_variant_id)
+                            ->whereHas('productVariants', function($q){
+                                $q->where('status', '=', 1);
+                            })->get();
                             if(count($variantSet) == count($request->variants)){
                                 // if(!in_array($variantSet->product_variant_id, $pv_ids)){
                                     $pv_ids[] = $variant->product_variant_id;
