@@ -179,7 +179,13 @@ tr.wishlist-row{font-size: 14px;}
 .al_body_template_six .tab-product .nav-material.nav-tabs .nav-item .nav-link{color:#777;text-align:center;padding:0 15px 5px;text-transform:uppercase;border:0;font-weight:400;font-size:12px;letter-spacing:2px}
 .al_body_template_six .product-full-tab .nav-material.nav-tabs .nav-item .nav-link.active,
 .al_body_template_six .tab-product .nav-material.nav-tabs .nav-item .nav-link.active{color:var(--top-header-color);}
-.price_box_bottom span,.price_box_bottom label,.order_head h4,.alOrderStatus h4{font-size:12px}.order_head span,.alOrderStatus span{font-size:14px}.price_box_bottom span{color:var(--theme-deafult);font-weight:600}.page-item.active .page-link{background-color:var(--theme-deafult);border-color:var(--theme-deafult)}.displayProducts{margin-top:20px}.top-banner-content.small-section h4{margin:0;color:var(--top-header-color)}.collection-filter .theme-card{position:relative;margin-top:20px}.al_body_template_six .dashboard-left .block-content{background-color:#fff;border:none;border-radius:15px;box-shadow 0 0 10px rgba(0,0,0,.2)}
+.price_box_bottom span,.price_box_bottom label,.order_head h4,.alOrderStatus h4{font-size:12px}.order_head span,.alOrderStatus span{font-size:14px}.price_box_bottom span{color:var(--theme-deafult);font-weight:600}.page-item.active .page-link{background-color:var(--theme-deafult);border-color:var(--theme-deafult)}.displayProducts{margin-top:20px}.top-banner-content.small-section h4{margin:0;color:var(--top-header-color)}.collection-filter .theme-card{position:relative;margin-top:20px}
+.al_body_template_six .dashboard-left .block-content{background-color:#fff;border:none;border-radius:15px;box-shadow 0 0 10px rgb(0 0 0 / 20%)}
+.dark.al_body_template_six .dashboard-left .block-content{background-color: #232323;}
+.dark table.table.wishlist-table.border tr:hover{background-color: #232323;}
+.dark.al_body_template_six .dashboard-left .block-content ul li::before{color: #fff;}
+.dark.al_body_template_six .dashboard-left .block-content ul li:hover::before,
+.dark.al_body_template_six .dashboard-left .block-content ul li.active::before{color: var(--theme-deafult);}
 .al_body_template_six .suppliers-box{-webkit-transform:scale(.9);transform:scale(.9);-webkit-transition:.5s;transition:.5s;background-color:#fff;padding:0 0 10px;border-radius:15px;box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); overflow:hidden}
 .al_body_template_six .suppliers-box:hover{-webkit-transform:scale(1);transform:scale(1)}
 ul.timing-box li svg,
@@ -345,7 +351,7 @@ section.home-serivces .card-box{background-color: transparent;padding: 0;box-sha
 .home-serivces .indicator-line.active{background: var(--theme-deafult);}
 .home-serivces .indicator-line{display: none;}
 .tab-product .tab-content.nav-material p{padding: 0 10px;font-size: 12px; color: var(--top-header-color);}
-.order_detail.order_detail_data{margin-bottom: 20px !important;}
+.order_detail.order_detail_data{margin-bottom: 20px !important;overflow: hidden;}
 .status_box i, .status_box label{vertical-align: middle;display: inline-block;}
 .alOrderDetailsLink,
 .status_box label{background: rgba(247,184,75,.25);color: #f7b84b;border-radius: 50px;padding: 2px 10px;font-size: 12px;overflow: hidden;margin-top: 2px;}

@@ -234,7 +234,7 @@ body.al_body_template_six.light{visibility: visible;}
     object-fit: cover;position: absolute;margin: auto;top: 0;bottom: 0;left: 0;right: 0;max-width: 100%;max-height: 100%;}
 .al_body_template_six .vendors .al_clock{min-height: 40px;}
 .al_body_template_six .vendors span.rating-number{position: absolute;top: 5px;right: 10px;padding: 3px 10px;
-    background-color: var(--theme-deafult);color: var(--top-header-color);
+    background-color: var(--theme-deafult);color:#fff;
     border-radius: 50px;}
 .al_body_template_six .vendors .al_custom_brand .slick-slide{margin:  0 10px;}
 
