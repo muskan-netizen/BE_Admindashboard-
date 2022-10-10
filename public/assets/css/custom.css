@@ -4373,7 +4373,7 @@ body[dir="rtl"] .dataTables_filter {
 /* dark dashboard css end */
 @media(max-width: 1400px) {
   .banner_box {width: 170px;height: 90px;}
-  body .content-page .btn.btn-info {font-size: 12px;display: inline-block;padding: 5px;max-width: 80px;width: 100%;text-align: center !important;}
+  body .content-page .btn.btn-info {font-size: 12px;display: inline-block;padding: 5px;width: 100%;text-align: center !important;}
   body .content-page .btn.btn-info.openServiceModal{max-width: 130px;}
   body .content-page .btn.btn-info.alAddLongBtn,
   body .content-page .btn.btn-info.alAddProductBtn{max-width: 120px;}
