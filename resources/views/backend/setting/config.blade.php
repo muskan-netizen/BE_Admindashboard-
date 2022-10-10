@@ -41,7 +41,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
          @if($client_preference_detail->business_type != 'taxi')
 
-            <div class="col-lg-3 col-md-6 mb-3">
+            <div class="col-lg-4 col-md-6 mb-3">
                <div class="row h-100">
                   <div class="col-12">
                      <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -112,7 +112,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
          {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
 
-            <div class="col-lg-3 col-md-6 mb-3">
+            <div class="col-lg-4 col-md-6 mb-3">
                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
                   @csrf
                <!-- On Demand Services section start -->
@@ -600,7 +600,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       </div>
    </div>
    <div class="row">
-      <div class="col-xl-3 mb-3">
+      <div class="col-lg-3 mb-3">
          <!-- Map Configuration start -->
          <form class="h-100" method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             @csrf
@@ -656,7 +656,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          </form><!-- Map Configuration end -->
       </div>
-      <div class="col-xl-3 mb-3">
+      <div class="col-lg-3 mb-3">
          <!-- SMS Configuration start -->
          <form class="h-100" method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             @csrf
@@ -839,7 +839,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          </form><!-- SMS Configuration end -->
       </div>
-      <div class="col-xl-6 mb-3">
+      <div class="col-lg-6 mb-3">
          <!-- Mail Configuration start -->
          <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
             @csrf
@@ -942,7 +942,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          </form><!-- Mail Configuration end -->
       </div>
-      <div class="col-xl-6 mb-3">
+      <div class="col-lg-6 mb-3">
          <!-- Firebase Notification Configuration start -->
          <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
             @csrf
