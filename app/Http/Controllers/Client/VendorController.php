@@ -29,6 +29,7 @@ use App\Exports\VendorSimpelExport;
 use App\Exports\VendorProductExport;
 use DB,Log;
 use App\Models\VendorRegistrationDocument;
+use App\Models\VendorSocialMediaUrls;
 use Exception;
 
 class VendorController extends BaseController
@@ -764,7 +765,8 @@ class VendorController extends BaseController
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
         
-        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'taxRates'=>$taxRates,'files'=>$files,'facilties'=>$facilties,'vendor_facilty_ids'=> $vendor_facilty_ids,'vendorMultiBanner'=>$vendorMultiBanner,'client_languages'=>$client_languages]);
+        $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
+        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'taxRates'=>$taxRates,'files'=>$files,'facilties'=>$facilties,'vendor_facilty_ids'=> $vendor_facilty_ids,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls,'client_languages'=>$client_languages]);
     }
     // vendor product datatable
     public function VendorProductFilter(Request $request,$domain='',$vendor_id)
@@ -1275,6 +1277,40 @@ class VendorController extends BaseController
             return $this->successResponse($vendor,__("Vendor update successfully!"));
         }
         return redirect()->back()->with('success', $msg . ' updated successfully!');
+    }
+
+    /**
+     * Update vendor social media urls.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\ServiceArea  $serviceArea
+     * @return \Illuminate\Http\Response
+     */
+    public function updateVendorSocialMediaUrls(Request $request, $domain = ''){
+        try{
+
+            $rules = array(
+                'vendor_id' => 'required',
+                'icon' => 'required',
+                'url' => 'required'
+            );
+            //dd($request->all());
+            $validation  = Validator::make($request->all(), $rules)->validate();
+
+            $data['vendor_id'] = $request->vendor_id;
+            $data['icon']      = $request->icon;
+            $data['url']       = $request->url;
+            $result = VendorSocialMediaUrls::updateOrCreate(['vendor_id' => $request->vendor_id, 'icon' => $request->icon], $data);
+            if(!empty($result->id)){
+                $data = ['icon'=>$request->icon, 'url'=>$request->url, 'media'=>$result->id];
+                return $this->successResponse(__("Vendor Social Media Url Updated!"), $data);
+            }else{
+                return $this->errorResponse(__("Somthing Went Wrong."), 422);
+            }
+
+        }catch(\Exception $ex){
+            return $this->errorResponse($ex->getMessage(), 422);
+        }
     }
 
     /**
