@@ -12,8 +12,8 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Client\BaseController;
-use App\Models\{LongTermService, LongTermServiceProducts, ClientPreference, LongTermServiceTranslation};
+use App\Http\Controllers\Client\{BaseController,ProductController};
+use App\Models\{Product,ProductVariant,ProductTranslation,LongTermServiceProductAddons,ProductImage,LongTermService, LongTermServiceProducts, ClientPreference, LongTermServiceTranslation};
 class LongTermServiceController extends BaseController
 {
     use ApiResponser;
@@ -25,13 +25,13 @@ class LongTermServiceController extends BaseController
     public function index(Request $request,$domain = '',$vendor_id)
     {
         //echo $vendor_id;
-        $LongTermService = LongTermService::with('primary','product.product.primary')->where('vendor_id',$vendor_id)->get();
-        
+        $LongTermService = Product::with('primary','product.product','media.image','variant')->where(['vendor_id'=>$vendor_id,'is_long_term_service'=>'1'])->get();
+        //pr($LongTermService->toArray());
         return Datatables::of($LongTermService)
         ->addIndexColumn()
         ->addColumn('service_title', function ($LongTermService) {
            
-            return $LongTermService->primary ? $LongTermService->primary->name : $LongTermService->slug;
+            return $LongTermService->primary ? $LongTermService->primary->title : $LongTermService->slug;
         })
         ->addColumn('service_product_title', function ($LongTermService) {
            
@@ -39,10 +39,11 @@ class LongTermServiceController extends BaseController
         })
         ->addColumn('service_image', function ($LongTermService)  {
             $image = '';
-            if($LongTermService->image){
-                $image_path = $LongTermService->image['proxy_url'] . '30/30' . $LongTermService->image['image_path'];
+            if($LongTermService->media->first() && !empty($LongTermService->media->first()->image) ){
+                $image_path = $LongTermService->media->first()->image->path['proxy_url'] . '30/30' . $LongTermService->media[0]->image->path['image_path'];
                 $image = '<img  class="rounded-circle" src="'. $image_path.'">';
             }
+            
             return $image;
         })
         ->addColumn('service_product_quantity', function ($LongTermService)  {
@@ -53,7 +54,7 @@ class LongTermServiceController extends BaseController
             $title= '';
             if($LongTermService->service_period=='days'){
                 $title= __('Daily');
-            }elseif($LongTermService->service_period == 'monthly'){
+            }elseif($LongTermService->service_period == 'months'){
                 $title= __('Monthly');
             }else{
                 $title= __('Weekly');
@@ -61,7 +62,7 @@ class LongTermServiceController extends BaseController
             return $title;
         })
         ->editColumn('price', function ($LongTermService)  {
-            return $LongTermService->product ?  decimal_format($LongTermService->product->price) : 0;
+            return $LongTermService->variant->first() ?  decimal_format($LongTermService->variant->first()->price) : 0;
         })
         ->addColumn('action', function ($LongTermService) use ($request) {
             $edit_url = route('long_term_service.edit', $LongTermService->id);
@@ -104,55 +105,78 @@ class LongTermServiceController extends BaseController
      */
     public function store(Request $request)
     {
+       
         try {
             DB::beginTransaction();
 
             $this->validate($request, [
                 'name.0' => 'required|string|max:60',
-                'serviceSku' => 'required',
+                'sku' => 'required|unique:products',
                 'service_product_id' => 'required',
                 'product_quantity' => 'required',
                 'serice_price' => 'required',
                
                 'service_product_variant_id' => 'required',
             ],['name.0' =>__('The default language name field is required.')]);
-         
 
             if($request->has('long_term__service_id') && ($request->long_term__service_id != '') ){
-                $LongTermService = LongTermService::where('id', $request->long_term__service_id)->first();
-               // $LongTermService->sku = $request->serviceSku;
+                $LongTermService = Product::where('id', $request->long_term__service_id)->first();
             }else{
-                $LongTermService = new LongTermService();
-                $LongTermService->sku = $request->serviceSku;
+                $LongTermService = new Product();
+                $LongTermService->sku = $request->sku;
+                $LongTermService->url_slug   =  $request->sku ;
             }
-            // upload file
-            if ($request->hasFile('image')) {
-                $file = $request->file('image');
-                $LongTermService->image = Storage::disk('s3')->put('service', $file, 'public');
-            }
-            $LongTermService->price              = $request->serice_price;
-            $LongTermService->compare_at_price   = $request->serice_price + 10;
-            $LongTermService->vendor_id          = $request->vendor_id;
-            $LongTermService->service_period     = $request->service_period;
+            $LongTermService->title                 = !empty($request->name[0]) ? $request->name[0] : $request->sku;
+            $LongTermService->category_id           = $request->category_id ?? null;
+            $LongTermService->is_long_term_service  = 1;
+            $LongTermService->service_period        = $request->service_period;
+            $LongTermService->service_duration      = $request->service_duration;
+            $LongTermService->vendor_id             = $request->vendor_id;
             $LongTermService->save();
+            // upload file
+            if ($request->hasFile('file')) {
+                $request->merge(['prodId'=>$LongTermService->id,'retunId'=>'1']);
+                $ProductController = new ProductController();
+                $ReaImage          = $ProductController->images($request);
+                if(is_numeric($ReaImage)){
+                    $productImageSave = [
+                        'product_id' => $LongTermService->id,
+                        'media_id' => $ReaImage,
+                        'is_default' => 1
+                    ];
+                    ProductImage::insert($productImageSave);
+                }
+            }
+                     
+
+            $proVariant = new ProductVariant();
+            $proVariant->sku                = $request->sku;
+            $proVariant->product_id         = $LongTermService->id;
+            $proVariant->title              = $request->sku . '-' .  empty($request->product_name) ? $request->sku : $request->product_name;
+            $proVariant->price              = $request->serice_price;
+            $proVariant->compare_at_price   = $request->serice_price + 10;
+            $proVariant->barcode            = $this->generateBarcodeNumber();
+            $proVariant->save();
 
             $language_id = $request->language_id;
-            LongTermServiceTranslation::where('long_term_service_id', $LongTermService->id)->delete();
+            ProductTranslation::where('product_id', $LongTermService->id)->delete();
             foreach ($request->name as $k => $name) {
                 if($name){
-                    $LongTermServiceT                       = new LongTermServiceTranslation();
-                    $LongTermServiceT->name                 = $name;
-                    $LongTermServiceT->language_id          = $language_id[$k];
-                    $LongTermServiceT->long_term_service_id = $LongTermService->id;
+                    $LongTermServiceT                    = new ProductTranslation();
+                    $LongTermServiceT->title             = $name;
+                    $LongTermServiceT->language_id       = $language_id[$k];
+                    $LongTermServiceT->product_id        = $LongTermService->id;
                     $LongTermServiceT->save();
                 }
             }
-            $longTermProduct =   LongTermServiceProducts::where('long_term_service_id',$LongTermService->id)->first() ?? new LongTermServiceProducts();
-            $longTermProduct->long_term_service_id = $LongTermService->id ;
-            $longTermProduct->product_id           = $request->service_product_id ;
-            $longTermProduct->product_variant      = $request->service_product_variant_id ;
-            $longTermProduct->quantity             = $request->product_quantity ;
-            $longTermProduct->save();
+            // // save service product 
+            $request->merge(['long_term_service_id' => $LongTermService->id]);
+            $ServiceProductId =  LongTermServiceProducts::saveProducts($request);
+
+            // save service product addons
+            $request->merge(['long_term_service_product_id' => $ServiceProductId]);
+            LongTermServiceProductAddons::saveAddOn( $request);
+
             DB::commit();
             return $this->successResponse($LongTermService, __('Long Term Service Added Successfully.'));
           
@@ -188,8 +212,12 @@ class LongTermServiceController extends BaseController
     {
       
         try {
-        
-            $LongTermService = LongTermService::with('translations','product')->where(['id' => $id])->firstOrFail();
+            $LongTermService = Product::with('translation','product','media.image','variant')->where(['id' => $id])->firstOrFail();
+            $image = '';
+            if(($LongTermService) && $LongTermService->media->first() && !empty($LongTermService->media->first()->image) ){
+                $image_path = $LongTermService->media->first()->image->path['proxy_url'] . '100/100' . $LongTermService->media[0]->image->path['image_path'];
+                $LongTermService->image =  $image_path;
+            }
             return $this->successResponse($LongTermService, '');
         } catch (Exception $e) {
             return $this->errorResponse([], $e->getMessage());
@@ -223,4 +251,13 @@ class LongTermServiceController extends BaseController
             return $this->errorResponse([], $e->getMessage());
         }
     }
+    public function generateBarcodeNumber()
+    {
+        $random_string = substr(md5(microtime()), 0, 14);
+        while (ProductVariant::where('barcode', $random_string)->exists()) {
+            $random_string = substr(md5(microtime()), 0, 14);
+        }
+        return $random_string;
+    }
+
 }

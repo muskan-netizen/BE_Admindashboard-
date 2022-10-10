@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq,TaxRate};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq,TaxRate,LongTermServiceProductAddons};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -834,6 +834,9 @@ class ProductController extends BaseController
                 $img->save();
                 $imageId = $img->id;
             }
+            if($request->has('retunId') && $request->retunId  == 1){
+                return $imageId;
+            }
             return response()->json(['imageId' => $imageId]);
         } else {
             return response()->json(['error' => 'No file']);
@@ -1125,12 +1128,51 @@ class ProductController extends BaseController
 
     # check if last mile delivery on
     public function getProductVariant(Request $request){
-        $ProductVariants =   ProductVariant::where('product_id',$request->product_id)->get();
-        $options = [];
-        foreach($ProductVariants as $key => $variant){
-            $options[] = "<option value=".$variant['id'].">".($variant['title'] ?? $variant['sku'])."</option>";
+       
+        // variant option
+        // $ProductVariants =   ProductVariant::where('product_id',$request->product_id)->get();
+        // $options = [];
+        // foreach($ProductVariants as $key => $variant){
+        //     $options[] = "<option value=".$variant['id'].">".($variant['title'] ?? $variant['sku'])."</option>";
+        // }
+        
+        // addon selecter 
+        $selectedAddon =  LongTermServiceProductAddons::where('long_term_service_product_id',$request->service_product_id)->get();
+        pr($selectedAddon->toArray());
+        $ProductAddon  =  ProductAddon::with('addOnName','setoptions')->where('product_id',$request->product_id)->get();
+        $addOnHtml = '';
+        if(count( $ProductAddon)>0){
+            $addOnHtml .= '<div class="addon_ser bg-light p-3" style="border-radius:15px;">
+                                <h4 class="mt-0">'.__("Addons").'</h4>';
+            foreach($ProductAddon as $key => $addons){
+                if($addons->setoptions->isNotEmpty()){
+                    $addOnHtml .='<div class="col-12 p-0">
+                                    <div class="form-group" id="service_product_variantInput">
+                    
+                                        <label class="control-label">'.$addons->addOnName->title.'</label>
+                                        <input name="add_on_id[]" type="hidden" value="'.$addons->addOnName->id.'">
+                                        <select class="form-control selectizeInput" id="service_product_variant" name="add_on_set[]">';
+                                        foreach($addons->setoptions as $setoptionskey => $setoptions){
+                                            $addOnHtml .='<option value="'.$setoptions["id"].'">'.($setoptions["title"]).'</option>';
+                                        }
+                                        $addOnHtml .='</select>
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                    </div>
+                                </div>';
+                }
+            }
+            $addOnHtml .=   '</div>';
+                                   
+
         }
-        return $this->successResponse($options, '');
+      $respons = [
+        "variantOpt" => $options,
+        "addOnHtml"  => $addOnHtml
+      ];
+
+        return $this->successResponse($respons, '');
     }
 
 

@@ -851,5 +851,14 @@ class BaseController extends Controller{
         'status' => 200,
         'message' => 'Valid Order Panel API keys']);
     }
+    public function generateBarcodeNumber()
+    {
+        $random_string = substr(md5(microtime()), 0, 14);
+        while (ProductVariant::where('barcode', $random_string)->exists()) {
+            $random_string = substr(md5(microtime()), 0, 14);
+        }
+        return $random_string;
+    }
+
 
 }

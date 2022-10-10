@@ -416,9 +416,8 @@
                             <label>{{ __('Upload Service Image') }}</label>
                         
                             <div class="service_image">
-                                <input type="file" data-plugins="dropify" name="image" id="service_image" class="dropify" />
+                                <input type="file" data-plugins="dropify" name="file" id="service_image" class="dropify" />
                              </div>
-                             <label class="logo-size text-right w-100">{{ __("City image") }} 1000X1000</label>
                         </div>
                         <div class="col-md-12 selector-option-al ">
                             {!! Form::label('title', __('Service Name'), ['class' => 'control-label']) !!}
@@ -450,10 +449,10 @@
                         </div>
                         <div class="row mt-2">
                             <div class="col-6">
-                                <div class="form-group" id="serviceSkuInput">
+                                <div class="form-group" id="skuInput">
                                     {!! Form::label('title', __('SKU'), ['class' => 'control-label']) !!}
                                     <span class="text-danger">*</span>
-                                    {!! Form::text('serviceSku', null, ['class' => 'form-control', 'id' => 'srviceSku', 'onkeyup' => 'return alplaNumeric(event)', 'placeholder' =>  __('SKU')]) !!}
+                                    {!! Form::text('sku', null, ['class' => 'form-control', 'id' => 'srviceSku', 'onkeyup' => 'return alplaNumeric(event)', 'placeholder' =>  __('SKU')]) !!}
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
                                     </span>
@@ -496,6 +495,20 @@
                                 </div>
                             </div>
                             <div class="col-12">
+                                <div class="form-group" id="service_durationInput">
+                                    {!! Form::label('title', __('Select Time Duration'),['class' => 'control-label']) !!}
+                                        <select class="form-control selectizeInput" id="service_duration" name="service_duration">
+                                            <option value="1">1 {{ __('Month') }}</option>
+                                            <option value="3">3 {{ __('Months') }}</option>
+                                            <option value="6">6 {{ __('Months') }}</option>
+                                            <option value="12">1 {{ __('Year') }}</option>
+                                        </select>
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                </div>
+                            </div>
+                            <div class="col-12">
                                 <div class="form-group" id="service_product_idInput">
                                     {!! Form::label('title', __('Select Product'),['class' => 'control-label']) !!}
                                 <select class="form-control selectizeInput" id="service_product_list" name="service_product_id">
@@ -509,6 +522,7 @@
                                     </span>
                                 </div>
                             </div>
+                            
                             <div class="col-12">
                                 <div class="form-group" id="service_product_variantInput">
                                     {!! Form::label('title', __('Product variant'),['class' => 'control-label']) !!}
@@ -520,6 +534,7 @@
                                     </span>
                                 </div>
                             </div>
+                            <div class="col-12" id="addonSection"></div>
                         </div>
                     </div>
                     <div class="modal-footer">

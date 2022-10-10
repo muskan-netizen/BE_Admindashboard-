@@ -60,13 +60,17 @@ async function deleteService(id){
 
 }
 
-function setProductVariant(product_id,selected_variant=''){
-    axios.post(`/client/product/getVariant`, {product_id: product_id})
+function setProductVariant(product_id,selected_variant='',service_product_id=''){
+    console.log(service_product_id);
+    axios.post(`/client/product/getVariant`, {product_id: product_id,service_product_id:service_product_id})
     .then(async response => {
+        console.log(response.data.data);
         if(response.data.status == "Success"){
             $('#service_product_variant').selectize()[0].selectize.destroy();
             $("#service_product_variant").find('option').remove();
-            $("#service_product_variant").append(response.data.data);
+            $("#service_product_variant").append(response.data.data.variantOpt);
+           // $("#addonSection").html('');
+            $("#addonSection").html(response.data.data.addOnHtml);
             if(selected_variant!=''){
                 var $select = $("#service_product_variant").selectize();
                 var selectize = $select[0].selectize;
@@ -78,11 +82,7 @@ function setProductVariant(product_id,selected_variant=''){
     })
     .catch(e => {
         console.log(e);
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Something went wrong, try again later!',
-        })
+        sweetAlert.error();
     }) 
 }
 
@@ -93,28 +93,40 @@ function GetServiceData(service_id) {
             $('#save_service_form')[0].reset();
             if(response.data.status == "Success"){
                 var service = response.data.data;
+                console.log(service);
                 $('#add-service input[name=long_term__service_id]').val(service_id);
                 $('#add-service .modal-title').html('Edit Service');
-                $("#add-service input[name=serviceSku]").val(service.sku);
-                $("#add-service input[name=serice_price]").val(service.price);
+                $("#add-service input[name=sku]").val(service.sku);
+                $("#add-service input[name=serice_price]").val(service?.variant[0]?.price);
                 $("#add-service input[name=product_quantity]").val(service.product.quantity);
+                // select product 
                 var $select = $("#service_product_list").selectize();
                 var selectize = $select[0].selectize;
-                selectize.setValue(service.product.product_id)
-                setProductVariant(service.product.product_id)
-                var image = service.image.proxy_url+'100/100'+service.image.image_path;
+                selectize.setValue(service.product.product_id);
+                // select period of service
+                var $service_period = $("#service_period").selectize();
+                var service_selectize = $service_period[0].selectize;
+                service_selectize.setValue(service.service_period);
+                // select service_duration
+                var $service_duration = $("#service_duration").selectize();
+                var duration_selectize = $service_duration[0].selectize;
+                duration_selectize.setValue(service.service_duration);
+             
+                setProductVariant(service.product.product_id,'',service.product.id)
+                var image = service.image;
                 var html = `<input type="file" id="service_image" name="image" class="dropify form-control" data-default-file="${image}" required />`;
                 $('.service_image').html(html);
                 $('#add-service .dropify').dropify();
               
                 $('#add-service').modal('show');service_product_list
-                $.each(service.translations, function( index, value ) {
-                    $('#add-service #service_name_'+value.language_id).val(value.name);
+                $.each(service.translation, function( index, value ) {
+                    $('#add-service #service_name_'+value.language_id).val(value.title);
                 });
                 
             }
         })
         .catch(e => {
+            console.log(e);
             sweetAlert.error();
         })  
        
@@ -122,13 +134,18 @@ function GetServiceData(service_id) {
 
 }
 function saveServiceData(formData, data_uri) {
-
+    $('.submitServiceProduct').attr("disabled", true);
+    spinnerJS.showSpinner();
+  
     axios.post(data_uri,formData )
         .then(async response => {
             console.log(response);
             if(response.data.status == "Success"){
+                spinnerJS.hideSpinner();
                 sweetAlert.success('Success',response.data.message);
             } else{
+                $('.submitServiceProduct').attr("disabled", false);
+                spinnerJS.hideSpinner();
                 sweetAlert.error('',response.data.message);
             }
             $('#save_service_form')[0].reset();
@@ -139,7 +156,8 @@ function saveServiceData(formData, data_uri) {
             document.getElementById("save_service_form").reset();
         })
         .catch(e => {
-          
+            spinnerJS.hideSpinner();
+            $('.submitServiceProduct').attr("disabled", false);
             if (e.response.status === 422) {
                
                 let errors = e.response.data.errors;

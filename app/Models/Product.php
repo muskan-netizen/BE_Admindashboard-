@@ -298,6 +298,12 @@ class Product extends Model implements Auditable{
           $q->whereIn('type_id',$categoryTypesArray);
         });
     }
+    // check product validate 
+    public function scopeByProductWhereCheck($query)
+    {  
+        
+        return $query->where(['is_live'=>1,'is_long_term_service'=>0]);
+    }
 
     public function getActualPriceAttribute()
     {
@@ -341,6 +347,11 @@ class Product extends Model implements Auditable{
             return 0;  
            
     }
+    // in long term service 
+    public function product(){
+      $langData = $this->hasOne('App\Models\LongTermServiceProducts','long_term_service_id','id');
+      return $langData;
+  }
 
 
 }
