@@ -111,7 +111,7 @@ class LongTermServiceController extends BaseController
 
             $this->validate($request, [
                 'name.0' => 'required|string|max:60',
-                'sku' => 'required|unique:products',
+                'sku' => 'required|unique:products,sku,'.$request->long_term__service_id,
                 'service_product_id' => 'required',
                 'product_quantity' => 'required',
                 'serice_price' => 'required',
@@ -149,7 +149,7 @@ class LongTermServiceController extends BaseController
             }
                      
 
-            $proVariant = new ProductVariant();
+            $proVariant = ProductVariant::where('product_id',$LongTermService->id)->first() ??  new ProductVariant();
             $proVariant->sku                = $request->sku;
             $proVariant->product_id         = $LongTermService->id;
             $proVariant->title              = $request->sku . '-' .  empty($request->product_name) ? $request->sku : $request->product_name;
@@ -176,9 +176,11 @@ class LongTermServiceController extends BaseController
             // save service product addons
             $request->merge(['long_term_service_product_id' => $ServiceProductId]);
             LongTermServiceProductAddons::saveAddOn( $request);
-
+            $massage = __('Long Term Service Added Successfully.');
+            if($request->has('long_term__service_id') && $request->long_term__service_id)
+            $massage = __('Long Term Service Updated Successfully.');
             DB::commit();
-            return $this->successResponse($LongTermService, __('Long Term Service Added Successfully.'));
+            return $this->successResponse($LongTermService, $massage);
           
         } catch (\PDOException $e) {
             DB::rollBack();
@@ -245,7 +247,8 @@ class LongTermServiceController extends BaseController
     public function destroy(Request $request,$domain = '', $id)
     {
         try {
-            LongTermService::where('id',$id)->delete();
+           // LongTermService::where('id',$id)->delete();
+            $productde = Product::productDelete($id);
             return response()->json(array('success' => true,'message'=>__('Deleted successfully.')));
         } catch (Exception $e) {
             return $this->errorResponse([], $e->getMessage());

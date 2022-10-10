@@ -14,7 +14,7 @@ class LongTermServiceProductAddons extends Model
         if($request->has('add_on_id')){
             foreach ($request->add_on_id as $key => $add_on_id) {
                 if($add_on_id && $request->add_on_set[$key]){
-                    $ServiceAddon                                =  new LongTermServiceProductAddons();
+                    $ServiceAddon                                =   LongTermServiceProductAddons::where(['long_term_service_product_id'=>$request->long_term_service_product_id,'addon_id'=>$add_on_id])->first() ??  new LongTermServiceProductAddons();
                     $ServiceAddon->long_term_service_product_id  = $request->long_term_service_product_id;
                     $ServiceAddon->addon_id                      = $add_on_id;
                     $ServiceAddon->option_id                     = $request->add_on_set[$key];

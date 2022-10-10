@@ -4,8 +4,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
-use Auth;
+use Auth,DB;
 use OwenIt\Auditing\Contracts\Auditable;
+use App\Models\{Product,ProductVariant,CartProduct,UserWishlist};
 
 class Product extends Model implements Auditable{
       use SoftDeletes;
@@ -348,9 +349,38 @@ class Product extends Model implements Auditable{
            
     }
     // in long term service 
-    public function product(){
+  public function product(){
       $langData = $this->hasOne('App\Models\LongTermServiceProducts','long_term_service_id','id');
       return $langData;
+  }
+
+  public static function productDelete($id){
+    try{
+          DB::beginTransaction();
+          $product = Product::find($id);
+          $dynamic = time();
+
+          Product::where('id', $id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
+
+          $tot_var  = ProductVariant::where('product_id', $id)->get();
+          foreach($tot_var as $varr)
+          {
+              $dynamic = time().substr(md5(mt_rand()), 0, 7);
+              ProductVariant::where('id', $varr->id)->update(['sku' => $product->sku.$dynamic]);
+          }
+
+          Product::where('id', $id)->delete();
+
+          CartProduct::where('product_id', $id)->delete();
+          UserWishlist::where('product_id', $id)->delete();
+          DB::commit();
+          return 1;
+      }
+      catch(\Exception $ex){
+          DB::rollback();
+          pr($ex->getMessage());
+          return 2;
+      }
   }
 
 
