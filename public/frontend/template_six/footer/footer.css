@@ -10,6 +10,7 @@ footer#footer{position: absolute;bottom: 0;width: 100%;margin: 0;}
 article#page-container{position: relative;min-height: 100vh;}
 .al_footer_template_six .sub-footer{background-color: transparent;}
 .al_footer_template_six .footer-end{border-top: 1px solid #B6B6B6;}
+.al_footer_template_six .footer-end p{margin: 0;padding: 10px 0;}
 .al_footer_template_six  .footer-theme .sub-title .contact-list li{padding: 0;}
 .al_footer_template_six  .footer-theme .sub-title li a:before{display: none;}
 body .footer-theme .sub-title h4,
@@ -20,7 +21,10 @@ footer#footer .social-links li{display: inline-block;margin-right: 10px}
 footer#footer .social-links li a i{-webkit-transform: scale(.8);transform: scale(.8);font-size: 30px;-webkit-transition: 0.3s;transition: 0.3s;color: var(--top-header-color);}
 footer#footer .social-links li a:hover i{-webkit-transform: scale(1);transform: scale(1);}
 .al_footer_template_six ul li a:hover{color: var(--top-header-color)}
-.al_footer_template_six ul li{margin-bottom: 10px;}
+.al_footer_template_six ul li{margin-bottom: 0;}
+.al_footer_template_six ul li,
+.al_footer_template_six ul li a{color: #fff;}
+.payment-card-bottom li{display: inline-block;}
 .al_footer_template_six ul.social-links li span{display: none;}
 .footer-theme .sub-title li{padding-top: 0;}
 
@@ -29,7 +33,8 @@ footer#footer .social-links li a:hover i{-webkit-transform: scale(1);transform: 
 /*============== dark background-color ========== */
 .site-header.fixed-bar .nav-tabs.navigation-tab_al.nav-material{border-color: #0C0C0C;}
 .site-header.fixed-bar .nav-tabs.navigation-tab_al.nav-material .nav-link.active{color: #fff;}
-.site-header.fixed-bar .nav-tabs.navigation-tab_al.nav-material .nav-link,
+.site-header.fixed-bar .nav-tabs.navigation-tab_al.nav-material .nav-link{color: #0C0C0C;}
+.dark  .site-header.fixed-bar .nav-tabs.navigation-tab_al.nav-material .nav-link{color: #fff;}
 .dark .nav-tabs.navigation-tab_al.nav-material .nav-link{color: #fff;}
 body.al_body_template_six.dark{background-color: #232323;}
 .dark .nav-tabs.navigation-tab_al.nav-material{padding: 0;}

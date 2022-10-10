@@ -16,6 +16,7 @@
          url('../../../assets/fonts/MontserratRegular.ttf') format('truetype'),
          url('../../../assets/fonts/MontserratRegular.svg#MontserratRegular') format('svg');
 }
+ul{padding: 0;}
 ::-webkit-scrollbar{width: 8px;height: 8px;}
 ::-webkit-scrollbar-track{  background: #f1f1f1; }
 ::-webkit-scrollbar-thumb{  background: var(--theme-deafult); }
@@ -28,6 +29,7 @@ body{margin: 0;background-color: #fff;font-family: 'MontserratRegular' !importan
 .nav-tabs.navigation-tab_al.nav-material .nav-link.active{background-color: var(--theme-deafult);color: #fff;}
 .logo a.navbar-brand{padding: 0;margin-bottom: 5px;}
 .logo a.navbar-brand img{height: 100%;}
+.menu-navigation_al .pixelstrap  li.al_main_category:hover ul.al_main_category_list{display: block;}
 .vendor_mods_section{order: 2;}
 .rightHead{order: 3;}
 .al_body_template_six .viewAllProductSec ul li{margin-bottom: 0;text-align: right;}
@@ -72,7 +74,7 @@ button.alMenuClose{position: absolute;right: 0;top: 0;background-color: transpar
 .alSpaMenuCard.active{height: 100vh;width: 100%;}
 .alSpaMenuCard ul{text-align: center;}
 .alMobileLocations{margin-top: -120px;position: relative;}
-.alSpaMenuCard .onhover-dropdown .onhover-show-div{background-color: #000;padding: 15px;box-shadow: 0 1px 2px 0 var(--top-header-color);}
+.alSpaMenuCard .onhover-dropdown .onhover-show-div{background-color: #000;padding: 15px;box-shadow: 0 1px 2px 0 var(--top-header-color);position: absolute;}
 .alSpaMenuCard .onhover-dropdown:before{right: -30px;top: -10px;font-size: 30px;}
 .alSpaMenuCard span.cart_qty_cls{top: -15px;}
 .alSpaMenuCard.active ul li a{font-size: 14px;text-transform: capitalize;font-weight: 400;}
@@ -151,4 +153,21 @@ body .royo_whatsapp_img{bottom: 11%;}
 .royo_whatsapp_img img{width: 50px;}
 .royo_whatsapp_img{position: fixed;z-index: 99999;bottom:7%;left: 1%;}
 /*================== date picker ============================ */
+
+
+/* menu css */
+.pixelstrap ul{padding: 0;background: #fff;position: absolute;width: 16em!important;border: none;box-shadow: 0 1px 6px 0 #ebebeb;border-radius: 0;z-index: 99;
+    display: none;list-style: none;margin: 0;line-height: normal;direction: ltr;text-align: left;top: auto;}
+.dark .pixelstrap ul{background-color: #242424;box-shadow: 0 1px 6px 0 #242424;}
+.dark .pixelstrap ul.al_main_category_list li,
+.dark .pixelstrap ul.al_main_category_list li a,
+.dark .pixelstrap ul.al_main_category_list li a span.new-tag{color: #fff;}
+ .pixelstrap ul li.al_main_category{display: block;margin: 0 20px;}
+ .pixelstrap ul li a{padding: 10px !important;text-align: left;width: 100%;-webkit-transform: scale(1);transform: scale(1);letter-spacing: 0;display: block;font-size: 14px;text-transform: capitalize;white-space: normal;font-weight: 400;line-height: 23px;text-decoration: none;}
+ .pixelstrap ul li a:hover{background-color:#eee;}
+.dark .pixelstrap ul li a:hover{background-color:#333;}
+ .pixelstrap ul li a:hover span.new-tag{color:var(--theme-deafult)}
+ .pixelstrap ul li a span.new-tag{font-size: 14px;}
+#main-menu .slick-list{overflow: inherit;}
+.al_searchType .form-control{background-color: transparent;}
 

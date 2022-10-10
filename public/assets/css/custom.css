@@ -51,158 +51,7 @@
   font-weight: 400;
   src: local('Cera Round Pro Black'), url('/assets/css/fonts/TypeMatesCeraRoundProBlack.woff') format('woff')
 }
-
-html body,
-#sidebar-menu .menu-title {
-  font-family: 'Cera Round Pro Regular', sans-serif !important;
-  font-weight: 500 !important;
-}
-
-label {
-  font-weight: 500;
-}
-
-.dd-list .dd3-content {
-  font-weight: 400;
-}
-
-.h1,
-.h2,
-.h3,
-.h4,
-.h5,
-.h6,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: 'Cera Round Pro Regular', sans-serif !important;
-  font-weight: 500 !important
-}
-
-input[type=radio],
-input[type=checkbox] {
-  cursor: pointer !important;
-}
-
-[class*=" icon-"],
-[class^=icon-] {
-  font-family: icomoon !important;
-  speak: never;
-  font-style: normal;
-  font-weight: 400;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-  letter-spacing: 0;
-  -webkit-font-feature-settings: "liga";
-  -moz-font-feature-settings: "liga=1";
-  -moz-font-feature-settings: "liga";
-  -ms-font-feature-settings: "liga" 1;
-  font-feature-settings: "liga";
-  -webkit-font-variant-ligatures: discretionary-ligatures;
-  font-variant-ligatures: discretionary-ligatures;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale
-}
-
-.icon-dollar:before {
-  content: "\e920"
-}
-
-.icon-orders:before {
-  content: "\e90a"
-}
-
-.icon-dash:before {
-  content: "\e90b"
-}
-
-.icon-vendor:before {
-  content: "\e912"
-}
-
-.icon-customzie:before {
-  content: "\e90c"
-}
-
-.icon-accounting:before {
-  content: "\e913"
-}
-
-.icon-customer-2:before {
-  content: "\e90d"
-}
-
-.icon-subscribe:before {
-  content: "\e910"
-}
-
-.icon-settings-1-1:before {
-  content: "\e90e"
-}
-
-.icon-profile:before {
-  content: "\e90f"
-}
-
-.icon-styling:before {
-  content: "\e911"
-}
-
-.icon-cms:before {
-  content: "\e914"
-}
-
-.icon-catalogue:before {
-  content: "\e915"
-}
-
-.icon-configuration:before {
-  content: "\e916"
-}
-
-.icon-tax:before {
-  content: "\e917"
-}
-
-.icon-payment-options:before {
-  content: "\e918"
-}
-
-.icon-marketing:before {
-  content: "\e919"
-}
-
-.icon-banners:before {
-  content: "\e91a"
-}
-
-.icon-loyaltycard:before {
-  content: "\e91b"
-}
-
-.icon-extra:before {
-  content: "\e91c"
-}
-
-.icon-celebrity:before {
-  content: "\e91d"
-}
-
-.icon-discount-voucher:before {
-  content: "\e91e"
-}
-
-.icon-question:before {
-  content: "\e91f"
-}
-
-.icon-clock:before {
-  content: "\e94e"
-}
+html body,#sidebar-menu .menu-title{font-family:'Cera Round Pro Regular',sans-serif!important;font-weight:500!important}label{font-weight:500}.dd-list .dd3-content{font-weight:400}.dark .home-options-list .select2-container--default .select2-selection--single{background-color:#3b4651;border-color:transparent}.h1,.h2,.h3,.h4,.h5,.h6,h1,h2,h3,h4,h5,h6{font-family:'Cera Round Pro Regular',sans-serif!important;font-weight:500!important}input[type=radio],input[type=checkbox]{cursor:pointer!important}[class*=" icon-"],[class^=icon-]{font-family:icomoon!important;speak:never;font-style:normal;font-weight:400;font-variant:normal;text-transform:none;line-height:1;letter-spacing:0;-webkit-font-feature-settings:liga;-moz-font-feature-settings:liga=1;-moz-font-feature-settings:liga;-ms-font-feature-settings:liga 1;font-feature-settings:liga;-webkit-font-variant-ligatures:discretionary-ligatures;font-variant-ligatures:discretionary-ligatures;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.icon-dollar:before{content:"\e920"}.icon-orders:before{content:"\e90a"}.icon-dash:before{content:"\e90b"}.icon-vendor:before{content:"\e912"}.icon-customzie:before{content:"\e90c"}.icon-accounting:before{content:"\e913"}.icon-customer-2:before{content:"\e90d"}.icon-subscribe:before{content:"\e910"}.icon-settings-1-1:before{content:"\e90e"}.icon-profile:before{content:"\e90f"}.icon-styling:before{content:"\e911"}.icon-cms:before{content:"\e914"}.icon-catalogue:before{content:"\e915"}.icon-configuration:before{content:"\e916"}.icon-tax:before{content:"\e917"}.icon-payment-options:before{content:"\e918"}.icon-marketing:before{content:"\e919"}.icon-banners:before{content:"\e91a"}.icon-loyaltycard:before{content:"\e91b"}.icon-extra:before{content:"\e91c"}.icon-celebrity:before{content:"\e91d"}.icon-discount-voucher:before{content:"\e91e"}.icon-question:before{content:"\e91f"}.icon-clock:before{content:"\e94e"}
 
 [class^=icon-] {
   font-family: icomoon !important;
@@ -2337,9 +2186,7 @@ td.product-name {
   color: rgb(247 184 75 / 82%)
 }
 
-.dark .card {
-  background: rgb(255 255 255 / 5%)
-}
+.dark .card {background: #36404a;}
 
 .dark .header-title,
 .dark .text-dark,
@@ -2347,19 +2194,12 @@ td.product-name {
   color: #98a6ad !important
 }
 
-.dark .text-primary {
-  color: rgb(247 184 75 / 82%) !important
-}
+.dark .text-primary {  color: rgb(247 184 75 / 82%) !important}
 
 .dark .order_detail:before,
 .dark .tab-product .nav-material.nav-tabs .nav-link.active~.material-border,
-.dark .track-order-list ul li.completed {
-  border-color: rgb(247 184 75 / 82%)
-}
-
-.dark .tab-product .nav-material.nav-tabs .nav-link {
-  color: #f3f7f9
-}
+.dark .track-order-list ul li.completed {  border-color: rgb(247 184 75 / 82%)}
+.dark .tab-product .nav-material.nav-tabs .nav-link {  color: #f3f7f9}
 
 .dark .item_no,
 .dark .nav-pills .nav-link.active,
@@ -3866,7 +3706,10 @@ body p:empty {
 .altoggle input:checked+.toggle__bg {
   background-position: 15%;
 }
-
+body[dir="rtl"].light .toggle__sphere{
+  left: -20px;
+}
+body[dir="rtl"] .altoggle input:checked+.toggle__bg .toggle__sphere {left: -20px;}
 .altoggle input:checked+.toggle__bg .toggle__sphere {
   -webkit-transform: translateX(20px) translateY(0px);
   transform: translateX(20px) translateY(0px);
@@ -4530,7 +4373,7 @@ body[dir="rtl"] .dataTables_filter {
 /* dark dashboard css end */
 @media(max-width: 1400px) {
   .banner_box {width: 170px;height: 90px;}
-  body .content-page .btn.btn-info {font-size: 12px;display: inline-block;padding: 5px;max-width: 80px;width: 100%;text-align: center !important;}
+  body .content-page .btn.btn-info {font-size: 12px;display: inline-block;padding: 5px;width: 100%;text-align: center !important;}
   body .content-page .btn.btn-info.openServiceModal{max-width: 130px;}
   body .content-page .btn.btn-info.alAddLongBtn,
   body .content-page .btn.btn-info.alAddProductBtn{max-width: 120px;}
@@ -4711,4 +4554,9 @@ border: 1px solid #424e5a;
   top: 0;
   -webkit-transform: translate(0px, 0);
   transform: translate(0px, 0%);
+}
+.alDeliveryOptionsPage .switchery-demo label{margin: 0 !important;}
+@media(max-width:1400px){
+.web-style .dropify-wrapper.has-preview {width: 70px;height: 70px;}
+.web-style .text-left label{height: 40px;}
 }
