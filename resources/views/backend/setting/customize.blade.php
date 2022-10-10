@@ -42,7 +42,9 @@
     @endif
 
 <!-- New Customize Page -->
-
+@php
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency']);
+@endphp
 
    <!--Localization start -->
     <div class="row">
@@ -1192,6 +1194,13 @@
                                 <input type="checkbox" data-plugin="switchery" name="concise_signup" id="concise_signup" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->concise_signup == '1')) checked='checked' @endif>
                             </div>
                         </div>
+                        <div class="col-sm-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="Phone_signup" class="mr-3 mb-0">{{ __("Phone SignUp") }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="is_phone_signup_switch" id="is_phone_signup_switch" class="form-control checkbox_change" data-className="is_phone_signup"  data-color="#43bee1" @if( $getAdditionalPreference['is_phone_signup'] == '1') checked='checked' @endif>
+                                <input type="hidden"  @if($getAdditionalPreference['is_phone_signup'] == 1) value="1" @else value="0" @endif  name="is_phone_signup"  id="is_phone_signup"/>
+                            </div>
+                        </div>
                         @foreach($verify_options as $key => $opt)
                         @php $creds = json_decode($opt->credentials); @endphp
                         <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
@@ -1464,9 +1473,7 @@
             </form>
         </div>
         <!-- Start Google analytics -->
-        @php
-        $getAdditionalPreference = getAdditionalPreference(['gtag_id','fpixel_id']);
-        @endphp
+  
         @if(!$preference->client_preferences_additional->isEmpty())
             @foreach($preference->client_preferences_additional as $addiPreference)
                 @if($addiPreference->key_name == 'gtag_id')
@@ -1685,52 +1692,94 @@
 
 
 <!-- End New Customize page -->
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box">
-        <h4 class="page-title text-uppercase">{{ __("Policy") }}</h4>
-        </div>
-    </div>
-</div>
-<div class="row col-spacing">
-        <!-- Order Email Notification start -->
-        <div class="col-lg-4 col-xl-3 mb-3">
-            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
-                @csrf
-                <input type="hidden" name="send_to" id="send_to" value="customize">
-                <div class="card-box pb-1 h-100">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h4 class="header-title ">{{ __('Cancellation Policy') }}</h4>
-                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                    </div>
-                    <div class="col-xl-12 my-2 p-0" id="addCur-160">
-                        <label class="primaryCurText">{{ __('Free Cancellation Upto') }}</label>
-                        <input class="form-control" type="number" min="0" id="order_cancellation_time" name="order_cancellation_time" value="{{ !empty($preference->order_cancellation_time)? $preference->order_cancellation_time : 0}}" step="0">
-                        <!-- <select class="form-control al_box_height" id="order_cancellation_time" name="order_cancellation_time">
-                            <option value="0"  {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 0)? 'selected' : '' }}>{{__('No Cancellation')}}</option>
-                            <option value="10" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 10)? 'selected' : '' }}>{{__('10 Minutes')}}</option>
-                            <option value="20" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 20)? 'selected' : '' }}>{{__('20 Minutes')}}</option>
-                            <option value="30" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 30)? 'selected' : '' }}>{{__('30 Minutes')}}</option>
-                            <option value="40" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 40)? 'selected' : '' }}>{{__('40 Minutes')}}</option>
-                            <option value="50" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 50)? 'selected' : '' }}>{{__('50 Minutes')}}</option>
-                            <option value="60" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 60)? 'selected' : '' }}>{{__('60 Minutes')}}</option>
-                            <option value="70" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 70)? 'selected' : '' }}>{{__('70 Minutes')}}</option>
-                            <option value="80" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 80)? 'selected' : '' }}>{{__('80 Minutes')}}</option>
-                            <option value="90" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 90)? 'selected' : '' }}>{{__('90 Minutes')}}</option>
-                            <option value="100" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 100)? 'selected' : '' }}>{{__('100 Minutes')}}</option>
-                            <option value="120" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 120)? 'selected' : '' }}>{{__('120 Minutes')}}</option>
-                        </select> -->
-                    </div>
-                    <div class="col-xl-12 my-2 p-0" id="late-cancellation" style="{{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time > 0)? 'display:block;' : 'display:none;'}}">
-                        <label class="primaryCurText">{{ __('Late Cancellation Fee').'(%)' }}</label>
-                        <input class="form-control" type="number" min="0" id="cancellation_percentage" name="cancellation_percentage" value="{{ !empty($preference->cancellation_percentage)? $preference->cancellation_percentage : 20}}">
+
+    <div class="row mb-4">
+             <!-- Order Email Notification start -->
+             <div class="col-lg-4 col-xl-3 mb-3">
+                <div class="col-12">
+                    <div class="page-title-box">
+                    <h4 class="page-title text-uppercase">{{ __("Policy") }}</h4>
                     </div>
                 </div>
-            </form>
-        </div>
-    </div>
-</div>
-</div>
+                 <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                     @csrf
+                     <input type="hidden" name="send_to" id="send_to" value="customize">
+                     <div class="card-box pb-1 h-100">
+                         <div class="d-flex align-items-center justify-content-between">
+                             <h4 class="header-title ">{{ __('Cancellation Policy') }}</h4>
+                             <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                         </div>
+                         <div class="col-xl-12 my-2 p-0" id="addCur-160">
+                             <label class="primaryCurText">{{ __('Free Cancellation Upto') }}</label>
+                             <input class="form-control" type="number" min="0" id="order_cancellation_time" name="order_cancellation_time" value="{{ !empty($preference->order_cancellation_time)? $preference->order_cancellation_time : 0}}" step="0">
+                             <!-- <select class="form-control al_box_height" id="order_cancellation_time" name="order_cancellation_time">
+                                 <option value="0"  {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 0)? 'selected' : '' }}>{{__('No Cancellation')}}</option>
+                                 <option value="80" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 80)? 'selected' : '' }}>{{__('80 Minutes')}}</option>
+                                 <option value="90" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 90)? 'selected' : '' }}>{{__('90 Minutes')}}</option>
+                                 <option value="100" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 100)? 'selected' : '' }}>{{__('100 Minutes')}}</option>
+                                 <option value="120" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 120)? 'selected' : '' }}>{{__('120 Minutes')}}</option>
+                             </select> -->
+                         </div>
+                         <div class="col-xl-12 my-2 p-0" id="late-cancellation" style="{{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time > 0)? 'display:block;' : 'display:none;'}}">
+                             <label class="primaryCurText">{{ __('Late Cancellation Fee').'(%)' }}</label>
+                             <input class="form-control" type="number" min="0" id="cancellation_percentage" name="cancellation_percentage" value="{{ !empty($preference->cancellation_percentage)? $preference->cancellation_percentage : 20}}">
+                         </div>
+                     </div>
+                 </form>
+             </div>
+
+            <div class="col-lg-4 col-xl-3 mb-3">
+                <div class="col-12">
+                    <div class="page-title-box">
+                    <h4 class="page-title text-uppercase">{{ __("Token") }}</h4>
+                    </div>
+                </div>
+                <form method="POST" class="h-100" action="{{route('additional.update')}}">
+                    @csrf
+                    <input type="hidden" name="send_to" id="send_to" value="customize">
+                    <div class="card-box pb-1 h-100">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4 class="header-title ">{{ __('Token currency') }}</h4>
+                            <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                        </div>
+                        <div class="col-xl-12 my-2 p-0" id="">
+                                        <!-- Token card start -->
+                
+                    <div class="row">
+                       <div class="col-12">
+                          <div class="form-group mb-0 switchery-demo">
+                             <label for="" class="mr-3">{{ __("Enable") }}</label>
+                             <input type="checkbox" data-plugin="switchery" id="is_token_currency_enable" class="form-control checkbox_change" data-className="is_token_currency_enable_hidden" data-color="#43bee1" 
+                             @if(@$getAdditionalPreference['is_token_currency_enable'] == '1') checked='checked' value="1"  @endif>
+                             <input type="hidden"  @if(isset($getAdditionalPreference['is_token_currency_enable']) == 1) value="1" @else value="0" @endif name="is_token_currency_enable" id="is_token_currency_enable_hidden"/>
+                          </div>
+                       </div>
+                    </div>
+    
+                    <div class="row token_row" style="{{((isset($getAdditionalPreference['is_token_currency_enable']) && $getAdditionalPreference['is_token_currency_enable'] == 1)) ? '' : 'display:none;'}}">
+                       <div class="col-12">
+                          <div class="form-group row mt-2 d-flex align-items-center">
+                             <label class="col-3 m-0">1 {{$preference->primary->currency->iso_code}} {{!empty($preference->primary->currency->symbol) ? $preference->primary->currency->symbol : ''}} = </label>
+                             <div class="col-9">
+                                <input type="text" name="token_currency" id="token_currency" placeholder="" class="form-control" value="{{ old('token_currency',  $getAdditionalPreference['token_currency'] ?? '')}}">
+                                @if($errors->has('token_client_id'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('token_access_token') }}</strong>
+                                </span>
+                                @endif
+                            </div>
+                          </div>
+                       </div>
+                    </div>
+                <!-- Token card end -->
+    
+                
+    
+                        </div>
+                    </div>
+                </form>
+            </div>
+     </div>
 
 <div id="add_or_edit_social_media_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -2260,6 +2309,7 @@
 @endsection
 @section('script')
 <script src="{{asset('assets/js/jscolor.js')}}"></script>
+<script src="{{ asset('assets\js\backend\backend_common.js') }}"></script>
 <script src="https://itsjavi.com/fontawesome-iconpicker/dist/js/fontawesome-iconpicker.js"></script>
 <script type="text/javascript">
 
@@ -3003,6 +3053,17 @@ $(document).ready(function(){
     var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
     var laundry_service = $('#need_laundry_service');
     var need_appointment_service = $('#need_appointment_service');
+    var is_token_currency_enable = $('#is_token_currency_enable');
+    if(is_token_currency_enable.length > 0){
+         is_token_currency_enable[0].onchange = function() {
+
+            if ($('#is_token_currency_enable:checked').length != 1) {
+               $('.token_row').hide();
+            } else {
+               $('.token_row').show();
+            }
+         }
+      }
     if(dispatcherDiv.length > 0){
         dispatcherDiv[0].onchange = function() {
             if ($('#need_dispacher_ride:checked').length != 1) {
