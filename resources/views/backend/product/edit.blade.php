@@ -438,6 +438,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                         <th>{{ __("Name") }}</th>
                                         <th>{{ __("Variants") }}</th>
                                         <th>{{ __("Price") }}</th>
+                                        @if (isset($getAdditionalPreference['is_price_by_role']))
+                                            @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                                <th>{{ __("Role's Price") }}</th>
+                                            @endif
+                                        @endif
                                         <th>{{ __('Compare at price') }}</th>
                                         <th>{{ __('Cost Price') }}</th>
                                         <th class="check_inventory">{{ __("Quantity") }}</th>
@@ -482,6 +487,15 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                             <td>
                                                 <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
                                             </td>
+                                            @if (isset($getAdditionalPreference['is_price_by_role']))
+                                                @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                                    <td>
+                                                        <a href="javascript:void(0);" title="Add Price Based On Roles" class="action-icon rolePriceModal" data-toggle="modal" data-target="#rolePriceModal" data-varient-id="{{$varnt->id}}" data-product-id="{{$product->id}}">
+                                                            <i class="mdi mdi-loupe"></i>
+                                                        </a>
+                                                    </td>
+                                                @endif
+                                            @endif
                                             <td>
                                                 <input type="text" style="width: 100px;" name="variant_compare_price[]" value="{{decimal_format($varnt->compare_at_price)}}" onkeypress="return isNumberKey(event)">
                                             </td>
@@ -1144,6 +1158,43 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
     </div>
  </div>
 <!-- end product faq -->
+
+<!-- Role based Price (Start) -->
+<div class="modal fade" id="rolePriceModal" tabindex="-1" role="dialog" aria-labelledby="rolePriceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="rolePriceModalLabel">Insert Price Based On Roles</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{route('product.updateRolePrice')}}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    @if (isset($roles))
+                        @foreach ($roles as $key => $_role)
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}
+                                <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKeyMax(event)" placeholder="0" name="role_price[{{$_role['id']}}]" value="0.00">
+                                <input type="hidden" class="form-control" min="0" name="role_id[{{lcfirst($_role['role'])}}]" value="{{$_role['id']}}">
+                            </div>
+                        @endforeach
+                    @endif
+                    <input type="hidden" id="role_variant_id" name="variant_id" value="">
+                    <input type="hidden" id="role_product_id" name="product_id" value="">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<!-- Role based Price (END) -->
 
 <script type="text/template" id="vendorSelectorTemp">
     <tr class ="option_section" id ="option_section_<%= id %>" data-section_number="<%= id %>">
@@ -1899,7 +1950,21 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
         })
 
     </script>
-
 <!-- end product faq -->
+
+{{-- Insert Value to Role Price Modal (Start) --}}
+    <script>
+        $( document ).delegate( ".rolePriceModal", "click", function() {
+            var varient_id = $(this).attr('data-varient-id');
+            var product_id =  $(this).attr('data-product-id');
+
+            $('#role_variant_id').val(varient_id);
+            $('#role_product_id').val(product_id);
+
+            $('#rolePriceModal').modal('show');
+        });
+    </script>
+{{-- Insert Value to Role Price Modal (End) --}}
+
 <script src="{{ asset('assets/js/backend/product/edit_product.js')}}"></script>
 @endsection
