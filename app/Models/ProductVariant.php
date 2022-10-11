@@ -12,7 +12,7 @@ class ProductVariant extends Model
 {
 	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price','incremental_price_per_min','role_id'];
 
-  protected $appends = ['actual_price'];
+  protected $appends = ['actual_price', 'new_price'];
 
 
 	public function getImageAttribute($value)
@@ -76,7 +76,12 @@ class ProductVariant extends Model
     }
 
     public function productVariantByRole(){
-		return $this->hasOne('App\Models\ProductVariantByRole', 'product_variant_id', 'id');
+        if(auth()->user() !=null){
+            return $this->hasOne('App\Models\ProductVariantByRole', 'product_variant_id', 'id')->where('role_id', Auth::user()->role_id);
+        }else{
+            return $this->hasOne('App\Models\ProductVariantByRole', 'product_variant_id', 'id')->where('role_id', 1);
+        }
+		
 	}
 
     public function checkIfInCart()
@@ -119,6 +124,20 @@ class ProductVariant extends Model
                 return $this->price - $this->markup_price??0;
         }
                 return $this->price;
+    }
+
+    // price based on role
+    public function getNewPriceAttribute()
+    {
+
+        if(auth()->user() !=null){
+            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+            if($getAdditionalPreference['is_price_by_role'] == 1 && $this->productVariantByRole){
+                return $this->productVariantByRole->amount;
+            }
+            return $this->price;
+        }
+        return $this->price;
     }
 
     public function getPriceAttribute($value)

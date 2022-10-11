@@ -249,8 +249,9 @@
                                             <h3 id="productPriceValue" class="mb-md-3">
                                                 <b class="mr-1">{{Session::get('currencySymbol')}}
                                                     <span class="product_fixed_price">
+                                                        {{-- price based on role --}}
                                                         @if($getAdditionalPreference['is_price_by_role'] == '1')
-                                                            {{decimal_format($product->variant[0]->productVariantByRole->amount ?? $product->variant[0]->price * $product->variant[0]->multiplier)}}
+                                                            {{decimal_format($product->variant[0]->new_price * $product->variant[0]->multiplier) ?? decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}
                                                         @else
                                                             {{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}
                                                     </span>

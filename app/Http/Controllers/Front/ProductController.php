@@ -126,8 +126,6 @@ class ProductController extends FrontController{
         if($user){
             $product = $product->with(['inwishlist' => function ($query) use($user) {
                 $query->where('user_wishlists.user_id', $user->id);
-            }, 'variant.productVariantByRole' => function ($q) {
-                $q->where('role_id', Auth::user()->role_id);
             }]);
         }
         
@@ -377,16 +375,15 @@ class ProductController extends FrontController{
         ->where('products.id', $product->id)->first();
         $data['availableSets'] = $availableSets->variantSet;
         if($pv_ids){
-            $variantData = ProductVariant::with(['product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart', 'productVariantByRole' => function ($q) {
-                $q->where('role_id', Auth::user()->role_id);
-            }])->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
+            $variantData = ProductVariant::with(['product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart'])
+            ->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
             ->whereIn('id', $pv_ids)->get();
 
             if ($variantData) {
                 foreach($variantData as $variant){
 
-                    if($getAdditionalPreference['is_price_by_role'] == '1' && $variant->productVariantByRole){
-                        $variant->productPrice =  decimal_format(($variant->productVariantByRole->amount * $clientCurrency->doller_compare));
+                    if($getAdditionalPreference['is_price_by_role'] == '1'){
+                        $variant->productPrice =  decimal_format(($variant->new_price * $clientCurrency->doller_compare));
                     }else{
                         $variant->productPrice =  decimal_format(($variant->price * $clientCurrency->doller_compare));
                     }
