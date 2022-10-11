@@ -2492,4 +2492,4 @@ INSERT INTO `faq_translations` (`id`, `page_id`, `language_id`, `question`, `ans
 
 
 Update `web_styling_options` set `is_selected` = 0;
-Update `web_styling_options` set `is_selected` = 1 where image = 'template-three.png';
+Update `web_styling_options` set `is_selected` = 1 where id = '3';
