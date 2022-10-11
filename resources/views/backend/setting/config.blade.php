@@ -41,7 +41,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
          @if($client_preference_detail->business_type != 'taxi')
 
-            <div class="col-lg-3 col-md-6 mb-3">
+            <div class="col-lg-4 col-md-6 mb-3">
                <div class="row h-100">
                   <div class="col-12">
                      <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -112,7 +112,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
          {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
 
-            <div class="col-lg-3 col-md-6 mb-3">
+            <div class="col-lg-4 col-md-6 mb-3">
                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
                   @csrf
                <!-- On Demand Services section start -->
@@ -600,7 +600,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       </div>
    </div>
    <div class="row">
-      <div class="col-xl-3 mb-3">
+      <div class="col-lg-3 mb-3">
          <!-- Map Configuration start -->
          <form class="h-100" method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             @csrf
@@ -656,7 +656,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          </form><!-- Map Configuration end -->
       </div>
-      <div class="col-xl-3 mb-3">
+      <div class="col-lg-3 mb-3">
          <!-- SMS Configuration start -->
          <form class="h-100" method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             @csrf
@@ -839,7 +839,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          </form><!-- SMS Configuration end -->
       </div>
-      <div class="col-xl-6 mb-3">
+      <div class="col-lg-6 mb-3">
          <!-- Mail Configuration start -->
          <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
             @csrf
@@ -942,7 +942,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          </form><!-- Mail Configuration end -->
       </div>
-      <div class="col-xl-6 mb-3">
+      <div class="col-lg-6 mb-3">
          <!-- Firebase Notification Configuration start -->
          <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
             @csrf
@@ -1165,6 +1165,67 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
 
    </div>
+   <div class="row">
+      <div class="col-12">
+         <!-- Social Logins title start -->
+         <div class="page-title-box">
+            <h4 class="page-title text-uppercase">CRM</h4>
+         </div><!-- Social Logins title end -->
+      </div>
+   </div>
+
+   @php
+   $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable']);
+   @endphp
+   <form method="POST" action="{{route('additional.update')}}">
+      <input type="hidden" name="crm" id="crm" value="1">
+      <input type="hidden" name="send_to" id="send_to" value="configure">
+      @csrf
+      <div class="row">
+         <div class="col-xl-3 col-lg-6 mb-3">
+            <!-- HubSpot card start -->
+            <div class="card-box h-100">
+               <div class="row">
+                  <div class="col-12">
+                     <div class="form-group mb-0 switchery-demo">
+                        <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                           <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-hubspot"></i> <span>{{ __("Hubspot") }}</span></h5>
+
+                           <button class="btn btn-info btn-block save_btn" name="hubspot_submit" type="submit"> {{ __("Save") }} </button>
+                        </label>
+                        <label for="" class="mr-3">{{ __("Enable") }}</label>
+                        <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable" class="form-control checkbox_change" data-className="is_hubspot_enable_hidden" data-color="#43bee1"
+                        @if(@$getAdditionalPreference['is_hubspot_enable'] == '1') checked='checked' value="1"  @endif>
+                        <input type="hidden"  @if(isset($getAdditionalPreference['is_hubspot_enable']) == 1) value="1" @else value="0" @endif  name="is_hubspot_enable"  id="is_hubspot_enable_hidden"/>
+
+                        {{-- @if((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1')) checked='checked' @endif> --}}
+                     </div>
+                  </div>
+               </div>
+               {{-- <input type="hidden" name='custom_mods_config_additional' value='1'>
+               <input type="hidden" name='is_hubspot' value='1'> --}}
+               {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
+               <div class="row hub_row" style="{{((isset($getAdditionalPreference['is_hubspot_enable']) && $getAdditionalPreference['is_hubspot_enable'] == 1)) ? '' : 'display:none;'}}">
+                  <div class="col-12">
+                     <div class="form-group mb-2 mt-2">
+
+                        <label for="fb_client_id">{{ __("Access token Key") }}</label>
+                        {{-- <input type="password" name="hubspot_access_token" id="hubspot_access_token" placeholder="" class="form-control" value="{{ old('hubspot_access_token', $preference->client_preferences_additional->is_hubspot_enable ?? '')}}"> --}}
+                        <input type="password" name="hubspot_access_token" id="hubspot_access_token" placeholder="" class="form-control" value="{{ old('hubspot_access_token',  $getAdditionalPreference['hubspot_access_token'] ?? '')}}">
+                        @if($errors->has('hubspot_client_id'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('hubspot_access_token') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+                  </div>
+               </div>
+            </div><!-- HubSpot card end -->
+         </div>
+      </div>
+   </form>
+
+
 
    <div class="row">
       {{-- <div class="col-md-12 show-custom-mods">
@@ -1192,7 +1253,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      @if($client_preference_detail->business_type != 'laundry')
                      <div class="col-md-4">
                         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                           <label for="celebrity_check" class="mr-2 mb-0"> {{ __("Influencer Mod") }} <small class="d-block pr-5">Leverage the Influencer era by adding Influencers and associate product with them to create curated lists of products.</small></label>
+                           <label for="celebrity_check" class="mr-2 mb-0"> {{ __("Influencer Mod") }} <small class="d-block pr-5">{{ __('Leverage the Influencer era by adding Influencers and associate product with them to create curated lists of products') }}.</small></label>
                           <span> <input type="checkbox" data-plugin="switchery" name="celebrity_check" id="celebrity_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->celebrity_check == '1')) checked='checked' @endif></span>
                         </div>
                      </div>
@@ -1204,7 +1265,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                      <div class="col-md-4">
                         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                           <label for="enquire_mode" class="mr-2 mb-0">{{ __("Inquiry Mod") }}<small class="d-block pr-5">Set products to be only available for Inquiry and hide the price.</small></label>
+                           <label for="enquire_mode" class="mr-2 mb-0">{{ __("Inquiry Mod") }}<small class="d-block pr-5">{{ _('Set products to be only available for Inquiry and hide the price.') }}</small></label>
                            <span><input type="checkbox" data-plugin="switchery" name="enquire_mode" id="	enquire_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->enquire_mode == '1')) checked='checked' @endif></span>
                         </div>
                      </div>
@@ -1225,7 +1286,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}<small class="d-block pr-5">Enable the option to create Subscriptions for Customers and Vendors.</small></label>
+                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}<small class="d-block pr-5">{{__('Enable the option to create Subscriptions for Customers and Vendors.')}}</small></label>
                         <span> <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
                         </span>
                      </div>
@@ -1233,23 +1294,23 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   @elseif($client_preference_detail->subscription_tab_taxi == 1)
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}<small class="d-block pr-5">Enable the option to create Subscriptions for Customers and Vendors.</small></label>
+                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}<small class="d-block pr-5">{{__('Enable the option to create Subscriptions for Customers and Vendors.')}}</small></label>
                         <span> <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
                         </span>
                      </div>
                   </div>
                   @endif
-                  
+
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="subscription_tab_taxi" class="mr-2 mb-0">{{ __("Subscription Tab") }}<small class="d-block pr-5">Enable subscription tab for taxi/cab.</small></label>
+                        <label for="subscription_tab_taxi" class="mr-2 mb-0">{{ __("Subscription Tab") }}<small class="d-block pr-5">{{ __('Enable subscription tab for taxi/cab.') }}</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="subscription_tab_taxi" id="subscription_tab_taxi" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_tab_taxi == '1')) checked='checked' @endif>
                      </span>
                      </div>
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Pre Order Tips')}}<small class="d-block pr-5">Manage the option to Tip before the Order.</small></label>
+                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Pre Order Tips')}}<small class="d-block pr-5">{{ __('Manage the option to Tip before the Order') }}.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="tip_before_order" id="tip_before_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_before_order == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1257,7 +1318,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="tip_after_order" class="mr-2 mb-0">{{__('Post Order Tips')}}<small class="d-block pr-5">Manage the option to Tip after the Order.</small></label>
+                        <label for="tip_after_order" class="mr-2 mb-0">{{__('Post Order Tips')}}<small class="d-block pr-5">{{ __('Manage the option to Tip after the Order.') }}</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="tip_after_order" id="tip_after_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_after_order == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1285,7 +1346,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="gifting" class="mr-2 mb-0">{{__('Gifting')}}<small class="d-block pr-5">Enable option to mark an Order to be gift wrapped.</small></label>
+                        <label for="gifting" class="mr-2 mb-0">{{__('Gifting')}}<small class="d-block pr-5">{{ __('Enable option to mark an Order to be gift wrapped.') }}</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="gifting" id="gifting" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->gifting == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1301,14 +1362,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="minimum_order_batch" class="mr-2 mb-0">{{__('Minimum Order/Increment')}}<small class="d-block pr-5"> Set the minimum order and minimum increment per product.</small></label>
+                        <label for="minimum_order_batch" class="mr-2 mb-0">{{__('Minimum Order/Increment')}}<small class="d-block pr-5"> {{ __('Set the minimum order and minimum increment per product') }}.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="minimum_order_batch" id="minimum_order_batch" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->minimum_order_batch == '1')) checked='checked' @endif>
                      </span>
                      </div>
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="static_delivey_fee" class="mr-2 mb-0">{{__('Static Delivery fee')}}<small class="d-block pr-5">Set a static Delivery Price per vendor based on Minimum Order Value.</small></label>
+                        <label for="static_delivey_fee" class="mr-2 mb-0">{{__('Static Delivery fee')}}<small class="d-block pr-5">{{ __('Set a static Delivery Price per vendor based on Minimum Order Value.') }}</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="static_delivey_fee" id="static_delivey_fee" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->static_delivey_fee == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1333,18 +1394,12 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   @endif
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="max_safety_mod" class="mr-2 mb-0">{{__('Max Safety')}}<small class="d-block pr-5">Enable to give max safety option to vendors.</small></label>
+                        <label for="max_safety_mod" class="mr-2 mb-0">{{__('Max Safety')}}<small class="d-block pr-5">{{ __('Enable to give max safety option to vendors.') }}</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="max_safety_mod" id="max_safety_mod" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->max_safety_mod == '1')) checked='checked' @endif>
                         </span>
                      </div>
                   </div>
-                  <div class="col-md-4 d-none">
-                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="address_is_car" class="mr-2 mb-0">{{__('Car Mode')}}<small class="d-block pr-5">{{__('Enable to change addres into car details.')}}</small></label>
-                       <span> <input type="checkbox" data-plugin="switchery" name="address_is_car" id="address_is_car" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->address_is_car == '1')) checked='checked' @endif>
-                        </span>
-                     </div>
-                  </div>
+
                   <div class="col-md-4">
                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                        <label for="hide_order_address" class="mr-2 mb-0">{{__('Hide customer details')}}<small class="d-block pr-5">{{__('Enable to hide customer details from order.')}}</small></label>
@@ -1451,6 +1506,16 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Show map on search screen')}}<small class="d-block pr-5">{{__("Enable to show activate vendor's in map-view on search screen.")}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="map_on_search_screen" id="map_on_search_screen" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->map_on_search_screen == '1')) checked='checked' @endif>
                      </span>
+                  </div>
+               </div>
+               <div class="col-md-4 d-none">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                     <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Long Term Service')}}<small class="d-block pr-5">{{__("Enable to add long term service.")}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="is_long_term_service_switch" id="is_long_term_service_switch" class="form-control checkbox_change" data-className="is_long_term_service"  data-color="#43bee1" @if( @getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == '1') checked='checked' @endif>
+                     </span>
+                     <input type="hidden"  @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1) value="1" @else value="0" @endif  name="is_long_term_service"  id="is_long_term_service"/>
+
+
                   </div>
                </div>
                </div>
@@ -1774,6 +1839,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
    @endsection
    @section('script')
+   <script src="{{ asset('assets\js\backend\backend_common.js') }}"></script>
    <script type="text/javascript">
 
     $(document).on("change","#option_client_language",function() {
@@ -2201,7 +2267,9 @@ $sms_crendential = json_decode($preference->sms_credentials);
       var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
       var laundry_service = $('#need_laundry_service');
 
-      var need_inventory_service = $('#need_inventory_service');
+      var laundry_service = $('#need_laundry_service');
+
+      var is_hubspot_enable = $('#is_hubspot_enable');
 
       if(laundry_service.length > 0){
          laundry_service[0].onchange = function() {
@@ -2210,6 +2278,16 @@ $sms_crendential = json_decode($preference->sms_credentials);
                $('.laundryServiceFields').hide();
             } else {
                $('.laundryServiceFields').show();
+            }
+         }
+      }
+      if(is_hubspot_enable.length > 0){
+         is_hubspot_enable[0].onchange = function() {
+
+            if ($('#is_hubspot_enable:checked').length != 1) {
+               $('.hub_row').hide();
+            } else {
+               $('.hub_row').show();
             }
          }
       }

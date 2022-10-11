@@ -284,7 +284,7 @@
                                                 }*/ ?>
                                                 <div class="col-xl-3 col-md-3 col-6 mt-3">
                                                     <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="product-box scale-effect mt-0">
-                                                        <div class="product-image p-0"  style="height:200px">
+                                                        <div class="product-image">
                                                             <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
                                                         </div>
                                                         <div class="media-body align-self-center">

@@ -2,11 +2,12 @@
 namespace App\Http\Traits;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
-use App\Models\ClientPreference;
+use App\Models\{ClientPreference,ClientPreferenceAdditional,Client};
 use GuzzleHttp\Client as GCLIENT;
 use Log;
 trait ClientPreferenceManager{ 
 
+  public $client_preference_fillable_key = ['is_phone_signup', 'token_currency', 'is_token_currency_enable', 'hubspot_access_token', 'is_hubspot_enable', 'gtag_id', 'fpixel_id','is_long_term_service'];
   # get last mile teams
   public function getLastMileTeams(){
     try {
@@ -38,5 +39,24 @@ trait ClientPreferenceManager{
       return $preference;
     else
       return false;
+  }
+    
+  /**
+   * updatePreferenceAdditional
+   *
+   * @param  mixed $$request
+   * @return void
+   * harbans :)
+   * 
+   */
+  public function updatePreferenceAdditional($request=[]){
+    $validated_keys = $request->only($this->client_preference_fillable_key);
+    $client = Client::first();
+    foreach($validated_keys as $key => $value){ 
+        ClientPreferenceAdditional::updateOrCreate(
+            ['key_name' => $key, 'client_code' => $client->code],
+            ['key_name' => $key, 'key_value' => $value,'client_code' => $client->code,'client_id'=> $client->id]);
+    } 
+    return 1;
   }
 }

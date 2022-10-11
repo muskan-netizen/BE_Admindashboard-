@@ -83,11 +83,11 @@
                                 </tr>
                                 <tr>
                                     <th class="text-nowrap" scope="row">Nestable</th>
-                                    <td colspan="5">Yes</td>
+                                    <td colspan="5">{{ __('Yes') }}</td>
                                 </tr>
                                 <tr>
                                     <th class="text-nowrap" scope="row">Column ordering</th>
-                                    <td colspan="5">Yes</td>
+                                    <td colspan="5">{{ __('Yes') }}</td>
                                 </tr>
                             </tbody>
                         </table>
