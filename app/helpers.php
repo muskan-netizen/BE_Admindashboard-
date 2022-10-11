@@ -65,6 +65,14 @@ if (!function_exists('changeDateFormate')) {
     }
 }
 
+if (!function_exists('getInToken')) {
+    function getInToken($amount = 1){
+        $currency_id = session()->get('customerCurrency');
+        $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+        return decimal_format(($amount * ( $clientCurrency->doller_compare ?? 1)) * (getAdditionalPreference(['token_currency'])['token_currency'] ?? 1));
+    }
+}
+
 if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
     function checkShowSubscriptionPlanOnSignup(){
         $showSubscriptionPlanPopUp = 0;

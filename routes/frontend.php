@@ -489,6 +489,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('verifTokenProcess', 'Front\UserController@verifyToken')->name('user.verifyToken');
 	Route::get('user/addressBook', 'Front\AddressController@index')->name('user.addressBook');
 	Route::get('user/wallet', 'Front\WalletController@index')->name('user.wallet');
+	Route::get('user/token', 'Front\TokenController@index')->name('user.token');
 	Route::get('user/wallet/refreshBalance/{id?}', 'Front\WalletController@refreshWalletbalance')->name('user.wallet.refreshBalance');
 	Route::post('user/wallet/credit', 'Front\WalletController@creditWallet')->name('user.creditWallet');
 	Route::post('wallet/transfer/user/verify', 'Front\WalletController@walletTransferUserVerify')->name('wallet.transfer.user.verify');

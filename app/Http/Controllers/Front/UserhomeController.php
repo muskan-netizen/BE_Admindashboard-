@@ -27,6 +27,12 @@ class UserhomeController extends FrontController
     use ApiResponser, OrderTrait;
     private $field_status = 2;
     public $cities = [];
+    public $additionalPreference =[];
+    
+    public function __construct(Request $request)
+    {
+        $this->additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency']);
+    }
 
 
     public function setTheme(Request $request)
@@ -831,6 +837,7 @@ class UserhomeController extends FrontController
             $multiply = $new_product_detail->variant->first()->multiplier?? 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
             $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            // dd(getInToken(decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,','))); 
             $new_products[] = array(
                 'tag_title' => $new_products_title??0,
                 'image_url' => $image_url,
@@ -841,7 +848,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $new_product_detail->inquiry_only,
                 'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
                 'vendor' => $new_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
+                'price' => $this->additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
             );
         }
