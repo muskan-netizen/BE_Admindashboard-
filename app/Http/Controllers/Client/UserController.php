@@ -398,7 +398,7 @@ class UserController extends BaseController
         $user = User::where('id', $id)->first();
         $data = [
             'status'        => $request->status,
-            'role_id'       => $request->has('role_id') ? $request->get('role_id')  : $user->role_id,
+            'role_id'       => $request->has('role_id') ? $request->get('role_id') : $user->role_id,
             'is_admin'      => $request->is_admin,
             'is_superadmin' => 0
         ];

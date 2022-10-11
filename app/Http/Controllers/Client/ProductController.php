@@ -1146,5 +1146,29 @@ class ProductController extends BaseController
         return $this->successResponse($options, '');
     }
 
+    // update Role's variant Price (START)
+    public function updateRolePrice(Request $request)
+    {
+        try{
+            if($request->has('role_id')){
+                foreach ($request->role_id as $key => $value) {
+                    $productVariantByRole = ProductVariantByRole::where('product_id', $request->product_id)->where('role_id',$value)->first();
+                    if (!$productVariantByRole) {
+                        $productVariantByRole          = new ProductVariantByRole();
+                    }
+                    $productVariantByRole->product_id         = $request->product_id;
+                    $productVariantByRole->role_id            = $value;
+                    $productVariantByRole->amount             = $request->role_price[$value];
+                    $productVariantByRole->product_variant_id = $request->variant_id;
+                    $productVariantByRole->save();
+                }
+            }
+            return redirect()->back()->with('success', 'Amount Added Successfully!');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput()->withError($e->getMessage());
+        }
+    }
+    // Save Product Variant By Roles with variant_id and Amount (END)
 
 }

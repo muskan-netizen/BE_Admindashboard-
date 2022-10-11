@@ -88,7 +88,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::get('backend/order/refund', [OrderController::class, 'backendOrderRefund'])->name('backend.order.refund');
         Route::get('backend/order/refund/filter', [OrderController::class, 'backendOrderRefundFilter'])->name('backend.order.refund.filter');
-        
+
         Route::post('account/vendor/payout/request/complete', [VendorPayoutController::class, 'vendorPayoutRequestComplete'])->name('account.vendor.payout.request.complete');
         Route::get('account/tax/filter', [TaxController::class, 'filter'])->name('account.tax.filter');
         Route::get('account/tax/export', [TaxController::class, 'export'])->name('account.tax.export');
@@ -164,15 +164,15 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendorregistrationdocument/update', [VendorRegistrationDocumentController::class, 'update'])->name('vendor.registration.document.update');
         Route::post('vendor/registration/document/delete', [VendorRegistrationDocumentController::class, 'destroy'])->name('vendor.registration.document.delete');
 
-        
-        // user registreation document 
+
+        // user registreation document
         Route::resource('userregistrationdocument', 'Client\UserRegistrationDocumentController');
         Route::get('user/registration/document/edit', [UserRegistrationDocumentController::class, 'show'])->name('user.registration.document.edit');
         Route::post('userregistrationdocument/create', [UserRegistrationDocumentController::class, 'store'])->name('user.registration.document.create');
         Route::post('userregistrationdocument/update', [UserRegistrationDocumentController::class, 'update'])->name('user.registration.document.update');
         Route::post('user/registration/document/delete', [UserRegistrationDocumentController::class, 'destroy'])->name('user.registration.document.delete');
 
-        // Category Kyc document 
+        // Category Kyc document
         Route::resource('categorykycdocument', 'Client\CategoryKycDocumentController');
         Route::get('categorykyc/document/edit', [CategoryKycDocumentController::class, 'show'])->name('categorykyc.document.edit');
         Route::post('categorykycdocument/create', [CategoryKycDocumentController::class, 'store'])->name('categorykyc.document.create');
@@ -241,7 +241,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('vendor/inventory-import/{id}', 'Client\VendorController@getInventoryImport')->name('get.inventory.import');
         Route::post('vendor/get-inventory-store-products', 'Client\VendorController@getInventoryStoreProducts')->name('get.inventory.store.products');
         Route::post('vendor/post-inventory-store-products', 'Client\VendorController@postInventoryStoreProducts')->name('post.inventory.store.products');
-        Route::post('vendor/get-inventory-category-products', 'Client\VendorController@getInventoryCategoryListProducts')->name('get.inventory.category.products'); 
+        Route::post('vendor/get-inventory-category-products', 'Client\VendorController@getInventoryCategoryListProducts')->name('get.inventory.category.products');
         Route::get('vendor/payout/{id}', 'Client\VendorController@vendorPayout')->name('vendor.payout');
         Route::get('vendor/payout/filter/{id}', 'Client\VendorController@payoutFilter')->name('vendor.payout.filter');
         Route::post('vendor/payout/create/{id}', 'Client\VendorController@vendorPayoutCreate')->name('vendor.payout.create');
@@ -325,6 +325,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('product/translation', 'Client\ProductController@translation')->name('product.translation');
         Route::post('product/variantRows', 'Client\ProductController@makeVariantRows')->name('product.makeRows');
         Route::post('product/getVariant', 'Client\ProductController@getProductVariant')->name('product.getVariant');
+        Route::post('product/updateRolePrice', 'Client\ProductController@updateRolePrice')->name('product.updateRolePrice');
         Route::post('product/variantImage/update', 'Client\ProductController@updateVariantImage')->name('product.variant.update');
         Route::get('product/image/delete/{pid}/{id}', 'Client\ProductController@deleteImage')->name('product.deleteImg');
         Route::resource('loyalty', 'Client\LoyaltyController');
@@ -398,11 +399,11 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
             Route::post('updateCreateVendorInDispatchAppointment', 'Client\VendorController@updateCreateVendorInDispatchAppointment')->name('update.Create.Vendor.In.Dispatch.Appointment');
         });
 
-        
+
         Route::get('reports/productperformance', 'Client\ReportController@productPerformance')->name('report.productperformance');
         Route::post('reports/searchproduct', 'Client\ReportController@getOrdersListAjax')->name('report.searchproduct');
         Route::post('reports/productreport', 'Client\ReportController@getProductReportAjax')->name('report.loadproductreport');
-        
+
         Route::resource('campaign', 'Client\CampaignController');
         Route::get('campaign-push-option', 'Client\CampaignController@GetPushOptions')->name('campaign.pushoptions');
         //Route::get('test-notification', 'Client\CampaignController@testnotification');
@@ -435,7 +436,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('static-dropoff/edit', 'Client\StaticDropoffController@edit')->name('static-dropoff.edit');
         Route::delete('static-dropoff/destroy/{id}', 'Client\StaticDropoffController@delete')->name('static-dropoff.destroy');
 
-      
+
 
         Route::post('facilty/store', 'Client\FaciltyController@store')->name('facilty.store');
         Route::post('facilty/update', 'Client\FaciltyController@update')->name('facilty.update');
@@ -462,7 +463,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('booking/updateBlockSlot', 'Client\Booking\ProductBookingController@updateBlockSlot')->name('product-booking.updateBlockSlot');   # update all product actions
 
 
-        // rental product 
+        // rental product
         Route::post('rentalVariantRow', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
         Route::post('updateProductVariantSet', 'Client\RentalProductController@updateProductVariantSet')->name('rental-product.updateProductVariantSet');   # update all product actions
         Route::get('getScheduleTableData', 'Client\RentalProductController@getScheduleTableData')->name('rental-product.getScheduleTableData');   # update all product actions
@@ -481,7 +482,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
 
         /**  Hubspot Create a contact.
-         * 
+         *
          */
         Route::post('/hubspot/create-contact', 'Hubspot\HubspotApiController@create');
         /** end */
