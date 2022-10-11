@@ -303,18 +303,21 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div>
 
-                    @if (isset($getAdditionalPreference['is_price_by_role']))
-                        @if($getAdditionalPreference['is_price_by_role'] == '1')
-                            <div class="row mb-2">
-                                @if (isset($roles))
-                                    @foreach ($roles as $_role)
-                                    <div class="col-4 mb-2">
-                                        {!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}
-                                        <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKeyMax(event)" placeholder="0" name="role_price[{{lcfirst($_role['role'])}}]" value="0.00">
-                                    </div>
-                                    @endforeach
-                                @endif
-                            </div>
+                    @if($product->has_variant == 0)
+                        @if (isset($getAdditionalPreference['is_price_by_role']))
+                            @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                <div class="row mb-2">
+                                    @if (isset($roles))
+                                        @foreach ($roles as $_role)
+                                            <div class="col-4 mb-2">
+                                                {!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}
+                                                <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKeyMax(event)" placeholder="0" name="role_price[{{$_role['id']}}]" value="0.00">
+                                                <input type="hidden" class="form-control" min="0" name="role_id[{{lcfirst($_role['role'])}}]" value="{{$_role['id']}}">
+                                            </div>
+                                        @endforeach
+                                    @endif
+                                </div>
+                            @endif
                         @endif
                     @endif
 
