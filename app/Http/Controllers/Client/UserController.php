@@ -395,14 +395,14 @@ class UserController extends BaseController
      */
     public function newUpdate(Request $request, $domain = '', $id)
     {
-
+        $user = User::where('id', $id)->first();
         $data = [
             'status'        => $request->status,
-            'role_id'       => $request->role_id,
+            'role_id'       => $request->has('role_id') ? $request->get('role_id')  : $user->role_id,
             'is_admin'      => $request->is_admin,
             'is_superadmin' => 0
         ];
-        $client = User::where('id', $id)->update($data);
+        $client = $user->update($data);
         //for updating permissions
         $removepermissions = UserPermissions::where('user_id', $id)->delete();
         if ($request->permissions) {
