@@ -1155,7 +1155,7 @@ class ProductController extends BaseController
         try{
             if($request->has('role_id')){
                 foreach ($request->role_id as $key => $value) {
-                    $productVariantByRole = ProductVariantByRole::where('product_id', $request->product_id)->where('role_id',$value)->first();
+                    $productVariantByRole = ProductVariantByRole::where('product_id', $request->product_id)->where('product_variant_id',$request->variant_id)->where('role_id',$value)->first();
                     if (!$productVariantByRole) {
                         $productVariantByRole          = new ProductVariantByRole();
                     }

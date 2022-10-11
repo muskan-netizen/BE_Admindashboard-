@@ -1182,8 +1182,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </div>
                         @endforeach
                     @endif
-                    <input type="text" id="role_variant_id" name="variant_id" value="">
-                    <input type="text" id="role_product_id" name="product_id" value="">
+                    <input type="hidden" id="role_variant_id" name="variant_id" value="">
+                    <input type="hidden" id="role_product_id" name="product_id" value="">
                 </div>
 
                 <div class="modal-footer">
