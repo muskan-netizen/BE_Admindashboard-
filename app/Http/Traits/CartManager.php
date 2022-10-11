@@ -708,8 +708,8 @@ trait cartManager{
                     }
                 }
 
-                $is_slot_from_dispatch = $prod->product->is_slot_from_dispatch ;
-                $show_dispatcher_agent = $prod->product->is_show_dispatcher_agent ;
+                $is_slot_from_dispatch =  checkColumnExists('products', 'is_slot_from_dispatch') ?  $prod->product->is_slot_from_dispatch : '';
+                $show_dispatcher_agent =  checkColumnExists('products', 'is_show_dispatcher_agent') ? $prod->product->is_show_dispatcher_agent  : '';
                 $last_mile_check       = $prod->product->Requires_last_mile  ;
                 $cateTypeId = $prod->product->productcategory->type_id ; 
                 

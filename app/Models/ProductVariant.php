@@ -120,13 +120,7 @@ class ProductVariant extends Model
     public function getPriceAttribute($value)
     {
         $checkMarkup = 0;
-        $preff = ClientPreference::value('is_tax_price_inclusive');
         $vendor = Product::where('id', $this->product_id)->select('vendor_id','tax_category_id')->first();
-        if(isset($vendor->taxCategory->taxRate[0]->tax_rate) && $preff>0)
-        {
-            return $incTaxPrice = ($value + (($value*$vendor->taxCategory->taxRate[0]->tax_rate)/100));
-             //dd($value);
-        }
         $checkMarkup = Vendor::where('id',$vendor->vendor_id)->value('add_markup_price');
         //if vendor price add with markup price
            if(auth()->user() !=null && auth()->user()->is_admin == 1){

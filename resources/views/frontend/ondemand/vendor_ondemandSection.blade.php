@@ -540,7 +540,7 @@
                                         @endphp
 
 
-                                        <div  id="date_time_set_div{{$cart_data->id}}">
+                                        <div  id="date_time_set_div{{$cart_data->id}}" class="booking_date_section">
                                             {{-- <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif> --}}
 
                                             <h4 class="mb-2"><b>{{__('When would you like your service?')}}</b></h4>
@@ -572,9 +572,9 @@
                                             
                                                 $dispatch_agents = $cart_data->dispatchAgents ?? [];
                                                 $cart_product_id = $cart_data->id;
-                                                $dispatch_agent_id = $cart_data->dispatch_agent_id;
-                                                $show_dispatcher_agent = $cart_data->product->is_show_dispatcher_agent;
-                                                $selected_agent_id = $cart_data->dispatch_agent_id;
+                                              
+                                                $show_dispatcher_agent = @$cart_data->product->is_show_dispatcher_agent;
+                                                $selected_agent_id = @$cart_data->dispatch_agent_id;
                                                 $schedule_slot = $cart_data->schedule_slot;
                                                 
                                                 @endphp

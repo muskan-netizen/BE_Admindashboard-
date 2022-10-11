@@ -26,10 +26,12 @@ body.al_body_template_six.light{visibility: visible;}
 }
 .alHomeServiceShimmer{
     position: fixed;
-    z-index: 20;
+    z-index: 99999999999999999;
     width: 100%;
     background-color: #fff;
+    top: 0;
 }
+.dark .alHomeServiceShimmer{background-color: #232323;}
 .shimmer_effect .headerLoding.loading{
     box-shadow: 0 0 10px rgb(0 0 0 / 20%);
     height: 80px;
@@ -72,7 +74,7 @@ body.al_body_template_six.light{visibility: visible;}
 }
 .shimmer_effect .card_image.loading{
     width:100%;
-    height:285px;
+    height:250px;
     margin-bottom:10px;
     border-radius: 10px 10px 0 0;
 }
@@ -196,19 +198,21 @@ body.al_body_template_six.light{visibility: visible;}
 .alFindSecMobile span{position: relative;width: 100%;display: block;}
 .alFindSecMobile span:before{border: solid black;border-width: 0 2px 2px 0;display: inline-block;padding: 3px;transform: rotate(45deg);-webkit-transform: rotate(45deg);position: absolute;content: "";right: 10px;top: 2px;}
 
+
 /* ====================== home product css ========================= */
 .product-description_list.border-bottom{text-align: left;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 .product-description_list.border-bottom p{margin-bottom: 0;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 .product-description_list.border-bottom p.al_product_category{margin-bottom: 10px; font-size: 12px;color: var(--theme-deafult);text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 
 /* ============= main menu css ===================== */
+
 .al_body_template_six .alSixMainMenu .pixelstrap a,
 .al_body_template_six .alSixMainMenu .pixelstrap a:active,
 .al_body_template_six .alSixMainMenu .pixelstrap a:hover,
 .al_body_template_six .alSixMainMenu .pixelstrap li>a{width: 100%;-webkit-transform: scale(1);transform: scale(1);padding: 0;font-size: 12px;}
 .al_body_template_six .alSixMainMenu .pixelstrap .al_main_category_list li a{text-align: left;}
 .al_body_template_six .nav-cate-img img{height: 150px;width: 150px;object-fit: fill;margin-bottom: 10px;border-radius: 10px 10px 0 0;}
-.al_body_template_six .alSixMainMenu{margin-top: -120px;display: flex;justify-content: center;}
+.al_body_template_six .alSixMainMenu{margin-top: -120px;display: flex;justify-content: center;position: relative;z-index: 9;}
 .al_body_template_six .alSixMainMenu .slick-slide .al_main_category a .alCategoryName{text-transform: uppercase;max-width: 120px;width: 100%;display: block;margin: 0 auto;}
 .al_body_template_six .al_custom_brand .brand-box{overflow: hidden; background-color: #fff;padding: 0 0 10px;border-radius: 15px;box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);}
 .al_body_template_six .alSixMainMenu .slick-slide{background-color: #fff;margin: 0 10px; padding: 0 0 10px;border-radius: 15px;box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);}
@@ -230,7 +234,7 @@ body.al_body_template_six.light{visibility: visible;}
     object-fit: cover;position: absolute;margin: auto;top: 0;bottom: 0;left: 0;right: 0;max-width: 100%;max-height: 100%;}
 .al_body_template_six .vendors .al_clock{min-height: 40px;}
 .al_body_template_six .vendors span.rating-number{position: absolute;top: 5px;right: 10px;padding: 3px 10px;
-    background-color: var(--theme-deafult);color: var(--top-header-color);
+    background-color: var(--theme-deafult);color:#fff;
     border-radius: 50px;}
 .al_body_template_six .vendors .al_custom_brand .slick-slide{margin:  0 10px;}
 
@@ -255,14 +259,28 @@ a.brand-box.d-block.black-box{text-align: center;}
     color: #fff;
 }
 .recent-orders ul.product_list li img{
-    width: 100%;
+    width: 50px;
     object-fit: cover;
-    height: 100%;
+    height: 50px;
     border-radius: 50px;
 }
 .al_body_template_six.dark .al_custom_brand .render_brands  .brand-box{
 background-color: #232323;
 }
+.dark .vendors h2.h2-heading,
+.dark .brand-slider h6,
+.dark .product-m .supplier-rating h6,
+.dark .vendors .al_top_heading h2{color: #fff;}
+.container, .container-lg, .container-md, .container-sm, .container-xl{
+    max-width: 1280px;
+}
+/* car bar css start */
+.p-64{padding:64px!important;margin-bottom: 30px;}
+.cab-footer button.btn.btn-solid.new-btn{
+    background-color: var(--theme-deafult);color: #fff;
+}
+.cab-banner-area .card-box{padding:48px;border-radius:20px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);background-color:rgba(255,255,255,.5)}.cab-input{margin:31px 0 13px;position:relative}.cab-footer{margin:19px 0 0}.input-line{width:1px;height:46px;background:#000;position:absolute;top:33px;left:22px}.cab-footer .btn.btn-solid:last-child{margin-right:0}.input-line:before{content:"";width:7px;height:7px;border:1px solid #000;border-radius:50%;position:absolute;top:-10px;left:-3px}.input-line:after{width:7px;height:7px;border:1px solid #000;content:"";position:absolute;bottom:-10px;left:-3px}.cab-input input.form-control{background-color:#f6f6f6;padding:11px 30px 11px 40px;height:auto;min-height:52px;border:0;border-radius:0!important;font-size:16px}
+/* car bar css end */
 
 
 
