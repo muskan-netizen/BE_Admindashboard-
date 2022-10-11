@@ -181,7 +181,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        $product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $id)->firstOrFail();
+        $product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles')->where('id', $id)->firstOrFail();
 
         $type = Type::all();
         $countries = Country::all();
@@ -280,7 +280,6 @@ class ProductController extends BaseController
         }
         $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
-
         return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference ]);
     }
 
@@ -540,9 +539,10 @@ class ProductController extends BaseController
                             if (!$productVariantByRole) {
                                 $productVariantByRole          = new ProductVariantByRole();
                             }
-                            $productVariantByRole->product_id  = $product->id;
-                            $productVariantByRole->role_id     = $value;
-                            $productVariantByRole->amount      = $request->role_price[$value];
+                            $productVariantByRole->product_id         = $product->id;
+                            $productVariantByRole->role_id            = $value;
+                            $productVariantByRole->amount             = $request->role_price[$value];
+                            $productVariantByRole->product_variant_id = $variantData->id;
                             $productVariantByRole->save();
                         }
                     }

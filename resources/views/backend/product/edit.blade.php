@@ -308,10 +308,10 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             @if($getAdditionalPreference['is_price_by_role'] == '1')
                                 <div class="row mb-2">
                                     @if (isset($roles))
-                                        @foreach ($roles as $_role)
+                                        @foreach ($roles as $key => $_role)
                                             <div class="col-4 mb-2">
                                                 {!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}
-                                                <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKeyMax(event)" placeholder="0" name="role_price[{{$_role['id']}}]" value="0.00">
+                                                <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKeyMax(event)" placeholder="0" name="role_price[{{$_role['id']}}]" value="{{ $product->productVariantByRoles[$key] ? (decimal_format($product->productVariantByRoles[$key]->amount) ?? 0.00) : 0.00 }}">
                                                 <input type="hidden" class="form-control" min="0" name="role_id[{{lcfirst($_role['role'])}}]" value="{{$_role['id']}}">
                                             </div>
                                         @endforeach

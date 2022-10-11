@@ -46,7 +46,7 @@ class Product extends Model implements Auditable{
        return $this->hasMany('App\Models\ProductCrossSell')->select('product_id', 'cross_product_id');
     }
 
-   
+
     public function variant(){
       return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id','container_charges','markup_price','incremental_price','incremental_price_per_min')->where('status', 1);
     }
@@ -110,6 +110,10 @@ class Product extends Model implements Auditable{
     public function reviews(){
       return $this->hasMany('App\Models\OrderProductRating', 'product_id', 'id');
     }
+
+    public function productVariantByRoles(){
+        return $this->hasMany('App\Models\ProductVariantByRole')->select('id', 'role_id','product_id', 'product_variant_id','amount');
+     }
 
     public function variant_list(){
        return $this->hasMany('App\Models\ProductVariantSet')
@@ -260,18 +264,18 @@ class Product extends Model implements Auditable{
 
 
     public function variantPrice(){
-      return $this->hasOne('App\Models\ProductVariant')->select('*','price as variant_price')->first(); 
+      return $this->hasOne('App\Models\ProductVariant')->select('*','price as variant_price')->first();
     }
 
 
-    
+
     public function OrderProduct(){
         return $this->hasMany('App\Models\OrderProduct')->where(function($q){
             $q->groupBy('order_id ');
         });
 
     }
-    
+
     public function UserWishlist(){
       return $this->hasMany('App\Models\UserWishlist')->where(function($q){
           $q->groupBy('product_id');
@@ -292,9 +296,9 @@ class Product extends Model implements Auditable{
       return $this->hasOne('App\Models\Category','id','category_id');
     }
     public function scopeByProductCategoryServiceType($query,$type)
-    {  
+    {
         $categoryTypesArray = getServiceTypesCategory($type);
-        return $query->whereHas('productcategory',function($q) use ($categoryTypesArray){ 
+        return $query->whereHas('productcategory',function($q) use ($categoryTypesArray){
           $q->whereIn('type_id',$categoryTypesArray);
         });
     }
@@ -323,9 +327,9 @@ class Product extends Model implements Auditable{
            if($checkMarkup){
                 return $value + $this->markup_price??0;
             }
-        
-            return $value;  
-           
+
+            return $value;
+
     }
 
     public function getMarkupPriceAttribute($value)
@@ -337,9 +341,9 @@ class Product extends Model implements Auditable{
            if($checkMarkup){
                 return $value;
             }
-        
-            return 0;  
-           
+
+            return 0;
+
     }
 
 
