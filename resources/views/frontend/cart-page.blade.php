@@ -173,21 +173,11 @@
                                 @endif
                             </div>
                             
-                            {{-- price based on role --}}
-                            @if($getAdditionalPreference['is_price_by_role'] == '1')
-                                @if(isset($vendor_product->pvariant->new_price))
-                                <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
-                                    <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->new_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
-                                </div>
-                                @endif
-                            @else
-                                @if(isset($vendor_product->pvariant->actual_price))
-                                <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
-                                    <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
-                                </div>
-                                @endif
+                            @if(isset($vendor_product->pvariant->actual_price))
+                            <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
+                                <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
+                            </div>
                             @endif
-                            
                             @if(!empty($vendor_product->quantity_price))
                             <div class="col-6 col-md-2 text-left order-md-4">
                                 @if($serviceType ==  'rental') 

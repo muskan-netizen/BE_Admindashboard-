@@ -382,11 +382,7 @@ class ProductController extends FrontController{
             if ($variantData) {
                 foreach($variantData as $variant){
 
-                    if($getAdditionalPreference['is_price_by_role'] == '1'){
-                        $variant->productPrice =  decimal_format(($variant->new_price * $clientCurrency->doller_compare));
-                    }else{
-                        $variant->productPrice =  decimal_format(($variant->price * $clientCurrency->doller_compare));
-                    }
+                    $variant->productPrice =  decimal_format(($variant->price * $clientCurrency->doller_compare));
                     // dump($variant->productPrice);
                    
                     // $variant->productPrice = Session::get('currencySymbol') . number_format(($variant->price * $clientCurrency->doller_compare), 2, '.', '');

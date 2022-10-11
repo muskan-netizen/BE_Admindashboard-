@@ -247,16 +247,7 @@
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
                                         @if($product->inquiry_only == 0)
                                             <h3 id="productPriceValue" class="mb-md-3">
-                                                <b class="mr-1">{{Session::get('currencySymbol')}}
-                                                    <span class="product_fixed_price">
-                                                        {{-- price based on role --}}
-                                                        @if($getAdditionalPreference['is_price_by_role'] == '1')
-                                                            {{decimal_format($product->variant[0]->new_price * $product->variant[0]->multiplier) ?? decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}
-                                                        @else
-                                                            {{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}
-                                                    </span>
-                                                    @endif
-                                                </b>
+                                                <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
                                                 @if($product->variant[0]->compare_at_price > 0 )
                                                     <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
                                                 @endif

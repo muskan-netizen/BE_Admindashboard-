@@ -121,12 +121,21 @@ class ProductVariant extends Model
     {
        // if vendor actual price = price - markup price
         if(auth()->user() !=null && !auth()->user()->is_admin == 1){
-                return $this->price - $this->markup_price??0;
+            return $this->price - $this->markup_price??0;
         }
-                return $this->price;
+
+        //  price based on role
+        if(auth()->user() !=null){
+            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+            if($getAdditionalPreference['is_price_by_role'] == 1 && $this->productVariantByRole){
+                return $this->productVariantByRole->amount;
+            }
+        }
+        
+        return $this->price;
     }
 
-    // price based on role
+    // do not use this. price based on role
     public function getNewPriceAttribute()
     {
 
@@ -152,11 +161,18 @@ class ProductVariant extends Model
                 return $value;
             }
         }
-           if($checkMarkup){
-                return $value + $this->markup_price??0;
-            }
+        if($checkMarkup){
+            return $value + $this->markup_price??0;
+        }
 
-            return $value;
+        //  price based on role
+        if(auth()->user() !=null){
+            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+            if($getAdditionalPreference['is_price_by_role'] == 1 && $this->productVariantByRole){
+                return $this->productVariantByRole->amount;
+            }
+        }
+        return $value;
 
     }
 
