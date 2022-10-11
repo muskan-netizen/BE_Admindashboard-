@@ -19,7 +19,6 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0{color
 .dark.al_body_template_three .top-header .header-dropdown .onhover-dropdown .onhover-show-div li:hover a{color: var(--theme-deafult) !important;}
 @media (max-width: 1430px){
 .al_new_wrapper_design .top-banner-wrapper.text-center .common-banner{border-radius:20px;height:200px; margin-bottom: 30px;}
-.al_desktop_banner {height: 240px;}
 .al_new_ipad_view.ipad-view {padding-right: 15px;}
 .al_custom_head_map_box{max-width: 500px;}
 .al_custom_head .onhover-dropdown span:before, .al_custom_head.top-header .header-dropdown li, .al_custom_head.top-header .header-dropdown li a {font-size: 12px!important;}
