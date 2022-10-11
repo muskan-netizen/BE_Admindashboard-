@@ -345,7 +345,7 @@ $preference = $client_preference_detail;
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
@@ -379,7 +379,7 @@ $preference = $client_preference_detail;
 <script type="text/template" id="mobile_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
@@ -457,10 +457,10 @@ $preference = $client_preference_detail;
                   <a href="/cities/<%=city.slug %>"><img class="w-100" src="<%=city.image.image_fit %>260/260<%=city.image.image_path %>"></a>
                </div>
                <p><%=city.title %></p>
-            </div>            
+            </div>
          </div>
       </div>
-   	<% }); 
+   	<% });
    %>
 </script><!-- cities cities end -->
 <script type="text/template" id="products_template">

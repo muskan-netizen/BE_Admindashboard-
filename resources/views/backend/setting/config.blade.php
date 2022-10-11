@@ -41,7 +41,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
          @if($client_preference_detail->business_type != 'taxi')
 
-            <div class="col-lg-3 col-md-6 mb-3">
+            <div class="col-lg-4 col-md-6 mb-3">
                <div class="row h-100">
                   <div class="col-12">
                      <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -112,7 +112,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
          {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
 
-            <div class="col-lg-3 col-md-6 mb-3">
+            <div class="col-lg-4 col-md-6 mb-3">
                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
                   @csrf
                <!-- On Demand Services section start -->
@@ -600,7 +600,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       </div>
    </div>
    <div class="row">
-      <div class="col-xl-3 mb-3">
+      <div class="col-lg-3 mb-3">
          <!-- Map Configuration start -->
          <form class="h-100" method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             @csrf
@@ -656,7 +656,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          </form><!-- Map Configuration end -->
       </div>
-      <div class="col-xl-3 mb-3">
+      <div class="col-lg-3 mb-3">
          <!-- SMS Configuration start -->
          <form class="h-100" method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             @csrf
@@ -839,7 +839,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          </form><!-- SMS Configuration end -->
       </div>
-      <div class="col-xl-6 mb-3">
+      <div class="col-lg-6 mb-3">
          <!-- Mail Configuration start -->
          <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
             @csrf
@@ -942,7 +942,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          </form><!-- Mail Configuration end -->
       </div>
-      <div class="col-xl-6 mb-3">
+      <div class="col-lg-6 mb-3">
          <!-- Firebase Notification Configuration start -->
          <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
             @csrf
@@ -1182,7 +1182,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       <input type="hidden" name="send_to" id="send_to" value="configure">
       @csrf
       <div class="row">
-         <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
+         <div class="col-xl-3 col-lg-6 mb-3">
             <!-- HubSpot card start -->
             <div class="card-box h-100">
                <div class="row">
@@ -1194,10 +1194,10 @@ $sms_crendential = json_decode($preference->sms_credentials);
                            <button class="btn btn-info btn-block save_btn" name="hubspot_submit" type="submit"> {{ __("Save") }} </button>
                         </label>
                         <label for="" class="mr-3">{{ __("Enable") }}</label>
-                        <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable" class="form-control checkbox_change" data-className="is_hubspot_enable_hidden" data-color="#43bee1" 
+                        <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable" class="form-control checkbox_change" data-className="is_hubspot_enable_hidden" data-color="#43bee1"
                         @if(@$getAdditionalPreference['is_hubspot_enable'] == '1') checked='checked' value="1"  @endif>
                         <input type="hidden"  @if(isset($getAdditionalPreference['is_hubspot_enable']) == 1) value="1" @else value="0" @endif  name="is_hubspot_enable"  id="is_hubspot_enable_hidden"/>
-      
+
                         {{-- @if((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1')) checked='checked' @endif> --}}
                      </div>
                   </div>
@@ -1300,7 +1300,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   @endif
-                  
+
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                         <label for="subscription_tab_taxi" class="mr-2 mb-0">{{ __("Subscription Tab") }}<small class="d-block pr-5">{{ __('Enable subscription tab for taxi/cab.') }}</small></label>
@@ -1399,7 +1399,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </span>
                      </div>
                   </div>
-                 
+
                   <div class="col-md-4">
                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                        <label for="hide_order_address" class="mr-2 mb-0">{{__('Hide customer details')}}<small class="d-block pr-5">{{__('Enable to hide customer details from order.')}}</small></label>
@@ -1514,8 +1514,8 @@ $sms_crendential = json_decode($preference->sms_credentials);
                     <span> <input type="checkbox" data-plugin="switchery" name="is_long_term_service_switch" id="is_long_term_service_switch" class="form-control checkbox_change" data-className="is_long_term_service"  data-color="#43bee1" @if( @getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == '1') checked='checked' @endif>
                      </span>
                      <input type="hidden"  @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1) value="1" @else value="0" @endif  name="is_long_term_service"  id="is_long_term_service"/>
-                    
-                   
+
+
                   </div>
                </div>
                </div>
@@ -1524,7 +1524,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          <!-- Custom Mods end -->
       </div>
    </div>
-   
+
    <div class="row">
       {{--<div class="col-lg-6">
          <div class="page-title-box">
@@ -2266,7 +2266,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       var dispatcherDiv = $('#need_dispacher_ride');
       var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
       var laundry_service = $('#need_laundry_service');
-      
+
       var laundry_service = $('#need_laundry_service');
 
       var is_hubspot_enable = $('#is_hubspot_enable');

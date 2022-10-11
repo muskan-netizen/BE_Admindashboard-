@@ -17,7 +17,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
         <div class="container ">
             <div class="row d-flex align-items-center justify-content-between w-100">
                 <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start"   >
-                    <a class="navbar-brand mr-xl-3 mr-0"  href="{{ route('userHome') }}">
+                    <a class="navbar-brand mr-3"  href="{{ route('userHome') }}">
                     <img class="logo-image" style="height:50px;" alt="" src="{{$urlImg}}"></a>
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
                         @if(isset($preference))

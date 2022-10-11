@@ -64,6 +64,9 @@
 @if(!empty($category))
 @include('frontend.included_files.products_breadcrumb')
 @endif
+@php 
+  $img = '';
+@endphp
 <!-- <div class="toast">
     <div class="toast-header">
       Toast Header
@@ -175,6 +178,7 @@
                                     <div class="exzoom_img_box mb-2">
                                         <ul class='exzoom_img_ul'>
                                         @if(!empty($product->media))
+                                          
                                             @foreach($product->media as $k => $image)
                                                     @php
                                                         if(isset($image->pimage)){
@@ -185,7 +189,7 @@
                                                     @endphp
                                             @endforeach
                                             @if(!is_null($img))
-                                            <img id="main_image" src="{{$img->path['image_fit'].'1000/1000'.$img->path['image_path']}}" />
+                                            <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
                                             @endif
                                         @endif
                                         </ul>
@@ -204,9 +208,9 @@
                                             @if(!is_null($img))
                                             <span class="">
                                                 <img class="blur-up lazyloaded pro_imgs myimage1"
-                                                    data-src="{{$img->path['image_fit'].'1000/1000'.$img->path['image_path']}}"
+                                                    data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}"
                                                     width="60" height="60"
-                                                    src="{{$img->path['image_fit'].'1000/1000'.$img->path['image_path']}}">
+                                                    src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
                                             </span>
                                             @endif
                                         @endforeach
