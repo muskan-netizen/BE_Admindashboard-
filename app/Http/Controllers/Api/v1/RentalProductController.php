@@ -43,7 +43,9 @@ class RentalProductController extends BaseController
           $returnarr['start_time'] =  $start_time;
           $returnarr['end_time'] =  $end_time;
           $returnarr['variant_option_id'] = $request->variant_option_id;
-          
+          if(empty($returnarr['product_variant_data'])){
+            return response()->json(array('error' => false, 'message'=>'Product Not Found.'));
+          }
           return response()->json(array('success' => true, 'variant_data'=>$returnarr ,'message'=>'Available product data.'));
         } catch (Exception $e) {
           return response()->json(array('error' => false, 'message'=>'Something went wrong.'));
