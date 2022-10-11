@@ -26,7 +26,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <div class="col-lg-2 d-flex align-items-center justify-content-center justify-content-md-start">
                         <div class="footer-logo mb-0">
                             <a href="{{ route('userHome') }}">
-                                <img class="logo-image" src="{{$urlImg}}" style="height:50px;">
+                                @isset($urlImg)<img class="logo-image" src="{{$urlImg}}" style="height:50px;">@endisset
                             </a>
                         </div>
                     </div>

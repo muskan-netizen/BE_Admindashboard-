@@ -25,7 +25,7 @@ body{margin: 0;background-color: #fff;font-family: 'MontserratRegular' !importan
 .main-menu{position: relative;left: 0;margin: 0 auto;right: 0;display: inline-block;width: 100%;top: 20px;z-index: 9999;}
 .al_count_tabs_new_design{display: flex;justify-content: center;}
 .nav-tabs.navigation-tab_al.nav-material{background-color: #fff;border-radius: 30px;box-shadow: 0 1px 7px rgb(62 62 76 / 20%);max-width: max-content;border:none;width: 100%;}
-.nav-tabs.navigation-tab_al.nav-material .nav-link{border-radius: 50px;border: none;font-size: 14px;color: #0C0C0C;font-weight: 300;padding: 7px 20px;}
+.nav-tabs.navigation-tab_al.nav-material .nav-link{border-radius: 50px;border: none;font-size: 14px;color: #0C0C0C;font-weight: 300;padding: 7px 10px;}
 .nav-tabs.navigation-tab_al.nav-material .nav-link.active{background-color: var(--theme-deafult);color: #fff;}
 .logo a.navbar-brand{padding: 0;margin-bottom: 5px;}
 .logo a.navbar-brand img{height: 100%;}

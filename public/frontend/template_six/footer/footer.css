@@ -127,8 +127,8 @@ border-color: #fff;
 
 
 @media(max-width:1400px){
-.vendor_mods_section{order: 3; margin: 0 auto;}
-.rightHead{order: 2;}
+/* .vendor_mods_section{order: 3; margin: 0 auto;}
+.rightHead{order: 2;} */
 body .footer-theme .sub-title h4, .footer-title h4{font-size: 15px;}
 .shimmer_effect .headerLoding.loading{width: 95%;}
 }

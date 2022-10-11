@@ -272,7 +272,8 @@ body.al_body_template_one .top-banner-wrapper{background-color: transparent;box-
 .al_body_template_one .order_head h4{padding: 0;font-size: 14px;}
 .al_body_template_one .order_head{text-transform: capitalize;font-weight: 400;font-size: 16px;}
 body.al_body_template_one .status_box label{display: inline-block;}
-body.al_body_template_one table.table.wishlist-table.border{background-color: #232323;}
+body.dark.al_body_template_one table.table.wishlist-table.border{background-color: #232323;}
+
 .dark .sm-horizontal{background-color: transparent;border-color: transparent;}
 .dark .suppliers-box .suppliers-img-outer{background-color: transparent;}
 .dark.al_body_template_one .ratio_asos .top-banner-wrapper .top-banner-content h4{color: #fff;}

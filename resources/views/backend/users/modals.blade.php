@@ -9,7 +9,7 @@
                 @csrf
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6 offset-3 text-center">
+                        <div class="col-md-6 offset-md-3 text-center">
                             <div class="form-group" id="imageInput">
                                 <label>{{ __('Profile image') }}</label>
                                 <input data-default-file="" type="file" data-plugins="dropify" name="image" accept="image/*" class="dropify" />
