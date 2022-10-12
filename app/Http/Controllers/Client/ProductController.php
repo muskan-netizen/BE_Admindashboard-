@@ -1187,7 +1187,7 @@ class ProductController extends BaseController
                 if($roles){
                     foreach($roles as $_role){
                         $data = ProductVariantByRole::where('product_id', $request->product_id)->where('product_variant_id',$request->variant_id)->where('role_id',$_role->id)->first();
-                        $productVariantByRole[$_role->role] = $data->amount;
+                        $productVariantByRole[] = $data;
                     }
                 }
                 if(!$productVariantByRole){

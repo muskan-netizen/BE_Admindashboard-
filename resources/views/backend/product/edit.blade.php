@@ -1183,7 +1183,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         @foreach ($roles as $key => $_role)
                             <div class="col-4 mb-2">
                                 {!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}
-                                <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKey(event)" placeholder="0" name="role_price[{{$_role['id']}}]" value="0.00">
+                                <input type="number" class="form-control" min="0" id="{{lcfirst($_role['id'])}}_price" onkeyup="isNumberKey(event)" placeholder="0" name="role_price[{{$_role['id']}}]" value="0.00">
                                 <input type="hidden" class="form-control" min="0" name="role_id[{{lcfirst($_role['role'])}}]" value="{{$_role['id']}}">
                             </div>
                         @endforeach
@@ -1979,6 +1979,16 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     success: function(result) {
                         console.log(result);
                         $('#rolePriceModal').modal('show');
+                        $(':input[type="number"]').val('');
+                        
+                        let data = result.result;
+                        data.forEach((val) => {
+                            
+                            if(val != undefined){
+                                $('#'+val.role_id+'_price').val(val.amount);
+                            }
+                            
+                        });
                     }
                 });
         });
