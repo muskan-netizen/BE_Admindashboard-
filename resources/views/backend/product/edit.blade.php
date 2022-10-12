@@ -233,7 +233,14 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
                             @include('backend.primary_currency')
-                            {!! Form::text('price', decimal_format($product->variant[0]->actual_price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            @if (isset($getAdditionalPreference['is_price_by_role']))
+                                @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                    {!! Form::text('price', decimal_format($product->variant[0]->getRawOriginal('price')), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                @else
+                                    {!! Form::text('price', decimal_format($product->variant[0]->actual_price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                @endif
+                            @endif
+
                         </div>
 
                         <div class="col-4 mb-2">
@@ -489,7 +496,14 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                             </td>
                                             <td>{{rtrim($vsets, ', ')}}</td>
                                             <td>
-                                                <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
+                                                @if (isset($getAdditionalPreference['is_price_by_role']))
+                                                    @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                                        <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
+                                                    @else
+                                                        <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->actual_price)}}" onkeypress="return isNumberKey(event)">
+                                                    @endif
+                                                @endif
+                                                {{-- <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)"> --}}
                                             </td>
                                             {{-- Role Price Column to Enter price with respect to roles (START) --}}
                                             @if (isset($getAdditionalPreference['is_price_by_role']))
@@ -1980,14 +1994,14 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         console.log(result);
                         $('#rolePriceModal').modal('show');
                         $(':input[type="number"]').val('');
-                        
+
                         let data = result.result;
                         data.forEach((val) => {
-                            
+
                             if(val != undefined){
                                 $('#'+val.role_id+'_price').val(val.amount);
                             }
-                            
+
                         });
                     }
                 });
