@@ -1802,15 +1802,13 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                             <div class="form-group mb-0 switchery-demo">
                                                 @if (isset($roles))
                                                     @foreach ($roles as $key => $_role)
-                                                        <input type="text" name="role" id="role" value="{{ $_role['role'] }}">
-                                                        <input type="checkbox" data-plugin="switchery" id="is_enable_pricing" class="form-control checkbox_change is_enable_pricing_via_role" data-className="is_enable_pricing_hidden" data-color="#43bee1"
+
+                                                        <input type="text" name="role[{{ $_role['id'] }}]" id="role" value="{{ $_role['role'] }}">
+
+                                                        <input type="checkbox"  name="price[{{ $_role['id'] }}]" data-plugin="switchery" id="is_enable_pricing" class="form-control checkbox_change is_enable_pricing_via_role" data-className="is_enable_pricing_hidden" data-color="#43bee1"
                                                         @if(@$_role['is_enable_pricing'] == '1') checked='checked' value="1"  @endif data-role-id={{$_role['id']}}>
-                                                        @if ($key == 0 )
-                                                            <input type="hidden"  @if(isset($_role['is_enable_pricing']) == 1) value="1" @else value="0" @endif name="is_enable_pricing" id="is_enable_pricing_hidden"/>
-                                                        @endif
                                                         <br>
                                                     @endforeach
-                                                    <input type="hidden" name="role_id" id="role_id_for_pricing" value="1">
                                                 @endif
                                             </div>
                                         </div>
