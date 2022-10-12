@@ -233,7 +233,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
                             @include('backend.primary_currency')
-                            {!! Form::text('price', decimal_format($product->variant[0]->getRawOriginal('price')), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            {!! Form::text('price', decimal_format($product->variant[0]->actual_price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
 
                         <div class="col-4 mb-2">
