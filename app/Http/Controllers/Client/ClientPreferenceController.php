@@ -215,7 +215,7 @@ class ClientPreferenceController extends BaseController{
             if($request->has('role_id')){
                 $userRole                    = Role::where('id', $request->get('role_id'))->first();
                 $userRole->is_enable_pricing = $request->is_enable_pricing == 1 ? 1 : 0 ;
-                // $userRole->role              = $request->has('is_enable_pricing') ? $request->role : $userRole->role ;
+                // $userRole->role              = $request->has('role') ? $request->role : $userRole->role ;
                 $userRole->save();
             }
             return redirect()->back()->with('success', 'Client settings updated successfully!');
