@@ -303,6 +303,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div>
 
+                    {{-- Input Filed of price based on roles (START) --}}
                     @if($product->has_variant == 0)
                         @if (isset($getAdditionalPreference['is_price_by_role']))
                             @if($getAdditionalPreference['is_price_by_role'] == '1')
@@ -320,6 +321,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             @endif
                         @endif
                     @endif
+                    {{-- Input Filed of price based on roles (END) --}}
 
                     @if(  in_array( $product->category->categoryDetail->type_id , [10]) )
                         <div class="row col-md-12 mb-2">
@@ -438,11 +440,13 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                         <th>{{ __("Name") }}</th>
                                         <th>{{ __("Variants") }}</th>
                                         <th>{{ __("Price") }}</th>
+                                        {{-- Role Price Column (START) --}}
                                         @if (isset($getAdditionalPreference['is_price_by_role']))
                                             @if($getAdditionalPreference['is_price_by_role'] == '1')
                                                 <th>{{ __("Role's Price") }}</th>
                                             @endif
                                         @endif
+                                        {{-- Role Price Column (END) --}}
                                         <th>{{ __('Compare at price') }}</th>
                                         <th>{{ __('Cost Price') }}</th>
                                         <th class="check_inventory">{{ __("Quantity") }}</th>
@@ -487,6 +491,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                             <td>
                                                 <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
                                             </td>
+                                            {{-- Role Price Column to Enter price with respect to roles (START) --}}
                                             @if (isset($getAdditionalPreference['is_price_by_role']))
                                                 @if($getAdditionalPreference['is_price_by_role'] == '1')
                                                     <td>
@@ -496,6 +501,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                                     </td>
                                                 @endif
                                             @endif
+                                            {{-- Role Price Column to Enter price with respect to roles (END) --}}
                                             <td>
                                                 <input type="text" style="width: 100px;" name="variant_compare_price[]" value="{{decimal_format($varnt->compare_at_price)}}" onkeypress="return isNumberKey(event)">
                                             </td>
@@ -1955,13 +1961,26 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 {{-- Insert Value to Role Price Modal (Start) --}}
     <script>
         $( document ).delegate( ".rolePriceModal", "click", function() {
-            var varient_id = $(this).attr('data-varient-id');
+            var variant_id = $(this).attr('data-varient-id');
             var product_id =  $(this).attr('data-product-id');
 
-            $('#role_variant_id').val(varient_id);
+            $('#role_variant_id').val(variant_id);
             $('#role_product_id').val(product_id);
 
-            $('#rolePriceModal').modal('show');
+            // Calling ajax to show the price based on roles (if its present in product_variant_by_roles table)
+            $.ajax({
+                    url: "{{ route('product.getRolePrice') }}",
+                    type: "POST",
+                    data: {
+                        variant_id: variant_id,
+                        product_id: product_id,
+                        _token: '{{csrf_token()}}'
+                    },
+                    success: function(result) {
+                        console.log(result);
+                        $('#rolePriceModal').modal('show');
+                    }
+                });
         });
     </script>
 {{-- Insert Value to Role Price Modal (End) --}}

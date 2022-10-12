@@ -1174,4 +1174,43 @@ class ProductController extends BaseController
     }
     // Save Product Variant By Roles with variant_id and Amount (END)
 
+    // Get the Amount based on product_id and product_variant_id (START)
+    public function getRolePrice(Request $request)
+    {
+        try{
+            if($request->has('product_id') && $request->has('variant_id')){
+                $roles                = [];
+                $productVariantByRole = [];
+                if(checkColumnExists('roles','is_enable_pricing')){
+                    $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
+                }
+                if($roles){
+                    foreach($roles as $_role){
+                        $data = ProductVariantByRole::where('product_id', $request->product_id)->where('product_variant_id',$request->variant_id)->where('role_id',$_role->id)->first();
+                        $productVariantByRole[$_role->role] = $data->amount;
+                    }
+                }
+                if(!$productVariantByRole){
+                    return response()->json([
+                        'status'  => 'error',
+                        'result'   => false,
+                        'message' => __('Products and its variants not found')
+                    ]);
+                }
+                return response()->json([
+                    'status'  => 'success',
+                    'result'  => $productVariantByRole,
+                    'message' => __('Successfully taken the amount!')
+                ]);
+            }
+            return response()->json([
+                'status'  => 'error',
+                'result'  => false,
+                'message' => __('Products and its variants not found')
+            ]);
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
+    }
+    // Get the Amount based on product_id and product_variant_id (END)
 }
