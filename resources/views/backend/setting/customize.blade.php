@@ -43,7 +43,7 @@
 
 <!-- New Customize Page -->
 @php
-$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency']);
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role']);
 @endphp
 
    <!--Localization start -->
@@ -1473,16 +1473,16 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
             </form>
         </div>
         <!-- Start Google analytics -->
-  
+
         @if(!$preference->client_preferences_additional->isEmpty())
             @foreach($preference->client_preferences_additional as $addiPreference)
                 @if($addiPreference->key_name == 'gtag_id')
                     @php $gtag_id = $addiPreference->key_value; @endphp
-                @endif   
+                @endif
                 @if($addiPreference->key_name == 'fpixel_id')
                     @php $fpixel_id = $addiPreference->key_value; @endphp
-                @endif 
-            @endforeach 
+                @endif
+            @endforeach
         @endif
         <div class="col-lg-3 col-lg-3 mb-3">
             <form method="POST" class="h-100" action="{{route('additional.update')}}">
@@ -1495,7 +1495,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                     </div>
                     <div class="col-xl-12 my-2 p-0" id="addCur-160">
                         <label class="primaryCurText">{{ __('GA Measurment Id') }}</label>
-                            <input class="form-control" type="text" id="gtag_id" name="gtag_id" value="{{ old('gtag_id',  $getAdditionalPreference['gtag_id'] ?? "")}}"> 
+                            <input class="form-control" type="text" id="gtag_id" name="gtag_id" value="{{ old('gtag_id',  $getAdditionalPreference['gtag_id'] ?? "")}}">
                     </div>
                 </div>
             </form>
@@ -1744,18 +1744,18 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                         </div>
                         <div class="col-xl-12 my-2 p-0" id="">
                                         <!-- Token card start -->
-                
+
                     <div class="row">
                        <div class="col-12">
                           <div class="form-group mb-0 switchery-demo">
                              <label for="" class="mr-3">{{ __("Enable") }}</label>
-                             <input type="checkbox" data-plugin="switchery" id="is_token_currency_enable" class="form-control checkbox_change" data-className="is_token_currency_enable_hidden" data-color="#43bee1" 
+                             <input type="checkbox" data-plugin="switchery" id="is_token_currency_enable" class="form-control checkbox_change" data-className="is_token_currency_enable_hidden" data-color="#43bee1"
                              @if(@$getAdditionalPreference['is_token_currency_enable'] == '1') checked='checked' value="1"  @endif>
                              <input type="hidden"  @if(isset($getAdditionalPreference['is_token_currency_enable']) == 1) value="1" @else value="0" @endif name="is_token_currency_enable" id="is_token_currency_enable_hidden"/>
                           </div>
                        </div>
                     </div>
-    
+
                     <div class="row token_row" style="{{((isset($getAdditionalPreference['is_token_currency_enable']) && $getAdditionalPreference['is_token_currency_enable'] == 1)) ? '' : 'display:none;'}}">
                        <div class="col-12">
                           <div class="form-group row mt-2 d-flex align-items-center">
@@ -1772,13 +1772,60 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                        </div>
                     </div>
                 <!-- Token card end -->
-    
-                
-    
+
+
+
                         </div>
                     </div>
                 </form>
             </div>
+
+            {{-- Roles Enable setting for price, that is, is_enable_pricing (START) --}}
+            <div class="col-lg-4 col-xl-3 mb-3">
+                <div class="col-12">
+                    <div class="page-title-box">
+                    <h4 class="page-title text-uppercase">{{ __("Role") }}</h4>
+                    </div>
+                </div>
+                <form method="POST" class="h-100" action="{{route('customize.updateIsPriceEnable')}}">
+                    @csrf
+                    <div class="card-box pb-1 h-100">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4 class="header-title ">{{ __('Enable price based on Roles') }}</h4>
+                            <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                        </div>
+                        <div class="col-xl-12 my-2 p-0" id="">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group mb-0 switchery-demo">
+                                        @if (isset($getAdditionalPreference['is_price_by_role']))
+                                            @if($getAdditionalPreference['is_price_by_role'] == '1')
+
+                                                @if (isset($roles))
+                                                    @foreach ($roles as $key => $_role)
+                                                        <label for="" class="mr-3">{{ $_role['role'] }}</label>
+                                                        <input type="checkbox" data-plugin="switchery" id="is_enable_pricing" class="form-control checkbox_change is_enable_pricing_via_role" data-className="is_enable_pricing_hidden" data-color="#43bee1"
+                                                        @if(@$_role['is_enable_pricing'] == '1') checked='checked' value="1"  @endif data-role-id={{$_role['id']}}>
+                                                        @if ($key == 0 )
+                                                            <input type="hidden"  @if(isset($_role['is_enable_pricing']) == 1) value="1" @else value="0" @endif name="is_enable_pricing" id="is_enable_pricing_hidden"/>
+                                                        @endif
+                                                        <br>
+                                                    @endforeach
+                                                    <input type="hidden" name="role_id" id="role_id_for_pricing" value="1">
+                                                @endif
+
+
+                                            @endif
+                                        @endif
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {{-- Roles Enable setting for price, that is, is_enable_pricing (END) --}}
      </div>
 
 <div id="add_or_edit_social_media_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
@@ -3110,6 +3157,15 @@ $(document).ready(function(){
     });
 
 </script>
+
+{{-- Insert role_id (Start) --}}
+    <script>
+        $(".is_enable_pricing_via_role").on("change paste keyup", function() {
+            var role_id = $(this).attr('data-role-id');
+            $('#role_id_for_pricing').val(role_id);
+        });
+    </script>
+{{-- Insert role_id (End) --}}
 
 @if($preference->is_static_dropoff == '1')
     @include('backend.setting.customizeDatatablescript')
