@@ -207,6 +207,7 @@ class ClientPreferenceController extends BaseController{
 
     }
 
+    // Have Issue need to fix in case of multipal role_id's
    // enable/disable price key in Role table (START)
     public function updateIsPriceEnable(Request $request)
     {
