@@ -1781,26 +1781,25 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
             </div>
 
             {{-- Roles Enable setting for price, that is, is_enable_pricing (START) --}}
-            <div class="col-lg-4 col-xl-3 mb-3">
-                <div class="col-12">
-                    <div class="page-title-box">
-                    <h4 class="page-title text-uppercase">{{ __("Role") }}</h4>
-                    </div>
-                </div>
-                <form method="POST" class="h-100" action="{{route('customize.updateIsPriceEnable')}}">
-                    @csrf
-                    <div class="card-box pb-1 h-100">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <h4 class="header-title ">{{ __('Enable price based on Roles') }}</h4>
-                            <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+            @if (isset($getAdditionalPreference['is_price_by_role']))
+                @if($getAdditionalPreference['is_price_by_role'] == '1')
+                    <div class="col-lg-4 col-xl-3 mb-3">
+                        <div class="col-12">
+                            <div class="page-title-box">
+                            <h4 class="page-title text-uppercase">{{ __("Role") }}</h4>
+                            </div>
                         </div>
-                        <div class="col-xl-12 my-2 p-0" id="">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="form-group mb-0 switchery-demo">
-                                        @if (isset($getAdditionalPreference['is_price_by_role']))
-                                            @if($getAdditionalPreference['is_price_by_role'] == '1')
-
+                        <form method="POST" class="h-100" action="{{route('customize.updateIsPriceEnable')}}">
+                            @csrf
+                            <div class="card-box pb-1 h-100">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <h4 class="header-title ">{{ __('Enable price based on Roles') }}</h4>
+                                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                                </div>
+                                <div class="col-xl-12 my-2 p-0" id="">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group mb-0 switchery-demo">
                                                 @if (isset($roles))
                                                     @foreach ($roles as $key => $_role)
                                                         <label for="" class="mr-3">{{ $_role['role'] }}</label>
@@ -1813,18 +1812,15 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                                     @endforeach
                                                     <input type="hidden" name="role_id" id="role_id_for_pricing" value="1">
                                                 @endif
-
-
-                                            @endif
-                                        @endif
-
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
-                </form>
-            </div>
+                @endif
+            @endif
             {{-- Roles Enable setting for price, that is, is_enable_pricing (END) --}}
      </div>
 
