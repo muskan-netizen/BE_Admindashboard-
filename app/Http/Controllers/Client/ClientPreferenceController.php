@@ -211,14 +211,30 @@ class ClientPreferenceController extends BaseController{
    // enable/disable price key in Role table (START)
     public function updateIsPriceEnable(Request $request)
     {
+        $rules = array(
+            'role' => 'required'
+        );
+
+        $validation  = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return redirect()->back()->with('error', $validation->errors()->first());
+        }
+
         try {
             if($request->has('role_id')){
-                $userRole                    = Role::where('id', $request->get('role_id'))->first();
-                $userRole->is_enable_pricing = $request->is_enable_pricing == 1 ? 1 : 0 ;
-                // $userRole->role              = $request->has('role') ? $request->role : $userRole->role ;
-                $userRole->save();
+                foreach($request->role_id as $key => $_role){
+                    $userRole                    = Role::where('id',$_role)->first();
+                    if(!$userRole){
+                        $userRole                = new Role();
+                    }
+                    $userRole->is_enable_pricing = ($request->has('is_enable_pricing') && isset($request->is_enable_pricing[$_role]) ) ? ( (($request->is_enable_pricing[$_role] == 1) || ($request->is_enable_pricing[$_role] == 'on')) ? 1 : 0) : 0;
+                    $userRole->role              = $request->has('role') ? $request->role[$_role] : $userRole->role;
+                    $userRole->save();
+                }
+                return redirect()->back()->with('success', 'Client settings updated successfully!');
             }
-            return redirect()->back()->with('success', 'Client settings updated successfully!');
+            return redirect()->back()->with('error', 'Something went wrong!!');
+
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Something went wrong!!');
         }

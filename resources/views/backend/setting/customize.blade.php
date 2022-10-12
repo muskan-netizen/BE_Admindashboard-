@@ -1804,8 +1804,9 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                                     @foreach ($roles as $key => $_role)
 
                                                         <input type="text" name="role[{{ $_role['id'] }}]" id="role{{ $_role['id'] }}" value="{{ $_role['role'] }}">
+                                                        <input type="hidden" name="role_id[{{ $_role['id'] }}]" value="{{ $_role['id'] }}">
 
-                                                        <input type="checkbox"  name="price[{{ $_role['id'] }}]" data-plugin="switchery" id="is_enable_pricing" class="form-control checkbox_change is_enable_pricing_via_role" data-className="is_enable_pricing_hidden" data-color="#43bee1"
+                                                        <input type="checkbox"  name="is_enable_pricing[{{ $_role['id'] }}]" data-plugin="switchery" id="is_enable_pricing" class="form-control checkbox_change" data-className="is_enable_pricing_hidden" data-color="#43bee1"
                                                         @if(@$_role['is_enable_pricing'] == '1') checked='checked' value="1"  @endif data-role-id={{$_role['id']}}>
                                                         <br>
                                                     @endforeach
@@ -3153,12 +3154,12 @@ $(document).ready(function(){
 </script>
 
 {{-- Insert role_id (Start) --}}
-    <script>
+    {{-- <script>
         $(".is_enable_pricing_via_role").on("change paste keyup", function() {
             var role_id = $(this).attr('data-role-id');
             $('#role_id_for_pricing').val(role_id);
         });
-    </script>
+    </script> --}}
 {{-- Insert role_id (End) --}}
 
 @if($preference->is_static_dropoff == '1')
