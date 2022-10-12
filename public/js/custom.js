@@ -1,4 +1,5 @@
 jQuery(document).ready(function () {
+    var slotValidater = 2;
     var footer_height = jQuery('.footer-light').height();
     var header_height = jQuery('.site-header').height();
     var window_height = jQuery(window).height();
@@ -9,7 +10,6 @@ jQuery(document).ready(function () {
     jQuery("#content-wrap").css('padding-bottom', footer_height);
 
     jQuery("h2.category-head, .scrollspy-menu, .cart-main-box").css('top', header_height);
-
 
     jQuery(window).scroll(function () {
         var scroll = jQuery(window).scrollTop();
@@ -25,8 +25,6 @@ jQuery(document).ready(function () {
         jQuery("html, body").animate({ scrollTop:  jQuery('#'+jQuery(this).data('slug')).offset().top - (header_height+30) });
     })
 });
-
-
 
 $(".mobile-account .fa").click(function(){
     $(".onhover-show-div").toggleClass("open");
@@ -2189,7 +2187,7 @@ $(document).ready(function () {
                     var client_preference_detail = response.client_preference_detail;
 
                     if (cart_details!= undefined) {
-                        if (cart_details.products.length > 0) {
+                         if (cart_details.products.length > 0) {
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
 
@@ -3442,7 +3440,15 @@ $(document).ready(function () {
 
     $(document).on("click", "#next-button-ondemand-3", function () {
         $('.alert-danger').html('');
-       //window.location.href = showCart;
+       
+       var valid =  checkSlotTimeSelecedValidation();
+     
+       if(slotValidater == 1  ){ // some date or time not selected
+         sweetAlert.error('Oops...','Schedule date time is required');
+         return false;
+       }
+       
+       
 
         var task_type = 'schedule';
         var schedule_date = $("input[name='booking_date']:checked").val();
@@ -3462,7 +3468,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: update_cart_schedule,
-            data: { task_type: task_type, schedule_dt: schedule_dt ,specific_instructions:specific_instructions,productid:productid,schedule_time:schedule_time},
+            data: { task_type: task_type ,specific_instructions:specific_instructions,productid:productid}, //, schedule_dt: schedule_dt,schedule_time:schedule_time
             success: function (response) {
                 if (response.status == "Success") {
                     window.location.href = showCart;
@@ -3799,7 +3805,7 @@ $(document).ready(function () {
         });
         return res;
     }
-    
+
 
     $(document).on('click', '.selected-time', function () {
 
@@ -3808,10 +3814,10 @@ $(document).ready(function () {
         let dispatch_agent_id = '';
         let agent_ids = $(this).data("agent_ids");
         let show_agent = $(this).data("show_agent");
-       
+
         //&& (show_agent != undefined && show_agent !='' )
         if((agent_ids != undefined && agent_ids !='' )  ){
-          
+
             dispatch_agent_id = agent_ids[0] ;
         }
         if((show_agent != undefined && show_agent ==1  ) && (agent_ids != undefined && agent_ids !='' )  ){
@@ -3826,14 +3832,14 @@ $(document).ready(function () {
         //var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date" + cart_product_id + "']:checked").val();
 
         //var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date']:checked").val();
-        var schedule_date = $("input[name='booking_date']:checked").val();
+        var schedule_date = $(`input[name='booking_date_${cart_product_id}']:checked`).val();// $("input[name='booking_date']:checked").val();
        // var schedule_time = $(this).data("value");
         //var specific_instructions = $("#specific_instructions").val();
        // alert(specific_instructions);
 
         //var schedule_dt = schedule_date + ' ' + schedule_time;
         var schedule_dt = schedule_date;
-        if ((task_type == 'schedule') && (schedule_dt == '')) {
+        if ((task_type == 'schedule') && (schedule_dt == '' || schedule_dt== undefined) ) {
             success_error_alert('error', 'Schedule date time is required', ".cart_response");
             return false;
         }

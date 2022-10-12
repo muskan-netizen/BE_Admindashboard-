@@ -26,7 +26,7 @@ $applocale = session()->get('applocale');
                     @if($client_preference_detail->show_contact_us == 1)
                     <div class="col-12 d-block d-md-none">
                         <div class="footer-contant">
-                            <div class="store-btn mb-3 d-flex align-items-center justify-content-start">
+                            <div class="store-btn mb-3 d-flex align-items-center justify-content-center">
                                 @if($client_preference_detail->show_qr_on_footer)
 
                                 <ul class="row">

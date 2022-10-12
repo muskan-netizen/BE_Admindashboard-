@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, Permissions, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country, OrderReturnRequest, Order, VendorOrderStatus, LuxuryOption,OrderVendor, OrderStatusOption};
+use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, VendorSocialMediaUrls, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, Permissions, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country, OrderReturnRequest, Order, VendorOrderStatus, LuxuryOption,OrderVendor, OrderStatusOption};
 use Log;
 class VendorController extends BaseController{
     use ApiResponser;
@@ -2117,6 +2117,41 @@ class VendorController extends BaseController{
             if(!$vendor){
                 return response()->json(['error' => 'No record found.'], 200);
             }
+
+            $socialMediaLinks = [];
+            $vendorSocialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->select('icon', 'url')->get();
+            if(!empty($vendorSocialMediaUrls)){
+                foreach($vendorSocialMediaUrls as $key => $url){
+                    if($url->icon == 'facebook'){
+                        $vendorSocialMediaUrls[$key]->icon_url = asset('assets/images/social-media/facebook.png');
+                    }else if($url->icon == 'github'){
+                        $vendorSocialMediaUrls[$key]->icon_url = asset('assets/images/social-media/github.png');
+                    }else if($url->icon == 'reddit'){
+                        $vendorSocialMediaUrls[$key]->icon_url = asset('assets/images/social-media/reddit.png');
+                    }else if($url->icon == 'whatsapp'){
+                        $vendorSocialMediaUrls[$key]->icon_url = asset('assets/images/social-media/whatsapp-img.png');
+                    }else if($url->icon == 'instagram'){
+                        $vendorSocialMediaUrls[$key]->icon_url = asset('assets/images/social-media/instagram.png');
+                    }else if($url->icon == 'tumblr'){
+                        $vendorSocialMediaUrls[$key]->icon_url = asset('assets/images/social-media/tumblr.png');
+                    }else if($url->icon == 'twitch'){
+                        $vendorSocialMediaUrls[$key]->icon_url = asset('assets/images/social-media/twitch.png');
+                    }else if($url->icon == 'twitter'){
+                        $vendorSocialMediaUrls[$key]->icon_url = asset('assets/images/social-media/twitter.png');
+                    }else if($url->icon == 'pinterest'){
+                        $vendorSocialMediaUrls[$key]->icon_url = asset('assets/images/social-media/pinterest.png');
+                    }else if($url->icon == 'youtube'){
+                        $vendorSocialMediaUrls[$key]->icon_url = asset('assets/images/social-media/youtube.png');
+                    }else if($url->icon == 'snapchat'){
+                        $vendorSocialMediaUrls[$key]->icon_url = asset('assets/images/social-media/snapchat.png');
+                    }else if($url->icon == 'linkedin'){
+                        $vendorSocialMediaUrls[$key]->icon_url = asset('assets/images/social-media/linkedin.png');
+                    }
+                }
+                $vendor->social_media_links = $vendorSocialMediaUrls;
+            }else{
+                $vendor->social_media_links = $socialMediaLinks;
+            }
             
             $vendor->is_vendor_closed = 0;
             if($vendor->show_slot == 0){
@@ -2159,7 +2194,10 @@ class VendorController extends BaseController{
 
             $code = $request->header('code');
             $client = Client::where('code',$code)->first();
-            $vendor->share_link = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/vendor/".$vendor->slug;
+
+            $clientDomain = !empty($client->custom_domain)? $client->custom_domain : $client->sub_domain.env('SUBMAINDOMAIN');
+
+            $vendor->share_link = $this->siteURL()."/vendor/".$vendor->slug;
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     
             $product_category_ids =  Product::byProductCategoryServiceType($type)->where('vendor_id', $vid)->pluck('category_id');
@@ -2284,6 +2322,13 @@ class VendorController extends BaseController{
             return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
         }
     }
+
+    function siteURL() {
+        $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || 
+          $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+        $domainName = $_SERVER['HTTP_HOST'];
+        return $protocol.$domainName;
+      }
 
 
      # optimize product by vendor filters
