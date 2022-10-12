@@ -47,7 +47,7 @@
                                         <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 32x32</label>
                                     </div>
                                 </div>
-                                @if($themeId==4 || $themeId==6)
+                                @if($themeId==4 || $themeId==5)
                                 <div class="col-md-4 col-6 mb-3">
                                     <h4 class="header-title">{{ __("Sign In/Up Image") }}</h4>
                                     <div class="mb-0 text-left alDropFile">
@@ -104,15 +104,13 @@
                                     {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
                                     <div class="row">
                                         <form id="themeIcon-form" method="post" enctype="multipart/form-data">
-
                                             @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                                                 @php
                                                     $VendorTypesName   = config('constants.VendorTypesIcon.'.$vendor_typ_key);
-
                                                     $clientVendorTypes = $vendor_typ_key.'_check';
                                                 @endphp
                                                 @if($client_preference_detail->$clientVendorTypes == 1)
-                                                    <div class="col-md-3 mb-3">
+                                                    <div class="col-md-3 mb-lg-3 col-4">
                                                         <div class="text-left">
                                                             <label>{{getDynamicTypeName($vendor_typ_value)}}{{ __(" Icon") }}</label>
                                                             <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$VendorTypesName ? $client_preferences->$VendorTypesName['proxy_url'].'600/400'.$client_preferences->$VendorTypesName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{ $VendorTypesName }}" class="dropify ss_form_submit" id="image" />
@@ -132,11 +130,11 @@
 
 
                         <div class="card">
-                            <div class="card-body al_custom_control">
+                            <div class="card-body al_custom_control p-2">
                                 <h4 class="header-title">{{ __("Home Page Style") }}</h4>
                                 <div class="row mt-3">
                                     @foreach($homepage_style_options as $homepage_style)
-                                    <div class="col-xl-4 col-md-4 mb-3 alThemeDemoSec">
+                                    <div class="col-xl-4 col-lg-6 col-md-6 mb-3 alThemeDemoSec">
                                         <div class="card mb-0">
                                             <div class="card-body p-0">
                                                 <div class="col-sm-12 custom-control custom-radio radio_new p-0">
@@ -496,9 +494,6 @@
                             {{$home_page_label->title}}
                             @endif
                         </a>
-
-
-
                     </li>
                     @endforeach
                 </ol>
@@ -522,9 +517,6 @@
                 </button>
             </div>
             <div class="modal-body py-0 px-2" id="edit_dynamic_html_desc">
-
-
-
             </div>
         </div>
     </div>
