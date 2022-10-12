@@ -326,6 +326,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('product/variantRows', 'Client\ProductController@makeVariantRows')->name('product.makeRows');
         Route::post('product/getVariant', 'Client\ProductController@getProductVariant')->name('product.getVariant');
         Route::post('product/updateRolePrice', 'Client\ProductController@updateRolePrice')->name('product.updateRolePrice');
+        Route::post('product/getRolePrice', 'Client\ProductController@getRolePrice')->name('product.getRolePrice');
         Route::post('product/variantImage/update', 'Client\ProductController@updateVariantImage')->name('product.variant.update');
         Route::get('product/image/delete/{pid}/{id}', 'Client\ProductController@deleteImage')->name('product.deleteImg');
         Route::resource('loyalty', 'Client\LoyaltyController');
