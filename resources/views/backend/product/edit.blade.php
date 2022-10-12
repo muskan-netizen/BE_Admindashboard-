@@ -498,9 +498,9 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                             <td>
                                                 @if (isset($getAdditionalPreference['is_price_by_role']))
                                                     @if($getAdditionalPreference['is_price_by_role'] == '1')
-                                                        <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
+                                                        <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->getRawOriginal('price') )}}" onkeypress="return isNumberKey(event)">
                                                     @else
-                                                        <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->actual_price)}}" onkeypress="return isNumberKey(event)">
+                                                        <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
                                                     @endif
                                                 @endif
                                                 {{-- <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)"> --}}
