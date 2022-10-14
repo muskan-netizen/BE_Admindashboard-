@@ -134,7 +134,7 @@ $applocale = session()->get('applocale');
                   <!-- logo start -->
                   <div class="logo">
                      <a class="navbar-brand position-relative" href="{{ route('userHome') }}">
-                     <img class="alspalogo lightLogo" style="height:50px;" alt="" src="{{$urlImg}}"></a>
+                     <img class="logo-image alspalogo lightLogo" style="height:50px;" alt="" src="{{$urlImg}}"></a>
                      </a>
                   </div>
                   <!-- logo end -->

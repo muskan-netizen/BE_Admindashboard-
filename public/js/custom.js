@@ -11,7 +11,6 @@ jQuery(document).ready(function () {
 
     jQuery("h2.category-head, .scrollspy-menu, .cart-main-box").css('top', header_height);
 
-
     jQuery(window).scroll(function () {
         var scroll = jQuery(window).scrollTop();
         if (scroll <= 100) {
@@ -26,8 +25,6 @@ jQuery(document).ready(function () {
         jQuery("html, body").animate({ scrollTop:  jQuery('#'+jQuery(this).data('slug')).offset().top - (header_height+30) });
     })
 });
-
-
 
 $(".mobile-account .fa").click(function(){
     $(".onhover-show-div").toggleClass("open");
@@ -2190,7 +2187,7 @@ $(document).ready(function () {
                     var client_preference_detail = response.client_preference_detail;
 
                     if (cart_details!= undefined) {
-                        if (cart_details.products.length > 0) {
+                         if (cart_details.products.length > 0) {
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
 
@@ -3808,7 +3805,7 @@ $(document).ready(function () {
         });
         return res;
     }
-    
+
 
     $(document).on('click', '.selected-time', function () {
 
@@ -3817,10 +3814,10 @@ $(document).ready(function () {
         let dispatch_agent_id = '';
         let agent_ids = $(this).data("agent_ids");
         let show_agent = $(this).data("show_agent");
-       
+
         //&& (show_agent != undefined && show_agent !='' )
         if((agent_ids != undefined && agent_ids !='' )  ){
-          
+
             dispatch_agent_id = agent_ids[0] ;
         }
         if((show_agent != undefined && show_agent ==1  ) && (agent_ids != undefined && agent_ids !='' )  ){
