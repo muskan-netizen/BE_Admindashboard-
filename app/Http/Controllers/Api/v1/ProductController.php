@@ -353,14 +353,15 @@ class ProductController extends BaseController
             if(empty($pv_ids)){
                 return $this->errorResponse('Invalid product sets or product has been removed.', 404, ['variant_empty'=>true]);
             }
+         
 
             $variantData = ProductVariant::join('products as pro', 'product_variants.product_id', 'pro.id')
-                        ->with(['wishlist', 'product.media.image', 'media.pimage.image', 'translation' => function($q) use($langId){
+                        ->with(['wishlist', 'product.media.image', 'media.pimage.image','set', 'translation' => function($q) use($langId){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $langId);
                         },'wishlist' =>  function($q) use($userid){
                             $q->where('user_id', $userid);
-                        }])->select('product_variants.id','product_variants.sku', 'product_variants.quantity', 'product_variants.price',  'product_variants.barcode', 'product_variants.product_id', 'pro.sku', 'pro.url_slug', 'pro.weight', 'pro.weight_unit', 'pro.vendor_id', 'pro.is_new', 'pro.is_featured', 'pro.is_physical', 'pro.has_inventory', 'pro.has_variant', 'pro.sell_when_out_of_stock', 'pro.requires_shipping', 'pro.Requires_last_mile', 'pro.averageRating')->where('product_variants.id', $pv_ids[0])->first();
+                        }])->select('product_variants.id','product_variants.sku', 'product_variants.quantity', 'product_variants.price','product_variants.incremental_price',  'product_variants.barcode', 'product_variants.product_id', 'pro.sku', 'pro.url_slug', 'pro.weight', 'pro.weight_unit', 'pro.vendor_id', 'pro.is_new', 'pro.is_featured', 'pro.is_physical', 'pro.has_inventory', 'pro.has_variant', 'pro.sell_when_out_of_stock', 'pro.requires_shipping', 'pro.Requires_last_mile', 'pro.averageRating')->where('product_variants.id', $pv_ids[0])->first();
             if($variantData->sell_when_out_of_stock == 1){
                 $variantData->stock_check = '1';
             }elseif($variantData->quantity > 0){
@@ -368,6 +369,8 @@ class ProductController extends BaseController
             }else{
                 $variantData->stock_check = 0;
             }
+
+            
             $data_image = array();
             $variantData->inwishlist = $variantData->wishlist;
             $variantData->is_wishlist = $product->category->categoryDetail->show_wishlist;

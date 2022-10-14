@@ -65,9 +65,11 @@ class CartController extends BaseController
                 $cart = Cart::where('user_id', $user->id);
             }
             $cart = $cart->first();
+       
             if ($cart) {
 
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
+               
 
                 $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
                                 $q->where('age_restriction',1);
@@ -164,6 +166,15 @@ class CartController extends BaseController
             if ($request->has('addon_options')) {
                 $addon_options = $request->addon_options;
             }
+            if($request->has('start_date_time')){
+                $start_date_time= $request->start_date_time;
+            }
+            if($request->has('end_date_time')){
+                $end_date_time= $request->end_date_time;
+            }
+            if($request->has('total_booking_time')){
+                $total_booking_time= $request->total_booking_time;
+            }
             foreach ($addon_options as $key => $opt) {
                 $addonSets[$addon_ids[$key]][] = $opt;
             }
@@ -246,6 +257,9 @@ class CartController extends BaseController
                     'variant_id'  => $request->product_variant_id,
                     'currency_id' => $client_currency->currency_id,
                     'luxury_option_id' => $luxury_option ? $luxury_option->id : 1,
+                    'start_date_time'=>$start_date_time,
+                    'end_date_time'=>$end_date_time,
+                    'total_booking_time'=>$total_booking_time,
                 ];
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)

@@ -228,15 +228,15 @@
 
             var start_current_time = $($checkinInput).val();
             var end_current_time = $($checkoutInput).val();
-           
-            $checkoutInput.val(moment(end_current_time).add(incremental_hrs,'minutes').format("M/DD/YY hh:mm A"));
+          
+            $checkoutInput.val(moment(end_current_time).add(default_step,'minutes').format("M/DD/YY hh:mm A"));
             var checkOutPicker = $checkoutInput.data('daterangepicker');
            
-            checkOutPicker.setEndDate(moment(end_current_time).add(incremental_hrs,'minutes').format("M/DD/YY hh:mm A"));
+            checkOutPicker.setEndDate(moment(end_current_time).add(default_step,'minutes').format("M/DD/YY hh:mm A"));
 
               var checkInPicker = $checkinInput.data('daterangepicker');
               
-              checkInPicker.setEndDate(moment(end_current_time).add(incremental_hrs,'minutes').format("M/DD/YY hh:mm A"));
+              checkInPicker.setEndDate(moment(end_current_time).add(default_step,'minutes').format("M/DD/YY hh:mm A"));
 
               var formData = {
                 variant_option_id:$('.changeVariant:checked').val(),
