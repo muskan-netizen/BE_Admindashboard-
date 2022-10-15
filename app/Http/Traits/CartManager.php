@@ -212,7 +212,7 @@ trait cartManager{
                     $fixed_fee_tax_rate=$taxRates[$vendorData->vendor->fixed_fee_tax_id]['tax_rate'];
             }
 
-
+            // \Log::info($vendorData);
             $service_charges_tax_rate = 0;
             if($vendorData->vendor->service_charges_tax_id!=null){
                     $service_charges_tax_rate=$taxRates[$vendorData->vendor->service_charges_tax_id]['tax_rate'];
@@ -229,18 +229,35 @@ trait cartManager{
             $total_markup_charges =  $taxChargeable['total_markup_charges'];
 
 
-            if($vendorData->vendor->delivery_charges_tax)
-            $taxCharges['deliver_fee_charges'] =  $deliveryCharges * $delivery_charges_tax_rate/100;
-            
-            if($vendorData->vendor->service_charges_tax)
-            $taxCharges['total_service_fee'] =  $vendor_service_fee_percentage_amount * $service_charges_tax_rate/100;
+            if(!$this->preferences->is_tax_price_inclusive)
+            {
+                if($vendorData->vendor->delivery_charges_tax)
+                $taxCharges['deliver_fee_charges'] =  $deliveryCharges * $delivery_charges_tax_rate/100;
+                
+                if($vendorData->vendor->service_charges_tax)
+                $taxCharges['total_service_fee'] =  $vendor_service_fee_percentage_amount * $service_charges_tax_rate/100;
 
-            if($vendorData->vendor->fixed_fee_tax)
-            $taxCharges['total_fixed_fee_tax'] =  $total_fixed_fee_amount * $fixed_fee_tax_rate/100;
+                if($vendorData->vendor->fixed_fee_tax)
+                $taxCharges['total_fixed_fee_tax'] =  $total_fixed_fee_amount * $fixed_fee_tax_rate/100;
 
-            if($vendorData->vendor->add_markup_price)
-            $taxCharges['total_markup_fee_tax'] =  $total_markup_charges * $markup_price_tax_rate/100;
-            //\Log::info($taxCharges);
+                if($vendorData->vendor->add_markup_price)
+                $taxCharges['total_markup_fee_tax'] =  $total_markup_charges * $markup_price_tax_rate/100;
+            }else{
+
+                if($vendorData->vendor->delivery_charges_tax)
+                $taxCharges['deliver_fee_charges'] =  ($deliveryCharges * $delivery_charges_tax_rate)/(100 + $delivery_charges_tax_rate);
+                
+                if($vendorData->vendor->service_charges_tax)
+                $taxCharges['total_service_fee'] =  ($vendor_service_fee_percentage_amount * $service_charges_tax_rate)/(100 + $service_charges_tax_rate);
+
+                if($vendorData->vendor->fixed_fee_tax)
+                $taxCharges['total_fixed_fee_tax'] =  ($total_fixed_fee_amount * $fixed_fee_tax_rate)/(100 + $fixed_fee_tax_rate);
+
+                if($vendorData->vendor->add_markup_price)
+                $taxCharges['total_markup_fee_tax'] =  ($total_markup_charges * $markup_price_tax_rate)/(100 + $markup_price_tax_rate);
+
+            }
+
             return (object)$taxCharges;    
             
         }
@@ -607,11 +624,16 @@ trait cartManager{
                     /* Getting taxes info */
                   
                     $taxData = array();
-                    if (!empty($prod->product->taxCategory) && ($preferences->is_tax_price_inclusive==0) && count($prod->product->taxCategory->taxRate) > 0) {
+                    if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                             $rate = $tax_value->tax_rate;
                             $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                            $product_tax = $quantity_price * $rate / 100; 
+                            if(!$preferences->is_tax_price_inclusive){
+                                $product_tax = $quantity_price * $rate / 100; 
+                            }else{
+                                $product_tax = ($quantity_price * $rate) / (100 + $rate); 
+                            } 
+                            // dd($product_tax);
                             $taxData[$tckey]['identifier'] = $tax_value->identifier;
                             $taxData[$tckey]['rate'] = $rate;
                             $taxData[$tckey]['tax_amount'] = decimal_format($tax_amount);
@@ -1190,7 +1212,13 @@ trait cartManager{
             $cart->loyalty_amount = decimal_format($loyalty_amount_saved);
             $cart->gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
-            $cart->total_payable_amount = decimal_format($total_payable_amount);
+            if(!$preferences->is_tax_price_inclusive){
+                $cart->total_payable_amount = decimal_format($total_payable_amount);
+            }else{
+                $cart->total_payable_amount = decimal_format($total_payable_amount - $total_taxable_amount - $other_taxes);
+                $cart->payy = decimal_format(($total_payable_amount - $total_taxable_amount - $other_taxes) + $cart->other_taxes);
+            }
+            // $cart->total_payable_amount = decimal_format($total_payable_amount);
             $cart->delivery_charges = decimal_format($deliveryCharges);
             $cart->total_deliver_charges = decimal_format($total_deliver_charges);
             $cart->total_markup_charges = decimal_format($total_markup_charges);

@@ -584,7 +584,13 @@ class OrderController extends BaseController
                     $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
-                    $order->payable_amount = $payable_amount;
+
+                    if (!$client_preference->is_tax_price_inclusive) {
+                        $order->payable_amount = $payable_amount;
+                    }else{
+                        $order->payable_amount = $payable_amount - $order->taxable_amount;
+                    }
+
                     $order->fixed_fee_amount = $fixed_fee_amount;
                     $order->total_container_charges = $total_container_charges;
                     if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {

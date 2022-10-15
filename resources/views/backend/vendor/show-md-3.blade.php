@@ -777,6 +777,7 @@
                             $mediaIcons = [];
                             @endphp
                             
+                            @if(@$socialMediaUrls)
                             @forelse($socialMediaUrls as $socialMediaUrl)
                             
                             <tr align="center">
@@ -804,6 +805,7 @@
                                 <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
                             </tr>
                             @endforelse
+                            @endif
                                 
                             </tbody>
                         </table>

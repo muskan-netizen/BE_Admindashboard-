@@ -784,7 +784,7 @@ class VendorController extends BaseController
         ->groupBy('products.id')
         ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
 
-            // pr($product->get()->toArray());
+            // pr($product->toSql());
         $datatable = Datatables::of($product)
             ->addIndexColumn()
             ->addColumn('single_product_check', function ($product) use ($request) {
