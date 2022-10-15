@@ -92,6 +92,8 @@ class PickupDeliveryController extends FrontController{
     }
 
     public function postVendorListByCategoryId(Request $request, $domain = '',$category_id = 0){
+        $vendor_type = Session::get('vendorType');
+        
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
         $vendor_ids = [];
         $pickup_latitude = '';
@@ -123,9 +125,11 @@ class PickupDeliveryController extends FrontController{
         }
 
         $vendors = $vendors->whereIn('id', $vendor_ids)
-        ->where('delivery', 1)
+        ->where($vendor_type, 1)
         ->where('status', 1)
         ->get();
+
+        
         foreach ($vendors as $vendor) {
             $vendor->is_show_category = ($vendor->vendor_templete_id == 1) ? 0 : 1;
             unset($vendor->products);
