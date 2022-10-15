@@ -77,7 +77,7 @@ class VendorSubscriptionController extends BaseController
         else{
             return response()->json(["status"=>"Error", "message" => "Subscription plan not active"]);
         }
-        $code = array('stripe');
+        $code = array('stripe','flutterwave');
         $ex_codes = array('cod');
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
         foreach ($payment_options as $k => $payment_option) {

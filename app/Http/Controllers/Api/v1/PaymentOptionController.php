@@ -639,7 +639,19 @@ class PaymentOptionController extends BaseController{
                         $this->savePaymentCartDetails($request,$order,$user);
                     }
                 }
-            } elseif($request->action == 'wallet'){
+            }
+            elseif($request->action == 'pickup_delivery'){
+                $order_number = $request->order_number;
+                $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                if ($order) {
+                    $order->payment_status = 1;
+                    $order->save();
+                    $payment_exists = Payment::where('transaction_id', $transaction_id)->first();
+                    if (!$payment_exists) {
+                        $this->csavePaymentOrderPickup($request,$order);
+                    }
+                }
+           } elseif($request->action == 'wallet'){
                  $this->savePaymentWalletDetails($request);
             }
             elseif($request->action == 'tip'){
@@ -705,6 +717,14 @@ class PaymentOptionController extends BaseController{
         $request->request->add(['payment_option_id' => $request->payment_option_id, 'transaction_id' => $transaction_id]);
         $subscriptionController = new UserSubscriptionController();
         $subscriptionController->purchaseSubscriptionPlan($request, $request->subscription_id);
+        return true;
+    }
+
+    public function csavePaymentOrderPickup(Request $request,$order)
+    {
+        $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 30, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransID]);
+        $plaseOrderForPickup = new PickupDeliveryController();
+        $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
         return true;
     }
 
