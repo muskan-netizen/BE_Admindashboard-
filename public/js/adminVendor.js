@@ -97,7 +97,7 @@ function GetServiceData(service_id) {
                 $('#add-service input[name=long_term__service_id]').val(service_id);
                 $('#add-service .modal-title').html('Edit Service');
                 $("#add-service input[name=sku]").val(service.sku);
-                $("#add-service input[name=serice_price]").val(service?.variant[0]?.price);
+                $("#add-service input[name=serice_price]").val( (Math.round(service?.variant[0]?.price * 100) / 100).toFixed(2) );
                 $("#add-service input[name=product_quantity]").val(service.product.quantity);
                 // select product 
                 var $select = $("#service_product_list").selectize();
@@ -114,7 +114,7 @@ function GetServiceData(service_id) {
              
                 setProductVariant(service.product.product_id,'',service.product.id)
                 var image = service.image;
-                var html = `<input type="file" id="service_image" name="image" class="dropify form-control" data-default-file="${image}" required />`;
+                var html = `<input type="file" id="service_image" name="file" class="dropify form-control" data-default-file="${image}" required />`;
                 $('.service_image').html(html);
                 $('#add-service .dropify').dropify();
               
@@ -150,6 +150,7 @@ function saveServiceData(formData, data_uri) {
             }
             $('#save_service_form')[0].reset();
             setTimeout(() => {
+                $('.submitServiceProduct').attr("disabled", false);
                 $('#add-service').modal('hide');
                 longTermServiceTable.ajax.reload();
             },1000);

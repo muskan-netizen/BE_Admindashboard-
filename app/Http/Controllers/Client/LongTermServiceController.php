@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController,ProductController};
-use App\Models\{Product,ProductVariant,ProductTranslation,LongTermServiceProductAddons,ProductImage,LongTermService, LongTermServiceProducts, ClientPreference, LongTermServiceTranslation};
+use App\Models\{Product,ProductVariant,ProductTranslation,LongTermServiceProductAddons,ProductImage, LongTermServiceProducts, ClientPreference};
 class LongTermServiceController extends BaseController
 {
     use ApiResponser;
