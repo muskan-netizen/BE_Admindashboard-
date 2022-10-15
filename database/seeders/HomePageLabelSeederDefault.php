@@ -16,7 +16,7 @@ class HomePageLabelSeederDefault extends Seeder
     public function run()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');  
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $already = CabBookingLayout::where('slug', 'vendors')->count();
 
@@ -36,7 +36,7 @@ class HomePageLabelSeederDefault extends Seeder
             'order_by' => 2,
         ]);
 
-       
+
 
         $already = CabBookingLayout::where('slug', 'new_products')->count();
 
@@ -48,7 +48,7 @@ class HomePageLabelSeederDefault extends Seeder
                 'order_by' => 3,
             ]);
         }
-      
+
 
         $already = CabBookingLayout::where('slug', 'on_sale')->count();
 
@@ -59,7 +59,7 @@ class HomePageLabelSeederDefault extends Seeder
             'order_by' => 4,
         ]);
 
-       
+
 
         $already = CabBookingLayout::where('slug', 'best_sellers')->count();
 
@@ -78,7 +78,12 @@ class HomePageLabelSeederDefault extends Seeder
             'slug' => 'brands',
             'order_by' => 6,
         ]);
-           
-       
+        if($already == 0)
+        $home_page = CabBookingLayout::insertGetId([
+            'title'    => 'Long Term Service',
+            'slug'     => 'long_term_service',
+            'order_by' => 7,
+        ]);
+
     }
 }
