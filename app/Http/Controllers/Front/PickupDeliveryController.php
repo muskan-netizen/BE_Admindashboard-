@@ -93,7 +93,6 @@ class PickupDeliveryController extends FrontController{
 
     public function postVendorListByCategoryId(Request $request, $domain = '',$category_id = 0){
         $vendor_type = Session::get('vendorType');
-        
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
         $vendor_ids = [];
         $pickup_latitude = '';
