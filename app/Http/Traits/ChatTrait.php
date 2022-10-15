@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Traits;
-use App\Models\{Order,User,OrderVendor,UserAddress,UserDevice,ClientPreference,Vendor};
+use App\Models\{Order,OrderVendor,UserDevice,ClientPreference};
 use Auth;
 use GuzzleHttp\Client as GCLIENT;
 
@@ -160,8 +160,8 @@ trait ChatTrait{
             
                 $client = new GClient([
                     'headers' => [
-                        'personaltoken' => 'icDerSAVT4Fd795DgPsPfONXahhTOA',
-                        'shortcode' => '745e3f',
+                        'personaltoken' => $dispatch_domain['service_key'],
+                        'shortcode' => $dispatch_domain['service_key_code'],
                         'content-type' => 'application/json'
                     ]
                 ]);
