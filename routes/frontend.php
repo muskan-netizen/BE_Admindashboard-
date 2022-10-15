@@ -450,6 +450,9 @@ Route::group(['middleware' => ['domain']], function () {
 	//cities
 	Route::get('cities/{slug}','Front\VendorCitiesController@getCities')->name('city.getCities');
 
+	//chatNotification to all users from dispacther
+	Route::any('sendNotificationToUserByDispatcher', 'Front\ChatDispatcherNotificationController@sendNotificationToUserByDispatcher')->name('sendNotificationToUserByDispatcher'); // Order Status update Dispatch
+
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
