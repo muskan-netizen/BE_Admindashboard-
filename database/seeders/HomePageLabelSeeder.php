@@ -130,6 +130,12 @@ class HomePageLabelSeeder extends Seeder
             'order_by' => 11,
         ]);
 
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Long Term Service',
+            'slug' => 'long_term_service',
+            'order_by' => 12,
+        ]);
 
     }
 }
