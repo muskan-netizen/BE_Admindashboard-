@@ -20,11 +20,11 @@ use Redirect;
 use DB;
 use Illuminate\Http\Response;
 use Cookie;
-use App\Http\Traits\OrderTrait;
+use App\Http\Traits\{OrderTrait,SetDemoDBdata};
 
 class UserhomeController extends FrontController
 {
-    use ApiResponser, OrderTrait;
+    use ApiResponser, OrderTrait,SetDemoDBdata;
     private $field_status = 2;
     public $cities = [];
 
@@ -382,7 +382,6 @@ class UserhomeController extends FrontController
     }
     public function index(Request $request, $domain='')
     {
-
         try {
             $home = array();
             $vendor_ids = array();

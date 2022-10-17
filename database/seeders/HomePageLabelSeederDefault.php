@@ -78,6 +78,7 @@ class HomePageLabelSeederDefault extends Seeder
             'slug' => 'brands',
             'order_by' => 6,
         ]);
+        $already = CabBookingLayout::where('slug', 'long_term_service')->count();
         if($already == 0)
         $home_page = CabBookingLayout::insertGetId([
             'title'    => 'Long Term Service',
