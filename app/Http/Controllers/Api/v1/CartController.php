@@ -67,7 +67,6 @@ class CartController extends BaseController
             $cart = $cart->first();
        
             if ($cart) {
-
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
                
 
@@ -751,6 +750,7 @@ class CartController extends BaseController
                         $proSum = $proSum + $quantity_price + $quantity_container_charges;
                         $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                         $total_container_charges = $total_container_charges + $quantity_container_charges;
+                        $prod->luxury_option_id= $prod->luxury_option_id;
                         if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
                             $prod->cartImg = $prod->pvariant->image->imagedata;
                         } else {
