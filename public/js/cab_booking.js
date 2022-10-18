@@ -1098,7 +1098,7 @@ $(document).ready(function () {
         $('.location-list').attr("style", "display: none !important");
         $('.scheduled-ride-list').attr("style", "display: block !important");
         
-        $(".scheduled-footer").html('<button id="check-schedule-date-time">Select</button>');
+        $(".scheduled-footer").html('<button class="btn btn-solid w-100" id="check-schedule-date-time">Select</button>');
         // var fromDate = moment();
         // var toDate   = moment().add(31, 'days');
        // enumerateDaysBetweenDates(fromDate, toDate);
@@ -1132,7 +1132,7 @@ $(document).ready(function () {
         var scheduleDateTimeSet = $('#schedule_pickup_date').val();
       
         if(scheduleDateTimeSet != '' || scheduleDateTimeSet != undefined ){
-            if(moment(scheduleDateTimeSet).format('MMDDYYYY') != moment().format('MMDDYYYY') ){
+            //if(moment(scheduleDateTimeSet).format('MMDDYYYY') != moment().format('MMDDYYYY') ){
                 var currentUrl  = window.location.href;
                 var queryString = removeURLParameterNew(currentUrl, 'schedule_date');
                 var perm = "?" + (queryString != '' ? queryString : '') + "&schedule_date=" + scheduleDateTimeSet;
@@ -1141,11 +1141,11 @@ $(document).ready(function () {
                 $('#schedule_date').val(scheduleDateTimeSet);
                 $('.scheduleDateTimeApnd').text( moment(scheduleDateTimeSet).format('MMM Do YY, h:mm:ss a'));
                 $('#schedule_datetime').val(scheduleDateTimeSet);
-            }{
-                $('#schedule_datetime').val('');
-                $('#schedule_date').val('');
-                $('.scheduleDateTimeApnd').text('Now');
-            }
+            // }else{
+            //     $('#schedule_datetime').val('');
+            //     $('#schedule_date').val('');
+            //     $('.scheduleDateTimeApnd').text('Now');
+            // }
            
             
        
