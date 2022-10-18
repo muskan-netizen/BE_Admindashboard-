@@ -5,21 +5,17 @@
 --}}
 @php
 $lang            = config('app.locale');
-$langFile        = resource_path('lang/' . $lang . '.json');
+$langFile        = resource_path('langa/' . $lang . '.json');
+if (!file_exists($langFile)) {
+    $langFile        = resource_path('lang/en.json');
+} 
+
 $langFileString  = file_get_contents($langFile, $lang . '.json');
 @endphp
 @section('headerJs')
-langTranslation.js
+
+<script src="{{ asset('js/lang/langTranslation.js') }}"></script>
 <script>
     var LangObjectJS = <?php  echo @$langFileString  ?>
-
-    const _language = { 
-        getLanString(str) {
-            if(LangObjectJS[str] == undefined){
-                return str;
-            }
-            return LangObjectJS[str];
-        }
-    }
 </script>
 @endsection
