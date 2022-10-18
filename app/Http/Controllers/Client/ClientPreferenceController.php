@@ -12,6 +12,7 @@ use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ValidatorTrait;
+use Illuminate\Support\Facades\Redis;
 use Session;
 
 class ClientPreferenceController extends BaseController{
@@ -182,10 +183,16 @@ class ClientPreferenceController extends BaseController{
             if ($validation->fails()) {
                 return redirect()->back()->with('error', $validation->errors()->first());
             }  
-        
+
         try {
             $this->updatePreferenceAdditional($request);
 
+            if($request->has('token_currency'))
+            {
+                $client = Client::first();
+                $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
+                Redis::set($client->code, json_encode($tokenCurrency), 'EX', 36000);
+            }
             // $validated_keys = $request->only($this->client_preference_fillable_key);
             // $client = Client::first();
            

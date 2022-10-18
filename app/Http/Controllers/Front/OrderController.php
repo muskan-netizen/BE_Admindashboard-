@@ -1305,6 +1305,19 @@ class OrderController extends FrontController
                     $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                 }
             }
+            // ------------ move up
+            $tip_amount = 0;
+            if (isset($request->tip)) {
+                $request->tip = str_replace(',', '', $request->tip);
+                $tip_amount = floatval($request->tip);
+                if( ($tip_amount != '') && ($tip_amount > 0) ){
+                    $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
+                    $order->tip_amount = $tip_amount;
+                }
+                
+            }
+            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
+            // ---------------------------------------
             $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
             $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
             $wallet_amount_used = 0;
@@ -1323,22 +1336,24 @@ class OrderController extends FrontController
                 }
             }
             $payable_amount = $payable_amount - $wallet_amount_used;
-            $tip_amount = 0;
-            if (isset($request->tip)) {
-                $request->tip = str_replace(',', '', $request->tip);
-                $tip_amount = floatval($request->tip);
-                if( ($tip_amount != '') && ($tip_amount > 0) ){
-                    $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
-                    $order->tip_amount = $tip_amount;
-                }
-                
-            }
+            // --------------------- old ----------------
+                        // $tip_amount = 0;
+                        // if (isset($request->tip)) {
+                        //     $request->tip = str_replace(',', '', $request->tip);
+                        //     $tip_amount = floatval($request->tip);
+                        //     if( ($tip_amount != '') && ($tip_amount > 0) ){
+                        //         $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
+                        //         $order->tip_amount = $tip_amount;
+                        //     }
+                            
+                        // }
+            //------------------------------------
             //echo  " Total payable_amount1=".$payable_amount."; <br>";
             //echo  " tip_amount=".$tip_amount." fixed_fee_amount=".$fixed_fee_amount." total_taxable_amount=".$total_taxable_amount."; <br>";
 
             
             // $payable_amount = $payable_amount + $tip_amount + $total_taxable_amount+$total_other_taxes;
-            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
+            //------------ old ----------// $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
             //echo  " Total payable_amount2=".$payable_amount."; <br>";
             $order->total_service_fee = $total_service_fee;
             $order->total_delivery_fee = $total_delivery_fee;

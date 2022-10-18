@@ -66,6 +66,7 @@
 @endif
 @php 
   $img = '';
+  $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 @endphp
 <!-- <div class="toast">
     <div class="toast-header">
@@ -250,11 +251,15 @@
                                     <div id="product_variant_wrapper">
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
                                         @if($product->inquiry_only == 0)
-                                            <h3 id="productPriceValue" class="mb-md-3">
+                                        <h3 id="productPriceValue" class="mb-md-3">
+                                            @if($additionalPreference ['is_token_currency_enable'])
+                                            <b class="mr-1"><span class="product_fixed_price">{{getInToken(decimal_format($product->variant[0]->price * $product->variant[0]->multiplier))}}</span></b>
+                                            @else
                                                 <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}</span></b>
                                                 @if($product->variant[0]->compare_at_price > 0 )
                                                     <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
                                                 @endif
+                                            @endif
                                             </h3>
                                         @endif
                                     </div>
@@ -882,6 +887,8 @@
 
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
+    var additionalPreference = "{{$additionalPreference['is_token_currency_enable']}}";
+    var token_currency = "{{getAdditionalPreference(['token_currency'])['token_currency']}}";
     var vendor_id = "{{ $product->vendor_id }}";
     var product_id = "{{ $product->id }}";
     var add_to_cart_url = "{{ route('addToCart') }}";
@@ -927,7 +934,9 @@
                             $('.incremental-left-minus').click();
                             //$('#blocktime, #blocktime2').change();
                         }
-                        
+                        if(additionalPreference != 0){
+                            response.variant.productPrice = token_currency * response.variant.productPrice;
+                        }
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);

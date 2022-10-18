@@ -16,7 +16,15 @@ use App\Models\{VendorSlot, ClientCurrency, Order,Type, ClientPreferenceAddition
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Redis;
 
+function setUserCode(){
+    $userCode = session()->has('userCode');
+    if(!$userCode){
+        $user = ClientData::first();
+        session()->put('userCode', $user->code);
+    }
+}
 
 // Returns the values of the additional preferences.
 if (!function_exists('checkColumnExists')) {    
@@ -42,12 +50,11 @@ if (!function_exists('getAdditionalPreference')) {
      * @return void
      */
     function getAdditionalPreference($key=array()){
-        $user = ClientData::first();
+        setUserCode();
         $return = [];
         $dbreturn= [];
         if(sizeof($key)){
-            $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => $user->code])->get() : [];
-            $return = array_column($result->toArray(), 'key_value', 'key_name');
+            $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => session()->get('userCode')])->get() : [];
                 if(sizeof($result)){
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
                 }   
@@ -67,9 +74,25 @@ if (!function_exists('changeDateFormate')) {
 
 if (!function_exists('getInToken')) {
     function getInToken($amount = 1){
-        $currency_id = session()->get('customerCurrency');
-        $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
-        return decimal_format(($amount * ( $clientCurrency->doller_compare ?? 1)) * (getAdditionalPreference(['token_currency'])['token_currency'] ?? 1));
+        setUserCode();
+        $redis = Redis::connection();
+        $compareCurrency = session()->has('compareCurrency');
+        if(!$compareCurrency){
+            $currency_id = session()->get('customerCurrency');
+            $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+            session()->put('compareCurrency', $clientCurrency->doller_compare);
+        }
+        
+        $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
+        $tokenCurrency = json_decode($tokenCurrency);
+        if($tokenCurrency == null){
+            $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
+            $redis->set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
+        }
+        // $currency_id = session()->get('customerCurrency');
+        // $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+
+        return decimal_format(($amount * ( session()->get('compareCurrency') ?? 1)) * ($tokenCurrency ?? 1));
     }
 }
 

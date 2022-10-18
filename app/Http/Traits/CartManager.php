@@ -277,6 +277,7 @@ trait cartManager{
         $crossSell_products = collect();
         $couponGetAmount=0;
         $loyalty_amount_saved = 0;
+        $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
         if($user){
             //Get User Address Details
             $address = $this->getUserAddress($user->id,$address_id);
@@ -372,6 +373,11 @@ trait cartManager{
             $total_markup_charges = 0;
             $total_quantity = 0;
 
+            $deliver_fee_charges = 0;
+            $total_fixed_fee_tax = 0;
+            $total_service_fee = 0;
+            $total_markup_fee_tax = 0;
+
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
                 $user->timezone = $client_timezone->timezone ?? $user->timezone;
@@ -462,11 +468,12 @@ trait cartManager{
                     }
                 }
                 $cart_product_ids = [];
-
-                $deliver_fee_charges = 0;
-                $total_fixed_fee_tax = 0;
-                $total_service_fee = 0;
-                $total_markup_fee_tax = 0;
+// ---------------
+                // $deliver_fee_charges = 0;
+                // $total_fixed_fee_tax = 0;
+                // $total_service_fee = 0;
+                // $total_markup_fee_tax = 0;
+// ---------------
                 /* Getting in Vendor product loop and setting product values*/
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
                   $slotsDate = findSlot('',$vendorData->vendor->id,'','webFormet');
@@ -673,11 +680,11 @@ trait cartManager{
                                 $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                 if (count($deliveries)>1) {
                                     foreach ($deliveries as $k=> $opt) {
-                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
+                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken($opt['rate']):$opt['rate']).'</option>';
                                     }
                                 } else {
                                     foreach ($deliveries as $k=> $opt) {
-                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
+                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken($opt['rate']):$opt['rate']).'</option>';
                                     }
                                 }
                                 $select .= '</select>';
@@ -1251,6 +1258,8 @@ trait cartManager{
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';
             $cart->sub_total =  $sub_total??0;
+            $cart->is_token =  $additionalPreference['is_token_currency_enable'] ? 1 : 0;
+            $cart->token_value = $additionalPreference['token_currency'] ?? 0;
             // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }
