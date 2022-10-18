@@ -555,7 +555,7 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tax') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format(($order->taxable_amount+$total_other_taxes)
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format(($order->taxable_amount)
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>

@@ -332,6 +332,7 @@
             try {
                 $('#'+table).DataTable({
                     "dom": '<"toolbar">Bfrtip',
+                    "responsive": true,
                     "searching": true,
                     "destroy": true,
                     "scrollX": true,

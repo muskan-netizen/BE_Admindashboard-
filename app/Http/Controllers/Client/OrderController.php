@@ -736,7 +736,7 @@ class OrderController extends BaseController
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
-           //pr( $order->toArray());
+        //    pr( $order['total_other_taxes'][14]);
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 
             'order' => $order,
