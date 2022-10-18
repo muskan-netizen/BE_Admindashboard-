@@ -338,7 +338,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
         <div class="col-xl-3 col-lg-3 mb-3">
             <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
                 @csrf
-            <!-- Pickup & Delivery section start -->
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <!-- Pickup & Delivery section start -->
             <div class="card-box h-100">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>

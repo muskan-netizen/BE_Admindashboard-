@@ -468,6 +468,7 @@ trait cartManager{
                 $total_service_fee = 0;
                 $total_markup_fee_tax = 0;
                 /* Getting in Vendor product loop and setting product values*/
+                $vendorTotalDeliveryFee = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
                   $slotsDate = findSlot('',$vendorData->vendor->id,'','webFormet');
                  
@@ -668,16 +669,17 @@ trait cartManager{
                     
                         if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
                             $deliveriesNew = new CartController();
-                            $deliveries = $deliveriesNew->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del);
+                            Log::info($prod->product->tags);
+                            $deliveries = $deliveriesNew->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del, $prod->product->tags);
                             if (isset($deliveries[0])) {
                                 $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                 if (count($deliveries)>1) {
                                     foreach ($deliveries as $k=> $opt) {
-                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
+                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($vendorTotalDeliveryFee + $opt['rate']).'</option>';
                                     }
                                 } else {
                                     foreach ($deliveries as $k=> $opt) {
-                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
+                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($vendorTotalDeliveryFee + $opt['rate']).'</option>';
                                     }
                                 }
                                 $select .= '</select>';
@@ -686,18 +688,19 @@ trait cartManager{
                                         return ($var['code'] == $code);
                                     });
                                     foreach ($new as $rate) {
-                                        $deliveryCharges = $rate['rate'];
+                                        $deliveryCharges = ($vendorTotalDeliveryFee + $rate['rate']);
                                     }
                                     if ($deliveryCharges) {
-                                        $deliveryCharges = $rate['rate'];
+                                        $deliveryCharges = ($vendorTotalDeliveryFee + $rate['rate']);
                                     } else {
-                                        $deliveryCharges = $deliveries[0]['rate'];
+                                        $deliveryCharges = ($vendorTotalDeliveryFee + $deliveries[0]['rate']);
                                         $code = $deliveries[0]['code'];
                                     }
                                 } else {
-                                    $deliveryCharges = $deliveries[0]['rate'];
+                                    $deliveryCharges = ($vendorTotalDeliveryFee + $deliveries[0]['rate']);
                                     $code = $deliveries[0]['code'];
                                 }
+                                $vendorTotalDeliveryFee = (isset($deliveryCharges) && !empty($deliveryCharges))?$deliveryCharges:0;
                             }
 
                             if (isset($deliveryCharges) && !empty($deliveryCharges)) {
@@ -1251,10 +1254,8 @@ trait cartManager{
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';
             $cart->sub_total =  $sub_total??0;
-            // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }
-        // pr($cart);
         return $cart;
       }
 

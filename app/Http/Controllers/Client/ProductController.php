@@ -244,7 +244,7 @@ class ProductController extends BaseController
         $agent_dispatcher_on_demand_tags = [];
         $pro_tags = [];
 
-         if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 7) # if type is pickup delivery then get dispatcher tags
+         if(isset($product->category->categoryDetail) && ($product->category->categoryDetail->type_id == 7 || $product->category->categoryDetail->type_id == 1)) # if type is pickup delivery then get dispatcher tags
         {
             $vendor_id = $product->vendor_id;
             $agent_dispatcher_tags = $this->getDispatcherTags($vendor_id);

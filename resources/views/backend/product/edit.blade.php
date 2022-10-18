@@ -544,7 +544,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <input type="checkbox" bid="" id="inquiry_only" data-plugin="switchery" name="inquiry_only" class="chk_box" data-color="#43bee1" @if($product->inquiry_only == 1) checked @endif>
                         </div>
                         @endif
-                        @if($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7)
+                       
+                        @if(($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7) || $product->category->categoryDetail->type_id == 1)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
                             <select class="selectize-select1 form-control" name="tags" required>
