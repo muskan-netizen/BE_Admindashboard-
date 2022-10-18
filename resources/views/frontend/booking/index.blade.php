@@ -1,6 +1,7 @@
 @extends('layouts.store', ['title' => 'Product'])
 @section('css')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
+{{-- <link rel="stylesheet" href="{{asset('assets/libs/jquery.datetimepicker.min.css')}}"> --}}
 @endsection
 @section('content')
 <style type="text/css">
@@ -124,14 +125,19 @@
                 </div>
                 <div class="scheduled-ride-list">
                     <div class="scheduled-ride-list-heading d-flex align-items-center justify-content-between">
-                        <h3>Choose Date And Time</h3>
+                        <h3>{{ __('Choose Date And Time') }}</h3>
                         <span class="skip-clear">
-                            Skip
+                            {{ __('Skip') }}
                         </span>
                     </div>
 
                     <div class="date-radio-list style-4">
-
+                        <div class="datepicker date input-group p-2">
+                            <input type="text" name="schedule_pickup_date"  placeholder="Choose Date" class="form-control" id="schedule_pickup_date" >
+                            <div class="input-group-append">
+                                <span class="input-group-text calendar_icon" for="schedule_pickup_date"><i class="fa fa-calendar"></i></span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="scheduled-footer">
@@ -306,6 +312,10 @@
                         <div class="col-6 mb-2 text-right" id="distance"></div>
                         <div class="col-6 mb-2">{{__('Duration')}}</div>
                         <div class="col-6 mb-2 text-right" id="duration"></div>
+                        <% if((schedule_datetime) && (schedule_datetime !='')  ){ %>
+                            <div class="col-6 mb-2">{{__('Schedule Date')}}</div>
+                            <div class="col-6 mb-2 text-right" ><%= schedule_datetime %></div>
+                        <% } %>
                         <% if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ %>
                         <div class="col-6 mb-2">{{__('Subscription Discount')}}</div>
                         <div class="col-6 mb-2 text-right" id="subscription-percent"><%= result.subscription_percent_value+'%' %></div>
@@ -675,6 +685,7 @@
 
 @section('script')
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
+{{-- <script src="{{asset('assets/libs/intlTelInput.js')}}"></script> --}}
 <script type="text/javascript">
     $('.iti__country').click(function() {
         var code = $(this).attr('data-country-code');
@@ -841,7 +852,22 @@ $('body').on('click', '.clproduct_order_form', function (event) {
 
 <script type="text/javascript">
     $(document).ready(function (e) {
-
+       var daterang = $('input[name="schedule_pickup_date"]').daterangepicker({
+            singleDatePicker: true,
+            startDate: moment().add('10', 'minutes'),
+            minDate:moment(),
+            showDropdowns: false,
+            timePicker: true,
+            timePicker24Hour: false,
+            timePickerIncrement: 1,
+            autoUpdateInput: true,
+            locale: {
+                format: 'MM-DD-YYYY HH:mm',
+            }
+        });
+        $('.calendar_icon').click(function() {
+            $('#schedule_pickup_date').click();
+        })
         var path = window.location.pathname;
         var inputs = path.split("/");
         var lastslug = inputs[inputs.length - 1];
@@ -885,3 +911,4 @@ $('body').on('click', '.clproduct_order_form', function (event) {
 
 
 @endsection
+
