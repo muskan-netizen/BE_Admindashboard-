@@ -869,7 +869,7 @@ $timezone = Auth::user()->timezone;
                         that.addClass("completed");
                         if (status_option_id == 2) {
                             if(reload_page ==1 || reload_page == '1'){
-                                setTimeout(function(){location.reload();}, 2500);
+                                // setTimeout(function(){location.reload();}, 2500);
                             }
                             that.next('li').remove();
                         }
