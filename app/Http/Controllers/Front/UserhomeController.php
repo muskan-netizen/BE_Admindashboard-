@@ -1722,4 +1722,12 @@ class UserhomeController extends FrontController
     public function confirmation(){
         return view('confirmatin');
     }
+
+    public function setSessionIndex(Request $request, $domain='')
+    {
+        Session::forget('vendorType');
+        Session::put('vendorType', $request->type);
+     
+        return response()->json(["status" => true]);
+    } 
 }

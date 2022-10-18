@@ -1035,8 +1035,9 @@ class AuthController extends BaseController
                 $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
                 $request->request->add(['is_phone' => 1, 'phone_number' => $phone_number, 'phoneCode' => $phoneCode, 'sendTime' => $sendTime, 'codeSent' => 0]);
                 $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
+               // pr($user->toArray());
                 if (!$user) {
-                   // return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
+                    //return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
 
                     $registerUser = $this->registerViaPhone($request)->getData();
                     if ($registerUser->status == 'Success') {
@@ -1240,10 +1241,10 @@ class AuthController extends BaseController
             $dialCode = $request->dialCode;
             $phone_number = preg_replace('/\D+/', '', $username);
             $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
-            if (!$user) {
-                $errors['error'] = __('Your phone number is not registered');
-                return response()->json($errors, 422);
-            }
+            // if (!$user) {
+            //     $errors['error'] = __('Your phone number is not registered');
+            //     return response()->json($errors, 422);
+            // }
             $currentTime = Carbon::now()->toDateTimeString();
             $message = 'Account verified successfully.';
 

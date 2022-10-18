@@ -76,7 +76,7 @@
                                                             @foreach ($childs->products as $data)
 
                                                             @php
-                                                            
+
                                                                 $data->translation_title = (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku;
                                                                 $data->translation_description = (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku;
                                                                 $data->variant_multiplier = (!empty($clientCurrency)) ? $clientCurrency->doller_compare : 1;
@@ -112,7 +112,7 @@
                                                                             </span>
                                                                         </div>
                                                                         @else
-                                                                        <a class="btn btn-solid add_on_demand" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Add') }} <i class="fa fa-plus"></i></a>
+                                                                        <a class="btn btn-solid add_on_demand" id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Add') }} <i class="fa fa-plus"></i></a>
                                                                         <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
                                                                             <span class="minus qty-minus-ondemand 132"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
                                                                                 <i class="fa fa-minus" aria-hidden="true"></i>
@@ -221,7 +221,7 @@
 
                                                                 @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
                                                                 @php
-                                                             
+
                                                                     $cartcount = 1;
                                                                 @endphp
                                                                  @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
@@ -236,11 +236,11 @@
                                                                         </span>
                                                                     </div>
                                                                     @else
-                                                                        <a class="btn btn-solid " id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
-                                                                        
+                                                                        <a class="btn btn-solid " id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+
                                                                     @endif
                                                                 @else
-                                                                <a class="btn btn-solid add_on_demand" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                <a class="btn btn-solid add_on_demand" id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
                                                                 @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
                                                                 <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
                                                                     <span class="minus qty-minus-ondemand 256"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
@@ -252,8 +252,8 @@
                                                                     </span>
                                                                 </div>
                                                                 @else
-                                                                        <a class="btn btn-solid " style="display:none;"   id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
-                                                                        
+                                                                        <a class="btn btn-solid " style="display:none;"   id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+
                                                                 @endif
 
                                                                 @endif
@@ -365,17 +365,17 @@
                                       @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
 
                                       @php
-                                    
+
                                         $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
                                       @endphp
 
 
-                                        <div  id="date_time_set_div{{$cart_data->id}}" class="booking_date_section"> 
+                                        <div  id="date_time_set_div{{$cart_data->id}}" class="booking_date_section">
 
                                             <h4 class="mb-2" ><b>{{ __('When would you like your service?')}}</b></h4>
                                             @if(count($cart_data->period)>0)
                                             <div class="date-items radio-btns hide">
-                                                
+
                                                 @foreach ($cart_data->period as $key => $date)
                                                     <div>
                                                         @php
@@ -398,21 +398,21 @@
                                                         </div>
                                                     </div>
                                                 @endforeach
-                                               
+
                                             </div>
                                             @else
                                              <h5 class="text-center">{{ __("Vendor has not created slots for this Date yet.") }}</h5>
                                             @endif
                                             @if($cart_data->is_dispatch_slot == 1)
                                             @php
-                                           
+
                                             $dispatch_agents = $cart_data->dispatchAgents ?? [];
                                             $cart_product_id = $cart_data->id;
                                             $dispatch_agent_id = @$cart_data->dispatch_agent_id;
                                             $show_dispatcher_agent = @$cart_data->product->is_show_dispatcher_agent;
                                             $selected_agent_id = @$cart_data->dispatch_agent_id;
                                             $schedule_slot = $cart_data->schedule_slot;
-                                            
+
                                             @endphp
                                             <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" >
                                                 {{-- style="@if($cart_data->schedule_slot != '')  @else display: none; @endif " --}}
@@ -465,7 +465,7 @@
                                                     <P id="message_of_time{{$cart_data->id}}"></P>
                                                 </div> --}}
                                             @endif
-                                            
+
 
                                             <input type="hidden" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" checked>
                                         </div>
@@ -559,7 +559,7 @@
                                                         </div>
 
                                                     <div class='close-circle'>
-                                                        <a  class="action-icon d-block mb-3 remove_product_via_cart" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
+                                                        <a  class="action-icon d-block mb-3 remove_product_via_cart" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>" data-product_id="<%= vendor_product.product.id %>">
                                                             <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                         </a>
                                                     </div>
@@ -622,7 +622,7 @@
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Price')}}</span>
-                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.gross_amount) %></span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.sub_total) %></span>
                                                 </h6>
                                             </div>
                                         </li>
@@ -651,7 +651,7 @@
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Total')}}</span>
-                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.total_payable_amount) %></span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.sub_total) %></span>
                                                 </h6>
                                             </div>
                                         </li>

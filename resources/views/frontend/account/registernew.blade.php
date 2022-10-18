@@ -86,6 +86,7 @@
                         @endif
                     @endif
                     <div class="row mt-3">
+                        @if (session('preferences'))
                         <div class="{{ (session('preferences')->concise_signup == 1)? 'mx-auto':'offset-xl-2 col-xl-8 text-left' }}">
                             <form name="register" id="register" enctype="multipart/form-data" action="{{ route('customer.register') }}"
                                 class="px-lg-4" method="post"> @csrf
@@ -307,6 +308,7 @@
                                 </div>
                             </form>
                         </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -318,13 +320,14 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
     <script>
         $(document).ready(function() {
-            @if(session('preferences')->concise_signup == 1)
-                $('#phone').change(function() {
-                    var custPhone = $(this).val();
-                    $('#guest-email').val(custPhone+'@gmail.com');
-                });
+            @if (session('preferences'))
+                @if(session('preferences')->concise_signup == 1)
+                    $('#phone').change(function() {
+                        var custPhone = $(this).val();
+                        $('#guest-email').val(custPhone+'@gmail.com');
+                    });
+                @endif
             @endif
-
             $("#register").validate({
                 errorClass: 'errors',
                 rules: {

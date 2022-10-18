@@ -2047,6 +2047,8 @@ $(document).ready(function () {
         $('#remove_item_modal').modal('show');
         let vendor_id = $(this).data('vendor_id');
         let cartproduct_id = $(this).data('product');
+        let product_id = $(this).data('product_id');
+        $('#remove_item_modal #product_id').val(product_id);
         $('#remove_item_modal #vendor_id').val(vendor_id);
         $('#remove_item_modal #cartproduct_id').val(cartproduct_id);
     });
@@ -2174,7 +2176,8 @@ $(document).ready(function () {
     function cartHeader(address_id=null) {
         $(".shopping-cart").html("");
         $(".spinner-box").show();
-
+        OrderStorage.setStorageSingle('cartData',[]);
+        OrderStorage.setStorageSingle('cartProductCount',0);
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -2191,7 +2194,9 @@ $(document).ready(function () {
                     var client_preference_detail = response.client_preference_detail;
                     // console.log(cart_details);
                     if (cart_details!= undefined) {
-                         if (cart_details.products.length > 0) {
+                        OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
+                        if (cart_details.products.length > 0) {
+                            OrderStorage.setStorageSingle('cartProductCount',cart_details.products.length);
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
 
@@ -3445,15 +3450,15 @@ $(document).ready(function () {
 
     $(document).on("click", "#next-button-ondemand-3", function () {
         $('.alert-danger').html('');
-       
+
        var valid =  checkSlotTimeSelecedValidation();
-     
+
        if(slotValidater == 1  ){ // some date or time not selected
          sweetAlert.error('Oops...','Schedule date time is required');
          return false;
        }
-       
-       
+
+
 
         var task_type = 'schedule';
         var schedule_date = $("input[name='booking_date']:checked").val();
