@@ -10,7 +10,7 @@
     </nav>
 </div>
 <div class="col-md-8 col-lg-6 alScrollspyProduct">
-        <div class="row mt-2 d-flex align-items-start mb-sm-2 justify-content-center">
+        {{-- <div class="row mt-2 d-flex align-items-start mb-sm-2 justify-content-center">
             <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
                 <div class="radius-bar w-100">
                     <div class="search_form d-flex align-items-center border">
@@ -34,7 +34,7 @@
                     <option value="newly_added" {{isset($input['order_type']) && $input['order_type'] == "newly_added" ? 'selected' : ''}}>{{__('Newest Arrivals')}}</option>
                 </select>
             </div>
-        </div>
+        </div> --}}
 
         <div class="col-12 d-sm-flex justify-content-start mb-2 p-0">
             @if (isset($tags) && !empty($tags))
