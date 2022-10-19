@@ -622,7 +622,7 @@
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Price')}}</span>
-                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.gross_amount) %></span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.sub_total) %></span>
                                                 </h6>
                                             </div>
                                         </li>
@@ -651,7 +651,7 @@
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Total')}}</span>
-                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.total_payable_amount) %></span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.sub_total) %></span>
                                                 </h6>
                                             </div>
                                         </li>

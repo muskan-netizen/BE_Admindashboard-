@@ -470,7 +470,7 @@
                                                                                         name="{{ 'var_' . $var_id }}"
                                                                                         vid="{{ $var_id }}"
                                                                                         class="changeVariant dataVar{{ $var_id }}">
-                                                                                        <option value="" disabled>
+                                                                                        <option value="Select Varient" >
                                                                                             {{ $variant->title }}
                                                                                         </option>
                                                                                         @foreach ($variant->option2 as $k => $optn)
@@ -480,7 +480,7 @@
                                                                                             ?>
                                                                                             <option
                                                                                                 value="{{ $opt_id }}"
-                                                                                                {{ $selected }}>
+                                                                                                >
                                                                                                 {{ $optn->title }}
                                                                                             </option>
                                                                                         @endforeach
