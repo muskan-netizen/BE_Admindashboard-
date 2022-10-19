@@ -2043,6 +2043,8 @@ $(document).ready(function () {
         $('#remove_item_modal').modal('show');
         let vendor_id = $(this).data('vendor_id');
         let cartproduct_id = $(this).data('product');
+        let product_id = $(this).data('product_id');
+        $('#remove_item_modal #product_id').val(product_id);
         $('#remove_item_modal #vendor_id').val(vendor_id);
         $('#remove_item_modal #cartproduct_id').val(cartproduct_id);
     });
@@ -3443,15 +3445,15 @@ $(document).ready(function () {
 
     $(document).on("click", "#next-button-ondemand-3", function () {
         $('.alert-danger').html('');
-       
+
        var valid =  checkSlotTimeSelecedValidation();
-     
+
        if(slotValidater == 1  ){ // some date or time not selected
          sweetAlert.error('Oops...','Schedule date time is required');
          return false;
        }
-       
-       
+
+
 
         var task_type = 'schedule';
         var schedule_date = $("input[name='booking_date']:checked").val();
