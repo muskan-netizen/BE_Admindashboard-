@@ -132,4 +132,17 @@ padding-bottom: 100%;
     object-fit: cover;
 }
 
+@media (max-width:576px){
+    .menu-navigation{overflow: visible;}
+.pixelstrap li:hover ul{
+    display: block;
+    position: absolute;
+    left: auto;
+    top: auto;
+    z-index: 11111;
+}
+.pixelstrap li:hover ul li a{padding:4px 10px;}.pixelstrap li:hover ul li a span{font-size: 12px;padding:0px 0px;}
+
+}
+
 
