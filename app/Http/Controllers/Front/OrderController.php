@@ -386,7 +386,11 @@ class OrderController extends FrontController
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
-                    $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
+                    if(!empty($address)){
+                        $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
+                    }else{
+                        $email_template_content = str_ireplace("{address}", '', $email_template_content);
+                    }
                 }
                 $email_data = [
                     'code' => $otp,

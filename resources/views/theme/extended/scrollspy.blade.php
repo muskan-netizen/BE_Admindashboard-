@@ -129,19 +129,19 @@
                                 <nav id="navbar-example3" class="navbar navbar-light flex-column">
                                     <a class="navbar-brand" href="#">Navbar</a>
                                     <nav class="nav nav-pills flex-column">
-                                        <a class="nav-link active" href="#item-1">Item 1</a>
+                                        <a class="nav-link active" href="#item-1">{{ __('item') }} 1</a>
                                         <nav class="nav nav-pills flex-column">
                                             <a class="nav-link ml-3 my-1 active"
-                                                href="#item-1-1">Item 1-1</a>
-                                            <a class="nav-link ml-3 my-1" href="#item-1-2">Item
+                                                href="#item-1-1">{{ __('item') }} 1-1</a>
+                                            <a class="nav-link ml-3 my-1" href="#item-1-2">{{ __('item') }}
                                                 1-2</a>
                                         </nav>
-                                        <a class="nav-link" href="#item-2">Item 2</a>
-                                        <a class="nav-link" href="#item-3">Item 3</a>
+                                        <a class="nav-link" href="#item-2">{{ __('item') }} 2</a>
+                                        <a class="nav-link" href="#item-3">{{ __('item') }} 3</a>
                                         <nav class="nav nav-pills flex-column">
-                                            <a class="nav-link ml-3 my-1" href="#item-3-1">Item
+                                            <a class="nav-link ml-3 my-1" href="#item-3-1">{{ __('item') }}
                                                 3-1</a>
-                                            <a class="nav-link ml-3 my-1" href="#item-3-2">Item
+                                            <a class="nav-link ml-3 my-1" href="#item-3-2">{{ __('item') }}
                                                 3-2</a>
                                         </nav>
                                     </nav>
@@ -151,7 +151,7 @@
                                 <div data-spy="scroll" data-target="#navbar-example3"
                                     data-offset="0" class="scrollspy-example"
                                     style="height: 350px;">
-                                    <h4 id="item-1">Item 1</h4>
+                                    <h4 id="item-1">{{ __('item') }} 1</h4>
                                     <p>Ex consequat commodo adipisicing exercitation aute excepteur
                                         occaecat ullamco duis aliqua id magna ullamco eu. Do aute
                                         ipsum ipsum ullamco cillum consectetur ut et aute
@@ -163,7 +163,7 @@
                                         Aliquip nulla enim veniam non fugiat id cupidatat nulla elit
                                         cupidatat commodo velit ut eiusmod cupidatat elit dolore.
                                     </p>
-                                    <h5 id="item-1-1">Item 1-1</h5>
+                                    <h5 id="item-1-1">{{ __('item') }} 1-1</h5>
                                     <p>Amet tempor mollit aliquip pariatur excepteur commodo do ea
                                         cillum commodo Lorem et occaecat elit qui et. Aliquip labore
                                         ex ex esse voluptate occaecat Lorem ullamco deserunt. Aliqua
@@ -176,7 +176,7 @@
                                         exercitation officia nisi adipisicing. Anim id duis qui
                                         consequat labore adipisicing sint dolor elit cillum anim et
                                         fugiat.</p>
-                                    <h5 id="item-1-2">Item 1-2</h5>
+                                    <h5 id="item-1-2">{{ __('item') }} 1-2</h5>
                                     <p>Cillum nisi deserunt magna eiusmod qui eiusmod velit
                                         voluptate pariatur laborum sunt enim. Irure laboris mollit
                                         consequat incididunt sint et culpa culpa incididunt
@@ -185,7 +185,7 @@
                                         anim. Proident ullamco ipsum esse elit ut Lorem eiusmod
                                         dolor et eiusmod. Anim occaecat nulla in non consequat
                                         eiusmod velit incididunt.</p>
-                                    <h4 id="item-2">Item 2</h4>
+                                    <h4 id="item-2">{{ __('item') }} 2</h4>
                                     <p>Quis magna Lorem anim amet ipsum do mollit sit cillum
                                         voluptate ex nulla tempor. Laborum consequat non elit enim
                                         exercitation cillum aliqua consequat id aliqua. Esse ex
@@ -196,14 +196,14 @@
                                         officia laborum excepteur commodo non commodo dolor
                                         excepteur commodo. Ipsum fugiat ex est consectetur ipsum
                                         commodo tempor sunt in proident.</p>
-                                    <h4 id="item-3">Item 3</h4>
+                                    <h4 id="item-3">{{ __('item') }} 3</h4>
                                     <p>Quis anim sit do amet fugiat dolor velit sit ea ea do
                                         reprehenderit culpa duis. Nostrud aliqua ipsum fugiat minim
                                         proident occaecat excepteur aliquip culpa aute tempor
                                         reprehenderit. Deserunt tempor mollit elit ex pariatur
                                         dolore velit fugiat mollit culpa irure ullamco est ex
                                         ullamco excepteur.</p>
-                                    <h5 id="item-3-1">Item 3-1</h5>
+                                    <h5 id="item-3-1">{{ __('item') }} 3-1</h5>
                                     <p>Deserunt quis elit Lorem eiusmod amet enim enim amet minim
                                         Lorem proident nostrud. Ea id dolore anim exercitation aute
                                         fugiat labore voluptate cillum do laboris labore. Ex velit
@@ -214,7 +214,7 @@
                                         minim enim culpa occaecat exercitation. Est tempor excepteur
                                         aliquip laborum consequat do deserunt laborum esse eiusmod
                                         irure proident ipsum esse qui.</p>
-                                    <h5 id="item-3-2">Item 3-2</h5>
+                                    <h5 id="item-3-2">{{ __('item') }} 3-2</h5>
                                     <p>Labore sit culpa commodo elit adipisicing sit aliquip elit
                                         proident voluptate minim mollit nostrud aute reprehenderit
                                         do. Mollit excepteur eu Lorem ipsum anim commodo sint labore
@@ -247,19 +247,19 @@
                             <div class="col-4">
                                 <div id="list-example" class="list-group">
                                     <a class="list-group-item list-group-item-action active"
-                                        href="#list-item-1">Item 1</a>
+                                        href="#list-item-1">{{ __('item') }} 1</a>
                                     <a class="list-group-item list-group-item-action"
-                                        href="#list-item-2">Item 2</a>
+                                        href="#list-item-2">{{ __('item') }} 2</a>
                                     <a class="list-group-item list-group-item-action"
-                                        href="#list-item-3">Item 3</a>
+                                        href="#list-item-3">{{ __('item') }} 3</a>
                                     <a class="list-group-item list-group-item-action"
-                                        href="#list-item-4">Item 4</a>
+                                        href="#list-item-4">{{ __('item') }} 4</a>
                                 </div>
                             </div>
                             <div class="col-8">
                                 <div data-spy="scroll" data-target="#list-example" data-offset="0"
                                     class="scrollspy-example">
-                                    <h4 id="list-item-1">Item 1</h4>
+                                    <h4 id="list-item-1">{{ __('item') }} 1</h4>
                                     <p>Ex consequat commodo adipisicing exercitation aute excepteur
                                         occaecat ullamco duis aliqua id magna ullamco eu. Do aute
                                         ipsum ipsum ullamco cillum consectetur ut et aute
@@ -271,7 +271,7 @@
                                         Aliquip nulla enim veniam non fugiat id cupidatat nulla elit
                                         cupidatat commodo velit ut eiusmod cupidatat elit dolore.
                                     </p>
-                                    <h4 id="list-item-2">Item 2</h4>
+                                    <h4 id="list-item-2">{{ __('item') }} 2</h4>
                                     <p>Quis magna Lorem anim amet ipsum do mollit sit cillum
                                         voluptate ex nulla tempor. Laborum consequat non elit enim
                                         exercitation cillum aliqua consequat id aliqua. Esse ex
@@ -282,14 +282,14 @@
                                         officia laborum excepteur commodo non commodo dolor
                                         excepteur commodo. Ipsum fugiat ex est consectetur ipsum
                                         commodo tempor sunt in proident.</p>
-                                    <h4 id="list-item-3">Item 3</h4>
+                                    <h4 id="list-item-3">{{ __('item') }} 3</h4>
                                     <p>Quis anim sit do amet fugiat dolor velit sit ea ea do
                                         reprehenderit culpa duis. Nostrud aliqua ipsum fugiat minim
                                         proident occaecat excepteur aliquip culpa aute tempor
                                         reprehenderit. Deserunt tempor mollit elit ex pariatur
                                         dolore velit fugiat mollit culpa irure ullamco est ex
                                         ullamco excepteur.</p>
-                                    <h4 id="list-item-4">Item 4</h4>
+                                    <h4 id="list-item-4">{{ __('item') }} 4</h4>
                                     <p>Quis anim sit do amet fugiat dolor velit sit ea ea do
                                         reprehenderit culpa duis. Nostrud aliqua ipsum fugiat minim
                                         proident occaecat excepteur aliquip culpa aute tempor

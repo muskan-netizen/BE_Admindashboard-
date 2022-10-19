@@ -10,10 +10,11 @@ use App\Models\Client as CP;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
-use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus};
-
+use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product};
+use App\Http\Traits\{ValidatorTrait};
 
 trait OrderTrait{
+    use ValidatorTrait;
 
     public function ProductVariantStock($order_id)
     {
@@ -355,5 +356,50 @@ trait OrderTrait{
           }
     }
 
+    /** update vendor rating
+     * @author sudhanshu sharma
+     */
+    public function updateVendorRating($vendor_id){
+        $vendor_rating = 0;
+        
+        if($vendor_id != null & $vendor_id > 0){
+            $vendor_rating = Product::where('vendor_id', $vendor_id)
+                            ->avg('averageRating');
+        } 
+
+        if($this->checkColumnExists('vendors', 'rating')){
+            Vendor::where('id', $vendor_id)->update(['rating' => $vendor_rating]);
+            return $vendor_rating;
+        }else{
+            return $vendor_rating;
+        }
+    }
+
+    /**
+     * get or update vendor rating if rating is null
+     * @author sudhanshu sharma
+     */
+    public function getVendorRating($vendor_id){
+        $vendor_rating = 0;
+
+        $vendor = Vendor::find($vendor_id);
+
+        if($vendor && $vendor->rating == null){
+            
+            $vendor_rating = $this->updateVendorRating($vendor_id);
+            return number_format($vendor_rating, 1);
+
+        }else if($vendor){
+
+            return number_format($vendor->rating, 1);
+
+        }else{
+
+            return number_format($vendor_rating, 1);
+
+        }
+
+
+    }
 
 }

@@ -1516,17 +1516,11 @@ class OrderController extends BaseController
                     $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
                     $smsTemplates = str_replace("{amount}", $currSymbol . decimal_format($order->payable_amount), $smsTemplates);
                     $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
-                    \Log::info('sms:');
-                    \Log::info($body);
-                    \Log::info('sms:');
                 }else{
                     $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
                 }
                 if (!empty($prefer->sms_provider)) {
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-                    \Log::info('sms:rs');
-                    \Log::info($send);
-                    \Log::info('sms:rs');
                 }
             }
         } catch (\Exception $ex) {

@@ -56,7 +56,7 @@
                                 <select class="form-control" id='copy_from' name="copy_from" required>
                                     <option value="">{{ __("Select vendor for copy") }}</option>
                                     @foreach($vendors as $vendor)
-                                    <option value="{{$vendor->id}}">{{$vendor->name}}</option>
+                                    <option value="{{$vendor->id}}">{{@$vendor->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -66,7 +66,7 @@
                                 <label for="copy_to" class="mr-3">{{ __("Copy To") }}</label>
                                 <select class="form-control select2-multiple" id="copy_to" name="copy_to[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required>
                                     @foreach($vendors as $vendor)
-                                    <option value="{{$vendor->id}}">{{$vendor->name}}</option>
+                                    <option value="{{$vendor->id}}">{{@$vendor->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -108,9 +108,9 @@
                                     @foreach($categories as $category)
                                     <option value="{{$category->id}}">
                                         @if(!is_null($category->parent) && $category->parent_id > 1)
-                                        {{$category->parent->translation_one->name}}-> @endif
-                                        {{$category->translation_one->name}}
-                                        @if(!is_null($category->vendor)) ({{$category->vendor->name}}) @endif
+                                        {{@$category->parent->translation_one->name}}-> @endif
+                                        {{@$category->translation_one->name}}
+                                        @if(!is_null($category->vendor)) ({{@$category->vendor->name}}) @endif
                                     </option>
                                     @endforeach
                                 </select>
