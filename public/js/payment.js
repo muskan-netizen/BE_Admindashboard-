@@ -652,19 +652,9 @@ $(document).ready(function() {
         razorpay_options.handler = function (response){
             startLoader('body','We are processing your transaction...');
             razorPayCompletePayment(data,response, order);
-            // alert(response.razorpay_payment_id);
-            // alert(response.razorpay_order_id);
-            // alert(response.razorpay_signature);
         }
         var rzp1 = new Razorpay(razorpay_options);
         rzp1.on('payment.failed', function (response){
-                // alert(response.error.code);
-                // alert(response.error.description);
-                // alert(response.error.source);
-                // alert(response.error.step);
-                // alert(response.error.reason);
-                // alert(response.error.metadata.order_id);
-                // alert(response.error.metadata.payment_id);
         });
         rzp1.open();
     }

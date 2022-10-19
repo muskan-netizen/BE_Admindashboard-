@@ -381,6 +381,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/update_all', 'Client\VendorController@updateActions')->name('vendor.updateall');
 
         Route::post('subscription/payment/stripe', 'Client\StripeGatewayController@subscriptionPaymentViaStripe')->name('subscription.payment.stripe');
+        Route::post('subscription/payment/flutterwave', 'Client\FlutterwaveController@createHash')->name('vendor.subscription.payment');
 
         // Vendor Payout via gateway
         Route::get('verify/oauth/token/stripe', 'Client\StripeGatewayController@verifyOAuthToken')->name('verify.oauth.token.stripe');

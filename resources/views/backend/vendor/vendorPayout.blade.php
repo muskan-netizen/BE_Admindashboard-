@@ -250,6 +250,8 @@
                                                 <button type="button" class="btn btn-info waves-effect text-sm-right connect_btn" id="{{$opt->code}}_connect_btn" 
                                                     @if($opt->code == 'stripe')
                                                         onclick="location.href='{{$opt->stripe_connect_url}}'";
+                                                    @elseif($opt->code == 'razorpay')
+                                                        onclick="location.href='{{$opt->razorpay_connect_url}}'";
                                                     @endif
                                                 data-vendor="{{$vendor->id}}"
                                                 data-payout_option="{{$opt->code}}"

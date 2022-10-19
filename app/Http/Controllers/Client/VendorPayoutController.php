@@ -36,7 +36,7 @@ class VendorPayoutController extends BaseController{
         }
 
         //stripe connected account details
-        $codes = ['cash', 'stripe', 'pagarme'];
+        $codes = ['cash', 'stripe', 'pagarme','razorpay'];
         $payout_creds = PayoutOption::whereIn('code', $codes)->where('status', 1)->get();
         if ($payout_creds) {
             foreach ($payout_creds as $creds) {
@@ -47,6 +47,12 @@ class VendorPayoutController extends BaseController{
                         if( (isset($creds_arr->client_id)) && !empty($creds_arr->client_id) ){
                             $stripe_redirect_url = $server_url."client/verify/oauth/token/stripe";
                             $creds->stripe_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$vendor.'&client_id='.$creds_arr->client_id.'&scope=read_write&redirect_uri='.$stripe_redirect_url;
+                        }
+                    }elseif($creds->code == 'razorpay'){
+                        $creds->razorpay_connect_url = '';
+                        if( (isset($creds_arr->client_id)) && !empty($creds_arr->client_id) ){
+                            $stripe_redirect_url = $server_url."client/verify/oauth/token/stripe";
+                            $creds->razorpay_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$vendor.'&client_id='.$creds_arr->client_id.'&scope=read_write&redirect_uri='.$stripe_redirect_url;
                         }
                     }
 
@@ -59,6 +65,7 @@ class VendorPayoutController extends BaseController{
                     }
                 }
             }
+            // dd($payout_creds->toArray());
         }
 
         // $ex_countries = ['INDIA'];

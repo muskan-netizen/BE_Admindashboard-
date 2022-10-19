@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Traits;
 
-use App\Http\Controllers\Front\{PromoCodeController,CartController};
+use App\Http\Controllers\Front\{PromoCodeController,CartController, FrontController};
 use App\Models\CaregoryKycDoc;
 use App\Models\Cart;
 use App\Models\CartDeliveryFee;
@@ -780,11 +780,12 @@ trait cartManager{
                         ->first();
 
                     $doller_compare = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
-                    $up_prods = $this->metaProduct($langId, $doller_compare, 'upSell', ($product->upSell ?? ''));
+                    $upsell = new FrontController();
+                    $up_prods = $upsell->metaProduct($langId, $doller_compare, 'upSell', ($product->upSell ?? ''));
                     if($up_prods){
                         $upSell_products->push($up_prods);
                     }
-                    $cross_prods = $this->metaProduct($langId, $doller_compare, 'crossSell', ($product->crossSell ?? ''));
+                    $cross_prods = $upsell->metaProduct($langId, $doller_compare, 'crossSell', ($product->crossSell ?? ''));
                     if($cross_prods){
                         $crossSell_products->push($cross_prods);
                     }

@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Front;
 
-
+use App\Http\Controllers\Api\v1\VendorSubscriptionController;
+use App\Http\Controllers\Client\VendorSubscriptionController as ClientVendorSubscriptionController;
 use Log;
 use Auth;
 use Illuminate\Http\Request;
@@ -198,6 +199,11 @@ class RazorpayGatewayController extends FrontController
             $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
             $returnUrl = route('user.subscription.plans');
             return $returnUrl;
+        }elseif($request->payment_from == 'vendor_subscription'){
+            $request->request->add(['payment_option_id' => 10, 'transaction_id' => $transactionId, 'amount' => $request->amount/100]);
+            $subscriptionController = new ClientVendorSubscriptionController();
+            $subscriptionController->purchaseSubscriptionPlan($request, '', $request->vendor_id,$request->subscription_id);
+            return true;
         }
         return route('order.return.success');
     }
