@@ -2170,7 +2170,7 @@ $(document).ready(function () {
     function cartHeader(address_id=null) {
         $(".shopping-cart").html("");
         $(".spinner-box").show();
-
+        OrderStorage.setStorageSingle('cartData',[]);
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -2187,7 +2187,8 @@ $(document).ready(function () {
                     var client_preference_detail = response.client_preference_detail;
 
                     if (cart_details!= undefined) {
-                         if (cart_details.products.length > 0) {
+                        OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
+                        if (cart_details.products.length > 0) {
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
 

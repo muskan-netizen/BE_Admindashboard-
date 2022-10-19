@@ -211,9 +211,9 @@ $(document).ready( async function () {
 
     //$(".navigation-tab-item").click(function() {
     $(document).on('click','.navigation-tab-item > a',function() {
-        if($.hasAjaxRunning()){
-            return false;
-        }
+        // if($.hasAjaxRunning()){
+        //     return false;
+        // }
         
       
         //$(".navigation-tab-item").removeClass("active");
@@ -248,9 +248,10 @@ $(document).ready( async function () {
         //     type = "delivery";
         // }
         nav_click_vendor_mode = 1;
-        if(!$.hasAjaxRunning()){
-            vendorType(latitude, longitude, type);
-        }
+        // if(!$.hasAjaxRunning()){
+        //     vendorType(latitude, longitude, type);
+        // }
+        setSession(type);
     });
 
     $('#remove_cart_modal').on("hide.bs.modal", function() {
@@ -272,11 +273,24 @@ $(document).ready( async function () {
         //     $('#takeaway_tab').addClass('active');
         // }
     })
-
+    async function setSession(type = "delivery"){
+        var cartData = (OrderStorage.getStorage('cartData') != '') ? JSON.parse(OrderStorage.getStorage('cartData')) : [];
+        if(cartData?.products.length > 0){
+            $("#remove_cart_modal").modal('show');
+            $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", cartData.id);
+            $(".nav-tabs.vendor_mods").attr("data-mod", type);
+            return false;
+        }
+        $.ajax({
+            type: "get",
+            dataType: 'json',
+            url: `/setSessionIndex?type=${type}`,
+            success: function (response) {
+               location.reload();
+            }
+        });
+    }
     async function vendorType(latitude, longitude, type = "delivery"){
-
-        // await  getHomePageCategoryMenu(latitude, longitude, type);
-        // await  getHomePage(latitude, longitude, type);
         $.ajax({
             type: "get",
             dataType: 'json',
