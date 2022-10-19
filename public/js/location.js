@@ -240,13 +240,7 @@ $(document).ready( async function () {
         if($("#address-longitude").length > 0){
             longitude = $("#address-longitude").val();
         }
-        // if(id == "dinein_tab"){
-        //     type = "dine_in";
-        // }else if(id == "takeaway_tab"){
-        //     type = "takeaway";
-        // }else{
-        //     type = "delivery";
-        // }
+       
         nav_click_vendor_mode = 1;
         // if(!$.hasAjaxRunning()){
         //     vendorType(latitude, longitude, type);
@@ -260,22 +254,12 @@ $(document).ready( async function () {
         $('.vendor_mods').find('.nav-link').removeClass('active');
         $('#'+session_vendor_type+'_tab').addClass('active');
         // location.reload();.
-        // if(session_vendor_type=="delivery")
-        // {
-        //     $('#delivery_tab').addClass('active');
-        // }
-        // if(session_vendor_type=="dine_in")
-        // {
-        //     $('#dinein_tab').addClass('active');
-        // }
-        // if(session_vendor_type=="takeaway")
-        // {
-        //     $('#takeaway_tab').addClass('active');
-        // }
+     
     })
     async function setSession(type = "delivery"){
         var cartData = (OrderStorage.getStorage('cartData') != '') ? JSON.parse(OrderStorage.getStorage('cartData')) : [];
-        if(cartData?.products.length > 0){
+        var cartProductCount = OrderStorage.getStorage('cartProductCount');
+        if(cartProductCount > 0){
             $("#remove_cart_modal").modal('show');
             $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", cartData.id);
             $(".nav-tabs.vendor_mods").attr("data-mod", type);

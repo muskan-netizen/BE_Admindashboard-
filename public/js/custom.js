@@ -2171,6 +2171,7 @@ $(document).ready(function () {
         $(".shopping-cart").html("");
         $(".spinner-box").show();
         OrderStorage.setStorageSingle('cartData',[]);
+        OrderStorage.setStorageSingle('cartProductCount',0);
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -2189,6 +2190,7 @@ $(document).ready(function () {
                     if (cart_details!= undefined) {
                         OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
                         if (cart_details.products.length > 0) {
+                            OrderStorage.setStorageSingle('cartProductCount',cart_details.products.length);
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
 
