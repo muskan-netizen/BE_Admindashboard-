@@ -440,8 +440,8 @@ if($showSubscriptionPlanPopUp == 1){
     }
     bindLatestCoords(userLatitude, userLongitude);
 
-    @if($client_preference_detail->hide_nav_bar == 1 ) 
     // || $set_common_business_type == 'taxi'
+    @if($client_preference_detail->hide_nav_bar == 1)
       $('.main-menu').addClass('d-none').removeClass('d-block');
       $('.menu-navigation').addClass('d-none').removeClass('d-block');
     @endif
@@ -495,9 +495,6 @@ if($showSubscriptionPlanPopUp == 1){
         }).then((result) => {
             return false;
         });
-    }
-    function setLanguageFile(){
-
     }
 </script>
 
