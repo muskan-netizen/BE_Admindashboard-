@@ -10,9 +10,12 @@
 .vendor-description .profile_address h3 {font-size: 24px;text-transform: capitalize;margin: 10px 0px 6px 0px;}
 .vendor-description .profile_address h4 {font-size: 16px; margin: 0px;color: #6c757d;}
 /* .vendor-description .profile_address ul.vendor-info li {padding: 2px 8px 3px 0px;} */
-.al_body_template_two .vendor-reviwes{padding: 0;position: absolute;right: 0px;}
+.al_body_template_two .vendor-description .vendor-reviwes{padding: 0;position: absolute;right: auto;left:0px;top:5px;}
 .al_body_template_six.homeHeader .product-bottom-bar{padding: 20px 10px;}
+.vendor-description .vendor-info .d-block.vendor-location{padding-left:0px;}
 .al_body_template_six.homeHeader .vendor-stories{background: transparent;}
+.vendor-description .vendor-details-left .vendor-location a {position: inherit !important;}
+.al_body_template_six .vendor-description .vendor-info .vendor-location{margin-bottom:10px;}
 
 </style>
 @endsection
@@ -59,7 +62,7 @@
                                     </div>
                                     <!-- <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-lg" alt="profile-image"> -->
                                 </div>
-                                <div class=" col-sm-2 ml-sm-1 position-relative profile_address">
+                                <div class="ml-sm-1 position-relative profile_address">
                                             <h3>{{ $vendor->name }}</h3>
                                             @if (!empty($vendor->desc))
                                                 <h4 title="{{ $vendor->desc }}" style="line-height: 24px">
