@@ -45,16 +45,16 @@ if (!function_exists('getAdditionalPreference')) {
         $user = ClientData::first();
         $return = [];
         $dbreturn= [];
-        // if(sizeof($key)){
-        //     $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => $user->code])->get() : [];
-        //     $return = array_column($result->toArray(), 'key_value', 'key_name');
-        //         if(sizeof($result)){
-        //         $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
-        //         }
-        //     $emp = array_diff($key,array_keys($dbreturn));
-        //     $emptyArr = array_fill_keys($emp, '');
-        //     $return = array_merge($emptyArr, $dbreturn);
-        // }
+        if(sizeof($key)){
+            $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => $user->code])->get() : [];
+            $return = array_column($result->toArray(), 'key_value', 'key_name');
+                if(sizeof($result)){
+                $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
+                }
+            $emp = array_diff($key,array_keys($dbreturn));
+            $emptyArr = array_fill_keys($emp, '');
+            $return = array_merge($emptyArr, $dbreturn);
+        }
         return $return;
     }
 }
