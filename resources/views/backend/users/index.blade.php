@@ -693,7 +693,7 @@
             if(result.value)
             {
                 syncHubspotData();
-               
+
             }else{
                return false;
             }
