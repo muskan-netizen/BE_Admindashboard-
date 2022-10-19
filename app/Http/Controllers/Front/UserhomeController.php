@@ -513,6 +513,10 @@ class UserhomeController extends FrontController
                 // $view_page = "home-template-six";
                 $view_page = "home-template-test-six";
             }
+            elseif(isset($set_template)  && $set_template->template_id == 8){
+                // $view_page = "home-template-six";
+                $view_page = "home-template-test-eight";
+            }
             //pr($set_template->toArray());exit();
             //pr(Session::get('latitude'));
             return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData]);

@@ -110,7 +110,25 @@ if(Auth::check()){
 	@endif
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/style-rtl.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/footer/footer.css')}}">
+
+@elseif(isset($set_template)  && $set_template->template_id == 8)
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/header/header.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/footer/footer.css')}}">
+	@if(Route::currentRouteName() == "userHome")
+	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/homepage/homepage.css')}}">
+	@else
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/homepage/inner_page.css')}}">
+	@endif
+	@if(Route::currentRouteName() == "homeTest")
+	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/homepage/homepage.css')}}">
+	@else
+
+	<link defer type="text/css" rel="stylesheet" href="{{asset('assets/css/thiredtemplate.css')}}">
+	@endif
+
 @endif
+
+
 
 @yield('css-links')
 <style type="text/css">
