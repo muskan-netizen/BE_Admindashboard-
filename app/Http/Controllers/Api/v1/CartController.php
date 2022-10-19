@@ -174,6 +174,9 @@ class CartController extends BaseController
             if($request->has('total_booking_time')){
                 $total_booking_time= $request->total_booking_time;
             }
+            if($request->has('additional_increments_hrs_min')){
+                $additional_increments_hrs_min=$request->additional_increments_hrs_min;
+            }
             foreach ($addon_options as $key => $opt) {
                 $addonSets[$addon_ids[$key]][] = $opt;
             }
@@ -259,6 +262,7 @@ class CartController extends BaseController
                     'start_date_time'=>$start_date_time,
                     'end_date_time'=>$end_date_time,
                     'total_booking_time'=>$total_booking_time,
+                    'additional_increments_hrs_min'=>$additional_increments_hrs_min,
                 ];
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)

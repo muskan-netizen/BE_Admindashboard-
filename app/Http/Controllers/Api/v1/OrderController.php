@@ -196,6 +196,7 @@ class OrderController extends BaseController
                     $order->schedule_dropoff = $cart->schedule_dropoff ?? null;
                     // $order->specific_instructions = $cart->specific_instructions ?? null;
                     $order->specific_instructions = $request->specific_instructions ?? null;
+                    $order->additional_price = $request->additional_price ?? null;
                     $order->is_gift = $request->is_gift ?? 0;
                     $order->user_latitude = $latitude ? $latitude : null;
                     $order->user_longitude = $longitude ? $longitude : null;
