@@ -215,7 +215,7 @@ a.agentInfo.d-block.black-box {
 .ellipsis{
     text-overflow: ellipsis;
     overflow: hidden;
-    white-space: nowrap;
+    /* white-space: nowrap; */
 }
 body .order-page .order_head {
     text-transform: capitalize;
