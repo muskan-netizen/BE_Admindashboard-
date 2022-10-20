@@ -127,6 +127,8 @@ class PickupDeliveryController extends FrontController{
         ->where($vendor_type, 1)
         ->where('status', 1)
         ->get();
+
+        
         foreach ($vendors as $vendor) {
             $vendor->is_show_category = ($vendor->vendor_templete_id == 1) ? 0 : 1;
             unset($vendor->products);
