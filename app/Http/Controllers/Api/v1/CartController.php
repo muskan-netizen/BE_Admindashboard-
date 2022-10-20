@@ -259,10 +259,10 @@ class CartController extends BaseController
                     'variant_id'  => $request->product_variant_id,
                     'currency_id' => $client_currency->currency_id,
                     'luxury_option_id' => $luxury_option ? $luxury_option->id : 1,
-                    'start_date_time'=>$start_date_time,
-                    'end_date_time'=>$end_date_time,
-                    'total_booking_time'=>$total_booking_time,
-                    'additional_increments_hrs_min'=>$additional_increments_hrs_min,
+                    'start_date_time'=>$start_date_time ?? null,
+                    'end_date_time'=>$end_date_time ?? null,
+                    'total_booking_time'=>$total_booking_time ?? null,
+                    'additional_increments_hrs_min'=>$additional_increments_hrs_min ?? null,
                 ];
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)
