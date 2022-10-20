@@ -511,10 +511,11 @@ if (!function_exists('showSlot')) {
             $myDate = date('Y-m-d');
             $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
         }
+        $slots = [];
         $mytime =$mytime->dayOfWeek+1;
         if ($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry') {
-            $slots = VendorSlot::where('vendor_id', $vid)->where('slot_type', $slot_type)->whereHas('days', function ($q) use ($mytime, $type) {
-                return $q->where('day', $mytime)->where($type, '1');
+            $slots = VendorSlot::where('vendor_id', $vid)->where('slot_type', $slot_type)->whereHas('days', function ($q) use ($mytime) {
+                return $q->where('day', $mytime)->where('laundry', '1');
             })->get();
         } else {
             $slots = VendorSlot::where('vendor_id', $vid)
@@ -523,6 +524,7 @@ if (!function_exists('showSlot')) {
         })
         ->get();
         }
+
 
         // check if vendor has added slots. if not added then no need to execute this.
         if (isset($slots) && count($slots)>0) {
