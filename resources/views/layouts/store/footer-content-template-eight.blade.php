@@ -11,7 +11,7 @@ $applocale = session()->get('applocale');
 }
 @endphp
 </article>
-</article>
+
 @if($clientData->whatsapp_url)
 <div class="royo_whatsapp_img">
     <a href="{{$clientData->whatsapp_url}}" target="_blank">
