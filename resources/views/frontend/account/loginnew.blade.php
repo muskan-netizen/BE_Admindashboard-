@@ -11,7 +11,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 <section class="wrapper-main py-lg-5 py-3 d-flex align-items-center">
     <div class="container">
         <div class="row align-items-center h-100" id="login-section">
-            <div class="col-lg-6 mb-lg-0 mb-3 text-center pb-sm-0 {{($getAdditionalPreference['is_phone_signup'] == 1) ? 'offset-lg-3' : 'border-right' }}">
+            <div class="col-lg-6 mb-lg-0 mb-3 text-center pb-sm-0 {{(@$getAdditionalPreference['is_phone_signup'] == 1) ? 'offset-lg-3' : 'border-right' }}">
                 <h3 class="mb-2">{{ __('Login To Your Account') }}</h3>
                 @if(session('preferences'))
                 @if(@session('preferences')->fb_login == 1 || @session('preferences')->twitter_login == 1 || @session('preferences')->google_login == 1 || @session('preferences')->apple_login == 1)
@@ -118,7 +118,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                     </div>
                 </div>
             </div>
-            @if($getAdditionalPreference['is_phone_signup'] != 1)
+            @if(@$getAdditionalPreference['is_phone_signup'] != 1)
             <div class="col-lg-6 text-center">
                 <h3 class="mb-md-3 mb-2">{{ __('New Customer') }}</h3>
                 <div class="create_box">
@@ -127,7 +127,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                     <h6>{{ __('Create a free account and join us!') }}</h6>
                     <a href="{{route('customer.register')}}" class="btn btn-solid mt-2">{{ __('Create An Account') }}</a>
                 </div>
-            </div>  
+            </div>
             @endif
         </div>
         <div class="row justify-content-center" id="verify-phone-section" style="display:none">
