@@ -469,6 +469,7 @@ trait cartManager{
                 $total_markup_fee_tax = 0;
                 /* Getting in Vendor product loop and setting product values*/
                 $vendorTotalDeliveryFee = 0;
+                $previousdeliveryfee = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
                   $slotsDate = findSlot('',$vendorData->vendor->id,'','webFormet');
                  
@@ -675,11 +676,19 @@ trait cartManager{
                                 $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                 if (count($deliveries)>1) {
                                     foreach ($deliveries as $k=> $opt) {
-                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($vendorTotalDeliveryFee + $opt['rate']).'</option>';
+                                        if(!empty($prod->product->individual_delivery_fee) && ($prod->product->individual_delivery_fee == 1)) {
+                                            $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($vendorTotalDeliveryFee + $previousdeliveryfee).'</option>';
+                                        }else{
+                                            $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($vendorTotalDeliveryFee + $opt['rate']).'</option>';
+                                        }
                                     }
                                 } else {
                                     foreach ($deliveries as $k=> $opt) {
-                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($vendorTotalDeliveryFee + $opt['rate']).'</option>';
+                                        if(!empty($prod->product->individual_delivery_fee) && ($prod->product->individual_delivery_fee == 1)) {
+                                            $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($vendorTotalDeliveryFee + $previousdeliveryfee).'</option>';
+                                        }else{
+                                            $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($vendorTotalDeliveryFee + $opt['rate']).'</option>';
+                                        }
                                     }
                                 }
                                 $select .= '</select>';
@@ -700,7 +709,14 @@ trait cartManager{
                                     $deliveryCharges = ($vendorTotalDeliveryFee + $deliveries[0]['rate']);
                                     $code = $deliveries[0]['code'];
                                 }
-                                $vendorTotalDeliveryFee = (isset($deliveryCharges) && !empty($deliveryCharges))?$deliveryCharges:0;
+
+                                if(!empty($prod->product->individual_delivery_fee) && ($prod->product->individual_delivery_fee == 1)) {
+                                    $vendorTotalDeliveryFee = (isset($deliveryCharges) && !empty($deliveryCharges))?$deliveryCharges:0;
+                                    $previousdeliveryfee = 0;
+                                }else{
+                                    $previousdeliveryfee = (isset($deliveryCharges) && !empty($deliveryCharges))?$deliveryCharges:0;
+                                }
+                                
                             }
 
                             if (isset($deliveryCharges) && !empty($deliveryCharges)) {
