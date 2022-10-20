@@ -488,7 +488,7 @@ $timezone = Auth::user()->timezone;
                                         <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                                         <td>
                                             {{-- <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}</div> --}}
-                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount,2)}}</div> 
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount,2)}}</div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -828,7 +828,7 @@ $timezone = Auth::user()->timezone;
                         that.addClass("completed");
                         if (status_option_id == 2) {
                             if(reload_page ==1 || reload_page == '1'){
-                                setTimeout(function(){location.reload();}, 2500);
+                                // setTimeout(function(){location.reload();}, 2500);
                             }
                             that.next('li').remove();
                         }
@@ -839,7 +839,7 @@ $timezone = Auth::user()->timezone;
                         $('#text_muted_' + status_option_id).html('<small class="text-muted">' + response.created_date + '</small>');
                         if (status_option_id == 2 || status_option_id == 4)
                             $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                        //location.reload();
+                        location.reload();
                     },
                 });
             }else{

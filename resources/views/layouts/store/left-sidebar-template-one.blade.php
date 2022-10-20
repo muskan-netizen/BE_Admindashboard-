@@ -171,30 +171,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                     aria-controls="profile" aria-selected="false">{{$NomenclatureName}}</a> </li>
                                     @endif
                                 @endforeach
-                                    {{-- @if($client_preference_detail->delivery_check==1) @php
-                                    $Delivery=getNomenclatureName('Delivery', true);
-                                    $Delivery=($Delivery==='Delivery') ?
-                                    __('Delivery') : $Delivery; @endphp
-                                    <li class="navigation-tab-item" role="presentation"> <a
-                                            class="nav-link {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}"
-                                            id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab"
-                                            aria-controls="profile" aria-selected="false">{{$Delivery}}</a> </li>
-                                    @endif @if($client_preference_detail->dinein_check==1) @php
-                                    $Dine_In=getNomenclatureName('Dine-In', true);
-                                    $Dine_In=($Dine_In==='Dine-In') ?
-                                    __('Dine-In') : $Dine_In; @endphp
-                                    <li class="navigation-tab-item" role="presentation"> <a
-                                            class="nav-link {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}"
-                                            id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab"
-                                            aria-controls="dinein_tab" aria-selected="false">{{$Dine_In}}</a> </li>
-                                    @endif @if($client_preference_detail->takeaway_check==1)
-                                    <li class="navigation-tab-item" role="presentation"> @php
-                                        $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway')
-                                        ? __('Takeaway') : $Takeaway; @endphp <a
-                                            class="nav-link {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}"
-                                            id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab"
-                                            aria-controls="takeaway_tab" aria-selected="false">{{$Takeaway}}</a> </li>
-                                    @endif --}}
+                                  
                                 <div class="navigation-tab-overlay"></div>
                             </ul>
                             @endif
@@ -546,48 +523,46 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                     @if($cate['name'])
                                     <li class="al_main_category">
 
-                                        @if ($client_preference_detail->view_get_estimation_in_category == 1 && $client_preference_detail->business_type == "laundry")
-                                            <a href="/get-estimation#{{$cate['slug']}}">
-                                                @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='homeTest'))
-                                                <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
-                                                @endif{{$cate['name']}}
-                                            </a>
-                                        @else
-                                            <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='homeTest'))
-                                                <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
-                                                @endif{{$cate['name']}}
-                                            </a>
-                                        @endif
+                                @if ($client_preference_detail->view_get_estimation_in_category == 1 && $client_preference_detail->business_type == "laundry")
+                                    <a href="/get-estimation#{{$cate['slug']}}">
+                                        @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='homeTest'))
+                                        <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
+                                        @endif{{$cate['name']}}
+                                    </a>
+                                @else
+                                    <a href="{{route('categoryDetail', $cate['slug'])}}">
+                                        @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='homeTest'))
+                                        <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
+                                        @endif{{$cate['name']}}
+                                    </a>
+                                @endif
 
-                                        @if(!empty($cate['children']))
-                                        <ul class="al_main_category_list">
-                                            @foreach($cate['children'] as $childs)
-                                            <li>
-                                                <a href="{{route('categoryDetail', $childs['slug'])}}"><span
-                                                        class="new-tag">{{$childs['name']}}</span></a>
-                                                @if(!empty($childs['children']))
-                                                <ul class="al_main_category_sub_list">
-                                                    @foreach($childs['children'] as $chld)
-                                                    <li><a
-                                                            href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a>
-                                                    </li>
-                                                    @endforeach
-                                                </ul>
-                                                @endif
+                                @if(!empty($cate['children']))
+                                <ul class="al_main_category_list">
+                                    @foreach($cate['children'] as $childs)
+                                    <li>
+                                        <a href="{{route('categoryDetail', $childs['slug'])}}"><span
+                                                class="new-tag">{{$childs['name']}}</span></a>
+                                        @if(!empty($childs['children']))
+                                        <ul class="al_main_category_sub_list">
+                                            @foreach($childs['children'] as $chld)
+                                            <li><a
+                                                    href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a>
                                             </li>
                                             @endforeach
                                         </ul>
                                         @endif
                                     </li>
-                                    @endif
                                     @endforeach
                                 </ul>
-                            </div>
-                        </div>
+                                @endif
+                            </li>
+                            @endif
+                            @endforeach
+                        </ul>
                     </div>
+                </div>
             </div>
-        </div>
     </div>
     @endif
 </article>
