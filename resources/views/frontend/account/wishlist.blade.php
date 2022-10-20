@@ -131,7 +131,11 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                                                         <h4 class="m-0">{{ $wish['product']['translation_title'] }}</h4>
                                                     </div>
                                                 </td>
-                                                <td>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($wish['product']['variant_price'])) : Session::get('currencySymbol').decimal_format($wish['product']['variant_price'])}}</td>
+                                                <td>@if( $additionalPreference["is_token_currency_enable"]) 
+                                                {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($wish['product']['variant_price'])) }}
+                                                @else
+                                                {{ Session::get('currencySymbol').decimal_format($wish['product']['variant_price'])}}
+                                                @endif</td>
                                                 <td>{{ dateTimeInUserTimeZone($wish['added_on'], $timezone, true, false) }}</td>
                                                 <td>
                                                     @if(empty($wish['product']['deleted_at']))
