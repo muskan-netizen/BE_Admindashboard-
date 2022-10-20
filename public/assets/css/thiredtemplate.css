@@ -112,6 +112,7 @@ select#order_type {font-size: 12px;height: 30px;padding: 0 5px !important;margin
 .al_body_template_three .search_form.d-flex.align-items-center.justify-content-between.border input#vendor_search_box {
 padding: 0 0 0 10px;
 }
+
 .al_body_template_three .outer-box {
 min-height: auto;
 }
