@@ -469,8 +469,7 @@ class UserhomeController extends FrontController
 
             if (count($home_page_labels) == 0)
                 $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
-              
-            $request->merge(['type'=>Session::get('vendorType'),'noTinJson'=>1] );
+            $request->request->add(['type'=>Session::get('vendorType')??'delivery','noTinJson'=>1] );
             $homePageData = $this->postHomePageData($request);
 
             $home_page_labels = $home_page_labels->map(function($da) use ($homePageData) {
@@ -615,7 +614,6 @@ class UserhomeController extends FrontController
         }else{
             $brands = [];
         }
-
 
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);

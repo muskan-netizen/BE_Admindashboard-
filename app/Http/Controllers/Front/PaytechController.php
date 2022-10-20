@@ -87,10 +87,11 @@ class PaytechController extends FrontController
     public function createHash(Request $request)
     {
         $order_number =  $this->orderNumber($request);
+        $customerCurrency = Session::has('customerCurrency') ? Session::get('customerCurrency') : ( (!empty($customerCurrency)) ? $customerCurrency : 'USD' );
         //['XOF', 'EUR', 'USD', 'CAD','GBP','MAD']
         //orderProductDetails($order_id)
         $amt = $this->getDollarCompareAmount($request->amt);
-        $postFields = array ("item_name" => 'Test Item', "item_price" => $amt , "currency" => "USD" , "ref_command" =>   'testing'.$order_number , "command_name" =>   'Testing gateway' , "env" =>   $this->env , "success_url" =>   route('paytech.success').'?oid='.$order_number , "ipn_url" => 'https://royo-order.com/payment/paytech/success' , "cancel_url" =>  route('paytech.fail').'?oid='.$order_number , "custom_field" =>'testing'.$order_number); 
+        $postFields = array ("item_name" => 'Test Item', "item_price" => $amt , "currency" => $customerCurrency , "ref_command" =>   'testing'.$order_number , "command_name" =>   'Testing gateway' , "env" =>   $this->env , "success_url" =>   route('paytech.success').'?oid='.$order_number , "ipn_url" => 'https://royo-order.com/payment/paytech/success' , "cancel_url" =>  route('paytech.fail').'?oid='.$order_number , "custom_field" =>'testing'.$order_number); 
         $jsonResponse = $this->post ($this->app_url.'/payment/request-payment',$postFields,["API_KEY: " . $this->api_key , "API_SECRET: " . $this->api_secret]); 
         return $jsonResponse;
     }
