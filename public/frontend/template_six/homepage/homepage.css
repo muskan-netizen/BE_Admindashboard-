@@ -285,14 +285,11 @@ background-color: #232323;
 
 /*responsive css add */
 @media (max-width:576px){
+    html,body {overflow-x: hidden;}
 .al_body_template_six .cab-banner-area .card-box{padding: 18px;}
 .cab-footer button {width: 100%;}
 .menu-navigation{overflow: visible;}
-.pixelstrap li:hover ul{
-    display: block;
-    position: absolute;
-    left: auto;
-    top: auto;
-    z-index: 11111;
-}
+.pixelstrap li:hover ul{display: block;position: absolute;left: auto;top: auto;z-index: 11111;}
+.age-restriction {padding-right: 0px !important;}
+
 }

@@ -31,6 +31,8 @@ body .cab-booking #booking-map{height: 50vh!important;position: relative !import
 body .booking-experience{height: 100%;position: relative;width: 100%;left: 0;top: 0;margin-bottom: 160px;}
 .cab-booking{height: 100%;}
 }
+
+
 /* ============================== cab booking code css =============================== */
 
 .cart-main-box-inside ul,
@@ -476,4 +478,9 @@ span.registerLink{text-align: center;width: 100%;margin-top: 10px;display: block
 
 @media(max-width:1400px){
 .pricingtable-header.position-absolute .price-value{font-size: 14px;}
+}
+
+@media (max-width:576px){
+    .al_body_template_six .al_new_wrapper_design .vendor-description{padding:20px 20px !important;}
+    .mobile-searchbarr select {width: 100%;}
 }

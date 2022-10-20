@@ -6,7 +6,7 @@
     border-radius: 4px;border: 1px dotted#938a8a;background-color: #f8f1f8;}.social-icon-list {
     width: 100%;max-width: 90%;}.social-icon-list .modal-body {text-align: center;}.social-icon-list .modal-body .text-center a img {width: 40px;}
 .social-icon-list .modal-body .text-center {display: inline-block;margin: 0px 6px;}.profile_address ul.vendor-info li.d-block.vendor-location a span {font-size: 13px;}.profile_address ul.vendor-info li.d-block.vendor-location a img {width: 12px;}
-.vendor-description .vendor-details-left .vender-icon .vendor-stories a img {width: 110px;height: 110px;}
+/* .vendor-description .vendor-details-left .vender-icon .vendor-stories a img {width: 110px;height: 110px;} */
 .vendor-description .profile_address h3 {font-size: 24px;text-transform: capitalize;margin: 10px 0px 6px 0px;}
 .vendor-description .profile_address h4 {font-size: 16px; margin: 0px;color: #6c757d;}
 /* .vendor-description .profile_address ul.vendor-info li {padding: 2px 8px 3px 0px;} */
@@ -160,7 +160,7 @@
 
                         <div class="row">
                             <div class="col-12">
-                                <div class="col-sm-6 offset-3">
+                                <div class="col-sm-6 mobile-searchbarr offset-sm-3">
                                     <div class="row  d-flex align-items-start justify-content-center m-0">
                                         <div class="col-7 vendor-search-bar mb-sm-0 mb-2 p-0">
                                             <div class="radius-bar w-100">

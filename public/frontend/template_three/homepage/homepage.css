@@ -118,7 +118,7 @@ article#page-container section .vendors section{padding:20px 0 !important;margin
 /* car bar css end */
 
 @media (max-width:576px){
-    .menu-navigation{overflow: visible;}
+    .menu-navigation{overflow: visible;}.age-restriction{padding-right:0px !important;}
 .pixelstrap li:hover ul{
     display: block;
     position: absolute;

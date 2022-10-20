@@ -350,9 +350,18 @@ li.mobile-menu-btn.d-sm-inline-block.d-none,.main-menu .menu-right .icon-nav li.
 body.al_body_template_one .cab-footer button {
     height: 50px !important;line-height: 20px !important;width:100%;
 }
+.footer-theme .sub-title li .al_QRcode a{padding-bottom: 50px;}
 .cab-banner-area .card-box{
     padding:20px !important;
 }
+ul.exzoom_img_ul {
+    min-height: auto;
+}
+.mobile-searchbarr select {width: 100%;}
+.al_body_template_two .al .product-right .product-description .qty-box {
+    justify-content: center;
+}
+.al .product-right div#product_variant_wrapper h3{width:100%;}
 body.al_body_template_two .cab-footer button {
     height: 50px !important;
     line-height: 20px !important;width:100%;

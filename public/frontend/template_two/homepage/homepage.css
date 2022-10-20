@@ -133,6 +133,7 @@ padding-bottom: 100%;
 }
 
 @media (max-width:576px){
+    html,body{overflow-x: hidden;}
     .menu-navigation{overflow: visible;}
 .pixelstrap li:hover ul{
     display: block;
