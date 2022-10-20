@@ -236,4 +236,98 @@ class RazorpayGatewayController extends FrontController
             }
             return route('order.return.success');
     }
+
+    public function razorpay_create_contact($request)
+    {
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://api.razorpay.com/v1/contacts',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS =>'{
+        "name": "Inderjit Singh Dev",
+        "email": "inderjit@yopmail.com",
+        "contact": 9123456744,
+        "type": "vendor",
+        "reference_id": "Inder@123",
+        "notes":{
+            "notes_key_1":"Tea, Earl Grey, Hot",
+            "notes_key_2":"Tea, Earl Grey… decaf."
+        }
+        }',
+        CURLOPT_HTTPHEADER => array(
+            'Authorization: Basic cnpwX3Rlc3RfRXpBRlVtRkI1dE5vSjI6SXRqUVU0WnpkYTVmWDlVNGhXd3ZGbFRw',
+            'Content-Type: application/json'
+        ),
+        ));
+
+        $response = curl_exec($curl);
+
+
+    }
+
+
+
+        private function postCurl($endpoint,$data,$token=null):object{
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $endpoint);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_ENCODING, '');
+            curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 0);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION,true);
+            curl_setopt($ch, CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST,'POST');
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($data));
+            $headers = array();
+            $headers[] = 'Accept: */*';
+            $headers[] = "Authorization: Bearer ${token}";
+            $headers[] = 'Content-Type: application/json';
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+                echo 'Error:' . curl_error($ch);
+            }
+            curl_close($ch);
+            return json_decode($result); 
+        }
+
+        private function getCurl($endpoint,$data,$token=null):object{
+
+            $curl = curl_init();
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $this->api_url.''.$endpoint);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+            if($data)
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
+
+
+            $headers = array();
+            $headers[] = 'Accept: */*';
+            if(!is_null($token)){
+                $headers[] = "Authorization: Bearer $token";
+            }
+            $headers[] = 'Content-Type: application/json';
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+                echo 'Error:' . curl_error($ch);
+            }
+                curl_close($ch);
+                dd($result); 
+        }
+
+
 }

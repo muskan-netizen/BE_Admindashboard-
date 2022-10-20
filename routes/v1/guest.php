@@ -40,7 +40,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('homepage', 'Api\v1\HomeController@homepage');
         Route::post('get/subcategory/vendor', 'Api\v1\HomeController@getSubcategoryVendor');
         Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
-        Route::post('header', 'Api\v1\HomeController@headerContent');
+        Route::post('header', 'Api\v1\HomeController@main');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
         Route::get('getAllProductTags', 'Api\v1\ProductController@getAllProductTags');
         Route::post('get-products', 'Api\v1\ProductController@productList');

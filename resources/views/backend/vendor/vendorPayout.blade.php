@@ -269,6 +269,9 @@
                                                 <button type="button" class="btn btn-info waves-effect text-sm-right" onclick="location.href='{{$stripe_connect_url}}'">{{ __("Connect to Stripe") }}</button>
                                             @endif
                                         @endif --}}
+
+                                        <button type="button" class="btn btn-info waves-effect text-sm-right ml-2" data-toggle="modal" data-target="#razorpay-connect-modal">{{ __("Razorpay Connect") }}</button>
+
                                         <button type="button" class="btn btn-info waves-effect text-sm-right ml-2" data-toggle="modal" data-target="#pay-receive-modal">{{ __("Payout") }}</button>
                                     </div>
                                     <div class="col-md-12">
@@ -294,6 +297,34 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="razorpay-connect-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none" aria-modal="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h4 class="modal-title">Razorpay Connect Back Details</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                    <div class="modal-body px-3 py-0">
+                        <div class="row">
+                         
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                   <button class="btn btn-primary" id="razorpay_connect" type="button" >Create Contact</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <button class="btn btn-primary" id="razorpay_add_bank" type="button" >Connect with Bank</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             </div>
         </div>
     </div>
