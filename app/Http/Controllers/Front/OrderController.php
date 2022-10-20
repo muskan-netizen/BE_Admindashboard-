@@ -955,8 +955,9 @@ class OrderController extends FrontController
                     $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
                     $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
                     //echo  "<br>payable_amount: ".$payable_amount."+ quantity_price: ".$quantity_price ;
+                    dump("Start --------------- ".$payable_amount); 
                     $payable_amount = $payable_amount + $quantity_price ;
-                   
+                    dump("Payable amount ------ ".$payable_amount); 
                     //$payable_amount = $payable_amount + $quantity_price;
                     //$vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     //$vendor_payable_amount = $vendor_payable_amount + $quantity_price;
@@ -1126,13 +1127,13 @@ class OrderController extends FrontController
                             // }
                         }
                     }
-                   
+                
                 $vendor_service_fee_percentage_amount = 0;
                 if ($vendor_cart_product->vendor->service_fee_percent > 0) {
                     $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100;
                     $payable_amount += $vendor_service_fee_percentage_amount;
                 }
-
+                dump("+Service fee ---------".$payable_amount); 
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
                     if ($cart_addons) {
                         foreach ($cart_addons as $cart_addon) {
@@ -1164,7 +1165,9 @@ class OrderController extends FrontController
         //        $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
                 //echo  "    payable_amount==".$payable_amount;
                 }
+                dump("After +SF ------------".$payable_amount);
                 $payable_amount+= $vendor_total_container_charges;
+                dump("+Container_charges ---".$payable_amount); 
             
                 //echo "vendor_total_container_charges: ".$vendor_total_container_charges."payable_amount: ".$payable_amount."<br>";
                 
@@ -1217,7 +1220,9 @@ class OrderController extends FrontController
                 $vendor_payable_amount += $delivery_fee;
                 $vendor_payable_amount += $vendor_taxable_amount;
 
+                
                 $payable_amount+= $additionalPrice;
+                dump("+Additional Price ----".$payable_amount); 
                 $totalAdditionalPrice+= $additionalPrice;
 
 
@@ -1297,8 +1302,10 @@ class OrderController extends FrontController
             $order->total_discount = $total_discount;
              // $order->taxable_amount = $taxable_amount;
             //$new_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
-            $order->taxable_amount = $total_taxable_amount; 
+            $order->taxable_amount = $total_taxable_amount;
+            dump("Delivery_fee---- ".$total_delivery_fee);
             $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
+            dump("+Delivery_fee -Total_disco ".$payable_amount);
             if ($loyalty_amount_saved > 0) {
                 if ($loyalty_amount_saved > $payable_amount) {
                     $loyalty_amount_saved = $payable_amount;
@@ -1306,6 +1313,7 @@ class OrderController extends FrontController
                 }
             }
             $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
+            dump("+Fixed_fee -Loyalty_amount ".$payable_amount);
             $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
             $wallet_amount_used = 0;
             if ($user) {
@@ -1323,6 +1331,7 @@ class OrderController extends FrontController
                 }
             }
             $payable_amount = $payable_amount - $wallet_amount_used;
+            dump("-Wallet_amount ---------- ".$payable_amount);
             $tip_amount = 0;
             if (isset($request->tip)) {
                 $request->tip = str_replace(',', '', $request->tip);
@@ -1339,6 +1348,7 @@ class OrderController extends FrontController
             
             // $payable_amount = $payable_amount + $tip_amount + $total_taxable_amount+$total_other_taxes;
             $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
+            dd("Last -------------------- ".$payable_amount);
             //echo  " Total payable_amount2=".$payable_amount."; <br>";
             $order->total_service_fee = $total_service_fee;
             $order->total_delivery_fee = $total_delivery_fee;
