@@ -2,20 +2,15 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use DB;
 use Auth;
-use Session;
-use DataTables;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Traits\ChatTrait;
 use App\Http\Traits\GlobalFunction;
 use Illuminate\Support\Facades\Http;
 
 
-use App\Models\{Client, Order, UserVendor, ClientPreference, LoyaltyCard,OrderProductRating};
+use App\Models\{Client, UserVendor};
 
 class ChatController extends BaseController
 {
@@ -40,7 +35,15 @@ class ChatController extends BaseController
     
             return $next($request);
         });
-    }
+    }    
+    /**
+     * getChatRoom
+     *
+     * @param  mixed $vendor_id
+     * @param  mixed $type
+     * @param  mixed $sub_domain
+     * @return void
+     */
     public function getChatRoom($vendor_id,$type,$sub_domain){
         try {
             $clientData = $this->client_data;
@@ -66,7 +69,15 @@ class ChatController extends BaseController
         
 
     }
-
+    
+    /**
+     * getChatRoomForUser
+     *
+     * @param  mixed $order_user_id
+     * @param  mixed $type
+     * @param  mixed $sub_domain
+     * @return void
+     */
     public function getChatRoomForUser($order_user_id,$type,$sub_domain){
         try {
             $clientData = $this->client_data;
@@ -94,7 +105,13 @@ class ChatController extends BaseController
         }
   
 
-    }
+    }    
+    /**
+     * vendorUserChatRoom
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function vendorUserChatRoom(Request $request){
 
         try {
@@ -118,7 +135,13 @@ class ChatController extends BaseController
 
     }
 
-
+    
+    /**
+     * userVendorChatRoom
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function userVendorChatRoom(Request $request){
         try {
             $user = Auth::user();
@@ -203,7 +226,13 @@ class ChatController extends BaseController
         }
         
     }
-
+    
+    /**
+     * fetchOrderDetail
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function fetchOrderDetail(Request $request){
         try {
             $orderData = $this->OrderVendorDetail($request);
@@ -216,7 +245,13 @@ class ChatController extends BaseController
             
     }
 
-
+    
+    /**
+     * userAgentChatRoom
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function userAgentChatRoom(Request $request){
         try {
             $user = Auth::user();
@@ -235,7 +270,13 @@ class ChatController extends BaseController
         
 
     }
-
+    
+    /**
+     * sendNotificationToUser
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function sendNotificationToUser(Request $request){
         try {
             $notiFY = $this->sendNotification($request);

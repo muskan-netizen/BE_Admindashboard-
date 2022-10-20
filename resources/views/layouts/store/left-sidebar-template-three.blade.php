@@ -24,6 +24,7 @@ $pages = \App\Models\Page::with([
     })
     ->orderBy('order_by', 'ASC')
     ->get();
+   
 @endphp
 @section('css')
 
@@ -36,6 +37,11 @@ $pages = \App\Models\Page::with([
     <div class="cab-booking-header">
         <div class="container">
             <div class="row align-items-center">
+                <div class="col-sm-3 col-md-2">
+                    <a class="navbar-brand mr-3"  href="{{ route('userHome') }}">
+                        <img class="logo-image" style="height:50px;" alt="" src="{{$urlImg}}">
+                    </a>
+                </div>
                 <div class="col-sm-9 col-md-10 top-header bg-transparent">
                     <ul class="header-dropdown d-flex align-items-center justify-content-md-end justify-content-center">
                         @if ($client_preference_detail->header_quick_link == 1)
@@ -165,8 +171,8 @@ $pages = \App\Models\Page::with([
                                         @endphp
 
                                         @if($client_preference_detail->$clientVendorTypes == 1)
-                                        <li class="navigation-tab-item pr-lg-3" role="presentation">
-                                        <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
+                                        <li class="navigation-tab-item pr-lg-2" role="presentation">
+                                            <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
                                         id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
                                         aria-controls="profile" aria-selected="false">
                                         <span class="al_tabsIcons">
@@ -176,21 +182,21 @@ $pages = \App\Models\Page::with([
                                         @endif
                                     @endforeach
                                 {{-- @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
-                                    <li class="navigation-tab-item pr-lg-3" role="presentation">
+                                    <li class="navigation-tab-item pr-lg-2" role="presentation">
                                         <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
                                             <span class="al_tabsIcons"><img src="{{$client_preference_detail->deliveryicon ? $client_preference_detail->deliveryicon['proxy_url'].'36/36'.$client_preference_detail->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" alt=""></span>
                                             <span class="al_textTabsText">{{$Delivery}} </span>
                                         </a>
                                     </li>
                                     @endif @if($client_preference_detail->dinein_check==1) @php $Dine_In=getNomenclatureName('Dine-In', true); $Dine_In=($Dine_In==='Dine-In') ? __('Dine-In') : $Dine_In; @endphp
-                                    <li class="navigation-tab-item pr-lg-3 " role="presentation">
+                                    <li class="navigation-tab-item pr-lg-2 " role="presentation">
                                         <a class="nav-link px-0 al_dinein d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
                                             <span class="al_tabsIcons"><img src="{{$client_preference_detail->dineinicon ? $client_preference_detail->dineinicon['proxy_url'].'36/36'.$client_preference_detail->dineinicon['image_path'] : asset('images/al_custom1.png')}}" alt=""></span>
                                            <span class="al_textTabsText"> {{$Dine_In}} </span>
                                         </a>
                                     </li>
                                     @endif @if($client_preference_detail->takeaway_check==1)
-                                    <li class="navigation-tab-item  pr-lg-3" role="presentation">
+                                    <li class="navigation-tab-item  pr-lg-2" role="presentation">
                                         @php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
                                         <a class="nav-link px-0 al_takeway d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
                                             <span class="al_tabsIcons"><img src="{{$client_preference_detail->takewayicon ? $client_preference_detail->takewayicon['proxy_url'].'36/36'.$client_preference_detail->takewayicon['image_path'] : asset('images/al_custom2.png')}}" alt=""></span>
@@ -216,7 +222,7 @@ $pages = \App\Models\Page::with([
                                         @endphp
 
                                         @if($client_preference_detail->$clientVendorTypes == 1)
-                                        <li class="navigation-tab-item pr-lg-3" role="presentation">
+                                        <li class="navigation-tab-item pr-lg-2" role="presentation">
                                         <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
                                         id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
                                         aria-controls="profile" aria-selected="false">
@@ -227,21 +233,21 @@ $pages = \App\Models\Page::with([
                                         @endif
                                     @endforeach
                                     {{-- @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
-                                    <li class="navigation-tab-item pr-lg-3" role="presentation">
+                                    <li class="navigation-tab-item pr-lg-2" role="presentation">
                                         <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
                                             <span class="al_tabsIcons"><img src="{{$client_preference_detail->deliveryicon ? $client_preference_detail->deliveryicon['proxy_url'].'18/18'.$client_preference_detail->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" alt=""></span>
                                             <span class="al_textTabsText">{{$Delivery}} </span>
                                         </a>
                                     </li>
                                     @endif @if($client_preference_detail->dinein_check==1) @php $Dine_In=getNomenclatureName('Dine-In', true); $Dine_In=($Dine_In==='Dine-In') ? __('Dine-In') : $Dine_In; @endphp
-                                    <li class="navigation-tab-item pr-lg-3 " role="presentation">
+                                    <li class="navigation-tab-item pr-lg-2 " role="presentation">
                                         <a class="nav-link px-0 al_dinein d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
                                             <span class="al_tabsIcons"><img src="{{$client_preference_detail->dineinicon ? $client_preference_detail->dineinicon['proxy_url'].'18/18'.$client_preference_detail->dineinicon['image_path'] : asset('images/al_custom1.png')}}" alt=""></span>
                                            <span class="al_textTabsText"> {{$Dine_In}} </span>
                                         </a>
                                     </li>
                                     @endif @if($client_preference_detail->takeaway_check==1)
-                                    <li class="navigation-tab-item  pr-lg-3" role="presentation">
+                                    <li class="navigation-tab-item  pr-lg-2" role="presentation">
                                         @php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
                                         <a class="nav-link px-0 al_takeway d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
                                             <span class="al_tabsIcons"><img src="{{$client_preference_detail->takewayicon ? $client_preference_detail->takewayicon['proxy_url'].'18/18'.$client_preference_detail->takewayicon['image_path'] : asset('images/al_custom2.png')}}" alt=""></span>
@@ -290,11 +296,8 @@ $pages = \App\Models\Page::with([
                                             </span> </li> -->
                                             <li class="onhover-div pl-0 shake-effect">
                                                 @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
-                                                <a class="btn btn-solid d-flex align-items-center " href="{{route('showCart')}}">
-                                                    <span class="mr-1"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-</span>
+                                                <a class="btn btn-solid d-flex align-items-center p-0" href="{{route('showCart')}}">
+                                                    <span class="mr-1"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
 
                                                     <!-- <span>{{__('Cart')}}•</span> -->
                                                     <span id="cart_qty_span"></span>
@@ -400,9 +403,9 @@ $pages = \App\Models\Page::with([
                                                                 @if($client_preference_detail->cart_enable==1)
                                                                 <a class="btn btn-solid d-flex align-items-center " href="{{route('showCart')}}">
                                                                     <span class="mr-1"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-</span>
+                                                                    <path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                    </svg>
+                                                                    </span>
                                                                     <!-- <span>{{__('Cart')}}•</span> -->
                                                                     <span id="cart_qty_span">
                                                                     </span>
@@ -484,46 +487,48 @@ $pages = \App\Models\Page::with([
                 </div>
             </div>
         </div>
-        @if(count($navCategories))
-        <div class="menu-navigation alThreeMenu">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                       <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
-                          @foreach($navCategories as $cate)
-                          @if($cate['name'])
-                          <li class="al_main_category"  >
-                             <a href="{{route('categoryDetail', $cate['slug'])}}" class="{{isset($category) && $category->slug == $cate['slug'] ? 'current_category' : ''}}">
-                                @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='categoryDetail' || \Request::route()->getName()=='homeTest'))
-                                <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}} " > <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'> </div>
-                                @endif
-                                {{$cate['name']}}
-                             </a>
-                            @if(!empty($cate['children']))
-                            <ul class="al_main_category_list">
-                                @foreach($cate['children'] as $childs)
-                                <li>
-                                   <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a>
-                                    @if(!empty($childs['children']))
-                                   <ul class="al_main_category_sub_list">
-                                      @foreach($childs['children'] as $chld)
-                                      <li><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
-                                      @endforeach
-                                   </ul>
-                                   @endif
-                                </li>
-                                @endforeach
-                            </ul>
-                            @endif
-                          </li>
-                          @endif
-                          @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
+       
+       
+   @endif
+   @if(count($navCategories))
+   <div class="menu-navigation alThreeMenu">
+       <div class="container-fluid">
+           <div class="row">
+               <div class="col-12">
+                  <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
+                     @foreach($navCategories as $cate)
+                     @if($cate['name'])
+                     <li class="al_main_category"  >
+                        <a href="{{route('categoryDetail', $cate['slug'])}}" class="{{isset($category) && $category->slug == $cate['slug'] ? 'current_category' : ''}}">
+                           @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='categoryDetail' || \Request::route()->getName()=='homeTest'))
+                           <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}} " > <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'> </div>
+                           @endif
+                           {{$cate['name']}}
+                        </a>
+                       @if(!empty($cate['children']))
+                       <ul class="al_main_category_list">
+                           @foreach($cate['children'] as $childs)
+                           <li>
+                              <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a>
+                               @if(!empty($childs['children']))
+                              <ul class="al_main_category_sub_list">
+                                 @foreach($childs['children'] as $chld)
+                                 <li><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
+                                 @endforeach
+                              </ul>
+                              @endif
+                           </li>
+                           @endforeach
+                       </ul>
+                       @endif
+                     </li>
+                     @endif
+                     @endforeach
+                   </ul>
+               </div>
+           </div>
+       </div>
+   </div>
    @endif
 </header>
 

@@ -43,11 +43,7 @@ $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
                 </li>
             @endif
             <li class="{{ (request()->is('user/addressBook')) ? 'active' : '' }}"><a href="{{route('user.addressBook')}}">
-                @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
-                {{ __('My Cars') }}
-                @else
                 {{ __('Address Book') }}
-                @endif
             </a></li>
             <li class="{{ (request()->is('user/orders*')) ? 'active' : '' }}"><a href="{{route('user.orders')}}">{{ __('My '.getNomenclatureName($ordertitle, true) )}}</a></li>
             <li class="{{ (request()->is('user/wishlists')) ? 'active' : '' }}"><a href="{{route('user.wishlists')}}">{{ __(getNomenclatureName('Wishlist', true) )}}</a></li>

@@ -105,6 +105,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('hardDeleteEverything', 'Client\ManageContentController@hardDeleteEverything')->name('config.hardDeleteEverything');
         Route::get('customize', 'Client\ClientPreferenceController@getCustomizePage')->name('configure.customize')->middleware('onlysuperadmin');
         Route::post('configUpdate/{code}', 'Client\ClientPreferenceController@update')->name('configure.update');
+        Route::post('additionalUpdate', 'Client\ClientPreferenceController@additionalupdate')->name('additional.update');
+        Route::post('configUpdateAdditional/{code}', 'Client\ClientPreferenceController@updateAdditional')->name('configure.updateAdditional');
 
         Route::post('custom/mod/verification', 'Client\ClientPreferenceController@customModVerification')->name('custom.mod.verification');
 
@@ -245,6 +247,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/payout/create/{id}', 'Client\VendorController@vendorPayoutCreate')->name('vendor.payout.create');
         Route::post('vendor/saveConfig/{id}', 'Client\VendorController@updateConfig')->name('vendor.config.update');
         Route::post('vendor/saveConfig/profile/{id}', 'Client\VendorController@updateVendorConfigProfile')->name('vendor.config.update.profile');
+        Route::post('vendor/social/media/urls', 'Client\VendorController@updateVendorSocialMediaUrls')->name('vendor.social.media.urls');
         Route::post('vendor/saveLocation/{id}', 'Client\VendorController@updateLocation')->name('vendor.config.pickuplocation');
         Route::post('vendor/activeCategory/{id}', 'Client\VendorController@activeCategory')->name('vendor.category.update');
         Route::post('vendor/addCategory/{id}', 'Client\TableBookingController@storeCategory')->name('vendor.addCategory');
@@ -321,6 +324,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('product/images', 'Client\ProductController@images')->name('product.images');
         Route::post('product/translation', 'Client\ProductController@translation')->name('product.translation');
         Route::post('product/variantRows', 'Client\ProductController@makeVariantRows')->name('product.makeRows');
+        Route::post('product/getVariant', 'Client\ProductController@getProductVariant')->name('product.getVariant');
         Route::post('product/variantImage/update', 'Client\ProductController@updateVariantImage')->name('product.variant.update');
         Route::get('product/image/delete/{pid}/{id}', 'Client\ProductController@deleteImage')->name('product.deleteImg');
         Route::resource('loyalty', 'Client\LoyaltyController');
@@ -470,7 +474,22 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('vendor_city/show/{id?}', 'Client\VendorCitiesController@show')->name("vendor_city.show");
         Route::post('vendor_city/update', 'Client\VendorCitiesController@update')->name("vendor_city.update");
         Route::get('vendor_city/destroy/{id}', 'Client\VendorCitiesController@destroy')->name('vendor_city.destroy');
-        
+
+        // vendor multi banner for t6 :)
+        Route::post('vendor_banner/store', 'Client\VendorMultiBannerController@store')->name("vendor_banner.store");
+        Route::get('vendor_banner/destroy/{id}', 'Client\VendorMultiBannerController@destroy')->name("vendor_banner.destroy");
+
+
+        /**  Hubspot Create a contact.
+         * 
+         */
+        Route::post('/hubspot/create-contact', 'Hubspot\HubspotApiController@create');
+        /** end */
+        // long term Serive by harbans :)
+        Route::post('long_term_service/store',             'Client\LongTermServiceController@store')->name("long_term_service.store");
+        Route::get('long_term_service/index/{vendor_id}',  'Client\LongTermServiceController@index')->name("long_term_service.index");
+        Route::get('long_term_service/edit/{id}',          'Client\LongTermServiceController@edit')->name('long_term_service.edit');
+        Route::get('long_term_service/delete/{id}',        'Client\LongTermServiceController@destroy')->name("long_term_service.destroy");
     });
 });
 
