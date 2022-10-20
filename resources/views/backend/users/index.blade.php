@@ -332,6 +332,7 @@
             try {
                 $('#'+table).DataTable({
                     "dom": '<"toolbar">Bfrtip',
+                    "responsive": true,
                     "searching": true,
                     "destroy": true,
                     "scrollX": true,
@@ -693,7 +694,7 @@
             if(result.value)
             {
                 syncHubspotData();
-               
+
             }else{
                return false;
             }
