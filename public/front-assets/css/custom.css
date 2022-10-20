@@ -233,6 +233,7 @@ body[dir=rtl] .store-btn a {display: block;margin-left: 15px;}
 body[dir=rtl] .footer-title {text-align: right;}
 body[dir="rtl"] .footer-theme .sub-title .contact-list i {right: 0;position: absolute !important;}
 body[dir="rtl"] .payment-card.mobile-border {padding-right: 68px !important;}
+
 }
 
 /* template two common css */
@@ -358,6 +359,12 @@ ul.exzoom_img_ul {
     min-height: auto;
 }
 .mobile-searchbarr select {width: 100%;}
+.al_body_template_two .vendor-search-bar .radius-bar {
+    display: block !important;
+    position: relative;
+    bottom: 0;
+    z-index: 1;
+}
 .al_body_template_two .al .product-right .product-description .qty-box {
     justify-content: center;
 }
@@ -365,6 +372,13 @@ ul.exzoom_img_ul {
 body.al_body_template_two .cab-footer button {
     height: 50px !important;
     line-height: 20px !important;width:100%;
+}
+.al_body_template_two .al_white_bg_round .scrollspy-menu {
+    position: fixed;
+    top: auto !important;
+    width: 100%;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgb(0 0 0 / 30%);
 }
 }
 

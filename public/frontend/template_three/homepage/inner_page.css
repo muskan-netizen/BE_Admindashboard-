@@ -448,6 +448,8 @@ body.al_body_template_three.dark .sm-horizontal{background-color: transparent;}
 body[dir=rtl] .al_footer_template_three ul{text-align: right;}
 body[dir=rtl] .al_footer_template_three ul li{padding-right: 0px !important;}
 .al_body_template_three h2.category-head{top: 140px;}
+.al_body_template_three .tip_radio_controls{text-align: left;}
+.al_body_template_three .tip_label{padding: 5px 8px;}
 }
 
 

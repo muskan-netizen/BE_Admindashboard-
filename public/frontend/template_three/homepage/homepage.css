@@ -126,7 +126,7 @@ article#page-container section .vendors section{padding:20px 0 !important;margin
     top: auto;
     z-index: 11111;
 }.pixelstrap li:hover ul li a span{font-size: 12px !important;}
-
+.al_body_template_three .tip_radio_controls{text-align: left;}
 }
 
 

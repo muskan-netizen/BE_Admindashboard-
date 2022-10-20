@@ -171,3 +171,7 @@ body .royo_whatsapp_img{bottom: 11%;}
 #main-menu .slick-list{overflow: inherit;}
 .al_searchType .form-control{background-color: transparent;}
 
+@media (max-width:576px){.rightHead{order:2;}
+.al_body_template_six .cart-price .tip_label{padding: 5px 8px;}
+
+}

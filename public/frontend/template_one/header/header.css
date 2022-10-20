@@ -108,9 +108,17 @@ section.home-slider-wrapper.py-sm-3{padding: 24px 0!important;}
     border-top: 0px solid #ddd !important;
     border-radius: 10px;
     margin-left: 12px;
-    PADDING-TOP: 3PX !IMPORTANT;
-    DISPLAY: BLOCK;
+    padding-top: 3px;
+    display: block;
 }
 .al_count_tabs.my-1{border-radius: 0px;}
+body .menu-navigation.al .navigation-tab-item .nav-link {
+    padding-left: 0px;padding-right: 15px;padding-top: 10px;
+}
+body .menu-navigation.al .navigation-tab-item .nav-link{color:#777;}
+body .menu-navigation.al .navigation-tab-item .nav-link.active{
+    color:var(--theme-deafult);
+}
+
 }
 
