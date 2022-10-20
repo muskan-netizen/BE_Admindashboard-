@@ -201,7 +201,7 @@ class PickupDeliveryController extends BaseController{
                 if ($dispatch_domain && $dispatch_domain != false) 
                 {
                     $all_location = array();
-                    $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del];
+                    $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => 'IN_FASTAG', 'VehicleEmissionType' => 'GASOLINE', 'travelMode' => 'TAXI'];
                     $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                                                 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                 'content-type' => 'application/json']
@@ -668,7 +668,10 @@ class PickupDeliveryController extends BaseController{
                             'dbname' => $client_do->database_name,
                             'order_id' => $order->id,
                             'customer_id' => $order->user_id,
-                            'user_icon' => $customer->image
+                            'user_icon' => $customer->image,
+                            'toll_passes' => 'IN_FASTAG',
+                            'VehicleEmissionType' => 'GASOLINE',
+                            'travelMode' => 'TAXI'
                         ];
 
 

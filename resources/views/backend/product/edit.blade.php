@@ -545,7 +545,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                         @endif
                        
-                        @if(($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7) || $product->category->categoryDetail->type_id == 1)
+                        @if($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
                             <select class="selectize-select1 form-control" name="tags" required>
@@ -555,6 +555,28 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 @endforeach
                                 @endif
                             </select>
+                        </div>
+                        @elseif($product->category->categoryDetail->type_id == 1)
+                        <div class="col-md-6 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Individual Delivery Fee'),['class' => 'control-label']) !!}
+                            <input type="checkbox" bid="" id="individual_delivery_fee" data-plugin="switchery" name="individual_delivery_fee" class="chk_box" data-color="#43bee1" @if($product->individual_delivery_fee == 1) checked @endif>
+                        </div>
+                        <div class="col-md-6 justify-content-between mb-2" style="display:@if($product->individual_delivery_fee == 1) block @else none @endif;" id="dispatcher_tags_div">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
+                                </div>
+                                <div class="col-md-7">
+                                    <select class="selectize-select1 form-control" name="tags">
+                                        <option value="">---Select Dispatcher Tags--</option>
+                                        @if($agent_dispatcher_tags != null && count($agent_dispatcher_tags))
+                                        @foreach($agent_dispatcher_tags as $key => $tags)
+                                        <option value="{{ $tags['name'] }}" @if($product->tags == $tags['name']) selected="selected" @endif>{{ ucfirst($tags['name']) }}</option>
+                                        @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         @endif
                        
@@ -1793,6 +1815,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
        
         editProductOrderForm(product_faq_id);
     });
+
     function editProductOrderForm(product_faq_id){
         let language_id = $('#option_client_language').val();
         $('#add_product_faq_modal input[name=product_faq_id]').val(product_faq_id);
@@ -1883,6 +1906,14 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
             }
         })
 
+        $("#individual_delivery_fee").change(function() {
+            if($(this).is(':checked')){
+                $("#dispatcher_tags_div").show();
+            }else{
+                $("#dispatcher_tags_div").hide();
+                $("#dispatcher_tags_div .selectize-select1").val('');
+            }
+        });
     </script>
 
 <!-- end product faq -->
