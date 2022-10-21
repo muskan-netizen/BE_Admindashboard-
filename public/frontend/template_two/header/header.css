@@ -27,8 +27,9 @@
 /*hotfix product page css*/
 @media (max-width:767px){
     .product_tag_filter {
-        width: 100%;
+        width: 100%;margin-left: 6px;
     }
+    #side_menu_toggle{left: auto;right: 0px;}
     .al_white_bg_round .scrollspy-menu {
         position: fixed;
         top: auto !important;
