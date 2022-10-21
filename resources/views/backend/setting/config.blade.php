@@ -437,7 +437,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="col-12">
                      <div class="form-group mb-0 switchery-demo">
                         <label for="twitter_login" class="d-flex align-items-center justify-content-between">
-                           <h5 class="social_head"><i class="fab fa-twitter"></i> <span>Twitter</span></h5>
+                           <h5 class="social_head"><i class="fab fa-twitter"></i> <span>{{ __("Twitter") }}</span></h5>
                            <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
                         </label>
                         <label for="" class="mr-3">{{ __("Enable") }}</label>
@@ -490,8 +490,8 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="col-12">
                      <div class="form-group mb-0 switchery-demo">
                         <label for="google_login" class="d-flex align-items-center justify-content-between">
-                           <h5 class="social_head"><i class="fab fa-google"></i> <span>Google</span></h5>
-                           <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
+                           <h5 class="social_head"><i class="fab fa-google"></i> <span>{{ __("Google") }}</span></h5>
+                           <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Google") }} </button>
                         </label>
                         <label for="" class="mr-3">{{ __("Enable") }}</label>
                         <input type="checkbox" data-plugin="switchery" name="google_login" id="google_login" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->google_login == '1')) checked='checked' @endif>
@@ -501,7 +501,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                <div class="row google_row" style="{{((isset($preference) && $preference->google_login == '1')) ? '' : 'display:none;'}}">
                   <div class="col-md-12">
                      <div class="form-group mb-2 mt-2">
-                        <label for="google_client_id">Google {{ __("Client Key") }}</label>
+                        <label for="google_client_id">{{__("Google")}} {{ __("Client Key") }}</label>
                         <input type="text" name="google_client_id" id="google_client_id" placeholder="" class="form-control" value="{{ old('google_client_id', $preference->google_client_id ?? '')}}">
                         @if($errors->has('google_client_id'))
                         <span class="text-danger" role="alert">
@@ -512,7 +512,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-12">
                      <div class="form-group mb-2">
-                        <label for="google_client_secret">Google {{ __("Client Secret") }}</label>
+                        <label for="google_client_secret">{{__("Google")}} {{ __("Client Secret") }}</label>
                         <input type="password" name="google_client_secret" id="google_client_secret" placeholder="" class="form-control" value="{{ old('google_client_secret', $preference->google_client_secret ?? '')}}">
                         @if($errors->has('google_client_secret'))
                         <span class="text-danger" role="alert">
@@ -523,7 +523,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-12">
                      <div class="form-group mb-0">
-                        <label for="google_client_url">Google {{ __("Redirect URL") }}</label>
+                        <label for="google_client_url">{{__("Google")}} {{ __("Redirect URL") }}</label>
                         <input type="text" name="google_client_url" id="google_client_url" placeholder="" class="form-control" value="{{ old('google_client_url', $preference->google_client_url ?? '')}}">
                         @if($errors->has('google_client_url'))
                         <span class="text-danger" role="alert">
@@ -542,7 +542,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="col-12">
                      <div class="form-group mb-0 switchery-demo">
                         <label for="apple_login" class="d-flex align-items-center justify-content-between">
-                           <h5 class="social_head"><i class="fab fa-apple"></i> <span>Apple</span></h5>
+                           <h5 class="social_head"><i class="fab fa-apple"></i> <span>{{ __("Apple") }}</span></h5>
                            <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
                         </label>
                         <label for="" class="mr-3">{{ __("Enable") }}</label>
@@ -1088,7 +1088,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                            <div class="form-group mt-3 mb-0">
                               <label for="customer_support_key">{{ __("API Key") }}</label>
-                              <input type="text" name="customer_support_key" id="customer_support_key" placeholder="Please enter key" class="form-control" value="{{ old('customer_support_key', $preference->customer_support_key ?? '')}}">
+                              <input type="text" name="customer_support_key" id="customer_support_key" placeholder="{{ __('Please enter key') }}" class="form-control" value="{{ old('customer_support_key', $preference->customer_support_key ?? '')}}">
                               @if($errors->has('customer_support_key'))
                               <span class="text-danger" role="alert">
                                  <strong>{{ $errors->first('customer_support_key') }}</strong>
@@ -1098,7 +1098,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                            <div class="form-group mt-3 mb-0">
                               <label for="customer_support_application_id">{{ __("Application ID") }}</label>
-                              <input type="text" name="customer_support_application_id" id="customer_support_application_id" placeholder="Please enter application ID" class="form-control" value="{{ old('customer_support_application_id', $preference->customer_support_application_id ?? '')}}">
+                              <input type="text" name="customer_support_application_id" id="customer_support_application_id" placeholder="{{ __('Please enter application ID') }}" class="form-control" value="{{ old('customer_support_application_id', $preference->customer_support_application_id ?? '')}}">
                               @if($errors->has('customer_support_application_id'))
                               <span class="text-danger" role="alert">
                                  <strong>{{ $errors->first('customer_support_application_id') }}</strong>
@@ -1310,7 +1310,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Pre Order Tips')}}<small class="d-block pr-5">{{ __('Manage the option to Tip before the Order') }}.</small></label>
+                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Pre Order Tips')}}<small class="d-block pr-5">{{ __('Manage the option to Tip before the Order.') }}.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="tip_before_order" id="tip_before_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_before_order == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1325,7 +1325,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-4">
                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                       <label for="auto_implement_5_percent_tip" class="mr-2 mb-0">{{__('Auto Implement Tip 5% ')}}<small class="d-block pr-5">{{__('Enable to apply auto implement 5 percent tip.')}}</small></label>
+                       <label for="auto_implement_5_percent_tip" class="mr-2 mb-0">{{__('Auto Implement Tip 5%')}}<small class="d-block pr-5">{{__('Enable to apply auto implement 5 percent tip.')}}</small></label>
                       <span> <input type="checkbox" data-plugin="switchery" name="auto_implement_5_percent_tip" id="auto_implement_5_percent_tip" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->auto_implement_5_percent_tip == '1')) checked='checked' @endif>
                        </span>
                     </div>
@@ -1362,7 +1362,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="minimum_order_batch" class="mr-2 mb-0">{{__('Minimum Order/Increment')}}<small class="d-block pr-5"> {{ __('Set the minimum order and minimum increment per product') }}.</small></label>
+                        <label for="minimum_order_batch" class="mr-2 mb-0">{{__('Minimum Order/Increment')}}<small class="d-block pr-5"> {{ __('Set the minimum order and minimum increment per product.') }}.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="minimum_order_batch" id="minimum_order_batch" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->minimum_order_batch == '1')) checked='checked' @endif>
                      </span>
                      </div>

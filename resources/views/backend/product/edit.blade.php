@@ -656,8 +656,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         <div class="col-sm-12 mb-2">
                             {!! Form::label('title', __('Live'),['class' => 'control-label']) !!}
                             <select class="selectizeInput form-control" id="is_live" name="is_live">
-                                <option value="0" @if($product->is_live == 0) selected @endif>Draft</option>
-                                <option value="1" @if($product->is_live == 1) selected @endif>Published</option>
+                                <option value="0" @if($product->is_live == 0) selected @endif>{{ __('Draft')}}</option>
+                                <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
                             </select>
                         </div>
 
@@ -665,7 +665,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Brand'),['class' => 'control-label']) !!}
                             <select class="form-control " id="brand_idBox" name="brand_id">
-                                <option value="">Select</option>
+                                <option value="">{{ __('Select')}}</option>
                                 @foreach($brands as $brand)
                                 <option value="{{$brand->id}}" @if(!empty($product->brand) && $product->brand->id == $brand->id) selected @endif>{{$brand->title??null}}</option>
                                 @endforeach
@@ -676,7 +676,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Tax Category'),['class' => 'control-label']) !!}
                             <select class="form-control " id="typeSelectBox" name="tax_category">
-                                <option value="">Select</option>
+                                <option value="">{{ __('Select')}}</option>
                                 @foreach($taxCate as $cate)
                                 <option value="{{$cate->id}}" {{ $product->tax_category_id == $cate->id ? 'selected' : ''}} >{{$cate->title??null}}</option>
                                 @endforeach
