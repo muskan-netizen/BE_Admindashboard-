@@ -568,7 +568,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 </div>
                                 <div class="col-md-7">
                                     <select class="selectize-select1 form-control" name="tags">
-                                        <option value="">---Select Dispatcher Tags--</option>
+                                        
                                         @if($agent_dispatcher_tags != null && count($agent_dispatcher_tags))
                                         @foreach($agent_dispatcher_tags as $key => $tags)
                                         <option value="{{ $tags['name'] }}" @if($product->tags == $tags['name']) selected="selected" @endif>{{ ucfirst($tags['name']) }}</option>
@@ -1906,14 +1906,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
             }
         })
 
-        /* $("#individual_delivery_fee").change(function() {
-            if($(this).is(':checked')){
-                $("#dispatcher_tags_div").show();
-            }else{
-                $("#dispatcher_tags_div").hide();
-                $("#dispatcher_tags_div .selectize-select1").val('');
-            }
-        }); */
     </script>
 
 <!-- end product faq -->
