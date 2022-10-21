@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -297,6 +297,8 @@ class ProductController extends BaseController
     {
         DB::beginTransaction();
         try {
+            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
             //ProductVariant::where('product_id',$id)->update(['status'=>0]);
             $product = Product::where('id', $id)->firstOrFail();
             $rule = array(
@@ -551,6 +553,20 @@ class ProductController extends BaseController
                     }
                     // Product Variant By Roles (END)
                 }
+
+                // min order count
+                if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == 1){
+                    $minimum_order_count_arr = $request->minimum_order_count_arr;
+                    
+                    if($minimum_order_count_arr){
+                        foreach($minimum_order_count_arr as $key => $minimum_order_count){
+                            $where = ['product_id' => $id, 'role_id' => $key];
+                            $create = ['product_id' => $id, 'role_id' => $key, 'minimum_order_count' => $minimum_order_count ];
+                            ProductByRole::updateOrCreate($where, $create);
+                        }
+                    }
+                }
+                
             }
             DB::commit();
             $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );

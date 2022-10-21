@@ -686,14 +686,40 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                     {{--@if($configData->minimum_order_batch == 1 || $product->minimum_order_count > 0)--}}
                     <div class="row">
-                                <div class="col-md-6 mb-2">
-                                    {!! Form::label('title', __('Minimum Order Count'),['class' => 'control-label']) !!}
-                                    {!! Form::number('minimum_order_count', $product->minimum_order_count, ['class'=>'form-control', 'id' => 'minimum_order_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    {!! Form::label('title', __('Minimum Increment'),['class' => 'control-label']) !!}
-                                    {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
-                                </div>
+                        @if($getAdditionalPreference['is_price_by_role'] == '1')
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Minimum Order Count'),['class' => 'control-label']) !!}
+                                {!! Form::number('minimum_order_count', $product->getRawOriginal('minimum_order_count'), ['class'=>'form-control', 'id' => 'minimum_order_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        @else
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Minimum Order Count'),['class' => 'control-label']) !!}
+                                {!! Form::number('minimum_order_count', $product->minimum_order_count, ['class'=>'form-control', 'id' => 'minimum_order_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        @endif
+
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Minimum Increment'),['class' => 'control-label']) !!}
+                            {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        </div>
+                    </div>
+                    <div class="row">
+                        @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')
+                            @if (isset($roles))
+                                @foreach ($roles as $key => $role)
+                                    @php
+                                        $label_min = 'Minimum Order Count ['.$role->role.']';
+                                        $input_min = 'minimum_order_count['.$role->role.']';
+                                    @endphp
+                                    <div class="col-md-6 mb-2">
+                                        {!! Form::label('title', $label_min,['class' => 'control-label']) !!}
+
+                                        <input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="0" name="minimum_order_count_arr[{{$role['id']}}]" value="{{ isset($product->productByRoleForAdmin[$key]) ? (decimal_format($product->productByRoleForAdmin[$key]->minimum_order_count) ?? 0.00) : 0.00 }}">
+
+                                    </div>
+                                @endforeach
+                            @endif
+                        @endif
                     </div>
                     {{--@endif--}}
 

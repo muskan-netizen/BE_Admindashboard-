@@ -346,5 +346,29 @@ class Product extends Model implements Auditable{
 
     }
 
+    public function productByRole(){
+      if(auth()->user() !=null){
+          return $this->hasOne('App\Models\ProductByRole', 'product_id', 'id')->where('role_id', Auth::user()->role_id);
+      }else{
+          return $this->hasOne('App\Models\ProductByRole', 'product_id', 'id')->where('role_id', 1);
+      }
+    }
+
+    public function productByRoleForAdmin(){
+      return $this->hasMany('App\Models\ProductByRole', 'product_id', 'id');
+    }
+
+    public function getMinimumOrderCountAttribute($value)
+    {
+      //  price based on role
+      if(auth()->user() !=null){
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+        if($getAdditionalPreference['is_price_by_role'] == 1 && $this->productByRole){
+            return $this->productByRole->minimum_order_count;
+        }
+      }
+      return $value;
+    }
+
 
 }
