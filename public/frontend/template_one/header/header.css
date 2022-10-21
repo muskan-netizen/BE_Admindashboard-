@@ -81,3 +81,12 @@ ul.header-dropdown.d-none.d-sm-inline li{
  .pixelstrap ul li a span.new-tag{font-size: 14px;}
 #main-menu .slick-list{overflow: inherit;}
 .al_searchType .form-control{background-color: transparent;}
+
+
+/*hotfix product page css*/
+@media (max-width:767px){
+    .product_tag_filter {
+        width: 100%;
+    }
+    
+}

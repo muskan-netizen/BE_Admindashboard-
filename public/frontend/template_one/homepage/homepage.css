@@ -173,8 +173,8 @@ body.al_body_template_one  #page-container .footer-theme .sub-title .contact-lis
 .al_body_template_one .offer-slider .common-product-box.scale-effect.mb-2 .col-8{padding-left: 0;}
 .al_body_template_one .al_white_bg_round .scrollspy-menu{background-color: transparent;box-shadow: none;border-radius: 0;}
 .al_body_template_one .product-bottom-bar .row{margin: 0;}
-.al_body_template_one .vender-icon.mr-sm-3{margin-top: -150px;margin-left: 20px;position: relative;}
-.al_body_template_one .vendor-description .vendor-reviwes{padding: 0;position: absolute;right: -20px;top:0px;}
+/* .al_body_template_one .vender-icon.mr-sm-3{margin-top: -150px;margin-left: 20px;position: relative;} */
+.al_body_template_one .vendor-description .vendor-reviwes{padding: 0;position: absolute;right:auto;top:0px;}
 .al_body_template_one .vender-icon img{border:4px solid #fff;}
 .al_body_template_one .delivery_address button.close{padding: 0;text-align: right;z-index: 9999;position: relative;right: 0;top: 0;}
 .al_body_template_one .shopping-cart h5.d-flex.align-items-center.justify-content-between.pb-2{padding-bottom: 0 !important;margin-bottom: 0 !important;}
@@ -243,7 +243,7 @@ body.al_body_template_one .top-banner-wrapper{background-color: transparent;box-
 .al_body_template_one .suppliers-box .suppliers-img-outer img{object-fit:contain;}
 .slick-slider .common-product-box, .slick-slider .product-box, .slick-slider .product-card-box, .slick-slider .suppliers-box{border-radius:5px;}
 .al_body_template_one .vendor-search-bar .radius-bar{display: block !important;position: relative;bottom: 0;z-index:1;}
-.al_body_template_one .al_white_bg_round .scrollspy-menu{position: fixed;top:auto;width:100%;background-color: #fff;box-shadow: 0 0 10px rgba(0,0,0,.3);}
+.al_body_template_one .al_white_bg_round .scrollspy-menu{position: fixed;top:auto !important;width:100%;background-color: #fff;box-shadow: 0 0 10px rgba(0,0,0,.3);}
 .al_body_template_one .slick-slider .product-card-box .img-outer-box.position-relative{height: 100px;}
 .product-banner-img{height: 120px;margin-top: 15px;}
 .al_body_template_one .site-topbar .location-bar h2{width: 100%;}

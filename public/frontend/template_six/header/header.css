@@ -171,3 +171,18 @@ body .royo_whatsapp_img{bottom: 11%;}
 #main-menu .slick-list{overflow: inherit;}
 .al_searchType .form-control{background-color: transparent;}
 
+
+/*hotfix product page css*/
+@media (max-width:767px){
+    .product_tag_filter {
+        width: 100%;
+    }
+    .al_white_bg_round .scrollspy-menu {
+        top: auto !important;
+        width: 100%;
+    }
+    .al_body_template_six.homeHeader .product-bottom-bar {
+        padding: 20px 20px !important;
+    }
+}
+

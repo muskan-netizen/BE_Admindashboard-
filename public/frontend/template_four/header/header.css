@@ -29,3 +29,10 @@
 #main-menu .slick-list{overflow: inherit;}
 .al_body_template_four .pixelstrap ul.alInnerMenu{top: 30px;padding: 0;display: none;}
 .al_searchType .form-control{background-color: transparent;}
+
+
+
+
+@media (max-width:767px){
+    .al_searchType {width: 100%;  }
+}
