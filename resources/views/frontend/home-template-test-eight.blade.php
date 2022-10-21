@@ -559,7 +559,7 @@
 		<section class="container popular-brands left-shape_ position-relative">
 			<div class="al_top_heading d-flex justify-content-between">
 				<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
-				{{-- <a class="" href="">See All</a> --}}
+				{{-- <a class="" href="">See All  </a> --}}
 			</div>
 			<div class="row">
 				<div class=" col-12 al_custom_brand">
@@ -597,7 +597,7 @@
 		<section class="suppliers-section container ">
 			<div class=" top-heading d-flex justify-content-between align-self-center">
 				<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
-				<a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a>
+				<a class="" href="{{route('vendor.all')}}">{{__("See all")}} <img class="btn-arrow" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""></a>
 			</div>
 			<div class="row">
 				<div class="col-12">
@@ -646,16 +646,20 @@
 		@if(@$categories)
 
 
-		<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-			<div class="top-heading d-flex justify-content-between">
-				<h2 class="h2-heading"> Categories</h2>
-			</div>
-			<div class="row">
-				<div class="col-12">
-					<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-						@foreach($categories as $key => $category)
-						@include('frontend.home_page_8.category')
-						@endforeach
+		<section class="mb-0 render_full_{{$homePageLabel->slug}} Categories-section" id="{{$homePageLabel->slug.$key}}">
+			<div class="container">
+				<div class="top-heading d-flex justify-content-between">
+					<h2 class="h2-heading"> Categories</h2>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+						<div class="row">
+							@foreach($categories as $key => $category)
+							@include('frontend.home_page_8.category')
+							@endforeach
+						</div>
+						</div>
 					</div>
 				</div>
 			</div>

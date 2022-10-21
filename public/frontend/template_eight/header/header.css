@@ -186,13 +186,29 @@ z-index:1111;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-
 .al_body_template_eight #al_new_design .pixelstrap ul {
     top: 85px;
 }
-
-.al_body_template_eight .menu-navigation.alThreeMenu {
-    height: 100px;
+header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu {
+    padding-top: 15px;
+    padding-bottom: 10px;
+}
+.site-header.fixed-bar .nav-cate-img.activ_nav {
+    display: block !important;
+}
+/* header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu {
+    height: 65px !important;
     padding-top: 20px !important;
+} */
+header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu ul.al_main_category_list {
+    top: 80px !important;
+}
+body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
+    height: 100px !important;
+    padding-top: 5px !important;
+}
+body.al_body_template_eight.homeHeader #al_new_design .pixelstrap ul {
+    top: 85px !important;
 }
 .al_body_template_eight .menu-navigation.alThreeMenu li.al_main_category {
-    padding: 0 20px 35px;
+    padding: 0 20px;
     top: -6px;
 }
 .al_body_template_eight #al_new_design .pixelstrap li a:hover:after {
