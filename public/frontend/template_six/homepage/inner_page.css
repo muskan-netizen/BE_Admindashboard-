@@ -464,6 +464,10 @@ span.registerLink{text-align: center;width: 100%;margin-top: 10px;display: block
 .alFourTemplateOrderSucces .order-success-sec  .order-detail li{color: #777;font-weight: 400;}
 .alFourTemplateOrderSucces .order-success-sec  .order-detail li span{color: var(--theme-deafult);font-weight: 400; margin-left: 15px;}
 
+.al_body_template_six .categories-product-list .search_form {border-radius: 10px;overflow: hidden;}
+.al_body_template_six .categories-product-list .search_form button {background: #eee;}
+.al_body_template_six .categories-product-list .search_form input {background-color: #eee;}
+
 /* ================= dark css ================= */
 .dark .tip_label{background: transparent;}
 
@@ -490,3 +494,5 @@ span.registerLink{text-align: center;width: 100%;margin-top: 10px;display: block
             width: 60px;
         }
     }
+
+
