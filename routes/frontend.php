@@ -357,6 +357,9 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/autocomplete-search', 'Front\SearchController@postAutocompleteSearch')->name('autocomplete');
 	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
 	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
+
+	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
+	
 	Route::get('/updateLocation', 'Front\UserhomeController@setHyperlocalAddress')->name('updateLocation');
 	Route::get('/homeTest', 'Front\UserhomeController@indexTest')->name('homeTest');
 	Route::get('/homeTemplateOne', 'Front\UserhomeController@indexTemplateOne')->name('indexTemplateOne');
@@ -463,6 +466,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('cities/{slug}','Front\VendorCitiesController@getCities')->name('city.getCities');
 
 	Route::post('getSlotFromDispatchDemand', 'Front\FrontController@getSlotFromDispatchDemand')->name('getSlotFromDispatchDemand');
+	//chatNotification to all users from dispacther
+	Route::any('sendNotificationToUserByDispatcher', 'Front\ChatDispatcherNotificationController@sendNotificationToUserByDispatcher')->name('sendNotificationToUserByDispatcher'); // Order Status update Dispatch
 
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
