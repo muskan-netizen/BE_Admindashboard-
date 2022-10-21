@@ -561,7 +561,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Individual Delivery Fee'),['class' => 'control-label']) !!}
                             <input type="checkbox" bid="" id="individual_delivery_fee" data-plugin="switchery" name="individual_delivery_fee" class="chk_box" data-color="#43bee1" @if($product->individual_delivery_fee == 1) checked @endif>
                         </div>
-                        <div class="col-md-6 justify-content-between mb-2" style="display:@if($product->individual_delivery_fee == 1) block @else none @endif;" id="dispatcher_tags_div">
+                        <div class="col-md-6 justify-content-between mb-2" id="dispatcher_tags_div">
                             <div class="row">
                                 <div class="col-md-5">
                                     {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
@@ -1906,14 +1906,14 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
             }
         })
 
-        $("#individual_delivery_fee").change(function() {
+        /* $("#individual_delivery_fee").change(function() {
             if($(this).is(':checked')){
                 $("#dispatcher_tags_div").show();
             }else{
                 $("#dispatcher_tags_div").hide();
                 $("#dispatcher_tags_div .selectize-select1").val('');
             }
-        });
+        }); */
     </script>
 
 <!-- end product faq -->
