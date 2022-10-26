@@ -1924,7 +1924,10 @@ class CartController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function getCartData($domain = '', Request $request)
-    {   $cart_details = null;
+    {   
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+        
+        $cart_details = null;
         $user = Auth::user();
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
@@ -1977,7 +1980,7 @@ class CartController extends FrontController
                 }
             }
 
-            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm])->render();
+            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference])->render();
         }
         return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'']);
     }

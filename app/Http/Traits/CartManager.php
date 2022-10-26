@@ -258,6 +258,9 @@ trait cartManager{
        */
       public function getCartsNew($cart, $address_id=0 , $code = 'D',$schedule_datetime_del='')
       {
+
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+   
         $this->config();
         $address = [];
         $category_array = [];
@@ -511,7 +514,7 @@ trait cartManager{
 
                     $quantity_price = 0;
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
-                    $price_in_currency = $prod->pvariant->price??0;
+                    $price_in_currency = ($getAdditionalPreference['is_price_by_role'] == 1 ) ? $prod->pvariant->new_price : $prod->pvariant->price??0;
                     if($cartData[0]->luxury_option_id == 4 ){ // for rental case
                         if(($prod->pvariant->incremental_price_per_min!='' && $prod->pvariant->incremental_price_per_min > 0)){
                             $prod->additional_price = ($prod->additional_increments_hrs_min / $prod->pvariant->incremental_price_per_min);
@@ -540,7 +543,8 @@ trait cartManager{
                     //  $coupon_apply_price+=$price_in_currency;
                     $container_charges_in_doller_compare = $prod->pvariant->container_charges??0;
                     if($customerCurrency && $prod->pvariant){
-                        $price_in_currency = $prod->pvariant->price / $divider;
+
+                        // $price_in_currency = $prod->pvariant->price / $divider;
                         $price_in_doller_compare = $price_in_currency * $customerCurrency->doller_compare;
 
                         $container_charges_in_currency = $prod->pvariant->container_charges / $divider;
