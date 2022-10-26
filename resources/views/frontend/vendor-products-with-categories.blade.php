@@ -6,10 +6,16 @@
     border-radius: 4px;border: 1px dotted#938a8a;background-color: #f8f1f8;}.social-icon-list {
     width: 100%;max-width: 90%;}.social-icon-list .modal-body {text-align: center;}.social-icon-list .modal-body .text-center a img {width: 40px;}
 .social-icon-list .modal-body .text-center {display: inline-block;margin: 0px 6px;}.profile_address ul.vendor-info li.d-block.vendor-location a span {font-size: 13px;}.profile_address ul.vendor-info li.d-block.vendor-location a img {width: 12px;}
-.vendor-description .vendor-details-left .vender-icon .vendor-stories a img {width: 110px;height: 110px;}
+/* .vendor-description .vendor-details-left .vender-icon .vendor-stories a img {width: 110px;height: 110px;} */
 .vendor-description .profile_address h3 {font-size: 24px;text-transform: capitalize;margin: 10px 0px 6px 0px;}
 .vendor-description .profile_address h4 {font-size: 16px; margin: 0px;color: #6c757d;}
-.vendor-description .profile_address ul.vendor-info li {padding: 2px 8px 3px 0px;}
+/* .vendor-description .profile_address ul.vendor-info li {padding: 2px 8px 3px 0px;} */
+.al_body_template_two .vendor-description .vendor-reviwes{padding: 0;position: absolute;right: auto;left:0px;top:5px;}
+.al_body_template_six.homeHeader .product-bottom-bar{padding: 20px 10px;}
+.vendor-description .vendor-info .d-block.vendor-location{padding-left:0px;}
+.al_body_template_six.homeHeader .vendor-stories{background: transparent;}
+.vendor-description .vendor-details-left .vendor-location a {position: inherit !important;}
+.al_body_template_six .vendor-description .vendor-info .vendor-location{margin-bottom:10px;}
 
 </style>
 @endsection
@@ -31,10 +37,10 @@
                         </div>
                         </div>
                 </div>
-                    <div class="row">
-                        <div class="col-12">
-                        <div class="product-bottom-bar vendor-description pb-2">
-                            <div class="vendor-details-left">
+                    {{-- <div class="row">
+                        <div class="col-12"> --}}
+                        <div class="col-12 product-bottom-bar vendor-description pb-2">
+                            <div class="vendor-details-left d-sm-flex align-items-center">
                                 <div class="vender-icon mr-sm-3">
                                     <div class="vendor-stories">
                                         <div class="circle-wrapper"></div>
@@ -137,8 +143,8 @@
                             </div>
 
                         </div>
-                        </div>
-                    </div>
+                        {{-- </div>
+                    </div> --}}
             </div>
                 <div class="position-relative container">
                     <div class="categories-product-list mt-sm-4">
@@ -154,6 +160,33 @@
 
                         <div class="row">
                             <div class="col-12">
+                                <div class="col-sm-6 offset-sm-3">
+                                    <div class="row  d-flex align-items-start justify-content-center m-0">
+                                        <div class="col-7 vendor-search-bar mb-sm-0 mb-2 p-0">
+                                            <div class="radius-bar w-100">
+                                                <div class="search_form d-flex align-items-center">
+                                                    <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                                    <input class="form-control border-0 typeahead" type="search"
+                                                        placeholder="{{ __('Search') }}" id="vendor_search_box">
+                                                </div>
+                                                <div class="list-box style-4" style="display:none;" id="search_box_main_div">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-5 text-right pl-0">
+                                            <!-- <span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span> -->
+                                            <select name="order_type" id='order_type' class="product_tag_filter p-1">
+                                                <option value="featured">{{ __('Featured') }}</option>
+                                                <option value="a_to_z">{{ __('A to Z') }}</option>
+                                                <option value="z_to_a">{{ __('Z to A') }}</option>
+                                                <option value="low_to_high">{{ __('Cost : Low to High') }}</option>
+                                                <option value="high_to_low">{{ __('Cost : High to Low') }}</option>
+                                                <option value="rating">{{ __('Avg. Customer Review') }}</option>
+                                                <option value="newly_added">{{ __('Newest Arrivals') }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row vendor-products-wrapper">
                                     <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
                                         <nav class="scrollspy-menu ">
@@ -167,53 +200,28 @@
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6 alScrollspyProduct">
-                                            <div class="row d-flex align-items-start justify-content-center m-0">
-                                                <div class="col-7 vendor-search-bar mb-sm-0 mb-2 p-0">
-                                                    <div class="radius-bar w-100">
-                                                        <div class="search_form d-flex align-items-center">
-                                                            <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
-                                                            <input class="form-control border-0 typeahead" type="search"
-                                                                placeholder="{{ __('Search') }}" id="vendor_search_box">
-                                                        </div>
-                                                        <div class="list-box style-4" style="display:none;" id="search_box_main_div">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-5 text-right pl-0">
-                                                    <!-- <span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span> -->
-                                                    <select name="order_type" id='order_type' class="product_tag_filter p-1">
-                                                        <option value="featured">{{ __('Featured') }}</option>
-                                                        <option value="a_to_z">{{ __('A to Z') }}</option>
-                                                        <option value="z_to_a">{{ __('Z to A') }}</option>
-                                                        <option value="low_to_high">{{ __('Cost : Low to High') }}</option>
-                                                        <option value="high_to_low">{{ __('Cost : High to Low') }}</option>
-                                                        <option value="rating">{{ __('Avg. Customer Review') }}</option>
-                                                        <option value="newly_added">{{ __('Newest Arrivals') }}</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-12 d-sm-flex justify-content-start mb-2 p-0">
-                                                @if (isset($tags) && !empty($tags))
-                                                    @foreach ($tags as $key => $tag)
-                                                        <label class="label-switch switch-primary product_tag_filter mr-2 mb-0">
-                                                            <input type="checkbox"
-                                                                class="switch switch-bootstrap product_tag_filter status"
-                                                                name="tag_id" id="product_tag_filter_{{ $key }}"
-                                                                data-tag_id="{{ $tag->id }}" value="
-                                                                {{ $tag->id }}">
-                                                            <span class="lable">
-                                                                @if (isset($tag->icon) && !empty($tag->icon))
-                                                                    <img class="ml-1"
-                                                                        src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}"
-                                                                        alt="">
-                                                                @endif <span
-                                                                    class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span>
-                                                            </span>
-                                                        </label>
-                                                    @endforeach
-                                                @endif
-                                            </div>
+                                        
+                                        <div class="col-12 d-sm-flex justify-content-start mb-2 p-0">
+                                            @if (isset($tags) && !empty($tags))
+                                                @foreach ($tags as $key => $tag)
+                                                    <label class="label-switch switch-primary product_tag_filter mr-2 mb-0">
+                                                        <input type="checkbox"
+                                                            class="switch switch-bootstrap product_tag_filter status"
+                                                            name="tag_id" id="product_tag_filter_{{ $key }}"
+                                                            data-tag_id="{{ $tag->id }}" value="
+                                                            {{ $tag->id }}">
+                                                        <span class="lable">
+                                                            @if (isset($tag->icon) && !empty($tag->icon))
+                                                                <img class="ml-1"
+                                                                    src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}"
+                                                                    alt="">
+                                                            @endif <span
+                                                                class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span>
+                                                        </span>
+                                                    </label>
+                                                @endforeach
+                                            @endif
+                                        </div>
                                         @forelse($listData as $key => $data)
                                             <section class="scrolling_section " id="{{ $data->category->slug }}">
                                                 @if (!empty($data->products))
