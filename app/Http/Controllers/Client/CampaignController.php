@@ -481,7 +481,6 @@ class CampaignController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request){
-        dd($request->campaign_id);
         Campaign::where('id', $request->campaign_id)->delete();
         CampaignRoster::where('campaign_id',$request->campaign_id)->delete();
         return redirect()->back()->with('success', 'Campaign deleted successfully!');
