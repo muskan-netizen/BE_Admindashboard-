@@ -12,11 +12,52 @@ use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
-use App\Models\{VendorSlot, ClientCurrency, Order,Type};
+use App\Models\{VendorSlot, ClientCurrency, Order,Type, ClientPreferenceAdditional};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 
+// Returns the values of the additional preferences.
+if (!function_exists('checkColumnExists')) {    
+  /** check if column exits in table
+     * @param string $tableName
+     * @param string @columnName
+     * @return boolean true or false
+     */
+    function checkColumnExists($tableName, $columnName){
+        if (Schema::hasColumn($tableName, $columnName)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+}
+
+if (!function_exists('getAdditionalPreference')) {    
+    /**
+     * getAdditionalPreference
+     *
+     * @param  mixed $key
+     * @return void
+     */
+    function getAdditionalPreference($key=array()){
+        $user = ClientData::first();
+        $return = [];
+        $dbreturn= [];
+        if(sizeof($key)){
+            $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => $user->code])->get() : [];
+            $return = array_column($result->toArray(), 'key_value', 'key_name');
+                if(sizeof($result)){
+                    $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
+                }   
+            $emp = array_diff($key,array_keys($dbreturn));
+            $emptyArr = array_fill_keys($emp, '');
+            $return = array_merge($emptyArr, $dbreturn);
+        } 
+        return $return;
+    }
+}
 
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date,$date_format){
@@ -36,22 +77,31 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
     }
 }
 
-if (!function_exists('curlJsonRequest')) {
-    function curlJsonRequest($from, $data){
-        $headers = [
-            'Authorization: key=' . $from,
-            'Content-Type: application/json',
-        ];
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return $result;
+if (!function_exists('sendFcmCurlRequest')) {
+    function sendFcmCurlRequest($data)
+    {
+        $client_preferences = ClientPreference::first();
+        if (!empty($client_preferences->fcm_server_key)) {
+            $headers = [
+                'Authorization: key=' . $client_preferences->fcm_server_key,
+                'Content-Type: application/json',
+            ];
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            $result = curl_exec($ch);
+            // if ($result === FALSE) {
+            //     die('Oops! FCM Send Error: ' . curl_error($ch));
+            // }
+            curl_close($ch);
+            return $result;
+        } else {
+            return false;
+        }
     }
 }
 
@@ -207,6 +257,17 @@ if (!function_exists('convertDateTimeInClientTimeZone')) {
         $clientTimezone = ClientData::find(1);
         $date->setTimezone($clientTimezone->timezone);
         return $date->format($format);
+    }
+}
+
+if (!function_exists('limit_text')) {
+    function limit_text($text, $limit) {
+        if (str_word_count($text, 0) > $limit) {
+            $words = str_word_count($text, 2);
+            $pos   = array_keys($words);
+            $text  = substr($text, 0, $pos[$limit]) . '...';
+        }
+        return $text;
     }
 }
 
@@ -519,10 +580,10 @@ if (!function_exists('showSlot')) {
             })->get();
         } else {
             $slots = VendorSlot::where('vendor_id', $vid)
-        ->whereHas('days', function ($q) use ($mytime, $type) {
-            return $q->where('day', $mytime)->where($type, '1');
-        })
-        ->get();
+                    ->whereHas('days', function ($q) use ($mytime, $type) {
+                        return $q->where('day', $mytime)->where($type, '1');
+                    })
+                    ->get();
         }
 
 
@@ -670,8 +731,8 @@ if (!function_exists('SplitTimeTemp')) {
             }
         }
 
-        $cr = Carbon::now()->addMinutes($delayMin);
-        $now = dateTimeInUserTimeZone24($cr, $timezoneset);
+        $cr   = Carbon::now()->addMinutes($delayMin);
+        $now  = dateTimeInUserTimeZone24($cr, $timezoneset);
         $nowT = strtotime($now);
         $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
         $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
@@ -728,6 +789,12 @@ if (!function_exists('findSlot')) {
             $time = explode(' - ', $slots[0]['value']);
 
             if ($api != 'api') {
+                if($api == 'webFormet'){ // webFormet for geting date and time 
+                    return ['date'=>$myDate,
+                            'time'=>$time[0],
+                            'datetime'=>date('d M, Y h:i:A', strtotime($myDate.'T'.$time[0]))
+                        ];
+                }
                 return date('d M, Y h:i:A', strtotime($myDate.'T'.$time[0]));
             } else {
                 return date('Y-m-d', strtotime($myDate.'T'.$time[0]));

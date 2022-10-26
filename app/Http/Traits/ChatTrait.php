@@ -62,7 +62,6 @@ trait ChatTrait{
         $devices            = UserDevice::whereNotNull('device_token')->whereIn('user_id',$removeAuth)->pluck('device_token') ?? [];
         
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            $SERVER_API_KEY = $client_preferences->fcm_server_key;
             $data = [
                 "registration_ids" => $devices,
                 "notification" => [
@@ -82,20 +81,8 @@ trait ChatTrait{
                 ],
                 "priority" => "high"
             ];
-            $dataString = json_encode($data);
-            $headers = [
-                'Authorization: key=' . $SERVER_API_KEY,
-                'Content-Type: application/json',
-            ];
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
-            $response = curl_exec($ch);
-            curl_close($ch);
+                      
+            $response = sendFcmCurlRequest($data);
             $result = json_decode($response); 
             return $result;
         }

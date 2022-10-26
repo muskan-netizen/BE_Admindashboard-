@@ -2,6 +2,11 @@
 @section('css')
 <style type="text/css">
 .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}.product-box .product-detail h4,.product-box .product-info h4{font-size:16px}
+.social-icon-list {width: 100%;max-width: 90%;}.social-icon-list .modal-body {text-align: center;}.social-icon-list .modal-body .text-center a img {width: 40px;}
+.social-icon-list .modal-body .text-center {display: inline-block;margin: 0px 6px;}
+
+.vendor-page-copy .name_location a.copy-board {padding: 0px 6px;border-radius: 4px;border: 1px dotted#938a8a;background-color: #f8f1f8;}.vendor-page-copy .name_location a.copy-board img {width: 12px;}
+.vendor-page-copy .name_location a.copy-board span {font-size: 13px;}
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
@@ -21,16 +26,22 @@
                             <div class="col-12">
                                 <form action="">
                                     <div class="row">
-                                        <div class="col-sm-12 text-center">
+                                        <div class="col-sm-12 text-center position-relative vendor-page-copy">
                                             <div class="file file--upload">
                                                 <label>
                                                     <span class="update_pic border-0">
-                                                    <img class="img-fluid blur-up lazyload" data-src="{{$vendor->logo['image_fit'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
+                                                    <img class="img-fluid blur-up lazyload rounded-circle avatar-sm avatar-lg w-100" data-src="{{$vendor->logo['image_fit'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
                                                     </span>
                                                 </label>
                                             </div>
                                             <div class="name_location d-block py-0">
-                                                <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4>
+                                                <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4> 
+                                                <a class="copy-board" href="javascript:void(0)" onclick="copyToClipboard('#p1')" >
+                                                    <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
+                                                    <span class="copied_txt" id="show_copy_msg_on_click_copy">{{ __('Copy') }}</span>
+                                                    <span class="copied_txt" id="show_copy_msg_on_click_copied" style="display:none;">{{ __('Copied') }}</span>
+                                                </a>
+                                                <span id="p1" style="display:none;">{{url()->current()}}</span>
                                             </div>
 
                                                 <div class="">
@@ -43,8 +54,8 @@
                                                         <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
                                                     @endif
                                                     @endif
-                                                    @if($vendor->instagram_url)
-                                                        <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>
+                                                    @if(!empty($socialMediaUrls))
+                                                        <a class="open-social-medialinks" data-toggle="tooltip" title="Social Media Links" href="javascript:void(0)"><i class="fa fa-globe"></i></a>
                                                     @endif
                                                 </div>
                                                 @if ($vendor->is_show_vendor_details == 1 && $vendor->order_min_amount > 0)
@@ -100,9 +111,10 @@
                         @endif
                         @if(!empty($variantSets) && count($variantSets) > 0)
                         @foreach($variantSets as $key => $sets)
+                        
                         <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
                             @php
-                            $slug = $sets->variantDetail->varcategory->cate ? $sets->variantDetail->varcategory->cate->slug.' > ' : '';
+                            $slug = $sets->variantDetail->varcategory ?  ($sets->variantDetail->varcategory->cate ? $sets->variantDetail->varcategory->cate->slug.' > ' : '' ) : '';
                             @endphp
                             @if($slug)
                             <h3 class="collapse-block-title"> {{$slug . $sets->title}}</h3>
@@ -356,6 +368,54 @@
             @endif
         </div>
     </div>
+    <div class="modal fade" id="social-media-links-modal" data-backdrop="static" data-keyboard="false"
+        tabindex="-1" aria-labelledby="repeat_itemLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content social-icon-list">
+                <div class="modal-header pb-0">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                   @if(!empty($socialMediaUrls))
+                   @foreach($socialMediaUrls as $url)
+                   <div class="text-center">
+                        @php
+                            if($url->icon == 'facebook'){
+                                $iconUrl = asset('assets/images/social-media/facebook.png');
+                            }else if($url->icon == 'github'){
+                                $iconUrl = asset('assets/images/social-media/github.png');
+                            }else if($url->icon == 'reddit'){
+                                $iconUrl = asset('assets/images/social-media/reddit.png');
+                            }else if($url->icon == 'whatsapp'){
+                                $iconUrl = asset('assets/images/social-media/whatsapp-img.png');
+                            }else if($url->icon == 'instagram'){
+                                $iconUrl = asset('assets/images/social-media/instagram.png');
+                            }else if($url->icon == 'tumblr'){
+                                $iconUrl = asset('assets/images/social-media/tumblr.png');
+                            }else if($url->icon == 'twitch'){
+                                $iconUrl = asset('assets/images/social-media/twitch.png');
+                            }else if($url->icon == 'twitter'){
+                                $iconUrl = asset('assets/images/social-media/twitter.png');
+                            }else if($url->icon == 'pinterest'){
+                                $iconUrl = asset('assets/images/social-media/pinterest.png');
+                            }else if($url->icon == 'youtube'){
+                                $iconUrl = asset('assets/images/social-media/youtube.png');
+                            }else if($url->icon == 'snapchat'){
+                                $iconUrl = asset('assets/images/social-media/snapchat.png');
+                            }else if($url->icon == 'linkedin'){
+                                $iconUrl = asset('assets/images/social-media/linkedin.png');
+                            }
+                        @endphp
+                        <a target="_blank" href="{{$url->url}}"><img src="{{$iconUrl}}" alt=""></a>
+                    </div>
+                   @endforeach
+                   @endif
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 @endsection
 @section('script')
@@ -387,6 +447,27 @@
     $(document).on('change','.sortingFilter',function(){
         filterProducts();
     });
+
+    $(document).on('click', '.open-social-medialinks', function(e) {
+        $('#social-media-links-modal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+
+    function copyToClipboard(element) {
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($(element).text()).select();
+        document.execCommand("copy");
+        $temp.remove();
+        $("#show_copy_msg_on_click_copy").hide();
+        $("#show_copy_msg_on_click_copied").show();
+        setTimeout(function() {
+            $("#show_copy_msg_on_click_copied").hide();
+            $("#show_copy_msg_on_click_copy").show();
+        }, 1000);
+    }
 
     function filterProducts() {
         var brands = [];

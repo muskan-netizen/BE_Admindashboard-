@@ -136,13 +136,16 @@ class CustomDomain{
           $vendor_mode_count = 0;
           $single_vendor_type = "delivery";
           $enabled_vendor_types = [];
+          
           if($clientPreference){
+         
               // if($clientPreference->dinein_check == 1){$vendor_mode_count++;    $single_vendor_type = "dine_in";}
               // if($clientPreference->takeaway_check == 1){$vendor_mode_count++;  $single_vendor_type = "takeaway";}
               // if($clientPreference->delivery_check == 1){$vendor_mode_count++;  $single_vendor_type = "delivery";}
 
               foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
 									$clientVendorTypes = $vendor_typ_key.'_check';
+                  
 										if($clientPreference->$clientVendorTypes == 1){
                       if($vendor_mode_count == 0){
                         $single_vendor_type   = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
@@ -152,13 +155,12 @@ class CustomDomain{
                     }
               }
           }
-
+         // pr(Session::get('latitude'));
           if(empty(Session::get('vendorType'))){
               Session::put('vendorType', $single_vendor_type);
-          }else{
-            if(!in_array(Session::get('vendorType'), $enabled_vendor_types)){
+          }
+          if(!in_array(Session::get('vendorType'), $enabled_vendor_types)){
               Session::put('vendorType', $single_vendor_type);
-            }
           }
           if(empty(Session::get('selectedAddress'))){
             Session::put('selectedAddress', @$clientPreference->Default_location_name);

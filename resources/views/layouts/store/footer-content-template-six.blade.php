@@ -216,6 +216,7 @@ $applocale = session()->get('applocale');
                   </div>
                </div>
             </div>
+            @endif
             {{-- Contact Us details --}}
             @if($client_preference_detail->show_contact_us == 1)
             <div class="col-lg-3 col-md-6">
@@ -368,7 +369,7 @@ $applocale = session()->get('applocale');
             </div>
             @endif
          </div>
-         @endif
+
       </div>
    </section>
    <div class="sub-footer">
