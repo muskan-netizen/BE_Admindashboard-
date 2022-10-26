@@ -876,7 +876,7 @@ trait cartManager{
 
                 if($user){
                     // calculate subscription discount
-                    $subscription_discount = $this->calCulateSubscriptionDiscount($user->id,$deliveryCharges,$payable_amount);
+                    $subscription_discount = $this->calCulateSubscriptionDiscount($user->id,$deliveryCharges_real,$payable_amount);
                 }
                 // add total delivery fee 
                 if($vendorData->vendor->delivery_charges_tax_id)

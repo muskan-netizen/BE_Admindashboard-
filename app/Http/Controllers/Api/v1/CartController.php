@@ -695,10 +695,12 @@ class CartController extends BaseController
                 $coupon_removed_msg = '';
                 $deliver_charge = 0;
                 $deliveryCharges = 0;
+                $deliveryCharges_real = 0;
                 $delivery_fee_charges = 0.00;
                 $couponData = $couponProducts = array();
 
-               
+                $vendorTotalDeliveryFee = 0;
+                $previousdeliveryfee = 0;
                
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
                     if(isset($prod->product) && !empty($prod->product)){
@@ -841,7 +843,7 @@ class CartController extends BaseController
                                 if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
 
 
-                            $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address);
+                            $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address, $prod->product->tags);
                             $deliveryDuration = 0;
                             if(isset($deliveries[0]))
                             {
@@ -869,16 +871,30 @@ class CartController extends BaseController
                                      $deliveryDuration = $deliveries[0]['duration'];
                                      $code = $deliveries[0]['code'];
                                  }
-
-
+                                
+                                if($prod->product->individual_delivery_fee == 1) {
+                                    $deliveryCharges_real = ($vendorTotalDeliveryFee + $previousdeliveryfee + $deliveryCharges);
+                                    $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $deliveryCharges;
+                                    $previousdeliveryfee = 0;
+                                    CartProduct::where('cart_id', $cart->id)->where('vendor_id', $vendorData->vendor->id)->where('product_id', $prod->product->id)->update(['product_delivery_fee'=>$deliveryCharges]);
+                                    $prod->product->product_delivery_fee = $deliveryCharges;
+                                    
+                                }else{
+                                    $deliveryCharges_real = ($vendorTotalDeliveryFee + $deliveryCharges);
+                                    $previousdeliveryfee = $deliveryCharges;
+                                }
+                                if(isset($deliveries[0]['rate'])){
+                                    $deliveries[0]['rate'] = $deliveryCharges_real;
+                                }
+                                
                                 $selType = CartDeliveryFee::where(['cart_id'=>$cartID,'vendor_id'=>$vendorData->vendor_id])->first();
                                 $vendorData->delivery_types = $deliveries;
                                 $vendorData->sel_types = (($selType)?$selType->shipping_delivery_type.'_'.$selType->courier_id:$code);
                             }
- 
-                        if(isset($deliveryCharges) && !empty($deliveryCharges)){
+                        
+                        if(isset($deliveryCharges_real) && !empty($deliveryCharges_real)){
                                 $dtype = explode('_',$code);
-                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges, 'delivery_duration' => $deliveryDuration,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
+                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges_real, 'delivery_duration' => $deliveryDuration,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
                         }
                         
                      
@@ -1008,16 +1024,16 @@ class CartController extends BaseController
                             if($vendorData->coupon->promo->allow_free_delivery ==1   ){
                                 $PromoFreeDeliver = 1;
 
-                                $discount_amount = $discount_amount +  $deliveryCharges;
+                                $discount_amount = $discount_amount +  $deliveryCharges_real;
                             }
                         }
                     }
                 }
 
 
-                $payable_amount = $payable_amount + $deliveryCharges ;
+                $payable_amount = $payable_amount + $deliveryCharges_real ;
 
-                $deliver_charge = $deliveryCharges * $clientCurrency->doller_compare;
+                $deliver_charge = $deliveryCharges_real * $clientCurrency->doller_compare;
                 $vendorData->proSum = $proSum;
                 $vendorData->addonSum = $ttAddon;
                 $vendorData->promo_free_delivery = $PromoFreeDeliver;
@@ -1095,7 +1111,7 @@ class CartController extends BaseController
                 $vendorData->is_promo_code_available = $is_promo_code_available;
                 $slotsDate = findSlot('',$vendorData->vendor->id,'','api');
                 $vendorData->delaySlot = $slotsDate;
-                $totalDeliveryCharges+=$deliveryCharges;
+                $totalDeliveryCharges+=$deliveryCharges_real;
 
 
             //All other tax calculations 
@@ -1123,7 +1139,7 @@ class CartController extends BaseController
 
 
             if($vendorData->vendor->delivery_charges_tax)
-            $deliver_fee_charges +=  $deliveryCharges * $delivery_charges_tax_rate/100;
+            $deliver_fee_charges +=  $deliveryCharges_real * $delivery_charges_tax_rate/100;
             
             if($vendorData->vendor->service_charges_tax)
             $total_service_fee +=  $vendor_service_fee_percentage_amount * $service_charges_tax_rate/100;
@@ -1392,7 +1408,7 @@ class CartController extends BaseController
     }
 
 
-    public function getDeliveryFeeDispatcher($vendor_id)
+    public function getDeliveryFeeDispatcher($vendor_id, $dispatcher_tags='')
     {
         try {
             $dispatch_domain = $this->checkIfLastMileOn();
@@ -1410,7 +1426,7 @@ class CartController extends BaseController
                         'latitude' => $cus_address->latitude ?? 30.717288800000,
                         'longitude' => $cus_address->longitude ?? 76.803508700000
                     );
-                    $postdata =  ['locations' => $location];
+                    $postdata =  ['locations' => $location, 'agent_tag' => (!empty($dispatcher_tags)?$dispatcher_tags:'')];
                     $client = new GClient([
                         'headers' => [
                             'personaltoken' => $dispatch_domain->delivery_service_key,
@@ -1628,7 +1644,7 @@ class CartController extends BaseController
 
 
     //Fetch all delivery fee option
-    public function getDeliveryOptions($vendorData,$preferences,$payable_amount,$address)
+    public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $dispatcher_tags='')
     {
         $option = array();
         $delivery_count = 0;
@@ -1641,7 +1657,7 @@ class CartController extends BaseController
         if($preferences->static_delivey_fee != 1)
         {
             //Dispatcher Delivery changes code
-            $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
+            $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $dispatcher_tags);
             if (!empty($deliver_response_array[0])){
                 $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format($deliver_response_array[0]['delivery_fee'], 2, '.', ''):'0.00';
                 $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
