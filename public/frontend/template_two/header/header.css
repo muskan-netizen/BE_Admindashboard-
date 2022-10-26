@@ -2,7 +2,7 @@
 
 
 @media (max-width: 767px){
-    .cab-booking-header{padding:10px 0}.al_mobile_menu{display:block;z-index:9}.al_body_template_two .main-menu .d-md-flex.mr-auto{max-width:100%;overflow:auto}.al_body_template_two .site-topbar .location-bar span{color:#fff!important}.al_body_template_two .top-header.site-topbar{margin-bottom:10px}.al_menu-drawer.open .onhover-dropdown.mobile-account{display:block}.al_body_template_two #content-wrap .site-header .navbar-brand img{height:40px;display:block}.onhover-show-div li{line-height:2.5;border-bottom:1px solid #ddd}.al_menu-drawer.open .onhover-dropdown.mobile-account{display:block}.al_body_template_two #content-wrap .site-header .navbar-brand img{height:40px;display:block}.al_body_template_two ul.onhover-show-div{min-width:200px;box-shadow:none}.al_body_template_two ul.onhover-show-div li{display:block}.al_body_template_two ul.onhover-show-div li a{color:#777}.al_menu-drawer.open .onhover-dropdown.mobile-account i{margin-right:10px}.al_body_template_two ul.onhover-show-div li a:hover{color:var(--theme-deafult)}.date-radio-list:after{height:0!important}.address-form .location-container{height:calc(100vh - 340px)!important}
+    .cab-booking-header{padding:10px 0}.al_mobile_menu{display:block;z-index:9}.al_body_template_two .main-menu .d-md-flex.mr-auto{max-width:100%;overflow:auto}.al_body_template_two .site-topbar .location-bar span{color:#fff!important}.al_body_template_two .top-header.site-topbar{margin-bottom:10px}.al_menu-drawer.open .onhover-dropdown.mobile-account{display:block}.al_body_template_two #content-wrap .site-header .navbar-brand img{height:40px !important;display:block}.onhover-show-div li{line-height:2.5;border-bottom:1px solid #ddd}.al_menu-drawer.open .onhover-dropdown.mobile-account{display:block}.al_body_template_two #content-wrap .site-header .navbar-brand img{height:40px;display:block}.al_body_template_two ul.onhover-show-div{min-width:200px;box-shadow:none}.al_body_template_two ul.onhover-show-div li{display:block}.al_body_template_two ul.onhover-show-div li a{color:#777}.al_menu-drawer.open .onhover-dropdown.mobile-account i{margin-right:10px}.al_body_template_two ul.onhover-show-div li a:hover{color:var(--theme-deafult)}.date-radio-list:after{height:0!important}.address-form .location-container{height:calc(100vh - 340px)!important}
 }
 
 
@@ -23,3 +23,16 @@
 #main-menu .slick-list{overflow: inherit;}
 .al_body_template_two .pixelstrap ul.alInnerMenu{top: 30px;padding: 0;display: none;}
 .al_searchType .form-control{background-color: transparent;}
+
+/*hotfix product page css*/
+@media (max-width:767px){
+    .product_tag_filter {
+        width: 100%;margin-left: 6px;
+    }
+    #side_menu_toggle{left: auto;right: 0px;}
+    .al_white_bg_round .scrollspy-menu {
+        position: fixed;
+        top: auto !important;
+        width: 100%;
+    }
+}
