@@ -50,7 +50,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
     <div class="row">
       <div class="col-12">
          <div class="page-title-box">
-            <h4 class="page-title text-uppercase">{{ __("Localization ") }}</h4>
+            <h4 class="page-title text-uppercase">{{ __("Localization") }}</h4>
          </div>
       </div>
     </div>
@@ -1157,7 +1157,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
     <div class="row">
       <div class="col-12">
          <div class="page-title-box">
-            <h4 class="page-title text-uppercase">{{ __("User Onboarding ") }}</h4>
+            <h4 class="page-title text-uppercase">{{ __("User Onboarding") }}</h4>
          </div>
       </div>
     </div>
@@ -1197,8 +1197,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                         <div class="col-sm-12">
                             <div class="form-group d-flex justify-content-between">
                                 <label for="Phone_signup" class="mr-3 mb-0">{{ __("Phone SignUp") }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="is_phone_signup_switch" id="is_phone_signup_switch" class="form-control checkbox_change" data-className="is_phone_signup"  data-color="#43bee1" @if( $getAdditionalPreference['is_phone_signup'] == '1') checked='checked' @endif>
-                                <input type="hidden"  @if($getAdditionalPreference['is_phone_signup'] == 1) value="1" @else value="0" @endif  name="is_phone_signup"  id="is_phone_signup"/>
+                                <input type="checkbox" data-plugin="switchery" name="is_phone_signup_switch" id="is_phone_signup_switch" class="form-control checkbox_change" data-className="is_phone_signup"  data-color="#43bee1" @if( @$getAdditionalPreference['is_phone_signup'] == '1') checked='checked' @endif>
+                                <input type="hidden"  @if(@$getAdditionalPreference['is_phone_signup'] == 1) value="1" @else value="0" @endif  name="is_phone_signup"  id="is_phone_signup"/>
                             </div>
                         </div>
                         @foreach($verify_options as $key => $opt)
@@ -1458,7 +1458,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                 <input type="hidden" name="send_to" id="send_to" value="customize">
                 <div class="card-box mb-0 pb-1 h-100">
                     <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="header-title">Refer and Earn</h4>
+                    <h4 class="header-title">{{ __("Refer and Earn") }}</h4>
                     <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
                     <div class="col-xl-12 my-2" id="addCur-160">
@@ -1473,7 +1473,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
             </form>
         </div>
         <!-- Start Google analytics -->
-  
+
         @if(!$preference->client_preferences_additional->isEmpty())
             @foreach($preference->client_preferences_additional as $addiPreference)
                 @if($addiPreference->key_name == 'gtag_id')
@@ -1526,41 +1526,42 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                 <input type="hidden" name="send_to" id="send_to" value="customize">
                 <div class="card-box mb-0 pb-1 h-100">
                     <div class="d-flex align-items-center justify-content-between">
-                        <h4 class="header-title">Slotting & Orders Scheduling </h4>
+                        <h4 class="header-title">{{ __("Slotting & Orders Scheduling") }} </h4>
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
                     <div class="row">
                         <div class="col-lg-6 my-2">
                             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
+                                <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">{{__('Disable Order Scheduling across the platform to limit only to Instant Orders.')}}</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="off_scheduling_at_cart" id="off_scheduling_at_cart" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->off_scheduling_at_cart == '1')) checked='checked' @endif>
                             </span>
                             </div>
                         </div>
+
                         <div class="col-lg-6 my-2">
                             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="delay_order" class="mr-2 mb-0">{{__('Delay Order')}}<small class="d-block pr-5">Option to add delay time per product separately for Dine In/ Delivery/ Takeaway to restrict order to scheduling only with added Delay.</small></label>
+                                <label for="delay_order" class="mr-2 mb-0">{{__('Delay Order')}}<small class="d-block pr-5">{{__('Option to add delay time per product separately for Dine In/ Delivery/ Takeaway to restrict order to scheduling only with added Delay.')}}</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="delay_order" id="delay_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delay_order == '1')) checked='checked' @endif>
                             </span>
                             </div>
                         </div>
                         <div class="col-lg-6 my-2" id="scheduling_with_slots_div" style="display:none;">
                             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="scheduling_with_slots" class="mr-2 mb-0">{{__('Schedule Pickup & Dropoff With Slots')}}<small class="d-block pr-5">Enable or disable schedule pickup & dropoff with slots for laundry.</small></label>
+                                <label for="scheduling_with_slots" class="mr-2 mb-0">{{__('Schedule Pickup & Dropoff With Slots')}}<small class="d-block pr-5">{{__('Enable or disable schedule pickup & dropoff with slots for laundry.')}}</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="scheduling_with_slots" id="scheduling_with_slots" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->scheduling_with_slots == '1')) checked='checked' @endif>
                                 </span>
                             </div>
                         </div>
                         <div class="col-lg-6 my-2" id="same_day_delivery_for_schedule_div" style="display:none;">
                             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Scheduling')}}<small class="d-block pr-5">Enable or disable same day pickup & delivery for scheduling.</small></label>
+                                <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Scheduling')}}<small class="d-block pr-5">{{__('Enable or disable same day pickup & delivery for scheduling.')}}</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="same_day_delivery_for_schedule" id="same_day_delivery_for_schedule" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->same_day_delivery_for_schedule == '1')) checked='checked' @endif>
                                 </span>
                             </div>
                         </div>
                         <div class="col-lg-6 my-2" id="same_day_orders_for_rescheduing_div" style="display:none;">
                             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Rescheduling')}}<small class="d-block pr-5">Enable or disable same day pickup & delivery for rescheduling.</small></label>
+                                <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Rescheduling')}}<small class="d-block pr-5">{{__('Enable or disable same day pickup & delivery for rescheduling.')}}</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="same_day_orders_for_rescheduing" id="same_day_orders_for_rescheduing" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->same_day_orders_for_rescheduing == '1')) checked='checked' @endif>
                                 </span>
                             </div>
@@ -1721,7 +1722,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                              </select> -->
                          </div>
                          <div class="col-xl-12 my-2 p-0" id="late-cancellation" style="{{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time > 0)? 'display:block;' : 'display:none;'}}">
-                             <label class="primaryCurText">{{ __('Late Cancellation Fee').'(%)' }}</label>
+                             <label class="primaryCurText">{{ __('Late Cancellation Fee') }}(%)</label>
                              <input class="form-control" type="number" min="0" id="cancellation_percentage" name="cancellation_percentage" value="{{ !empty($preference->cancellation_percentage)? $preference->cancellation_percentage : 20}}">
                          </div>
                      </div>
@@ -1731,7 +1732,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
             <div class="col-lg-4 col-xl-3 mb-3">
                 <div class="col-12">
                     <div class="page-title-box">
-                    <h4 class="page-title text-uppercase">{{ __("Token") }}</h4>
+                        <h4 class="page-title text-uppercase">{{ __("Token") }}</h4>
                     </div>
                 </div>
                 <form method="POST" class="h-100" action="{{route('additional.update')}}">
@@ -1744,18 +1745,18 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                         </div>
                         <div class="col-xl-12 my-2 p-0" id="">
                                         <!-- Token card start -->
-                
+
                     <div class="row">
                        <div class="col-12">
                           <div class="form-group mb-0 switchery-demo">
                              <label for="" class="mr-3">{{ __("Enable") }}</label>
-                             <input type="checkbox" data-plugin="switchery" id="is_token_currency_enable" class="form-control checkbox_change" data-className="is_token_currency_enable_hidden" data-color="#43bee1" 
+                             <input type="checkbox" data-plugin="switchery" id="is_token_currency_enable" class="form-control checkbox_change" data-className="is_token_currency_enable_hidden" data-color="#43bee1"
                              @if(@$getAdditionalPreference['is_token_currency_enable'] == '1') checked='checked' value="1"  @endif>
                              <input type="hidden"  @if(isset($getAdditionalPreference['is_token_currency_enable']) == 1) value="1" @else value="0" @endif name="is_token_currency_enable" id="is_token_currency_enable_hidden"/>
                           </div>
                        </div>
                     </div>
-    
+
                     <div class="row token_row" style="{{((isset($getAdditionalPreference['is_token_currency_enable']) && $getAdditionalPreference['is_token_currency_enable'] == 1)) ? '' : 'display:none;'}}">
                        <div class="col-12">
                           <div class="form-group row mt-2 d-flex align-items-center">
@@ -1772,9 +1773,9 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                        </div>
                     </div>
                 <!-- Token card end -->
-    
-                
-    
+
+
+
                         </div>
                     </div>
                 </form>
