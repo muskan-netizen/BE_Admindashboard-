@@ -224,9 +224,6 @@ class OrderController extends BaseController
                                 }
                     $order->taxable_amount = $total_taxes;
                     $order->save();
-<<<<<<< HEAD
-                 
-=======
 
                     /* Updating order prescription if any */
                     $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
@@ -238,7 +235,6 @@ class OrderController extends BaseController
                         $order_prescription->prescription = $cart_prescription->getRawOriginal('prescription');
                         $order_prescription->save();
                     }
->>>>>>> 9c6f4682a452fb2b9b7938a7b3479615e6e4f78c
                   
                     $total_fixed_fee_amount =0.00;
                     $pro_vendors=array();
