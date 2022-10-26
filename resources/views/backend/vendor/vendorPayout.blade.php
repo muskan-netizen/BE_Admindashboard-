@@ -105,6 +105,17 @@
         <div class="row mb-1">
             <div class="col-sm-12">
                 <div class="text-sm-left">
+
+                    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
                     @if (\Session::has('success'))
                         <div class="alert alert-success">
                             <span>{!! \Session::get('success') !!}</span>
@@ -247,11 +258,11 @@
                                                     <i class="fa fa-check text-success mr-2"></i><b>{{ __('Connected to') .' '. __($opt->title) }}</b>
                                                 </h5>
                                             @else
-                                                <button type="button" class="btn btn-info waves-effect text-sm-right connect_btn" id="{{$opt->code}}_connect_btn" 
+                                                <button type="button" class="btn btn-info waves-effect text-sm-right connect_btn mr-2" id="{{$opt->code}}_connect_btn" 
                                                     @if($opt->code == 'stripe')
                                                         onclick="location.href='{{$opt->stripe_connect_url}}'";
                                                     @elseif($opt->code == 'razorpay')
-                                                        onclick="location.href='{{$opt->razorpay_connect_url}}'";
+                                                    data-toggle="modal" data-target="#razorpay-connect-modal"
                                                     @endif
                                                 data-vendor="{{$vendor->id}}"
                                                 data-payout_option="{{$opt->code}}"
@@ -270,9 +281,7 @@
                                             @endif
                                         @endif --}}
 
-                                        <button type="button" class="btn btn-info waves-effect text-sm-right ml-2" data-toggle="modal" data-target="#razorpay-connect-modal">{{ __("Razorpay Connect") }}</button>
-
-                                        <button type="button" class="btn btn-info waves-effect text-sm-right ml-2" data-toggle="modal" data-target="#pay-receive-modal">{{ __("Payout") }}</button>
+                                        <button type="button" class="btn btn-info waves-effect text-sm-right" data-toggle="modal" data-target="#pay-receive-modal">{{ __("Payout") }}</button>
                                     </div>
                                     <div class="col-md-12">
                                         <div class="table-responsive">
@@ -305,7 +314,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0">
-                    <h4 class="modal-title">Razorpay Connect Back Details</h4>
+                    <h4 class="modal-title">Razorpay Connect Bank Details</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
                     <div class="modal-body px-3 py-0">
@@ -320,10 +329,59 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <button class="btn btn-primary" id="razorpay_add_bank" type="button" >Connect with Bank</button>
+                                    <button type="button" class="btn btn-primary" id="razorpay_bank_modal"  >Connect with Bank</button>
                                 </div>
                             </div>
                         </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="razorpay-add-bank-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none" aria-modal="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h4 class="modal-title">Razorpay Connect Account Funds Details</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                    <div class="modal-body px-3 py-0">
+                            <form method="POST" action="{{route('vendor.add.fund.account')}}" >
+                                <input type="hidden" name="vid" value="{{$vendor->id}}">
+                                @csrf
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="field-1" class="control-label">Name</label>
+                                            <input name="name" type="text" class="form-control" >
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="field-1" class="control-label">IFSC</label>
+                                            <input name="ifsc" type="text" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="field-2" class="control-label">Account Number</label>
+                                            <input type="password" name="acc_no" class="form-control" value="{{ $available_funds }}" >
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="field-2" class="control-label">Re-Enter Account Number</label>
+                                            <input type="password" name="re_acc_no" class="form-control" value="{{ $available_funds }}" >
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary " >Submit</button>
+                            </form>
                     </div>
             </div>
         </div>
@@ -340,22 +398,6 @@
                     @csrf
                     <div class="modal-body px-3 py-0">
                         <div class="row">
-                            {{-- <div class="col-md-12">
-                                <div class="form-group">
-                                    <div class="login-form setmodal">
-                                        <ul class="list-inline">
-                                            <li class="d-inline-block mr-2">
-                                                <input type="radio" id="teacher" name="payment_type" value="1" checked="">
-                                                <label for="teacher"><span class="showspan">Pay</span></label>
-                                                </li>
-                                            <li class="d-inline-block mr-2">
-                                                <input type="radio" id="student" name="payment_type" value="2">
-                                                <label for="student"><span class="showspan">Receive</span></label>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div> --}}
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="field-1" class="control-label">Amount</label>
@@ -430,6 +472,30 @@
                 $("#action_product_button").css("display", "none");
                 $('.single_product_check').prop('checked', false);
             }
+        });
+
+        $('#razorpay_connect').click(function() {
+            $.ajax({
+                type: "post",
+                url: "{{route('vendor.razorpay_connect')}}",
+                data: {'vid':"{{$vendor->id}}"},
+                success: function(response) {
+                    if(response.status == '200'){
+                        console.log(response);
+                        window.location.reload();
+                    }
+                },
+                error:function(error){
+                    console.log(error);
+                    window.location.reload();
+                }
+            });
+            $('#razorpay-connect-modal').modal('hide');
+        });
+
+        $('#razorpay_bank_modal').click(function() {
+            $('#razorpay-connect-modal').modal('hide');
+            $('#razorpay-add-bank-modal').modal();
         });
 
         $(document).on('change', '#action_for', function() {
