@@ -1,4 +1,4 @@
-@extends('layouts.store', ['title' => ($client_preference_detail->address_is_car == 1 ? __('Car') : __('Address Book') )  ])
+@extends('layouts.store', ['title' =>  __('Address Book')  ])
 @section('css')
 <style type="text/css">
     .main-menu .brand-logo {
@@ -96,12 +96,7 @@
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">
-                            @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
-                                <h2>{{ __('Cars') }}</h2>
-                                {{-- <p>{{ __('Here Are All Your Previous Cars') }}</p> --}}
-                            @else
                                 <h2>{{ __('Address Book') }}</h2>
-                            @endif
                         </div>
                         <div class="box-account box-info order-address">
                             <div class="row">
@@ -109,11 +104,7 @@
                                     <a class="outer-box border-dashed d-flex align-items-center justify-content-center add_edit_address_btn" href="javascript:void(0)" data-toggle="modal" data-target="#add_edit_address">
                                         <i class="fa fa-plus-circle d-block mr-1" aria-hidden="true"></i>
                                         <h6 class="m-0">
-                                        @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
-                                            {{ __('Add New Cars') }}
-                                        @else
                                             {{ __('Add New Address') }}
-                                        @endif
                                         </h6>
                                     </a>
                                 </div>
@@ -160,24 +151,14 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header border-bottom">
-        <h5 class="modal-title" id="remove_addressLabel">
-            @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
-                {{ __('Delete Car') }}
-            @else
-            {{ __('Delete Address') }}
-            @endif
-        </h5>
+        <h5 class="modal-title" id="remove_addressLabel">{{ __('Delete Address') }} </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
       </div>
       <div class="modal-body">
         <h6 class="m-0">
-            @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
-                {{ __('Do you really want to delete this Car ?') }}
-            @else
                 {{ __('Do you really want to delete this address ?') }}
-            @endif
         </h6>
       </div>
       <div class="modal-footer flex-nowrap justify-content-center align-items-center">
@@ -189,7 +170,7 @@
 </div>
 <script type="text/template" id="add_address_template">
     <div class="modal-header border-bottom">
-        <h5 class="modal-title" id="addedit-addressLabel"><%= title %> {{(@$client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</h5>
+        <h5 class="modal-title" id="addedit-addressLabel"><%= title %> {{ __('Address') }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -307,7 +288,7 @@
                                 <span class="text-danger" id="extra_instruction_error"></span>
                             </div>
                             <div class="col-md-12 mt-2">
-                                <button type="button" class="btn btn-solid" id="<%= ((typeof address !== 'undefined') && (address !== false)) ? 'updateAddress' : 'saveAddress' %>">{{(@$client_preference_detail->address_is_car == 1) ? __('Save Car') : __('Save Address') }}</button>
+                                <button type="button" class="btn btn-solid" id="<%= ((typeof address !== 'undefined') && (address !== false)) ? 'updateAddress' : 'saveAddress' %>">{{__('Save Address') }}</button>
                                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
                             </div>
                         </div>

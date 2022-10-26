@@ -14,7 +14,7 @@ if($theme && !empty($theme->map_key)){
 <link href="{{asset('assets/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/css/custom.css')}}" rel="stylesheet" type="text/css" />
 <link defer type="text/css" rel="stylesheet" href="{{asset('frontend/common/arabic_common.css')}}">
-
+<link href="{{asset('assets/dashboard/css/arabic_dashboard.css')}}" rel="stylesheet" type="text/css" />
 
 @if(isset($mode) && $mode == 'rtl')
 

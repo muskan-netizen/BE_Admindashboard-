@@ -37,7 +37,7 @@ return [
     'rental'       => 'rentalicon',             // Products which are available for rents will be mentioned in this flow.
     'on_demand'    => 'on_demandicon',         // Services that are available any time you want to use it. 
     'laundry'      => 'laundryicon',            // Laundry related products are mentioned in this flow.
-    'appointment'  => 'appointment',        // appointment related products are mentioned in this flow.
+    'appointment'  => 'appointmenticon',        // appointment related products are mentioned in this flow.
   ],
   /**  
    * these service types for category type 
