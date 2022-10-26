@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">{{getNomenclatureName('Loyalty Cards', true)}}</h4>
+                <h4 class="page-title">{{getNomenclatureName( __('Loyalty Cards'), true)}}</h4>
             </div>
         </div>
     </div>
