@@ -1236,7 +1236,8 @@ class CartController extends BaseController
         $userCart = Cart::find($cartID);
         $userCart->total_other_taxes  = $other_taxes_string;
         $userCart->save();
-        
+        // add delivery fee charges as other tax as per web code.
+        $cart->other_taxes = $deliver_fee_charges;
 
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
@@ -1266,6 +1267,11 @@ class CartController extends BaseController
         }
         if($total_taxable_amount>0){
             $cart->total_payable_amount = $cart->total_payable_amount +$total_taxable_amount;
+        }
+
+        // add other taxes amount as well in total payable amount.
+        if($cart->other_taxes>0){
+            $cart->total_payable_amount = $cart->total_payable_amount + $cart->other_taxes;
         }
 
         if($cart->total_fixed_fee_amount){

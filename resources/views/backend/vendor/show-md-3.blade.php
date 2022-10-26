@@ -1,3 +1,9 @@
+<style>
+    a.deleteMultiBanner {
+        color: #fff;
+    }
+    .add_field{display: inline-block;}td.lasttd.manage_social.text-center {vertical-align: middle;}.social_manage .addUrlRow-Add {font-size: 12px;}
+</style>
 <div class="card-box text-center p-0 overflow-hidden" style="">
     <div class="background pt-3 pb-2 px-2" style="background:url({{$vendor->banner['proxy_url'] . '200/100' . $vendor->banner['image_path']}}) no-repeat center center;background-size:cover;">
         <div class="vendor_text">
@@ -37,6 +43,9 @@
             @endif
 
             @endif
+            <div class="for_pickup_delivery_service_only">
+                <a href="javascript:void(0)" class="openSocialMedia btn btn-info bg-info text-white">{{ __("Manage Social Media URLs") }}</a>
+            </div>
         </div>
     </div>
     <div class="text-left mt-0 p-3">
@@ -44,6 +53,36 @@
             {{$vendor->desc}}
         </p>
     </div>
+    @if($vendorMultiBanner['webStyleId'] == 6)
+    <div class="Upload_meltipat_banner row m-0">
+        <div class="col-md-4 text-center mb-2">
+            <a class="outer-box border-dashed d-flex align-items-center justify-content-center addBannner-btns" href="javascript:void(0)" data-toggle="modal" data-target="#addBannner-form">
+                <i class="fa fa-plus-circle d-block mr-1" aria-hidden="true"></i>
+                <h6 class="m-0">banner</h6>
+            </a>
+        </div>
+        @foreach ($vendorMultiBanner['banner'] as $key =>$multiBanner )
+        <div class="col-md-4 text-center mb-2">
+            <div class="alProDuctBannerImg">
+                <img src="{{$multiBanner->image['proxy_url'] . '200/100' . $multiBanner->image['image_path']}}" alt="" class="w-100">
+                <span class=""><a class='deleteMultiBanner' data-banner_id="{{$multiBanner->id }}" href="javascript:void(0)"><i class="fa fa-times "  ></i></a></span>
+            </div>
+        </div>
+        @endforeach
+        {{-- <div class="col-md-4 text-center mb-2">
+            <div class="alProDuctBannerImg">
+                <img src="https://images.royoorders.com/insecure/fill/200/100/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/vendor/bDZm2MWRNof7IyTlie6E9aQYWUsL1YI7DLCB9dJb.jpg@webp" alt="" class="w-100">
+                <span class=""><i class="fa fa-times"></i></span>
+            </div>
+        </div>
+        <div class="col-md-4 text-center mb-2">
+            <div class="alProDuctBannerImg">
+                <img src="https://images.royoorders.com/insecure/fill/200/100/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/vendor/bDZm2MWRNof7IyTlie6E9aQYWUsL1YI7DLCB9dJb.jpg@webp" alt="" class="w-100">
+                <span class=""><i class="fa fa-times"></i></span>
+            </div>
+        </div> --}}
+    </div>
+    @endif
 </div>
 <!-- <div class="card-box">
     <div class="row text-left">
@@ -98,7 +137,7 @@
                     </div>
 
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between" style="display:{{$vendor->show_slot == 1 ? 'none!important' : 'block'}}" id="sch_vendor_close">
-                        {!! Form::label('title', __('Scheduled order if vendor closed?'),['class' => 'control-label']) !!}
+                        {!! Form::label('title', __('Schedule order if vendor closed?'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="closed_store_order_scheduled" class="form-control" data-color="#43bee1" @if($vendor->closed_store_order_scheduled == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
 
@@ -172,7 +211,7 @@
 
                      <div class="col-md-12">
                         <div class="form-group" id="order_min_amountInput">
-                            {!! Form::label('title', 'Absolute Min Order Value [AMOV]',['class' => 'control-label']) !!}
+                            {!! Form::label('title',  __('Absolute Min Order Value [AMOV]'),['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{$vendor->order_min_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     </div>
@@ -181,32 +220,27 @@
                     @if($client_preference_detail->static_delivey_fee == 1)
                     <div class="col-md-12">
                         <div class="form-group" id="order_amount_for_delivery_feeInput">
-                            {!! Form::label('title', 'Min Order Value (with Delivery fee) [MOV]',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Min Order Value (with Delivery fee) [MOV]'),['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="order_amount_for_delivery_fee" type="text" value="{{$vendor->order_amount_for_delivery_fee}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     </div>
 
                     <div class="col-md-12">
                         <div class="form-group" id="delivery_fee_minimumInput">
-                            {!! Form::label('title', 'Delivery Fee For Below MOV',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Delivery Fee For Below MOV'),['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="delivery_fee_minimum" type="text" value="{{$vendor->delivery_fee_minimum}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     </div>
 
                     <div class="col-md-12">
                         <div class="form-group" id="delivery_fee_maximumInput">
-                            {!! Form::label('title', 'Delivery Fee For Above MOV',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Delivery Fee For Above MOV'),['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="delivery_fee_maximum" type="text" value="{{$vendor->delivery_fee_maximum}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     </div>
                     @endif
 
-                    <div class="col-md-12">
-                        <div class="form-group" id="social_link">
-                            {!! Form::label('title', 'Instagram URL',['class' => 'control-label']) !!}
-                            <input class="form-control" name="instagram_url" type="url" value="{{$vendor->instagram_url}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
-                        </div>
-                    </div>
+
                     @if(EasebuzzSubMerchent() == 1)
                     <div class="col-md-12">
                         <div class="form-group" id="social_link">
@@ -247,32 +281,6 @@
         </div>
     </div>
 </div>
-{{-- <div class="card-box">
-    <div class="row text-left">
-        <div class="col-md-12">
-            <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
-                @csrf
-                <div class="row">
-                    <div class="col-md-12">
-                        <h4 class="mb-2"> <span class="">{{ __("Service Fee") }}</span></h4>
-                    </div>
-                </div>
-                <div class="row mb-2">
-
-                    <div class="col-md-12">
-                        <div class="form-group" id="service_fee_percentInput">
-                            {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
-                            <input class="form-control" name="service_fee_percent" type="text" min="0" maxlength="5" value="{{$vendor->service_fee_percent}}" onkeypress="return isNumberKey(event)" onkeydown="if(this.value.length > 6) return false;">
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div> --}}
 
 
 @if(Auth::user()->is_superadmin == 1)
@@ -676,6 +684,140 @@
     </div>
 </div>
 
+<div id="manageSocialMedia" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg social_manage">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __("Manage Social Media URLs") }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+                <form id="add_manage_social_media" method="post" enctype="multipart/form-data" action="{{route('permissionsForUserViaVendor')}}" autocomplete="off">
+                @csrf
+                <div class="modal-body" id="AddAddonBox">
+                {!! Form::hidden('vendor_id', $vendor->id) !!}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row rowYK mb-2">
+                                <div class="col-md-12">
+                                    <h5 class="add_field">{{ __("Add URLs") }}</h5>
+                                    <!-- <button type="button" class="btn btn-info waves-effect waves-light addUrlRow-Add float-right">{{ __("Add URLs") }}</button> -->
+                                </div>
+                                <div class="col-md-12" style="overflow-x: auto;">
+                                    <table class="table table-borderless mb-0 urlTableAdd" id="banner-datatable">
+                                        <tr class="trForClone">
+                                            <th>{{ __("Icon") }}</th>
+                                            <th>{{ __("URL") }}</th>
+                                            <th></th>
+                                        </tr>
+                                        <tr class="input_tr">
+                                            <td><select class="form-control" id="social_icon" name="icon">
+                                                <option value="facebook"> Facebook </option>
+                                                <option value="github"> Github </option>
+                                                <option value="reddit"> Reddit </option>
+                                                <option value="whatsapp"> Whatsapp </option>
+                                                <option value="instagram"> Instagram </option>
+                                                <option value="tumblr"> Tumblr </option>
+                                                <option value="twitch"> Twitch </option>
+                                                <option value="twitter"> Twitter </option>
+                                                <option value="pinterest"> Pinterest </option>
+                                                <option value="youtube"> Youtube </option>
+                                                <option value="snapchat"> Snapchat </option>
+                                                <option value="linkedin"> Linkedin-in </option>
+                                            </select></td>
+                                            <td><input type="text" class="form-control" id="social_url" name="url" required='required'></td>
+                                            <td class="lasttd manage_social text-center"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <button type="submit" class="btn btn-info waves-effect waves-light addUrlSubmit w-100">{{ __("Submit") }}</button>
+                    </div>
+                </div>
+                </form>
+                <div class="modal-footer">
+                    <div class="table-responsive mt-3">
+                        <table class="table table-centered table-nowrap table-striped" id="social-media-datatable">
+                            <thead>
+                                <tr>
+                                    <th>{{ __("Icon") }}</th>
+                                    <th class="text-center">{{ __("URL") }}</th>
+                                    <th>{{ __("Action") }}</th>
+                                </tr>
+                            </thead>
+                            <tbody id="social-media-list">
+                            @php
+                            $mediaIcons = [];
+                            @endphp
+
+                            @forelse($socialMediaUrls as $socialMediaUrl)
+
+                            <tr align="center">
+                            @php
+                            $mediaIcons[] = $socialMediaUrl->icon;
+                            @endphp
+                                <td>
+                                    <i class="fab fa-{{$socialMediaUrl->icon}}  social-media-{{$socialMediaUrl->icon}}" aria-hidden="true"></i>
+                                </td>
+                                <td>
+                                    <a href="{{$socialMediaUrl->url}}" class="social-media-url-{{$socialMediaUrl->icon}}" target="_blank">{{$socialMediaUrl->url}}</a>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div class="inner-div">
+                                            <button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
+                                                <i class="mdi mdi-delete"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr align="center">
+                                <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                            </tr>
+                            @endforelse
+
+                            </tbody>
+                        </table>
+                        <input type="hidden" id="added-icons" value="{{ json_encode($mediaIcons) }}">
+                    </div>
+                </div>
+
+
+        </div>
+    </div>
+</div>
+
+<div id="addBannner-form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __("Add Banner Image") }} </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+
+
+            <form id="save_multi_banner_form" method="post" enctype="multipart/form-data">
+                @csrf
+              <input type="hidden" name="vendor_id" value="{{ $vendor->id }}">
+                <div class="modal-body" id="editCardBox">
+                    <div class="">
+                        <label>{{ __('Upload Banner') }}</label>
+                        <input type="file" accept="image/*" data-plugins="dropify" name="banner_image" class="dropify" />
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info waves-effect waves-light submitMultibannerForm">{{ __("Submit") }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div id="edit-form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -782,6 +924,97 @@ $( document ).ready(function() {
             $('#Vendor_order_pre_time_show').text(txt);
        }
     }
+
+    $('#add_manage_social_media').submit(function(e) {
+
+        e.preventDefault();
+
+        var formData = new FormData(this);
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('vendor.social.media.urls') }}",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            beforeSend: function() {
+            $("#user_permission_form_button").html(
+                        '<i class="fa fa-spinner fa-spin fa-custom"></i> Loading').prop(
+                        'disabled', true);
+            },
+            success: (res) => {
+                if(res.status == 'Success'){
+                    var icon = "success";
+                    var addedIcon = 'social-media-' + res.message.icon;
+
+                    console.log('addedIcon', addedIcon);
+                    if ( $('.'+addedIcon).length ) {
+                        var addedurl = 'social-media-url-'+ res.message.icon;
+                        $("."+addedurl).text(res.message.url);
+                        $("."+addedurl).attr('href', res.message.url);
+                    }else{
+                        $('#social-media-datatable tr:last').after('<tr><td><i class="fab fa-'+res.message.icon+'  social-media-'+res.message.icon+'" aria-hidden="true"></i></td>'+
+                                '<td><a href="'+res.message.url+'" class="social-media-url-'+res.message.icon+'" target="_blank">'+res.message.url+'</a></td>'+
+                                '<td><div><div class="inner-div"><button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="'+res.message.media+'"><i class="mdi mdi-delete"></i></button></div></div></td></tr>');
+                    }
+
+                    $('#social_url').val('');
+
+
+                }else{
+                    var icon = "error";
+                }
+
+                Swal.fire({
+                    text: res.data,
+                    icon: icon,
+                    button: "OK",
+                });
+
+            },
+            error: function(data) {
+                $('#error-msg').text(data.message);
+                $("#user_permission_form_button").html('Submit').prop('disabled',
+                    false);
+            }
+        });
+    });
+
+    // $(".addUrlSubmit").click(function(e) {
+    //     e.preventDefault();
+    //     var addedIcons = $('#added-icons').val();
+    //     var socialIcon = $('#social_icon').val();
+    //     var socialUrl = $('#social_url').val();
+
+    //     var ajaxUrl = "{{route('vendor.social.media.urls')}}";
+
+    // });
+
+    $(".openSocialMedia").click(function(e) {
+        $('#manageSocialMedia').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+        $('#social_url').val('');
+    });
+    $(document).on('click', '.addUrlRow-Add', function(e) {
+        var rowCount = $('#social-media-list tr').length;
+
+        if(rowCount == 12){
+            console.log('rowCount', rowCount);
+            return false;
+        }
+        var $tr = $('.urlTableAdd tbody>tr:first').next('tr');
+        var $clone = $tr.clone();
+        $clone.find(':text').val('');
+        $clone.find('.lasttd').html('<a href="javascript:void(0);" class="action-icon deleteUrlRow"> <i class="mdi mdi-delete"></i></a>');
+        $('.urlTableAdd').append($clone);
+    });
+
+    $("#manageSocialMedia").on('click', '.deleteUrlRow', function() {
+        $(this).closest('tr').remove();
+    });
+
     // search users for set permission
     $('#id_search_user_for_permission').keyup(function(){
         var query = $(this).val();

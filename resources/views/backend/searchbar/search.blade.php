@@ -116,7 +116,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12 product-related">
-                    <h2>products</h2>
+                    <h2>{{ __('Products') }}</h2>
                 </div>
             </div>
             <div class="row search-product">

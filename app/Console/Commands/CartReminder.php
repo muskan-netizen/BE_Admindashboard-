@@ -77,14 +77,10 @@ class CartReminder extends Command
                 })->pluck('user_id')->toArray();
                 $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $cartList)->pluck('device_token')->toArray();
                 if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-                    $from = $client_preferences->fcm_server_key;
                     $notification_content = NotificationTemplate::where(['id' => 10])->first();
                     if ($notification_content) {
                         $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/viewcart";
-                        $headers = [
-                            'Authorization: key=' . $from,
-                            'Content-Type: application/json',
-                        ];
+                        
                         $recipients_array = array_chunk($devices, 1000);
                         foreach ($recipients_array as $recipient_value) {
                             $data = [
@@ -104,17 +100,7 @@ class CartReminder extends Command
                                 ],
                                 "priority" => "high"
                             ];
-                            $dataString = $data;
-                            $ch = curl_init();
-                            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                            curl_setopt($ch, CURLOPT_POST, true);
-                            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                            $result = curl_exec($ch);
-                            // Log::info($result);
-                            curl_close($ch);
+                            sendFcmCurlRequest($data);
                         }
                     }
                 }

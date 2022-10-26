@@ -13,10 +13,10 @@
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="javascript: void(0);">UBold</a></li>
                             <li class="breadcrumb-item"><a href="javascript: void(0);">eCommerce</a></li>
-                            <li class="breadcrumb-item active">Products</li>
+                            <li class="breadcrumb-item active">{{ __('Products') }}</li>
                         </ol>
                     </div>
-                    <h4 class="page-title">Products</h4>
+                    <h4 class="page-title">{{ __('Products') }}</h4>
                 </div>
             </div>
         </div>     
@@ -349,7 +349,7 @@
                     <li class="page-item">
                         <a class="page-link" href="javascript: void(0);" aria-label="Previous">
                             <span aria-hidden="true">«</span>
-                            <span class="sr-only">Previous</span>
+                            <span class="sr-only">{{__('Previous')}}</span>
                         </a>
                     </li>
                     <li class="page-item active"><a class="page-link" href="javascript: void(0);">1</a></li>
@@ -360,7 +360,7 @@
                     <li class="page-item">
                         <a class="page-link" href="javascript: void(0);" aria-label="Next">
                             <span aria-hidden="true">»</span>
-                            <span class="sr-only">Next</span>
+                            <span class="sr-only">{{__('Next')}}</span>
                         </a>
                     </li>
                 </ul>
