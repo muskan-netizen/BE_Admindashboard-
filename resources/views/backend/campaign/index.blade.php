@@ -165,6 +165,7 @@
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script type="text/javascript">
     $('.deleteCampaignButton').click(function(e) {
+        var campId=$(this).attr('data-id');
         e.preventDefault();
         Swal.fire({
             title: "{{__('Are you sure?')}}",
@@ -175,7 +176,7 @@
         }).then((result) => {
             if(result.value)
             {
-                $(`#deleteCampaign${$(this).attr('data-id')}`).submit();
+                $(`#deleteCampaign${campId}`).submit();
             }else{
                 return false;
             }
