@@ -21,31 +21,21 @@ $checkSlot = findSlot('', $vendor->id, '');
                 <div class="row">
                     <div class="slider regular">
                         @if (!empty($vendor->banner))
-                            <div><img src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}" alt=""></div>
+                            <div><img src="{{ $vendor->banner['image_fit'] . '1920/550' . $vendor->banner['image_path'] }}" alt=""></div>
                         @endif
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
+                        @foreach ($vendorMultiBanner['banner'] as $key =>$multiBanner )
+                         <div><img src="{{$multiBanner->image['proxy_url'] . '1920/550' . $multiBanner->image['image_path']}}" alt=""></div>
+                       @endforeach
                     </div>
 
 
                     <div class="slider regular-nav">
                         @if (!empty($vendor->banner))
-                        <div><img src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}" alt=""></div>
+                        <div><img src="{{ $vendor->banner['image_fit'] . '1920/550' . $vendor->banner['image_path'] }}" alt=""></div>
                     @endif
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
+                        @foreach ($vendorMultiBanner['banner'] as $key =>$multiBanner )
+                         <div><img src="{{$multiBanner->image['proxy_url'] . '1920/550' . $multiBanner->image['image_path']}}" alt=""></div>
+                        @endforeach
                     </div>
                  </div>
             </div>
@@ -111,7 +101,7 @@ $checkSlot = findSlot('', $vendor->id, '');
 				<!-- Spa and hotel facilities start -->
 				<div class="row py-5 border-bottom">
 					<div class="col-lg-12 hotelFacilities">
-						<h3 class="mb-4">{{ getNomenclatureName('vendors', false).' ' . __('facilities') }} </h3>
+						<h3 class="mb-4">{{ getNomenclatureName('Vendors', false).' ' . __('Facilities') }} </h3>
 						<ul class="p-0 m-0 d-flex align-items-center">
                             @php
                              $total_facilty =count($vendor->facilty);
@@ -184,6 +174,33 @@ $checkSlot = findSlot('', $vendor->id, '');
                     </a>
                         <div class="row">
                             <div class="col-12">
+                                <div class="col-sm-6 offset-sm-3">
+                                    <div class="row mt-2 d-flex align-items-center mb-sm-2 justify-content-center">
+                                        <div class="col-6 vendor-search-bar mb-sm-0 mb-2">
+                                            <div class="radius-bar w-100">
+                                                <div class="search_form d-flex align-items-center border">
+                                                    <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                                    <input class="form-control border-0 typeahead" type="search"
+                                                        placeholder="{{ __('Search') }}" id="vendor_search_box">
+                                                </div>
+                                                <div class="list-box style-4" style="display:none;" id="search_box_main_div">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 text-right pl-0"><span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span>
+                                            <select name="order_type" id='order_type' class="product_tag_filter p-1">
+                                                <option value="featured">{{ __('Featured') }}</option>
+                                                <option value="a_to_z">{{ __('A to Z') }}</option>
+                                                <option value="z_to_a">{{ __('Z to A') }}</option>
+                                                <option value="low_to_high">{{ __('Cost : Low to High') }}</option>
+                                                <option value="high_to_low">{{ __('Cost : High to Low') }}</option>
+                                                <option value="rating">{{ __('Avg. Customer Review') }}</option>
+                                                <option value="newly_added">{{ __('Newest Arrivals') }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="row vendor-products-wrapper">
                                     <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
                                         <nav class="scrollspy-menu ">
@@ -198,31 +215,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6 alScrollspyProduct">
-                                            <div class="row mt-2 d-flex align-items-start mb-sm-2 justify-content-center">
-                                                <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
-                                                    <div class="radius-bar w-100">
-                                                        <div class="search_form d-flex align-items-center border">
-                                                            <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
-                                                            <input class="form-control border-0 typeahead" type="search"
-                                                                placeholder="{{ __('Search') }}" id="vendor_search_box">
-                                                        </div>
-                                                        <div class="list-box style-4" style="display:none;" id="search_box_main_div">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-5 text-right pl-0"><span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span>
-                                                    <select name="order_type" id='order_type' class="product_tag_filter p-1">
-                                                        <option value="featured">{{ __('Featured') }}</option>
-                                                        <option value="a_to_z">{{ __('A to Z') }}</option>
-                                                        <option value="z_to_a">{{ __('Z to A') }}</option>
-                                                        <option value="low_to_high">{{ __('Cost : Low to High') }}</option>
-                                                        <option value="high_to_low">{{ __('Cost : High to Low') }}</option>
-                                                        <option value="rating">{{ __('Avg. Customer Review') }}</option>
-                                                        <option value="newly_added">{{ __('Newest Arrivals') }}</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-
+                                          
                                             <div class="col-12 d-sm-flex justify-content-start mb-2 p-0">
                                                 @if (isset($tags) && !empty($tags))
                                                     @foreach ($tags as $key => $tag)

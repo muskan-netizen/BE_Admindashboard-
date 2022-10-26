@@ -178,7 +178,7 @@
                                                 <li>
                                                     <div class="radio-option">
                                                         <input type="radio" name="payment-group" value="2" id="payment-2" checked="">
-                                                        <label for="payment-2">Cash On Delivery
+                                                        <label for="payment-2">{{ __('Cash On Delivery') }}
                                                             <span class="small-text">Please send a check to Store
                                                                 Name, Store Street, Store Town, Store State / County, Store Postcode.</span>
                                                         </label>

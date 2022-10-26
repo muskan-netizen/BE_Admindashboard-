@@ -19,7 +19,7 @@
                         <label>{{ __("Upload Image") }}</label>
                         <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="" />
                         <label class="logo-size text-right w-100">{{ __('Image Size') }} 120x120</label>
-                    </div> 
+                    </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-6">
@@ -50,35 +50,36 @@
                         </div>
                     </div>
                 </div>
+                <div class="bg-light mt-3 p-2 border-radius">
+                    <h5 class="mb-3">{{ __('Earnings') }}</h5>
 
-                <h5 class="mb-3">{{ __('Earnings') }}</h5>
+                    <div class="form-group" id="per_order_pointsInput">
+                        {!! Form::label('title', __('Earnings Per Order*'),['class' => 'control-label']) !!}
+                        {!! Form::text('per_order_points', null, ['class' => 'form-control']) !!}
+                        <span class="invalid-feedback" role="alert">
+                            <strong></strong>
+                        </span>
+                    </div>
+                    <!-- <div class="form-group" id="per_purchase_minimum_amountInput">
+                        {!! Form::label('title', 'Minimum Order Amount to redeem Purchase Points*',['class' => 'control-label']) !!}
+                        {!! Form::text('per_purchase_minimum_amount', null, ['class' => 'form-control']) !!}
+                        <span class="invalid-feedback" role="alert">
+                            <strong></strong>
+                        </span>
+                    </div> -->
+                    <br>
 
-                <div class="form-group" id="per_order_pointsInput">
-                    {!! Form::label('title', __('Earnings Per Order*'),['class' => 'control-label']) !!}
-                    {!! Form::text('per_order_points', null, ['class' => 'form-control']) !!}
-                    <span class="invalid-feedback" role="alert">
-                        <strong></strong>
-                    </span>
-                </div>
-                <!-- <div class="form-group" id="per_purchase_minimum_amountInput">
-                    {!! Form::label('title', 'Minimum Order Amount to redeem Purchase Points*',['class' => 'control-label']) !!}
-                    {!! Form::text('per_purchase_minimum_amount', null, ['class' => 'form-control']) !!}
-                    <span class="invalid-feedback" role="alert">
-                        <strong></strong>
-                    </span>
-                </div> -->
-                <br>
+                    <label for="purchase">{{ __("Order Amount to earn 1") }} {{ $newLoyalty_Cards }} {{ __("point") }} ({{ __("as per primary currency") }})</label>
 
-                <label for="purchase">{{ __("Order Amount to earn 1") }} {{ $newLoyalty_Cards }} {{ __("point") }} ({{ __("as per primary currency") }})</label>
-
-                <div class="row mb-2">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic-addon1">1 {{ $newLoyalty_Cards }} {{ __("Point") }} =</span>
+                    <div class="row mb-2">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">1 {{ $newLoyalty_Cards }} {{ __("Point") }} =</span>
+                                    </div>
+                                    <input type="text" onkeypress="return isNumberKey(event);" class="form-control" name="amount_per_loyalty_point" id="amount_per_loyalty_point" placeholder="Value" aria-label="Username" aria-describedby="basic-addon1">
                                 </div>
-                                <input type="text" onkeypress="return isNumberKey(event);" class="form-control" name="amount_per_loyalty_point" id="amount_per_loyalty_point" placeholder="Value" aria-label="Username" aria-describedby="basic-addon1">
                             </div>
                         </div>
                     </div>
