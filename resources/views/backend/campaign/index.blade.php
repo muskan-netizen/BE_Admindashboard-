@@ -175,7 +175,7 @@
         }).then((result) => {
             if(result.value)
             {
-                $("#deleteCampaign"+$(this).attr("data-id")).submit();
+                $(`#deleteCampaign${$(this).attr('data-id')}`).submit();
             }else{
                 return false;
             }
