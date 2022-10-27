@@ -10,7 +10,7 @@ padding-left: 0;
 article#page-container{position:relative;min-height:100vh;overflow:hidden}.slick-slide{float:left;height:100%;min-height:1px}.al_body_template_eight{background-color:#fff}
 .al_body_template_eight #myCarousel{border-radius:40px;overflow:hidden}
 .al_desktop_banner{display:block;min-height:fit-content;}
-.home-slider-wrapper .banner-img-outer img{max-width:1370px;border-radius:30px}article#page-container section .vendors section{padding:60px 0 0!important;margin-bottom:0!important}
+.home-slider-wrapper .banner-img-outer img{max-width:1370px;border-radius:30px}article#page-container section .vendors section{padding:60px 0 0;margin-bottom:0!important}
 .slick-slider{position:relative;display:block;-webkit-box-sizing:border-box;box-sizing:border-box;-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-ms-touch-action:pan-y;touch-action:pan-y;-webkit-tap-highlight-color:transparent}.slick-slider{overflow:inherit}.slick-slider .slick-list,.slick-slider .slick-track{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}.slick-track{position:relative;left:0;top:0;display:block;margin-left:auto;margin-right:auto}
 .al_body_template_eight .suppliers-box .suppliers-img-outer{border-radius:50%; text-align:center;border:none;background-color:#fff;padding-bottom:100%;position:relative;overflow:hidden;}
 .al_body_template_eight .al_custom_brand{text-align:center}
@@ -248,12 +248,36 @@ body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
 
 article#page-container section .vendors section h2.h2-heading {
     margin-bottom: 35px;
+    width: 90%;
+    display: block;
+    text-align: center;
+}
+section#our_vendor_main_div .suppliers-slider-vendors.product-m.render_vendors {
+    margin-bottom: 50px;
+}
+section#our_vendor_main_div .render_full_best_sellers {
+    padding: 50px 0 !important;
 }
 .Categories-section {
-    margin: 50px 0;
+    background-color: #d8d8d8;
+    padding: 30px 0 60px !important;
 }
 article#page-container section .vendors section img.btn-arrow {
     width: 30px;
+}
+section.main-heading {
+    padding: 50px 0 0!important;
+}
+.Categories-section a.brand-box.d-block.black-box h6 {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 16px;
+    color: #1D1D1D;
+    text-align: center;
+}
+section#our_vendor_main_div {
+    padding: 60px 0 !important;
 }
 /*----------new design media css---------*/
 @media(max-width:767px){

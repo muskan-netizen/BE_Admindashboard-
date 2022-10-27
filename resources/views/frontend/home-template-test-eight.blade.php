@@ -557,7 +557,7 @@
 		@elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page')
 		@elseif($homePageLabel->slug == 'brands' && (count($homePageData['brands']) != 0))
 		<section class="container popular-brands left-shape_ position-relative">
-			<div class="al_top_heading d-flex justify-content-between">
+			<div class="al_top_heading text-center">
 				<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
 				{{-- <a class="" href="">See All  </a> --}}
 			</div>
@@ -645,12 +645,20 @@
 		<!-----------------Categories-------------------->
 		@if(@$categories)
 
-
+		<section class="main-heading">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12 text-center">
+						<div class="top-heading">
+							<h2 class="h2-heading"> Categories</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 		<section class="mb-0 render_full_{{$homePageLabel->slug}} Categories-section" id="{{$homePageLabel->slug.$key}}">
 			<div class="container">
-				<div class="top-heading d-flex justify-content-between">
-					<h2 class="h2-heading"> Categories</h2>
-				</div>
+			
 				<div class="row">
 					<div class="col-12">
 						<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
