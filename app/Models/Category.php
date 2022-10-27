@@ -85,6 +85,15 @@ class Category extends Model
         return $this->hasOne(CategoryTag::class)->select('category_id', 'tag');
     }
 
+    public function categoryRoleAssigned()
+    {
+      if(auth()->user() !=null){
+        return $this->hasOne('App\Models\CategoryRole', 'category_id', 'id')->where('role_id', Auth::user()->role_id);
+      }else{
+          return $this->hasOne('App\Models\CategoryRole', 'category_id', 'id')->where('role_id', 1);
+      }
+    }
+
     public function getImageAttribute($value)
     {
       $values = array();
