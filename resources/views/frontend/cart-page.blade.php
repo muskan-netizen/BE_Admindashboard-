@@ -191,7 +191,6 @@
                                 @else
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
                                 @endif
-                                
                             </div>
                             @endif
                             @if($serviceType ==  'rental')
@@ -213,7 +212,6 @@
                                     </div>
                                 
                                 </div>
-                               
                             </div>
                             @elseif( $serviceType ==  'appointment')
                             <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -242,6 +240,10 @@
                                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{$vendor_product->cart_product_prescription }} {{ __('Prescription Added')}}</strong></h4>
                                             @endif
                                         @endif
+                                    @endif
+
+                                    @if(isset($vendor_product->product->product_delivery_fee) && $vendor_product->product->product_delivery_fee >0)
+                                    <div class="float-left mt-2">Delivery Fee : <span style="color: #000;font-size: 14px;font-weight: 500;">{{Session::get('currencySymbol')}}{{$vendor_product->product->product_delivery_fee}}</span></div>
                                     @endif
                                 </div>
                             @endif

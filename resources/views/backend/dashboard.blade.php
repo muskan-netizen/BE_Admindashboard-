@@ -34,7 +34,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                         </a> -->
                     </form>
                 </div><!-- page title right side here -->
-                <h4 class="page-title">Dashboard</h4>
+                <h4 class="page-title">{{ __('Dashboard') }}</h4>
             </div><!-- page title end here -->
         </div>
     </div>
@@ -49,7 +49,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             <div class="float-right">
                                 <i class="mdi mdi-account-multiple widget-icon"></i>
                             </div>
-                            <h5 class="" title="Number of Customer">Customer</h5>
+                            <h5 class="" title="Number of Customer">{{ __('Customer') }}</h5>
                             <h3 class="mt-3 mb-3" id="total_customers">0</h3>
                             <p class="mb-0" id="customers_change">
                                 <!-- <span class="text-success me-2" id="customers_change"></span> -->
@@ -84,7 +84,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             <div class="float-right">
                                 <i class="mdi mdi-currency-usd widget-icon"></i>
                             </div>
-                            <h5 class="" title="Number of Revenue">Total Revenue</h5>
+                            <h5 class="" title="Number of Revenue">{{ __('Total Revenue') }}</h5>
                             <h3 class="mt-3 mb-3" id="total_revenue">0</h3>
                             <p class="mb-0" id="revenue_change">
                                 <!-- <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 5.27%</span> -->
@@ -100,7 +100,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             <div class="float-right">
                                 <i class="mdi mdi-pulse widget-icon"></i>
                             </div>
-                            <h5 class="" title="Number of Growth">Products</h5>
+                            <h5 class="" title="Number of Growth">{{ __('Products') }}</h5>
                             <h3 class="mt-3 mb-3" id="total_products">+ 0</h3>
                             <p class="mb-0" id="products_change">
                                 <!-- <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> 4.08%</span> -->
@@ -166,7 +166,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                         <div class="row text-center">
                             <!-- current week data start here -->
                             <div class="col-sm-6">
-                                <p class="text-muted mb-0 mt-3">Current Week</p>
+                                <p class="text-muted mb-0 mt-3">{{ __('Current Week') }}</p>
                                 <h2 class="fw-normal mb-3">
                                     <small class="mdi mdi-checkbox-blank-circle text-primary align-middle me-1"></small>
                                     <span id="revenueCurrentWeek">0</span>

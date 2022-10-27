@@ -1021,6 +1021,7 @@ class OrderController extends FrontController
                     $order_product->additional_increments_hrs_min = @$vendor_cart_product->additional_increments_hrs_min;
                     $order_product->start_date_time = $vendor_cart_product->start_date_time;
                     $order_product->end_date_time = $vendor_cart_product->end_date_time;
+                    $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee)?$vendor_cart_product->product_delivery_fee:0;
                     /**
                      * for rental case total_booking_time as a total time 
                      * for on_demand and appointment total booking time as single service duration time as per service for get totel service time multiply by quantity

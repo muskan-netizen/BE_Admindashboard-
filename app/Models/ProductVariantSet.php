@@ -32,4 +32,8 @@ class ProductVariantSet extends Model
 	public function optionData() {
 	    return $this->belongsTo('App\Models\VariantOption', 'variant_option_id', 'id');
 	}
+
+	public function productVariants(){
+		return $this->hasMany('App\Models\ProductVariant', 'id', 'product_variant_id');
+	}
 }

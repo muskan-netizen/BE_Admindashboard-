@@ -1924,7 +1924,10 @@ class CartController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function getCartData($domain = '', Request $request)
-    {   $cart_details = null;
+    {   
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+        
+        $cart_details = null;
         $user = Auth::user();
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
@@ -1977,7 +1980,7 @@ class CartController extends FrontController
                 }
             }
 
-            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm])->render();
+            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference])->render();
         }
         return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'']);
     }
@@ -2013,7 +2016,7 @@ class CartController extends FrontController
 
 
         //Fetch all delivery fee option
-    public function getDeliveryOptions($vendorData,$preferences,$payable_amount,$address,$schedule_datetime_del='')
+    public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del='', $dispatcher_tags='')
     {
         $option = array();
         $delivery_count = 0;
@@ -2026,7 +2029,7 @@ class CartController extends FrontController
                 {
 
                     //Dispatcher Delivery changes and estimated delivery duration code
-                    $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del);
+                    $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del, $dispatcher_tags);
                     if (!empty($deliver_response_array[0])){
                         $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format($deliver_response_array[0]['delivery_fee'], 2, '.', ''):'0.00';
                         $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
@@ -2166,7 +2169,7 @@ class CartController extends FrontController
 
 
     # get delivery fee from dispatcher
-    public function getDeliveryFeeDispatcher($vendor_id, $schedule_datetime_del='')
+    public function getDeliveryFeeDispatcher($vendor_id, $schedule_datetime_del='', $dispatcher_tags='')
     {
       
         try {
@@ -2186,7 +2189,7 @@ class CartController extends FrontController
                         'latitude' => $cus_address->latitude ?? 30.717288800000,
                         'longitude' => $cus_address->longitude ?? 76.803508700000
                     );
-                    $postdata =  ['locations' => $location, 'schedule_datetime_del' => $schedule_datetime_del];
+                    $postdata =  ['locations' => $location, 'schedule_datetime_del' => $schedule_datetime_del, 'agent_tag' => (!empty($dispatcher_tags)?$dispatcher_tags:'')];
                     
                     $vendorType =  (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
                     if($vendorType == 'appointment'){
