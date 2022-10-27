@@ -307,6 +307,8 @@
     "Save": "Save",
     "Enable location based visibility of Vendors and set the Default Location.": "Enable location based visibility of Vendors and set the Default Location.",
     "Default Location": "Default Location",
+    "Price By Role": "Price By Role",
+    "Enable to show price by role on edit's vendor screen.": "Enable to show price by role on edit's vendor screen.",
     "Latitude": "Latitude",
     "Longitude": "Longitude",
     "Last Mile Delivery": "Last Mile Delivery",

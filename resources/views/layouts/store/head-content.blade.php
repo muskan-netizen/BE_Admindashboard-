@@ -39,10 +39,11 @@
 @elseif(isset($set_template)  && $set_template->template_id == 3)
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/header/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/footer/footer.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/inner_page.css')}}">
 	@if(Route::currentRouteName() == "userHome")
 	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/homepage.css')}}">
 	@else
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/inner_page.css')}}">
+
 	@endif
 	@if(Route::currentRouteName() == "homeTest")
 	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/homepage.css')}}">
