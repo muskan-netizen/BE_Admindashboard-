@@ -90,5 +90,15 @@ class HomePageLabelSeederDefault extends Seeder
             'created_at' => Carbon::now(),
         ]);
 
+        $already = CabBookingLayout::where('slug', 'spotlight_deals')->count();
+
+        if($already == 0)
+        $home_page = CabBookingLayout::insertGetId([
+            'title'      => 'Spotlight Deals',
+            'slug'       => 'spotlight_deals',
+            'order_by'   => 8,
+            'created_at' => Carbon::now(),
+        ]);
+
     }
 }

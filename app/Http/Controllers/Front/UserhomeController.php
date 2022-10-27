@@ -991,7 +991,8 @@ class UserhomeController extends FrontController
                 'on_sale' => $on_sale_products,
                 'cities' => $this->cities,
                 'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:[],
-                'best_sellers' => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
+                'best_sellers'     => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
+                'spotlight_deals'  => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
                 'recent_orders' => $activeOrders,
                 'categories' => $categories
             ];
