@@ -188,11 +188,11 @@ class CategoryController extends BaseController
 
      //   $del = CategoryTranslation::where('category_id',$id)->whereNotIn('id',$get_multi_cat)->delete();
 
-        $category = Category::with('translationSetUnique', 'tags')->where('id', $id)->first();
+        $category = Category::with('translationSetUnique', 'tags','primary')->where('id', $id)->first();
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
             ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
             ->where('client_languages.client_code', Auth::user()->code)
-            ->where('client_languages.is_active', 1)
+            ->where('client_languages.is_active', 1)            
             ->orderBy('client_languages.is_primary', 'desc')->get();
         $existlangs = $langIds = array();
         foreach ($langs as $key => $value) {
