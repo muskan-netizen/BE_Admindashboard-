@@ -1,3 +1,5 @@
+
+<div class="col-md-2">
 <div class="product-card-box position-relative al_box_third_template al"  >
     {{-- {{ dd($product)}} --}}
     {{--<div class="add-to-fav 12">
@@ -21,7 +23,7 @@
                             {{ $product["vendor_name"] }}
                         </p>
                         <p class="al_product_category">
-                            <span>
+                            <span class="product_discription">
                         {{__('In')}}
                         {{$product["category"] ?? ''}}</span>
                         <span class="rating"><i class="fa fa-star" aria-hidden="true"></i>4.5</span>
@@ -34,4 +36,5 @@
             </div>
         </div>
     </a>
+</div>
 </div>
