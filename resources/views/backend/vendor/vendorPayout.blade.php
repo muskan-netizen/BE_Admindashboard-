@@ -236,20 +236,6 @@
                                         <h4 class="mb-0"> {{ __('Payout') }}</h4>
                                     </div>
                                     <div class="col-6 d-flex align-items-center justify-content-end mb-3">
-                                        {{-- <a class="btn btn-info  waves-effect waves-light text-sm-right action_product_button" dataid="0"
-                                            id="action_product_button" href="javascript:void(0);"
-                                            style="display: none;"><i class="mdi mdi-plus-circle mr-1"></i>
-                                            {{ __('Action') }}
-                                        </a>
-                                        <a class="btn btn-info waves-effect waves-light text-sm-right importProductBtn mx-2 {{ $vendor->status == 1 ? '' : 'disabled' }}"
-                                            dataid="0" href="javascript:void(0);"
-                                            {{ $vendor->status == 1 ? '' : 'disabled' }}><i
-                                                class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
-                                        </a> --}}
-                                        {{-- <a class="btn btn-info waves-effect waves-light text-sm-right addProductBtn {{ $vendor->status == 1 ? '' : 'disabled' }}"
-                                            dataid="0" href="javascript:void(0);"><i
-                                                class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Product') }}
-                                        </a> --}}
 
                                         @foreach ($payout_options as $opt)
                                             @if($opt->code != 'cash')
@@ -272,14 +258,6 @@
                                             @endif
                                             @endif
                                         @endforeach
-                                        
-                                        {{-- @if($is_stripe_connected == 1)
-                                            <h5><i class="fa fa-check text-success mr-2"></i><b>Connected to Stripe</b></h5>
-                                        @else
-                                            @if($is_stripe_payout_enabled == 1)
-                                                <button type="button" class="btn btn-info waves-effect text-sm-right" onclick="location.href='{{$stripe_connect_url}}'">{{ __("Connect to Stripe") }}</button>
-                                            @endif
-                                        @endif --}}
 
                                         <button type="button" class="btn btn-info waves-effect text-sm-right" data-toggle="modal" data-target="#pay-receive-modal">{{ __("Payout") }}</button>
                                     </div>
@@ -317,7 +295,7 @@
                     <h4 class="modal-title">Razorpay Connect Bank Details</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
-                    <div class="modal-body px-3 py-0">
+                    <div class="modal-body px-3 py-2">
                         <div class="row">
                          
                             <div class="col-md-6">
@@ -325,11 +303,21 @@
                                    <button class="btn btn-primary" id="razorpay_connect" type="button" >Create Contact</button>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-group mt-1">
+                                  <b class="text-success">{{((@$vendor->vendor_contact_json)?'Contact Created':'')}}</b>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <button type="button" class="btn btn-primary" id="razorpay_bank_modal"  >Connect with Bank</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mt-1">
+                                  <b class="text-success">{{((@$vendor->vendor_bank_json->id)?'Bank Connected':'')}}</b>
                                 </div>
                             </div>
                         </div>
@@ -345,7 +333,7 @@
                     <h4 class="modal-title">Razorpay Connect Account Funds Details</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
-                    <div class="modal-body px-3 py-0">
+                    <div class="modal-body px-3 py-2">
                             <form method="POST" action="{{route('vendor.add.fund.account')}}" >
                                 <input type="hidden" name="vid" value="{{$vendor->id}}">
                                 @csrf
@@ -354,13 +342,13 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="field-1" class="control-label">Name</label>
-                                            <input name="name" type="text" class="form-control" >
+                                            <input name="name" type="text" value="{{@$vendor->vendor_bank_json->bank_account->name}}" class="form-control" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="field-1" class="control-label">IFSC</label>
-                                            <input name="ifsc" type="text" class="form-control" required>
+                                            <input name="ifsc" type="text" value="{{@$vendor->vendor_bank_json->bank_account->ifsc}}" class="form-control" required>
                                         </div>
                                     </div>
                                 </div>
@@ -369,14 +357,14 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="field-2" class="control-label">Account Number</label>
-                                            <input type="password" name="acc_no" class="form-control" value="{{ $available_funds }}" >
+                                            <input type="password" name="acc_no" class="form-control" value="" >
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="field-2" class="control-label">Re-Enter Account Number</label>
-                                            <input type="password" name="re_acc_no" class="form-control" value="{{ $available_funds }}" >
+                                            <input type="password" name="re_acc_no" class="form-control" value="" >
                                         </div>
                                     </div>
                                 </div>

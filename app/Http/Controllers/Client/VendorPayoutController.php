@@ -48,21 +48,25 @@ class VendorPayoutController extends BaseController{
                             $stripe_redirect_url = $server_url."client/verify/oauth/token/stripe";
                             $creds->stripe_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$vendor.'&client_id='.$creds_arr->client_id.'&scope=read_write&redirect_uri='.$stripe_redirect_url;
                         }
-                    }elseif($creds->code == 'razorpay'){
-                        $creds->razorpay_connect_url = '';
-                        if( (isset($creds_arr->client_id)) && !empty($creds_arr->client_id) ){
-                            $stripe_redirect_url = $server_url."client/verify/oauth/token/stripe";
-                            $creds->razorpay_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$vendor.'&client_id='.$creds_arr->client_id.'&scope=read_write&redirect_uri='.$stripe_redirect_url;
+
+                        // Check if vendor has connected account
+                        $checkIfStripeAccountExists = VendorConnectedAccount::where(['vendor_id' => $vendor, 'payment_option_id' => $creds->id])->first();
+                        if($checkIfStripeAccountExists && (!empty($checkIfStripeAccountExists->account_id))){
+                            $creds->is_connected = 1;
+                        }else{
+                            $creds->is_connected = 0;
+                        }
+                        
+                    }else if($creds->code == 'razorpay'){
+                        $creds->is_connected = 0;
+                        $vendors = Vendor::find($vendor);
+                        if(@$vendors->vendor_bank_json->id)
+                        {
+                            $creds->is_connected = 1;
                         }
                     }
 
-                    // Check if vendor has connected account
-                    $checkIfStripeAccountExists = VendorConnectedAccount::where(['vendor_id' => $vendor, 'payment_option_id' => $creds->id])->first();
-                    if($checkIfStripeAccountExists && (!empty($checkIfStripeAccountExists->account_id))){
-                        $creds->is_connected = 1;
-                    }else{
-                        $creds->is_connected = 0;
-                    }
+                    
                 }
             }
             // dd($payout_creds->toArray());
@@ -340,6 +344,19 @@ class VendorPayoutController extends BaseController{
                     return Redirect()->back()->with('toaster', $toaster);
                 }
                 $request->request->add(['transaction_id' => $response->data]);
+            }
+
+
+            /////// Payout via Razorpay ///////
+            if($payout_option_id == 4){
+                $razorpayController = new RazorpayGatwayController();
+                $request->request->add(['vid' => $vendor_id]);
+                $response = $razorpayController->razorpay_complete_funds_request($request)->getData();
+                if($response->status != '200'){
+                    $toaster = $this->errorToaster('Error', __($response->message));
+                    return Redirect()->back()->with('toaster', $toaster);
+                }
+                $request->request->add(['transaction_id' => $response->data->id]);
             }
             
             // update payout request

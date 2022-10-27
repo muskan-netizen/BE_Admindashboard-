@@ -34,7 +34,8 @@ class RazorpayGatwayController extends Controller
         $this->API_SECRET_KEY = $api_secret_key;
         $this->api = new Api($api_key, $api_secret_key);
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'INR';
+        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : '';
+        $this->currency_id = (isset($primaryCurrency->currency_id)) ? $primaryCurrency->currency_id : '';
    
         $this->token = base64_encode($api_key.':'.$api_secret_key);
         $this->api_url = 'https://api.razorpay.com/v1/';
@@ -46,30 +47,37 @@ class RazorpayGatwayController extends Controller
         try{
 
                 $vendor = Vendor::find($request->vid);
-                //->select('name','email','phone');
-                $jsonData = array(
-                    'name'=>$vendor->name,
-                    'email'=>$vendor->email,
-                    'contact'=>$vendor->phone_no,
-                    'type'=>'vendor',
-                    'reference_id' => base64_encode($vendor->id.'@contact')
-                ); 
-                $result = $this->postCurl('contacts',$jsonData);
-                if(isset($result) && !empty($result->id))
+                if(isset($vendor) && empty($vendor->razorpay_contact_json))
                 {
-                    $vendor->razorpay_contact_json = json_encode($result);
-                    $vendor->save();
-                    session()->flash('success', 'Razorpay Contact Created Successfuly!'); 
-                    return response()->json(['status'=>'200','data' => $result]);
-                }
-                session()->flash('error', 'Something went wrong!'); 
-                return response()->json(['error' => 'Something went wrong!'], 404);
+                    $jsonData = array(
+                        'name'=>$vendor->name,
+                        'email'=>$vendor->email,
+                        'contact'=>$vendor->phone_no,
+                        'type'=>'vendor',
+                        'reference_id' => base64_encode($vendor->id.'@contact')
+                    ); 
+                    $result = $this->postCurl('contacts',$jsonData);
+                    if(isset($result) && !empty($result->id))
+                    {
+                        $vendor->razorpay_contact_json = json_encode($result);
+                        $vendor->save();
+                        session()->flash('success', 'Razorpay Contact Created Successfuly!'); 
+                        return response()->json(['status'=>'200']);
+                    }
+                    session()->flash('error', 'Something went wrong!'); 
+                    return response()->json(['error' => 'Something went wrong!'], 404);
 
-            }catch(\Exception $e)
-            {
-                session()->flash('error', $e->getMessage()); 
-                return response()->json(['error' => $e->getMessage()], 404);
-            }
+                }else{
+                    session()->flash('success', 'Razorpay Contact Already Created!'); 
+                    return response()->json(['status'=>'200']);
+                }
+
+                }catch(\Exception $e)
+                {
+                    session()->flash('error', $e->getMessage()); 
+                    return response()->json(['error' => $e->getMessage()], 404);
+                }
+            
 
     }
 
@@ -77,7 +85,6 @@ class RazorpayGatwayController extends Controller
     public function razorpay_add_funds_accounts(Request $request)
     {
         try{
-
             $validator = Validator::make($request->all(), [
                 'name' => 'required|max:100',
                 'vid' => 'required',
@@ -100,7 +107,7 @@ class RazorpayGatwayController extends Controller
                 ); 
 
                 $razorpayContact = json_decode($vendor->razorpay_contact_json);
-                if(isset($razorpayContact) && !empty($razorpayContact->id))
+                if(isset($razorpayContact) && !empty($razorpayContact->id) && empty($vendor->razorpay_bank_json))
                 {
                         $jsonData = array(
                             'contact_id'=>$razorpayContact->id,
@@ -112,15 +119,52 @@ class RazorpayGatwayController extends Controller
                         {
                             $vendor->razorpay_bank_json = json_encode($result);
                             $vendor->save();
-                            session()->flash('success', 'Razorpay Account Added Successfuly!'); 
-                           return redirect()->back()->with('success','Done Account');
+                           return redirect()->back()->with('success','Razorpay Account Added Successfuly!');
                         }
+                }else{
+                    return redirect()->back()->with('success','Already Done Account');
                 }
 
             }catch(\Exception $e)
             {
-                session()->flash('error', $e->getMessage()); 
                 return redirect()->back()->with('error',$e->getMessage());
+            }
+
+    }
+
+
+    public function razorpay_complete_funds_request(Request $request)
+    {
+        try{
+                $vendor = Vendor::find($request->vid);
+                $razorpayBank = $vendor->vendor_bank_json;
+                $amount = getDollarCompareAmount($request->amount, $this->currency_id);
+                if(isset($razorpayBank) && !empty($razorpayBank->id))
+                {
+                        $jsonData = array(
+                            'account_number'=>$razorpayBank->bank_account->account_number,
+                            'fund_account_id'=>$razorpayBank->id,
+                            'amount'=>$amount * 100,
+                            'currency'=>$this->currency??'INR',
+                            'mode'=>'IMPS',
+                            'purpose'=>'payout',
+                            'queue_if_low_balance'=>false,
+                            'reference_id'=>$vendor->id.'@123'
+                        ); 
+                        $result = $this->postCurl('payouts',$jsonData);
+                        if(isset($result->id) && !empty($result->id))
+                        {
+                            return response()->json(['status'=>'200','data'=>$result]);
+                        }
+                        return response()->json(['status'=>'400','message'=>$result->error->description]);
+
+                }else{
+                    return response()->json(['status'=>'400','message'=>'No bank funds account founds.']);
+                }
+
+            }catch(\Exception $e)
+            {
+                return response()->json(['status'=>'400','data' => $e->getMessage()]);
             }
 
     }
