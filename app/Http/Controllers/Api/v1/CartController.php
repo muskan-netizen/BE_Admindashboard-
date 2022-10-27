@@ -65,9 +65,10 @@ class CartController extends BaseController
                 $cart = Cart::where('user_id', $user->id);
             }
             $cart = $cart->first();
+       
             if ($cart) {
-
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
+               
 
                 $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
                                 $q->where('age_restriction',1);
@@ -164,6 +165,18 @@ class CartController extends BaseController
             if ($request->has('addon_options')) {
                 $addon_options = $request->addon_options;
             }
+            if($request->has('start_date_time')){
+                $start_date_time= $request->start_date_time;
+            }
+            if($request->has('end_date_time')){
+                $end_date_time= $request->end_date_time;
+            }
+            if($request->has('total_booking_time')){
+                $total_booking_time= $request->total_booking_time;
+            }
+            if($request->has('additional_increments_hrs_min')){
+                $additional_increments_hrs_min=$request->additional_increments_hrs_min;
+            }
             foreach ($addon_options as $key => $opt) {
                 $addonSets[$addon_ids[$key]][] = $opt;
             }
@@ -246,6 +259,10 @@ class CartController extends BaseController
                     'variant_id'  => $request->product_variant_id,
                     'currency_id' => $client_currency->currency_id,
                     'luxury_option_id' => $luxury_option ? $luxury_option->id : 1,
+                    'start_date_time'=>$start_date_time ?? null,
+                    'end_date_time'=>$end_date_time ?? null,
+                    'total_booking_time'=>$total_booking_time ?? null,
+                    'additional_increments_hrs_min'=>$additional_increments_hrs_min ?? null,
                 ];
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)
@@ -739,6 +756,7 @@ class CartController extends BaseController
                         $proSum = $proSum + $quantity_price + $quantity_container_charges;
                         $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                         $total_container_charges = $total_container_charges + $quantity_container_charges;
+                        $prod->luxury_option_id= $prod->luxury_option_id;
                         if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
                             $prod->cartImg = $prod->pvariant->image->imagedata;
                         } else {
@@ -1173,7 +1191,7 @@ class CartController extends BaseController
         
         $total_subscription_discount = $total_subscription_discount + $subscription_discount;
 
-        $cart_product_luxury_id = CartProduct::where('cart_id', $cartID)->select('luxury_option_id', 'vendor_id')->first();
+        $cart_product_luxury_id = CartProduct::where('cart_id', $cartID)->select('luxury_option_id', 'vendor_id','additional_increments_hrs_min')->first();
         if ($cart_product_luxury_id) {
             if ($cart_product_luxury_id->luxury_option_id == 2 || $cart_product_luxury_id->luxury_option_id == 3) {
                 $vendor_address = Vendor::where('id', $cart_product_luxury_id->vendor_id)->select('address')->first();
@@ -1321,8 +1339,16 @@ class CartController extends BaseController
             ['label' => '10%', 'value' => decimal_format(0.1 * $cal_tip_value_total)],
             ['label' => '15%', 'value' => decimal_format(0.15 * $cal_tip_value_total)]
         );
-
+        
+    if($cart_product_luxury_id->luxury_option_id=='4'){
+    $additional_price=($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min);
+    $cart->total_payable_amount= number_format((float)$cart->total_payable_amount+$additional_price, 2, '.', '');
+        $cart->additional_price=$additional_price;
+    }
+    else{
         $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
+    }
+        
         $cart->vendor_details = $vendor_details;
         $cart->cart_dinein_table_id = $cart_dinein_table_id;
         $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
