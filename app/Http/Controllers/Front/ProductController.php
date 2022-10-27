@@ -28,6 +28,10 @@ class ProductController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request, $domain = '',$vendor,$url_slug){
+
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
+
         $user = Auth::user();
         $preferences = Session::get('preferences');
         $langId = Session::get('customerLanguage');
@@ -72,6 +76,56 @@ class ProductController extends FrontController{
         $p_id = $product->id;
         $product =  $this->getProduct($p_id,$vendor,$url_slug,$user,$langId);
        
+        
+        // $product = Product::with([
+        //     'variant' => function ($sel) {
+        //         $sel->groupBy('product_id');
+        //     },
+        //     'variant.set' => function ($sel) {
+        //         $sel->select('product_variant_id', 'variant_option_id');
+        //     },
+        //     'variant.media.pimage.image', 'related', 'upSell', 'crossSell', 'vendor', 'media.image', 'translation' => function ($q) use ($langId) {
+        //         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+        //         $q->where('language_id', $langId);
+        //     },
+        //     'addOn' => function ($q1) use ($langId) {
+        //         $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
+        //         $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
+        //         $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
+        //         $q1->where('set.status', 1)->where('ast.language_id', $langId);
+        //     },
+        //     'variantSet' => function ($z) use ($langId, $p_id) {
+        //         $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+        //         $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
+        //         $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+        //         $z->where('vt.language_id', $langId);
+        //         $z->where('product_variant_sets.product_id', $p_id);
+        //         $z->where('vr.status', 1);
+        //     },
+        //     'variantSet.option2' => function ($zx) use ($langId, $p_id) {
+        //         $zx->where('vt.language_id', $langId)
+        //             ->where('product_variant_sets.product_id', $p_id);
+        //     },
+        //     'addOn.setoptions' => function ($q2) use ($langId) {
+        //         $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+        //         $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
+        //         $q2->where('apt.language_id', $langId);
+        //     },
+        //     'category.categoryDetail.allParentsAccount'
+        // ]);
+        // if($user){
+        //     $product = $product->with(['inwishlist' => function ($query) use($user) {
+        //         $query->where('user_wishlists.user_id', $user->id);
+        //     }]);
+        // }
+        
+        // $product = $product->with('related')->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags' )
+        //     ->whereHas('vendor',function($q) use($vendor){
+        //         $q->where('slug',$vendor);
+        //     })->where('url_slug', $url_slug)
+        //     ->where('is_live', 1)
+        //     ->firstOrFail();
+        // pr($product->toArray());   
         $doller_compare = 1;
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         if($clientCurrency){
@@ -236,9 +290,7 @@ class ProductController extends FrontController{
             }else{
                 $product_page = "product";
             }
-            //long_term service product
-           
-            return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available]);
+            return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference]);
 
         }
    }
@@ -249,6 +301,8 @@ class ProductController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function getVariantData(Request $request, $domain = '', $sku){
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
         $customerCurrency = Session::get('customerCurrency');
         if(isset($customerCurrency) && !empty($customerCurrency)){
         }
@@ -293,7 +347,10 @@ class ProductController extends FrontController{
                         if($request->options[$key]){
                             $variantSet = ProductVariantSet::whereIn('variant_type_id', $request->variants)
                             ->whereIn('variant_option_id', $request->options)
-                            ->where('product_variant_id', $variant->product_variant_id)->get();
+                            ->where('product_variant_id', $variant->product_variant_id)
+                            ->whereHas('productVariants', function($q){
+                                $q->where('status', '=', 1);
+                            })->get();
                             if(count($variantSet) == count($request->variants)){
                                 // if(!in_array($variantSet->product_variant_id, $pv_ids)){
                                     $pv_ids[] = $variant->product_variant_id;
@@ -326,11 +383,16 @@ class ProductController extends FrontController{
         ->where('products.id', $product->id)->first();
         $data['availableSets'] = $availableSets->variantSet;
         if($pv_ids){
-            $variantData = ProductVariant::with('product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart')->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
-                ->whereIn('id', $pv_ids)->get();
+            $variantData = ProductVariant::with(['product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart'])
+            ->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
+            ->whereIn('id', $pv_ids)->get();
+
             if ($variantData) {
                 foreach($variantData as $variant){
+
                     $variant->productPrice =  decimal_format(($variant->price * $clientCurrency->doller_compare));
+                    // dump($variant->productPrice);
+                   
                     // $variant->productPrice = Session::get('currencySymbol') . number_format(($variant->price * $clientCurrency->doller_compare), 2, '.', '');
                     // $sets[] = $availableSet->toArray();
                     // foreach($availableSet->groupBy('product_variant_id') as $avSets){
@@ -374,6 +436,7 @@ class ProductController extends FrontController{
                     $variantData = array();
                 }
                 $data['variant'] = $variantData;
+                
                 return response()->json(array('status' => 'Success', 'data' => $data));
             }
 
