@@ -465,7 +465,7 @@ trait cartManager{
 
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;
-                $total_service_fee = 0;
+                // $total_service_fee = 0;
                 $total_markup_fee_tax = 0; 
                 /* Getting in Vendor product loop and setting product values*/
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
