@@ -1079,6 +1079,15 @@ class CartController extends BaseController
 
                 $order_sub_total = $order_sub_total + $vendor_products_total_amount;
 
+                $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
+                if($getAdditionalPreference['is_price_by_role'] == 1){
+                    $role_id = (Auth::user() != null) ? Auth::user()->role_id : 1;
+                    $vendor_min_amount_data = VendorMinAmount::where('vendor_id',$vendorData->vendor->id)
+                    ->where('role_id', $role_id)->first();
+                    $vendorData->vendor->order_min_amount = empty($vendor_min_amount_data)?0:$vendor_min_amount_data->order_min_amount;
+                }
+
                 if((float)($vendorData->vendor->order_min_amount) > $payable_amount){  # if any vendor total amount of order is less then minimum order amount
                     $delivery_status = 0;
                 }
