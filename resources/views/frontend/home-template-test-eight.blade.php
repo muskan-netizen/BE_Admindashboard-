@@ -641,6 +641,21 @@
 				</div>
 			</div>
 		</section>
+        @elseif($homePageLabel->slug == 'recently_viewed' && (count($homePageData['recently_viewed']) != 0))
+		<section class="suppliers-section container mb-4" id="homepage_recently_viewed">
+			<div class=" top-heading ">
+				<h2 class="h2-heading">{{$homePageLabel->slug=='recently_viewed' ? __('Recently')." ".getNomenclatureName('Viewed', true) : __($homePageLabel->title)}}</h2>
+			</div>
+			<div class="row">
+				<div class="col-12 p-0 mb-4">
+					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+						@foreach ($homePageData[$homePageLabel->slug] as $vendor )
+						@include('frontend.home_page_8.recently_viewed')
+						@endforeach
+					</div>
+				</div>
+			</div>
+		</section>
 		@elseif($homePageLabel->slug == 'categories' && count($homePageData['categories']) != 0 )
 		<!-----------------Categories-------------------->
 		@if(@$categories)
@@ -704,7 +719,7 @@
 		@endif
 		@endif @endforeach
 
-		
+
 	</div>
 </section><!-- our_vendor_main_div end -->
 
@@ -736,7 +751,7 @@
 @section('home-page')
 {{-- <script type="text/javascript" src="{{asset('front-assets/js/homepage-three.js')}}"></script> --}}
 <script type="text/javascript" src="{{asset('assets/js/template/commonFunction.js')}}"></script>
-<script type="text/javascript" src="{{asset('assets/js/template/template-three/templateFunction.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/js/template/template-eight/templateFunction.js')}}"></script>
 @endsection
 @endsection
 @section('js-script')
