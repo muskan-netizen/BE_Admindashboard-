@@ -243,7 +243,7 @@ class UserhomeController extends FrontController
                     $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
                 })->first();
                 return view('frontend.extrapageNew', compact('page_detail','templetes','VendorCategory','builds','navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
-                
+
         }else {
                 $tag = [];
                     $showTag = implode(',', $tag);
@@ -284,9 +284,9 @@ class UserhomeController extends FrontController
 
             if(count($navCategories) > 0 && $vendor_type =='pick_drop' ){
                 $categoriesSlug = $navCategories[0]->slug;
-                return redirect()->route('categoryDetail',$categoriesSlug); 
+                return redirect()->route('categoryDetail',$categoriesSlug);
             }
-           
+
             if ($clientPreferences) {
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
                     $clientVendorTypes = $vendor_typ_key.'_check';
@@ -356,7 +356,7 @@ class UserhomeController extends FrontController
 
             $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
             $enable_layout = CabBookingLayout::where('is_active',1)->orderBy('order_by','asc')->pluck('slug')->toArray();
-           
+
             // $last_mile = $this->checkIfLastMileDeliveryOn();
             $view_page ="home-template-one";
             if (isset($set_template)  && $set_template->template_id == 1){
@@ -382,7 +382,7 @@ class UserhomeController extends FrontController
     }
     public function index(Request $request, $domain='')
     {
-        
+
         try {
             $home = array();
             $vendor_ids = array();
@@ -397,14 +397,14 @@ class UserhomeController extends FrontController
             $client_config = Session::get('client_config');
             $selectedAddress = Session::get('selectedAddress');
             $_REQUEST['request_from'] = 1;
-           
+
             $navCategories = $this->categoryNav($langId);
-           
+
             Session::put('navCategories', $navCategories);
             $clientPreferences = ClientPreference::first();
             $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
 
-           
+
             $count = 0;
             if ($clientPreferences) {
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
@@ -422,7 +422,7 @@ class UserhomeController extends FrontController
             }
             if(count($navCategories) > 0 && ($vendor_type =='pick_drop') &&  ($count!=1) ){
                 $categoriesSlug = $navCategories[0]->slug;
-                return redirect()->route('categoryDetail',$categoriesSlug); 
+                return redirect()->route('categoryDetail',$categoriesSlug);
             }
 
             $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
@@ -469,7 +469,7 @@ class UserhomeController extends FrontController
 
             if (count($home_page_labels) == 0)
                 $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
-              
+
             $request->merge(['type'=>Session::get('vendorType'),'noTinJson'=>1] );
             $homePageData = $this->postHomePageData($request);
 
@@ -478,9 +478,9 @@ class UserhomeController extends FrontController
                     $da[$da->slug] = $homePageData[$da->slug];
                 }
                 return $da;
-               
+
             });
-               
+
             // dd($homePageData);
             $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
             if ($only_cab_booking == 1)
@@ -506,7 +506,7 @@ class UserhomeController extends FrontController
                 ->orderBy('parent_id', 'asc')->get();
             }
             // dd($categories);
-           
+
             // $last_mile = $this->checkIfLastMileDeliveryOn();
             $view_page ="home-template-one";
             if (isset($set_template)  && $set_template->template_id == 1){
@@ -539,9 +539,9 @@ class UserhomeController extends FrontController
             pr($e->getCode());
             die;
         }
-    }   
-    
-        
+    }
+
+
     /**
      * setHyperlocalAddress
      *
@@ -563,7 +563,7 @@ class UserhomeController extends FrontController
             Session::put('selectedPlaceId', $selectedPlaceId);
        // }
         return redirect()->route('userHome');
-    } 
+    }
     /**
      * postHomePageData
      *
@@ -572,7 +572,7 @@ class UserhomeController extends FrontController
      */
     public function postHomePageData(Request $request)
     {
-       
+
         $vendor_ids = [];
         $new_products = [];
         $feature_products = [];
@@ -586,16 +586,16 @@ class UserhomeController extends FrontController
         }
         $latitude = Session::get('latitude');
         $longitude = Session::get('longitude');
-        
+
         //pr($latitude);
         if($request->has('latitude') ){
             $latitude = $request->latitude;
             Session::put('latitude', $latitude);
-        } 
+        }
         if ($request->has('longitude')) {
             $longitude = $request->longitude;
             Session::put('longitude', $longitude);
-        } 
+        }
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'): ClientPreference::first();
@@ -649,7 +649,7 @@ class UserhomeController extends FrontController
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
         $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1);
-        if ($preferences) {    
+        if ($preferences) {
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                 $selectedAddress = $preferences->Default_location_name;
                 $latitude = $preferences->Default_latitude??null;
@@ -662,8 +662,8 @@ class UserhomeController extends FrontController
                     Session::put('selectedAddress', $preferences->Default_location_name);
                 }
             }
-         
-           
+
+
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
 
                 if (!empty($latitude) && !empty($longitude)) {
@@ -686,7 +686,7 @@ class UserhomeController extends FrontController
         foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;
             // $value->vendorRating = $this->vendorRating($value->products);
-            
+
             // get or update rating
             $value->vendorRating = $this->getVendorRating($value->id);
 
@@ -718,7 +718,7 @@ class UserhomeController extends FrontController
                             $value->opening_time  = date('g:i A',strtotime($value->slotDate->first()->start_time));
                             $value->closing_time = date('g:i A',strtotime($value->slotDate->first()->end_time));
                         }
-                     
+
                     }elseif($value->slot->isNotEmpty()){
                         \Log::info( date('g:i A',strtotime($value->slot->first()->end_time)));
                         if($value->slot->first()->start_time && $value->slot->first()->end_time){
@@ -965,8 +965,8 @@ class UserhomeController extends FrontController
             $this->getCities($language_id);
         }
         /**  Get cities end */
-        
-         
+
+
         /** Respose data */
 
         $data = [
@@ -985,6 +985,7 @@ class UserhomeController extends FrontController
                 'brands' => $brands,
                 'vendors' => $vendors,
                 'new_products' => $new_products,
+                'recently_viewed' => $new_products,
                 'homePageLabels' => $home_page_labels,
                 'featured_products' => $feature_products,
                 'on_sale' => $on_sale_products,
@@ -1002,7 +1003,7 @@ class UserhomeController extends FrontController
 
         return $this->successResponse($data);
     }
- 
+
     /**
      * getCities
      *
@@ -1016,7 +1017,7 @@ class UserhomeController extends FrontController
                             $q->where('latitude','!=', null);
                             $q->where('longitude','!=', null);
                         })->get();
-      
+
         $this->cities = $this->cities->map(function($da) {
             $da->title = $da->translations->first() ? $da->translations->first()->name : $da->slug ;
             unset($da->translations);
@@ -1319,7 +1320,7 @@ class UserhomeController extends FrontController
 
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
-      
+
         if(isset($slug)){
             $categoryTypes = getServiceTypesCategory($request->type);
             $vendors = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
@@ -1752,7 +1753,7 @@ class UserhomeController extends FrontController
     {
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
-     
+
         return response()->json(["status" => true]);
-    } 
+    }
 }

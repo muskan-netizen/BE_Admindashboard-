@@ -130,6 +130,13 @@ class HomePageLabelSeeder extends Seeder
             'order_by' => 11,
         ]);
 
+        $already = HomePageLabel::where('slug', 'recently_viewed')->count();
 
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title'     => 'Recently Viewed',
+            'slug'      => 'recently_viewed',
+            'order_by'  => 12,
+        ]);
     }
 }
