@@ -2016,7 +2016,7 @@ class CartController extends FrontController
 
 
         //Fetch all delivery fee option
-    public function getDeliveryOptions($vendorData,$preferences,$payable_amount,$address,$schedule_datetime_del='')
+    public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del='', $dispatcher_tags='')
     {
         $option = array();
         $delivery_count = 0;
@@ -2029,7 +2029,7 @@ class CartController extends FrontController
                 {
 
                     //Dispatcher Delivery changes and estimated delivery duration code
-                    $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del);
+                    $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del, $dispatcher_tags);
                     if (!empty($deliver_response_array[0])){
                         $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format($deliver_response_array[0]['delivery_fee'], 2, '.', ''):'0.00';
                         $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
@@ -2169,7 +2169,7 @@ class CartController extends FrontController
 
 
     # get delivery fee from dispatcher
-    public function getDeliveryFeeDispatcher($vendor_id, $schedule_datetime_del='')
+    public function getDeliveryFeeDispatcher($vendor_id, $schedule_datetime_del='', $dispatcher_tags='')
     {
       
         try {
@@ -2189,7 +2189,7 @@ class CartController extends FrontController
                         'latitude' => $cus_address->latitude ?? 30.717288800000,
                         'longitude' => $cus_address->longitude ?? 76.803508700000
                     );
-                    $postdata =  ['locations' => $location, 'schedule_datetime_del' => $schedule_datetime_del];
+                    $postdata =  ['locations' => $location, 'schedule_datetime_del' => $schedule_datetime_del, 'agent_tag' => (!empty($dispatcher_tags)?$dispatcher_tags:'')];
                     
                     $vendorType =  (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
                     if($vendorType == 'appointment'){
