@@ -10,9 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption};
+
+use App\Http\Traits\ProductTrait;
 class ProductController extends FrontController{
     private $field_status = 2;
-
+    use ProductTrait;
     public function __construct()
     {
 
@@ -63,75 +65,13 @@ class ProductController extends FrontController{
                 if(!in_array($productVendorId, $vendors)){
                     $is_available = false;
                 }
-
-                // if(Session::has('vendors')){
-                //     $vendors = Session::get('vendors');
-                //     if(is_array($vendors))
-                //     $vendors = $vendors;
-                //     else
-                //     $vendors = $vendors->toArray();
-
-                //     if(!in_array($productVendorId, $vendors)){
-                //         $is_available = false;
-                //         // abort(404);
-                //     }
-                // }else{
-                //     // abort(404);
-                // }
             }
         }
 
 
         $p_id = $product->id;
-        $product = Product::with([
-            'variant' => function ($sel) {
-                $sel->groupBy('product_id');
-            },
-            'variant.set' => function ($sel) {
-                $sel->select('product_variant_id', 'variant_option_id');
-            },
-            'variant.media.pimage.image', 'related', 'upSell', 'crossSell', 'vendor', 'media.image', 'translation' => function ($q) use ($langId) {
-                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
-                $q->where('language_id', $langId);
-            },
-            'addOn' => function ($q1) use ($langId) {
-                $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
-                $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
-                $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
-                $q1->where('set.status', 1)->where('ast.language_id', $langId);
-            },
-            'variantSet' => function ($z) use ($langId, $p_id) {
-                $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
-                $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
-                $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
-                $z->where('vt.language_id', $langId);
-                $z->where('product_variant_sets.product_id', $p_id);
-                $z->where('vr.status', 1);
-            },
-            'variantSet.option2' => function ($zx) use ($langId, $p_id) {
-                $zx->where('vt.language_id', $langId)
-                    ->where('product_variant_sets.product_id', $p_id);
-            },
-            'addOn.setoptions' => function ($q2) use ($langId) {
-                $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
-                $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
-                $q2->where('apt.language_id', $langId);
-            },
-            'category.categoryDetail.allParentsAccount'
-        ]);
-        if($user){
-            $product = $product->with('inwishlist', function ($query) use($user) {
-                $query->where('user_wishlists.user_id', $user->id);
-            });
-        }
-
-        $product = $product->with('related')->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags' )
-            ->whereHas('vendor',function($q) use($vendor){
-                $q->where('slug',$vendor);
-            })->where('url_slug', $url_slug)
-            ->where('is_live', 1)
-            ->firstOrFail();
-        //pr($product->toArray());
+        $product =  $this->getProduct($p_id,$vendor,$url_slug,$user,$langId);
+       
         $doller_compare = 1;
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         if($clientCurrency){
@@ -141,11 +81,30 @@ class ProductController extends FrontController{
             $doller_compare = $clientCurrency->doller_compare ?? 1;
         }
         $product->related_products = $this->metaProduct($langId, $doller_compare, 'related', $product->related);
+        $rating_details = '';
+        $rating_details = OrderProductRating::select('*','created_at as time_zone_created_at')->where(['product_id' => $product->id])->get();
         foreach ($product->variant as $key => $value) {
             if(isset($product->variant[$key])){
             $product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
             }
         }
+         //long_term service product
+        if($product->is_long_term_service == 1){
+            $product_id = $product->LongTermProducts->product_id;
+            $url_slug   = $product->LongTermProducts->product->url_slug;
+           
+            $LongTermProducts                    = $this->getProduct($product->LongTermProducts->product_id,$vendor,$url_slug,$user,$langId);
+            $LongTermProducts->long_term_product = $product->LongTermProducts;
+            $addon =  $product->LongTermProducts->addons->pluck('option_id','addon_id')->toArray() ?? [];
+            if($product->ServicePeriod){
+                $product->ServicePeriods = $product->ServicePeriod->pluck('service_period')->toArray();
+            }
+           //pr($product->ServicePeriods);
+            $LongTermProducts->product_addon     =  $addon;
+            // pr(   $LongTermProducts->toArray());
+            return view('frontend.long_term_service_product')->with([  'product' => $product, 'navCategories' => $navCategories,  'rating_details' => $rating_details,  'product_in_cart' => $product_in_cart,'is_available'=>$is_available,'LongTermProducts'=> $LongTermProducts]);
+        }
+
         $vendorIds[] = $product->vendor_id;
         $np = $this->productList($vendorIds, $langId, $curId, 'is_new');
         $newProducts = ($np->count() > 0) ? array_chunk($np->toArray(), ceil(count($np) / 2)) : $np;
@@ -154,8 +113,7 @@ class ProductController extends FrontController{
                 $v->multiplier = $clientCurrency->doller_compare;
             }
         }
-        $rating_details = '';
-        $rating_details = OrderProductRating::select('*','created_at as time_zone_created_at')->where(['product_id' => $product->id])->get();
+       
         $is_inwishlist_btn = 0;
         if($product->category){
             $category_detail = Category::select()->where('id',$product->category->category_id)->first();
@@ -279,9 +237,7 @@ class ProductController extends FrontController{
                 $product_page = "product";
             }
             //long_term service product
-            if($product->is_long_term_service == 1){
-                $product_page = "long_term_service_product";
-            }
+           
             return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available]);
 
         }

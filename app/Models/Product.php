@@ -270,7 +270,6 @@ class Product extends Model implements Auditable{
         return $this->hasMany('App\Models\OrderProduct')->where(function($q){
             $q->groupBy('order_id ');
         });
-
     }
     
     public function UserWishlist(){
@@ -299,11 +298,22 @@ class Product extends Model implements Auditable{
           $q->whereIn('type_id',$categoryTypesArray);
         });
     }
+    public function scopeByLongTermProductCategoryServiceType($query,$type)
+    {  
+        $categoryTypesArray = getServiceTypesCategory($type);
+        return $query->whereHas('LongTermProducts.product.productcategory',function($q) use ($categoryTypesArray){ 
+          $q->whereIn('type_id',$categoryTypesArray);
+        });
+    }
     // check product validate 
     public function scopeByProductWhereCheck($query)
-    {  
-        
+    {   
         return $query->where(['is_live'=>1,'is_long_term_service'=>0]);
+    }
+    // check product validate 
+    public function scopeByProductLongTerm($query)
+    {   
+        return $query->where(['is_live'=>1,'is_long_term_service'=>1]);
     }
 
     public function getActualPriceAttribute()
@@ -349,7 +359,7 @@ class Product extends Model implements Auditable{
            
     }
     // in long term service 
-    public function product(){
+    public function LongTermProducts(){
         $langData = $this->hasOne('App\Models\LongTermServiceProducts','long_term_service_id','id');
         return $langData;
     }
@@ -382,6 +392,10 @@ class Product extends Model implements Auditable{
             return 2;
         }
     }
+
+  public function ServicePeriod(){
+    return $this->hasMany('App\Models\LongTermServicePeriod');
+  }
 
 
 }

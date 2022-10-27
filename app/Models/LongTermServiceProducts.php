@@ -12,6 +12,11 @@ class LongTermServiceProducts extends Model
         $langData = $this->hasOne('App\Models\Product','id','product_id');
         return $langData;
     }
+
+    public function addons(){
+        $langData = $this->hasMany('App\Models\LongTermServiceProductAddons','long_term_service_product_id','id');
+        return $langData;
+    }
     
     public static function saveProducts($request){
         $longTermProduct =  LongTermServiceProducts::where('long_term_service_id',$request->long_term_service_id)->first() ?? new LongTermServiceProducts();

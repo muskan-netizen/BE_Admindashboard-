@@ -2,6 +2,14 @@ $(function(){
     var longTermServiceTable = '' ;
     initServiceDataTable();
     $(document).on("click",".addServiceBtn",function() {
+        
+        $('#add-service .modal-title').html('Add Service');
+        var html = `<input type="file" id="service_image" name="file" class="dropify form-control" data-default-file="" required />`;
+        $('.service_image').html(html);
+        $('#add-service .dropify').dropify();
+        $('#service_period').val([]);
+        $('#service_period').select2();
+        $('#save_service_form')[0].reset();
         $('#add-service').modal({
             keyboard: false
         });
@@ -98,27 +106,28 @@ function GetServiceData(service_id) {
                 $('#add-service .modal-title').html('Edit Service');
                 $("#add-service input[name=sku]").val(service.sku);
                 $("#add-service input[name=serice_price]").val( (Math.round(service?.variant[0]?.price * 100) / 100).toFixed(2) );
-                $("#add-service input[name=product_quantity]").val(service.product.quantity);
+                $("#add-service input[name=product_quantity]").val(service.long_term_products.quantity);
                 // select product 
                 var $select = $("#service_product_list").selectize();
                 var selectize = $select[0].selectize;
-                selectize.setValue(service.product.product_id);
-                // select period of service
-                var $service_period = $("#service_period").selectize();
-                var service_selectize = $service_period[0].selectize;
-                service_selectize.setValue(service.service_period);
-                // select service_duration
+                selectize.setValue(service.long_term_products.product_id);
+               // select period of service
+                $('#service_period').val(service.ServicePeriods);
+                $('#service_period').select2();
+            
+                
+             
                 var $service_duration = $("#service_duration").selectize();
                 var duration_selectize = $service_duration[0].selectize;
                 duration_selectize.setValue(service.service_duration);
              
-                setProductVariant(service.product.product_id,'',service.product.id)
+                setProductVariant(service.long_term_products.product_id,'',service.long_term_products.id)
                 var image = service.image;
                 var html = `<input type="file" id="service_image" name="file" class="dropify form-control" data-default-file="${image}" required />`;
                 $('.service_image').html(html);
                 $('#add-service .dropify').dropify();
               
-                $('#add-service').modal('show');service_product_list
+                $('#add-service').modal('show');
                 $.each(service.translation, function( index, value ) {
                     $('#add-service #service_name_'+value.language_id).val(value.title);
                 });
@@ -139,6 +148,7 @@ function saveServiceData(formData, data_uri) {
   
     axios.post(data_uri,formData )
         .then(async response => {
+            hideError()
             console.log(response);
             if(response.data.status == "Success"){
                 spinnerJS.hideSpinner();
@@ -178,6 +188,12 @@ function saveServiceData(formData, data_uri) {
             
         })  
 
+}
+function hideError(){
+    var errorClass = document.getElementsByClassName('invalid-feedback');
+    $.each(errorClass, function( index, value ) {
+        $(this).children("strong").text('');
+    });
 }
 function setServiceSkuFromName(event,getVal='',setVal='') {
     var n1 = $('#'+getVal).val()

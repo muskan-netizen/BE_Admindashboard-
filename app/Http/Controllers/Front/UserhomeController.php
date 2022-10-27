@@ -469,6 +469,7 @@ class UserhomeController extends FrontController
             if (count($home_page_labels) == 0)
                 $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
 
+
             $request->merge(['type'=>Session::get('vendorType'),'noTinJson'=>1] );
             $homePageData = $this->postHomePageData($request);
 
@@ -512,7 +513,7 @@ class UserhomeController extends FrontController
                 // $view_page = "home-template-six";
                 $view_page = "home-template-test-six";
             }
-            //pr($set_template->toArray());exit();
+            //pr($view_page);
             //pr(Session::get('latitude'));
             return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData]);
 
@@ -827,7 +828,8 @@ class UserhomeController extends FrontController
         $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);
         $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
         $feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
-        $long_term_service_product_details = $this->longTermServiceProducts($vendor_ids, $language_id, $currency_id,'', $request->type);
+       
+
         foreach ($new_product_details as  $new_product_detail) {
             $multiply = $new_product_detail->variant->first()->multiplier?? 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
@@ -864,24 +866,7 @@ class UserhomeController extends FrontController
                 'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug
             );
         }
-        foreach ($long_term_service_product_details as  $long_term_service_product_detail) {
-            $multiply = $long_term_service_product_detail->variant->first()->multiplier ?? 1;
-            $title = $long_term_service_product_detail->translation->first() ? $long_term_service_product_detail->translation->first()->title : $long_term_service_product_detail->sku;
-            $image_url = $long_term_service_product_detail->media->first() ? $long_term_service_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $long_term_service_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-            $long_term_service_products[] = array(
-                'tag_title' => $featured_products_title??'0',
-                'image_url' => $image_url,
-                'sku' => $long_term_service_product_detail->sku,
-                'title' => Str::limit($title, 18, '..'),
-                'url_slug' => $long_term_service_product_detail->url_slug,
-                'averageRating' => number_format($long_term_service_product_detail->averageRating, 1, '.', ''),
-                'inquiry_only' => $long_term_service_product_detail->inquiry_only,
-                'vendor_name' => $long_term_service_product_detail->vendor ? $long_term_service_product_detail->vendor->name : '',
-                'vendor' => $long_term_service_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$long_term_service_product_detail->variant->first()->price * $multiply,',')),
-                'category' => (@$long_term_service_product_detail->category->categoryDetail->translation) ? @$long_term_service_product_detail->category->categoryDetail->translation->first()->name : @$long_term_service_product_detail->category->categoryDetail->slug
-            );
-        }
+        
         foreach ($on_sale_product_details as  $on_sale_product_detail) {
             $multiply = $on_sale_product_detail->variant->first()->multiplier ?? 1;
             $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
@@ -900,6 +885,13 @@ class UserhomeController extends FrontController
                 'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
         }
+         //get long term service 
+        $long_term_service_products =[];
+        if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
+            $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $language_id, $currency_id,'', $request->type,$p_dim);
+        }
+       
+       
         /**  Recent order */
             $activeOrders = [];
             $user = Auth::user();
@@ -1016,7 +1008,7 @@ class UserhomeController extends FrontController
 
     public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type)
     {
-        $products = Product::byProductCategoryServiceType($type)->with([
+        $products = Product::byProductCategoryServiceType($type)->byProductWhereCheck()->with([
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
@@ -1031,51 +1023,7 @@ class UserhomeController extends FrontController
                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
                 $q->groupBy('product_id');
             },
-        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
-        if ($where !== '') {
-            $products = $products->where($where, 1);
-        }
-        $pndCategories = Category::where('type_id', 7)->pluck('id');
-        // if (is_array($venderIds)) {
-        //     $products = $products->whereIn('vendor_id', $venderIds);
-        // }
-        if ($pndCategories) {
-            $products = $products->whereNotIn('category_id', $pndCategories);
-        }
-        $products = $products->whereHas('vendor', function($q) use ($type,$venderIds){
-                    $q->where('status',1);
-                    $q->whereIn('id',$venderIds);
-                    $q->where($type, 1);
-                })->where('is_live', 1)->take(10)->inRandomOrder()->get();
-        if (!empty($products)) {
-            foreach ($products as $key => $value) {
-                foreach ($value->variant as $k => $v) {
-                    $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
-                }
-            }
-        }
-       return $products;
-        //pr( $products->toArray());
-    }
-
-    public function longTermServiceProducts($venderIds, $langId, $currency = 'USD', $where = '', $type)
-    {
-        $products = Product::byProductCategoryServiceType($type)->ByProductWhereCheck()->with([
-            'category.categoryDetail.translation' => function ($q) use ($langId) {
-                $q->where('category_translations.language_id', $langId);
-            },
-            'vendor',
-            'media' => function ($q) {
-                $q->groupBy('product_id');
-            }, 'media.image',
-            'translation' => function ($q) use ($langId) {
-                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
-            },
-            'variant' => function ($q) use ($langId) {
-                $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
-                $q->groupBy('product_id');
-            },
-        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
+        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','is_long_term_service');
         if ($where !== '') {
             $products = $products->where($where, 1);
         }
@@ -1100,6 +1048,61 @@ class UserhomeController extends FrontController
         }
        return $products;
         //pr( $products->toArray());
+    }
+
+    public function longTermServiceProducts($venderIds, $langId, $currency = 'USD', $where = '', $type,$p_dim ='260/100' )
+    {
+       
+        $products = Product::byLongTermProductCategoryServiceType($type)->byProductLongTerm()->with([
+            'vendor','LongTermProducts.product',
+            'media' => function ($q) {
+                $q->groupBy('product_id');
+            }, 'media.image',
+            'translation' => function ($q) use ($langId) {
+                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+            },
+            'variant' => function ($q) use ($langId) {
+                $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                $q->groupBy('product_id');
+            },
+        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','is_long_term_service')
+        ->whereHas('LongTermProducts.product', function($q){$q->where('is_live',1); });
+        
+        if ($where !== '') {
+            $products = $products->where($where, 1);
+        }
+       
+       
+       //$venderIds = ['8'];
+        $products = $products->whereHas('vendor', function($q) use ($type,$venderIds){
+                    $q->where('status',1);
+                    $q->whereIn('id',$venderIds);
+                    $q->where($type, 1);
+                })->take(10)->inRandomOrder()->get();
+     
+        $return = [];
+        if (!empty($products)) {
+            foreach ($products as $key => $value) {
+                $multiply = Session::get('currencyMultiplier') ?? 1;
+                $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
+                $image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . $p_dim . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                $return[] = array(
+                    'tag_title' => $title??'0',
+                    'image_url' => $image_url,
+                    'sku' => $value->sku,
+                    'title' => Str::limit($title, 18, '..'),
+                    'url_slug' => $value->url_slug,
+                    'averageRating' => number_format($value->averageRating, 1, '.', ''),
+                    'inquiry_only' => $value->inquiry_only,
+                    'vendor_name' => $value->vendor ? $value->vendor->name : '',
+                    'vendor' => $value->vendor,
+                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->price * $multiply,',')),
+                    'category' => ''
+                );
+            }
+        }
+       return $return;
+        
     }
 
     public function changePrimaryData(Request $request)

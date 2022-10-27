@@ -322,8 +322,7 @@ trait cartManager{
                 // $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
         ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        
-
+ 
        //Get All Taxes    
        $taxRates = $this->getTaxes();
       
@@ -711,7 +710,7 @@ trait cartManager{
                 $is_slot_from_dispatch =  checkColumnExists('products', 'is_slot_from_dispatch') ?  $prod->product->is_slot_from_dispatch : '';
                 $show_dispatcher_agent =  checkColumnExists('products', 'is_show_dispatcher_agent') ? $prod->product->is_show_dispatcher_agent  : '';
                 $last_mile_check       = $prod->product->Requires_last_mile  ;
-                $cateTypeId = $prod->product->productcategory->type_id ; 
+                $cateTypeId = $prod->product->productcategory ? $prod->product->productcategory->type_id : ''; 
                 
                 $getSlotingDate = $prod->scheduled_date_time ;
                 if( ($prod->scheduled_date_time =='') || ( strtotime($prod->scheduled_date_time) < strtotime($vendorStartDate) ) ){

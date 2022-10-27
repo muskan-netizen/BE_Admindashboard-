@@ -2809,6 +2809,12 @@ $(document).ready(function () {
             return false;
 
         }
+        if($('#is_long_term_service').length > 0){
+            var service_start_time     =  $('#service_start_time').val();
+            if(service_start_time == '' || service_start_time== undefined){
+
+            }
+        }
 
         $(".productAddonSetOptions").each(function (index) {
             var min_select = $(this).attr("data-min");
@@ -2841,11 +2847,15 @@ $(document).ready(function () {
         if (!breakOut) {
             var sVendorResponse = checkIsolateSingleVendor(vendor_id);
             if (sVendorResponse.status == 'Success') {
+                var service_period  =  $('#service_period').val();
+                var service_day     =  $('#service_day').val();
+                var service_start_time     =  $('#service_start_time').val();
                 if ((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) {
                     var start_date =  $('#start_time').val();
                     var end_date =  $('#end_time').val();
                     var incremental_hrs =  $('#incremental_hrs').val();
                     var total_booking_time =  $('#total_hrs').val();
+                  
                     $("#single_vendor_remove_cart_btn").attr({
                         'data-product_id': product_id,
                         'data-variant_id': $('#prod_variant_id').val(),
@@ -2855,6 +2865,9 @@ $(document).ready(function () {
                         'data-start_time':start_date,
                         'data-end_time':end_date,
                         'data-incremental_hrs':incremental_hrs,
+                        'data-service_period':service_period,
+                        'data-service_day':service_day,
+                        'data-service_start_time':service_start_time,
                         'data-total_hrs':total_booking_time
                     });
                     $("#single_vendor_order_modal").modal('show');
@@ -2866,13 +2879,13 @@ $(document).ready(function () {
                     var incremental_hrs =  $('#incremental_hrs').val();
                     var total_booking_time =  $('#total_hrs').val();
 
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time);
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='') {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='') {
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -2889,7 +2902,10 @@ $(document).ready(function () {
                 "start_date":start_date,
                 "end_date":end_date,
                 "incremental_hrs":incremental_hrs,
-                "total_booking_time":total_booking_time
+                "total_booking_time":total_booking_time,
+                "service_period":service_period,
+                "service_day":service_day,
+                "service_start_time":service_start_time
             },
             success: function (response) {
                 if (response.status == 'success') {
@@ -2934,9 +2950,12 @@ $(document).ready(function () {
         var end_date = $(this).attr('data-end_time');
         var incremental_hrs = $(this).attr('data-incremental_hrs');
         var total_booking_time =  $(this).attr('data-total_hrs');
+        var service_period =  $(this).attr('data-service_period');
+        var service_day =  $(this).attr('data-service_day');
+        var service_start_time =  $(this).attr('data-service_start_time');
 
         if ($(this).attr('data-page') == 'productDetail') {
-            submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time);
+            submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time);
         } else if ($(this).attr('data-page') == 'vendorProducts') {
             var elem = $(this).attr('data-element_id');
             submitAddtoCartProductsAddons($('#' + elem), addonids, addonoptids, product_id, variant_id, quantity, vendor_id);

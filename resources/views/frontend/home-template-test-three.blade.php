@@ -614,8 +614,12 @@
             </div>
             <div class="row">
                 <div class="col-12 p-0">
+					{{-- @php
+					pr($homePageData[$homePageLabel->slug]);
+					@endphp --}}
                     <div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-                        @foreach ($homePageData['long_term_service'] as $vendor )
+                        @foreach ($homePageData[$homePageLabel->slug] as $value )
+					
                         @include('frontend.home_page_3.long_term_service')
                         @endforeach
                     </div>

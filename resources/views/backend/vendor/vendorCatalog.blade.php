@@ -484,7 +484,7 @@
                             <div class="col-6">
                                 <div class="form-group" id="service_periodInput">
                                     {!! Form::label('title', __('Select Time Period'),['class' => 'control-label']) !!}
-                                        <select class="form-control selectizeInput" id="service_period" name="service_period">
+                                        <select class="form-control select2-multiple" id="service_period" data-toggle="select2" multiple="multiple" name="service_period[]">
                                             <option value="days">{{ __('Day') }}</option>
                                             <option value="week">{{ __('Weekly') }}</option>
                                             <option value="months">{{ __('Monthly') }}</option>
@@ -508,7 +508,7 @@
                                         </span>
                                 </div>
                             </div>
-                            <div class="col-12">
+                            <div class="col-6">
                                 <div class="form-group" id="service_product_idInput">
                                     {!! Form::label('title', __('Select Product'),['class' => 'control-label']) !!}
                                 <select class="form-control selectizeInput" id="service_product_list" name="service_product_id">
@@ -523,7 +523,7 @@
                                 </div>
                             </div>
                             
-                            <div class="col-12">
+                            <div class="col-6">
                                 <div class="form-group" id="service_product_variantInput">
                                     {!! Form::label('title', __('Product variant'),['class' => 'control-label']) !!}
                                      <select class="form-control selectizeInput" id="service_product_variant" name="service_product_variant_id">
@@ -1243,7 +1243,7 @@
             if (regexp.test(n1)) {
                 var n1 = $('#product_name').val();
                 $('#url_slug').val(n1);
-                slugify();
+                slugify();setSkuFromName
             } else {
             $('#sku').val(total_sku.split(' ').join(''));
             }

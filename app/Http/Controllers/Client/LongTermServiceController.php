@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController,ProductController};
-use App\Models\{Product,ProductVariant,ProductTranslation,LongTermServiceProductAddons,ProductImage, LongTermServiceProducts, ClientPreference};
+use App\Models\{Product,ProductVariant,ProductTranslation,LongTermServiceProductAddons,ProductImage, LongTermServiceProducts, ClientPreference,LongTermServicePeriod};
 class LongTermServiceController extends BaseController
 {
     use ApiResponser;
@@ -25,7 +25,7 @@ class LongTermServiceController extends BaseController
     public function index(Request $request,$domain = '',$vendor_id)
     {
         //echo $vendor_id;
-        $LongTermService = Product::with('primary','product.product','media.image','variant')->where(['vendor_id'=>$vendor_id,'is_long_term_service'=>'1'])->get();
+        $LongTermService = Product::with('primary','LongTermProducts.product','media.image','variant')->where(['vendor_id'=>$vendor_id,'is_long_term_service'=>'1'])->get();
         //pr($LongTermService->toArray());
         return Datatables::of($LongTermService)
         ->addIndexColumn()
@@ -35,7 +35,7 @@ class LongTermServiceController extends BaseController
         })
         ->addColumn('service_product_title', function ($LongTermService) {
            
-            return $LongTermService->product ? ($LongTermService->product->product ?  ( $LongTermService->product->product->primary ? $LongTermService->product->product->primary->title : $LongTermService->product->produc->sku  ) : 'NA'  ) : $LongTermService->slug;
+            return $LongTermService->LongTermProducts ? ($LongTermService->LongTermProducts->product ?  ( $LongTermService->LongTermProducts->product->primary ? $LongTermService->LongTermProducts->product->primary->title : $LongTermService->LongTermProducts->product->sku  ) : 'NA'  ) : $LongTermService->slug;
         })
         ->addColumn('service_image', function ($LongTermService)  {
             $image = '';
@@ -48,7 +48,7 @@ class LongTermServiceController extends BaseController
         })
         ->addColumn('service_product_quantity', function ($LongTermService)  {
            
-            return $LongTermService->product ? $LongTermService->product->quantity : 0;
+            return $LongTermService->LongTermProducts ? $LongTermService->LongTermProducts->quantity : 0;
         })
         ->addColumn('time_period', function ($LongTermService)  {
             $title= '';
@@ -110,12 +110,12 @@ class LongTermServiceController extends BaseController
             DB::beginTransaction();
 
             $this->validate($request, [
-                'name.0' => 'required|string|max:60',
-                'sku' => 'required|unique:products,sku,'.$request->long_term__service_id,
-                'service_product_id' => 'required',
-                'product_quantity' => 'required',
-                'serice_price' => 'required',
-               
+                'name.0'                => 'required|string|max:60',
+                'sku'                   => 'required|unique:products,sku,'.$request->long_term__service_id,
+                'service_product_id'    => 'required',
+                'product_quantity'      => 'required',
+                'serice_price'          => 'required',
+                'service_period'      => 'required',
                 'service_product_variant_id' => 'required',
             ],['name.0' =>__('The default language name field is required.')]);
 
@@ -129,7 +129,8 @@ class LongTermServiceController extends BaseController
             $LongTermService->title                 = !empty($request->name[0]) ? $request->name[0] : $request->sku;
             $LongTermService->category_id           = $request->category_id ?? null;
             $LongTermService->is_long_term_service  = 1;
-            $LongTermService->service_period        = $request->service_period;
+            $LongTermService->is_live               = 1;
+           // $LongTermService->service_period        = $request->service_period;
             $LongTermService->service_duration      = $request->service_duration;
             $LongTermService->vendor_id             = $request->vendor_id;
             $LongTermService->save();
@@ -169,11 +170,15 @@ class LongTermServiceController extends BaseController
                     $LongTermServiceT->save();
                 }
             }
-            // // save service product 
+          
             $request->merge(['long_term_service_id' => $LongTermService->id]);
+            
+            /** save service product  period */
+            LongTermServicePeriod::saveServicePeriod($request);
+             /** save service product */
             $ServiceProductId =  LongTermServiceProducts::saveProducts($request);
 
-            // save service product addons
+            /** save service product addons*/
             $request->merge(['long_term_service_product_id' => $ServiceProductId]);
             LongTermServiceProductAddons::saveAddOn( $request);
             $massage = __('Long Term Service Added Successfully.');
@@ -214,12 +219,18 @@ class LongTermServiceController extends BaseController
     {
       
         try {
-            $LongTermService = Product::with('translation','product','media.image','variant')->where(['id' => $id])->firstOrFail();
+            $LongTermService = Product::with('translation','LongTermProducts','media.image','variant','ServicePeriod')->where(['id' => $id])->firstOrFail();
+           
             $image = '';
             if(($LongTermService) && $LongTermService->media->first() && !empty($LongTermService->media->first()->image) ){
                 $image_path = $LongTermService->media->first()->image->path['proxy_url'] . '100/100' . $LongTermService->media[0]->image->path['image_path'];
                 $LongTermService->image =  $image_path;
             }
+            $LongTermService->ServicePeriods = [];
+            if($LongTermService->ServicePeriod){
+                $LongTermService->ServicePeriods = $LongTermService->ServicePeriod->pluck('service_period')->toArray();
+            }
+          
             return $this->successResponse($LongTermService, '');
         } catch (Exception $e) {
             return $this->errorResponse([], $e->getMessage());
