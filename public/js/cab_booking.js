@@ -209,6 +209,7 @@ $(document).ready(function () {
         });
        
         let amount = $(this).attr('data-amount');
+        let tollamount = $(this).attr('data-tollamount');
         let subscription_payable_amount = $(this).attr('data-subscriptionPayableAmount');
         let product_image = $(this).attr('data-image');
         let vendor_id = $(this).attr('data-vendor_id');
@@ -224,7 +225,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,type:type,friendName:friendName,friendPhoneNumber:friendPhoneNumber},
+            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,type:type,friendName:friendName,friendPhoneNumber:friendPhoneNumber},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);

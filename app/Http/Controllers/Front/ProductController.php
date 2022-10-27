@@ -87,6 +87,7 @@ class ProductController extends FrontController{
 
 
         $p_id = $product->id;
+        
         $product = Product::with([
             'variant' => function ($sel) {
                 $sel->groupBy('product_id');
@@ -428,6 +429,7 @@ class ProductController extends FrontController{
                     $variantData = array();
                 }
                 $data['variant'] = $variantData;
+                
                 return response()->json(array('status' => 'Success', 'data' => $data));
             }
 

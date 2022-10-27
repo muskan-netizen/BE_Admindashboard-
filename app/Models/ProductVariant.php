@@ -45,6 +45,9 @@ class ProductVariant extends Model
 		return $this->hasOne('App\Models\ProductVariantImage', 'product_variant_id', 'id')
 	    		->select('product_variant_id', 'product_image_id')->groupBy('product_variant_id');
 	}
+    public function category(){
+        return $this->belongsToMany('App\Models\ProductCategory', 'products','category_id','id');
+    }
 
 	public function media(){
 		return $this->hasMany('App\Models\ProductVariantImage', 'product_variant_id', 'id')->select('product_variant_id', 'product_image_id');

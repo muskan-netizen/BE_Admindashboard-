@@ -249,6 +249,7 @@
                         <img class='img-fluid' src='<%= result.image_url %>'>
                     </div>
                     <div class="col-10">
+                    
                         <div class="row no-gutters">
                             <div class="col vehicle-details">
                                 <h4 class="m-0"><b><%= result.name %></b></h4>
@@ -257,6 +258,7 @@
                                 <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
                             </div>
                         </div>
+                    
                     </div>
                 </a>
                 <hr class="m-0">
@@ -295,8 +297,19 @@
                         <img src="<%= result.image_url %>">
                     </div>
                     <div class="cab-location-details">
+                    <% if(result.toll_fee > 0){ %>
+                        <span class="d-flex align-items-center justify-content-between mt-2"><b><%= result.name %></b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.toll_less_tags_price%></b></label></span>
+
+                        <span class="d-flex align-items-center justify-content-between"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
+
+                        <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= (result.tags_price)%></b></label></h4>
+                    <% }else{ %>
                         <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
+                    <% } %>
                         <p><%= result.description %></p>
                     </div>
                 </div>
@@ -326,8 +339,8 @@
                         <span class="code-text">{{__('Select a promo code')}}</span>
                     </label>
 
-                    <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" id="promo_code_list_btn_cab_booking">Apply</a>
-                    <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" style="display:none;">Remove</a>
+                    <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" id="promo_code_list_btn_cab_booking">Apply</a>
+                    <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" style="display:none;">Remove</a>
 
                 </div>
                 <% if((result.faqlist) && (result.faqlist) > 0 ){ %>
@@ -364,7 +377,7 @@
 
                     %>
                         <input type="hidden" id="stripe_token" name="stripe_token" value="">
-                        <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
+                        <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-tollamount="<%= result.toll_fee%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
                     </div>
                     <!--<div class="col-6">
                         <button class="btn btn-solid w-100" id="pickup_later" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_later">Pickup Later</button>
