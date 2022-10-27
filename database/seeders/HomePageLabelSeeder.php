@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\HomePageLabel;
+use Carbon\Carbon;
 use DB;
 use Log;
 class HomePageLabelSeeder extends Seeder
@@ -134,9 +135,20 @@ class HomePageLabelSeeder extends Seeder
 
         if($already == 0)
         $home_page = HomePageLabel::insertGetId([
-            'title'     => 'Recently Viewed',
-            'slug'      => 'recently_viewed',
-            'order_by'  => 12,
+            'title'      => 'Recently Viewed',
+            'slug'       => 'recently_viewed',
+            'order_by'   => 12,
+            'created_at' => Carbon::now(),
+        ]);
+
+        $already = HomePageLabel::where('slug', 'spotlight_deals')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title'      => 'Spotlight Deals',
+            'slug'       => 'spotlight_deals',
+            'order_by'   => 13,
+            'created_at' => Carbon::now(),
         ]);
     }
 }
