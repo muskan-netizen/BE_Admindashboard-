@@ -608,4 +608,15 @@ section.suppliers-section.container.vender_slider .supplier-rating h5 {
         max-width: 50%;
         flex: 50%;
     }
+    section.suppliers-section.container.vender_slider .top-heading.mt-5.pt-5 {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    article#page-container section .vendors section h2.h2-heading {
+        line-height: 30px;
+    }
+    .main-pro-slider .top-heading.mt-4.pt-5 {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
 }
