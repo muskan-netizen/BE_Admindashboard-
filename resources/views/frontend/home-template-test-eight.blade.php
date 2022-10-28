@@ -597,13 +597,19 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'vendors' && (count($homePageData['vendors']) != 0))
-		<section class="suppliers-section container ">
-			<div class=" top-heading d-flex justify-content-between align-self-center">
+		<section class="suppliers-section container vender_slider">
+			<!-- <div class=" top-heading d-flex justify-content-between align-self-center">
 				<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
 				<a class="" href="{{route('vendor.all')}}">{{__("See all")}} <img class="btn-arrow" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""></a>
-			</div>
+			</div> -->
 			<div class="row">
-				<div class="col-12">
+				<div class="col-md-3">
+					<div class=" top-heading mt-5 pt-5">
+					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Recommended Products', true)}}</h2>
+				<a class="" href="{{route('vendor.all')}}">{{__("See all")}} <img class="btn-arrow" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""></a>
+					</div>
+				</div>
+				<div class="col-md-9">
 					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						@foreach ($homePageData[$homePageLabel->slug] as $vendor )
 						@include('frontend.home_page_8.vendor')
@@ -709,7 +715,7 @@
 				<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 					<div class="row">
 							@foreach ($homePageData[$homePageLabel->slug] as $vendor )
-							@include('frontend.home_page_8.vendor')
+							@include('frontend.home_page_8.spotlight_deals')
 							@endforeach
 						</div>
 				</div>
@@ -726,7 +732,7 @@
 				<div class="col-12">
 					<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						@foreach ($homePageData[$homePageLabel->slug] as $vendor )
-						@include('frontend.home_page_8.vendor')
+						@include('frontend.home_page_8.best_sellers')
 						@endforeach
 					</div>
 				</div>
