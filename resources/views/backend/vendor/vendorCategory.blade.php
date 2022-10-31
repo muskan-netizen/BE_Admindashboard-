@@ -68,6 +68,9 @@
                     <span>{!! \Session::get('error_delete') !!}</span>
                 </div>
                 @endif
+                @php
+                    $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+                @endphp
             </div>
         </div>
     </div>
@@ -248,6 +251,17 @@
                                     <table class="table table-borderless mb-0 optionTableAdd" id="banner-datatable">
                                         <tr class="trForClone">
                                             <th>{{ __("Price") }}({{$clientCurrency->currency->symbol}})</th>
+
+                                            @if (isset($getAdditionalPreference['is_price_by_role']))
+                                                @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                                    @if (isset($roles))
+                                                        @foreach ($roles as $_role)
+                                                            <th>{!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}</th>
+                                                        @endforeach
+                                                    @endif
+                                                @endif
+                                            @endif
+
                                             @foreach($languages as $langs)
                                             <th>{{$langs->language->name}}</th>
                                             @endforeach
@@ -255,8 +269,22 @@
                                         </tr>
                                         <tr class="input_tr">
                                             <td>{!! Form::text('price[]', null, ['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'min' => '1', 'required' => 'required']) !!}</td>
+
+                                            @if (isset($getAdditionalPreference['is_price_by_role']))
+                                                @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                                    @if (isset($roles))
+                                                        @foreach ($roles as $_role)
+                                                        <td>
+                                                            <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKeyMax(event)" placeholder="0" name="role_price[{{lcfirst($_role['role'])}}]" value="0.00">
+                                                        </td>
+                                                        @endforeach
+                                                    @endif
+                                                @endif
+                                            @endif
+
                                             @foreach($languages as $k => $langs)
-                                            <td><input type="text" name="opt_value[{{$k}}][]" class="form-control" @if($langs->is_primary == 1) required @endif>
+                                            <td>
+                                                <input type="text" name="opt_value[{{$k}}][]" class="form-control" @if($langs->is_primary == 1) required @endif>
                                             </td>
                                             @endforeach
                                             <td class="lasttd"></td>

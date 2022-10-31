@@ -26,6 +26,10 @@ class ProductController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request, $domain = '',$vendor,$url_slug){
+
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
+
         $user = Auth::user();
         $preferences = Session::get('preferences');
         $langId = Session::get('customerLanguage');
@@ -83,6 +87,7 @@ class ProductController extends FrontController{
 
 
         $p_id = $product->id;
+        
         $product = Product::with([
             'variant' => function ($sel) {
                 $sel->groupBy('product_id');
@@ -120,9 +125,9 @@ class ProductController extends FrontController{
             'category.categoryDetail.allParentsAccount'
         ]);
         if($user){
-            $product = $product->with('inwishlist', function ($query) use($user) {
+            $product = $product->with(['inwishlist' => function ($query) use($user) {
                 $query->where('user_wishlists.user_id', $user->id);
-            });
+            }]);
         }
         
         $product = $product->with('related')->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags' )
@@ -131,7 +136,7 @@ class ProductController extends FrontController{
             })->where('url_slug', $url_slug)
             ->where('is_live', 1)
             ->firstOrFail();
-        //pr($product->toArray());   
+        // pr($product->toArray());   
         $doller_compare = 1;
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         if($clientCurrency){
@@ -278,7 +283,7 @@ class ProductController extends FrontController{
             }else{
                 $product_page = "product";
             }
-            return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available]);
+            return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference]);
 
         }
    }
@@ -289,6 +294,8 @@ class ProductController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function getVariantData(Request $request, $domain = '', $sku){
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
         $customerCurrency = Session::get('customerCurrency');
         if(isset($customerCurrency) && !empty($customerCurrency)){
         }
@@ -333,7 +340,10 @@ class ProductController extends FrontController{
                         if($request->options[$key]){
                             $variantSet = ProductVariantSet::whereIn('variant_type_id', $request->variants)
                             ->whereIn('variant_option_id', $request->options)
-                            ->where('product_variant_id', $variant->product_variant_id)->get();
+                            ->where('product_variant_id', $variant->product_variant_id)
+                            ->whereHas('productVariants', function($q){
+                                $q->where('status', '=', 1);
+                            })->get();
                             if(count($variantSet) == count($request->variants)){
                                 // if(!in_array($variantSet->product_variant_id, $pv_ids)){
                                     $pv_ids[] = $variant->product_variant_id;
@@ -366,11 +376,16 @@ class ProductController extends FrontController{
         ->where('products.id', $product->id)->first();
         $data['availableSets'] = $availableSets->variantSet;
         if($pv_ids){
-            $variantData = ProductVariant::with('product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart')->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
-                ->whereIn('id', $pv_ids)->get();
+            $variantData = ProductVariant::with(['product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart'])
+            ->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
+            ->whereIn('id', $pv_ids)->get();
+
             if ($variantData) {
                 foreach($variantData as $variant){
+
                     $variant->productPrice =  decimal_format(($variant->price * $clientCurrency->doller_compare));
+                    // dump($variant->productPrice);
+                   
                     // $variant->productPrice = Session::get('currencySymbol') . number_format(($variant->price * $clientCurrency->doller_compare), 2, '.', '');
                     // $sets[] = $availableSet->toArray();
                     // foreach($availableSet->groupBy('product_variant_id') as $avSets){
@@ -414,6 +429,7 @@ class ProductController extends FrontController{
                     $variantData = array();
                 }
                 $data['variant'] = $variantData;
+                
                 return response()->json(array('status' => 'Success', 'data' => $data));
             }
 

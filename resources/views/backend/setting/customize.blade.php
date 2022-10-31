@@ -43,7 +43,7 @@
 
 <!-- New Customize Page -->
 @php
-$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency']);
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role']);
 @endphp
 
    <!--Localization start -->
@@ -338,7 +338,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
         <div class="col-xl-3 col-lg-3 mb-3">
             <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
                 @csrf
-            <!-- Pickup & Delivery section start -->
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <!-- Pickup & Delivery section start -->
             <div class="card-box h-100">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
@@ -1780,6 +1781,48 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                     </div>
                 </form>
             </div>
+
+            {{-- Roles Enable setting for price, that is, is_enable_pricing (START) --}}
+            @if (isset($getAdditionalPreference['is_price_by_role']))
+                @if($getAdditionalPreference['is_price_by_role'] == '1')
+                    <div class="col-lg-4 col-xl-3 mb-3">
+                        <div class="col-12">
+                            <div class="page-title-box">
+                            <h4 class="page-title text-uppercase">{{ __("Role") }}</h4>
+                            </div>
+                        </div>
+                        <form method="POST" class="h-100" action="{{route('customize.updateIsPriceEnable')}}">
+                            @csrf
+                            <div class="card-box pb-1 h-100">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <h4 class="header-title ">{{ __('Enable price based on Roles') }}</h4>
+                                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                                </div>
+                                <div class="col-xl-12 my-2 p-0" id="">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group mb-0 switchery-demo">
+                                                @if (isset($roles))
+                                                    @foreach ($roles as $key => $_role)
+
+                                                        <input type="text" name="role[{{ $_role['id'] }}]" id="role{{ $_role['id'] }}" value="{{ $_role['role'] }}">
+                                                        <input type="hidden" name="role_id[{{ $_role['id'] }}]" value="{{ $_role['id'] }}">
+
+                                                        <input type="checkbox"  name="is_enable_pricing[{{ $_role['id'] }}]" data-plugin="switchery" id="is_enable_pricing" class="form-control checkbox_change" data-className="is_enable_pricing_hidden" data-color="#43bee1"
+                                                        @if(@$_role['is_enable_pricing'] == '1') checked='checked' value="1"  @endif data-role-id={{$_role['id']}}>
+                                                        <br>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                @endif
+            @endif
+            {{-- Roles Enable setting for price, that is, is_enable_pricing (END) --}}
      </div>
 
 <div id="add_or_edit_social_media_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
@@ -3111,6 +3154,15 @@ $(document).ready(function(){
     });
 
 </script>
+
+{{-- Insert role_id (Start) --}}
+    {{-- <script>
+        $(".is_enable_pricing_via_role").on("change paste keyup", function() {
+            var role_id = $(this).attr('data-role-id');
+            $('#role_id_for_pricing').val(role_id);
+        });
+    </script> --}}
+{{-- Insert role_id (End) --}}
 
 @if($preference->is_static_dropoff == '1')
     @include('backend.setting.customizeDatatablescript')
