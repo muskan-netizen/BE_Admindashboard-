@@ -117,7 +117,7 @@ class UserController extends BaseController
             })
             ->addColumn('signup_date', function($users) {
                 $date = dateTimeInUserTimeZone($users->created_at, $users->timezone);
-                return explode(' ',$date)[0] ; 
+                return explode(' ',$date)[0] ;
             })
             ->addColumn('last_login', function($users) use($current_user) {
                 return is_null($users->last_login_at) ? ' - ' : dateTimeInUserTimeZone($users->last_login_at, $current_user->timezone);
@@ -359,7 +359,11 @@ class UserController extends BaseController
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-        return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions,'user_docs'=>$user_docs,'user_registration_documents'=>$user_registration_documents,'active_orders'=>$active_orders,'completed_orders'=>$completed_orders,'clientCurrency'=>$clientCurrency,'fixedFee'=>$fixedFee]);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+        $roles = Role::where('status',1)
+                  // ->where('is_enable_pricing',1)
+                     ->get();
+        return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions,'user_docs'=>$user_docs,'user_registration_documents'=>$user_registration_documents,'active_orders'=>$active_orders,'completed_orders'=>$completed_orders,'clientCurrency'=>$clientCurrency,'fixedFee'=>$fixedFee, 'getAdditionalPreference'=> $getAdditionalPreference , 'roles'=> $roles ]);
     }
     public function getUserOrders($id,$order_type){
         $user = Auth::user();
@@ -379,7 +383,7 @@ class UserController extends BaseController
                 $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image)? $product->media->first()->image->path : getDefaultImagePath();
             }
         }
-        return $orders; 
+        return $orders;
 
     }
     /**
@@ -391,13 +395,14 @@ class UserController extends BaseController
      */
     public function newUpdate(Request $request, $domain = '', $id)
     {
-      
+        $user = User::where('id', $id)->first();
         $data = [
-            'status' => $request->status,
-            'is_admin' => $request->is_admin,
+            'status'        => $request->status,
+            'role_id'       => $request->has('role_id') ? $request->get('role_id') : $user->role_id,
+            'is_admin'      => $request->is_admin,
             'is_superadmin' => 0
         ];
-        $client = User::where('id', $id)->update($data);
+        $client = $user->update($data);
         //for updating permissions
         $removepermissions = UserPermissions::where('user_id', $id)->delete();
         if ($request->permissions) {
@@ -476,7 +481,7 @@ class UserController extends BaseController
         } else {
             $data['logo'] = $client->getRawOriginal('logo');
         }
-        
+
         if ($request->hasFile('dark_logo')) {
             $file = $request->file('dark_logo');
             $file_name = 'Clientlogo/' . uniqid() . '.' .  $file->getClientOriginalExtension();
@@ -534,8 +539,8 @@ class UserController extends BaseController
             $clientData = 'empty';
             //return redirect()->back()->with('success', 'Password Changed successfully!');
             $data = array('type'=>'success','message'=>'Password Changed successfully!');
-            
-            
+
+
             // $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username','mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
             // $user = Auth()->user();
             //     $phone_number = "+919999999999";
@@ -661,9 +666,8 @@ class UserController extends BaseController
 
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            $from = $client_preferences->fcm_server_key;
-            $notification_content = NotificationTemplate::where('id', 4)->first();
-            
+           $notification_content = NotificationTemplate::where('id', 4)->first();
+
             if ($notification_content) {
                 if($header_code == ''){
                     $header_code = Client::orderBy('id', 'asc')->first()->code;
@@ -672,10 +676,7 @@ class UserController extends BaseController
                 $client = Client::where('code', $code)->first();
                 $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/client/order";
                 $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
-                $headers = [
-                    'Authorization: key=' . $from,
-                    'Content-Type: application/json',
-                ];
+
                 $data = [
                     "registration_ids" => $devices,
                     "notification" => [
@@ -694,16 +695,7 @@ class UserController extends BaseController
                     ],
                     "priority" => "high"
                 ];
-                $dataString = $data;
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                $result = curl_exec($ch);
-                curl_close($ch);
+                sendFcmCurlRequest($data);
             }
         }
     }
@@ -763,7 +755,7 @@ class UserController extends BaseController
                 return $this->successResponse('', __('Payment is successfully completed'), 201);
             }else{
                 return $this->errorResponse(__('Insufficient Amount'), 422);
-            }            
+            }
         }
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

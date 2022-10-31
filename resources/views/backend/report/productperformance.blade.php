@@ -25,15 +25,15 @@
                 </div>
                 <div class="col-sm-2 mb-1">
                     <select class="form-control" id="limit_select_box">
-                        <option value="10">{{ __("Top 10") }}</option>
-                        <option value="20">{{ __("Top 20") }}</option>
-                        <option value="50">{{ __("Top 50") }}</option>
-                        <option value="100">{{ __("Top 100") }}</option>
+                        <option value="10">{{ __("Top") }} 10</option>
+                        <option value="20">{{ __("Top") }} 20</option>
+                        <option value="50">{{ __("Top") }} 50</option>
+                        <option value="100">{{ __("Top") }} 100</option>
                         <option value="All">{{ __("All") }}</option>
                     </select>
                 </div>
                 <div class="col-sm-2 mb-1">
-                    <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="Select Date Range" readonly="readonly">
+                    <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="{{ __('Select Date Range') }}" readonly="readonly">
                 </div>
                 <div class="col-sm-4  mb-1">
                     <select class="form-control" multiple="multiple" id="product_select_box" name="product_select_box[]">
@@ -93,7 +93,7 @@
                                                     <table class="table table-bordered">
                                                         <thead>
                                                         <tr>
-                                                            <th width="10%">{{ __("S.No.") }}</th>
+                                                            <th width="10%">{{ __("S.No") }}</th>
                                                             <th width="30%">{{ __("Product") }}</th>
                                                             <th width="30%">{{ __("Vendor") }}</th>
                                                             <th width="30%">{{ __("No. Of Products") }}</th>
@@ -117,7 +117,7 @@
                                                     <table class="table table-bordered">
                                                         <thead>
                                                         <tr>
-                                                            <th width="10%">{{ __("S.No.") }}</th>
+                                                            <th width="10%">{{ __("S.No") }}</th>
                                                             <th width="30%">{{ __("Product") }}</th>
                                                             <th width="30%">{{ __("Vendor") }}</th>
                                                             <th width="30%">{{ __("No. Of Wishlist") }}</th>
@@ -141,7 +141,7 @@
                                                     <table class="table table-bordered">
                                                         <thead>
                                                         <tr>
-                                                            <th width="10%">{{ __("S.No.") }}</th>
+                                                            <th width="10%">{{ __("S.No") }}</th>
                                                             <th width="30%">{{ __("Product") }}</th>
                                                             <th width="30%">{{ __("Vendor") }}</th>
                                                             <th width="30%">{{ __("No. Of Returns") }}</th>

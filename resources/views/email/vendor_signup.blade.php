@@ -2,7 +2,7 @@
 <html lang="en">
    <head>
       <meta charset="utf-8">
-      <title>New Vendor Signup</title>
+      <title>{{__('New Vendor Signup')}}</title>
       <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
       <style type="text/css">
          body{
