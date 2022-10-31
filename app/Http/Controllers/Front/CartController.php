@@ -279,6 +279,7 @@ class CartController extends FrontController
     public function postAddToCart(Request $request, $domain = '')
     {
        // pr($request->all());
+      
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
@@ -380,6 +381,7 @@ class CartController extends FrontController
             }
             // total booking time for rental case 
             $total_booking_time = $request->has('total_booking_time') ? $request->total_booking_time : null;
+         
 
             // total booking time as single service duration time as per service for get totel service time multiply by quantity
             if(in_array($luxury_option->id,[6,8])){

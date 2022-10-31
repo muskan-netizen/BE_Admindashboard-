@@ -956,6 +956,16 @@ trait cartManager{
                 // if ($loyalty_amount_saved > 0) {
                 // dd($payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)); //36.81
                 // }
+
+                $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
+                if($getAdditionalPreference['is_price_by_role'] == 1){
+                    $role_id = (Auth::user() != null) ? Auth::user()->role_id : 1;
+                    $vendor_min_amount_data = VendorMinAmount::where('vendor_id',$vendorData->vendor->id)
+                    ->where('role_id', $role_id)->first();
+                    $vendorData->vendor->order_min_amount = empty($vendor_min_amount_data)?0:$vendor_min_amount_data->order_min_amount;
+                }
+                
                 if((float)($vendorData->vendor->order_min_amount) > $payable_amount+(float)($vendorData->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)){  # if any vendor total amount of order is less then minimum order amount
                     $vendorData->les_order_min_amount = 1;
                     $delivery_status = 0;
