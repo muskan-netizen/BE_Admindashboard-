@@ -965,7 +965,7 @@ class CustomerAuthController extends FrontController
             // vendor additional data
             $this->addDataSaveVendor($request , $vendor->id);
              
-            if($this->checkIfTemplateEightEnable()){
+            if($this->checkTemplateForAction(8)){
                 $this->LoginActionRecentView($user->id);
             }
             

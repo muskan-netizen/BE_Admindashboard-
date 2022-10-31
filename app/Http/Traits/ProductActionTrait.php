@@ -53,11 +53,11 @@ trait ProductActionTrait{
      * @param  mixed $user_id
      * @return void
      */
-    public function checkIfTemplateEightEnable()
+    public function checkTemplateForAction($t_id)
     {
         $set_template = WebStylingOption::where('is_selected', 1)->first();
         $val = 0;
-        if(isset($set_template)  && $set_template->template_id == 8){
+        if(isset($set_template)  && $set_template->template_id == $t_id){
             $val = 1;
         }
         return $val;

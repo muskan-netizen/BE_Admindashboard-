@@ -90,7 +90,7 @@ class ProductController extends FrontController{
 
 
         $p_id = $product->id;
-        if($this->checkIfTemplateEightEnable()){
+        if($this->checkTemplateForAction(8)){
             $this->RecentView($p_id);
         }
         
