@@ -842,8 +842,8 @@ trait cartManager{
                                     $payable_amount -= $total_discount_percent;
                                     $coupon_amount_used = $total_discount_percent;
                                 } else {
-                                    $gross_amount = decimal_format($payable_amount - $taxable_amount);
-                                    $percentage_amount = ($coupon_apply_price * $vendorData->coupon->promo->amount / 100);
+                                    $gross_amount = decimal_format($payable_amount - $taxable_amount-$quantity_container_charges);
+                                    $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
                                     $payable_amount -= $percentage_amount;
                                     $coupon_amount_used = $percentage_amount;
                                 }
