@@ -20,11 +20,11 @@ use Redirect;
 use DB;
 use Illuminate\Http\Response;
 use Cookie;
-use App\Http\Traits\OrderTrait;
+use App\Http\Traits\{OrderTrait,ProductActionTrait};
 
 class UserhomeController extends FrontController
 {
-    use ApiResponser, OrderTrait;
+    use ApiResponser, OrderTrait,ProductActionTrait;
     private $field_status = 2;
     public $cities = [];
 
@@ -577,6 +577,7 @@ class UserhomeController extends FrontController
         $new_products = [];
         $feature_products = [];
         $on_sale_products = [];
+        $recently_viewed = [];
         $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
         $p_dim = '260/100';
         if (isset($set_template)  && $set_template->template_id == 3){
@@ -856,6 +857,7 @@ class UserhomeController extends FrontController
         $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);
         $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
         $feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
+      
         foreach ($new_product_details as  $new_product_detail) {
             $multiply = $new_product_detail->variant->first()->multiplier?? 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
@@ -909,6 +911,10 @@ class UserhomeController extends FrontController
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
+        }
+          
+        if($this->checkTemplateForAction(8)){
+            $recently_viewed = $this->productvendorProducts($vendor_ids, $language_id, $currency_id, '', $request->type,$p_dim);
         }
         /**  Recent order */
             $activeOrders = [];
@@ -980,12 +986,13 @@ class UserhomeController extends FrontController
             'active_orders' => $activeOrders,
             'categories' => $categories
         ];
+       
         if($request->has('noTinJson') && $request->noTinJson == 1){
             $data = [
                 'brands' => $brands,
                 'vendors' => $vendors,
                 'new_products' => $new_products,
-                'recently_viewed' => $new_products,
+                'recently_viewed' => $recently_viewed,
                 'homePageLabels' => $home_page_labels,
                 'featured_products' => $feature_products,
                 'on_sale' => $on_sale_products,
