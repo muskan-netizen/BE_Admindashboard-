@@ -17,14 +17,19 @@ trait ProductActionTrait{
      */
     public function getRecentProductIds()
     {
-        $query =  ProductRecentlyViewed::query();
-        if(Auth::check()){
-            $query =  $query->where('user_id', Auth::user()->id);
+        if(checkColumnExists('product_recently_viewed','product_id')){
+            $query =  ProductRecentlyViewed::query();
+            if(Auth::check()){
+                $query =  $query->where('user_id', Auth::user()->id);
+            } else{
+                $query = $query->where('token_id', session()->get('_token'));
+            }
+            $return = $query->orderBy('updated_at','DESC')->pluck('product_id');
+            return $return;
         } else{
-            $query = $query->where('token_id', session()->get('_token'));
+            return [];
         }
-        $return = $query->orderBy('updated_at','DESC')->pluck('product_id');
-       return $return ;
+       
     }
     /**
      * RecentView
@@ -49,9 +54,12 @@ trait ProductActionTrait{
             'user_id' => $user_id,
             'updated_at' => Carbon::now()
         ];
-         ProductRecentlyViewed::updateOrCreate(
-            $update_by
-        ,$RecentlyViewed);
+        if(checkColumnExists('product_recently_viewed','product_id')){
+            ProductRecentlyViewed::updateOrCreate(
+                $update_by
+            ,$RecentlyViewed);
+        }
+      
     }
     
     /**
@@ -62,7 +70,9 @@ trait ProductActionTrait{
      */
     public function LoginActionRecentView($user_id)
     {
-        ProductRecentlyViewed::where('token_id', session()->get('_token'))->update(['user_id' => $user_id, 'token_id' => '']);
+        if(checkColumnExists('product_recently_viewed','product_id')){
+            ProductRecentlyViewed::where('token_id', session()->get('_token'))->update(['user_id' => $user_id, 'token_id' => '']);
+        }
     }
 
 
