@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">{{getNomenclatureName('Loyalty Cards', true)}}</h4>
+                <h4 class="page-title">{{getNomenclatureName( __('Loyalty Cards'), true)}}</h4>
             </div>
         </div>
     </div>
@@ -25,17 +25,17 @@
             <div class="card mb-0">
                 <div class="card-body">
                     <div class="row align-items-center">
-                        <div class="col-12">
+                        <div class="col-12 d-flex justify-content-between">
                             <label class="mr-2 mb-0">{{ __('Enable') }}</label>
                             <input type="checkbox" id="activeCheck" {{$status == 0 ? 'checked' : ''}} data-plugin="switchery" name="validity_index" class="chk_box1 " data-color="#43bee1">
                         </div>
                         <div class="col-12">
-                        <form id="setRedeem">
+                            <form id="setRedeem">
                             @csrf
                                 <div class="row mt-3">
                                     <div class="col-md-12">
                                         <div class="form-group mb-0">
-                                            <h4 class="header-title">{{ __('Redemption Value') }}</h4> 
+                                            <h4 class="header-title">{{ __('Redemption Value') }}</h4>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text primaryKey" id="basic-addon1">
@@ -54,7 +54,7 @@
                                 </div>
                             </form>
                         </div>
-                    </div>    
+                    </div>
                 </div>
             </div>
         </div>
@@ -96,20 +96,20 @@
                                     <td> {{ Str::limit($ban->description, 50, ' ...') }} </td>
                                     <td> {{ $ban->minimum_points }} </td>
                                     <td> {{ $ban->per_order_points }} </td>
-                                    <td> 
+                                    <td>
                                         <input type="checkbox" bid="{{$ban->id}}" id="activeCheck" data-plugin="switchery" name="validity_index" class="chk_box" data-color="#43bee1" {{($ban->status == '0') ? 'checked' : ''}} >
                                      </td>
-                                    <td> 
+                                    <td>
                                         <div class="form-ul" style="width: 60px;">
                                             <div class="inner-div" style="float: left;">
-                                                <a class="action-icon openEditModal" loyaltyID="{{$ban->id}}" href="#"><i class="mdi mdi-square-edit-outline"></i></a> 
+                                                <a class="action-icon openEditModal" loyaltyID="{{$ban->id}}" href="#"><i class="mdi mdi-square-edit-outline"></i></a>
                                             </div>
                                             <div class="inner-div">
                                                 <form method="POST" action="{{ route('loyalty.destroy', $ban->id) }}" id="deleteLoyality{{$ban->id}}">
-                                                    @csrf 
+                                                    @csrf
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                       <button type="button" class="btn btn-primary-outline action-icon" id="deleteLoyalityButton" onclick="deleteloyality('{{$ban->id}}')"><i class="mdi mdi-delete"></i></button> 
+                                                       <button type="button" class="btn btn-primary-outline action-icon" id="deleteLoyalityButton" onclick="deleteloyality('{{$ban->id}}')"><i class="mdi mdi-delete"></i></button>
                                                     </div>
                                                 </form>
                                             </div>

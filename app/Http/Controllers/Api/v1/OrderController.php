@@ -209,6 +209,17 @@ class OrderController extends BaseController
                                 }
                     $order->taxable_amount = $total_taxes;
                     $order->save();
+
+                    /* Updating order prescription if any */
+                    $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
+                    foreach ($cart_prescriptions as $cart_prescription) {
+                        $order_prescription = new OrderProductPrescription();
+                        $order_prescription->order_id = $order->id;
+                        $order_prescription->vendor_id = $cart_prescription->vendor_id;
+                        $order_prescription->product_id = $cart_prescription->product_id;
+                        $order_prescription->prescription = $cart_prescription->getRawOriginal('prescription');
+                        $order_prescription->save();
+                    }
                   
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
@@ -1529,14 +1540,11 @@ class OrderController extends BaseController
     public function sendOrderNotification($id)
     {
         $token = UserDevice::whereNotNull('device_token')->pluck('device_token')->where('user_id', $id)->toArray();
-        $from = env('FIREBASE_SERVER_KEY');
-
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        //$from = env('FIREBASE_SERVER_KEY');
         $notification_content = NotificationTemplate::where('id', 1)->first();
-        if ($notification_content) {
-            $headers = [
-                'Authorization: key=' . $from,
-                'Content-Type: application/json',
-            ];
+        if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
+            
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -1544,17 +1552,7 @@ class OrderController extends BaseController
                     'body'  => $notification_content->content,
                 ]
             ];
-            $dataString = $data;
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-            $result = curl_exec($ch);
-            curl_close($ch);
+            sendFcmCurlRequest($data);
         }
     }
     public function getOrdersList(Request $request)
@@ -2710,7 +2708,7 @@ class OrderController extends BaseController
 
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            $from = $client_preferences->fcm_server_key;
+            
             $notification_content = NotificationTemplate::where('id', 4)->first();
             $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
             if ($notification_content) {
@@ -2720,10 +2718,7 @@ class OrderController extends BaseController
                 $code = $header_code;
                 $client = Client::where('code', $code)->first();
                 $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/client/order";
-                $headers = [
-                    'Authorization: key=' . $from,
-                    'Content-Type: application/json',
-                ];
+               
                 $data = [
                     "registration_ids" => $devices,
                     "notification" => [
@@ -2743,16 +2738,7 @@ class OrderController extends BaseController
                     ],
                     "priority" => "high"
                 ];
-                $dataString = $data;
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                $result = curl_exec($ch);
-                curl_close($ch);
+                sendFcmCurlRequest($data);
             }
         }
     }
@@ -2764,7 +2750,7 @@ class OrderController extends BaseController
         
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            $from = $client_preferences->fcm_server_key;
+            
             if ($order_status_id == 2 || $order_status_id == 7) {
                 $notification_content = NotificationTemplate::where('id', 5)->first();
             } elseif ($order_status_id == 3 || $order_status_id == 8) {
@@ -2780,10 +2766,7 @@ class OrderController extends BaseController
                 $code = $header_code;
                 $client = Client::where('code', $code)->first();
                 $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/user/orders";
-                $headers = [
-                    'Authorization: key=' . $from,
-                    'Content-Type: application/json',
-                ];
+                
                 $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
                 $data = [
                     "registration_ids" => $devices,
@@ -2802,16 +2785,7 @@ class OrderController extends BaseController
                     ],
                     "priority" => "high"
                 ];
-                $dataString = $data;
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                $result = curl_exec($ch);
-                curl_close($ch);
+                sendFcmCurlRequest($data);
             }
         }
     }

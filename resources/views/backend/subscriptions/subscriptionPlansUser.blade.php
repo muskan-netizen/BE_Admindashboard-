@@ -246,15 +246,12 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="row mb-2">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <label>{{ __('Upload Image') }}</label>
                                     <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="" />
                                     <label class="logo-size text-right w-100">{{ __('Image Size') }} 120x120</label>
                                 </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         {!! Form::label('title', __('Enable'),['class' => 'control-label']) !!}
                                         <div class="mt-md-1">
@@ -262,6 +259,10 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="row">
+
                                 <div class="col-md-6">
                                     <div class="form-group" id="nameInput">
                                         {!! Form::label('title', __('Title'),['class' => 'control-label']) !!}

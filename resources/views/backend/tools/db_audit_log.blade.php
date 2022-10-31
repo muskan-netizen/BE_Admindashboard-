@@ -31,7 +31,7 @@
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h4>{{ __("Log Tables") }}</h4>
                     </div>
-                
+
                    <div class="custom-dd-empty dd home-options-list" id="pickup_page_datatable">
                         <a href="#" target="_self" style="color:#095cd2;">
                             <nav class="navbar navbar-light bg-light mt-2" >
@@ -43,7 +43,7 @@
                                 </span>
                             </nav>
                         </a>
-                    
+
                        @php
                            $count = 2;
                        @endphp
@@ -76,11 +76,11 @@
                         <thead class="thead-dark">
                           <tr>
                             <th scope="col">#</th>
-                            <th scope="col">User Name</th>
-                            <th scope="col">IP Address</th>
-                            <th scope="col">User Agent</th>
-                            <th scope="col">Login At</th>
-                            <th scope="col">Logout At</th>
+                            <th scope="col">{{ __("User Name")}}</th>
+                            <th scope="col">{{ __("IP Address")}}</th>
+                            <th scope="col">{{ __("User Agent")}}</th>
+                            <th scope="col">{{ __("Login At")}}</th>
+                            <th scope="col">{{ __("Logout At")}}</th>
                           </tr>
                         </thead>
                         <tbody>
