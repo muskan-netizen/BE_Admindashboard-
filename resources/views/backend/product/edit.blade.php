@@ -630,6 +630,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                         @endif
 
+                        
+
                         @if(($configData->need_dispacher_home_other_service == 1 && ($product->category->categoryDetail->type_id == 8)) || ($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12 ) )
                         @if($product->Requires_last_mile == 1 )
                             <div class="col-md-6 d-flex justify-content-between mb-2">
@@ -675,6 +677,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
 
                     </div>
+
+                    
                     <div class="row">
                         <div class="col-sm-12 mb-2">
                             {!! Form::label('title', __('Live'),['class' => 'control-label']) !!}
@@ -937,6 +941,18 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div> -->
 
+                    @if($product->vendor->pick_drop == 1 && $configData->is_cab_pooling == 1)
+                    <div class="row">
+                        <div class="col-sm-6 mb-1">
+                            {!! Form::label('title', __('Total Number Of Seats'),['class' => 'control-label']) !!}
+                            <input type="number"  class="form-control" value="{{$product->seats}}" name="seats" placeholder="{{__('Number Of Seats')}}">
+                        </div>
+                        <div class="col-sm-6 mb-1">
+                            {!! Form::label('title', __('Number Of Seats Available for Booking'),['class' => 'control-label']) !!}
+                            <input type="number"  class="form-control" value="{{$product->seats_for_booking}}" name="seats_for_booking" placeholder="{{__('Number Of Seats Available for Booking')}}">
+                        </div>
+                    </div>
+                    @endif
                 </div>
 
                 <div class="card-box">

@@ -27,6 +27,19 @@
                     </label>
                 </div>
                 @endif
+
+                @if(isset($client_preference_detail) && $client_preference_detail->is_cab_pooling == 1)
+                <div class="tip_radio_controls_book_friend text-center mt-2">
+                    <input type="radio" class="cab_radio is_cab_pooling" id="cab_booking" name="is_cab_pooling" value="0">
+                    <label class="tip_label mb-0  my-2 active " for="for_me" id="label_cab_booking">
+                        <h5 class="m-0" id="tip_5">{{__('Booking')}}</h5>
+                    </label>
+                    <input type="radio" class="cab_radio is_cab_pooling" id="cab_pooling" name="is_cab_pooling" value="1">
+                    <label class="tip_label mb-0  my-2" for="for_friend" id="label_cab_pooling">
+                        <h5 class="m-0" id="tip_5">{{__('Pooling')}}</h5>
+                    </label>
+                </div>
+                @endif
             <div class="location-box check-pick-first">
                 <div class="where-to-go">
                     <div class="title title-36">{{__('Where can we pick you up?')}}</div>
@@ -255,7 +268,13 @@
                                 <h4 class="m-0"><b><%= result.name %></b></h4>
                             </div>
                             <div class="col ride-price pl-2 text-right">
-                                <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
+                            <% if(result.per_tags_price < result.tags_price){ %>
+                                        <p class="mb-0">Maximum Price : <b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
+                                        <p class="mb-0">Minimum Price : <b>{{Session::get('currencySymbol')}}<%= result.per_tags_price%></b></p>
+                                    <% }else{ %>
+                                        <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
+                                    <% } %>
+                                <!-- <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p> -->
                             </div>
                         </div>
                     

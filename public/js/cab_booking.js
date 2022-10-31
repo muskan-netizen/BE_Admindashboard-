@@ -605,6 +605,22 @@ $(document).ready(function () {
             $('#product_rider_div').hide();
         }
     });
+
+    $(document).on("change",".is_cab_pooling",function() {
+        if($(this).val() == 1)
+        {
+            $('#search_product_main_div').hide();
+            $('#search_product_rider_main_div').show();
+            $(".alAddRiderSecOuter").show();
+            $('#product_rider_div').show();
+        }else{
+            $('#search_product_rider_main_div').hide();
+            $('#search_product_main_div').show();
+            $(".alAddRiderSecOuter").hide();
+            $('#product_rider_div').hide();
+        }
+    });
+
     $(document).on("click","#submit_product_rider_button",function(){
         let product_id = $('input[name="rider_product_id"]:checked').val();
         let rider_id = 0;
