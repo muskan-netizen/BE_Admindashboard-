@@ -32,7 +32,28 @@
                 </div>
             </div>
             <div class="row mb-5 homepageSix">
+                {{-- @dd($category->childs) --}}
                 <div class="collection-filter col-lg-3 al">
+                    <div class="theme-card">
+                        <h5 class="title-border d-flex align-items-center justify-content-between">
+                            <span>{{__('Sub Category')}}</span>
+                            <span class="filter-back d-lg-none d-inline-block">
+                                <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
+                            </span>
+                        </h5>
+                        <div class="offer-slider al">
+                            @if(!empty($category) && count($category->childs) > 0)
+                                <div class="listing-categories">
+                                    <ul>
+                                        @foreach($category->childs as $child)
+                                            <li><a href="{{route('categoryDetail', $child->slug)}}">{{ $child->slug }}</a></li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
