@@ -229,22 +229,59 @@ body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
     text-align: center;
     line-height: 220px;
 } */
-.Categories-section .bg-outter {
+.category-block .bg-outter {
     height: 250px;
     width: 220px;
     object-fit: cover;
     overflow: hidden;
     position: relative;
     z-index: 1;
+    margin: 0 auto;
 }
-.category-block .brand-ing img {
+.al_body_template_eight .category-block .brand-img {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+.al_body_template_eight .category-block .brand-img h6{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    color: #000;
+    font-size: 18px;
+    text-transform: capitalize;
+    font-weight: bold;
+}
+/* .category-block .brand-img img {
     position: absolute;
     top: 0;
     height: 225px;
     width: 206px;
     object-fit: cover;
+} */
+.al_body_template_eight .render_nav_categories .row{
+    flex-wrap:wrap;
 }
-
+.al_body_template_eight .render_nav_categories .row .col{
+    width:20%;
+}
+.popular-brands.left-shape_.position-relative {
+    padding: 60px 0 !important;
+    background: #d8d8d8;
+}
+.category-block .brand-img img {
+    position: absolute;
+    top: 40%;
+    height: 100px;
+    width: 100px;
+    object-fit: cover;
+    line-height: 100px;
+    text-align: center;
+    margin: 0 auto;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 article#page-container section .vendors section h2.h2-heading {
     margin-bottom: 35px;
     width: 90%;
