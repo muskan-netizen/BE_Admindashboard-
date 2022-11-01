@@ -986,6 +986,7 @@ class UserhomeController extends FrontController
                 'vendors' => $vendors,
                 'new_products' => $new_products,
                 'recently_viewed' => $new_products,
+                'top_rated'       => $new_products,
                 'homePageLabels' => $home_page_labels,
                 'featured_products' => $feature_products,
                 'on_sale' => $on_sale_products,

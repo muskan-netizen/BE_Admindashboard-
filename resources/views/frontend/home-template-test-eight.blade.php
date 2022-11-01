@@ -663,6 +663,24 @@
 				</div>
 			</div>
 		</section>
+		@elseif($homePageLabel->slug == 'top_rated' && (count($homePageData['top_rated']) != 0))
+		<section class="main-pro-slider suppliers-section container mb-4" id="homepage_top_rated">
+			<div class="row">
+				<div class="col-md-3">
+					<div class=" top-heading mt-4 pt-5">
+						<h2 class="h2-heading">{{$homePageLabel->slug=='top_rated' ? __('Top')." ".getNomenclatureName('Rated', true) : __($homePageLabel->title)}}</h2>
+						<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+					</div>
+				</div>
+				<div class="col-md-9 p-0 mb-4">
+					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+						@foreach ($homePageData[$homePageLabel->slug] as $vendor )
+						@include('frontend.home_page_8.top_rated')
+						@endforeach
+					</div>
+				</div>
+			</div>
+		</section>
 		@elseif($homePageLabel->slug == 'categories' && count($homePageData['categories']) != 0 )
 		<!-----------------Categories-------------------->
 		@if(@$categories)
