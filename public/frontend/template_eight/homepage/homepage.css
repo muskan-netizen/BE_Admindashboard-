@@ -285,9 +285,8 @@ section#our_vendor_main_div {
 article#page-container section .vendors section a {
     color: #ff7521;
 }
-
 .main-product {
-    background: linear-gradient(to right, #d99677 , #ffc1a4 );
+    background: linear-gradient(to right, #813512 , #e79b77 );
     padding: 60px 0 !important;
 }
 section.home-headings {
@@ -615,6 +614,19 @@ section#homepage_top_rated .slick-slider .slick-next {
         width: 60%;
         text-align: left;
         margin-top: 0;
+        display:inline-block;
+    }
+    .al_body_template_eight section#homepage_recently_viewed h2.h2-heading {
+        padding: 30px 0;
+    }
+    .al_body_template_eight section.mb-0.render_full_spotlight_deals h2.h2-heading {
+        padding: 20px 0;
+    }
+    .al_body_template_eight section.mb-0.render_full_spotlight_deals .top-heading.d-flex.justify-content-between a {
+        margin-top: 20px;
+    }
+    section.home-headings .top-heading.d-flex.justify-content-between {
+        margin: 20px 0;
     }
     .home-slider-wrapper .banner-img-outer img {
         border-radius: 20px;
@@ -656,8 +668,11 @@ section#homepage_top_rated .slick-slider .slick-next {
         flex: 50%;
     }
     section.suppliers-section.container.vender_slider .top-heading.mt-5.pt-5 {
-        margin: 0 !important;
+        margin: 20px 0 !important;
         padding: 0 !important;
+    }
+    .al_body_template_eight section#homepage_top_rated h2.h2-heading {
+        width: 65% !important;
     }
     article#page-container section .vendors section h2.h2-heading {
         line-height: 30px;
@@ -665,5 +680,8 @@ section#homepage_top_rated .slick-slider .slick-next {
     .main-pro-slider .top-heading.mt-4.pt-5 {
         padding: 0 !important;
         margin: 0 !important;
+    }
+    section#homepage_top_rated .top-heading.text-center {
+        margin: 20px 0 0;
     }
 }
