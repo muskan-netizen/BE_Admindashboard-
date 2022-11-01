@@ -560,7 +560,7 @@
                                                                         <tr>
                                                                             <td>{{ $key + 1 }}</td>
                                                                             <td><a href="javascript:void(0)"
-                                                                                   >{{ date('Y-m-d H:i', strtotime(dateTimeInUserTimeZone($schedule->schedule_date, $timezone)))   }}</a>
+                                                                                   >{{ date('d M Y h:i A', strtotime(dateTimeInUserTimeZone($schedule->schedule_date, $timezone)))   }}</a>
                                                                             </td>
                                                                             <td> <span class="badge {{  $schedule->status ==0 ? 'badge-info' : 'badge-success'}}  mr-2">{{  $schedule->status ==0 ? __('Pending') : __('Complete')}}</span>
                                                                             </td>

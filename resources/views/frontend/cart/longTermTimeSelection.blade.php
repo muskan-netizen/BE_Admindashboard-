@@ -21,7 +21,7 @@
     <div class="col-3 service_date_div {{  $vendor_product->service_period == 'months' ? '' : 'd-none' }}" >
         <label for="">{{ __('Date') }}</label>
         <select class="form-control selectize-select" id="service_date"
-            name="date">
+            name="date" disabled>
             @for ($i = 1; $i <= 28; $i++)
                 <option value="{{ $i }}" {{ $vendor_product->service_date == $i ? 'selected' : '' }} >{{ $i }}
                 </option>
@@ -33,9 +33,9 @@
         </select>
     </div>
     <div class="service_day_div col-3 {{  $vendor_product->service_period == 'week' ? '' : 'd-none' }}">
-        <label for="">{{ __('Day') }}</label>
+        <label for="">{{ __('Day:') }}</label>
         <select class="form-control selectize-select" id="service_day"
-            name="day">
+            name="day" disabled>
             @foreach (config('constants.weekDay') as $dayKey => $day)
                 <option value="{{ $dayKey }}" {{ $vendor_product->service_day == $dayKey ? 'selected' : '' }} >{{ __($day) }}
                 </option>
@@ -43,7 +43,7 @@
         </select>
     </div>
     <div class="service_time_div col-3">
-        <label for="">{{ __('Time') }}</label>
-        <input type="time" id="service_start_time" value="{{ $vendor_product->service_start_time  }}" class="form-control">
+        <label for="">{{ __('Time:') }}</label>
+        <input type="time" id="service_start_time" value="{{ $vendor_product->service_start_time  }}"  disabled class="form-control">
     </div>
 </div>
