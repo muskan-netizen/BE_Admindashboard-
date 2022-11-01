@@ -1,5 +1,7 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => getNomenclatureName('vendors', true)])
-
+{{-- @php
+pr($products->toArray());
+@endphp --}}
 @section('css')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
     <link href="{{ asset('assets/libs/fullcalendar-list/fullcalendar-list.min.css') }}" rel="stylesheet" type="text/css" />
@@ -285,72 +287,7 @@
                                                         <th>{{ __('Action') }}</th>
                                                     </tr>
                                                 </thead>
-                                                <!-- <tbody id="post_list">
-                                                    @foreach ($products as $product)
-                                                        <tr data-row-id="{{ $product->id }}">
-
-                                                            <td><input type="checkbox" class="single_product_check"
-                                                                    name="product_id[]" id="single_product"
-                                                                    value="{{ $product->id }}"></td>
-                                                            <td>
-                                                                @if (isset($product->media[0]) && isset($product->media[0]->image))
-                                                                    <img alt="{{ $product->id }}" class="rounded-circle"
-                                                                        src="{{ $product->media[0]->image->path['proxy_url'] . '30/30' . $product->media[0]->image->path['image_path'] }}">
-                                                                @else
-                                                                    {{-- {{ $product->sku }} --}}
-                                                                @endif
-                                                            </td>
-                                                            <td> <a href="{{ route('product.edit', $product->id) }}"
-                                                                    target="_blank">{{ Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30) }}</a>
-                                                            </td>
-                                                            <td> {{ $product->category ? $product->category->cat->name : 'N/A' }}
-                                                            </td>
-                                                            @if ($client_preference_detail->business_type != 'taxi')
-                                                                <td> {{ !empty($product->brand) ? $product->brand->title : 'N/A' }}
-                                                                </td>
-                                                                <td> {{ $product->variant->first() ? $product->variant->first()->quantity : 0 }}
-                                                                </td>
-                                                                <td> {{ $product->variant->first() ? decimal_format($product->variant->first()->price) : 0 }}
-                                                                </td>
-                                                            @endif
-                                                            <td>
-                                                                {{ $live_status[$product->is_live]  }}
-
-                                                            </td>
-                                                            @if ($client_preference_detail->business_type != 'taxi')
-                                                                <td> {{ $product->is_new == 0 ? __('No') : __('Yes') }}</td>
-                                                                <td> {{ $product->is_featured == 0 ? __('No')  : __('Yes') }}
-                                                                </td>
-                                                                <td> {{ $product->Requires_last_mile == 0 ? __('No')  : __('Yes') }}
-                                                                </td>
-                                                            @endif
-                                                            <td>
-                                                                <div class="form-ul" style="width: 60px;">
-                                                                    <div class="inner-div" style="float: left;">
-                                                                        <a class="action-icon"
-                                                                            href="{{ route('product.edit', $product->id) }}"
-                                                                            userId="{{ $product->id }}"><i
-                                                                                class="mdi mdi-square-edit-outline"></i></a>
-                                                                    </div>
-                                                                    <div class="inner-div">
-                                                                        <form id="deleteproduct_{{$product->id}}" method="POST"
-                                                                            action="{{ route('product.destroy', $product->id) }}">
-                                                                            @csrf
-                                                                            @method('DELETE')
-                                                                            <div class="form-group">
-                                                                                <button type="button" class="btn btn-primary-outline action-icon delete-product" data-destroy_url="{{ route('product.destroy', $product->id) }}" data-rel="{{$product->id}}"><i class="mdi mdi-delete"></i></button>
-                                                                                {{-- <button type="submit"
-                                                                                    onclick="return confirm('Are you sure? You want to delete the product.')"
-                                                                                    class="btn btn-primary-outline action-icon"><i
-                                                                                        class="mdi mdi-delete"></i></button> --}}
-                                                                            </div>
-                                                                        </form>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody> -->
+                                                
                                             </table>
                                         </div>
                                     </div>
@@ -513,8 +450,9 @@
                                     {!! Form::label('title', __('Select Product'),['class' => 'control-label']) !!}
                                 <select class="form-control selectizeInput" id="service_product_list" name="service_product_id">
                                     <option value="">{{ __("Select Product") }}...</option>
-                                    @foreach($products as $product)
-                                        <option value="{{$product['id']}}" data-product_title="{{ $product->primary->title ?? '' }}">{{ Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30) }}</option>
+                                  
+                                    @foreach($products->where('category_id','!=','7') as $product)
+                                        <option value="{{$product['id']}}" data-category_id="{{ $product->category_id ?? '' }} data-product_title="{{ $product->primary->title ?? '' }}">{{ Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30) }}</option>
                                     @endforeach
                                     </select>
                                     <span class="invalid-feedback" role="alert">

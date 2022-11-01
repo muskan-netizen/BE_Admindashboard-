@@ -219,7 +219,7 @@
 
                                         <div id="product_variant_wrapper">
                                             <input type="hidden" name="variant_id" id="prod_variant_id"
-                                                value="{{ $product->variant[0]->id }}}">
+                                                value="{{ $product->variant[0]->id }}">
                                             @if ($product->inquiry_only == 0)
                                                 <h3 id="productPriceValue" class="mb-md-3">
                                                     <b class="mr-1">{{ Session::get('currencySymbol') }}<span
@@ -260,7 +260,7 @@
                                                                 id="service_period" name="service_period">
                                                                 @foreach (config('constants.Period') as $key => $value)
                                                                     @if (in_array($key, $product->ServicePeriods))
-                                                                        <option value="{{ $key }}">
+                                                                        <option value="{{ $key }}" {{ $product_in_cart ? ($product_in_cart->service_period == $key ? 'selected' : '') : '' }}>
                                                                             {{ __($value) }}</option>
                                                                     @endif
                                                                 @endforeach
@@ -309,13 +309,13 @@
                                             <div class='select_timing row'>
                                                 <div class="service_date_div col-4">
                                                     <label for="">{{ __('Date') }}</label>
-                                                    <select class="form-control selectize-select" id="service_day"
-                                                        name="day">
+                                                    <select class="form-control selectize-select" id="service_date"
+                                                        name="date">
                                                         @for ($i = 1; $i <= 28; $i++)
-                                                            <option value="{{ $i }}">{{ $i }}
+                                                            <option value="{{ $i }}" {{ $product_in_cart ? ($product_in_cart->service_date == $i ? 'selected' : '') : '' }}>{{ $i }}
                                                             </option>
                                                             @if ($i == 28)
-                                                                <option value="0">{{ __('Last day if month') }}
+                                                                <option value="0"  {{ $product_in_cart ? ($product_in_cart->service_date == 0 ? 'selected' : '') : '' }}> {{ __('Last day of month') }}
                                                                 </option>
                                                             @endif
                                                         @endfor
@@ -326,19 +326,19 @@
                                                     <select class="form-control selectize-select" id="service_day"
                                                         name="day">
                                                         @foreach (config('constants.weekDay') as $dayKey => $day)
-                                                            <option value="{{ $dayKey }}">{{ __($day) }}
+                                                            <option value="{{ $dayKey }}"  {{ $product_in_cart ? ($product_in_cart->service_day == $dayKey ? 'selected' : '') : '' }}>{{ __($day) }}
                                                             </option>
                                                         @endforeach
                                                     </select>
                                                 </div>
                                                 <div class="service_time_div col-4">
                                                     <label for="">{{ __('Time') }}</label>
-                                                    <input type="time" id="service_start_time" class="form-control">
+                                                    <input type="time" id="service_start_time" value="{{ $product_in_cart ? $product_in_cart->$product_in_cart  : ''  }}" class="form-control">
                                                 </div>
                                                 <div class="col-3">
                                                     <label for=""></label>
                                                     <a href="#" data-toggle="modal" data-target="#addtocart"
-                                                        class="btn btn-solid addToCart px-2 mt-3 py-1 w-100">{{ __('Add To Cart') }}</a>
+                                                        class="btn btn-solid  px-2 mt-3 py-1 w-100 {{ $product_in_cart ? 'btn-disabled' : 'addToCart' }}">{{ $product_in_cart ?__('Added') :__('Add To Cart') }}</a>
                                                 </div>
                                             </div>
 

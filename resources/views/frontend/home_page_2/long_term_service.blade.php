@@ -1,33 +1,27 @@
-<div class="product-card-box position-relative al_box_third_template al"  >
-    {{-- {{ dd($product)}} --}}
-    {{--<div class="add-to-fav 12">
-        <input id="fav_pro_one" type="checkbox">
-        <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
-    </div>--}}	
-    {{-- @php
-							pr($value);
-						@endphp --}}
-    <a class="common-product-box text-center" href="{{ $value['vendor']->slug }}/product/{{ $value['url_slug'] }}">
-        <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $value['image_url'] }}" alt="" title="">
-            <div class="pref-timing"> </div>
+<div>
+    <a class="card scale-effect text-center" href="{{ $value['vendor']->slug }}/product/{{ $value['url_slug'] }}">
+        <label class="product-tag">@if($value["tag_title"] != 0) {{$value["tag_title"]}} @else {{$homePageLabel->title}}@endif </label>
+        <div class="product-image">
+            <img class="blur-up lazyloaded" src="{{ $value['image_url'] }}" alt="">
         </div>
-        <div class="media-body align-self-start">
+        <div class="media-body align-self-center">
             <div class="inner_spacing px-0">
-                <div class="product-description">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h6 class="card_title ellips">{{ $value["title"] }}</h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-                        @if($value["averageRating"] >0)<span class="rating-number">{{ $value["averageRating"] }}</span>
-                        @endif @endif @endif </div>
-                    <div class="product-description_list border-bottom">
-                        <p>
-                            {{ $value["vendor_name"] }}
-                        </p>
-                        
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between al_clock pt-2">
-                        <b>{{$value["price"] ?? ''}} </b>
-                    </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <h3 class="m-0">{{ $value["title"] }}</h3>
+                    @if($client_preference_detail)
+                        @if($client_preference_detail->rating_check == 1)
+                            @if($value["averageRating"] >0)
+                                <span class="rating">{{ $value["averageRating"] }} <i class="fa fa-star text-white p-0"></i></span>
+                            @endif 
+                        @endif
+                    @endif
                 </div>
+                <p>{{ $value["vendor_name"] }}</p>
+                <h4>
+                    @if($value["inquiry_only"] == 0)
+                    {{$value["price"]}}
+                    @endif
+                </h4>
             </div>
         </div>
     </a>

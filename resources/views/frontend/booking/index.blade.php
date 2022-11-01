@@ -1,362 +1,424 @@
 @extends('layouts.store', ['title' => 'Product'])
 @section('css')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
+{{-- <link rel="stylesheet" href="{{asset('assets/libs/jquery.datetimepicker.min.css')}}"> --}}
 @endsection
 @section('content')
 <style type="text/css">
 .option{background:#fff;height:100%;width:100%;text-align:center;cursor:pointer;-webkit-transition:all .3s ease;transition:all .3s ease}input.alCheckMark[type=radio]{display:none}.alRiderImg{display:inline-block;height:50px;width:50px;border-radius:50%;line-height:45px;color:#fff;border:3px solid transparent;font-size:24px;text-transform:capitalize}.alRiderName{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}.alCheckMark:checked:checked~.option .alRiderImg{border:4px solid #fff;box-shadow:0 2px 10px rgb(0 0 0 / 30%);text-transform:capitalize}.alCheckMark:checked:checked~.option span.alCloseBtn{display:none}.alAddRiderSecOuter{max-height:220px;overflow-y:auto;overflow-x:hidden}#alTaxiBookingWrapper .vehical-container{max-height:200px}#alTaxiBookingWrapper .location-box{padding:10px 24px}#alTaxiBookingWrapper .location-inputs .title-24{font-size:16px;line-height:24px;font-weight:500}#alTaxiBookingWrapper .scheduled-ride{padding:10px}.alAddRiderSecOuter button.btn.rounded{border:1px solid}span.alCloseBtn{position:absolute;background-color:#fff;height:15px;width:15px;font-size:10px;font-weight:600;line-height:15px;color:#000;border-radius:30px;right:28px;margin:0 auto;top:-3px;box-shadow:0 0 5px rgb(0 0 0 / 30%);z-index:99;cursor:pointer;display:none;-webkit-transition:all .3s ease;transition:all .3s ease}.alHoverRiderBox:hover span.alCloseBtn{display:block}.input-hidden{position:absolute;left:-9999px}::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{box-shadow:inset 0 0 2px grey;border-radius:10px}::-webkit-scrollbar-thumb{background:var(--theme-deafult);border-radius:10px}::-webkit-scrollbar-thumb:hover{background:#b30000}.alRiderRadioBox label{border:2px solid transparent;position:relative}.alRiderRadioBox label:before{position:absolute;top:0;left:0;content:"";background-color:var(--theme-deafult);height:25px;width:25px;z-index:1;border-radius:0 0 50px 0;display:none}.alRiderRadioBox label:after{position:absolute;content:"";left:7px;top:4px;width:6px;height:10px;border:solid #fff;border-width:0 2px 2px 0;-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);transform:rotate(45deg);z-index:2;display:none}.alRiderRadioBox input[type=radio]:checked+label{border:2px solid var(--theme-deafult);box-shadow:0 3px 3px rgba(0,0,0,.2)}.alRiderRadioBox input[type=radio]:checked+label:after,.alRiderRadioBox input[type=radio]:checked+label:before{display:block}
-
+.alFullMapForm {
+    max-width: 450px !important;
+    margin-left: 15px !important;
+    top: 50px;
+    left: 0;
+}
+body .alFullMapForm .scheduled-footer .btn {
+    font-size: 14px !important;
+    padding: 0 !important;
+    line-height: 3;
+    min-height: auto;border: 1px solid var(--theme-deafult)
+}
+/* body .alFullMapForm .scheduled-footer .btn:hover{ } */
+.booking-experienceNew{background-color: #fff;left: 0;height: 100%;
+    overflow-x: hidden;overflow-y: scroll}
 </style>
-<section id="alTaxiBookingWrapper" class="cab-booking pt-0">
-    <div id="booking-map" style="width: 100%; height: 100%;"></div>
-    <input id="booking-latitude" type="hidden" value="-34">
-    <input id="booking-longitude"  type="hidden" value="151">
+<section id="alTaxiBookingWrapper" class="cab-booking pt-0 pb-0">
+    <div class="alFullMapArea col-md-12 p-0 h-100">
+        <div id="booking-map" style="width: 100%; height: 100%;"></div>
+        <input id="booking-latitude" type="hidden" value="-34">
+        <input id="booking-longitude"  type="hidden" value="151">
+       
+    </div>
+    <div class="alFullMapForm col-md-12 p-0 position-absolute">
+        <div class="booking-experienceNew ds bc">
+            <div class="address-form">
 
-    <div class="booking-experience ds bc">
-        <div class="address-form">
-
-                @if(isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
-                <div class="tip_radio_controls_book_friend text-center mt-2">
-                    <input type="radio" class="tip_radio is_for_friend" id="for_me" name="is_for_friend" value="0">
-                    <label class="tip_label mb-0  my-2 active " for="for_me" id="label_for_me">
-                        <h5 class="m-0" id="tip_5">{{__('For Me')}}</h5>
-                    </label>
-                    <input type="radio" class="tip_radio is_for_friend" id="for_friend" name="is_for_friend" value="1">
-                    <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
-                        <h5 class="m-0" id="tip_5">{{__('For Others')}}</h5>
-                    </label>
-                </div>
-                @endif
-            <div class="location-box check-pick-first">
-                <div class="where-to-go">
-                    <div class="title title-36">{{__('Where can we pick you up?')}}</div>
-                </div>
-            </div>
-            <div class="location-box check-dropoff-secpond" style="display:none">
-                <ul class="location-inputs position-relative pl-2" id="location_input_main_div">
-                    <li class="d-flex dots">
-                        <div class="title title-24 position-relative edit-pickup">  {{__('From')}} - <span id="pickup-where-from"></span><i class="fa fa-angle-down" aria-hidden="true"></i></div>
-                    </li>
-                    <li class="d-flex dots where-to-first">
-                        <div class="title title-36 pr-3 position-relative">{{__('Where To?')}}</div>
-                    </li>
-                    <li class="d-flex dots where-to-second" style="display:none !important;">
-                        <div class="title title-24 position-relative edit-dropoff">  {{__('To')}} - <span id="dropoff-where-to"></span><i class="fa fa-angle-down" aria-hidden="true"></i></div>
-                        <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel=""></i>
-                    </li>
-                </ul>
-                <a class="add-more-location position-relative pl-2" style="display:none" href="javascript:void(0)">{{__('Add Destination')}}</a>
-            </div>
-            <input type="hidden" name="pickup_location_latitude[]" value="" id="pickup_location_latitude">
-            <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude">
-            <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude"/>
-            <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude"/>
-
-            <input type="hidden" name="default_cab_vendor" value="" id="default_cab_vendor">
-            <input type="hidden" name="default_cab_vendor_id" value="" id="default_cab_vendor_id">
-
-            <input type="hidden" id="address-input" value=""/>
-            <input type="hidden" id="address-latitude" value=""/>
-            <input type="hidden" id="address-longitude" value=""/>
-            <input type="hidden" name="schedule_date" value="" id="schedule_date"/>
-            <div class="location-container style-4">
-                <div class="location-search d-flex align-items-center check-pickup">
-                    <i class="fa fa-search" aria-hidden="true"></i>
-                    <input class="form-control pickup-text pac-target-input" type="text" name="pickup_location_name[]" placeholder="Add A Pick-Up Location" id="pickup_location" autocomplete="off">
-                </div>
-                <div class="location-search d-flex align-items-center" style="display:none !important;" id="destination_location_add_more">
-                </div>
-                <div class="location-search d-flex align-items-center check-dropoff" style="display:none !important;">
-                    <i class="fa fa-search" aria-hidden="true"></i>
-                    <input class="form-control pickup-text" name="destination_location_name[]" type="text" placeholder="{{__('Add A Stop')}}" id="destination_location"/>
-                </div>
-                <div class="location-search d-flex align-items-center" style="display:none !important;" id="destination_location_add_temp">
-
-                </div>
-                <div class="scheduled-ride">
-                    <button><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="mx-2 scheduleDateTimeApnd">{{__('Now')}}</span> <i class="fa fa-angle-down" aria-hidden="true"></i></button>
-                </div>
-                @if($wallet_balance < 0)
-                <div class="row">
-                        <div class="col-md-7">
-                            <h6 style="color: red;">{{__('* Please recharge your wallet.')}}
-                        </div>
-                        <div class="col-md-5 text-md-right text-center">
-                            <button type="button" class="btn btn-solid" id="topup_wallet_btn" data-toggle="modal" data-target="#topup_wallet">{{__('Topup Wallet')}}</button>
+                    @if(isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
+                    <div class="tip_radio_controls_book_friend text-center mt-2">
+                        <input type="radio" class="tip_radio is_for_friend" id="for_me" name="is_for_friend" value="0">
+                        <label class="tip_label mb-0  my-2 active " for="for_me" id="label_for_me">
+                            <h5 class="m-0" id="tip_5">{{__('For Me')}}</h5>
+                        </label>
+                        <input type="radio" class="tip_radio is_for_friend" id="for_friend" name="is_for_friend" value="1">
+                        <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
+                            <h5 class="m-0" id="tip_5">{{__('For Others')}}</h5>
+                        </label>
+                    </div>
+                    @endif
+                    <div class="location-box check-pick-first">
+                        <div class="where-to-go">
+                            <div class="title title-36">{{__('Where can we pick you up?')}}</div>
                         </div>
                     </div>
+                    <div class="location-box check-dropoff-secpond" style="display:none">
+                        <ul class="location-inputs position-relative pl-2" id="location_input_main_div">
+                            <li class="d-flex dots">
+                                <div class="title title-24 position-relative edit-pickup">  {{__('From')}} - <span id="pickup-where-from"></span><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+                            </li>
+                            <li class="d-flex dots where-to-first">
+                                <div class="title title-36 pr-3 position-relative">{{__('Where To?')}}</div>
+                            </li>
+                            <li class="d-flex dots where-to-second" style="display:none !important;">
+                                <div class="title title-24 position-relative edit-dropoff">  {{__('To')}} - <span id="dropoff-where-to"></span><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+                                <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel=""></i>
+                            </li>
+                        </ul>
+                        <a class="add-more-location position-relative pl-2" style="display:none" href="javascript:void(0)">{{__('Add Destination')}}</a>
+                    </div>
+                    <input type="hidden" name="pickup_location_latitude[]" value="" id="pickup_location_latitude">
+                    <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude">
+                    <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude"/>
+                    <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude"/>
 
-                @endif
-                <div class="loader cab-booking-main-loader"></div>
-                <div class="location-list style-4">
-                        <a class="select-location row align-items-center" id="get-current-location" href="javascript:void(0)">
-                            <div class="col-2 text-center pl-4">
-                                <div class="round-shape active-location">
-                                    <i class="fa fa-crosshairs" aria-hidden="true"></i>
+                    <input type="hidden" name="default_cab_vendor" value="" id="default_cab_vendor">
+                    <input type="hidden" name="default_cab_vendor_id" value="" id="default_cab_vendor_id">
+
+                    <input type="hidden" id="address-input" value=""/>
+                    <input type="hidden" id="address-latitude" value=""/>
+                    <input type="hidden" id="address-longitude" value=""/>
+                    <input type="hidden" name="schedule_date" value="" id="schedule_date"/>
+                    <div class="location-containerNew style-4">
+                        <div class="location-search d-flex align-items-center check-pickup">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                            <input class="form-control pickup-text pac-target-input" type="text" name="pickup_location_name[]" placeholder="Add A Pick-Up Location" id="pickup_location" autocomplete="off">
+                        </div>
+                        <div class="location-search d-flex align-items-center" style="display:none !important;" id="destination_location_add_more">
+                        </div>
+                        <div class="location-search d-flex align-items-center check-dropoff" style="display:none !important;">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                            <input class="form-control pickup-text" name="destination_location_name[]" type="text" placeholder="{{__('Add A Stop')}}" id="destination_location"/>
+                        </div>
+                        <div class="location-search d-flex align-items-center" style="display:none !important;" id="destination_location_add_temp">
+
+                        </div>
+                        <div class="scheduled-ride">
+                            <button><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="mx-2 scheduleDateTimeApnd">{{__('Now')}}</span> <i class="fa fa-angle-down" aria-hidden="true"></i></button>
+                        </div>
+                        @if($wallet_balance < 0)
+                        <div class="row">
+                                <div class="col-md-7">
+                                    <h6 style="color: red;">{{__('* Please recharge your wallet.')}}
+                                </div>
+                                <div class="col-md-5 text-md-right text-center">
+                                    <button type="button" class="btn btn-solid" id="topup_wallet_btn" data-toggle="modal" data-target="#topup_wallet">{{__('Topup Wallet')}}</button>
                                 </div>
                             </div>
-                            <div class="col-10 pl-3">
-                                <h4><b>{{__('Allow location Access')}}</b></h4>
-                                <div class="current-location ellips text-color mb-2">{{__('Your current location')}}</div>
-                                <hr class="m-0">
 
-                            </div>
-                        </a>
-                    @forelse($user_addresses as $user_address)
-                        <!-- <a class="search-location-result position-relative d-block" href="javascript:void(0);" data-address="{{$user_address->address}}" data-latitude="{{$user_address->latitude}}" data-longitude="{{$user_address->longitude}}">
-                            <h4 class="mt-0 mb-1"><b>{{$user_address->address}}</b></h4>
-                            <p class="ellips mb-0">{{$user_address->city}}, {{$user_address->state}}, {{$user_address->country}}</p>
-                        </a> -->
-                        <a class="search-location-result position-relative row align-items-center mt-2" href="javascript:void(0);" data-address="{{$user_address->address}}" data-latitude="{{$user_address->latitude}}" data-longitude="{{$user_address->longitude}}">
-                            <div class="col-2 text-center pl-3">
-                                <div class="round-shape">
-                                    <i class="fa fa-map-marker" aria-hidden="true"></i>
-                                </div>
-                            </div>
-                            <div class="col-10 pl-3">
-                                <h4 class="mt-0 mb-1"><b>{{$user_address->address}}</b></h4>
-                                <div class="current-location ellips mb-2">{{$user_address->city}}, {{$user_address->state}}, {{$user_address->country}}</div>
-                                <hr class="m-0">
-                            </div>
-                        </a>
-                    @empty
-                    @endforelse
-                </div>
-                <div class="scheduled-ride-list">
-                    <div class="scheduled-ride-list-heading d-flex align-items-center justify-content-between">
-                        <h3>Choose Date And Time</h3>
-                        <span class="skip-clear">
-                            Skip
-                        </span>
-                    </div>
-
-                    <div class="date-radio-list style-4">
-
-                    </div>
-
-                    <div class="scheduled-footer">
-
-                    </div>
-                </div>
-                <div class="table-responsive style-4">
-                    <div class="cab-button d-flex flex-nowrap align-items-center py-2 pl-2" id="vendor_main_div"></div>
-                </div>
-                <div class="vehical-container style-4" id="search_product_main_div"></div>
-                <div class="vehical-container style-4" id="search_product_rider_main_div" style="display:none;"></div>
-
-                <!-- Riders Code -->
-                <div class="alAddRiderSecOuter" id="rider_section" style="display:none;">
-                    <div class="col-12 d-flex justify-content-between align-items-center">
-                        @if(count($riders) > 0)
-                        <p class="m-0">Riders : <span id="rider_count">{{count($riders)}}</span></p>
                         @endif
-                        <button class="btn rounded {{count($riders) == 0 ? 'w-100' : ''}}  add_rider_button" data-toggle="modal" data-target="#alAddRiderSecModal"><i class="fa fa-plus"></i> {{__('Add Rider')}}</button>
-                    </div>
-                    <div class="col-12 mt-2">
-                        <div class="row alRiderImgBox">
-                            @foreach($riders as $key=>$rider)
-                            <div class="col-3 text-center alHoverRiderBox">
-
-                                <input class="alCheckMark" type="radio" name="rider_id" id="option-{{$key}}" {{$key == 0 ? 'checked' : ''}} value="{{$rider->id}}">
-                                <label for="option-{{$key}}" class="option option-{{$key}}">
-
-                                    <div class="alRiderImg mb-1" style="background-color:<?php printf( "#%06X\n", mt_rand( 0, 0xFFFFFF )); ?>">{{substr($rider->first_name, 0, 1)}}</div>
-                                    <div class="dalRiderInfo">
-                                        <p class="alRiderName mb-0">{{$rider->first_name}}</p>
+                        <div class="loader cab-booking-main-loader"></div>
+                        <div class="location-list style-4">
+                                <a class="select-location row align-items-center" id="get-current-location" href="javascript:void(0)">
+                                    <div class="col-2 text-center pl-4">
+                                        <div class="round-shape active-location">
+                                            <i class="fa fa-crosshairs" aria-hidden="true"></i>
+                                        </div>
                                     </div>
+                                    <div class="col-10 pl-3">
+                                        <h4><b>{{__('Allow location Access')}}</b></h4>
+                                        <div class="current-location ellips text-color mb-2">{{__('Your current location')}}</div>
+                                        <hr class="m-0">
 
-                                </label>
-                                <span class="alCloseBtn deleteRider" data-id="{{$rider->id}}">X</span>
-                            </div>
-                            @endforeach
+                                    </div>
+                                </a>
+                            @forelse($user_addresses as $user_address)
+                                <!-- <a class="search-location-result position-relative d-block" href="javascript:void(0);" data-address="{{$user_address->address}}" data-latitude="{{$user_address->latitude}}" data-longitude="{{$user_address->longitude}}">
+                                    <h4 class="mt-0 mb-1"><b>{{$user_address->address}}</b></h4>
+                                    <p class="ellips mb-0">{{$user_address->city}}, {{$user_address->state}}, {{$user_address->country}}</p>
+                                </a> -->
+                                <a class="search-location-result position-relative row align-items-center mt-2" href="javascript:void(0);" data-address="{{$user_address->address}}" data-latitude="{{$user_address->latitude}}" data-longitude="{{$user_address->longitude}}">
+                                    <div class="col-2 text-center pl-3">
+                                        <div class="round-shape">
+                                            <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-10 pl-3">
+                                        <h4 class="mt-0 mb-1"><b>{{$user_address->address}}</b></h4>
+                                        <div class="current-location ellips mb-2">{{$user_address->city}}, {{$user_address->state}}, {{$user_address->country}}</div>
+                                        <hr class="m-0">
+                                    </div>
+                                </a>
+                            @empty
+                            @endforelse
                         </div>
+                        <div class="scheduled-ride-list">
+                            <div class="scheduled-ride-list-heading d-flex align-items-center justify-content-between">
+                                <h3>{{ __('Choose Date And Time') }}</h3>
+                                <span class="skip-clear">
+                                    {{ __('Skip') }}
+                                </span>
+                            </div>
+
+                            <div class="date-radio-list1 style-4">
+                                <div class="datepicker date input-group p-2">
+                                    <input type="text" name="schedule_pickup_date"  placeholder="Choose Date" class="form-control" id="schedule_pickup_date" >
+                                    <div class="input-group-append">
+                                        <span class="input-group-text calendar_icon" for="schedule_pickup_date"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="scheduled-footer">
+
+                            </div>
+                        </div>
+                        <div class="table-responsive style-4">
+                            <div class="cab-button d-flex flex-nowrap align-items-center py-2 pl-2" id="vendor_main_div"></div>
+                        </div>
+                        <div class="vehical-container style-4" id="search_product_main_div"></div>
+                        <div class="vehical-container style-4" id="search_product_rider_main_div" style="display:none;"></div>
+
+                        <!-- Riders Code -->
+                        <div class="alAddRiderSecOuter" id="rider_section" style="display:none;">
+                            <div class="col-12 d-flex justify-content-between align-items-center">
+                                @if(count($riders) > 0)
+                                <p class="m-0">Riders : <span id="rider_count">{{count($riders)}}</span></p>
+                                @endif
+                                <button class="btn rounded {{count($riders) == 0 ? 'w-100' : ''}}  add_rider_button" data-toggle="modal" data-target="#alAddRiderSecModal"><i class="fa fa-plus"></i> {{__('Add Rider')}}</button>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <div class="row alRiderImgBox">
+                                    @foreach($riders as $key=>$rider)
+                                    <div class="col-3 text-center alHoverRiderBox">
+
+                                        <input class="alCheckMark" type="radio" name="rider_id" id="option-{{$key}}" {{$key == 0 ? 'checked' : ''}} value="{{$rider->id}}">
+                                        <label for="option-{{$key}}" class="option option-{{$key}}">
+
+                                            <div class="alRiderImg mb-1" style="background-color:<?php printf( "#%06X\n", mt_rand( 0, 0xFFFFFF )); ?>">{{substr($rider->first_name, 0, 1)}}</div>
+                                            <div class="dalRiderInfo">
+                                                <p class="alRiderName mb-0">{{$rider->first_name}}</p>
+                                            </div>
+
+                                        </label>
+                                        <span class="alCloseBtn deleteRider" data-id="{{$rider->id}}">X</span>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12" id="product_rider_div" style="display:none;">
+                            <button class="btn btn-solid w-100" id="submit_product_rider_button">{{__('Next')}}</button>
+                        </div>
+
+
                     </div>
-                </div>
-                <div class="col-md-12" id="product_rider_div" style="display:none;">
-                    <button class="btn btn-solid w-100" id="submit_product_rider_button">{{__('Next')}}</button>
-                </div>
+            </div>
+            
+            <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
 
+            <div class="promo-box style-4 d-none">
+                <a class="d-block mt-2 close-promo-code-detail-box" href="javascript:void(0)">✕</a>
+                <div class="row" id="cab_booking_promo_code_list_main_div">
 
+                </div>
             </div>
         </div>
-        <script type="text/template" id="rider_template">
-            <div class="col-12 d-flex justify-content-between align-items-center">
-                <% if(riders.length > 0){%>
-                    <p class="m-0">Riders : <%= riders.length %></p>
+    </div>
+
+
+</section>
+<script type="text/template" id="rider_template">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <% if(riders.length > 0){%>
+            <p class="m-0">Riders : <%= riders.length %></p>
+        <% } %>
+        <button class="btn rounded <% if(riders.length > 0){'w-100'} %> add_rider_button" data-toggle="modal" data-target="#alAddRiderSecModal"><i class="fa fa-plus"></i> {{__('Add Rider')}}</button>
+    </div>
+    <div class="col-12 mt-2">
+        <div class="row alRiderImgBox">
+            <% _.each(riders, function(rider, key){%>
+                <%
+                var randomColor = "#" + ((1<<24)*Math.random() | 0).toString(16);
+                %>
+                <div class="col-3 text-center alHoverRiderBox">
+                    <input class="alCheckMark" type="radio" name="rider_id" id="option-<%= key %>" <% if(key == 0){'checked'} %> >
+                    <label for="option-<%= key %>" class="option option-<%= key %>">
+                        <div class="alRiderImg mb-1" style="background-color: <%=randomColor%> "> <%= (rider.first_name).charAt(0)%></div>
+                        <div class="dalRiderInfo">
+                            <p class="alRiderName mb-0"><%=rider.first_name%></p>
+                        </div>
+                    </label>
+                    <span class="alCloseBtn deleteRider" data-id="<%=rider.id%>">X</span>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</script>
+<script type="text/template" id="vendors_template">
+    <% _.each(results, function(result, key){%>
+        <a class="btn btn-solid ml-2 vendor-list" href="javascript:void(0);" data-vendor="<%= result.id %>"><%= result.name %></a>
+    <% }); %>
+</script>
+<script type="text/template" id="products_rider_template">
+    <% if(results != ''){ %>
+    <% _.each(results, function(result, key){%>
+        <div class="vehical-view-box-1 alRiderRadioBox" data-product_id="<%= result.id %>">
+            <input type="radio" name="rider_product_id" value="<%= result.id %>" <% if(key == 0){'checked'} %>  id="alRiderRadio_<%= key %>" class="input-hidden" />
+            <label for="alRiderRadio_<%= key %>" class="d-flex align-items-center no-gutters px-2">
+                <div class="col-3 vehicle-icon">
+                    <img class='img-fluid' src='<%= result.image_url %>'>
+                </div>
+                <div class="col-9">
+                    <div class="row no-gutters">
+                        <div class="col vehicle-details">
+                            <h4 class="m-0"><b><%= result.name %></b></h4>
+                        </div>
+                        <div class="col ride-price pl-2 text-right">
+                            <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
+                        </div>
+                    
+                    </div>
+                </div>
+            </label>
+        </div>
+        <hr class="m-0">
+    <% }); %>
+    <% }else{ %>
+        <div class="col-12 vehicle-details  text-center">
+            <img class="w-100" src="{{asset('assets/images/noproductfound.png')}}" alt="noproductfound">
+            {{ __('No result found. Please try a new search') }}
+        </div>
+    <% } %>
+</script>
+<script type="text/template" id="products_template">
+    <% if(results != ''){ %>
+    <% _.each(results, function(result, key){%>
+        <a class="vehical-view-box d-flex align-items-center no-gutters px-2" href="javascript:void(0)" data-product_id="<%= result.id %>">
+            <div class="col-2 vehicle-icon">
+                <img class='img-fluid' src='<%= result.image_url %>'>
+            </div>
+            <div class="col-10">
+                <div class="row no-gutters">
+                    <div class="col vehicle-details">
+                        <h4 class="m-0"><b><%= result.name %></b></h4>
+                    </div>
+                    <div class="col ride-price pl-2 text-right">
+                        <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <hr class="m-0">
+    <% }); %>
+    <% }else{ %>
+        <div class="col-12 vehicle-details text-center">
+            <img class="w-100" src="{{asset('assets/images/noproductfound.png')}}" alt="noproductfound">
+            {{ __('No result found. Please try a new search') }}
+        </div>
+    <% } %>
+</script>
+<script type="text/template" id="scheduleTime_template">
+    <div class="scheduleTime">
+        <select class="scheduleHour" onchange="checkScheduleDateTime(this)" ><option value="">HH</option><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>
+        <select class="scheduleMinute" onchange="checkScheduleDateTime(this)" ><option value="">MM</option><option value="0">00</option><option value="1">05</option><option value="2">10</option><option value="3">15</option><option value="4">20</option><option value="5">25</option><option value="6">30</option><option value="7">35</option><option value="8">40</option><option value="9">45</option><option value="10">50</option><option value="11">55</option></select>
+        <select class="scheduleAmPm" onchange="checkScheduleDateTime(this)" ><option value="">AM/PM</option><option value="am">AM</option><option value="pm">PM</option></select>
+    </div>
+</script>
+<script type="text/template" id="destination_location_template">
+    <i class="fa fa-search destination-icon" aria-hidden="true"></i>
+    <input class="form-control pickup-text" type="text" name="destination_location_name[]" placeholder="{{__('Add A Stop')}}" id="destination_location_<%= random_id %>" data-rel="<%= random_id %>"/>
+    <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude_<%= random_id %>" data-rel="<%= random_id %>"/>
+    <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude_<%= random_id %>" data-rel="<%= random_id %>"/>
+</script>
+<script type="text/template" id="destination_location_template_li">
+    <li class="d-flex dots" id="dots_<%= random_id %>">
+        <div class="title title-24 position-relative edit-other-stop" id="<%= random_id %>">  {{__('To')}} - <span id="dropoff-where-to-<%= random_id %>"></span><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+        <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel="<%= random_id %>"></i>
+    </li>
+</script>
+<script type="text/template" id="cab_detail_box_template">
+    <div class="cab-outer style-4">
+        <div class="bg-white p-2">
+            <a class="close-cab-detail-box" href="javascript:void()"><i class="fa fa-angle-left"></i></a>
+            <div class="cab-image-box w-100 d-flex align-items-center justify-content-center">
+                <img src="<%= result.image_url %>">
+            </div>
+            <div class="cab-location-details">
+                <% if(result.toll_fee > 0){ %>
+                    <span class="d-flex align-items-center justify-content-between mt-2"><b><%= result.name %></b> <label><sub class="ling-throgh" id
+                    ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.toll_less_tags_price%></b></label></span>
+
+                    <span class="d-flex align-items-center justify-content-between"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
+                    ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
+
+                    <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
+                    ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= (result.tags_price)%></b></label></h4>
+                <% }else{ %>
+                    <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
+                    ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
                 <% } %>
-                <button class="btn rounded <% if(riders.length > 0){'w-100'} %> add_rider_button" data-toggle="modal" data-target="#alAddRiderSecModal"><i class="fa fa-plus"></i> {{__('Add Rider')}}</button>
+                    <p><%= result.description %></p>
             </div>
-            <div class="col-12 mt-2">
-                <div class="row alRiderImgBox">
-                    <% _.each(riders, function(rider, key){%>
-                        <%
-                        var randomColor = "#" + ((1<<24)*Math.random() | 0).toString(16);
-                        %>
-                        <div class="col-3 text-center alHoverRiderBox">
-                            <input class="alCheckMark" type="radio" name="rider_id" id="option-<%= key %>" <% if(key == 0){'checked'} %> >
-                            <label for="option-<%= key %>" class="option option-<%= key %>">
-                                <div class="alRiderImg mb-1" style="background-color: <%=randomColor%> "> <%= (rider.first_name).charAt(0)%></div>
-                                <div class="dalRiderInfo">
-                                    <p class="alRiderName mb-0"><%=rider.first_name%></p>
-                                </div>
-                            </label>
-                            <span class="alCloseBtn deleteRider" data-id="<%=rider.id%>">X</span>
-                        </div>
-                    <% }); %>
-                </div>
+        </div>
+        <div class="cab-amount-details px-2">
+            <div class="row">
+                <div class="col-6 mb-2">{{__('Distance')}}</div>
+                <div class="col-6 mb-2 text-right" id="distance"></div>
+                <div class="col-6 mb-2">{{__('Duration')}}</div>
+                <div class="col-6 mb-2 text-right" id="duration"></div>
+                <% if((schedule_datetime) && (schedule_datetime !='')  ){ %>
+                    <div class="col-6 mb-2">{{__('Schedule Date')}}</div>
+                    <div class="col-6 mb-2 text-right" ><%= schedule_datetime %></div>
+                <% } %>
+                <% if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ %>
+                <div class="col-6 mb-2">{{__('Subscription Discount')}}</div>
+                <div class="col-6 mb-2 text-right" id="subscription-percent"><%= result.subscription_percent_value+'%' %></div>
+                <input type="hidden" id="subscription-percent-h" value="<%= result.subscription_percent_value %>">
+                <div class="col-6 mb-2"><p class="total_amt m-0">{{__('Amount Payable')}}</p></div>
+                <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
+                <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
+                <% } %>
+                <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
+                    <div class="col-6 mb-2">Loyalty</div>
+                    <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
+                <% } %>
             </div>
-        </script>
-        <script type="text/template" id="vendors_template">
-            <% _.each(results, function(result, key){%>
-                <a class="btn btn-solid ml-2 vendor-list" href="javascript:void(0);" data-vendor="<%= result.id %>"><%= result.name %></a>
-            <% }); %>
-        </script>
-        <script type="text/template" id="products_rider_template">
-            <% if(results != ''){ %>
-            <% _.each(results, function(result, key){%>
-                <div class="vehical-view-box-1 alRiderRadioBox" data-product_id="<%= result.id %>">
-                    <input type="radio" name="rider_product_id" value="<%= result.id %>" <% if(key == 0){'checked'} %>  id="alRiderRadio_<%= key %>" class="input-hidden" />
-                    <label for="alRiderRadio_<%= key %>" class="d-flex align-items-center no-gutters px-2">
-                        <div class="col-3 vehicle-icon">
-                            <img class='img-fluid' src='<%= result.image_url %>'>
-                        </div>
-                        <div class="col-9">
-                            <div class="row no-gutters">
-                                <div class="col vehicle-details">
-                                    <h4 class="m-0"><b><%= result.name %></b></h4>
-                                </div>
-                                <div class="col ride-price pl-2 text-right">
-                                    <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
-                                </div>
-                            </div>
-                        </div>
-                    </label>
-                </div>
-                <hr class="m-0">
-            <% }); %>
-            <% }else{ %>
-                <div class="col-12 vehicle-details  text-center">
-                    <img class="w-100" src="{{asset('assets/images/noproductfound.png')}}" alt="noproductfound">
-                    {{ __('No result found. Please try a new search') }}
-                </div>
-            <% } %>
-        </script>
-        <script type="text/template" id="products_template">
-            <% if(results != ''){ %>
-            <% _.each(results, function(result, key){%>
-                <a class="vehical-view-box d-flex align-items-center no-gutters px-2" href="javascript:void(0)" data-product_id="<%= result.id %>">
-                    <div class="col-2 vehicle-icon">
-                        <img class='img-fluid' src='<%= result.image_url %>'>
-                    </div>
-                    <div class="col-10">
-                    
-                        <div class="row no-gutters">
-                            <div class="col vehicle-details">
-                                <h4 class="m-0"><b><%= result.name %></b></h4>
-                            </div>
-                            <div class="col ride-price pl-2 text-right">
-                                <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
-                            </div>
-                        </div>
-                    
-                    </div>
-                </a>
-                <hr class="m-0">
-            <% }); %>
-            <% }else{ %>
-                <div class="col-12 vehicle-details text-center">
-                    <img class="w-100" src="{{asset('assets/images/noproductfound.png')}}" alt="noproductfound">
-                    {{ __('No result found. Please try a new search') }}
-                </div>
-            <% } %>
-        </script>
-        <script type="text/template" id="scheduleTime_template">
-            <div class="scheduleTime">
-                <select class="scheduleHour" onchange="checkScheduleDateTime(this)" ><option value="">HH</option><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>
-                <select class="scheduleMinute" onchange="checkScheduleDateTime(this)" ><option value="">MM</option><option value="0">00</option><option value="1">05</option><option value="2">10</option><option value="3">15</option><option value="4">20</option><option value="5">25</option><option value="6">30</option><option value="7">35</option><option value="8">40</option><option value="9">45</option><option value="10">50</option><option value="11">55</option></select>
-                <select class="scheduleAmPm" onchange="checkScheduleDateTime(this)" ><option value="">AM/PM</option><option value="am">AM</option><option value="pm">PM</option></select>
-            </div>
-        </script>
-        <script type="text/template" id="destination_location_template">
-            <i class="fa fa-search destination-icon" aria-hidden="true"></i>
-            <input class="form-control pickup-text" type="text" name="destination_location_name[]" placeholder="{{__('Add A Stop')}}" id="destination_location_<%= random_id %>" data-rel="<%= random_id %>"/>
-            <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude_<%= random_id %>" data-rel="<%= random_id %>"/>
-            <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude_<%= random_id %>" data-rel="<%= random_id %>"/>
-        </script>
-        <script type="text/template" id="destination_location_template_li">
-            <li class="d-flex dots" id="dots_<%= random_id %>">
-                <div class="title title-24 position-relative edit-other-stop" id="<%= random_id %>">  {{__('To')}} - <span id="dropoff-where-to-<%= random_id %>"></span><i class="fa fa-angle-down" aria-hidden="true"></i></div>
-                <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel="<%= random_id %>"></i>
-            </li>
-        </script>
-        <script type="text/template" id="cab_detail_box_template">
-            <div class="cab-outer style-4">
-                <div class="bg-white p-2">
-                    <a class="close-cab-detail-box" href="javascript:void()">✕</a>
-                    <div class="cab-image-box w-100 d-flex align-items-center justify-content-center">
-                        <img src="<%= result.image_url %>">
-                    </div>
-                    <div class="cab-location-details">
-                    <% if(result.toll_fee > 0){ %>
-                        <span class="d-flex align-items-center justify-content-between mt-2"><b><%= result.name %></b> <label><sub class="ling-throgh" id
-                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.toll_less_tags_price%></b></label></span>
+        </div>
+        <div class="coupon_box d-flex w-100 py-2 align-items-center justify-content-between">
+            <label class="mb-0 ml-1">
+                <img src="{{asset('assets/images/discount_icon.svg')}}">
+                <span class="code-text">{{__('Select a promo code')}}</span>
+            </label>
 
-                        <span class="d-flex align-items-center justify-content-between"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
-                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
-
-                        <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
-                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= (result.tags_price)%></b></label></h4>
-                    <% }else{ %>
-                        <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
-                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
-                    <% } %>
-                        <p><%= result.description %></p>
-                    </div>
-                </div>
-                <div class="cab-amount-details px-2">
-                    <div class="row">
-                        <div class="col-6 mb-2">{{__('Distance')}}</div>
-                        <div class="col-6 mb-2 text-right" id="distance"></div>
-                        <div class="col-6 mb-2">{{__('Duration')}}</div>
-                        <div class="col-6 mb-2 text-right" id="duration"></div>
-                        <% if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ %>
-                        <div class="col-6 mb-2">{{__('Subscription Discount')}}</div>
-                        <div class="col-6 mb-2 text-right" id="subscription-percent"><%= result.subscription_percent_value+'%' %></div>
-                        <input type="hidden" id="subscription-percent-h" value="<%= result.subscription_percent_value %>">
-                        <div class="col-6 mb-2"><p class="total_amt m-0">{{__('Amount Payable')}}</p></div>
-                        <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
-                        <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
-                        <% } %>
-                        <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
-                            <div class="col-6 mb-2">Loyalty</div>
-                            <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
-                        <% } %>
-                    </div>
-                </div>
-                <div class="coupon_box d-flex w-100 py-2 align-items-center justify-content-between">
-                    <label class="mb-0 ml-1">
-                        <img src="{{asset('assets/images/discount_icon.svg')}}">
-                        <span class="code-text">{{__('Select a promo code')}}</span>
-                    </label>
-
-                    <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" id="promo_code_list_btn_cab_booking">Apply</a>
+                    <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.
+                        %>" id="promo_code_list_btn_cab_booking">Apply</a>
                     <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" style="display:none;">Remove</a>
 
-                </div>
-                <% if((result.faqlist) && (result.faqlist) > 0 ){ %>
-                <div class="text-center my-3 btn-product-order-form-div">
-                    <button class="clproduct_order_form btn btn-solid w-100"  id="add_product_order_form"  data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" >{{__('Product Order Form')}}</button>
-                </div>
-                <% } %>
-                <div class="form-group pmd-textfield pmd-textfield-floating-label" style="display:none;" id="schedule_datetime_main_div">
-                    <label class="control-label" for="datetimepicker-default">{{__('Select Date and Time')}}</label>
-                    <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
-                </div>
-                <div class="for_friend_fields_div px-2 py-2">
-                    <input type="hidden" name="friendName" value="<%= result.friend_name %>">
-                    <input type="hidden" name="friendPhoneNumber" value="<%= result.friend_phone_name %>">
-                </div>
+        </div>
+        <% if((result.faqlist) && (result.faqlist) > 0 ){ %>
+        <div class="text-center my-3 btn-product-order-form-div">
+            <button class="clproduct_order_form btn btn-solid w-100"  id="add_product_order_form"  data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" >{{__('Product Order Form')}}</button>
+        </div>
+        <% } %>
+        <div class="form-group pmd-textfield pmd-textfield-floating-label" style="display:none;" id="schedule_datetime_main_div">
+            <label class="control-label" for="datetimepicker-default">{{__('Select Date and Time')}}</label>
+            <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
+        </div>
+        <div class="for_friend_fields_div px-2 py-2">
+            <input type="hidden" name="friendName" value="<%= result.friend_name %>">
+            <input type="hidden" name="friendPhoneNumber" value="<%= result.friend_phone_name %>">
+        </div>
 
+    </div>
+    <span id="show_error_of_booking" class="error"></span>
+
+    <div class="payment-promo-container p-2">
+        <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
+            <span id="payment_type">
+                <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
+            </span>
+            <i class="fa fa-angle-down" aria-hidden="true"></i>
+        </h4>
+        <div class="row">
+            <div class="col-12">
+            <%
+            var payableAmout = '';
+            if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){
+                payableAmout = result.subscription_discount;
+            }
+
+            %>
+                <input type="hidden" id="stripe_token" name="stripe_token" value="">
+                <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-tollamount="<%= result.toll_fee%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
             </div>
             <span id="show_error_of_booking" class="error"></span>
 
@@ -432,84 +494,98 @@
                             <div class="col-sm-12 p-0 d-flex flex-fill">
                                 <button type="button" class="btn btn-solid ml-1 select_payment_option_done">{{__('Done')}}</button>
                             </div>
+                            <span class="error text-danger" id="stripe_card_error"></span>
                         </div>
-                    </div>
-                </form>
-            <% } %>
-        </script>
-
-        <script type="text/template" id="cab_booking_promo_code_template">
-            <% _.each(promo_codes, function(promo_code, key){%>
-                <div class="col-12 mt-2">
-                    <div class="coupon-code mt-0">
-                        <div class="p-2">
-                            <img src="<%= promo_code.image.image_fit %>100/35<%= promo_code.image.image_path %>" alt="">
-                            <h6 class="mt-0"><%= promo_code.title %></h6>
+                    <% } %>
+                    <% if(payment_option.slug == 'yoco') { %>
+                        <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper d-none">
+                            <div class="form-control">
+                                <div id="yoco-card-frame">
+                                <!-- Yoco Inline form will be added here -->
+                                </div>
+                            </div>
+                            <span class="error text-danger" id="yoco_card_error"></span>
                         </div>
-                        <hr class="m-0">
-                        <div class="code-outer p-2 text-uppercase d-flex align-items-center justify-content-between">
-                            <label class="m-0"><%= promo_code.name %></label>
-                            <a class="btn btn-solid cab_booking_apply_promo_code_btn" data-vendor_id="<%= vendor_id %>" data-coupon_id="<%= promo_code.id %>" data-product_id="<%= product_id %>" data-amount="<%= amount %>" style="cursor: pointer;">Apply</a>
-                        </div>
-                        <hr class="m-0">
-                        <div class="offer-text p-2">
-                            <p class="m-0"><%= promo_code.short_desc %></p>
-                        </div>
-                    </div>
+                    <% } %>
                 </div>
             <% }); %>
-        </script>
-
-        <script type="text/template" id="order_success_template">
-            <div class="bg-white p-2">
-                <div class="w-100 h-100">
-                    <img src="<%= product_image %>" alt="">
-                </div>
-                <div class="cab-location-details" id="searching_main_div">
-                    <h4><b>{{__('Searching For Nearby Drivers')}}</b></h4>
-                    <div class="new-loader"></div>
-                </div>
-                <div class="cab-location-details" id="driver_details_main_div" style="display:none;">
-                   <div class="row align-items-center">
-
-                        <div class="col-4">
-                           <div class="taxi-img">
-                               <img src="" id="driver_image">
-                           </div>
-                        </div>
-
-                        <div class="col-8" >
-                            <h4 id="driver_name"><b><%= result.user_name %></b></h4>
-                            <p class="mb-0" id="driver_phone_number"><%= result.phone_number %></p>
-                        </div>
-
-                   </div>
-                </div>
-            </div>
-            <div class="cab-amount-details px-2">
+            {{-- <div>
+                <label class="radio mt-2">
+                    <span>{{__('Wallet/Card')}}</span>
+                    <input type="radio" class="select_cab_payment_method" name="select_cab_payment_method" id="radio-wallet" value="2" data-payment_method="2">
+                    <span class="checkround"></span>
+                </label>
+            </div> --}}
+            <div class="modal-footer d-block text-center">
                 <div class="row">
-                    <div class="col-6 mb-2">{{__('ETA')}}</div>
-                    <div class="col-6 mb-2 text-right" id="distance">--</div>
-                    <div class="col-6 mb-2">{{__('Order ID')}}</div>
-                    <div class="col-6 mb-2 text-right" id=""><%= result.order_number %></div>
-                    <div class="col-6 mb-2">{{__('Amount Paid')}}</div>
-                    <div class="col-6 mb-2 text-right">$<%= result.total_amount %></div>
+                    <div class="col-sm-12 p-0 d-flex flex-fill">
+                        <button type="button" class="btn btn-solid ml-1 select_payment_option_done">{{__('Done')}}</button>
+                    </div>
                 </div>
             </div>
-        </script>
+        </form>
+    <% } %>
+</script>
 
-        <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
-            <div class="promo-box style-4 d-none">
-                <a class="d-block mt-2 close-promo-code-detail-box" href="javascript:void(0)">✕</a>
-                <div class="row" id="cab_booking_promo_code_list_main_div">
-
+<script type="text/template" id="cab_booking_promo_code_template">
+    <% _.each(promo_codes, function(promo_code, key){%>
+        <div class="col-12 mt-2">
+            <div class="coupon-code mt-0">
+                <div class="p-2">
+                    <img src="<%= promo_code.image.image_fit %>100/35<%= promo_code.image.image_path %>" alt="">
+                    <h6 class="mt-0"><%= promo_code.title %></h6>
+                </div>
+                <hr class="m-0">
+                <div class="code-outer p-2 text-uppercase d-flex align-items-center justify-content-between">
+                    <label class="m-0"><%= promo_code.name %></label>
+                    <a class="btn btn-solid cab_booking_apply_promo_code_btn" data-vendor_id="<%= vendor_id %>" data-coupon_id="<%= promo_code.id %>" data-product_id="<%= product_id %>" data-amount="<%= amount %>" style="cursor: pointer;">Apply</a>
+                </div>
+                <hr class="m-0">
+                <div class="offer-text p-2">
+                    <p class="m-0"><%= promo_code.short_desc %></p>
                 </div>
             </div>
         </div>
+    <% }); %>
+</script>
 
+<script type="text/template" id="order_success_template">
+    <div class="bg-white p-2">
+        <div class="w-100 h-100">
+            <img src="<%= product_image %>" alt="">
+        </div>
+        <div class="cab-location-details" id="searching_main_div">
+            <h4><b>{{__('Searching For Nearby Drivers')}}</b></h4>
+            <div class="new-loader"></div>
+        </div>
+        <div class="cab-location-details" id="driver_details_main_div" style="display:none;">
+           <div class="row align-items-center">
 
+                <div class="col-4">
+                   <div class="taxi-img">
+                       <img src="" id="driver_image">
+                   </div>
+                </div>
 
-</section>
+                <div class="col-8" >
+                    <h4 id="driver_name"><b><%= result.user_name %></b></h4>
+                    <p class="mb-0" id="driver_phone_number"><%= result.phone_number %></p>
+                </div>
+
+           </div>
+        </div>
+    </div>
+    <div class="cab-amount-details px-2">
+        <div class="row">
+            <div class="col-6 mb-2">{{__('ETA')}}</div>
+            <div class="col-6 mb-2 text-right" id="distance">--</div>
+            <div class="col-6 mb-2">{{__('Order ID')}}</div>
+            <div class="col-6 mb-2 text-right" id=""><%= result.order_number %></div>
+            <div class="col-6 mb-2">{{__('Amount Paid')}}</div>
+            <div class="col-6 mb-2 text-right">$<%= result.total_amount %></div>
+        </div>
+    </div>
+</script>
 
 <!-- Paymentoption Modal -->
 <div class="modal fade payment-modal payment-modal-width" id="payment_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="payment_modalLabel" aria-hidden="true">
@@ -688,6 +764,7 @@
 
 @section('script')
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
+<script src="{{asset('js/pick_drop.js')}}"></script>
 <script type="text/javascript">
     $('.iti__country').click(function() {
         var code = $(this).attr('data-country-code');
@@ -854,7 +931,22 @@ $('body').on('click', '.clproduct_order_form', function (event) {
 
 <script type="text/javascript">
     $(document).ready(function (e) {
-
+       var daterang = $('input[name="schedule_pickup_date"]').daterangepicker({
+            singleDatePicker: true,
+            startDate: moment().add('10', 'minutes'),
+            minDate:moment(),
+            showDropdowns: false,
+            timePicker: true,
+            timePicker24Hour: false,
+            timePickerIncrement: 1,
+            autoUpdateInput: true,
+            locale: {
+                format: 'MM-DD-YYYY HH:mm',
+            }
+        });
+        $('.calendar_icon').click(function() {
+            $('#schedule_pickup_date').click();
+        })
         var path = window.location.pathname;
         var inputs = path.split("/");
         var lastslug = inputs[inputs.length - 1];
@@ -898,3 +990,4 @@ $('body').on('click', '.clproduct_order_form', function (event) {
 
 
 @endsection
+

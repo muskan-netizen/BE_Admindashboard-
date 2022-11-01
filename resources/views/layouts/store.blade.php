@@ -97,6 +97,8 @@ if(isset($set_template))
 		socket:'',
 	} 
 </script>
+@include('layouts.language')
+@yield('headerJs')
 <body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
 <article id="page-container">
   <article id="content-wrap">

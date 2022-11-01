@@ -280,7 +280,9 @@ trait cartManager{
         $crossSell_products = collect();
         $couponGetAmount=0;
         $loyalty_amount_saved = 0;
+        $user_timezone = 'Asia/Kolkata';
         if($user){
+            $user_timezone =  $user->timezone;
             //Get User Address Details
             $address = $this->getUserAddress($user->id,$address_id);
         }
@@ -318,6 +320,7 @@ trait cartManager{
             },'vendorProducts.product.productcategory'=> function ($q1)  {
                 $q1->select('id', 'type_id');
             },
+            'vendorProducts.product.ServicePeriod',
             'vendorProducts.addon.option' => function ($qry) use ($langId) {
                 $qry->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
                 $qry->select('addon_options.id', 'addon_options.price', 'apt.title', 'addon_options.addon_id', 'apt.language_id');
@@ -360,6 +363,7 @@ trait cartManager{
             $closed_store_order_scheduled = 0;
             $deliver_charge = 0;
             $deliveryCharges = 0;
+            $deliveryCharges_real = 0;
             $totalMarkup = 0;
             $delay_date = 0;
             $pickup_delay_date = 0;
@@ -377,6 +381,7 @@ trait cartManager{
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
                 $user->timezone = $client_timezone->timezone ?? $user->timezone;
+                $user_timezone = $user->timezone ;
             }
           // $sub_total+=$opt_price_in_currency;
             /* Getting in vendor loop */
@@ -473,6 +478,15 @@ trait cartManager{
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
+                    $prod->product->ServicePeriods = [];
+                    if($prod->product->ServicePeriod){
+                        $prod->product->ServicePeriods = $prod->product->ServicePeriod->pluck('service_period')->toArray();
+                    }
+                    $prod->service_start_time = '';
+                    if($prod->start_date_time !=''){
+                        $prod->service_start_time = convertDateTimeInTimeZone($prod->start_date_time, $user_timezone, 'H:i');
+                    }
+                 
                   $slotsDate = findSlot('',$vendorData->vendor->id,'','webFormet');
                  
                   $vendorData->delaySlot = (($slotsDate)? ( $slotsDate['datetime']?  $slotsDate['datetime'] : '' ):'');
@@ -983,46 +997,6 @@ trait cartManager{
                 $taxCharges['total_service_fee'] = $getalltaxes->total_service_fee??0;
                 $taxCharges['total_fixed_fee_tax'] = $getalltaxes->total_fixed_fee_tax??0;
                 $taxCharges['total_markup_fee_tax'] = $getalltaxes->total_markup_fee_tax??0;
-               
-        //All other tax calculations 
-        //  if(!empty($taxRates)){
-        //     $delivery_charges_tax_rate = 0;
-        //     if($vendorData->vendor->delivery_charges_tax_id!=null){
-        //             $delivery_charges_tax_rate=$taxRates[$vendorData->vendor->delivery_charges_tax_id]['tax_rate'];
-        //     }
-
-        //     $fixed_fee_tax_rate = 0;
-        //     if($vendorData->vendor->fixed_fee_tax_id!=null){
-        //             $fixed_fee_tax_rate=$taxRates[$vendorData->vendor->fixed_fee_tax_id]['tax_rate'];
-        //     }
-
-
-        //     $service_charges_tax_rate = 0;
-        //     if($vendorData->vendor->service_charges_tax_id!=null){
-        //             $service_charges_tax_rate=$taxRates[$vendorData->vendor->service_charges_tax_id]['tax_rate'];
-        //     }
-
-        //     $markup_price_tax_rate = 0;
-        //     if($vendorData->vendor->markup_price_tax_id!=null){
-        //             $markup_price_tax_rate=$taxRates[$vendorData->vendor->markup_price_tax_id]['tax_rate'];
-        //     }
-
-
-        //     if($vendorData->vendor->delivery_charges_tax)
-        //     $deliver_fee_charges +=  $deliveryCharges * $delivery_charges_tax_rate/100;
-            
-        //     if($vendorData->vendor->service_charges_tax)
-        //     $total_service_fee +=  $vendor_service_fee_percentage_amount * $service_charges_tax_rate/100;
-
-        //     if($vendorData->vendor->fixed_fee_tax)
-        //     $total_fixed_fee_tax +=  $total_fixed_fee_amount * $fixed_fee_tax_rate/100;
-
-        //     if($vendorData->vendor->add_markup_price)
-        //     $total_markup_fee_tax +=  $total_markup_charges * $markup_price_tax_rate/100;
-        //     } //End Tax Code
-
-
-
 
             }//End vendor loop
 

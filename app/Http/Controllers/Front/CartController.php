@@ -395,6 +395,7 @@ class CartController extends FrontController
                 $total_booking_time = $productDetail->minimum_duration_min;
             }
             $oldquantity = $isnew = 0;
+            $service_start_date   = '';
             $start_date  = $request->has('start_date') ? $request->start_date : null;
             if( $request->has('service_start_time')){
                 $client_timezone = DB::table('clients')->first('timezone');
@@ -402,7 +403,9 @@ class CartController extends FrontController
                 $time = '2022-10-27 '.$request->service_start_time; /**only need time */
                 $service_start_time = Carbon::parse($time, $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 $start_date = $service_start_time ; /** we user start_date_time for long term order timing */
+                $service_start_date = carbon::now()->setTimezone('UTC')->format('Y-m-d H:i:s');
             }
+            
             $cart_product_detail = [
                 'status'            => '0',
                 'is_tax_applied'    => '1',
@@ -421,6 +424,7 @@ class CartController extends FrontController
                 'service_day'         => $request->has('service_day') ? $request->service_day : null,
                 'service_date'        => $request->has('service_date') ? $request->service_date : null,
                 'service_period'      => $request->has('service_period') ? $request->service_period : null,
+                'service_start_date'  => @$service_start_date,
             ];
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();

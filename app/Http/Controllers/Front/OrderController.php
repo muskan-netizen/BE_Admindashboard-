@@ -9,7 +9,7 @@ use Log;
 use Auth;
 use Crypt;
 use Redirect;
-use Carbon\Carbon;
+use Carbon\{Carbon,CarbonPeriod};
 use Omnipay\Omnipay;
 use App\Models\Cart;
 use App\Models\User;
@@ -51,6 +51,7 @@ use App\Models\CartDeliveryFee;
 use App\Models\ClientPreference;
 use App\Http\Traits\ApiResponser;
 use App\Models\AddonOption;
+use App\Models\{OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule};
 use App\Models\ProductVariantSet;
 use GuzzleHttp\Client as GCLIENT;
 use App\Models\AutoRejectOrderCron;
@@ -848,7 +849,8 @@ class OrderController extends FrontController
             /* Get all products blongs to cart */
             $cart_products = CartProduct::select('*')->with(['vendor', 'vendor.slot.geos.serviceArea', 'vendor.slotDate.geos.serviceArea',  'product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
                 $query->where('cart_id', $cart->id);
-            }, 'coupon.promo', 'product.addon'])->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+            }, 'coupon.promo', 'product.addon','LongTermProducts.addons'])->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+           
             
             /* Initialize empty data */
             $total_amount = 0;
@@ -908,11 +910,12 @@ class OrderController extends FrontController
                 $OrderVendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                 $OrderVendor->save();
                 //
-              
+               //  pr($vendor_cart_products);
 
                 $vendorProductIds = array();
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
+                    //pr($vendor_cart_product->toArray());
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                         if (!empty($latitude) && !empty($longitude)) {
                             if(($preferences->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)){
@@ -1095,6 +1098,125 @@ class OrderController extends FrontController
                     $order_product->additional_increments_hrs_min = $vendor_cart_product->additional_increments_hrs_min;
 
                     $order_product->save();
+                 /** for long Term Service */
+                    if($vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts){
+                      
+                        $service_start_date =  $vendor_cart_product->service_start_date ??   Carbon::now()->format('Y-m-d H:i:s');
+                        $service_end_date = Carbon::parse( $service_start_date )->addMonths($vendor_cart_product->product->service_duration)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                        $LongTermSericeData=[
+                            'order_product_id'  => $order_product->id,
+                            'user_id'           => $user->id,
+                            'service_quentity'  => $vendor_cart_product->LongTermProducts->quantity ?? 1,
+                            'service_day'       => $vendor_cart_product->service_day,
+                            'service_date'      => $vendor_cart_product->service_date,
+                            'service_start_date'=> $service_start_date,
+                            'service_period'    => $vendor_cart_product->service_period,
+                            'service_end_date'  => $service_end_date,
+                            'service_product_id'         => $vendor_cart_product->LongTermProducts->product_id,
+                            'service_product_variant_id' => $vendor_cart_product->LongTermProducts->product_variant,
+                            'status'                => 0,
+                        ];
+                        $OrderLongTermServices  = OrderLongTermServices::create($LongTermSericeData);
+                        if($vendor_cart_product->LongTermProducts->addons->isNotEmpty()){
+                            foreach($vendor_cart_product->LongTermProducts->addons as $SAddon){
+                                $LongTermSericeAddonData= [
+                                    'order_long_term_services_id' => $OrderLongTermServices->id , 
+                                    'addon_id'                    => $SAddon->addon_id, 
+                                    'option_id'                   => $SAddon->option_id
+                                ];
+                                OrderLongTermServicesAddon::create($LongTermSericeAddonData);
+                            }
+                        }
+                        /** save long term service schedule */
+                        $OrderLongTermServiceSchedule = array();;
+                        $Service_quantity = $vendor_cart_product->LongTermProducts->quantity;
+                        $start_service_date = Carbon::parse($vendor_cart_product->service_start_date)->format('Y-m-d'); 
+                        $end_service_date   = Carbon::parse($vendor_cart_product->service_start_date)->addMonths($vendor_cart_product->product->service_duration);
+                     
+                        if($vendor_cart_product->service_period=='days'){
+                          
+                            $end_service_date = Carbon::parse($vendor_cart_product->service_start_date)->addDays(($vendor_cart_product->LongTermProducts->quantity +1) );
+                            $period   = CarbonPeriod::create($start_service_date, $end_service_date);
+                            $entery = 1;
+                            foreach ($period as $key => $date) {
+                                if($entery <= $Service_quantity ){
+                                    $OrderLongTermServiceSchedule [] = [
+                                        'order_long_term_services_id' => $OrderLongTermServices->id,
+                                        'schedule_date'               => $date->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
+                                    ];
+                                    $entery++;
+                                }
+                            }
+                        }elseif($vendor_cart_product->service_period=='week')
+                        {
+                            $end_service_date = Carbon::parse($vendor_cart_product->service_start_date)->addWeeks(($vendor_cart_product->LongTermProducts->quantity +1) );
+                            $period   = CarbonPeriod::create($start_service_date, $end_service_date);
+                            $entery = 1;
+                            foreach ($period as $key => $date) {
+                                $dayNumber = $date->dayOfWeek+1; // get day number 
+                                    if($vendor_cart_product->service_day == $dayNumber){
+                                        if($entery <= $Service_quantity ){
+                                            $OrderLongTermServiceSchedule [] = [
+                                                'order_long_term_services_id' => $OrderLongTermServices->id,
+                                                'schedule_date'               => $date->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
+                                            ];
+                                            $entery++;
+                                        }
+                                    }
+                               
+                            }
+                        }elseif($vendor_cart_product->service_period=='months'){
+
+                            $end_service_date = Carbon::parse($vendor_cart_product->service_start_date)->addMonths(($vendor_cart_product->LongTermProducts->quantity +1) );
+
+                            if($vendor_cart_product->service_date == 0){
+
+                                $startdate =  Carbon::now()->endOfMonth()->format('Y-m-d');
+                                echo $startdate . ' '; 
+                                if(strtotime($startdate) < strtotime($start_service_date))
+                                $startdate = Carbon::now()->addMonths(1);
+
+                                $arrayDate = explode("-",$startdate);
+                                $newDate =  $arrayDate[0].'-'.$arrayDate[1].'-01';
+
+                                for($i=0;$i<$Service_quantity;$i++){
+                                    
+                                    $OrderLongTermServiceSchedule [] = [
+                                        'order_long_term_services_id' => $OrderLongTermServices->id,
+                                        'schedule_date'               => Carbon::parse($newDate)->addMonths($i)->endOfMonth()->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
+                                    ];
+                                }
+
+                            }else{
+                                
+                                $todayDate =  Carbon::now()->format('Y-m-d');
+                                $arrayDate = explode("-",$todayDate);
+                                $newDate =  $arrayDate[0].'-'.$arrayDate[1].'-'.$vendor_cart_product->service_date;
+                                $startdate = Carbon::parse($newDate)->format('Y-m-d');
+                                if(strtotime($startdate) < strtotime($start_service_date))
+                                $startdate = Carbon::parse($startdate)->addMonth();
+
+                              
+                               // $selected_date = $startdate->subMonth(); 
+
+                                for($i=0;$i<$Service_quantity;$i++){
+                                    
+                                    $OrderLongTermServiceSchedule [] = [
+                                        'order_long_term_services_id' => $OrderLongTermServices->id,
+                                        'schedule_date'               => Carbon::parse($startdate)->addMonths($i)->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
+                                    ];
+                                }
+
+                              
+                            }
+                        }
+                        
+                        if (!empty($OrderLongTermServiceSchedule)) {
+                            OrderLongTermServiceSchedule::insert($OrderLongTermServiceSchedule);
+                        }
+                      
+                    }
+                    
                     // book for rental 
                     if($luxury_option->id==4){
                        

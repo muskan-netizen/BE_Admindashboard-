@@ -13,7 +13,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet,OrderProductDispatchRoute};
+use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet,OrderProductDispatchRoute,OrderLongTermServices};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -620,6 +620,7 @@ class OrderController extends BaseController
             'vendors.products' => function ($query) use ($vendor_id) {
                 $query->where('vendor_id', $vendor_id);
             },
+            'vendors.products.product',
             'vendors.products.addon',
             'vendors.products.addon.set',
             'vendors.products.addon.option',
@@ -655,6 +656,30 @@ class OrderController extends BaseController
         $product_schedule_type = '';
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
+             
+                $product->longTermSchedule = array();
+                if($product->product->is_long_term_service ==1){
+                    $product->longTermSchedule =  OrderLongTermServices::with(['schedule','product.primary','addon.set','addon.option','addon.option.translation' => function ($q) use ($langId) {
+                                    $q->select('addon_option_translations.id', 'addon_option_translations.addon_opt_id', 'addon_option_translations.title', 'addon_option_translations.language_id');
+                                    $q->where('addon_option_translations.language_id', $langId);
+                                    $q->groupBy('addon_option_translations.addon_opt_id', 'addon_option_translations.language_id');
+                                }])->where('order_product_id',$product->id)->first();
+                    foreach ($product->longTermSchedule->addon as $ck => $addons) {
+                        $opt_price_in_currency = $addons->option->price??0;
+                        $opt_price_in_doller_compare = $addons->option->price??0;
+                        if ($clientCurrency) {
+                            $opt_price_in_currency = $addons->option->price??0 / $divider;
+                            $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                        }
+                        $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $product->quantity);
+                        $addons->option->translation_title = ($addons->option->translation->isNotEmpty()) ? $addons->option->translation->first()->title : '';
+                        $addons->option->price_in_cart = $addons->option->price;
+                        $addons->option->price = decimal_format($opt_price_in_currency);
+                        $addons->option->multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
+                        
+                    }
+                }
+                //pr($product->longTermSchedule->toArray());
                 // check vendor product for schedule
                 if($product->schedule_type == 'schedule'){
                     $product_schedule_type = 'schedule';
@@ -682,7 +707,6 @@ class OrderController extends BaseController
                     $total_amount = $total_amount + $opt_quantity_price;
                 }
                 $product->total_amount = $total_amount;
-
             }
             if ($vendor->dineInTable) {
                 $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -726,6 +750,7 @@ class OrderController extends BaseController
             $lala = new LalaMovesController();
             $driver_data = $lala->getDeriverDetails($order->vendors[0]);
         }
+        
         $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
 
         $nomenclature = Nomenclature::where('label','Product Order Form')->first();
@@ -763,6 +788,7 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '')
     {
+       
         $orderPlaced = true;
         $orderPlacedNo = '';
         DB::beginTransaction();
@@ -779,12 +805,14 @@ class OrderController extends BaseController
             if ($currentOrderStatus->order_status_option_id == 3) { //$request->status_option_id == 2){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
             }
+            
             if (!$vendor_order_status_check) {
                 if ($request->status_option_id == 2 || $request->status_option_id == 3) {
                     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
                 }
                 $orderData = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
+                
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type=='D') {
@@ -835,57 +863,6 @@ class OrderController extends BaseController
                     $vendor_order_status->order_vendor_id = $vendorOrderStatus->order_vendor_id;
                     $vendor_order_status->order_status_option_id = $request->status_option_id;
                     $vendor_order_status->save();
-
-
-
-
-
-                    // //Refund to wallet
-                    // if( (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) && $request->status_option_id == 3){
-
-                    //     $orderRefund=new OrderRefund();
-                    //     $orderRefund->user_id=$order->user_id;
-                    //     $orderRefund->order_id=$order->id;
-                    //     $payment_id=Order::select('payments.id')
-                    //         ->leftJoin('payments','payments.order_id','=','orders.id')
-                    //         ->where('orders.id',$order->id)->first()->id;
-
-                    //     if(!empty($payment_id)){
-                    //         $orderRefund->payment_id=$payment_id;
-                    //     }else{
-                    //         $orderRefund->payment_id=0;
-                    //     }
-                    //     $orderRefund->payment_option_id=$order->payment_option_id;
-                    //     $orderRefund->amount=$order->wallet_amount_used+$order->payable_amount;
-                    //     $orderRefund->paid_to_wallet=1;
-                    //     $orderRefund->save();
-
-
-                    //     $refund_amount = $order->wallet_amount_used + $order->payable_amount;
-                    //     if($refund_amount > 0){
-                    //         $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                    //         if(!$transaction){
-                    //             $user = User::find($order->user_id);
-                    //             if($user){
-                    //                 $wallet = $user->wallet;
-                    //                 $wallet->depositFloat($refund_amount, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
-                    //             }
-                    //         }
-                    //     }
-
-                    //     $wallet = User::find($order->user_id)->wallet;
-                    //     if(!empty($refund_amount) && $refund_amount>0){
-                    //         $wallet->depositFloat($refund_amount, ['Wallet has been <b>refunded</b> for cancellation of order #'. $refund_amount]);
-                    //     }
-
-                    //     $order->payment_status=2;
-                    //     $order->save();
-
-                    // }
-
-
-
-
 
                     if ($request->status_option_id == 3) {
                         if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {
@@ -1140,8 +1117,7 @@ class OrderController extends BaseController
                 $Appointment = 0;
                 foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
 
-
-                    if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 12) {
+                    if ( ($prod->product->is_long_term_service !=1 ) && isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 12) {
                         $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
                         //echo $Appointment . 'app';
                         //echo $checkdeliveryFeeAdded->delivery_fee . '$checkdeliveryFeeAdded->delivery_fee';
@@ -1174,7 +1150,7 @@ class OrderController extends BaseController
                 foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
 
 
-                    if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
+                    if ( ($prod->product->is_long_term_service !=1 ) && isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
 
                       //  $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
                         //echo $Appointment . 'app';
@@ -1239,7 +1215,8 @@ class OrderController extends BaseController
             $laundry = 0;
 
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
-                if ($prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
+               
+                if (( $prod->product->is_long_term_service !=1 ) && $prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
 
                     $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
                     if ($dispatch_domain_laundry && $dispatch_domain_laundry != false && $laundry == 0) {

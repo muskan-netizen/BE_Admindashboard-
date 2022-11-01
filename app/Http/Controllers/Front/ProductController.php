@@ -155,8 +155,8 @@ class ProductController extends FrontController{
             }
            //pr($product->ServicePeriods);
             $LongTermProducts->product_addon     =  $addon;
-            // pr(   $LongTermProducts->toArray());
-            return view('frontend.long_term_service_product')->with([  'product' => $product, 'navCategories' => $navCategories,  'rating_details' => $rating_details,  'product_in_cart' => $product_in_cart,'is_available'=>$is_available,'LongTermProducts'=> $LongTermProducts]);
+            // pr($product_in_cart);
+            return view('frontend.long_term_service_product')->with(['product' => $product, 'navCategories' => $navCategories,  'rating_details' => $rating_details,  'product_in_cart' => $product_in_cart,'is_available'=>$is_available,'LongTermProducts'=> $LongTermProducts]);
         }
 
         $vendorIds[] = $product->vendor_id;
