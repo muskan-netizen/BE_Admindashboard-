@@ -662,7 +662,7 @@
 				</div>
 				<div class="col-md-9 p-0 mb-4">
 					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-						@foreach ($homePageData[$homePageLabel->slug] as $vendor )
+						@foreach ($homePageData[$homePageLabel->slug] as $product )
 						@include('frontend.home_page_8.recently_viewed')
 						@endforeach
 					</div>
