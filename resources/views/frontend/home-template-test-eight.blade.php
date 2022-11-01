@@ -605,7 +605,7 @@
 			<div class="row">
 				<div class="col-md-3">
 					<div class=" top-heading mt-5 pt-5">
-					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Recommended Products', true)}}</h2>
+					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Recommended Vender', true)}}</h2>
 				<a class="" href="{{route('vendor.all')}}">{{__("See all")}} <img class="btn-arrow" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""></a>
 					</div>
 				</div>
@@ -670,19 +670,24 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'top_rated' && (count($homePageData['top_rated']) != 0))
-		<section class="main-pro-slider suppliers-section container mb-4" id="homepage_top_rated">
-			<div class="row">
-				<div class="col-md-3">
-					<div class=" top-heading mt-4 pt-5">
-						<h2 class="h2-heading">{{$homePageLabel->slug=='top_rated' ? __('Top')." ".getNomenclatureName('Rated', true) : __($homePageLabel->title)}}</h2>
-						<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+		<section class="main-pro-slider suppliers-section  mb-4" id="homepage_top_rated">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class=" top-heading text-center">
+							<h2 class="h2-heading">{{$homePageLabel->slug=='top_rated' ? __('Top')." ".getNomenclatureName('Rated', true) : __($homePageLabel->title)}}</h2>
+							<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+						</div>
 					</div>
-				</div>
-				<div class="col-md-9 p-0 mb-4">
-					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-						@foreach ($homePageData[$homePageLabel->slug] as $vendor )
-						@include('frontend.home_page_8.top_rated')
-						@endforeach
+					<div class="col-md-12 mb-4">
+					<!-- suppliers-slider-{{$homePageLabel->slug}} -->
+						<div class="product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+							<div class="row">
+							@foreach ($homePageData[$homePageLabel->slug] as $vendor )
+							@include('frontend.home_page_8.top_rated')
+							@endforeach
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

@@ -442,13 +442,50 @@ body.al_body_template_eight.homeHeader .common-banner img {
     width: 100% !important;
     object-fit: cover !important;
 }
-
+section#homepage_top_rated {
+    background: #f2f2f2;
+    padding: 60px 0 20px !important;
+}
+section#homepage_top_rated .slick-slider .slick-prev {
+    left: -40px;
+    z-index: 9;
+}
+section#homepage_top_rated .slick-slider .slick-next {
+    right: -40px;
+    z-index: 9;
+}
+.al_body_template_eight section#homepage_top_rated h2.h2-heading {
+    margin: 0 0 40px !important;
+    width: 92% !important;
+    display: inline-block !important;
+    text-align: left;
+}
+.al_body_template_eight section#homepage_top_rated .product-m.render_top_rated .row .col {
+    width: 20%;
+    max-width: 20%;
+    flex: 20%;
+}
+.al_body_template_eight section#homepage_top_rated .product-m.render_top_rated .row {
+    flex-wrap: wrap;
+}
+.al_body_template_eight .product-card-box.position-relative.al_box_third_template.al {
+    background-color: #fff !important;
+}
+.al_body_template_eight .product-card-box.position-relative.al_box_third_template.al:hover{
+    transform:translateY(-10px);
+    transition:.3s ease-in-out;
+}
 /*----------new design media css---------*/
 /*------------ipad view css-------------*/
 @media(max-width:991px){
     article#page-container section .vendors section h2.h2-heading {
         width: 80%;
         text-align: left;
+    }
+    .al_body_template_eight section#homepage_top_rated .product-m.render_top_rated .row .col {
+        width: 33%;
+        max-width: 33%;
+        flex: 33%;
     }
     section.home-slider-wrapper .cardbanner, .al_desktop_banner {
         height: 310px !important;
@@ -519,7 +556,11 @@ body.al_body_template_eight.homeHeader .common-banner img {
         max-width: 50%;
         flex: 50%;
     }
-
+    .al_body_template_eight section#homepage_top_rated .product-m.render_top_rated .row .col {
+        width: 50%;
+        max-width: 50%;
+        flex: 50%;
+    }
     .render_new_products .col-md-2 {
         width: 50%;
         max-width: 50%;
