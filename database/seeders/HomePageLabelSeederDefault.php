@@ -100,5 +100,15 @@ class HomePageLabelSeederDefault extends Seeder
             'created_at' => Carbon::now(),
         ]);
 
+        $already = CabBookingLayout::where('slug', 'top_rated')->count();
+
+        if($already == 0)
+        $home_page = CabBookingLayout::insertGetId([
+            'title'      => 'Top Rated',
+            'slug'       => 'top_rated',
+            'order_by'   => 9,
+            'created_at' => Carbon::now(),
+        ]);
+
     }
 }

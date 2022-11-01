@@ -150,5 +150,15 @@ class HomePageLabelSeeder extends Seeder
             'order_by'   => 13,
             'created_at' => Carbon::now(),
         ]);
+
+        $already = HomePageLabel::where('slug', 'top_rated')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title'      => 'Top Rated',
+            'slug'       => 'top_rated',
+            'order_by'   => 14,
+            'created_at' => Carbon::now(),
+        ]);
     }
 }
