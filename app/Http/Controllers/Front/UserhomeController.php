@@ -21,10 +21,11 @@ use DB;
 use Illuminate\Http\Response;
 use Cookie;
 use App\Http\Traits\{OrderTrait,ProductActionTrait};
+use App\Http\Traits\HomePage\{HomePageTrait};
 
 class UserhomeController extends FrontController
 {
-    use ApiResponser, OrderTrait,ProductActionTrait;
+    use ApiResponser, OrderTrait,ProductActionTrait, HomePageTrait;
     private $field_status = 2;
     public $cities = [];
 
@@ -794,60 +795,13 @@ class UserhomeController extends FrontController
         if (($preferences) && ($preferences->is_hyperlocal == 1)) {
             $trendingVendors = $trendingVendors->sortBy('lineOfSightDistance')->values()->all();
         }
-        $mostSellingVendors = Vendor::with('slot.day', 'slotDate')->select('vendors.*',DB::raw('count(vendor_id) as max_sales'))->join('order_vendors','vendors.id','=','order_vendors.vendor_id')->whereIn('vendors.id',$vendor_ids)->where('vendors.status', 1)->groupBy('order_vendors.vendor_id')->orderBy(DB::raw('count(vendor_id)'),'desc');
+        
+        //get Most Selling Vendors
+        $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
 
-        // add hyperlocal check to get vendors
-        if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-
-            if (!empty($latitude) && !empty($longitude)) {
-                $mostSellingVendors = $mostSellingVendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
-                    $query->select('vendor_id')
-                    ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                });
-            }
-        }
-        $mostSellingVendors = $mostSellingVendors->get();
-
-        if ((!empty($mostSellingVendors) && count($mostSellingVendors) > 0)) {
-            foreach ($mostSellingVendors as $key => $value) {
-                $value->vendorRating = $this->vendorRating($value->products);
-                // $value->name = Str::limit($value->name, 15, '..');
-                if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                    $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
-                }
-                $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
-                $categoriesList = '';
-                foreach ($vendorCategories as $key => $category) {
-                    if ($category->category) {
-                        $categoriesList = $categoriesList . @$category->category->translation_one->name;
-                        if ($key !=  $vendorCategories->count() - 1) {
-                            $categoriesList = $categoriesList . ', ';
-                        }
-                    }
-                }
-                $value->categoriesList = $categoriesList;
-
-                $value->is_vendor_closed = 0;
-                if($value->show_slot == 0){
-                    if( ($value->slotDate->isEmpty()) && ($value->slot->isEmpty()) ){
-                        $value->is_vendor_closed = 1;
-                    }else{
-                        $value->is_vendor_closed = 0;
-                        if($value->slotDate->isNotEmpty()){
-                            $value->opening_time = Carbon::parse($value->slotDate->first()->start_time)->format('g:i A');
-                            $value->closing_time = Carbon::parse($value->slotDate->first()->end_time)->format('g:i A');
-                        }elseif($value->slot->isNotEmpty()){
-                            $value->opening_time = Carbon::parse($value->slot->first()->start_time)->format('g:i A');
-                            $value->closing_time = Carbon::parse($value->slot->first()->end_time)->format('g:i A');
-                        }
-                    }
-                }
-            }
-        }
-        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-            $mostSellingVendors = $mostSellingVendors->sortBy('lineOfSightDistance')->values()->all();
-        }
-
+        //spotLight
+        $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id);
+// dd($spot_light_products);
         $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);
         $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
         $feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
@@ -994,7 +948,7 @@ class UserhomeController extends FrontController
                 'cities' => $this->cities,
                 'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:[],
                 'best_sellers'     => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
-                'spotlight_deals'  => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
+                'spotlight_deals'  => (!empty($spot_light_products) && count($spot_light_products) > 0)?$spot_light_products:[],
                 'recent_orders' => $activeOrders,
             ];
             // dd( $data);

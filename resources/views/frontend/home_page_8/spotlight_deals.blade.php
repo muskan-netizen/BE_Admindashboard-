@@ -2,16 +2,12 @@
     <div class="deals-product product-card-box position-relative text-center al_custom_vendors_sec"  >
         <a class="suppliers-box d-block" href="{{route('vendorDetail')}}/{{ $vendor->slug }}">
             <div class="suppliers-img-outer position-relative ">
-                @if($vendor->is_vendor_closed==1) 
-                    <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="{{ $vendor->logo['image_fit'] }}200/200{{ $vendor->logo['image_path'] }}" alt="" title="">
-                @else
-                    <img  class="fluid-img mx-auto blur-up lazyload" data-src="{{ $vendor->logo['image_fit'] }}200/200{{ $vendor->logo['image_path'] }}" alt="" title="">
-                @endif
-
+                <img  class="fluid-img mx-auto blur-up lazyload" data-src="{{ $product['image_url']  }}" alt="" title="">
             </div>
             <div class="supplier-rating">
-                <h4>{{ $vendor->name }}</h4>
-                <h5>10-50% OFF</h5>
+                <h4>{{  $product["title"] }}</h4>
+                
+                <h5>{{ $product['discount_percentage'] ?? 0}}% OFF</h5>
                 <a href="#">SHOP NOW</a>
                 <!-- {{--<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips d-none">
                     <%=vendor.categoriesList %>

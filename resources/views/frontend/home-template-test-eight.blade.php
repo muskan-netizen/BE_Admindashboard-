@@ -722,7 +722,7 @@
 				</div>
 				<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 					<div class="row">
-							@foreach ($homePageData[$homePageLabel->slug] as $vendor )
+							@foreach ($homePageData[$homePageLabel->slug] as $product )
 							@include('frontend.home_page_8.spotlight_deals')
 							@endforeach
 						</div>

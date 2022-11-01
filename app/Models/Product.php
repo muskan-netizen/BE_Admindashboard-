@@ -267,6 +267,10 @@ class Product extends Model implements Auditable{
       return $this->hasOne('App\Models\ProductVariant')->select('*','price as variant_price')->first();
     }
 
+    public function variantSingle(){
+      return $this->hasOne('App\Models\ProductVariant');
+    }
+
 
 
     public function OrderProduct(){
