@@ -692,39 +692,24 @@
 				</div>
 			</div>
 		</section>
-		@elseif($homePageLabel->slug == 'categories' && count($homePageData['categories']) != 0 )
-		<!-----------------Categories-------------------->
-		@if(@$categories)
-
-		<section class="main-heading">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12 text-center">
-						<div class="top-heading">
-							<h2 class="h2-heading"> Categories</h2>
-						</div>
-					</div>
-				</div>
+		{{--  && (count($homePageData['nav_categories']) != 0) --}}
+		@elseif($homePageLabel->slug == 'nav_categories' && (count($homePageLabel->nav_categories) != 0))
+		<section class="container popular-brands left-shape_ position-relative">
+			<div class="al_top_heading text-center d-flex align-items-center">
+				<h2 class="h2-heading">{{$homePageLabel->slug=='nav_categories' ? __('Categories') : __($homePageLabel->title)}}</h2>
 			</div>
-		</section>
-		<section class="mb-0 render_full_{{$homePageLabel->slug}} Categories-section" id="{{$homePageLabel->slug.$key}}">
-			<div class="container">
-			
-				<div class="row">
-					<div class="col-12">
-						<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+			<div class="row">
+				<div class=" col-12 al_custom_categories">
+					<div class="render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						<div class="row">
-							@foreach($categories as $key => $category)
-							@include('frontend.home_page_8.category')
+							@foreach ( $homePageLabel->nav_categories as $category )
+								@include('frontend.home_page_8.category')
 							@endforeach
 						</div>
-						</div>
 					</div>
 				</div>
 			</div>
 		</section>
-
-		@endif
         @elseif($homePageLabel->slug == 'spotlight_deals' && (count($homePageData['spotlight_deals']) != 0))
 		
 		<section class="mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">

@@ -27,7 +27,6 @@ class CategoryController extends FrontController{
      */
     public function categoryProduct(Request $request, $domain = '', $slug = 0)
     {
-        
         $preferences = Session::get('preferences');
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
@@ -144,7 +143,7 @@ class CategoryController extends FrontController{
             $new->variant_price = (!empty($new->variant->first())) ? $new->variant->first()->price : 0;
         }
         $newProducts = ($np->count() > 0) ? array_chunk($np->toArray(), ceil(count($np) / 2)) : $np;
-
+        
         if($page == 'pickup/delivery'){
             if(!Auth::user()){
                 return redirect()->route('customer.login');
@@ -193,7 +192,6 @@ class CategoryController extends FrontController{
 
             if($page == 'laundry' || $service_type == 'rental_service')
                 $page = 'product';
-
                 if(view()->exists('frontend/cate-'.$page.'s')){
                     return view('frontend/cate-'.$page.'s')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets]);
                 }else{

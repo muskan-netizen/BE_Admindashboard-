@@ -160,5 +160,15 @@ class HomePageLabelSeeder extends Seeder
             'order_by'   => 14,
             'created_at' => Carbon::now(),
         ]);
+
+        $already = HomePageLabel::where('slug', 'nav_categories')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title'      => 'NavCategories',
+            'slug'       => 'nav_categories',
+            'order_by'   => 15,
+            'created_at' => Carbon::now(),
+        ]);
     }
 }
