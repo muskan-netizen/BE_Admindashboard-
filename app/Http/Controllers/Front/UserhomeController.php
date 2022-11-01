@@ -472,16 +472,22 @@ class UserhomeController extends FrontController
 
             $request->merge(['type'=>Session::get('vendorType'),'noTinJson'=>1] );
             $homePageData = $this->postHomePageData($request);
-
-            $home_page_labels = $home_page_labels->map(function($da) use ($homePageData) {
-                if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' ){
+// dd($navCategories);
+            $home_page_labels = $home_page_labels->map(function($da) use ($homePageData,$navCategories) {
+                if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' && $da->slug!='nav_categories'){
                     $da[$da->slug] = $homePageData[$da->slug];
                 }
+                if( $da->slug == 'nav_categories'  ){
+                    // dd($da->slug);
+                    $da['nav_categories'] = $navCategories;
+                   // dd($da[$da->slug]);
+                }
+
                 return $da;
 
             });
 
-            // dd($homePageData);
+            // dd($home_page_labels[10]->nav_categories);
             $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
             if ($only_cab_booking == 1)
                 return Redirect::route('categoryDetail', 'cabservice');
@@ -634,18 +640,6 @@ class UserhomeController extends FrontController
         }else{
             $brands = [];
         }
-
-        $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
-                ->where('id', '>', '1')
-                // ->where('is_core', 1)
-                ->whereNotIn('type_id', [4, 5])
-                ->where(function ($q) {
-                    $q->whereNull('vendor_id');
-                })->orderBy('position', 'asc')
-                ->orderBy('id', 'asc')
-                ->where('status', 1)
-                ->orderBy('parent_id', 'asc')->get();
-
 
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
@@ -984,7 +978,7 @@ class UserhomeController extends FrontController
             'on_sale_products' => $on_sale_products,
             'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
             'active_orders' => $activeOrders,
-            'categories' => $categories
+            
         ];
        
         if($request->has('noTinJson') && $request->noTinJson == 1){
@@ -992,6 +986,7 @@ class UserhomeController extends FrontController
                 'brands' => $brands,
                 'vendors' => $vendors,
                 'new_products' => $new_products,
+                'top_rated'       => $new_products,
                 'recently_viewed' => $recently_viewed,
                 'homePageLabels' => $home_page_labels,
                 'featured_products' => $feature_products,
@@ -1001,7 +996,6 @@ class UserhomeController extends FrontController
                 'best_sellers'     => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
                 'spotlight_deals'  => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
                 'recent_orders' => $activeOrders,
-                'categories' => $categories
             ];
             // dd( $data);
             return $data ;
