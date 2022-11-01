@@ -607,18 +607,52 @@ $(document).ready(function () {
     });
 
     $(document).on("change",".is_cab_pooling",function() {
-        if($(this).val() == 1)
-        {
-            $('#search_product_main_div').hide();
-            $('#search_product_rider_main_div').show();
-            $(".alAddRiderSecOuter").show();
-            $('#product_rider_div').show();
-        }else{
-            $('#search_product_rider_main_div').hide();
-            $('#search_product_main_div').show();
-            $(".alAddRiderSecOuter").hide();
-            $('#product_rider_div').hide();
+        $('.cab-booking-main-loader').show();
+        getListOfCabs();
+    });
+
+    $(document).on("click",".btn-number-up-down",function(e){
+        e.preventDefault();
+        
+        fieldName = $(this).attr('data-field');
+        type      = $(this).attr('data-type');
+        var input = $("input[name='"+fieldName+"']");
+        var currentVal = parseInt(input.val());
+        if (!isNaN(currentVal)) {
+            if(type == 'minus') {
+                
+                if(currentVal > input.attr('min')) {
+                    input.val(currentVal - 1).change();
+                } 
+                if(parseInt(input.val()) == input.attr('min')) {
+                    //$(this).attr('disabled', true);
+                }
+    
+            } else if(type == 'plus') {
+    
+                if(currentVal < input.attr('max')) {
+                    input.val(currentVal + 1).change();
+                }
+                if(parseInt(input.val()) == input.attr('max')) {
+                    //$(this).attr('disabled', true);
+                }
+    
+            }
+        } else {
+            input.val(1);
         }
+        var input_seats           = input.val();if(isNaN(input_seats)){input_seats = 1;input.val(1);}
+        var hddn_amount_less_toll = parseFloat($("#hddn_amount_less_toll").val());if(isNaN(hddn_amount_less_toll)){hddn_amount_less_toll = 0;}
+        var hddn_amount_toll_fee  = parseFloat($("#hddn_amount_toll_fee").val());if(isNaN(hddn_amount_toll_fee)){hddn_amount_toll_fee = 0;}
+        var hddn_real_amount      = parseFloat($("#hddn_real_amount").val());if(isNaN(hddn_real_amount)){hddn_real_amount = 0;}
+        
+        hddn_amount_less_toll     = parseFloat(hddn_amount_less_toll)*parseFloat(input_seats);if(isNaN(hddn_amount_less_toll)){hddn_amount_less_toll = 0;}
+        hddn_amount_toll_fee      = parseFloat(hddn_amount_toll_fee)*parseFloat(input_seats);if(isNaN(hddn_amount_toll_fee)){hddn_amount_toll_fee = 0;}
+        hddn_real_amount          = parseFloat(hddn_real_amount)*parseFloat(input_seats);if(isNaN(hddn_real_amount)){hddn_real_amount = 0;}
+       
+        $("#real_amount_less_toll").text($("#hddn_currency_symbol").val()+""+hddn_amount_less_toll.toFixed(2));
+        $("#real_amount_toll_fee").text($("#hddn_currency_symbol").val()+""+hddn_amount_toll_fee.toFixed(2));
+        $("#real_amount").text($("#hddn_currency_symbol").val()+""+hddn_real_amount.toFixed(2));
     });
 
     $(document).on("click","#submit_product_rider_button",function(){
@@ -739,10 +773,11 @@ $(document).ready(function () {
             data.longitude = destination_location_longitudes[index];
             locations.push(data);
         });
+        var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {locations:locations, schedule_date_delivery:schedule_datetime},
+            data: {locations:locations, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling},
             url: get_vehicle_list+'/'+vendor_id+'/'+category_id,
             success: function(response) {
                 if(response.status == 'Success'){
@@ -759,6 +794,16 @@ $(document).ready(function () {
                         let products_rider_template = _.template($('#products_rider_template').html());
                         $("#search_product_main_div").append(products_template(productData));
                         $("#search_product_rider_main_div").append(products_rider_template(productData));
+
+                        if($('input[name="is_cab_pooling"]:checked').val() == 0)
+                        {
+                            $("#search_product_main_div .double_price_p").hide();
+                            $("#search_product_main_div .single_price_p").show();
+                        }else{
+                            $("#search_product_main_div .double_price_p").show();
+                            $("#search_product_main_div .single_price_p").hide();
+                        }
+
                         let is_friend = $('input[name="is_for_friend"]:checked').val();
                         if(is_friend == undefined || is_friend == '0')
                         {
@@ -910,11 +955,11 @@ $(document).ready(function () {
         if(schedule_datetimeset != undefined && schedule_datetimeset != 0){
             schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
         }
-
+        var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime},
+            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling},
             url: get_product_detail+'/'+product_id,
             success: function(response) {
                 if(response.status == 'Success'){
@@ -934,6 +979,12 @@ $(document).ready(function () {
                         let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
                         
                         $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
+                        if($('input[name="is_cab_pooling"]:checked').val() == 0)
+                        {
+                            $(".show_no_of_seats_if_pooling").hide();
+                        }else{
+                            $(".show_no_of_seats_if_pooling").show();
+                        }
                         getDistance();
                         if($('input[name=is_for_friend]:checked').val()==1){
                             $('.for_friend_fields_div').removeClass('d-none');

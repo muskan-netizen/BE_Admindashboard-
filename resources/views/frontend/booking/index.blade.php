@@ -29,14 +29,14 @@
                 @endif
 
                 @if(isset($client_preference_detail) && $client_preference_detail->is_cab_pooling == 1)
-                <div class="tip_radio_controls_book_friend text-center mt-2">
-                    <input type="radio" class="cab_radio is_cab_pooling" id="cab_booking" name="is_cab_pooling" value="0">
-                    <label class="tip_label mb-0  my-2 active " for="for_me" id="label_cab_booking">
-                        <h5 class="m-0" id="tip_5">{{__('Booking')}}</h5>
+                <div class="pool_radio_controls text-center">
+                    <input type="radio" class="pool_radio is_cab_pooling" id="cab_booking" name="is_cab_pooling" value="0" checked>
+                    <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
+                        <h5 class="m-0" id="pool_5">{{__('Booking')}}</h5>
                     </label>
-                    <input type="radio" class="cab_radio is_cab_pooling" id="cab_pooling" name="is_cab_pooling" value="1">
-                    <label class="tip_label mb-0  my-2" for="for_friend" id="label_cab_pooling">
-                        <h5 class="m-0" id="tip_5">{{__('Pooling')}}</h5>
+                    <input type="radio" class="pool_radio is_cab_pooling" id="cab_pooling" name="is_cab_pooling" value="1">
+                    <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
+                        <h5 class="m-0" id="pool_5">{{__('Pooling')}}</h5>
                     </label>
                 </div>
                 @endif
@@ -269,11 +269,12 @@
                             </div>
                             <div class="col ride-price pl-2 text-right">
                             <% if(result.per_tags_price < result.tags_price){ %>
-                                        <p class="mb-0">Maximum Price : <b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
-                                        <p class="mb-0">Minimum Price : <b>{{Session::get('currencySymbol')}}<%= result.per_tags_price%></b></p>
-                                    <% }else{ %>
-                                        <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
-                                    <% } %>
+                                        <!-- <p class="mb-0 double_price_p">Maximum Price : <b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
+                                        <p class="mb-0 double_price_p">Minimum Price : <b>{{Session::get('currencySymbol')}}<%= result.per_tags_price%></b></p> -->
+                                        <p class="mb-0 double_price_p"><b>{{Session::get('currencySymbol')}}<%= result.per_tags_price%></b></p>
+                            <% } %>        
+                                        <p class="mb-0 single_price_p"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
+                                    
                                 <!-- <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p> -->
                             </div>
                         </div>
@@ -316,12 +317,40 @@
                         <img src="<%= result.image_url %>">
                     </div>
                     <div class="cab-location-details">
+                    @if(isset($client_preference_detail) && $client_preference_detail->is_cab_pooling == 1)
+                    <div class="show_no_of_seats_if_pooling" style="display:none;">
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <div class="number_seats">
+                                    <h5>Number Of Seats</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-get-value">
+                                    <div class="input-group">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-danger btn-number-up-down" data-type="minus" data-field="no_seats_for_pooling">
+                                                <i class="fa fa-minus" aria-hidden="true"></i>
+                                            </button>
+                                        </span>
+                                        <input type="text" name="no_seats_for_pooling" class="form-control seats-number-up-down" value="1" min="1" max="<%= result.seats_for_booking%>">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-success btn-number-up-down" data-type="plus" data-field="no_seats_for_pooling">
+                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                     <% if(result.toll_fee > 0){ %>
                         <span class="d-flex align-items-center justify-content-between mt-2"><b><%= result.name %></b> <label><sub class="ling-throgh" id
-                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.toll_less_tags_price%></b></label></span>
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_less_tags_price%></b></label></span>
 
                         <span class="d-flex align-items-center justify-content-between"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
-                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
 
                         <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= (result.tags_price)%></b></label></h4>
@@ -329,6 +358,10 @@
                         <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
                     <% } %>
+                        <input type="hidden" id="hddn_amount_less_toll" value="<%= (result.toll_less_tags_price)%>"/>
+                        <input type="hidden" id="hddn_amount_toll_fee" value="<%= (result.toll_fee)%>"/>
+                        <input type="hidden" id="hddn_real_amount" value="<%= (result.tags_price)%>"/>
+                        <input type="hidden" id="hddn_currency_symbol" value="{{Session::get('currencySymbol')}}"/>
                         <p><%= result.description %></p>
                     </div>
                 </div>

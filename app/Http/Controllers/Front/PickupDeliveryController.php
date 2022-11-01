@@ -93,7 +93,7 @@ class PickupDeliveryController extends FrontController{
 
     public function postVendorListByCategoryId(Request $request, $domain = '',$category_id = 0){
         $vendor_type = Session::get('vendorType');
-        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
+        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area', 'is_cab_pooling')->where('id', '>', 0)->first();
         $vendor_ids = [];
         $pickup_latitude = '';
         $pickup_longitude = '';
@@ -138,7 +138,8 @@ class PickupDeliveryController extends FrontController{
     public function postCabProductById(Request $request, $domain = '',$product_id = 0){
         $user = Auth::user();
         $language_id = Session::get('customerLanguage');
-        
+        $preferences = ClientPreference::select('is_cab_pooling')->where('id', '>', 0)->first();
+
         if(!empty($user)){
             $client_timezone = DB::table('clients')->first('timezone');
             $user->timezone = $client_timezone->timezone ?? $user->timezone;
@@ -164,9 +165,17 @@ class PickupDeliveryController extends FrontController{
         $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
         $product->toll_less_tags_price = decimal_format($tags_price['delivery_fee']);
-
+        
+        //for cab pooling
         $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
-        $product->per_tags_price = decimal_format($product->original_tags_price/$product->seats_for_booking);
+        
+        if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
+        {
+            $product->original_tags_price = decimal_format(($product->original_tags_price/$product->seats_for_booking));
+            $product->tags_price = decimal_format(($product->tags_price/$product->seats_for_booking));
+            $product->toll_fee = decimal_format(($product->toll_fee/$product->seats_for_booking));
+            $product->toll_less_tags_price = decimal_format(($product->toll_less_tags_price/$product->seats_for_booking));
+        }
 
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
         $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
@@ -237,6 +246,7 @@ class PickupDeliveryController extends FrontController{
                 return response()->json(['error' => 'No record found.'], 404);
             }
 
+            $preferences = ClientPreference::select('is_cab_pooling')->where('id', '>', 0)->first();
             $user = Auth::user();
             $userid = $user->id;
             if(!empty($user)){
@@ -280,6 +290,11 @@ class PickupDeliveryController extends FrontController{
                     ->where('products.vendor_id', $vid);
                     if($cid > 0){
                         $products = $products->where('products.category_id', $cid);
+                    }
+                    
+                    if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
+                    {
+                        $products = $products->where('products.seats_for_booking', '>', 0);
                     }
                     $products = $products->where('products.is_live', 1)->distinct()->get();
 
