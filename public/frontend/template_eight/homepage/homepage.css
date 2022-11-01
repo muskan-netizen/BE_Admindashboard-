@@ -515,10 +515,11 @@ body.al_body_template_eight.homeHeader .common-banner img {
 /*----------------mobile view----------*/
 @media(max-width:767px){
     .al_custom_brand .col-md-3 {
-        width: 100%;
-        max-width: 100%;
-        flex: 100%;
+        width: 50%;
+        max-width: 50%;
+        flex: 50%;
     }
+
     .render_new_products .col-md-2 {
         width: 50%;
         max-width: 50%;
@@ -533,7 +534,7 @@ body.al_body_template_eight.homeHeader .common-banner img {
         height: 125px;
     }
     .al_body_template_eight .brand-img img.brand-banner {
-        height: 230px;
+        height: 160px;
         object-fit: cover;
     }
     .brand-logo {
@@ -541,8 +542,8 @@ body.al_body_template_eight.homeHeader .common-banner img {
         padding-bottom: 0px!important;
     }
     .al_body_template_eight img.blur-up.brand-logo.lazyloaded {
-        width: 100px;
-        height: 100px;
+        width: 70px;
+        height: 70px;
         object-fit: cover;
         margin: 0 auto;
         position: inherit;
