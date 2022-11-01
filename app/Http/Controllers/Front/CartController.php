@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\{ApiResponser,CartManager};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
 class CartController extends FrontController
 {
     use ApiResponser,CartManager;
@@ -2027,7 +2027,20 @@ class CartController extends FrontController
             {
                 Session()->put('vid',$vendorData->vendor_id);
 
-                if($preferences->static_delivey_fee != 1)
+                $getAdditionalPreference = getAdditionalPreference(['is_free_delivery_by_roles']);
+                $skip_delivery_fees = false;
+                if($getAdditionalPreference['is_free_delivery_by_roles'] == 1 ){
+                    $product_id = $vendorData->vendorProducts[0]['product_id'];
+                    $result = ProductDeliveryFeeByRole::where('product_id', $product_id)->where('role_id', Auth::user()->role_id)
+                    ->where('is_free_delivery', 1)->first();
+                    if($result != null){
+                        $skip_delivery_fees = true;
+                    }
+                }
+                if( $skip_delivery_fees == true ){
+                    // skip
+                }
+                else if($preferences->static_delivey_fee != 1)
                 {
 
                     //Dispatcher Delivery changes and estimated delivery duration code
