@@ -190,6 +190,16 @@ class HomePageLabelSeeder extends Seeder
                 'created_at' => Carbon::now(),
             ]);
         }
+
+        $already = HomePageLabel::where('slug', 'most_popular_products')->count();
+        if($already == 0){
+            $home_page = HomePageLabel::insertGetId([
+                'title'      => 'Most Popular Products',
+                'slug'       => 'most_popular_products',
+                'order_by'   => 17,
+                'created_at' => Carbon::now(),
+            ]);
+        }
         
     }
 }
