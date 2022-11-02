@@ -85,10 +85,13 @@ class PickupDeliveryController extends BaseController{
 
             if(!empty($products)){
                 foreach ($products as $key => $product) {
-                    $product->tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
+                    $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
+                    $product->tags_price = $tags_price['delivery_fee'] + $tags_price['toll_fee'];
+                    $product->toll_fee   = $tags_price['toll_fee'];
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->price = $product->tags_price;
+                        $product->variant[$k]->toll_fee = $product->toll_fee;
                         $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
                     }
                 }
@@ -169,8 +172,9 @@ class PickupDeliveryController extends BaseController{
     public function listData($langId, $category_id, $type = '', $userid,$request, $schedule_datetime_del=''){
         if ($type == 'Pickup/Delivery') {
             $category_details = [];
-            $deliver_charge = $this->getDeliveryFeeDispatcher($request, null, $schedule_datetime_del);
-            $deliver_charge = $deliver_charge??0.00;
+            $delivercharge = $this->getDeliveryFeeDispatcher($request, null, $schedule_datetime_del);
+            $deliver_charge = $delivercharge['delivery_fee']??0.00;
+            $toll_charge = $delivercharge['toll_fee']??0.00;
             $category_list = Category::where('parent_id', $category_id)->get();
             foreach ($category_list as $category) {
                 $category_details[] = array(
@@ -178,7 +182,8 @@ class PickupDeliveryController extends BaseController{
                     'name' => $category->slug,
                     'icon' => $category->icon,
                     'image' => $category->image,
-                    'price' => $deliver_charge
+                    'price' => $deliver_charge + $toll_charge,
+                    'toll_price' => $toll_charge,
                 );
             }
             return $category_details;
@@ -194,21 +199,24 @@ class PickupDeliveryController extends BaseController{
      public function getDeliveryFeeDispatcher($request, $product=null, $schedule_datetime_del=''){
         try {
                 $dispatch_domain = $this->checkIfPickupDeliveryOn();
-                if ($dispatch_domain && $dispatch_domain != false) {
-                            $all_location = array();
-                            $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del];
-                            $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
-                                                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
-                                                        'content-type' => 'application/json']
-                                                            ]);
-                            $url = $dispatch_domain->pickup_delivery_service_key_url;
-                            $res = $client->post($url.'/api/get-delivery-fee',
-                                ['form_params' => ($postdata)]
-                            );
-                            $response = json_decode($res->getBody(), true);
-                            if($response && $response['message'] == 'success'){
-                                return $response['total'];
-                            }
+                if ($dispatch_domain && $dispatch_domain != false) 
+                {
+                    $all_location = array();
+                    $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => 'IN_FASTAG', 'VehicleEmissionType' => 'GASOLINE', 'travelMode' => 'TAXI'];
+                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                                                'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                                                'content-type' => 'application/json']
+                                                    ]);
+                    $url = $dispatch_domain->pickup_delivery_service_key_url;
+                    $res = $client->post($url.'/api/get-delivery-fee',
+                        ['form_params' => ($postdata)]
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if($response && $response['message'] == 'success'){
+                        return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?$response['toll_fee']:0.00);
+                    }else{
+                        return array('delivery_fee' => 0, 'toll_fee' => 0);
+                    }
 
                 }
             }
@@ -374,6 +382,7 @@ class PickupDeliveryController extends BaseController{
                 $order_vendor->save();
                 $variant = $product->variants->where('product_id', $request->product_id)->first();
                 $variant->price = $request->amount;
+                $variant->toll_price = $request->tollamount;
                 $quantity_price = 0;
                 $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
                 $divider = isset($divider) ? $divider : 1;
@@ -401,6 +410,7 @@ class PickupDeliveryController extends BaseController{
                 $order_product->order_vendor_id = $order_vendor->id;
                 $order_product->order_id = $order->id;
                 $order_product->price = $variant->price;
+                $order_product->toll_price = $variant->toll_price;
                 $order_product->quantity = 1;
                 $order_product->vendor_id = $vendor->id;
                 $order_product->product_id = $product->id;
@@ -659,7 +669,10 @@ class PickupDeliveryController extends BaseController{
                             'dbname' => $client_do->database_name,
                             'order_id' => $order->id,
                             'customer_id' => $order->user_id,
-                            'user_icon' => $customer->image
+                            'user_icon' => $customer->image,
+                            'toll_passes' => 'IN_FASTAG',
+                            'VehicleEmissionType' => 'GASOLINE',
+                            'travelMode' => 'TAXI'
                         ];
 
 

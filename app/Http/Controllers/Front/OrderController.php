@@ -282,6 +282,7 @@ class OrderController extends FrontController
         $order = Order::with(['products.vendor','products.pvariant.vset', 'products.pvariant.translation' => function ($q) use ($langId) {
             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
             $q->where('language_id', $langId);}, 'address'])->findOrfail($request->order_id);
+        
 
         $fixedFeeNomenclatures = $this->fixedFee($langId);
         $order_vendors =  OrderVendor::where('order_id', $request->order_id)->whereNotNull('dispatch_traking_url')->get();
@@ -1023,6 +1024,7 @@ class OrderController extends FrontController
                     $order_product->additional_increments_hrs_min = @$vendor_cart_product->additional_increments_hrs_min;
                     $order_product->start_date_time = $vendor_cart_product->start_date_time;
                     $order_product->end_date_time = $vendor_cart_product->end_date_time;
+                    $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee)?$vendor_cart_product->product_delivery_fee:0;
                     /**
                      * for rental case total_booking_time as a total time 
                      * for on_demand and appointment total booking time as single service duration time as per service for get totel service time multiply by quantity

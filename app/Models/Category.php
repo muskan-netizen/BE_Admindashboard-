@@ -45,10 +45,10 @@ class Category extends Model
 
     public function primary(){
 
-      $langData = $this->hasOne('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')->select('category_translations.category_id', 'category_translations.name', 'category_translations.language_id')->where('cl.is_primary', 1);
+      $langData = $this->hasOne('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')->select('category_translations.category_id', 'category_translations.name', 'category_translations.language_id', 'category_translations.meta_description', 'category_translations.language_id as langId', 'category_translations.meta_title','category_translations.meta_keywords')->where('cl.is_primary', 1);
 
       if(!$langData){
-        $langData = $this->hasOne('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')->select('category_translations.category_id', 'category_translations.name', 'category_translations.language_id')->limit(1);
+        $langData = $this->hasOne('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id', 'category_translations.language_id as langId')->select('category_translations.category_id', 'category_translations.name', 'category_translations.language_id', 'category_translations.meta_title','category_translations.meta_keywords')->limit(1);
       }
       return $langData;
     }
@@ -83,6 +83,15 @@ class Category extends Model
     public function categoryTag()
     {
         return $this->hasOne(CategoryTag::class)->select('category_id', 'tag');
+    }
+
+    public function categoryRoleAssigned()
+    {
+      if(auth()->user() !=null){
+        return $this->hasOne('App\Models\CategoryRole', 'category_id', 'id')->where('role_id', Auth::user()->role_id);
+      }else{
+          return $this->hasOne('App\Models\CategoryRole', 'category_id', 'id')->where('role_id', 1);
+      }
     }
 
     public function getImageAttribute($value)

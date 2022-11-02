@@ -160,8 +160,10 @@ class PickupDeliveryController extends FrontController{
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
-        $product->original_tags_price = $tags_price;
-        $product->tags_price = decimal_format($tags_price);
+        $product->original_tags_price = $tags_price['delivery_fee'] + $tags_price['toll_fee'];
+        $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
+        $product->toll_fee = decimal_format($tags_price['toll_fee']);
+        $product->toll_less_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
         $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
@@ -175,6 +177,7 @@ class PickupDeliveryController extends FrontController{
         }
         foreach ($product->variant as $k => $v) {
             $product->variant[$k]->price = $product->tags_price;
+            $product->variant[$k]->toll_fee = $product->toll_fee;
             $product->variant[$k]->multiplier = 1;
         }
         $loyalty_amount_saved = 0;
@@ -283,8 +286,8 @@ class PickupDeliveryController extends FrontController{
                     $product->image_url = $image_url;
                     $product->name = $product->translation->first() ? $product->translation->first()->title :'';
                     $product->description = $product->translation->first() ? $product->translation->first()->meta_description :'';
-                    $product->original_tags_price = $tags_price;
-                    $product->tags_price = decimal_format($tags_price);
+                    $product->original_tags_price = $tags_price['delivery_fee'] + $tags_price['toll_fee'];
+                    $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->price = $product->tags_price;
@@ -385,12 +388,12 @@ class PickupDeliveryController extends FrontController{
 
 
      # get delivery fee from dispatcher
-     public function getDeliveryFeeDispatcher($request,$product=null, $schedule_datetime_del = ''){
+     public function getDeliveryFeeDispatcher($request, $product=null, $schedule_datetime_del = ''){
         try {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             if ($dispatch_domain && $dispatch_domain != false) {
                 $all_location = array();
-                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del];
+                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => 'IN_FASTAG', 'VehicleEmissionType' => 'GASOLINE', 'travelMode' => 'TAXI'];
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/get-delivery-fee',
@@ -399,7 +402,9 @@ class PickupDeliveryController extends FrontController{
                 $response = json_decode($res->getBody(), true);
                 //pr($response);
                 if($response && $response['message'] == 'success'){
-                    return $response['total'];
+                    return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?$response['toll_fee']:0.00);
+                }else{
+                    return array('delivery_fee' => 0, 'toll_fee' => 0);
                 }
             }
         }catch(\Exception $e){
@@ -438,7 +443,7 @@ class PickupDeliveryController extends FrontController{
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
-                $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
+                $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
                 if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                     DB::commit();
                     $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
@@ -635,6 +640,7 @@ class PickupDeliveryController extends FrontController{
                 $order_vendor->save();
                 $variant = $product->variants->where('product_id', $request->product_id)->first();
                 $variant->price = $request->amount;
+                $variant->toll_price = $request->tollamount;
                 $quantity_price = 0;
                 $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
                 $divider = isset($divider) ? $divider : 1;
@@ -662,6 +668,7 @@ class PickupDeliveryController extends FrontController{
                 $order_product->order_vendor_id = $order_vendor->id;
                 $order_product->order_id = $order->id;
                 $order_product->price = $variant->price;
+                $order_product->toll_price = $variant->toll_price;
                 $order_product->quantity = 1;
                 $order_product->vendor_id = $vendor->id;
                 $order_product->product_id = $product->id;
@@ -879,7 +886,10 @@ class PickupDeliveryController extends FrontController{
                     'dbname' => $client->database_name,
                     'order_id' => $order->id,
                     'customer_id' => $order->user_id,
-                    'user_icon' => $customer->image
+                    'user_icon' => $customer->image,
+                    'toll_passes' => 'IN_FASTAG',
+                    'VehicleEmissionType' => 'GASOLINE',
+                    'travelMode' => 'TAXI'
                 ];
                 
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);

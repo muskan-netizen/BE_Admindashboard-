@@ -751,38 +751,36 @@
                             @php
                             $mediaIcons = [];
                             @endphp
-                            
-                            @if(@$socialMediaUrls)
-                            @forelse($socialMediaUrls as $socialMediaUrl)
 
-                            <tr align="center">
-                            @php
-                            $mediaIcons[] = $socialMediaUrl->icon;
-                            @endphp
-                                <td>
-                                    <i class="fab fa-{{$socialMediaUrl->icon}}  social-media-{{$socialMediaUrl->icon}}" aria-hidden="true"></i>
-                                </td>
-                                <td>
-                                    <a href="{{$socialMediaUrl->url}}" class="social-media-url-{{$socialMediaUrl->icon}}" target="_blank">{{$socialMediaUrl->url}}</a>
-                                </td>
-                                <td>
-                                    <div>
-                                        <div class="inner-div">
-                                            <button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
-                                                <i class="mdi mdi-delete"></i>
-                                            </button>
+                            @if (isset($socialMediaUrls))
+                                @forelse($socialMediaUrls as $socialMediaUrl)
+
+                                <tr align="center">
+                                @php
+                                $mediaIcons[] = $socialMediaUrl->icon;
+                                @endphp
+                                    <td>
+                                        <i class="fab fa-{{$socialMediaUrl->icon}}  social-media-{{$socialMediaUrl->icon}}" aria-hidden="true"></i>
+                                    </td>
+                                    <td>
+                                        <a href="{{$socialMediaUrl->url}}" class="social-media-url-{{$socialMediaUrl->icon}}" target="_blank">{{$socialMediaUrl->url}}</a>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <div class="inner-div">
+                                                <button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
+                                                    <i class="mdi mdi-delete"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr align="center">
-                                <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
-                            </tr>
-                            @endforelse
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr align="center">
+                                    <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                                </tr>
+                                @endforelse
                             @endif
-                                
-
                             </tbody>
                         </table>
                         <input type="hidden" id="added-icons" value="{{ json_encode($mediaIcons) }}">
