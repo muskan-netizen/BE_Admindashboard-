@@ -667,6 +667,11 @@ section.main-product.mb-0.render_full_new_products h2.h2-heading {
         max-width: 50%;
         flex: 50%;
     }
+    section.main-product.single_category_products .col-md-3 {
+        width: 50%;
+        max-width: 50%;
+        flex: 50%;
+    }
     .category-block .bg-outter {
         height: 175px;
         width: 165px;
