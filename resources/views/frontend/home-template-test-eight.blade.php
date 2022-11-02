@@ -694,17 +694,19 @@
 		</section>
 		{{--  && (count($homePageData['nav_categories']) != 0) --}}
 		@elseif($homePageLabel->slug == 'nav_categories' && (count($homePageLabel->nav_categories) != 0))
-		<section class="container popular-brands left-shape_ position-relative">
-			<div class="al_top_heading text-center d-flex align-items-center">
-				<h2 class="h2-heading">{{$homePageLabel->slug=='nav_categories' ? __('Categories') : __($homePageLabel->title)}}</h2>
-			</div>
-			<div class="row">
-				<div class=" col-12 al_custom_categories">
-					<div class="render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-						<div class="row">
-							@foreach ( $homePageLabel->nav_categories as $category )
-								@include('frontend.home_page_8.category')
-							@endforeach
+		<section class="popular-brands left-shape_ position-relative">
+			<div class="container">
+				<div class="al_top_heading text-center d-flex align-items-center">
+					<h2 class="h2-heading">{{$homePageLabel->slug=='nav_categories' ? __('Categories') : __($homePageLabel->title)}}</h2>
+				</div>
+				<div class="row">
+					<div class=" col-12 al_custom_categories">
+						<div class="render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+							<div class="row">
+								@foreach ( $homePageLabel->nav_categories as $category )
+									@include('frontend.home_page_8.category')
+								@endforeach
+							</div>
 						</div>
 					</div>
 				</div>
