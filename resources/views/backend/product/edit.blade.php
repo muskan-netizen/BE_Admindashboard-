@@ -748,6 +748,21 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             @endif
                         @endif
                     </div>
+
+                    {{-- product free delivery fees --}}
+                    @if($getAdditionalPreference['is_free_delivery_by_roles'] == '1')
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="control-label">Free Delivery (Select Roles)</label>
+                                <select class="form-control select2-multiple" name="free_delivery_roles[]" data-toggle="select2" multiple="multiple" placeholder="Select role...">
+                                    @foreach($allRoles as $allRole)
+                                        <option value="{{$allRole->id}}" @if(in_array($allRole->id, $selectedRoles)) selected @endif>{{ $allRole->role }}</option>
+                                    @endforeach
+                                </select>
+
+                            </div>
+                        </div>
+                    @endif
                     {{--@endif--}}
 
 

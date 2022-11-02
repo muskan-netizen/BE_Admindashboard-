@@ -178,17 +178,21 @@ class ClientPreferenceController extends BaseController{
      */
 
     public function additionalupdate(Request $request){
-            $rules = array(
-                'token_currency' => 'required_if:is_token_currency_enable,1'
-            );
+            // $rules = array(
+            //     'token_currency' => 'required_if:is_token_currency_enable,1'
+            // );
 
-            $validation  = Validator::make($request->all(), $rules);
-            if ($validation->fails()) {
-                return redirect()->back()->with('error', $validation->errors()->first());
-            }
+            // $validation  = Validator::make($request->all(), $rules);
+            // if ($validation->fails()) {
+            //     return redirect()->back()->with('error', $validation->errors()->first());
+            // }
 
         try {
             $this->updatePreferenceAdditional($request);
+
+            if($request->has('apply_free_del')){
+                $this->updateFreeDeliveryForRoles($request->apply_free_del);
+            }
 
             // $validated_keys = $request->only($this->client_preference_fillable_key);
             // $client = Client::first();
@@ -201,7 +205,7 @@ class ClientPreferenceController extends BaseController{
             //  }
             return redirect()->back()->with('success', 'Client settings updated successfully!');
         } catch (\Throwable $th) {
-           // pr($th->getMessage());
+           pr($th->getMessage());
             return redirect()->back()->with('error', 'Something went wrong!!');
         }
 

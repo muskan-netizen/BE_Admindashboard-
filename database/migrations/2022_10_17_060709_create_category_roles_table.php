@@ -15,7 +15,12 @@ class CreateCategoryRolesTable extends Migration
     {
         Schema::create('category_roles', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('category_id')->unsigned()->nullable();
+            $table->bigInteger('role_id')->unsigned()->nullable();
             $table->timestamps();
+
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('SET NULL');
+            $table->foreign('role_id')->references('id')->on('roles')->onDelete('SET NULL');
         });
     }
 
