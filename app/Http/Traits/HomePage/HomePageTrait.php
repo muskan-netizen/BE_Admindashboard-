@@ -5,6 +5,7 @@ namespace App\Http\Traits\HomePage;
 use App\Models\{Product, Vendor, VendorCategory};
 use Carbon\Carbon;
 use Session, DB;
+use Illuminate\Support\Str;
 
 
 trait HomePageTrait
@@ -72,7 +73,7 @@ trait HomePageTrait
     }
 
 
-    public function getSpotLight($preferences, $vendor_ids, $language_id, $currency_id)
+    public function getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim)
     {
         $products = Product::with([
             'category.categoryDetail.translation' => function ($q) use ($language_id) {
@@ -97,7 +98,7 @@ trait HomePageTrait
             $q->whereIn('vendors.id', $vendor_ids);
         })->where('is_live', 1)
         ->orderBy(DB::raw("((product_variants.compare_at_price - product_variants.price)/product_variants.compare_at_price)*100"), 'desc')
-        ->take(10)->get();
+        ->take(8)->get();
 
         // $products = $products->sortBy(function($product) { 
         //     return $product->discount_percentage[0]->discount_percentage ?? 0;
@@ -109,6 +110,26 @@ trait HomePageTrait
                 }
             }
         }
-        return $products;
+        $spotlight_products = [];
+        foreach ($products as  $product) {
+            $multiply = $product->variant->first()->multiplier ?? 1;
+            $title = $product->translation->first() ? $product->translation->first()->title : $product->sku;
+            $image_url = $product->media->first() && !is_null($product->media->first()->image) ? $product->media->first()->image->path['image_fit'] . $p_dim . $product->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $spotlight_products[] = array(
+                'tag_title' => $spotlight_products_title??'0',
+                'image_url' => $image_url,
+                'sku' => $product->sku,
+                'title' => Str::limit($title, 18, '..'),
+                'url_slug' => $product->url_slug,
+                'discount_percentage' => (int) $product->discount_percentage,
+                'averageRating' => number_format($product->averageRating, 1, '.', ''),
+                'inquiry_only' => $product->inquiry_only,
+                'vendor_name' => $product->vendor ? $product->vendor->name : '',
+                'vendor' => $product->vendor,
+                'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$product->variant->first()->price * $multiply, ',')),
+                'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug
+            );
+        }
+        return $spotlight_products;
     }
 }

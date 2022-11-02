@@ -800,7 +800,7 @@ class UserhomeController extends FrontController
         $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
 
         //spotLight
-        $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id);
+        $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim);
 // dd($spot_light_products);
         $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);
         $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
