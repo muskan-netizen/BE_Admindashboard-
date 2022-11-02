@@ -170,5 +170,26 @@ class HomePageLabelSeeder extends Seeder
             'order_by'   => 15,
             'created_at' => Carbon::now(),
         ]);
+
+        $already = HomePageLabel::where('slug', 'single_category_products')->count();
+        if($already == 0){
+            $home_page = HomePageLabel::insertGetId([
+                'title'      => 'Single Category Products',
+                'slug'       => 'single_category_products',
+                'order_by'   => 16,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+
+        $already = HomePageLabel::where('slug', 'selected_products')->count();
+        if($already == 0){
+            $home_page = HomePageLabel::insertGetId([
+                'title'      => 'Selected Products',
+                'slug'       => 'selected_products',
+                'order_by'   => 16,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+        
     }
 }

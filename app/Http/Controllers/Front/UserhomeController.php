@@ -801,6 +801,8 @@ class UserhomeController extends FrontController
 
         //spotLight
         $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim);
+        $single_category_products = $this->getSingleCategoryProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim);
+        $selected_products = $this->getSelectedProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim);
 // dd($spot_light_products);
         $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);
         $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
@@ -949,6 +951,8 @@ class UserhomeController extends FrontController
                 'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:[],
                 'best_sellers'     => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
                 'spotlight_deals'  => (!empty($spot_light_products) && count($spot_light_products) > 0)?$spot_light_products:[],
+                'single_category_products'  => (!empty($single_category_products) && count($single_category_products) > 0)?$single_category_products:[],
+                'selected_products'  => (!empty($selected_products) && count($selected_products) > 0)?$selected_products:[],
                 'recent_orders' => $activeOrders,
             ];
             // dd( $data);
