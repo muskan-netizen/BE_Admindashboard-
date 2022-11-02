@@ -29,8 +29,10 @@ use App\Exports\VendorSimpelExport;
 use App\Exports\VendorProductExport;
 use DB,Log;
 use App\Models\VendorRegistrationDocument;
+use App\Services\InventoryService;
 use App\Models\VendorSocialMediaUrls;
 use Exception;
+use Illuminate\Support\Facades\Http;
 
 class VendorController extends BaseController
 {
@@ -2414,6 +2416,26 @@ class VendorController extends BaseController
 
     public function vendorProductExport(Request $request) {
         return Excel::download(new VendorProductExport($request->id), 'vendor_products.xlsx');
+    }
+
+    public function getInvetoryToken()
+    {
+// dd("asdf");
+        $preference = InventoryService::checkIfInventoryOn();
+        if($preference){
+            $email = Auth::user()->email;
+           
+            $response = Http::get($preference->inventory_service_key_url."/admin/generate_inventory_login_token", [
+                'email' => $email
+            ]);
+            // $response->body();
+           $token =  $response->json();
+           
+            return response()->json(['success' => true,'data' => $token['data']?? null]);
+        }else{
+            return $this->errorResponse(['success' => false,'message'=>'Not Found'], 401);
+        }
+        
     }
 
 
