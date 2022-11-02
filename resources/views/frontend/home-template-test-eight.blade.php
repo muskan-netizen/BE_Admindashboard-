@@ -694,7 +694,7 @@
 		</section>
 		{{--  && (count($homePageData['nav_categories']) != 0) --}}
 		@elseif($homePageLabel->slug == 'nav_categories' && (count($homePageLabel->nav_categories) != 0))
-		<section class="popular-brands left-shape_ position-relative">
+		<section class="popular-brands left-shape_ position-relative categories">
 			<div class="container">
 				<div class="al_top_heading text-center d-flex align-items-center">
 					<h2 class="h2-heading">{{$homePageLabel->slug=='nav_categories' ? __('Categories') : __($homePageLabel->title)}}</h2>

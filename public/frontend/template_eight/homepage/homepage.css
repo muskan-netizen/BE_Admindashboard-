@@ -266,7 +266,7 @@ body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
 .al_body_template_eight .render_nav_categories .row .col{
     width:20%;
 }
-.popular-brands.left-shape_.position-relative {
+section.popular-brands.left-shape_.position-relative.categories{
     padding: 60px 0 !important;
     background: #d8d8d8;
 }
