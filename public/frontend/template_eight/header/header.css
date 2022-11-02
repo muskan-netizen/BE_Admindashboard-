@@ -284,6 +284,9 @@ body.al_body_template_eight ul#header_cart_main_ul li .total {
 .al_body_template_eight .menu-slider.slick-slider {
         display: none !important;
     }
+    .al_body_template_eight .al_toggle-menu {
+        top: -6px;
+    }
     header#al_new_design.site-header.fixed-bar {
         z-index: 999999999;
     }
