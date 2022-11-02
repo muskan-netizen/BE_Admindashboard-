@@ -1251,7 +1251,7 @@ class OrderController extends FrontController
                 }
                 $OrderVendor->fixed_fee = $fixedFeeAmount; 
                 $OrderVendor->additional_price = $additionalPrice; 
-                $OrderVendor->taxable_amount = $new_vendor_taxable_amount; 
+                $OrderVendor->taxable_amount = number_format($total_other_taxes, 2);; 
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->payable_amount = $vendor_payable_amount;
                 $OrderVendor->total_markup_price = $vendor_markup_amount;
