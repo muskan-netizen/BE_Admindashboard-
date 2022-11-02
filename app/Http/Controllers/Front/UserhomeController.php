@@ -800,9 +800,10 @@ class UserhomeController extends FrontController
         $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
 
         //spotLight
-        $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim);
-        $single_category_products = $this->getSingleCategoryProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim);
-        $selected_products = $this->getSelectedProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim);
+        $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
+        $single_category_products = $this->getSingleCategoryProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get single selected category's products
+        $selected_products = $this->getSelectedProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim);  // get selected products to display 
+        $popular_products = $this->getMostPopularProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim);  // get selected products to display 
 // dd($spot_light_products);
         $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);
         $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
@@ -953,6 +954,7 @@ class UserhomeController extends FrontController
                 'spotlight_deals'  => (!empty($spot_light_products) && count($spot_light_products) > 0)?$spot_light_products:[],
                 'single_category_products'  => (!empty($single_category_products) && count($single_category_products) > 0)?$single_category_products:[],
                 'selected_products'  => (!empty($selected_products) && count($selected_products) > 0)?$selected_products:[],
+                'most_popular_products'  => (!empty($popular_products) && count($popular_products) > 0)?$popular_products:[],
                 'recent_orders' => $activeOrders,
             ];
             // dd( $data);

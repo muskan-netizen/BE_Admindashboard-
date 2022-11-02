@@ -253,4 +253,61 @@ trait HomePageTrait
         }
         return $spotlight_products;
     }
+
+    public function getMostPopularProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim)
+    {
+        $products = Product::with([
+            'category.categoryDetail.translation' => function ($q) use ($language_id) {
+                $q->where('category_translations.language_id', $language_id);
+            },
+            'vendor',
+            'media' => function ($q) {
+                $q->groupBy('product_id');
+            }, 'media.image',
+            'translation' => function ($q) use ($language_id) {
+                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
+            },
+            
+        ])
+        ->selectRaw('product_variants.sku, product_id, quantity,compare_at_price,  price, barcode, (compare_at_price - price) as discount_amount, ((compare_at_price - price)/compare_at_price)*100 as discount_percentage,   products.id, products.sku, url_slug, weight_unit, weight, vendor_id, has_variant, has_inventory, sell_when_out_of_stock, requires_shipping, Requires_last_mile, averageRating, inquiry_only
+        ')
+        
+       ->join('product_variants', 'products.id', 'product_variants.product_id');
+        
+        $products = $products->whereHas('vendor', function ($q) use ( $vendor_ids) {
+            $q->where('status', 1);
+            $q->whereIn('vendors.id', $vendor_ids);
+        })->where('is_live', 1)
+        ->orderBy(DB::raw("((product_variants.compare_at_price - product_variants.price)/product_variants.compare_at_price)*100"), 'desc')
+        ->take(8)->get();
+       
+        if (!empty($products)) {
+            foreach ($products as $key => $value) {
+                foreach ($value->variant as $k => $v) {
+                    $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
+                }
+            }
+        }
+        $spotlight_products = [];
+        foreach ($products as  $product) {
+            $multiply = $product->variant->first()->multiplier ?? 1;
+            $title = $product->translation->first() ? $product->translation->first()->title : $product->sku;
+            $image_url = $product->media->first() && !is_null($product->media->first()->image) ? $product->media->first()->image->path['image_fit'] . $p_dim . $product->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $spotlight_products[] = array(
+                'tag_title' => $spotlight_products_title??'Most Popular Products',
+                'image_url' => $image_url,
+                'sku' => $product->sku,
+                'title' => Str::limit($title, 18, '..'),
+                'url_slug' => $product->url_slug,
+                'discount_percentage' => (int) $product->discount_percentage,
+                'averageRating' => number_format($product->averageRating, 1, '.', ''),
+                'inquiry_only' => $product->inquiry_only,
+                'vendor_name' => $product->vendor ? $product->vendor->name : '',
+                'vendor' => $product->vendor,
+                'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$product->variant->first()->price * $multiply, ',')),
+                'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug
+            );
+        }
+        return $spotlight_products;
+    }
 }

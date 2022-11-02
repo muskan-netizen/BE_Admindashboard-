@@ -139,6 +139,16 @@ class HomePageLabelSeederDefault extends Seeder
                 'created_at' => Carbon::now(),
             ]);
         }
+
+        $already = CabBookingLayout::where('slug', 'most_popular_products')->count();
+        if($already == 0){
+            $home_page = CabBookingLayout::insertGetId([
+                'title'      => 'Most Popular Products',
+                'slug'       => 'most_popular_products',
+                'order_by'   => 12,
+                'created_at' => Carbon::now(),
+            ]);
+        }
         
     }
 }
