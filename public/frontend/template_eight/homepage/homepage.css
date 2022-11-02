@@ -229,20 +229,58 @@ body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
     text-align: center;
     line-height: 220px;
 } */
-.Categories-section .bg-outter {
+.category-block .bg-outter {
     height: 250px;
     width: 220px;
     object-fit: cover;
     overflow: hidden;
     position: relative;
     z-index: 1;
+    margin: 0 auto;
 }
-.category-block .brand-ing img {
+.al_body_template_eight .category-block .brand-img {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+.al_body_template_eight .category-block .brand-img h6{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    color: #000;
+    font-size: 18px;
+    text-transform: capitalize;
+    font-weight: bold;
+}
+/* .category-block .brand-img img {
     position: absolute;
     top: 0;
     height: 225px;
     width: 206px;
     object-fit: cover;
+} */
+.al_body_template_eight .render_nav_categories .row{
+    flex-wrap:wrap;
+}
+.al_body_template_eight .render_nav_categories .row .col{
+    width:20%;
+}
+section.popular-brands.left-shape_.position-relative.categories{
+    padding: 60px 0 !important;
+    background: #d8d8d8;
+}
+.category-block .brand-img img {
+    position: absolute;
+    top: 40%;
+    height: 100px;
+    width: 100px;
+    object-fit: cover;
+    line-height: 100px;
+    text-align: center;
+    margin: 0 auto;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 article#page-container section .vendors section h2.h2-heading {
@@ -547,9 +585,38 @@ section#homepage_top_rated .slick-slider .slick-next {
     .al_mobile_menu {
         top: 18px;
     }
+    .al_body_template_eight .render_nav_categories .row .col {
+        width: 33%;
+        max-width: 33%;
+        flex: 33%;
+    }
+    .cab-banner-area .card-box {
+        padding: 15px;
+    }
+    .cab-footer button.btn.btn-solid {
+        padding: 14px 20px !important;
+    }
+    .al_body_template_eight article#page-container section .vendors section h2.h2-heading {
+        font-size: 22px;
+    }
+    .al_body_template_eight section#homepage_top_rated h2.h2-heading {
+        width: 80% !important;
+    }
 }
 /*----------------mobile view----------*/
 @media(max-width:767px){
+    .al_body_template_eight .render_nav_categories .row .col {
+        width: 50%;
+        max-width: 50%;
+        flex: 50%;
+    }
+    .category-block .bg-outter {
+        height: 175px;
+        width: 165px;
+    }
+    .category-block .bg-outter img {
+        width: 100%;
+    }
     .al_custom_brand .col-md-3 {
         width: 50%;
         max-width: 50%;
