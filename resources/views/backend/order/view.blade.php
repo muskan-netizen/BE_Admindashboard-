@@ -457,14 +457,27 @@ $timezone = Auth::user()->timezone;
                                         <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}{{decimal_format($vendor->orderDetail->loyalty_amount_saved??0.00)}})</td>
                                     </tr>
                                     @endif
-                                    @php
-                                        $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
-                                        
-                                        $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
-                                        // dump("revenue ".$revenue, " taxable_amount ".$taxable_amount, " container_charges ". $container_charges , " vendor_service_fee " .$vendor_service_fee , " delivery_fee " .$vendor->delivery_fee, " adminDiscount -". $adminDiscount, " # ".$adminRevenue);
-                                        // dd("sub_total ".$sub_total, " fixed_fee_amount ".$order->fixed_fee_amount, " taxable_amount ".$taxable_amount, " container_charges ".$container_charges, " vendor_service_fee ".$vendor_service_fee, " delivery_fee ".$vendor->delivery_fee, " adminRevenue -". $adminRevenue, " vendorDiscount -".$vendorDiscount, " # ".$storeRevenue);
+                                    @if($client_preference_detail->is_tax_price_inclusive)
+                                            
+                                        @php  //taxable_amount
+                                            $adminRevenue = ($revenue + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
 
-                                    @endphp
+                                            //taxable_amount
+                                            $storeRevenue = ($sub_total + $order->fixed_fee_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+                                    
+                                        @endphp
+
+                                    @else
+
+                                        @php
+
+                                            $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
+
+                                            $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+
+                                        @endphp
+                                    @endif
+
 
                                     {{-- @if(Auth::user()->is_superadmin) --}}
                                     <tr>
