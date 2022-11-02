@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\AhoyController;
-use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, Role, VendorSection,VendorMultiBanner};
+use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, Role, VendorSection,VendorMultiBanner, VendorMinAmount};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
 use App\Exports\VendorProductExport;
@@ -774,7 +774,18 @@ class VendorController extends BaseController
                     ->orderBy('client_languages.is_primary', 'desc')->get();
 
         $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
-        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'taxRates'=>$taxRates,'files'=>$files,'facilties'=>$facilties,'vendor_facilty_ids'=> $vendor_facilty_ids,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls,'client_languages'=>$client_languages]);
+
+        $roles = Role::get();
+        if($roles){
+            foreach($roles as $role){
+                $role->order_min_amount = VendorMinAmount::where('role_id', $role->id)->where('vendor_id', $id)->value('order_min_amount');
+            }
+        }
+
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
+
+        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'taxRates'=>$taxRates,'files'=>$files,'facilties'=>$facilties,'vendor_facilty_ids'=> $vendor_facilty_ids,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls,'client_languages'=>$client_languages, 'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference]);
     }
     // vendor product datatable
     public function VendorProductFilter(Request $request,$domain='',$vendor_id)
@@ -1293,6 +1304,17 @@ class VendorController extends BaseController
                 }
             }
         }
+
+        // vendor min amount by role
+        if(isset($request->order_min_amount_arr)){
+            $min_amounts = $request->order_min_amount_arr;
+            foreach($min_amounts  as $key => $min_amount ){
+                $where = ['vendor_id' => $id, 'role_id' => $key];
+                $create = ['vendor_id' => $id, 'role_id' => $key, 'order_min_amount' => $min_amount ];
+                VendorMinAmount::updateOrCreate($where, $create);
+            }
+        }
+        
         $return_json   = $request->has('return_json') && $request->return_json ? $request->return_json : 0;
         if($return_json ==  1 ){
             return $this->successResponse($vendor,__("Vendor update successfully!"));

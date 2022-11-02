@@ -890,6 +890,7 @@
     });
     function updatePrice()
     {
+        
         var variants = [];
         var options = [];
         $('.changeVariant').each(function() {
