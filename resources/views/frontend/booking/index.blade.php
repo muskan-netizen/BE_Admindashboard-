@@ -268,14 +268,7 @@
                                 <h4 class="m-0"><b><%= result.name %></b></h4>
                             </div>
                             <div class="col ride-price pl-2 text-right">
-                            <% if(result.per_tags_price < result.tags_price){ %>
-                                        <!-- <p class="mb-0 double_price_p">Maximum Price : <b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
-                                        <p class="mb-0 double_price_p">Minimum Price : <b>{{Session::get('currencySymbol')}}<%= result.per_tags_price%></b></p> -->
-                                        <p class="mb-0 double_price_p"><b>{{Session::get('currencySymbol')}}<%= result.per_tags_price%></b></p>
-                            <% } %>        
-                                        <p class="mb-0 single_price_p"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
-                                    
-                                <!-- <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p> -->
+                            <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
                             </div>
                         </div>
                     
@@ -317,15 +310,16 @@
                         <img src="<%= result.image_url %>">
                     </div>
                     <div class="cab-location-details">
+                    <div style="height:5px;"><div class="loader cab-detail-main-loader" style="display: none;"></div></div>
                     @if(isset($client_preference_detail) && $client_preference_detail->is_cab_pooling == 1)
                     <div class="show_no_of_seats_if_pooling" style="display:none;">
                         <div class="row mt-2">
-                            <div class="col-md-6">
+                            <div class="col-md-7">
                                 <div class="number_seats">
                                     <h5>Number Of Seats</h5>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <div class="input-get-value">
                                     <div class="input-group">
                                         <span class="input-group-btn">
@@ -333,7 +327,7 @@
                                                 <i class="fa fa-minus" aria-hidden="true"></i>
                                             </button>
                                         </span>
-                                        <input type="text" name="no_seats_for_pooling" class="form-control seats-number-up-down" value="1" min="1" max="<%= result.seats_for_booking%>">
+                                        <input type="text" name="no_seats_for_pooling" class="form-control seats-number-up-down text-center" value="<%= result.no_seats_for_pooling%>" min="1" max="<%= result.seats_for_booking%>">
                                         <span class="input-group-btn">
                                             <button type="button" class="btn btn-success btn-number-up-down" data-type="plus" data-field="no_seats_for_pooling">
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
@@ -550,6 +544,7 @@
             </div>
         </script>
 
+        
         <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
             <div class="promo-box style-4 d-none">
                 <a class="d-block mt-2 close-promo-code-detail-box" href="javascript:void(0)">✕</a>

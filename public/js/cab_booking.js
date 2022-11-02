@@ -172,8 +172,6 @@ $(document).ready(function () {
             time_zone = time_zone;
         }
 
-        // $('#pickup_now').attr('disabled', true);
-      //  $('#pickup_later').attr('disabled', true);
         var pickup_location_names = $('input[name="pickup_location_name[]"]').map(function(){return this.value;}).get();
         var destination_location_names = $('input[name="destination_location_name[]"]').map(function(){return this.value;}).get();
         var pickup_location_latitudes = $('input[name="pickup_location_latitude[]"]').map(function(){return this.value;}).get();
@@ -221,11 +219,14 @@ $(document).ready(function () {
         // return false;
         let friendName=$('input[name=friendName]').val();
         let friendPhoneNumber= $('input[name=friendPhoneNumber]').val();
+
+        var no_seats_for_pooling = $('input[name="no_seats_for_pooling"]').val();
+        var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,type:type,friendName:friendName,friendPhoneNumber:friendPhoneNumber},
+            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
@@ -613,7 +614,7 @@ $(document).ready(function () {
 
     $(document).on("click",".btn-number-up-down",function(e){
         e.preventDefault();
-        
+        var product_id = $("#pickup_now").attr('data-product_id');
         fieldName = $(this).attr('data-field');
         type      = $(this).attr('data-type');
         var input = $("input[name='"+fieldName+"']");
@@ -623,6 +624,8 @@ $(document).ready(function () {
                 
                 if(currentVal > input.attr('min')) {
                     input.val(currentVal - 1).change();
+                    $(".cab-detail-main-loader").show();
+                    getVehicleDetail(product_id);
                 } 
                 if(parseInt(input.val()) == input.attr('min')) {
                     //$(this).attr('disabled', true);
@@ -632,27 +635,17 @@ $(document).ready(function () {
     
                 if(currentVal < input.attr('max')) {
                     input.val(currentVal + 1).change();
+                    $(".cab-detail-main-loader").show();
+                    getVehicleDetail(product_id);
                 }
                 if(parseInt(input.val()) == input.attr('max')) {
                     //$(this).attr('disabled', true);
                 }
-    
+
             }
         } else {
             input.val(1);
         }
-        var input_seats           = input.val();if(isNaN(input_seats)){input_seats = 1;input.val(1);}
-        var hddn_amount_less_toll = parseFloat($("#hddn_amount_less_toll").val());if(isNaN(hddn_amount_less_toll)){hddn_amount_less_toll = 0;}
-        var hddn_amount_toll_fee  = parseFloat($("#hddn_amount_toll_fee").val());if(isNaN(hddn_amount_toll_fee)){hddn_amount_toll_fee = 0;}
-        var hddn_real_amount      = parseFloat($("#hddn_real_amount").val());if(isNaN(hddn_real_amount)){hddn_real_amount = 0;}
-        
-        hddn_amount_less_toll     = parseFloat(hddn_amount_less_toll)*parseFloat(input_seats);if(isNaN(hddn_amount_less_toll)){hddn_amount_less_toll = 0;}
-        hddn_amount_toll_fee      = parseFloat(hddn_amount_toll_fee)*parseFloat(input_seats);if(isNaN(hddn_amount_toll_fee)){hddn_amount_toll_fee = 0;}
-        hddn_real_amount          = parseFloat(hddn_real_amount)*parseFloat(input_seats);if(isNaN(hddn_real_amount)){hddn_real_amount = 0;}
-       
-        $("#real_amount_less_toll").text($("#hddn_currency_symbol").val()+""+hddn_amount_less_toll.toFixed(2));
-        $("#real_amount_toll_fee").text($("#hddn_currency_symbol").val()+""+hddn_amount_toll_fee.toFixed(2));
-        $("#real_amount").text($("#hddn_currency_symbol").val()+""+hddn_real_amount.toFixed(2));
     });
 
     $(document).on("click","#submit_product_rider_button",function(){
@@ -673,7 +666,7 @@ $(document).ready(function () {
             utilsScript: utilsScript_path,
             initialCountry: initial_country_code, 
         });
-    })
+    });
     $(document).delegate('.iti__country','click', function() {
         var code = $(this).attr('data-country-code');
         $('#countryData').val(code);
@@ -710,7 +703,7 @@ $(document).ready(function () {
                 $(".loader_box").hide();
             }
         });
-    })
+    });
     $(document).on('click','.deleteRider',function(){
         var parent = $(this).parent()[0];
         var rider_id = $(this).data('id');
@@ -774,6 +767,7 @@ $(document).ready(function () {
             locations.push(data);
         });
         var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
+        $('input[name="no_seats_for_pooling"]').val(1);
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -929,7 +923,7 @@ $(document).ready(function () {
         let product_id = $(this).data('product_id');
         getVehicleDetail(product_id);
     });
-    function getVehicleDetail(product_id,rider_id=0)
+    function getVehicleDetail(product_id, rider_id=0)
     {
         $('.cab-booking-main-loader').show();
         var locations = [];
@@ -955,13 +949,15 @@ $(document).ready(function () {
         if(schedule_datetimeset != undefined && schedule_datetimeset != 0){
             schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
         }
+        var no_seats_for_pooling = $('input[name="no_seats_for_pooling"]').val();
         var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling},
+            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling, no_seats_for_pooling:no_seats_for_pooling},
             url: get_product_detail+'/'+product_id,
             success: function(response) {
+                $(".cab-detail-main-loader").hide();
                 if(response.status == 'Success'){
                     $('#cab_detail_box').html('');
                     $('.cab-booking-main-loader').hide();

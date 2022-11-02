@@ -168,13 +168,14 @@ class PickupDeliveryController extends FrontController{
         
         //for cab pooling
         $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
-        
+        $no_seats_for_pooling = isset($request->no_seats_for_pooling)?$request->no_seats_for_pooling:1;
+        $product->no_seats_for_pooling = $no_seats_for_pooling;
         if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
         {
-            $product->original_tags_price = decimal_format(($product->original_tags_price/$product->seats_for_booking));
-            $product->tags_price = decimal_format(($product->tags_price/$product->seats_for_booking));
-            $product->toll_fee = decimal_format(($product->toll_fee/$product->seats_for_booking));
-            $product->toll_less_tags_price = decimal_format(($product->toll_less_tags_price/$product->seats_for_booking));
+            $product->original_tags_price = decimal_format(($product->original_tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
+            $product->tags_price = decimal_format(($product->tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
+            $product->toll_fee = decimal_format(($product->toll_fee/$product->seats_for_booking)*$no_seats_for_pooling);
+            $product->toll_less_tags_price = decimal_format(($product->toll_less_tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
         }
 
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
@@ -307,8 +308,11 @@ class PickupDeliveryController extends FrontController{
                     $product->description = $product->translation->first() ? $product->translation->first()->meta_description :'';
                     $product->original_tags_price = $tags_price['delivery_fee'] + $tags_price['toll_fee'];
                     $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
-                    $product->per_tags_price = decimal_format($product->original_tags_price/$product->seats_for_booking);
-                    $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
+                    if(isset($request->is_cab_pooling) && $request->is_cab_pooling==1){
+                        $product->tags_price = decimal_format(($tags_price['delivery_fee'] + $tags_price['toll_fee'])/$product->seats_for_booking);
+                    }else{
+                        $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
+                    }
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->price = $product->tags_price;
@@ -444,7 +448,6 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
-         //pr($request->all());
         DB::beginTransaction();
         try {
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -458,9 +461,7 @@ class PickupDeliveryController extends FrontController{
           
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
-            // $orderrequest = new Request($order_place['data']->toArray());
-            // return $this->orderUpdateAfterPaymentPickupDelivery($orderrequest);
-            //pr($order_place);
+            
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
@@ -696,6 +697,8 @@ class PickupDeliveryController extends FrontController{
                 $order_product->created_by = null;
                 $order_product->variant_id = $variant->id;
                 $order_product->product_name = $product->sku;
+                $order_product->no_seats_for_pooling = isset($request->no_seats_for_pooling)?$request->no_seats_for_pooling:0;
+                $order_product->is_cab_pooling = isset($request->is_cab_pooling)?$request->is_cab_pooling:0;
 
                 if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
                 $user_product_order_form = json_encode($request->user_product_order_form);
@@ -910,7 +913,10 @@ class PickupDeliveryController extends FrontController{
                     'user_icon' => $customer->image,
                     'toll_passes' => 'IN_FASTAG',
                     'VehicleEmissionType' => 'GASOLINE',
-                    'travelMode' => 'TAXI'
+                    'travelMode' => 'TAXI',
+                    'no_seats_for_pooling' => isset($request->no_seats_for_pooling)?$request->no_seats_for_pooling:0,
+                    'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
+                    'available_seats' => $product->seats_for_booking,
                 ];
                 
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
