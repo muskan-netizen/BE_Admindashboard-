@@ -130,7 +130,7 @@ class ProductController extends FrontController{
             }]);
         }
         
-        $product = $product->with('related')->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags' )
+        $product = $product->with('related')->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags', 'brand_id', 'category_id' )
             ->whereHas('vendor',function($q) use($vendor){
                 $q->where('slug',$vendor);
             })->where('url_slug', $url_slug)
@@ -283,7 +283,20 @@ class ProductController extends FrontController{
             }else{
                 $product_page = "product";
             }
-            return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference]);
+            
+            $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = '';
+            $suggested_product = Product::with('media.image');
+            // dd($product->id);
+            if( !empty($product->category_id) ) 
+                $suggested_category_products = Product::with('media.image')->where('category_id', $product->category_id)->orderby('id', 'desc')->limit(20)->get();
+
+            if( !empty($product->brand_id) ) 
+                $suggested_brand_products = Product::with('media.image')->where('brand_id', $product->brand_id)->select('id')->orderby('id', 'desc')->limit(20)->get();
+            
+            if( !empty($product->vendor_id) ) 
+                $suggested_vendor_products = Product::with('media.image')->where('vendor_id', $product->vendor_id)->select('id')->orderby('id', 'desc')->limit(20)->get();
+            // dd($product);
+            return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products]);
 
         }
    }

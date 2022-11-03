@@ -479,6 +479,203 @@
                                             <!-- </ul>   -->
                                         </div>
                                     </div>
+
+                                    {{-- Category Related Product  --}}
+                                    
+                                    <div class="category-related-product">
+                                        @if( !empty($suggested_category_products) )
+                                            @foreach($suggested_category_products as $scp)
+                                            <div class="product-card-box position-relative al_box_third_template al" style="width: 100%; display: inline-block;">
+                                                <a class="common-product-box text-center" href="" tabindex="-1">                                                        
+                                                    <div class="img-outer-box position-relative"> 
+                                                        @if(count($scp->media) > 0)
+                                                            <div class="exzoom_nav">
+                                                                @if(!empty($scp->media))
+                                                                @foreach($scp->media as $k => $image)
+                                                                @php
+                                                                    if(isset($image->pimage))
+                                                                        $img = $image->pimage->image;
+                                                                    else
+                                                                        $img = $image->image;
+                                                                @endphp
+                                                                    @if(!is_null($img))
+                                                                    <span class="">
+                                                                        <img class="blur-up lazyloaded pro_imgs myimage1"
+                                                                            data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}"
+                                                                            width="60" height="60"
+                                                                            src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
+                                                                    </span>
+                                                                    @endif
+                                                                @endforeach
+                                                            @endif
+                                                            </div>
+                                                            <p class="exzoom_btn">
+                                                                <a href="javascript:void(0);" class="exzoom_prev_btn">
+                                                                    < </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
+                                                                </a>
+                                                            </p>
+                                                            @endif
+
+                                                        <div class="pref-timing"> </div>
+                                                    </div>
+                                                    <div class="media-body align-self-start">
+                                                        <div class="inner_spacing px-0">
+                                                            <div class="product-description">
+                                                                <div class="d-flex align-items-center justify-content-between">
+                                                                    <h6 class="card_title ellips">{{ (!empty($scp->translation) && isset($scp->translation[0])) ? $scp->translation[0]->meta_description : ''}}</h6>                             
+                                                                </div>
+                                                                <div class="product-description_list border-bottom">
+                                                                    <p>
+                                                                        {{$product->vendor->name}}
+                                                                    </p>
+                                                                    <p class="al_product_category">
+                                                                        <span>
+                                                                    In
+                                                                    {{optional($scp->categoryName)->name ?? ''}}</span>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="d-flex align-items-center justify-content-between al_clock pt-2">
+                                                                    <b>{{Session::get('currencySymbol')}} {{decimal_format($scp->variant[0]->compare_at_price * $scp->variant[0]->multiplier)}} </b>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+
+                                    {{-- Brand Related Product  --}}
+                                    <div class="category-related-product">
+                                        @if( !empty($suggested_brand_products) )
+                                            @foreach($suggested_brand_products as $sbp)
+                                                <div class="product-card-box position-relative al_box_third_template al" style="width: 100%; display: inline-block;">
+                                                    <a class="common-product-box text-center" href="" tabindex="-1">                                                        
+                                                        <div class="img-outer-box position-relative"> 
+                                                            @if(count($sbp->media) > 0)
+                                                                <div class="exzoom_nav">
+                                                                    @if(!empty($sbp->media))
+                                                                    @foreach($sbp->media as $k => $image)
+                                                                    @php
+                                                                        if(isset($image->pimage))
+                                                                            $img = $image->pimage->image;
+                                                                        else
+                                                                            $img = $image->image;
+                                                                    @endphp
+                                                                        @if(!is_null($img))
+                                                                        <span class="">
+                                                                            <img class="blur-up lazyloaded pro_imgs myimage1"
+                                                                                data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}"
+                                                                                width="60" height="60"
+                                                                                src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
+                                                                        </span>
+                                                                        @endif
+                                                                    @endforeach
+                                                                @endif
+                                                                </div>
+                                                                <p class="exzoom_btn">
+                                                                    <a href="javascript:void(0);" class="exzoom_prev_btn">
+                                                                        < </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
+                                                                    </a>
+                                                                </p>
+                                                                @endif
+
+                                                            <div class="pref-timing"> </div>
+                                                        </div>
+                                                        <div class="media-body align-self-start">
+                                                            <div class="inner_spacing px-0">
+                                                                <div class="product-description">
+                                                                    <div class="d-flex align-items-center justify-content-between">
+                                                                        <h6 class="card_title ellips">{{ (!empty($sbp->translation) && isset($sbp->translation[0])) ? $sbp->translation[0]->meta_description : ''}}</h6>                             
+                                                                    </div>
+                                                                    <div class="product-description_list border-bottom">
+                                                                        <p>
+                                                                            {{$product->vendor->name}}
+                                                                        </p>
+                                                                        <p class="al_product_category">
+                                                                            <span>
+                                                                        In
+                                                                        {{optional($sbp->categoryName)->name ?? ''}}</span>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="d-flex align-items-center justify-content-between al_clock pt-2">
+                                                                        <b>{{Session::get('currencySymbol')}} {{decimal_format($sbp->variant[0]->compare_at_price * $sbp->variant[0]->multiplier)}} </b>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+
+                                    {{-- Vendor Realted Product --}}
+
+                                    <div class="category-related-product">
+                                        @if( !empty($suggested_vendor_products) )
+                                            @foreach($suggested_vendor_products as $svp)
+                                                <div class="product-card-box position-relative al_box_third_template al" style="width: 100%; display: inline-block;">
+                                                    <a class="common-product-box text-center" href="" tabindex="-1">                                                        
+                                                        <div class="img-outer-box position-relative"> 
+                                                            @if(count($svp->media) > 0)
+                                                                <div class="exzoom_nav">
+                                                                    @if(!empty($svp->media))
+                                                                    @foreach($svp->media as $k => $image)
+                                                                    @php
+                                                                        if(isset($image->pimage))
+                                                                            $img = $image->pimage->image;
+                                                                        else
+                                                                            $img = $image->image;
+                                                                    @endphp
+                                                                        @if(!is_null($img))
+                                                                        <span class="">
+                                                                            <img class="blur-up lazyloaded pro_imgs myimage1"
+                                                                                data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}"
+                                                                                width="60" height="60"
+                                                                                src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
+                                                                        </span>
+                                                                        @endif
+                                                                    @endforeach
+                                                                @endif
+                                                                </div>
+                                                                <p class="exzoom_btn">
+                                                                    <a href="javascript:void(0);" class="exzoom_prev_btn">
+                                                                        < </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
+                                                                    </a>
+                                                                </p>
+                                                                @endif
+
+                                                            <div class="pref-timing"> </div>
+                                                        </div>
+                                                        <div class="media-body align-self-start">
+                                                            <div class="inner_spacing px-0">
+                                                                <div class="product-description">
+                                                                    <div class="d-flex align-items-center justify-content-between">
+                                                                        <h6 class="card_title ellips">{{ (!empty($svp->translation) && isset($svp->translation[0])) ? $svp->translation[0]->meta_description : ''}}</h6>                             
+                                                                    </div>
+                                                                    <div class="product-description_list border-bottom">
+                                                                        <p>
+                                                                            {{$product->vendor->name}}
+                                                                        </p>
+                                                                        <p class="al_product_category">
+                                                                            <span>
+                                                                        In
+                                                                        {{optional($svp->categoryName)->name ?? ''}}</span>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="d-flex align-items-center justify-content-between al_clock pt-2">
+                                                                        <b>{{Session::get('currencySymbol')}} {{decimal_format($svp->variant[0]->compare_at_price * $svp->variant[0]->multiplier)}} </b>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
