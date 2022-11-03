@@ -721,6 +721,7 @@ section.main-product.mb-0.render_full_new_products h2.h2-heading {
         margin: 0 auto;
         position: inherit;
         transform: translate(0);
+        border-radius: 10px;
     }
     .al_body_template_eight section.cab-banner-area.alTaxiBannerStart .container.p-64 {
         padding: 20px !important;
