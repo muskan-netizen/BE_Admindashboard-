@@ -209,12 +209,28 @@
                     </div>
                     @endif
 
-                     <div class="col-md-12">
-                        <div class="form-group" id="order_min_amountInput">
-                            {!! Form::label('title',  __('Absolute Min Order Value [AMOV]'),['class' => 'control-label']) !!}
-                            <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{$vendor->order_min_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')
+                        @if(isset($roles))
+                            @foreach($roles as $role)
+                                <div class="col-md-12">
+                                    <div class="form-group" id="order_min_amountInput">
+                                        @php
+                                            $label = 'Absolute Min Order Value ['.$role->role.']';
+                                        @endphp
+                                        {!! Form::label('title',  $label,['class' => 'control-label']) !!}
+                                        <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount_arr[{{$role->id}}]" type="text" value="{{$role->order_min_amount ?? '0.00' }}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    @else
+                        <div class="col-md-12">
+                            <div class="form-group" id="order_min_amountInput">
+                                {!! Form::label('title',  __('Absolute Min Order Value [AMOV]'),['class' => 'control-label']) !!}
+                                <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{$vendor->order_min_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
 
                     @if($client_preference_detail->static_delivey_fee == 1)

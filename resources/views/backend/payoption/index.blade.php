@@ -1197,6 +1197,31 @@
                     @endif
 
 
+                    @if ( (strtolower($opt->code) == 'razorpay') )
+                    <div class="2" id="razorpay_payout_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="razorpay_payout_api_key" class="mr-3">{{ __("API Key") }}</label>
+                                    <input type="text" name="razorpay_payout_api_key" id="razorpay_payout_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="razorpay_payout_secret_key" class="mr-3">{{ __("API Secret Key") }}</label>
+                                    <input type="text" name="razorpay_payout_secret_key" id="razorpay_payout_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                            <h6 class="mt-3">
+                                <span>{{ __('Webhook Url') }} : </span>
+                                <a href="javascript:;" class="webhook_url"><span id="pwd_spn" class="password-span">{{route('payment.razorpay.payout.notify')}}</span></a>
+                            </h6>
+                        </div>
+                    </div>
+                    @endif
+
+
                 </div>
             </div>
             @endforeach
