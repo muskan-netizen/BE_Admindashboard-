@@ -14,7 +14,7 @@ class AddTollPriceInOrderVendorProductsTable extends Migration
     public function up()
     {
         Schema::table('order_vendor_products', function (Blueprint $table) {
-            $table->decimal('toll_price', 16, 8)->nullable()->default(0);
+            // $table->decimal('toll_price', 16, 8)->nullable()->default(0);
         });
     }
 

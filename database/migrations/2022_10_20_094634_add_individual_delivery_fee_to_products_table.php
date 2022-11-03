@@ -14,7 +14,7 @@ class AddIndividualDeliveryFeeToProductsTable extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->tinyInteger('individual_delivery_fee')->nullable()->default(0)->comment('0-No, 1-Yes');
+            // $table->tinyInteger('individual_delivery_fee')->nullable()->default(0)->comment('0-No, 1-Yes');
         });
     }
 

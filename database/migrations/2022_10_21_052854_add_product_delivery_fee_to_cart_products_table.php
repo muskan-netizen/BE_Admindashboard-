@@ -14,7 +14,7 @@ class AddProductDeliveryFeeToCartProductsTable extends Migration
     public function up()
     {
         Schema::table('cart_products', function (Blueprint $table) {
-            $table->decimal('product_delivery_fee', 16, 8)->nullable()->default(0);
+            // $table->decimal('product_delivery_fee', 16, 8)->nullable()->default(0);
         });
     }
 
