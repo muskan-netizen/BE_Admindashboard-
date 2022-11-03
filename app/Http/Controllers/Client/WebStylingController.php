@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory,WebStyling,WebStylingOption};
+use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, Product, WebStyling,WebStylingOption};
 use Illuminate\Http\Request;
 use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use DB,Log;
+use Session;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\HomePage\WebStylingTrait;
 class WebStylingController extends BaseController{
@@ -22,7 +23,6 @@ class WebStylingController extends BaseController{
     public function index()
     {
         $client_preferences = ClientPreference::first();
-
         switch($client_preferences->business_type){
             case "taxi":
             $home_page_labels = HomePageLabel::whereIn('slug',['dynamic_page','pickup_delivery'])->with('translations')->orderBy('order_by');
@@ -71,6 +71,8 @@ class WebStylingController extends BaseController{
        $slug = 'single_category_products';
        $single_category_products = $this->getCategories($slug); // get categories listing for single cat products  section 
        $selected_single_category_products = $this->getSingleCategoryProducts($slug); // get categories listing for single cat products  section 
+
+       
        
 
         return view('backend/web_styling/index')->with(['clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'payment_methods' => $payment_methods,'themeId'=>$themeId, 'single_category_products'=> $single_category_products, 'selected_single_category_products' => $selected_single_category_products]);
@@ -382,6 +384,10 @@ class WebStylingController extends BaseController{
 
 
         }
+        if(@$request->product_category){
+            $this->updateSingleCategoryProductsToDb($request);
+        }
+        
 
         foreach ($request->pickup_labels as $key => $value) {
 
@@ -469,6 +475,27 @@ class WebStylingController extends BaseController{
             $banner = CabBookingLayout::where('id',$request->id)->first();
 
             $returnHTML = view('backend.web_styling.image-edit-modal')->with(['banner' => $banner])->render();
+            return response()->json(array('success' => true, 'html'=>$returnHTML));
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * get Layout background image in Modal
+    */
+    public function getProductDatainModal(Request $request){
+        try {
+            $language_id = Session::get('customerLanguage') ?? 1;
+            $products = Product::with([
+                'translation' => function ($q) use ($language_id){
+                    $q->select('product_id', 'title')->where('language_id', $language_id);
+                }])->select('id')
+                    ->where('is_live', 1)
+                    ->get();
+
+            $returnHTML = view('backend.web_styling.product-modal.blade')->with(['products' => $products])->render();
             return response()->json(array('success' => true, 'html'=>$returnHTML));
 
         } catch (Exception $e) {
@@ -573,18 +600,9 @@ class WebStylingController extends BaseController{
         return redirect()->back()->with('success', 'Contact Us Updated successfully!');
     }
 
-    public function updateSingleCategoryProducts(Request $request){
-        $rules = array(
-            'slug' => 'required',
-            'product_category' => 'required',
-            'title' => 'required',
-        );
-        $validation  = Validator::make($request->all(), $rules);
-        if ($validation->fails()) {
-            return redirect()->back()->withInput()->withErrors($validation);
-        }
-      
-        $this->updateSingleCategoryProductsToDb($request);
-        return redirect()->back()->with('success', 'Category Updated successfully!');
-    }
+    // public function updateSingleCategoryProducts(Request $request){
+        
+        
+    //     return redirect()->back()->with('success', 'Category Updated successfully!');
+    // }
 }

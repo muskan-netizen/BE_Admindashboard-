@@ -130,6 +130,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('web-styling/updateWebStylesNew', 'Client\WebStylingController@updateWebStylesNew')->name('styling.updateWebStylesNew');
         Route::get('web-styling/get-html-data-in-modal', 'Client\WebStylingController@getHtmlDatainModal')->name('get-html-data-in-modal');
         Route::get('web-styling/get-image-data-in-modal', 'Client\WebStylingController@getImageDatainModal')->name('get-image-data-in-modal');
+        Route::get('web-styling/get-product-data-in-modal', 'Client\WebStylingController@getProductDatainModal')->name('get-product-data-in-modal');
         Route::put('web-styling/update-image-data-in-modal', 'Client\WebStylingController@updateImageDatainModal')->name('update-image-data-in-modal');
         Route::post('web-styling/updateDarkMode', 'Client\WebStylingController@updateDarkMode')->name('styling.updateDarkMode');
         Route::post('homepagelabel/saveOrder', 'Client\WebStylingController@saveOrder');

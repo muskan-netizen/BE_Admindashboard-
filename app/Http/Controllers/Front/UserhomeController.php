@@ -802,9 +802,15 @@ class UserhomeController extends FrontController
         //spotLight
         if($this->checkTemplateForAction(8)){
             $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
-            $single_category_products = $this->getSingleCategoryProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get single selected category's products
-            $selected_products = $this->getSelectedProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim);  // get selected products to display 
-            $popular_products = $this->getMostPopularProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim);  // get selected products to display 
+
+            $single_category_product_ids = $this->getSingleCategoryProducts(); // get single selected category's products
+            $single_category_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $single_category_product_ids);
+            
+            $selected_product_ids = $this->getSelectedProducts(); // get single selected category's products
+            $selected_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $selected_product_ids);
+
+            $popular_product_ids = $this->getSingleCategoryProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim);  // get selected products to display 
+            $popular_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $popular_product_ids);
         }
 // dd($spot_light_products);
         $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);

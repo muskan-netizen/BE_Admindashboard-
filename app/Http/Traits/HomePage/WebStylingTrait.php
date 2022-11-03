@@ -32,7 +32,7 @@ trait WebStylingTrait
     public function getCategories($slug)
     {
         $single_category_products = [];
-        
+
         if ($this->homePageLabelExists($slug)) {
             $single_category_products['categories'] = $this->getCategoryListing();
             $single_category_products['slug'] = $slug;
@@ -42,15 +42,21 @@ trait WebStylingTrait
 
     public function updateSingleCategoryProductsToDb($request)
     {
-        HomeProduct::updateOrCreate(
-            ['slug' => $request->slug],
-            ['category_id' => $request->product_category,'title' => $request->title]
-        );
+        if (checkColumnExists('home_products', 'slug')) {
+            $insert = ['slug' => 'single_category_products', 'product_category' => $request->product_category];
+            HomeProduct::updateOrCreate(
+                ['slug' => $insert['slug']],
+                ['category_id' => $insert['product_category']]
+            );
+        }
         return true;
     }
 
     public function getSingleCategoryProducts($slug)
     {
-       return HomeProduct::where('slug', $slug)->first();
+        if (checkColumnExists('home_products', 'slug')) {
+            return HomeProduct::where('slug', $slug)->first();
+        }
+        return [];
     }
 }
