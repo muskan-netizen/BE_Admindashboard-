@@ -2,7 +2,7 @@
 
 namespace App\Http\Traits\HomePage;
 
-use App\Models\{HomeProduct, Product, ProductCategory, Vendor, VendorCategory};
+use App\Models\{HomeProduct, OrderProductRating, OrderVendorProduct, Product, ProductCategory, ProductRecentlyViewed, Vendor, VendorCategory};
 use Carbon\Carbon;
 use Session, DB;
 use Illuminate\Support\Str;
@@ -195,23 +195,28 @@ trait HomePageTrait
     {
         $product_ids = [];
         if (checkColumnExists('home_products', 'slug')) {
-            $single_category_products = HomeProduct::whereSlug('single_category_products')->first();
-        }
-        if (@$single_category_products) {
-            $product_ids = ProductCategory::select('product_id')->where('category_id', $single_category_products->category_id)->get();
+            $single_category_products = HomeProduct::whereSlug('selected_products')->first();
+            $product_ids = json_decode($single_category_products->products);
         }
         return $product_ids;
     }
 
-    public function getMostPopularProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim)
+    public function getMostPopularProducts()
     {
         $product_ids = [];
-        if (checkColumnExists('home_products', 'slug')) {
-            $single_category_products = HomeProduct::whereSlug('single_category_products')->first();
-        }
-        if (@$single_category_products) {
-            $product_ids = ProductCategory::select('product_id')->where('category_id', $single_category_products->category_id)->get();
-        }
+        $most_sold = OrderVendorProduct::selectRaw('id, product_id, count(product_id) as total')->whereHas('statusDelievered')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id');
+        // dd($most_sold);
+        $most_viewed = ProductRecentlyViewed::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id');
+
+        $product_ids = $most_sold->merge($most_viewed);
+        return $product_ids;
+    }
+
+
+    public function getTopRatedProducts()
+    {
+        
+        $product_ids = OrderProductRating::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id');
         return $product_ids;
     }
 }

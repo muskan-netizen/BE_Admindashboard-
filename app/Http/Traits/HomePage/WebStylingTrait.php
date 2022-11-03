@@ -59,4 +59,14 @@ trait WebStylingTrait
         }
         return [];
     }
+
+    public function getSelectedProducts()
+    {
+        $product_ids = [];
+        if (checkColumnExists('home_products', 'slug')) {
+            $single_category_products = HomeProduct::whereSlug('selected_products')->first();
+            $product_ids = json_decode($single_category_products->products);
+        }
+        return $product_ids;
+    }
 }

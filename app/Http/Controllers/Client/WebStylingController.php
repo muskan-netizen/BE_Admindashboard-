@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, Product, WebStyling,WebStylingOption};
+use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, HomeProduct, Product, WebStyling,WebStylingOption};
 use Illuminate\Http\Request;
 use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
@@ -483,7 +483,7 @@ class WebStylingController extends BaseController{
     }
 
     /**
-     * get Layout background image in Modal
+     * get Products for selected product home section
     */
     public function getProductDatainModal(Request $request){
         try {
@@ -494,13 +494,35 @@ class WebStylingController extends BaseController{
                 }])->select('id')
                     ->where('is_live', 1)
                     ->get();
-
-            $returnHTML = view('backend.web_styling.product-modal.blade')->with(['products' => $products])->render();
+                   $selectedProducts =  $this->getSelectedProducts();
+            $returnHTML = view('backend.web_styling.product-modal')->with(['products' => $products, 'selectedProducts' => $selectedProducts])->render();
             return response()->json(array('success' => true, 'html'=>$returnHTML));
 
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+    }
+
+    /**
+     * updateProduct Data in Modal
+    */
+    public function updateProductsDatainModal(Request $request){
+
+        if ($request->has('product_ids')) {    /* upload logo file */
+            $rules['product_ids'] =  'required';
+        }
+        $validation  = Validator::make($request->all(), $rules)->validate();
+        if (checkColumnExists('home_products', 'slug')) {
+            $insert = ['slug' => 'selected_products', 'products' => json_encode($request->product_ids)];
+            HomeProduct::updateOrCreate(
+                ['slug' => $insert['slug']],
+                ['products' => $insert['products']]
+            );
+        }
+        return response()->json([
+            'status'=>'success',
+            'message' => __('Products updated Successfully!')
+        ]);
     }
 
       /**

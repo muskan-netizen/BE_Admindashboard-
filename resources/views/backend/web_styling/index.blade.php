@@ -433,7 +433,7 @@
                                 @endif
 
                                 @if($home_page_label->slug == 'selected_products')
-                                <a class="action-icon openBannerModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
+                                <a class="action-icon openProductsModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
                                 @endif
@@ -557,14 +557,14 @@
                 <h4 class="modal-title">{{ __("Edit Background Image") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
-            <form id="save_home_products_form" method="post" enctype="multipart/form-data">
+            <form id="save_edit_banner_form" method="post" enctype="multipart/form-data">
                 @csrf
                 @method('POST')
                 <div class="modal-body" id="editCardBox">
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light submitHomeProductsForm">{{ __("Submit") }}</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light submitEditForm">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>
@@ -578,14 +578,14 @@
                 <h4 class="modal-title">{{ __("Add Products") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
-            <form id="save_edit_banner_form" method="post" enctype="multipart/form-data">
+            <form id="save_home_products_form" method="post" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
-                <div class="modal-body" id="editCardBox">
+                <div class="modal-body" id="editProductsBox">
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light submitEditForm">{{ __("Submit") }}</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light submitHomeProductsForm">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>
@@ -1033,7 +1033,7 @@ $(document).on('click', '.deletePickupSection', function() {
         });
     });
 
-    $(".openBannerModal").click(function (e) {
+    $(".openProductsModal").click(function (e) {
 
     $.ajaxSetup({
         headers: {
@@ -1057,16 +1057,14 @@ $(document).on('click', '.deletePickupSection', function() {
         },
         success: function (data) {
             if(uid > 0){
-                $('#edit-form #editCardBox').html(data.html);
-                $('#edit-form').modal({
+                $('#home_products #editProductsBox').html(data.html);
+                $('#home_products').modal({
                     backdrop: 'static',
                     keyboard: false
                 });
 
             }
-            // var now = new Date();
-            // runPicker();
-            $('.dropify').dropify();
+           
         },
         error: function (data) {
             console.log('data2');
@@ -1084,6 +1082,15 @@ $(document).on('click', '.deletePickupSection', function() {
         var form =  document.getElementById('save_edit_banner_form');
         var formData = new FormData(form);
         var url =  "{{route('update-image-data-in-modal')}}";
+        saveData(formData, 'edit', url);
+
+    });
+
+    $(document).on('click', '.submitHomeProductsForm', function(e) {
+        e.preventDefault();
+        var form =  document.getElementById('save_home_products_form');
+        var formData = new FormData(form);
+        var url =  "{{route('update-products-data-in-modal')}}";
         saveData(formData, 'edit', url);
 
     });
