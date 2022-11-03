@@ -121,7 +121,7 @@ trait ProductActionTrait{
             ]);
         }
     }
-    public function productvendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type,$p_dim)
+    public function productvendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type,$p_dim,$is_paginate = '')
     {
         try {
                 $recent_ids = $this->getRecentProductIds();
@@ -131,6 +131,7 @@ trait ProductActionTrait{
                 } else {
                     return [];
                 }
+                $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 30;
                 $products = Product::byProductCategoryServiceType($type)->with([
                     'category.categoryDetail.translation' => function ($q) use ($langId) {
                         $q->where('category_translations.language_id', $langId);
@@ -163,7 +164,26 @@ trait ProductActionTrait{
                             $q->where('status',1);
                             $q->whereIn('id',$venderIds);
                             $q->where($type, 1);
-                        })->where('is_live', 1)->take(10)->inRandomOrder()->get();
+                        })->where('is_live', 1);
+                if($is_paginate ==1){
+                    $products  =  $products->paginate($pagiNate);
+                    foreach ($products as $key => $value) {
+                        $multiply = Session::get('currencyMultiplier') ?? 1;
+                        $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
+                        $value->image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . $p_dim . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                        
+                        $value->title = Str::limit($title, 18, '..');
+                        $value->averageRating = number_format($value->averageRating, 1, '.', '');
+                        $value->inquiry_only = $value->inquiry_only;
+                        $value->vendor_name = $value->vendor ? $value->vendor->name : '';
+                        $value->price = Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->price??0 * $multiply,','));
+                        $value->category =  (@$value->category->categoryDetail->translation) ? @$value->category->categoryDetail->translation->first()->name : @$value->category->categoryDetail->slug;
+                    }
+                    return $products;
+                }else{
+                    $products  =  $products->take(10)->inRandomOrder()->get();
+                }
+               
                 $productArray = [];
                 if (!empty($products)) {
 
