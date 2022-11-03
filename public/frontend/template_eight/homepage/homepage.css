@@ -24,7 +24,7 @@ article#page-container{position:relative;min-height:100vh;overflow:hidden}.slick
 
 .al_body_template_eight .al_custom_brand .brand-box h6{font-size:18px;color:#000}.slick-list{position:relative;overflow:hidden;display:block;margin:0;padding:0}
 
-.al_box_third_template{padding:0px;border-radius:12px;background-color:#ffffff73!important;border:1px solid transparent}
+.al_box_third_template{padding:0px;border-radius:10px;background-color:#ffffff73!important;border:1px solid transparent}
 .al_body_template_eight .img-outer-box.position-relative{border-radius:12px 12px 0 0;padding-bottom: 100%;overflow: hidden;}
 .al_body_template_eight .img-outer-box.position-relative img{width:100%;left:0;height:100%;object-fit:cover;position: absolute;}
 .slick-next:focus:before,.slick-next:hover:before,.slick-prev:focus:before,.slick-prev:hover:before{opacity:1}
@@ -131,7 +131,7 @@ article#page-container{position:relative;min-height:100vh;overflow:hidden}
     border-radius: 10px;
 }
 .al_body_template_eight img.blur-up.brand-logo.lazyloaded {
-    width: 119px;
+    width: 75px;
     height: 67px;
     object-fit: contain;
     margin: 15px auto 10px;
@@ -263,8 +263,10 @@ body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
 .al_body_template_eight .render_nav_categories .row{
     flex-wrap:wrap;
 }
-.al_body_template_eight .render_nav_categories .row .col{
-    width:20%;
+.al_body_template_eight .render_nav_categories .row .col {
+    width: 20%;
+    max-width: 20%;
+    flex: 20%;
 }
 section.popular-brands.left-shape_.position-relative.categories{
     padding: 60px 0 !important;
@@ -336,7 +338,7 @@ article#page-container section .vendors section a {
     color: #ff7521;
 }
 .main-product {
-    background: linear-gradient(to right, #8135125e , #e79b77a8 );
+    background: linear-gradient(to right, #8135122b , #e79b777d );
     padding: 40px 0 !important;
 }
 section.home-headings {
@@ -357,7 +359,7 @@ section#homepage_recently_viewed {
 }
 .main-pro-slider .suppliers-slider-recently_viewed {
     background: #F6F6F6;
-    border-radius: 25px;
+    border-radius: 15px;
     padding: 30px 30px 0 30px;
 }
 .main-pro-slider .suppliers-slider-recently_viewed .product-card-box.position-relative.al_box_third_template.al {
@@ -391,7 +393,7 @@ section.suppliers-section.container {
 .deals-product .suppliers-img-outer.position-relative {
     height: 100%;
     object-fit: cover;
-    border-radius: 0;
+    border-radius:10px;
 }
 .deals-product .supplier-rating {
     position: absolute;
@@ -404,7 +406,7 @@ section.suppliers-section.container {
     font-family: 'Rubik';
     font-style: normal;
     font-weight: 400;
-    font-size: 20px;
+    font-size: 18px;
     line-height: 16px;
     color: #FFFFFF;
     margin: 0;
@@ -413,7 +415,7 @@ section.suppliers-section.container {
     font-family: 'Times New Roman';
     font-style: normal;
     font-weight: 400;
-    font-size: 21px;
+    font-size: 18px;
     line-height: 24px;
     text-align: center;
     color: #FFFFFF;
@@ -433,6 +435,7 @@ section.suppliers-section.container {
     position: absolute;
     top: 0;
     left: 0;
+    border-radius:10px;
 }
 .vender_slider .al_custom_vendors_sec:after{
     display:none !important;
@@ -458,7 +461,7 @@ section.suppliers-section.container.vender_slider .product-m.render_vendors {
     margin-bottom: 50px;
     background: #E8E8E8;
     mix-blend-mode: normal;
-    border-radius: 25px;
+    border-radius:12px;
     padding: 20px;
 }
 section.suppliers-section.container.vender_slider .supplier-rating {
@@ -485,6 +488,7 @@ section.suppliers-section.container.vender_slider .supplier-rating h5 {
     border: 2px solid#fff;
     padding: 10px;
     width: 80%;
+    border-radius:10px;
 }
 body.al_body_template_eight.homeHeader .common-banner img {
     height: 500px !important;

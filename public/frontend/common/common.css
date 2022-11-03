@@ -482,7 +482,7 @@ body.al_body_template_eight .aside_bar {
     border: 1px solid#d5d5d5;
     min-height: 550px;
     position: sticky;
-    top: 125px;
+    top: 180px;
 }
 body.al_body_template_eight .aside_bar h5 {
     border-radius: 4px 4px 0 0;
@@ -563,7 +563,7 @@ body.al_body_template_eight .aside_bar ul li:after {
 }
 body.al_body_template_eight section.section-b-space.alSingleProducts.product_ddetails_page .exzoom.hidden.w-100 {
     position: sticky;
-    top: 125px;
+    top: 180px;
 }
 body.al_body_template_eight .similar-product {
     padding: 20px;
