@@ -61,7 +61,10 @@ if(isset($set_template))
     if(Route::currentRouteName() == "customer.login" || Route::currentRouteName() == "customer.register"){
       $body_class =  $body_class. " login";
     }
+    
   }
+  elseif($set_template->template_id == 8)
+    $body_class = "al_body_template_eight";
     
 }
 
@@ -118,6 +121,8 @@ if(isset($set_template))
       @include('layouts.store/left-sidebar-template-five')
       @elseif(isset($set_template)  && $set_template->template_id == 6)
       @include('layouts.store/left-sidebar-template-six')
+      @elseif(isset($set_template)  && $set_template->template_id == 8)
+      @include('layouts.store/left-sidebar-template-eight')
       @else
       @include('layouts.store/left-sidebar-template-one')
       @endif
@@ -140,6 +145,8 @@ if(isset($set_template))
     @include('layouts.store/footer-content-template-five')
     @elseif(isset($set_template)  && $set_template->template_id == 6)
     @include('layouts.store/footer-content-template-six')
+    @elseif(isset($set_template)  && $set_template->template_id == 8)
+    @include('layouts.store/footer-content-template-eight')
     @else
     @include('layouts.store/footer-content-template-one')
     @endif

@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use DB,Log;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Traits\HomePage\WebStylingTrait;
 class WebStylingController extends BaseController{
+    use WebStylingTrait;
     //
      /**
      * Display a listing of the resource.
@@ -66,7 +68,12 @@ class WebStylingController extends BaseController{
         $payment_methods = PaymentMethod::get();
        // pr( $payment_methods->toArray());
 
-        return view('backend/web_styling/index')->with(['clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'payment_methods' => $payment_methods,'themeId'=>$themeId]);
+       $slug = 'single_category_products';
+       $single_category_products = $this->getCategories($slug); // get categories listing for single cat products  section 
+       $selected_single_category_products = $this->getSingleCategoryProducts($slug); // get categories listing for single cat products  section 
+       
+
+        return view('backend/web_styling/index')->with(['clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'payment_methods' => $payment_methods,'themeId'=>$themeId, 'single_category_products'=> $single_category_products, 'selected_single_category_products' => $selected_single_category_products]);
     }
 
 
@@ -564,5 +571,20 @@ class WebStylingController extends BaseController{
 
         $client->save();
         return redirect()->back()->with('success', 'Contact Us Updated successfully!');
+    }
+
+    public function updateSingleCategoryProducts(Request $request){
+        $rules = array(
+            'slug' => 'required',
+            'product_category' => 'required',
+            'title' => 'required',
+        );
+        $validation  = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return redirect()->back()->withInput()->withErrors($validation);
+        }
+      
+        $this->updateSingleCategoryProductsToDb($request);
+        return redirect()->back()->with('success', 'Category Updated successfully!');
     }
 }

@@ -29,9 +29,12 @@ use App\Http\Controllers\Client\VendorController;
 use Math;
 use SimpleXMLElement;
 use Log;
+use App\Http\Traits\ProductActionTrait;
+
 class CustomerAuthController extends FrontController
 {
     use ApiResponser;
+    use ProductActionTrait;
 
     private $folderName = '/vendor/extra_docs';
 
@@ -231,7 +234,6 @@ class CustomerAuthController extends FrontController
                 }
 
                 if(!empty($req->phone_number) && isset($preferences) && ($preferences->verify_phone == 0)){
-
                     $validator = $req->validate([
                         'phone_number' => 'string|min:7|max:15|unique:users'
                     ]);
@@ -446,6 +448,12 @@ class CustomerAuthController extends FrontController
             } else {
                 Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
             }
+
+            if($this->checkIfTemplateEightEnable()){
+                $this->LoginActionRecentView($userid);
+            }
+            
+
             $message = __('Logged in successfully');
             $redirect_to = '';
             if(session()->has('url.intended')){
@@ -603,6 +611,11 @@ class CustomerAuthController extends FrontController
                     } else {
                         Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
                     }
+                     
+            if($this->checkIfTemplateEightEnable()){
+                $this->LoginActionRecentView($userid);
+            }
+            
                     $message = 'Logged in successfully';
                     $redirect_to = '';
                     if(session()->has('url.intended')){
@@ -950,6 +963,11 @@ class CustomerAuthController extends FrontController
             }
             // vendor additional data
             $this->addDataSaveVendor($request , $vendor->id);
+             
+            if($this->checkTemplateForAction(8)){
+                $this->LoginActionRecentView($user->id);
+            }
+            
 
             $content = '';
             $email_template = EmailTemplate::where('id', 1)->first();
@@ -1102,3 +1120,4 @@ class CustomerAuthController extends FrontController
 
 
 }
+

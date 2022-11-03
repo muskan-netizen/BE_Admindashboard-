@@ -76,7 +76,7 @@
     </div>
   </div> -->
 
-<section class="section-b-space alSingleProducts">
+<section class="section-b-space alSingleProducts product_ddetails_page">
     <div class="collection-wrapper al">
         <div class="container">
             <div class="row">
@@ -108,7 +108,7 @@
                             </div>
                         </div>--}}
                         <div class="row">
-                            <div class="col-lg-5 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                            <div class="col-lg-4 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                 {{-- <div class="product__carousel">
                                     <div class="gallery-parent">
                                         @php
@@ -226,11 +226,12 @@
                                 <div id="myresult" class="img-zoom-result"></div>
                             </div>
 
-                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text p-0">
+                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-5'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text p-0">
                                 <div class="product-right inner_spacing pl-sm-3 p-0">
                                     <h2 class="mb-0">
                                         {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                     </h2>
+                                    <span class="rating main-rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
                                     <h6 class="sold-by">
                                         <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
                                     </h6>
@@ -676,6 +677,61 @@
                                             @endforeach
                                         @endif
                                     </div>
+                                </div>
+                                <div class="similar-product">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h3>Similar Product</h3>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="similar-prod-data">
+                                                <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}" alt="">
+                                                <h4>Lorem ipsum, dolor site</h4>
+                                                <span class="rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
+                                                <a href="javascript:void(0)">(5,326)</a>
+                                                <h5><span>₹449 <del>₹999 </del><small>55% off</small></span></h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="similar-prod-data">
+                                                <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}" alt="">
+                                                <h4>Lorem ipsum, dolor site</h4>
+                                                <span class="rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
+                                                <a href="javascript:void(0)">(5,326)</a>
+                                                <h5><span>₹449 <del>₹999 </del><small>55% off</small></span></h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="similar-prod-data">
+                                                <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}" alt="">
+                                                <h4>Lorem ipsum, dolor site</h4>
+                                                <span class="rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
+                                                <a href="javascript:void(0)">(5,326)</a>
+                                                <h5><span>₹449 <del>₹999 </del><small>55% off</small></span></h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="aside_bar">
+                                    <h5>Available offers</h5>
+                                    <span><i class="fa fa-tag" aria-hidden="true"></i><strong>Bank Offer</strong> 5% Cashback on Flipkart Axis Bank Card<small>T&C</small></span>
+                                    <span><i class="fa fa-tag" aria-hidden="true"></i><strong>Partner Offer</strong> Sign up for Flipkart Pay Later and get Flipkart Gift Card worth up to ₹500*<small>Know More</small></span>
+                                    <ul>
+                                        <li>100% Original Products</li>
+                                        <li>Pay on delivery might be available</li>
+                                        <li>Easy 30 days returns and exchanges</li>
+                                        <li>Try & Buy might be available</li>
+                                    </ul>
+                                    <form>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Promo Code">
+                                            <button type="submit" class="btn btn-primary">Apply</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
