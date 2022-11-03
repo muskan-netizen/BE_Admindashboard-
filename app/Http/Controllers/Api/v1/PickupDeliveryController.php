@@ -35,7 +35,7 @@ class PickupDeliveryController extends BaseController{
                 return response()->json(['error' => __('No record found.')], 404);
             }
             //$userid = Auth::user()->id;
-
+            $preferences = ClientPreference::select('is_cab_pooling')->where('id', '>', 0)->first();
             $user = Auth::user();
             $userid = $user->id;
             
@@ -75,18 +75,28 @@ class PickupDeliveryController extends BaseController{
                                 $qr->select('category_id')->from('vendor_categories')
                                     ->where('vendor_id', $vid)->where('status', 0);
                     })
-                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags')
+                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags','products.seats_for_booking', 'products.available_for_pooling')
                     ->where('products.vendor_id', $vid);
                     if($cid > 0){
                         $products = $products->where('products.category_id', $cid);
+                    }
+                    if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
+                    {
+                        $products = $products->where('products.available_for_pooling', '=', 1);
                     }
                     $products = $products->where('products.is_live', 1)->distinct()->paginate($paginate);
 
             if(!empty($products)){
                 foreach ($products as $key => $product) {
                     $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
-                    $product->tags_price = $tags_price['delivery_fee'] + $tags_price['toll_fee'];
-                    $product->toll_fee   = $tags_price['toll_fee'];
+                    $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
+                    if(isset($request->is_cab_pooling) && $request->is_cab_pooling==1 && !empty($preferences) && $preferences->is_cab_pooling == 1){
+                        $product->tags_price = decimal_format(($tags_price['delivery_fee'] + $tags_price['toll_fee'])/$product->seats_for_booking);
+                        $product->toll_fee   = decimal_format($tags_price['toll_fee']/$product->seats_for_booking);
+                    }else{
+                        $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
+                        $product->toll_fee   = $tags_price['toll_fee'];
+                    }
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->price = $product->tags_price;
@@ -416,6 +426,8 @@ class PickupDeliveryController extends BaseController{
                 $order_product->created_by = null;
                 $order_product->variant_id = $variant->id;
                 $order_product->product_name = $product->sku;
+                $order_product->no_seats_for_pooling = isset($request->no_seats_for_pooling)?$request->no_seats_for_pooling:0;
+                $order_product->is_cab_pooling = isset($request->is_cab_pooling)?$request->is_cab_pooling:0;
 
                 if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
                 $user_product_order_form = json_encode($request->user_product_order_form);
@@ -671,7 +683,10 @@ class PickupDeliveryController extends BaseController{
                             'user_icon' => $customer->image,
                             'toll_passes' => 'IN_FASTAG',
                             'VehicleEmissionType' => 'GASOLINE',
-                            'travelMode' => 'TAXI'
+                            'travelMode' => 'TAXI',
+                            'no_seats_for_pooling' => isset($request->no_seats_for_pooling)?$request->no_seats_for_pooling:0,
+                            'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
+                            'available_seats' => $product->seats_for_booking,
                         ];
 
 

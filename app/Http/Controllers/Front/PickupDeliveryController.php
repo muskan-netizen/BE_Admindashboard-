@@ -287,7 +287,7 @@ class PickupDeliveryController extends FrontController{
                     ->whereHas('category.categoryDetail' ,function($qryd) {
                         $qryd->where('type_id', 7);   # check only products get of pickup
                     })
-                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags','products.seats_for_booking')
+                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags','products.seats_for_booking', 'products.available_for_pooling')
                     ->where('products.vendor_id', $vid);
                     if($cid > 0){
                         $products = $products->where('products.category_id', $cid);
@@ -295,7 +295,7 @@ class PickupDeliveryController extends FrontController{
                     
                     if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
                     {
-                        $products = $products->where('products.seats_for_booking', '>', 0);
+                        $products = $products->where('products.available_for_pooling', '=', 1);
                     }
                     $products = $products->where('products.is_live', 1)->distinct()->get();
 
@@ -308,7 +308,7 @@ class PickupDeliveryController extends FrontController{
                     $product->description = $product->translation->first() ? $product->translation->first()->meta_description :'';
                     $product->original_tags_price = $tags_price['delivery_fee'] + $tags_price['toll_fee'];
                     $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
-                    if(isset($request->is_cab_pooling) && $request->is_cab_pooling==1){
+                    if(isset($request->is_cab_pooling) && $request->is_cab_pooling==1 && !empty($preferences) && $preferences->is_cab_pooling == 1){
                         $product->tags_price = decimal_format(($tags_price['delivery_fee'] + $tags_price['toll_fee'])/$product->seats_for_booking);
                     }else{
                         $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
@@ -389,11 +389,12 @@ class PickupDeliveryController extends FrontController{
 
     }
 
-    public function listData($langId, $category_id, $type = '', $userid,$request, $schedule_datetime_del=''){
+    public function listData($langId, $category_id, $type = '', $userid, $request, $schedule_datetime_del=''){
         if ($type == 'Pickup/Delivery') {
             $category_details = [];
             $deliver_charge = $this->getDeliveryFeeDispatcher($request, null, $schedule_datetime_del);
-            $deliver_charge = $deliver_charge??0.00;
+            $deliver_charge = $delivercharge['delivery_fee']??0.00;
+            $toll_charge = $delivercharge['toll_fee']??0.00;
             $category_list = Category::where('parent_id', $category_id)->get();
             foreach ($category_list as $category) {
                 $category_details[] = array(
@@ -401,7 +402,8 @@ class PickupDeliveryController extends FrontController{
                     'name' => $category->slug,
                     'icon' => $category->icon,
                     'image' => $category->image,
-                    'price' => $deliver_charge
+                    'price' => $deliver_charge + $toll_charge,
+                    'toll_price' => $toll_charge,
                 );
             }
             return $category_details;

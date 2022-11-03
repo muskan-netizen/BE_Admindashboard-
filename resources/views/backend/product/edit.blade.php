@@ -955,16 +955,38 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </select>
                         </div>
                     </div> -->
-
-                    @if($product->vendor->pick_drop == 1 && $configData->is_cab_pooling == 1)
+                    
+                    @if($product->vendor->pick_drop == 1 && $configData->is_cab_pooling == 1 && $product->category->categoryDetail->type_id == 7)
                     <div class="row">
+                        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                            {!! Form::label('title', __('Toll Tax'),['class' => 'control-label']) !!}
+                            <input type="checkbox" data-plugin="switchery" name="is_toll_tax" id="is_toll_tax" class="form-control" data-color="#43bee1" @if($product->is_toll_tax == 1) checked @endif>
+                        </div>
+                    </div>
+                    <div class="row" id="is_toll_tax_div" style="display:@if($product->is_toll_tax == 1) @else none @endif;">
+                        <div class="col-sm-4 mb-1">
+                            {!! Form::label('title', __('TollPass eg. IN_FASTAG'),['class' => 'control-label']) !!} <a href="https://developers.google.com/maps/documentation/routes_preferred/reference/rest/Shared.Types/TollPass" target="_blank"><i class="fas fa-info-circle"></i></a>
+                            <input type="text"  class="form-control" value="{{$product->toll_passes}}" name="toll_passes" placeholder="{{__('TollPass as per Origin eg. IN_FASTAG')}}">
+                        </div>
+                        <div class="col-sm-4 mb-1">
+                            {!! Form::label('title', __('Emission Type eg. GASOLINE'),['class' => 'control-label']) !!} <a href="https://developers.google.com/maps/documentation/routes_preferred/reference/rest/Shared.Types/VehicleEmissionType" target="_blank"><i class="fas fa-info-circle"></i></a>
+                            <input type="text"  class="form-control" value="{{$product->vehicle_emission_type}}" name="vehicle_emission_type" placeholder="{{__('Vehicle Emission Type eg. GASOLINE')}}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                            {!! Form::label('title', __('Available for Pooling'),['class' => 'control-label']) !!}
+                            <input type="checkbox" data-plugin="switchery" name="available_for_pooling" id="available_for_pooling" class="form-control" data-color="#43bee1" @if($product->available_for_pooling == 1) checked @endif>
+                        </div>
+                    </div>
+                    <div class="row" id="available_for_pooling_div" style="display:@if($product->available_for_pooling == 1) @else none @endif;">
                         <div class="col-sm-6 mb-1">
                             {!! Form::label('title', __('Total Number Of Seats'),['class' => 'control-label']) !!}
-                            <input type="number"  class="form-control" value="{{$product->seats}}" name="seats" placeholder="{{__('Number Of Seats')}}">
+                            <input type="number"  class="form-control" value="{{$product->seats}}" name="seats" id="seats" placeholder="{{__('Number Of Seats')}}">
                         </div>
                         <div class="col-sm-6 mb-1">
-                            {!! Form::label('title', __('Number Of Seats Available for Booking'),['class' => 'control-label']) !!}
-                            <input type="number"  class="form-control" value="{{$product->seats_for_booking}}" name="seats_for_booking" placeholder="{{__('Number Of Seats Available for Booking')}}">
+                            {!! Form::label('title', __('Number Of Seats Available for Pooling'),['class' => 'control-label']) !!}
+                            <input type="number"  class="form-control" value="{{$product->seats_for_booking}}" name="seats_for_booking" id="seats_for_booking" placeholder="{{__('Number Of Seats Available for Booking')}}">
                         </div>
                     </div>
                     @endif
@@ -1538,6 +1560,26 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 $('.check_inventory').show();
             } else {
                 $('.check_inventory').hide();
+            }
+        });
+
+        $('#available_for_pooling').change(function() {
+            var val = $(this).prop('checked');
+            if (val == true) {
+                $('#available_for_pooling_div').show();
+            } else {
+                $('#available_for_pooling_div').hide();
+                $("#toll_passes, #vehicle_emission_type").val(0);
+            }
+        });
+
+        $('#is_toll_tax').change(function() {
+            var val = $(this).prop('checked');
+            if (val == true) {
+                $('#is_toll_tax_div').show();
+            } else {
+                $('#is_toll_tax_div').hide();
+                $("#seats_for_booking, #seats").val(0);
             }
         });
 

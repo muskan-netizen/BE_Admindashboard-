@@ -416,6 +416,7 @@ class ProductController extends BaseController
             $product->buffer_time_duration_min = str_pad($request->buffer_time_duration_min, 2, '0', STR_PAD_LEFT)??null;
             $product->is_fix_check_in_time = ($request->has('is_fix_check_in_time') && $request->is_fix_check_in_time == 'on') ? 1 : 0;
 
+            $product->available_for_pooling = ($request->has('available_for_pooling') && $request->available_for_pooling == 'on') ? 1 : 0;
             $product->seats = ($request->has('seats')) ? $request->seats : 0;
             $product->seats_for_booking = ($request->has('seats_for_booking')) ? $request->seats_for_booking : 0;
             $product->save();
