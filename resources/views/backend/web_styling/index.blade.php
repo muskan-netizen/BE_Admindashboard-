@@ -351,6 +351,52 @@
             </div>
         </div>
         <!-- Payment Method Icons end -->
+        @if(@single_category_products)
+        <div class="col-md-3">
+            <form method="POST" id="update_single_category_products" action="{{route('web.styling.update_single_category_products')}}">
+            @csrf
+            @method('POST')
+            <input type="hidden" name="slug" value="{{$single_category_products['slug']}}" />
+                <div class="card-box h-100 mb-0">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h4 class="header-title mb-0">{{ __('Category')}}</h4>
+                    </div>
+                    <div class="row mt-2">
+
+                    <div class="col-12">
+                            <div class="form-group mb-2">
+                                <label for="product_category" class="mr-3">{{ __("Section Title") }}</label>
+                                <input class="form-control" type="text" value="{{$selected_single_category_products->title ?? ''}}" name="title" required>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="form-group mb-2">
+                                <label for="product_category" class="mr-3">{{ __("Product Category") }}</label>
+                                <select class="form-control" id='product_category' name="product_category"  data-placeholder="Choose ..." required>
+                                    <option value="">{{ __("Select Product Category") }}</option>
+                                    @foreach($single_category_products['categories'] as $category)
+                                    <option value="{{$category->id}}" @if(@$selected_single_category_products->category_id == $category->id) selected="selected" @endif>
+                                        @if(!is_null($category->parent) && $category->parent_id > 1)
+                                        {{@$category->parent->translation_one->name}}-> @endif
+                                        {{@$category->translation_one->name}}
+                                        @if(!is_null($category->vendor)) ({{@$category->vendor->name}}) @endif
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mt-3">
+                            <div class="form-group mb-0">
+                                <button class="btn btn-info btn-block" id="tax_copy_button" type="submit"> {{ __("Update") }} </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        @endif
     </div>
 
 
