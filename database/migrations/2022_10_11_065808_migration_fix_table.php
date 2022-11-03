@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddEnablePricingToRolesTable extends Migration
+class MigrationFixTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,8 @@ class AddEnablePricingToRolesTable extends Migration
     public function up()
     {
         Schema::table('roles', function (Blueprint $table) {
-            $table->boolean('is_enable_pricing')->default(0)->after('status');
+            // $table->boolean('is_enable_pricing')->default(0)->after('status');
+            $table->dropColumn('is_enable_pricing');
         });
     }
 
@@ -26,7 +27,7 @@ class AddEnablePricingToRolesTable extends Migration
     public function down()
     {
         Schema::table('roles', function (Blueprint $table) {
-            Schema::dropIfExists('roles');
+            // Schema::dropIfExists('roles');
         });
     }
 }
