@@ -804,7 +804,7 @@ class VendorController extends BaseController
         ->groupBy('products.id')
         ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
 
-            // pr($product->get()->toArray());
+            // pr($product->toSql());
         $datatable = Datatables::of($product)
             ->addIndexColumn()
             ->addColumn('single_product_check', function ($product) use ($request) {
@@ -1213,8 +1213,6 @@ class VendorController extends BaseController
             $vendor->service_fee_percent        = $request->service_fee_percent;
        
             //$vendor->add_category = ($request->has('add_category') && $request->add_category == 'on') ? 1 : 0;
-            // $vendor->show_slot  = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
-           
             $msg = 'commission configuration';
 
             $vendor->service_charges_tax = ($request->has('service_charges_tax') && $request->service_charges_tax == 'on') ? 1 : 0;

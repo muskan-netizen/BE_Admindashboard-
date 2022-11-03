@@ -469,8 +469,7 @@ class UserhomeController extends FrontController
 
             if (count($home_page_labels) == 0)
                 $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
-              
-            $request->merge(['type'=>Session::get('vendorType'),'noTinJson'=>1] );
+            $request->request->add(['type'=>Session::get('vendorType')??'delivery','noTinJson'=>1] );
             $homePageData = $this->postHomePageData($request);
 
             $home_page_labels = $home_page_labels->map(function($da) use ($homePageData) {
@@ -616,7 +615,6 @@ class UserhomeController extends FrontController
             $brands = [];
         }
 
-
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
         $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1);
@@ -641,7 +639,7 @@ class UserhomeController extends FrontController
                     $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
                         $query->select('vendor_id')
                         ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                    });
+                    });                                                                     
                 }
             }
         }
