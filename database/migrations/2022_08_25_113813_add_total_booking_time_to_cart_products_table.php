@@ -15,7 +15,7 @@ class AddTotalBookingTimeToCartProductsTable extends Migration
     {
         Schema::table('cart_products', function (Blueprint $table) {
             //
-            // $table->string('total_booking_time')->default(0)->nullable()->comment('in min');
+            $table->string('total_booking_time')->default(0)->nullable()->comment('in min');
         });
     }
 

@@ -15,7 +15,7 @@ class AddSignupImageToClientPreferencesTable extends Migration
     {
         Schema::table('client_preferences', function (Blueprint $table) {
             //
-            // $table->text('signup_image')->nullable();
+            $table->text('signup_image')->nullable();
         });
     }
 

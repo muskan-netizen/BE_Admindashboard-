@@ -14,7 +14,7 @@ class AddScheduleSlotToOrderVendorProductsTable extends Migration
     public function up()
     {
         Schema::table('order_vendor_products', function (Blueprint $table) {
-            // $table->string('schedule_slot')->nullable();
+            $table->string('schedule_slot')->nullable();
         });
     }
 

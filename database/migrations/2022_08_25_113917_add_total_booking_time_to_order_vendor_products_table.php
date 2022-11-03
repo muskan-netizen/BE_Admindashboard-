@@ -15,7 +15,7 @@ class AddTotalBookingTimeToOrderVendorProductsTable extends Migration
     {
         Schema::table('order_vendor_products', function (Blueprint $table) {
             //
-            // $table->string('total_booking_time')->default(0)->nullable()->comment('in min');
+            $table->string('total_booking_time')->default(0)->nullable()->comment('in min');
         });
     }
 
