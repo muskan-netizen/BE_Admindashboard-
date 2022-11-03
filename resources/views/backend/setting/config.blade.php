@@ -491,7 +491,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      <div class="form-group mb-0 switchery-demo">
                         <label for="google_login" class="d-flex align-items-center justify-content-between">
                            <h5 class="social_head"><i class="fab fa-google"></i> <span>{{ __("Google") }}</span></h5>
-                           <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
+                           <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Google") }} </button>
                         </label>
                         <label for="" class="mr-3">{{ __("Enable") }}</label>
                         <input type="checkbox" data-plugin="switchery" name="google_login" id="google_login" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->google_login == '1')) checked='checked' @endif>
