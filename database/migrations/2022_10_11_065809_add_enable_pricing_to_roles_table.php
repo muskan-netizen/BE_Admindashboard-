@@ -26,7 +26,7 @@ class AddEnablePricingToRolesTable extends Migration
     public function down()
     {
         Schema::table('roles', function (Blueprint $table) {
-            Schema::dropIfExists('roles');
+            // Schema::dropIfExists('roles');
         });
     }
 }
