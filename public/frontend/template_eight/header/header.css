@@ -117,8 +117,9 @@ z-index:1111;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-
     border-top: 1px solid #ddd;
     -webkit-transition: .5s;
     transition: .5s;
-    background: #1D1D1D;
-    padding: 20px 0 0;
+    background: #fff;
+    padding: 12px 0 0;
+    box-shadow: 0 4px 14px 0 rgb(0 0 0 / 8%);
 }
 .al_body_template_eight #al_new_design .pixelstrap li a {
     letter-spacing: 0;
@@ -127,7 +128,7 @@ z-index:1111;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-
     font-weight: 400;
     font-size: 14px;
     line-height: 16px;
-    color: #FFFFFF;
+    color: #222;
 }
 .al_body_template_eight .al_custom_head .onhover-dropdown span:before, .al_custom_head.top-header .header-dropdown li a, .al_custom_head.top-header .header-dropdown li span {
     display: block;

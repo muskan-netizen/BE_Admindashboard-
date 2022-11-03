@@ -108,7 +108,7 @@
                             </div>
                         </div>--}}
                         <div class="row">
-                            <div class="col-lg-3 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                            <div class="col-lg-4 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                 {{-- <div class="product__carousel">
                                     <div class="gallery-parent">
                                         @php
@@ -226,7 +226,7 @@
                                 <div id="myresult" class="img-zoom-result"></div>
                             </div>
 
-                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-6'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text p-0">
+                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-5'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text p-0">
                                 <div class="product-right inner_spacing pl-sm-3 p-0">
                                     <h2 class="mb-0">
                                         {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
