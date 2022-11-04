@@ -20,6 +20,7 @@ use App\Models\TaxRate;
 use App\Models\UserAddress;
 use App\Models\Vendor;
 use App\Models\VendorDineinTable;
+use App\Models\VendorMinAmount;
 use Auth, Log;
 use Carbon\Carbon;
 use Illuminate\Contracts\Session\Session;
