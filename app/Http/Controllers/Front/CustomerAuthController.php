@@ -352,7 +352,9 @@ class CustomerAuthController extends FrontController
                         $to = '+' . $user->dial_code . $user->phone_number;
                     }
                     $provider = $prefer->sms_provider;
-                    $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                   // $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                    $keyData = ['{user_name}'=>ucwords($user->name)];
+                    $body = sendSmsTemplate('user-signup-sms',$keyData);
                     // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
 
