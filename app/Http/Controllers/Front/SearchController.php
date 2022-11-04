@@ -99,7 +99,7 @@ class SearchController extends FrontController{
                           //                           });
                           //                   });
                           //       }       
-                        $categories->where(function ($q) use ($keyword) {
+                          $categories = $categories->where(function ($q) use ($keyword) {
                             $q->where('cts.name', ' LIKE', '%' . $keyword . '%')
                             ->orWhere('categories.slug', 'LIKE', '%' . $keyword . '%')
                             ->orWhere('cts.trans-slug', 'LIKE', '%' . $keyword . '%');
