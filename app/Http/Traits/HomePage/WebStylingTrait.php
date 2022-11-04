@@ -32,7 +32,7 @@ trait WebStylingTrait
     public function getCategories($slug)
     {
         $single_category_products = [];
-        
+
         if ($this->homePageLabelExists($slug)) {
             $single_category_products['categories'] = $this->getCategoryListing();
             $single_category_products['slug'] = $slug;
@@ -42,15 +42,31 @@ trait WebStylingTrait
 
     public function updateSingleCategoryProductsToDb($request)
     {
-        HomeProduct::updateOrCreate(
-            ['slug' => $request->slug],
-            ['category_id' => $request->product_category,'title' => $request->title]
-        );
+        if (checkTableExists('home_products')) {
+            $insert = ['slug' => 'single_category_products', 'product_category' => $request->product_category];
+            HomeProduct::updateOrCreate(
+                ['slug' => $insert['slug']],
+                ['category_id' => $insert['product_category']]
+            );
+        }
         return true;
     }
 
     public function getSingleCategoryProducts($slug)
     {
-       return HomeProduct::where('slug', $slug)->first();
+        if (checkTableExists('home_products')) {
+            return HomeProduct::where('slug', $slug)->first();
+        }
+        return [];
+    }
+
+    public function getSelectedProducts()
+    {
+        $product_ids = [];
+        if (checkColumnExists('home_products', 'slug')) {
+            $single_category_products = HomeProduct::whereSlug('selected_products')->first();
+            $product_ids = json_decode($single_category_products->products);
+        }
+        return $product_ids;
     }
 }

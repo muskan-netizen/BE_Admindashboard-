@@ -2,7 +2,7 @@
 
 namespace App\Http\Traits\HomePage;
 
-use App\Models\{HomeProduct, Product, Vendor, VendorCategory};
+use App\Models\{HomeProduct, OrderProductRating, OrderVendorProduct, Product, ProductCategory, ProductRecentlyViewed, Vendor, VendorCategory};
 use Carbon\Carbon;
 use Session, DB;
 use Illuminate\Support\Str;
@@ -100,88 +100,14 @@ trait HomePageTrait
             ->orderBy(DB::raw("((product_variants.compare_at_price - product_variants.price)/product_variants.compare_at_price)*100"), 'desc')
             ->take(8)->get();
 
-        // $products = $products->sortBy(function($product) { 
-        //     return $product->discount_percentage[0]->discount_percentage ?? 0;
-        //   });
         if (!empty($products)) {
-            foreach ($products as $key => $value) {
-                foreach ($value->variant as $k => $v) {
-                    $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
-                }
-            }
-        }
-        $spotlight_products = [];
-        foreach ($products as  $product) {
-            $multiply = $product->variant->first()->multiplier ?? 1;
-            $title = $product->translation->first() ? $product->translation->first()->title : $product->sku;
-            $image_url = $product->media->first() && !is_null($product->media->first()->image) ? $product->media->first()->image->path['image_fit'] . $p_dim . $product->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-            $spotlight_products[] = array(
-                'tag_title' => $spotlight_products_title ?? '0',
-                'image_url' => $image_url,
-                'sku' => $product->sku,
-                'title' => Str::limit($title, 18, '..'),
-                'url_slug' => $product->url_slug,
-                'discount_percentage' => (int) $product->discount_percentage,
-                'averageRating' => number_format($product->averageRating, 1, '.', ''),
-                'inquiry_only' => $product->inquiry_only,
-                'vendor_name' => $product->vendor ? $product->vendor->name : '',
-                'vendor' => $product->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$product->variant->first()->price * $multiply, ',')),
-                'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug
-            );
-        }
-        return $spotlight_products;
-    }
+            foreach ($products as $key => $product) {
 
-    public function getSingleCategoryProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim)
-    {
-        $spotlight_products = [];
-        $single_category_products = HomeProduct::whereSlug('single_category_products')->first();
-        if (@$single_category_products) {
-            $products = Product::with([
-                'category.categoryDetail.translation' => function ($q) use ($language_id) {
-                    $q->where('category_translations.language_id', $language_id);
-                },
-                'vendor',
-                'media' => function ($q) {
-                    $q->groupBy('product_id');
-                }, 'media.image',
-                'translation' => function ($q) use ($language_id) {
-                    $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
-                },
-
-            ])->selectRaw('product_variants.sku, product_id, quantity,compare_at_price,  price, barcode, (compare_at_price - price) as discount_amount, ((compare_at_price - price)/compare_at_price)*100 as discount_percentage,   products.id, products.sku, url_slug, weight_unit, weight, vendor_id, has_variant, has_inventory, sell_when_out_of_stock, requires_shipping, Requires_last_mile, averageRating, inquiry_only')
-
-            ->join('product_variants', 'products.id', 'product_variants.product_id');
-
-            $products = $products->whereHas('vendor', function ($q) use ($vendor_ids) {
-                $q->where('status', 1);
-                $q->whereIn('vendors.id', $vendor_ids);
-            })
-             ->whereHas('category', function ($q) use ($single_category_products) {
-                $q->where('id', $single_category_products->category_id);
-            })
-            ->where('is_live', 1)
-                ->orderBy(DB::raw("((product_variants.compare_at_price - product_variants.price)/product_variants.compare_at_price)*100"), 'desc')
-                ->take(8)->get();
-
-            // $products = $products->sortBy(function($product) { 
-            //     return $product->discount_percentage[0]->discount_percentage ?? 0;
-            //   });
-            if (!empty($products)) {
-                foreach ($products as $key => $value) {
-                    foreach ($value->variant as $k => $v) {
-                        $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
-                    }
-                }
-            }
-
-            foreach ($products as  $product) {
-                $multiply = $product->variant->first()->multiplier ?? 1;
+                $multiply =  Session::get('currencyMultiplier') ?? 1;
                 $title = $product->translation->first() ? $product->translation->first()->title : $product->sku;
                 $image_url = $product->media->first() && !is_null($product->media->first()->image) ? $product->media->first()->image->path['image_fit'] . $p_dim . $product->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 $spotlight_products[] = array(
-                    'tag_title' => $spotlight_products_title ?? 'Single Category Products',
+                    'tag_title' => $spotlight_products_title ?? '0',
                     'image_url' => $image_url,
                     'sku' => $product->sku,
                     'title' => Str::limit($title, 18, '..'),
@@ -196,123 +122,105 @@ trait HomePageTrait
                 );
             }
         }
+        // $spotlight_products = [];
+
         return $spotlight_products;
     }
 
-    public function getSelectedProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim)
+    public function getSingleCategoryProducts()
     {
-        $products = Product::with([
-            'category.categoryDetail.translation' => function ($q) use ($language_id) {
-                $q->where('category_translations.language_id', $language_id);
-            },
-            'vendor',
-            'media' => function ($q) {
-                $q->groupBy('product_id');
-            }, 'media.image',
-            'translation' => function ($q) use ($language_id) {
-                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
-            },
-
-        ])
-            ->selectRaw('product_variants.sku, product_id, quantity,compare_at_price,  price, barcode, (compare_at_price - price) as discount_amount, ((compare_at_price - price)/compare_at_price)*100 as discount_percentage,   products.id, products.sku, url_slug, weight_unit, weight, vendor_id, has_variant, has_inventory, sell_when_out_of_stock, requires_shipping, Requires_last_mile, averageRating, inquiry_only
-        ')
-
-            ->join('product_variants', 'products.id', 'product_variants.product_id');
-
-        $products = $products->whereHas('vendor', function ($q) use ($vendor_ids) {
-            $q->where('status', 1);
-            $q->whereIn('vendors.id', $vendor_ids);
-        })->where('is_live', 1)
-            ->orderBy(DB::raw("((product_variants.compare_at_price - product_variants.price)/product_variants.compare_at_price)*100"), 'desc')
-            ->take(8)->get();
-
-        // $products = $products->sortBy(function($product) { 
-        //     return $product->discount_percentage[0]->discount_percentage ?? 0;
-        //   });
-        if (!empty($products)) {
-            foreach ($products as $key => $value) {
-                foreach ($value->variant as $k => $v) {
-                    $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
-                }
+        $product_ids = [];
+        if (checkTableExists('home_products')) {
+            $single_category_products = HomeProduct::whereSlug('single_category_products')->first();
+            if (@$single_category_products) {
+                $product_ids = ProductCategory::select('product_id')->where('category_id', $single_category_products->category_id)->get();
             }
         }
-        $spotlight_products = [];
-        foreach ($products as  $product) {
-            $multiply = $product->variant->first()->multiplier ?? 1;
-            $title = $product->translation->first() ? $product->translation->first()->title : $product->sku;
-            $image_url = $product->media->first() && !is_null($product->media->first()->image) ? $product->media->first()->image->path['image_fit'] . $p_dim . $product->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-            $spotlight_products[] = array(
-                'tag_title' => $spotlight_products_title ?? 'Selected Products',
-                'image_url' => $image_url,
-                'sku' => $product->sku,
-                'title' => Str::limit($title, 18, '..'),
-                'url_slug' => $product->url_slug,
-                'discount_percentage' => (int) $product->discount_percentage,
-                'averageRating' => number_format($product->averageRating, 1, '.', ''),
-                'inquiry_only' => $product->inquiry_only,
-                'vendor_name' => $product->vendor ? $product->vendor->name : '',
-                'vendor' => $product->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$product->variant->first()->price * $multiply, ',')),
-                'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug
-            );
-        }
-        return $spotlight_products;
+        
+        return $product_ids;
     }
 
-    public function getMostPopularProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim)
+    public function getProducts($preferences, $vendor_ids, $language_id, $currency_id = 'USD', $p_dim, $product_ids)
     {
-        $products = Product::with([
-            'category.categoryDetail.translation' => function ($q) use ($language_id) {
-                $q->where('category_translations.language_id', $language_id);
-            },
-            'vendor',
-            'media' => function ($q) {
-                $q->groupBy('product_id');
-            }, 'media.image',
-            'translation' => function ($q) use ($language_id) {
-                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
-            },
+        $productFiltered = [];
+        if (@$product_ids) {
+            $products = Product::with([
+                'category.categoryDetail.translation' => function ($q) use ($language_id) {
+                    $q->where('category_translations.language_id', $language_id);
+                },
+                'vendor',
+                'media' => function ($q) {
+                    $q->groupBy('product_id');
+                }, 'media.image',
+                'translation' => function ($q) use ($language_id) {
+                    $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
+                },
 
-        ])
-            ->selectRaw('product_variants.sku, product_id, quantity,compare_at_price,  price, barcode, (compare_at_price - price) as discount_amount, ((compare_at_price - price)/compare_at_price)*100 as discount_percentage,   products.id, products.sku, url_slug, weight_unit, weight, vendor_id, has_variant, has_inventory, sell_when_out_of_stock, requires_shipping, Requires_last_mile, averageRating, inquiry_only
-        ')
+            ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
 
-            ->join('product_variants', 'products.id', 'product_variants.product_id');
 
-        $products = $products->whereHas('vendor', function ($q) use ($vendor_ids) {
-            $q->where('status', 1);
-            $q->whereIn('vendors.id', $vendor_ids);
-        })->where('is_live', 1)
-            ->orderBy(DB::raw("((product_variants.compare_at_price - product_variants.price)/product_variants.compare_at_price)*100"), 'desc')
-            ->take(8)->get();
+            $products = $products->whereHas('vendor', function ($q) use ($vendor_ids) {
+                $q->where('status', 1);
+                $q->whereIn('vendors.id', $vendor_ids);
+            })->where('is_live', 1);
+            $products = $products->whereIn('id', $product_ids)
+                ->take(8)->get();
 
-        if (!empty($products)) {
-            foreach ($products as $key => $value) {
-                foreach ($value->variant as $k => $v) {
-                    $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
+            
+            if (!empty($products)) {
+                foreach ($products as  $product) {
+                    $multiply =  Session::get('currencyMultiplier') ?? 1;
+                    $title = $product->translation->first() ? $product->translation->first()->title : $product->sku;
+                    $image_url = $product->media->first() && !is_null($product->media->first()->image) ? $product->media->first()->image->path['image_fit'] . $p_dim . $product->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                    $productFiltered[] = array(
+                        'tag_title' => $spotlight_products_title ?? 'Single Category Products',
+                        'image_url' => $image_url,
+                        'sku' => $product->sku,
+                        'title' => Str::limit($title, 18, '..'),
+                        'url_slug' => $product->url_slug,
+                        'discount_percentage' => (int) $product->discount_percentage,
+                        'averageRating' => number_format($product->averageRating, 1, '.', ''),
+                        'inquiry_only' => $product->inquiry_only,
+                        'vendor_name' => $product->vendor ? $product->vendor->name : '',
+                        'vendor' => $product->vendor,
+                        'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$product->variant->first()->price * $multiply, ',')),
+                        'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug
+                    );
                 }
             }
         }
-        $spotlight_products = [];
-        foreach ($products as  $product) {
-            $multiply = $product->variant->first()->multiplier ?? 1;
-            $title = $product->translation->first() ? $product->translation->first()->title : $product->sku;
-            $image_url = $product->media->first() && !is_null($product->media->first()->image) ? $product->media->first()->image->path['image_fit'] . $p_dim . $product->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-            $spotlight_products[] = array(
-                'tag_title' => $spotlight_products_title ?? 'Most Popular Products',
-                'image_url' => $image_url,
-                'sku' => $product->sku,
-                'title' => Str::limit($title, 18, '..'),
-                'url_slug' => $product->url_slug,
-                'discount_percentage' => (int) $product->discount_percentage,
-                'averageRating' => number_format($product->averageRating, 1, '.', ''),
-                'inquiry_only' => $product->inquiry_only,
-                'vendor_name' => $product->vendor ? $product->vendor->name : '',
-                'vendor' => $product->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$product->variant->first()->price * $multiply, ',')),
-                'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug
-            );
+        return $productFiltered;
+    }
+
+    public function getSelectedProducts()
+    {
+        $product_ids = [];
+        if (checkTableExists('home_products')) {
+            $single_category_products = HomeProduct::whereSlug('selected_products')->first();
+            if(@$single_category_products){
+                $product_ids = json_decode($single_category_products->products);
+            }
+            
         }
-        return $spotlight_products;
+        return $product_ids;
+    }
+
+    public function getMostPopularProducts()
+    {
+        $product_ids = [];
+        $most_sold = OrderVendorProduct::selectRaw('id, product_id, count(product_id) as total')->whereHas('statusDelievered')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id');
+        // dd($most_sold);
+        $most_viewed = ProductRecentlyViewed::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id');
+
+        $product_ids = $most_sold->merge($most_viewed);
+        return $product_ids;
+    }
+
+
+    public function getTopRatedProducts()
+    {
+        
+        $product_ids = OrderProductRating::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id');
+        return $product_ids;
     }
 }

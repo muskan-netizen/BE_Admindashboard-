@@ -798,15 +798,6 @@ class UserhomeController extends FrontController
         
         //get Most Selling Vendors
         $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
-
-        //spotLight
-        if($this->checkTemplateForAction(8)){
-            $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
-            $single_category_products = $this->getSingleCategoryProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get single selected category's products
-            $selected_products = $this->getSelectedProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim);  // get selected products to display 
-            $popular_products = $this->getMostPopularProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim);  // get selected products to display 
-        }
-// dd($spot_light_products);
         $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);
         $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
         $feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
@@ -868,6 +859,19 @@ class UserhomeController extends FrontController
           
         if($this->checkTemplateForAction(8)){
             $recently_viewed = $this->productvendorProducts($vendor_ids, $language_id, $currency_id, '', $request->type,$p_dim);
+            $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
+
+            $single_category_product_ids = $this->getSingleCategoryProducts(); // get single selected category's products
+            $single_category_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $single_category_product_ids);
+            
+            $selected_product_ids = $this->getSelectedProducts(); // get single selected category's products
+            $selected_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $selected_product_ids);
+
+            $popular_product_ids = $this->getMostPopularProducts();  // get selected products to display 
+            $popular_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $popular_product_ids);
+
+            $top_rated_products_ids = $this->getTopRatedProducts();  // get selected products to display 
+            $top_rated_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $top_rated_products_ids);
         }
         /**  Recent order */
             $activeOrders = [];
@@ -945,7 +949,7 @@ class UserhomeController extends FrontController
                 'brands' => $brands,
                 'vendors' => $vendors,
                 'new_products' => $new_products,
-                'top_rated'       => $new_products,
+                'top_rated'       => $top_rated_products,
                 'recently_viewed' => $recently_viewed,
                 'homePageLabels' => $home_page_labels,
                 'featured_products' => $feature_products,

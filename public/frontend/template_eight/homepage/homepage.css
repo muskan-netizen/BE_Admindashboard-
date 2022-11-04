@@ -391,10 +391,10 @@ section.suppliers-section.container {
     margin: 0 auto 20px;
 }
 .deals-product .suppliers-img-outer.position-relative {
-    height: 100%;
     object-fit: cover;
-    border-radius:10px;
-}
+    border-radius: 10px;
+    height: 300px;
+    }
 .deals-product .supplier-rating {
     position: absolute;
     bottom: 30px;
