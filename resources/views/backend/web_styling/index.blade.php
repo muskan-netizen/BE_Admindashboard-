@@ -581,7 +581,57 @@
             <form id="save_home_products_form" method="post" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
-                <div class="modal-body" id="editProductsBox">
+                <div class="modal-body" >
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="row">
+
+                                <div class="col-md-5 col-5 mb-3">
+
+                                    <label>{{ __("Choose Categories") }}</label>
+                                    <select class="form-control" id='categoryForProducts' name="product_category" data-placeholder="Choose ..." required>
+                                        <option value="">{{ __("Select Product Category") }}</option>
+                                        @foreach($categories as $category)
+                                        <option value="{{$category->id}}" >
+                                            @if(!is_null($category->parent) && $category->parent_id > 1)
+                                            {{@$category->parent->translation_one->name}}-> @endif
+                                            {{@$category->translation_one->name}}
+                                            @if(!is_null($category->vendor)) ({{@$category->vendor->name}}) @endif
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-5 col-5 mb-3">
+                                        <label>{{ __("Select Products") }}</label>
+                                        <div id="editProductsBox">
+                                            <select class="form-control" id='product_id' name="product_id" data-placeholder="Choose ..." required>
+                                                <option value="">{{ __("Select Product") }}</option>
+                                            </select>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12 col-12 mb-3">
+                                    <label>{{ __("Selected Products") }}</label>
+                                    <select class="form-control select2-multiple" id='product_ids' data-toggle="select2" name="product_ids[]" multiple data-placeholder="Choose ..." required>
+                                        <option value="">{{ __("Select Product") }}</option>
+                                        @foreach($products as $product)
+                                        <option value="{{$product->id}}" selected="selected">
+                                            {{$product->translation[0]->title}}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
 
                 </div>
                 <div class="modal-footer">
@@ -696,6 +746,7 @@ $(document).on('click', '.deletePickupSection', function() {
         zIndex: 9999
     }
     $(document).ready(function() {
+        $('.select2-multiple').select2();
         var color1 = new jscolor('#primary_color_option', options);
     });
 
@@ -1034,6 +1085,27 @@ $(document).on('click', '.deletePickupSection', function() {
     });
 
     $(".openProductsModal").click(function (e) {
+        $('#home_products').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+    $(document).on( 'change','#product_id', function (e) {
+        var productId  = $(this).val();
+        var text  = $("#product_id option:selected").text();
+        console.log(productId, ' ', text);
+        if ($('#product_ids').find("option[value='" + productId + "']").length) {
+           
+        } else { 
+            // Create a DOM Option and pre-select by default
+            var newOption = new Option(text, productId, true, true);
+
+            // Append it to the select
+            $('#product_ids').append(newOption).trigger('change');
+          
+        } 
+    });
+    $(document).on( 'change','#categoryForProducts', function (e) {
 
     $.ajaxSetup({
         headers: {
@@ -1044,25 +1116,20 @@ $(document).on('click', '.deletePickupSection', function() {
 
     var uri = "{{route('get-products-data-in-modal')}}";
 
-    var uid = $(this).attr('userId');
+    var category_id = $(this).val();
 
 
     $.ajax({
         type: "get",
         url: uri,
-        data: {id:uid},
+        data: {category_id:category_id},
         dataType: 'json',
         beforeSend: function(){
             $(".loader_box").show();
         },
         success: function (data) {
-            if(uid > 0){
+            if(data.success){
                 $('#home_products #editProductsBox').html(data.html);
-                $('#home_products').modal({
-                    backdrop: 'static',
-                    keyboard: false
-                });
-
             }
            
         },
