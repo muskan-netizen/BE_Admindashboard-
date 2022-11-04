@@ -42,7 +42,7 @@ trait WebStylingTrait
 
     public function updateSingleCategoryProductsToDb($request)
     {
-        if (checkColumnExists('home_products', 'slug')) {
+        if (checkTableExists('home_products')) {
             $insert = ['slug' => 'single_category_products', 'product_category' => $request->product_category];
             HomeProduct::updateOrCreate(
                 ['slug' => $insert['slug']],
@@ -54,7 +54,7 @@ trait WebStylingTrait
 
     public function getSingleCategoryProducts($slug)
     {
-        if (checkColumnExists('home_products', 'slug')) {
+        if (checkTableExists('home_products')) {
             return HomeProduct::where('slug', $slug)->first();
         }
         return [];

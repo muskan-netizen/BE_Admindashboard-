@@ -130,12 +130,13 @@ trait HomePageTrait
     public function getSingleCategoryProducts()
     {
         $product_ids = [];
-        if (checkColumnExists('home_products', 'slug')) {
+        if (checkTableExists('home_products')) {
             $single_category_products = HomeProduct::whereSlug('single_category_products')->first();
+            if (@$single_category_products) {
+                $product_ids = ProductCategory::select('product_id')->where('category_id', $single_category_products->category_id)->get();
+            }
         }
-        if (@$single_category_products) {
-            $product_ids = ProductCategory::select('product_id')->where('category_id', $single_category_products->category_id)->get();
-        }
+        
         return $product_ids;
     }
 
@@ -194,9 +195,12 @@ trait HomePageTrait
     public function getSelectedProducts()
     {
         $product_ids = [];
-        if (checkColumnExists('home_products', 'slug')) {
+        if (checkTableExists('home_products')) {
             $single_category_products = HomeProduct::whereSlug('selected_products')->first();
-            $product_ids = json_decode($single_category_products->products);
+            if(@$single_category_products){
+                $product_ids = json_decode($single_category_products->products);
+            }
+            
         }
         return $product_ids;
     }
