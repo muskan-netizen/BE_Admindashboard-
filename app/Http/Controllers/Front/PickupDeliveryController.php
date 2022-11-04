@@ -152,12 +152,12 @@ class PickupDeliveryController extends FrontController{
             $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
         }
 
-        $product = Product::with(['category.categoryDetail','media.image', 'translation' => function($q) use($language_id){
+        $product = Product::with(['category.categoryDetail','media.image', 'tollpass', 'travelmode', 'emissiontype', 'translation' => function($q) use($language_id){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
                         },'variant' => function($q) use($language_id){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
                             $q->groupBy('product_id');
-                        }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking')->where('products.id', $product_id)->where('products.is_live', 1)->first();
+                        }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')->where('products.id', $product_id)->where('products.is_live', 1)->first();
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
@@ -271,7 +271,7 @@ class PickupDeliveryController extends FrontController{
             if(!$vendor){
                 return response()->json(['error' => 'No record found.'], 200);
             }
-            $products = Product::with(['category.categoryDetail', 'inwishlist' => function($qry) use($userid){
+            $products = Product::with(['category.categoryDetail', 'tollpass', 'travelmode', 'emissiontype', 'inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },'media.image', 'translation' => function($q) use($language_id){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
@@ -287,7 +287,7 @@ class PickupDeliveryController extends FrontController{
                     ->whereHas('category.categoryDetail' ,function($qryd) {
                         $qryd->where('type_id', 7);   # check only products get of pickup
                     })
-                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags','products.seats_for_booking', 'products.available_for_pooling')
+                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags','products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')
                     ->where('products.vendor_id', $vid);
                     if($cid > 0){
                         $products = $products->where('products.category_id', $cid);
@@ -295,7 +295,7 @@ class PickupDeliveryController extends FrontController{
                     
                     if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
                     {
-                        $products = $products->where('products.available_for_pooling', '=', 1);
+                        $products = $products->where('products.available_for_pooling', 1);
                     }
                     $products = $products->where('products.is_live', 1)->distinct()->get();
 
@@ -420,7 +420,7 @@ class PickupDeliveryController extends FrontController{
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             if ($dispatch_domain && $dispatch_domain != false) {
                 $all_location = array();
-                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => 'IN_FASTAG', 'VehicleEmissionType' => 'GASOLINE', 'travelMode' => 'TAXI'];
+                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?$product->tollpass->toll_pass:'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?$product->emissiontype->emission_type:'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?$product->travelmode->travelmode:'TAXI')];
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/get-delivery-fee',
@@ -429,7 +429,7 @@ class PickupDeliveryController extends FrontController{
                 $response = json_decode($res->getBody(), true);
                 //pr($response);
                 if($response && $response['message'] == 'success'){
-                    return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?$response['toll_fee']:0.00);
+                    return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?((!empty($product) && $product->is_toll_tax == 1)?$response['toll_fee']:0.00):0.00);
                 }else{
                     return array('delivery_fee' => 0, 'toll_fee' => 0);
                 }

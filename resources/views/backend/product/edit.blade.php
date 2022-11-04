@@ -958,19 +958,35 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     
                     @if($product->vendor->pick_drop == 1 && $configData->is_cab_pooling == 1 && $product->category->categoryDetail->type_id == 7)
                     <div class="row">
-                        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        <div class="col-md-6 mb-2 d-flex align-items-center justify-content-between">
                             {!! Form::label('title', __('Toll Tax'),['class' => 'control-label']) !!}
                             <input type="checkbox" data-plugin="switchery" name="is_toll_tax" id="is_toll_tax" class="form-control" data-color="#43bee1" @if($product->is_toll_tax == 1) checked @endif>
                         </div>
-                    </div>
-                    <div class="row" id="is_toll_tax_div" style="display:@if($product->is_toll_tax == 1) @else none @endif;">
-                        <div class="col-sm-4 mb-1">
-                            {!! Form::label('title', __('TollPass eg. IN_FASTAG'),['class' => 'control-label']) !!} <a href="https://developers.google.com/maps/documentation/routes_preferred/reference/rest/Shared.Types/TollPass" target="_blank"><i class="fas fa-info-circle"></i></a>
-                            <input type="text"  class="form-control" value="{{$product->toll_passes}}" name="toll_passes" placeholder="{{__('TollPass as per Origin eg. IN_FASTAG')}}">
+                        <div class="col-sm-6 mb-1" id="is_toll_tax_div1" style="display:@if($product->is_toll_tax == 1) @else none @endif;">
+                            {!! Form::label('title', __('Travel Mode'),['class' => 'control-label']) !!} <a href="https://developers.google.com/maps/documentation/routes_preferred/reference/rest/Shared.Types/RouteTravelMode" target="_blank"><i class="fas fa-info-circle"></i></a>
+                            <select class="form-control" name="travel_mode" data-toggle="select2" placeholder="Select Travel Mode...">
+                                @foreach($travelMode as $cel)
+                                <option value="{{$cel->id}}" @if($cel->id==$product->travel_mode_id) selected @endif> {{$cel->travel_mode_name}}</option>
+                                @endforeach
+                            </select>
                         </div>
-                        <div class="col-sm-4 mb-1">
+                    </div>
+                    <div class="row" id="is_toll_tax_div2" style="display:@if($product->is_toll_tax == 1) @else none @endif;">
+                        <div class="col-sm-6 mb-1">
+                            {!! Form::label('title', __('TollPass eg. IN_FASTAG'),['class' => 'control-label']) !!} <a href="https://developers.google.com/maps/documentation/routes_preferred/reference/rest/Shared.Types/TollPass" target="_blank"><i class="fas fa-info-circle"></i></a>
+                            <select class="form-control" name="toll_passes" data-toggle="select2" placeholder="Select Tollpass...">
+                                @foreach($tollPassOrigin as $cel)
+                                <option value="{{$cel->id}}" @if($cel->id == $product->toll_pass_id) selected @endif > {{$cel->toll_pass_name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-sm-6 mb-1">
                             {!! Form::label('title', __('Emission Type eg. GASOLINE'),['class' => 'control-label']) !!} <a href="https://developers.google.com/maps/documentation/routes_preferred/reference/rest/Shared.Types/VehicleEmissionType" target="_blank"><i class="fas fa-info-circle"></i></a>
-                            <input type="text"  class="form-control" value="{{$product->vehicle_emission_type}}" name="vehicle_emission_type" placeholder="{{__('Vehicle Emission Type eg. GASOLINE')}}">
+                            <select class="form-control" name="emission_type" data-toggle="select2" placeholder="Select Emission Type...">
+                                @foreach($vehicleEmissionType as $cel)
+                                <option value="{{$cel->id}}" @if($cel->id == $product->emission_type_id) selected @endif > {{$cel->emission_type_name}}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <div class="row">
@@ -1569,17 +1585,16 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 $('#available_for_pooling_div').show();
             } else {
                 $('#available_for_pooling_div').hide();
-                $("#toll_passes, #vehicle_emission_type").val(0);
+                $("#seats_for_booking, #seats").val(0);
             }
         });
 
         $('#is_toll_tax').change(function() {
             var val = $(this).prop('checked');
             if (val == true) {
-                $('#is_toll_tax_div').show();
+                $('#is_toll_tax_div1, #is_toll_tax_div2').show();
             } else {
-                $('#is_toll_tax_div').hide();
-                $("#seats_for_booking, #seats").val(0);
+                $('#is_toll_tax_div1, #is_toll_tax_div2').hide();
             }
         });
 

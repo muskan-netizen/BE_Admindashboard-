@@ -371,4 +371,20 @@ class Product extends Model implements Auditable{
     }
 
 
+    public function tollpass()
+    {
+        return $this->belongsTo('App\Models\TollPassOrigin', 'toll_pass_id', 'id')->select('id', 'toll_pass', 'desc');
+    }
+
+    public function travelmode()
+    {
+        return $this->belongsTo('App\Models\TravelMode', 'travel_mode_id', 'id')->select('id', 'travelmode', 'desc');
+    }
+
+    public function emissiontype()
+    {
+        return $this->belongsTo('App\Models\VehicleEmissionType', 'emission_type_id', 'id')->select('id', 'emission_type', 'desc');
+    }
+
+
 }
