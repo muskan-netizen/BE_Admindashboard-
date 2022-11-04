@@ -1561,11 +1561,19 @@ $sms_crendential = json_decode($preference->sms_credentials);
                </div>
                <div class="col-md-4">
                   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                     <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Show map on search screen')}}<small class="d-block pr-5">{{__("Enable to show activate vendor's in map-view on search screen.")}}</small></label>
+                     <label for="map_on_search_screen" class="mr-2 mb-0">{{__('Show map on search screen')}}<small class="d-block pr-5">{{__("Enable to show activate vendor's in map-view on search screen.")}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="map_on_search_screen" id="map_on_search_screen" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->map_on_search_screen == '1')) checked='checked' @endif>
                      </span>
                   </div>
                </div>
+
+               <div class="col-md-4" id="slots_with_service_area_div">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                      <label for="slots_with_service_area" class="mr-2 mb-0">{{__('Food Truck Service')}}<small class="d-block pr-5">{{__('Enable or disable multiple service area for trucks')}}</small></label>
+                  <span> <input type="checkbox" data-plugin="switchery" name="slots_with_service_area" id="slots_with_service_area" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->slots_with_service_area == '1')) checked='checked' @endif>
+                      </span>
+                  </div>
+              </div>
                 <div class="col-md-4">
                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                         <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Price By Role')}}<small class="d-block pr-5">{{__("Enable to show price by role on edit's vendor screen.")}}</small></label>
@@ -1578,7 +1586,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                <div class="col-md-4 d-none">
                   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                     <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Long Term Service')}}<small class="d-block pr-5">{{__("Enable to add long term service.")}}</small></label>
+                     <label for="is_long_term_service" class="mr-2 mb-0">{{__('Long Term Service')}}<small class="d-block pr-5">{{__("Enable to add long term service.")}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="is_long_term_service_switch" id="is_long_term_service_switch" class="form-control checkbox_change" data-className="is_long_term_service"  data-color="#43bee1" @if( @getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == '1') checked='checked' @endif>
                      </span>
                      <input type="hidden"  @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1) value="1" @else value="0" @endif  name="is_long_term_service"  id="is_long_term_service"/>

@@ -837,10 +837,11 @@ class CartController extends BaseController
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                                     $rate = round($tax_value->tax_rate);
                                     $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                                    $product_tax = ($quantity_price+$total_addon_price) * $rate / 100;
-                                    //\Log::info($quantity_price.' + '.$total_addon_price .' -- '.$product_tax);
-                                    //$product_tax = ($quantity_price+$addon_price) * $rate / 100;  
-                                    
+                                    if(!$preferences->is_tax_price_inclusive){
+                                        $product_tax = ($quantity_price+$total_addon_price) * $rate / 100; 
+                                    }else{
+                                        $product_tax = (($quantity_price+$total_addon_price)  * $rate) / (100 + $rate); 
+                                    }
                                     $taxData[$tckey]['rate'] = $rate;
                                     $taxData[$tckey]['tax_amount'] = $tax_amount;
                                     $taxData[$tckey]['product_tax'] = $product_tax;
@@ -1165,17 +1166,44 @@ class CartController extends BaseController
             }
 
 
+            if(!$preferences->is_tax_price_inclusive)
+            {
+                if($vendorData->vendor->delivery_charges_tax)
+                $deliver_fee_charges +=  $deliveryCharges * $delivery_charges_tax_rate/100;
+                
+                if($vendorData->vendor->service_charges_tax)
+                $total_service_fee +=  $vendor_service_fee_percentage_amount * $service_charges_tax_rate/100;
+    
+                if($vendorData->vendor->fixed_fee_tax)
+                $total_fixed_fee_tax +=  $total_fixed_fee_amount * $fixed_fee_tax_rate/100;
+    
+                if($vendorData->vendor->add_markup_price)
+                $total_markup_fee_tax +=  $total_markup_charges * $markup_price_tax_rate/100;
             if($vendorData->vendor->delivery_charges_tax)
             $deliver_fee_charges +=  $deliveryCharges_real * $delivery_charges_tax_rate/100;
             
             if($vendorData->vendor->service_charges_tax)
             $total_service_fee +=  $vendor_service_fee_percentage_amount * $service_charges_tax_rate/100;
 
-            if($vendorData->vendor->fixed_fee_tax)
-            $total_fixed_fee_tax +=  $total_fixed_fee_amount * $fixed_fee_tax_rate/100;
+            }else{
 
-            if($vendorData->vendor->add_markup_price)
-            $total_markup_fee_tax +=  $total_markup_charges * $markup_price_tax_rate/100;
+                if($vendorData->vendor->delivery_charges_tax)
+                $deliver_fee_charges += ($deliveryCharges * $delivery_charges_tax_rate)/(100 + $delivery_charges_tax_rate);
+                
+                if($vendorData->vendor->service_charges_tax)
+                $total_service_fee +=   ($vendor_service_fee_percentage_amount * $service_charges_tax_rate)/(100 + $service_charges_tax_rate);
+
+                if($vendorData->vendor->fixed_fee_tax)
+                $total_fixed_fee_tax =  ($total_fixed_fee_amount * $fixed_fee_tax_rate)/(100 + $fixed_fee_tax_rate);
+
+                if($vendorData->vendor->add_markup_price)
+                $total_markup_fee_tax +=  ($total_markup_charges * $markup_price_tax_rate)/(100 + $markup_price_tax_rate);
+
+                if($vendorData->vendor->delivery_charges_tax)
+                $deliver_fee_charges +=  $deliveryCharges_real * $delivery_charges_tax_rate/100;
+
+            }
+            
             } //End Tax Code
 
 
