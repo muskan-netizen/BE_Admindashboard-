@@ -512,7 +512,7 @@ class WebStylingController extends BaseController{
             $rules['product_ids'] =  'required';
         }
         $validation  = Validator::make($request->all(), $rules)->validate();
-        if (checkColumnExists('home_products', 'slug')) {
+        if (checkTableExists('home_products')) {
             $insert = ['slug' => 'selected_products', 'products' => json_encode($request->product_ids)];
             HomeProduct::updateOrCreate(
                 ['slug' => $insert['slug']],
