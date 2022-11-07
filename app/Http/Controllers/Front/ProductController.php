@@ -285,17 +285,32 @@ class ProductController extends FrontController{
             }
             
             $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = '';
-            $suggested_product = Product::with('media.image');
-            // dd($product->id);
+            $suggested_product = Product::with(['media.image', 'vendor', 'translation']);
+            
             if( !empty($product->category_id) ) 
-                $suggested_category_products = Product::with('media.image')->where('category_id', $product->category_id)->orderby('id', 'desc')->limit(20)->get();
+                $suggested_category_products = $suggested_product->where('category_id', $product->category_id)->orderby('id', 'desc')->limit(20)->get();
 
             if( !empty($product->brand_id) ) 
-                $suggested_brand_products = Product::with('media.image')->where('brand_id', $product->brand_id)->select('id')->orderby('id', 'desc')->limit(20)->get();
+                $suggested_brand_products = $suggested_product->where('brand_id', $product->brand_id)->orderby('id', 'desc')->limit(20)->get();
             
             if( !empty($product->vendor_id) ) 
-                $suggested_vendor_products = Product::with('media.image')->where('vendor_id', $product->vendor_id)->select('id')->orderby('id', 'desc')->limit(20)->get();
-            // dd($product);
+                $suggested_vendor_products = $suggested_product->where('vendor_id', $product->vendor_id)->orderby('id', 'desc')->limit(20)->get();
+            
+
+            // Check Promo code is available
+            // $promoCodeController = new PromoCodeController();
+            // $promoCodeRequest = new Request();
+            // $promoCodeRequest->setMethod('POST');
+            // $promoCodeRequest->request->add(['product_id' => $product->id]);
+            // $promoCodeResponse = $promoCodeController->postProductPromoCodeCheck($promoCodeRequest)->getData();
+            // if($promoCodeResponse->status == 'Success'){
+            //     if(!empty($promoCodeResponse->data)){
+            //         $is_promo_code_available = 1;
+            //     }
+            // }
+
+            // dump($suggested_vendor_products->coupon);
+
             return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products]);
 
         }
