@@ -699,7 +699,7 @@ class PickupDeliveryController extends FrontController{
                 $order_product->created_by = null;
                 $order_product->variant_id = $variant->id;
                 $order_product->product_name = $product->sku;
-                $order_product->no_seats_for_pooling = isset($request->no_seats_for_pooling)?$request->no_seats_for_pooling:0;
+                $order_product->no_seats_for_pooling = (isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0;
                 $order_product->is_cab_pooling = isset($request->is_cab_pooling)?$request->is_cab_pooling:0;
 
                 if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
@@ -916,7 +916,7 @@ class PickupDeliveryController extends FrontController{
                     'toll_passes' => 'IN_FASTAG',
                     'VehicleEmissionType' => 'GASOLINE',
                     'travelMode' => 'TAXI',
-                    'no_seats_for_pooling' => isset($request->no_seats_for_pooling)?$request->no_seats_for_pooling:0,
+                    'no_seats_for_pooling' => (isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0,
                     'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
                     'available_seats' => $product->seats_for_booking,
                 ];
