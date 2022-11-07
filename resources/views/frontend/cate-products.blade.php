@@ -110,8 +110,19 @@
                             </div>
                           @endforeach
                         @endif
+                        <div class="collection-collapse-block border-0 mb-2 open">
+                            <h3 class="collapse-block-title">{{__('Price')}}</h3>
+                            <div class="collection-collapse-block-content">
+                                <div class="wrapper mt-3">
+                                    <div class="range-slider">
+                                        <input type="text" class="js-range-slider rangeSliderPrice" value="" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     @endif
+                    @if(!empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
@@ -121,7 +132,7 @@
                         </h5>
 
                         <div class="offer-slider al">
-                            @if(!empty($newProducts) && count($newProducts) > 0)
+                           
                                 @foreach($newProducts as $newProds)
                                     <div class="col-12 p-0">
                                     @foreach($newProds as $new)
@@ -204,10 +215,12 @@
                                     @endforeach
                                     </div>
                                 @endforeach
-                            @endif
+                            
                         </div>
                     </div>
+                    @endif
                 </div>
+                
                 <div class="collection-content col-lg-9">
                     <div class="page-main-content">
                         <div class="row">
