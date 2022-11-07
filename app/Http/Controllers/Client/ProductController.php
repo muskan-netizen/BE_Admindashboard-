@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -249,6 +249,11 @@ class ProductController extends BaseController
             $vendor_id = $product->vendor_id;
             $agent_dispatcher_tags = $this->getDispatcherTags($vendor_id);
         }
+        if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 1) # if type is pickup delivery then get dispatcher tags
+        {
+            $vendor_id = $product->vendor_id;
+            $agent_dispatcher_tags = $this->getDeliveryDispatcherTags($vendor_id);
+        }
         if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 8) # if type is on demand
         {
             $vendor_id = $product->vendor_id;
@@ -282,8 +287,20 @@ class ProductController extends BaseController
         if(checkColumnExists('roles','is_enable_pricing')){
             $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
         }
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
-        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference ]);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles']);
+
+        $allRoles = Role::where('status',1)->get();
+        
+        $selectedRoles = [];
+        if($getAdditionalPreference['is_free_delivery_by_roles'] == 1){
+            $querySelectedRoles = ProductDeliveryFeeByRole::where('product_id', $id)->where('is_free_delivery', 1)->get();
+            foreach($querySelectedRoles as $querySelectedRole){
+                $selectedRoles[] = $querySelectedRole->role_id;
+            }
+        }
+        
+
+        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles ]);
     }
 
     /**
@@ -341,7 +358,8 @@ class ProductController extends BaseController
             $product->is_new                    = ($request->has('is_new') && $request->is_new == 'on') ? 1 : 0;
             $product->is_featured               = ($request->has('is_featured') && $request->is_featured == 'on') ? 1 : 0;
             $product->is_physical               = ($request->has('is_physical') && $request->is_physical == 'on') ? 1 : 0;
-            $product->pharmacy_check               = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
+            $product->pharmacy_check            = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
+            $product->individual_delivery_fee   = ($request->has('individual_delivery_fee') && $request->individual_delivery_fee == 'on') ? 1 : 0;
             $product->has_inventory             = ($request->has('has_inventory') && $request->has_inventory == 'on') ? 1 : 0;
             $product->sell_when_out_of_stock    = ($request->has('sell_stock_out') && $request->sell_stock_out == 'on') ? 1 : 0;
             $product->requires_shipping         = ($request->has('require_ship') && $request->require_ship == 'on') ? 1 : 0;
@@ -568,6 +586,24 @@ class ProductController extends BaseController
                 }
                 
             }
+
+            // update product delivery fees
+            if($request->has('free_delivery_roles')){
+                $allRoles = Role::where('status', 1)->get();
+                $free_del_arr = [];
+                // list size will be small. so it's okay to use loop here
+                foreach($allRoles as $allRole){
+                    $free_del_val = [
+                        'product_id'=> $product->id,
+                        'role_id' => $allRole->id,
+                        'is_free_delivery' => (in_array( $allRole->id,  $request->free_delivery_roles ) ? 1 : 0)
+                    ];
+                    ProductDeliveryFeeByRole::updateOrCreate(['product_id' =>$product->id, 'role_id' => $allRole->id ], $free_del_val);
+                }
+
+            }
+            
+
             DB::commit();
             $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
             // return redirect('client/vendor/catalogs/' . $product->vendor_id)->with('toaster', $toaster);
@@ -994,6 +1030,33 @@ class ProductController extends BaseController
 
             }
     }
+
+    public function getDeliveryDispatcherTags($vendor_id)
+    {
+        try {
+            $dispatch_domain = $this->checkIfDeliveryOn();
+                if ($dispatch_domain && $dispatch_domain != false) {
+
+                    $unique = Auth::user()->code;
+                    $email =  $unique.$vendor_id."_royodispatch@dispatch.com";
+
+                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key,
+                                                        'shortcode' => $dispatch_domain->delivery_service_key_code,
+                                                        'content-type' => 'application/json']
+                                                            ]);
+                            $url = $dispatch_domain->delivery_service_key_url;
+                            $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
+                            $response = json_decode($res->getBody(), true);
+                            if($response && $response['message'] == 'success'){
+                                return $response['tags'];
+                            }
+
+                }
+            }
+            catch(\Exception $e){
+
+            }
+    }
     # check if last mile delivery on
     public function checkIfPickupDeliveryOn(){
         $preference = ClientPreference::first();
@@ -1062,6 +1125,14 @@ class ProductController extends BaseController
     public function checkIfOnDemandOn(){
         $preference = ClientPreference::first();
         if($preference->need_dispacher_home_other_service == 1 && !empty($preference->dispacher_home_other_service_key) && !empty($preference->dispacher_home_other_service_key_url) && !empty($preference->dispacher_home_other_service_key_code))
+            return $preference;
+        else
+            return false;
+    }
+
+    public function checkIfDeliveryOn(){
+        $preference = ClientPreference::first();
+        if(!empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_url) && !empty($preference->delivery_service_key_code))
             return $preference;
         else
             return false;

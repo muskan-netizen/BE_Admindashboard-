@@ -462,6 +462,7 @@
                                         @endif
                                         @endif
                                     </div>
+                                    {{-- @dump($product) --}}
                                     <div class="border-product al_disc">
                                         <h6 class="product-title">{{__('Product Details')}}</h6>
                                         <p></p>
@@ -480,6 +481,8 @@
                                             <!-- </ul>   -->
                                         </div>
                                     </div>
+
+                                    
                                 </div>
                                 <div class="similar-product">
                                     <div class="row">
@@ -539,6 +542,17 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Related Products --}}
+                    <div class="row">
+                        <div class="col-md-12">
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => 'Category Realted Product'])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_brand_products, 'title' => 'Brand Realted Product'])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => 'Vendor Realted Product'])
+                        </div>
+                    </div>
+                    {{-- End of Related Products --}}
+
                     @if($client_preference_detail && $client_preference_detail->rating_check == 1)
                     <section class="tab-product mb-3">
                         <div class="row">
@@ -946,6 +960,7 @@
     });
     function updatePrice()
     {
+        
         var variants = [];
         var options = [];
         $('.changeVariant').each(function() {
@@ -1163,7 +1178,12 @@
             $('.img-zoom-result').hide();
             $('.img-zoom-lens').remove();
         });
-    
+        
+        $(".suggested-product").slick({
+            infinite: true,
+            slidesToShow: 3,
+            slidesToScroll: 3
+        });
         </script>
 
 @endsection
