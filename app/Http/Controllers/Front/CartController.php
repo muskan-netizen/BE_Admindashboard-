@@ -1959,6 +1959,7 @@ class CartController extends FrontController
         }
 
         $client_preference_detail = ClientPreference::first();
+        $client_preference_detail  = $this->hideSecretKeys($client_preference_detail);
 
         $expected_vendors = [];
     //    $expected_vendors = $this->searchProductExpection($cart_details);
