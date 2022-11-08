@@ -108,7 +108,7 @@
                             </div>
                         </div>--}}
                         <div class="row">
-                            <div class="col-lg-4 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                            <div class="col-lg-6 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                 {{-- <div class="product__carousel">
                                     <div class="gallery-parent">
                                         @php
@@ -226,7 +226,7 @@
                                 <div id="myresult" class="img-zoom-result"></div>
                             </div>
 
-                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-5'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text p-0">
+                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-6'; } else { echo 'offset-lg-6 col-lg-6'; } @endphp rtl-text p-0">
                                 <div class="product-right inner_spacing pl-sm-3 p-0">
                                     <h2 class="mb-0">
                                         {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
@@ -248,6 +248,7 @@
                                     <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
                                     <input type="hidden" name="start_time" id="start_time" value="">
                                     <input type="hidden" name="end_time" id="end_time" value="">
+
                                     <div id="product_variant_wrapper">
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
                                         @if($product->inquiry_only == 0)
@@ -259,7 +260,12 @@
                                             </h3>
                                         @endif
                                     </div>
-                                   
+                                    <div class="border-product al_disc">
+                                        <h6 class="product-title">{{__('Product Details')}}</h6>
+                                        <p></p>
+                                        {!!(!empty($product->translation) && isset($product->translation[0])) ?
+                                            $product->translation[0]->body_html : ''!!}
+                                    </div>
                                     <div id="product_variant_options_wrapper">
                                         @if(!empty($product->variantSet))
                                             @php
@@ -300,44 +306,7 @@
                                         @include('frontend.product-part.booking-slot')
                                     @endif
                                     
-                                    <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'block'; ?>">
-                                        @if($product->inquiry_only == 0)
-                                        <div class="product-description border-product pb-0">
-                                            <h6 class="product-title mt-0">{{__('Quantity')}}:
-                                                @if($product->has_inventory && !$product->variant[0]->quantity > 0 && $product->sell_when_out_of_stock != 1)
-                                                    <span id="outofstock" style="color: red;">{{ __('Out of Stock')}}</span>
-                                                @else
-                                                @php
-                                                $product_quantity_in_cart = $product_in_cart->quantity??0;
-                                                @endphp
-                                                <input type="hidden" value="{{$product->has_inventory}}" id="hasInventory">
-                                                <input type="hidden" id="instock" value="{{ ($product->variant[0]->quantity - $product_quantity_in_cart)}}">
-                                                @endif
-                                            </h6>
-                                            @if(!$product->has_inventory || $product->variant[0]->quantity > 0 || $product->sell_when_out_of_stock == 1)
-                                            @if($product->minimum_order_count > 1)
-                                            {{-- <p class="mb-1 product_price">   {{__('Minimum Quantity') }} : {{ $product->minimum_order_count }} </p>
-                                            <p class="mb-1 product_price">   {{__('Batch') }} : {{ $product->batch_count }} </p> --}}
-                                            @endif
-                                            <div class="qty-box mb-3">
-                                                <div class="input-group">
-                                                    <span class="input-group-prepend">
-                                                        <button type="button" class="btn quantity-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="ti-angle-left"></i>
-                                                        </button>
-                                                    </span>
-                                                    <input type="text" name="quantity"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="quantity" class="form-control input-qty-number quantity_count"  value="{{$product->minimum_order_count??1}}" data-minimum_order_count={{$product->minimum_order_count}}>
-                                                    <span class="input-group-prepend quant-plus">
-                                                        <button type="button" class="btn quantity-right-plus" data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}>
-                                                            <i class="ti-angle-right"></i>
-                                                        </button>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            @endif
-                                        </div>
-                                        @endif
-
-                                    </div>
+                                    
 
                                     @if(!empty($product->addOn) && $product->addOn->count() > 0)
                                     <div class="border-product">
@@ -430,45 +399,85 @@
                                         else
                                             $checkSlot = 0;
                                     @endphp
-                                    <div class="product-buttons">
-                                        @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
-                                        @if($is_inwishlist_btn && $is_available)
-                                        <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
-                                            {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
-                                        </button>
-                                        @endif
-                                        @if($product->inquiry_only == 0)
-                                        @php
-                                        if($product->sell_when_out_of_stock == 1 && $product->variant[0]->quantity == 0){
-                                            $product_quantity_in_cart = 1;
-                                            $product->variant[0]->quantity = 2;
-                                        }
-                                        else
-                                        $product_quantity_in_cart = $product_in_cart->quantity??0;
-
-
-                                        @endphp
-                                        @if($is_available == 1)
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
-                                        @endif
-
-                                            @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
-                                            <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
-                                            @elseif($vendor_info->is_vendor_closed == 1 && $vendor_info->closed_store_order_scheduled == 1)
-                                            <p class="text-danger">{{ __('We are not accepting orders right now. You can schedule this for '). $checkSlot}}.</p>
+                                    <div class="btn-wrapper d-flex align-items-center">
+                                        <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
+                                            @if($product->inquiry_only == 0)
+                                            <div class="product-description border-product pb-0">
+                                                <h6 class="product-title mt-0">{{__('Quantity')}}:
+                                                    @if($product->has_inventory && !$product->variant[0]->quantity > 0 && $product->sell_when_out_of_stock != 1)
+                                                        <span id="outofstock" style="color: red;">{{ __('Out of Stock')}}</span>
+                                                    @else
+                                                    @php
+                                                    $product_quantity_in_cart = $product_in_cart->quantity??0;
+                                                    @endphp
+                                                    <input type="hidden" value="{{$product->has_inventory}}" id="hasInventory">
+                                                    <input type="hidden" id="instock" value="{{ ($product->variant[0]->quantity - $product_quantity_in_cart)}}">
+                                                    @endif
+                                                </h6>
+                                                @if(!$product->has_inventory || $product->variant[0]->quantity > 0 || $product->sell_when_out_of_stock == 1)
+                                                @if($product->minimum_order_count > 1)
+                                                {{-- <p class="mb-1 product_price">   {{__('Minimum Quantity') }} : {{ $product->minimum_order_count }} </p>
+                                                <p class="mb-1 product_price">   {{__('Batch') }} : {{ $product->batch_count }} </p> --}}
+                                                @endif
+                                                <div class="qty-box mb-3">
+                                                    <div class="input-group">
+                                                        <span class="input-group-prepend">
+                                                            <button type="button" class="btn quantity-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="fa fa-minus" aria-hidden="true"></i>
+                                                            </button>
+                                                        </span>
+                                                        <input type="text" name="quantity"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="quantity" class="form-control input-qty-number quantity_count"  value="{{$product->minimum_order_count??1}}" data-minimum_order_count={{$product->minimum_order_count}}>
+                                                        <span class="input-group-prepend quant-plus">
+                                                            <button type="button" class="btn quantity-right-plus" data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}>
+                                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                @endif
+                                            </div>
                                             @endif
-                                        @else
-                                            <a href="#" data-toggle="modal" data-target="#inquiry_form" class="btn btn-solid inquiry_mode">{{ __('Inquire Now')}}</a>
-                                        @endif
-                                        @endif
+
+                                        </div>
+                                        <div class="product-buttons">
+                                            @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
+                                            @if($is_inwishlist_btn && $is_available)
+                                            <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
+                                                {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
+                                            </button>
+                                            @endif
+                                            @if($product->inquiry_only == 0)
+                                            @php
+                                            if($product->sell_when_out_of_stock == 1 && $product->variant[0]->quantity == 0){
+                                                $product_quantity_in_cart = 1;
+                                                $product->variant[0]->quantity = 2;
+                                            }
+                                            else
+                                            $product_quantity_in_cart = $product_in_cart->quantity??0;
+
+
+                                            @endphp
+                                            @if($is_available == 1)
+                                                <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                            @endif
+
+                                                @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
+                                                <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
+                                                @elseif($vendor_info->is_vendor_closed == 1 && $vendor_info->closed_store_order_scheduled == 1)
+                                                <p class="text-danger">{{ __('We are not accepting orders right now. You can schedule this for '). $checkSlot}}.</p>
+                                                @endif
+                                            @else
+                                                <a href="#" data-toggle="modal" data-target="#inquiry_form" class="btn btn-solid inquiry_mode">{{ __('Inquire Now')}}</a>
+                                            @endif
+                                            @endif
+                                        </div>
                                     </div>
                                     {{-- @dump($product) --}}
-                                    <div class="border-product al_disc">
+                                    <!-- <div class="border-product al_disc">
                                         <h6 class="product-title">{{__('Product Details')}}</h6>
                                         <p></p>
                                         {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                             $product->translation[0]->body_html : ''!!}
-                                    </div>
+                                    </div> -->
                                     <div class="border-product">
                                         <h6 class="product-title">{{__('Share It')}}</h6>
                                         <div class="product-icon w-100">
@@ -484,63 +493,99 @@
 
                                     
                                 </div>
-                                <div class="similar-product">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <h3>Similar Product</h3>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="similar-prod-data">
-                                                <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}" alt="">
-                                                <h4>Lorem ipsum, dolor site</h4>
-                                                <span class="rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
-                                                <a href="javascript:void(0)">(5,326)</a>
-                                                <h5><span>₹449 <del>₹999 </del><small>55% off</small></span></h5>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="similar-prod-data">
-                                                <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}" alt="">
-                                                <h4>Lorem ipsum, dolor site</h4>
-                                                <span class="rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
-                                                <a href="javascript:void(0)">(5,326)</a>
-                                                <h5><span>₹449 <del>₹999 </del><small>55% off</small></span></h5>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="similar-prod-data">
-                                                <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}" alt="">
-                                                <h4>Lorem ipsum, dolor site</h4>
-                                                <span class="rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
-                                                <a href="javascript:void(0)">(5,326)</a>
-                                                <h5><span>₹449 <del>₹999 </del><small>55% off</small></span></h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="aside_bar">
-                                    <h5>Available offers</h5>
-                                    <span><i class="fa fa-tag" aria-hidden="true"></i><strong>Bank Offer</strong> 5% Cashback on Flipkart Axis Bank Card<small>T&C</small></span>
-                                    <span><i class="fa fa-tag" aria-hidden="true"></i><strong>Partner Offer</strong> Sign up for Flipkart Pay Later and get Flipkart Gift Card worth up to ₹500*<small>Know More</small></span>
-                                    <ul>
-                                        <li>100% Original Products</li>
-                                        <li>Pay on delivery might be available</li>
-                                        <li>Easy 30 days returns and exchanges</li>
-                                        <li>Try & Buy might be available</li>
-                                    </ul>
-                                    <form>
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Promo Code">
-                                            <button type="submit" class="btn btn-primary">Apply</button>
-                                        </div>
-                                    </form>
-                                </div>
+
                             </div>
                         </div>
+                        <div class="row mt-4">
+                            <div class="col-md-8">
+                                @if($client_preference_detail && $client_preference_detail->rating_check == 1)
+                                <section class="tab-product custom-tabs">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-lg-12">
+                                            <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
+                                                <!-- <li class="nav-item"><a class="nav-link active" id="top-home-tab" data-toggle="tab" href="#top-home" role="tab" aria-selected="true"><i class="icofont icofont-ui-home"></i>{{__('Description')}}</a>
+                                                    <div class="material-border"></div>
+                                                </li>
+                                                <li class="nav-item"><a class="nav-link" id="profile-top-tab" data-toggle="tab"
+                                                        href="#top-profile" role="tab" aria-selected="false"><i
+                                                            class="icofont icofont-man-in-glasses"></i>Details</a>
+                                                    <div class="material-border"></div>
+                                                </li> -->
+                                                @if($client_preference_detail && $client_preference_detail->rating_check == 1)
+                                                <li class="nav-item"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
+                                                    <div class="material-border"></div>
+                                                </li>
+                                                @endif
+                                            </ul>
+                                            <div class="tab-content nav-material" id="top-tabContent">
+                                                <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
+                                                    <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
+                                                        $product->translation[0]->body_html : ''!!}</p>
+                                                </div>
+                                                <div class="tab-pane fade" id="top-profile" role="tabpanel" aria-labelledby="profile-top-tab">
+                                                    <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
+                                                        $product->translation[0]->body_html : ''!!}</p>
+                                                </div>
+                                                <div class="tab-pane show active" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
+                                                    @forelse ($rating_details as $rating)
+                                                    <div v-for="item in list" class="w-100 d-flex justify-content-between mb-3">
+                                                        <div class="review-box">
+
+                                                            <div class="review-author mb-1">
+                                                                <p><strong>{{$rating->user->name??'NA'}}</strong> - <i class="fa fa-star{{ $rating->rating >= 1 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                    <i class="fa fa-star{{ $rating->rating >= 2 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                    <i class="fa fa-star{{ $rating->rating >= 3 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                    <i class="fa fa-star{{ $rating->rating >= 4 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                    <i class="fa fa-star{{ $rating->rating >= 5 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                </p>
+                                                            </div>
+                                                            <div class="review-comment">
+                                                                <p>{{$rating->review??''}}</p>
+                                                            </div>
+                                                            <div class="row review-wrapper">
+                                                                @if(isset($rating->reviewFiles))
+                                                                @foreach ($rating->reviewFiles as $files)
+                                                                <a target="_blank" href="{{$files->file['image_fit'].'900/900'.$files->file['image_path']}}" class="col review-photo mt-2 lightBoxGallery" data-gallery="">
+                                                                    <img class="blur-up lazyload" data-src="{{$files->file['image_fit'].'300/300'.$files->file['image_path']}}">
+                                                                </a>
+                                                                @endforeach
+                                                                @endif
+                                                            </div>
+                                                            <div class="review-date mt-2">
+                                                                <time> {{ $rating->time_zone_created_at->diffForHumans();}} </time>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @empty
+                                                    <p>{{__('No Result Found')}}</p>
+                                                    @endforelse
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                @endif
+                            </div>
+                            <div class="col-md-4">
+                                    <div class="aside_bar">
+                                        <h5>Available offers</h5>
+                                        <span><i class="fa fa-tag" aria-hidden="true"></i><strong>Bank Offer</strong> 5% Cashback on Flipkart Axis Bank Card<small>T&C</small></span>
+                                        <span><i class="fa fa-tag" aria-hidden="true"></i><strong>Partner Offer</strong> Sign up for Flipkart Pay Later and get Flipkart Gift Card worth up to ₹500*<small>Know More</small></span>
+                                        <ul>
+                                            <li>100% Original Products</li>
+                                            <li>Pay on delivery might be available</li>
+                                            <li>Easy 30 days returns and exchanges</li>
+                                            <li>Try & Buy might be available</li>
+                                        </ul>
+                                        <form>
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Promo Code">
+                                                <button type="submit" class="btn btn-primary">Apply</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                     </div>
 
                     {{-- Related Products --}}
@@ -553,73 +598,7 @@
                     </div>
                     {{-- End of Related Products --}}
 
-                    @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                    <section class="tab-product mb-3">
-                        <div class="row">
-                            <div class="col-sm-12 col-lg-12">
-                                <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
-                                    <!-- <li class="nav-item"><a class="nav-link active" id="top-home-tab" data-toggle="tab" href="#top-home" role="tab" aria-selected="true"><i class="icofont icofont-ui-home"></i>{{__('Description')}}</a>
-                                        <div class="material-border"></div>
-                                    </li> -->
-                                    <!-- <li class="nav-item"><a class="nav-link" id="profile-top-tab" data-toggle="tab"
-                                            href="#top-profile" role="tab" aria-selected="false"><i
-                                                class="icofont icofont-man-in-glasses"></i>Details</a>
-                                        <div class="material-border"></div>
-                                    </li> -->
-                                    @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                                    <li class="nav-item"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
-                                        <div class="material-border"></div>
-                                    </li>
-                                    @endif
-                                </ul>
-                                <div class="tab-content nav-material" id="top-tabContent">
-                                    <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
-                                        <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
-                                            $product->translation[0]->body_html : ''!!}</p>
-                                    </div>
-                                    <div class="tab-pane fade" id="top-profile" role="tabpanel" aria-labelledby="profile-top-tab">
-                                        <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
-                                            $product->translation[0]->body_html : ''!!}</p>
-                                    </div>
-                                    <div class="tab-pane show active" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
-                                        @forelse ($rating_details as $rating)
-                                        <div v-for="item in list" class="w-100 d-flex justify-content-between mb-3">
-                                            <div class="review-box">
-
-                                                <div class="review-author mb-1">
-                                                    <p><strong>{{$rating->user->name??'NA'}}</strong> - <i class="fa fa-star{{ $rating->rating >= 1 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                        <i class="fa fa-star{{ $rating->rating >= 2 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                        <i class="fa fa-star{{ $rating->rating >= 3 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                        <i class="fa fa-star{{ $rating->rating >= 4 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                        <i class="fa fa-star{{ $rating->rating >= 5 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                    </p>
-                                                </div>
-                                                <div class="review-comment">
-                                                    <p>{{$rating->review??''}}</p>
-                                                </div>
-                                                <div class="row review-wrapper">
-                                                    @if(isset($rating->reviewFiles))
-                                                    @foreach ($rating->reviewFiles as $files)
-                                                    <a target="_blank" href="{{$files->file['image_fit'].'900/900'.$files->file['image_path']}}" class="col review-photo mt-2 lightBoxGallery" data-gallery="">
-                                                        <img class="blur-up lazyload" data-src="{{$files->file['image_fit'].'300/300'.$files->file['image_path']}}">
-                                                    </a>
-                                                    @endforeach
-                                                    @endif
-                                                </div>
-                                                <div class="review-date mt-2">
-                                                    <time> {{ $rating->time_zone_created_at->diffForHumans();}} </time>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @empty
-                                        <p>{{__('No Result Found')}}</p>
-                                        @endforelse
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                    @endif
+                    
                 </div>
             </div>
         </div>
@@ -1181,8 +1160,8 @@
         
         $(".suggested-product").slick({
             infinite: true,
-            slidesToShow: 3,
-            slidesToScroll: 3
+            slidesToShow: 4,
+            slidesToScroll: 1
         });
         </script>
 

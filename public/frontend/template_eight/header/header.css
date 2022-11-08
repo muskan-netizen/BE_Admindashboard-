@@ -194,8 +194,8 @@ z-index:1111;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-
     display: none;
 }
 header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu {
-    padding-top: 15px;
-    padding-bottom: 10px;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 .site-header.fixed-bar .nav-cate-img.activ_nav {
     display: block !important;
