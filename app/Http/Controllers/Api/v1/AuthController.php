@@ -628,7 +628,7 @@ class AuthController extends BaseController
                     $user->save();
                     $provider = $data->sms_provider;
                     $to = '+' . $request->dial_code . $request->phone_number;
-                    $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.".((!empty($request->app_hash_key))?" ".$request->app_hash_key:'');
+                    $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
                     if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
                         $send = $this->sendSms($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
                         if ($send ==1) {
@@ -1083,7 +1083,7 @@ class AuthController extends BaseController
                     $to = '+' . $dialCode . $phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $body = "Please enter OTP " . $phoneCode . " to verify your account.".((!empty($request->app_hash_key))?" ".$request->app_hash_key:'');
+                $body = "Please enter OTP " . $phoneCode . " to verify your account.";
                 if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                     if ($send) {
