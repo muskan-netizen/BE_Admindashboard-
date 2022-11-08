@@ -15,7 +15,17 @@
     ::-webkit-scrollbar-thumb:hover{
     background: #555;
     }
-
+    .result-item-name.product_heading h4{
+        font-size:14px;
+        font-weight: bold;
+    }
+    .result-item-name.product_heading {
+        background: #f2f2f2;
+        width: 100%;
+        padding: 5px;
+       
+      }
+      
 .file.file--upload i.fa{color:#fff}
 header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#top-tab{display: inline-block;max-width: 100%;white-space: nowrap;}
 .top-header.site-topbar.al_custom_head{background-color:#fff}.top-header.site-topbar{background:var(--top-header-color);padding:5px 0;display:list-item}.location-bar.d-inline-flex.align-items-center.position-relative{width:100%;border-right:1px solid #bbb}.al_custom_head.site-topbar .location-bar i{color:var(--theme-deafult)!important;font-size:18px}
