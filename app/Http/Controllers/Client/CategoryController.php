@@ -338,6 +338,10 @@ class CategoryController extends BaseController
                 $file = $request->file('icon_two');
                 $cate->icon_two = Storage::disk('s3')->put($this->folderName, $file, 'public');
             }
+            if(@$request->remove_image && $request->remove_image == 1){
+                Storage::disk('s3')->delete($cate->image);
+                $cate->image = null;
+            }
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $cate->image = Storage::disk('s3')->put('/category/image', $file, 'public');
