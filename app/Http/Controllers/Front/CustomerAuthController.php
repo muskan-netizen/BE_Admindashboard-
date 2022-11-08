@@ -356,7 +356,7 @@ class CustomerAuthController extends FrontController
                     $keyData = ['{user_name}'=>ucwords($user->name)];
                     $body = sendSmsTemplate('user-signup-sms',$keyData);
                     // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
-                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
 
                     if( $prefer->verify_phone == 1 ){
                         $response['send_otp'] = 1;

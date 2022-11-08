@@ -1177,7 +1177,7 @@ if (!function_exists('sendSmsTemplate')) {
      */
     function sendSmsTemplate($slug,$data)
     {
-        $smsTemp = SmsTemplate::where('slug',$slug)->select('content','tags')->first();
+        $smsTemp = SmsTemplate::where('slug',$slug)->select('content','tags','template_id')->first();
         $smsBody = $smsTemp->content;
         if(isset($smsTemp->tags) && !empty($smsTemp->tags))
         {
@@ -1188,7 +1188,8 @@ if (!function_exists('sendSmsTemplate')) {
                 $smsBody = str_replace($tag,$value,$smsBody);
             }
         }
-        return $smsBody;
+        $sms = array(['body'=>$smsBody,'template_id'=>$smsTemp->template_id??'']);
+        return $sms;
     }
 }
 
