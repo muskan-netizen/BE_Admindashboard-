@@ -18,7 +18,7 @@ class SmsTemplateSeeder extends Seeder
         $option_count = DB::table('sms_templates')->count();
 
         $sms_templates = array(
-            ['id' => 1,'label' => "Order Placed Successfully", 'slug' => 'order-place-Successfully', 'subject' => "OrderQ Placed Successfully", 'content' => "Hi {user_name} Your order of amount {amount} for order number {order_number}", 'tags' => "{user_name},{amount},{order_number}"],
+            ['id' => 1,'label' => "Order Placed Successfully", 'slug' => 'order-place-Successfully', 'subject' => "Order Placed Successfully", 'content' => "Hi {user_name} Your order of amount {amount} for order number {order_number}", 'tags' => "{user_name},{amount},{order_number}"],
             ['id' => 2,'label' => "Otp Sms For Vendor Login", 'slug' => 'otp-sms-vendor-login', 'subject' => "Otp Sms For Vendor Login", 'content' => "Please enter otp-{otp_code}. Keep it safe and don't show to other.", 'tags' => "{otp_code}"],
             ['id' => 3,'label' => "Otp Sms For User Signup", 'slug' => 'otp-sms-user-signup', 'subject' => "Otp Sms User For Signup", 'content' => "Please enter otp-{otp_code}. Keep it safe and don't show to other.", 'tags' => "{otp_code}"],
             ['id' => 4,'label' => "Otp Sms For User Login", 'slug' => 'otp-sms-user-login', 'subject' => "Otp Sms For User Login", 'content' => "Please enter otp-{otp_code}. Keep it safe and don't show to other.", 'tags' => "{otp_code}"],
