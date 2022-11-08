@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVendorMinAmountsTable extends Migration
+class AddIsLongTermToOrdersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class CreateVendorMinAmountsTable extends Migration
      */
     public function up()
     {
-        Schema::create('vendor_min_amounts', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('orders', function (Blueprint $table) {
+            $table->tinyInteger('is_long_term')->nullable()->default(0);
         });
     }
 
@@ -26,6 +25,8 @@ class CreateVendorMinAmountsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('vendor_min_amounts');
+        Schema::table('orders', function (Blueprint $table) {
+            
+        });
     }
 }

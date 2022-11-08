@@ -250,43 +250,32 @@
 
                                                     </h5>
                                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <h6 class="product-title mt-0">{{ __('Quantity') }}:<br>
-                                                            {{ !empty($LongTermProducts->long_term_product) ? $LongTermProducts->long_term_product->quantity : '' }}
+                                                        <h6 class="product-title mt-0">{{ __('Quantity') }}:
+                                                            <span class="ml-3">
+                                                                {{ !empty($LongTermProducts->long_term_product) ? $LongTermProducts->long_term_product->quantity : '' }}
+                                                            </span>
                                                         </h6>
-                                                        <div class="hsProductTiming">
-                                                            <h6 class="product-title mt-0">{{ __('Service Time') }}:<br>
-                                                            </h6>
-                                                            <select class="form-control selectize-select"
-                                                                id="service_period" name="service_period">
-                                                                @foreach (config('constants.Period') as $key => $value)
-                                                                    @if (in_array($key, $product->ServicePeriods))
-                                                                        <option value="{{ $key }}" {{ $product_in_cart ? ($product_in_cart->service_period == $key ? 'selected' : '') : '' }}>
-                                                                            {{ __($value) }}</option>
-                                                                    @endif
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
+                                                        
                                                         <div class="hsProductTimingDuration">
                                                             <h6 class="product-title mt-0">
-                                                                {{ __('Service Duration') }}:<br>
-                                                                {{ $product->service_duration . __(' Months') }}
+                                                                {{ __('Service Duration') }}:
+                                                                <span class="ml-2"> {{ $product->service_duration . __(' Months') }}</span>
                                                             </h6>
                                                         </div>
                                                     </div>
 
                                                 </div>
-                                                @if ($LongTermProducts->long_term_product->addons->isNotEmpty())
+                                                    @if ($LongTermProducts->long_term_product->addons->isNotEmpty())
                                                     <div class="border-product p-0">
                                                         <h6 class="product-title">{{ __('Addon') }}</h6>
                                                     </div>
 
-                                                    <div
-                                                        class="row addon-product d-flex justify-content-between align-items-center mb-2">
+                                                    <div class="row addon-product mb-2">
                                                         @foreach ($LongTermProducts->addOn as $row => $addon)
                                                             @if (array_key_exists($addon->addon_id, $LongTermProducts->product_addon))
-                                                                <div class="col-md-4">
+                                                                <div class="col-md-4 d-flex justify-content-between align-items-center">
                                                                     <b addon_id="{{ $addon->addon_id }}"
-                                                                        class="text-capitalize">{{ $addon->title }}</b>
+                                                                        class="text-capitalize">{{ $addon->title }}:</b>
                                                                     @if ($addon->setoptions->isNotEmpty())
                                                                         <div class="productAddonSetOptions">
                                                                             <div class=" form-check-inline m-0">
@@ -299,50 +288,65 @@
                                                         @endforeach
 
                                                     </div>
+                                                    <input type="hidden" id="is_long_term_service" value="1">
+                                                    <div class="col-12 p-0">
+                                                        <div class='select_timing row'>
+                                                            <div class="hsProductTiming col-sm-4">
+                                                                <label class="mt-0">{{ __('Service Time') }}:<br>
+                                                                </label>
+                                                                <select class="form-control selectize-select"
+                                                                    id="service_period" name="service_period">
+                                                                    @foreach (config('constants.Period') as $key => $value)
+                                                                        @if (in_array($key, $product->ServicePeriods))
+                                                                            <option value="{{ $key }}" {{ $product_in_cart ? ($product_in_cart->service_period == $key ? 'selected' : '') : '' }}>
+                                                                                {{ __($value) }}</option>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            <div class="service_date_div col-sm-4">
+                                                                <label for="">{{ __('Date') }}</label>
+                                                                <select class="form-control selectize-select" id="service_date"
+                                                                    name="date">
+                                                                    @for ($i = 1; $i <= 28; $i++)
+                                                                        <option value="{{ $i }}" {{ $product_in_cart ? ($product_in_cart->service_date == $i ? 'selected' : '') : '' }}>{{ $i }}
+                                                                        </option>
+                                                                        @if ($i == 28)
+                                                                            <option value="0"  {{ $product_in_cart ? ($product_in_cart->service_date == 0 ? 'selected' : '') : '' }}> {{ __('Last day of month') }}
+                                                                            </option>
+                                                                        @endif
+                                                                    @endfor
+                                                                </select>
+                                                            </div>
+                                                            <div class="service_day_div col-sm-4">
+                                                                <label for="">{{ __('Day') }}</label>
+                                                                <select class="form-control selectize-select" id="service_day"
+                                                                    name="day">
+                                                                    @foreach (config('constants.weekDay') as $dayKey => $day)
+                                                                        <option value="{{ $dayKey }}"  {{ $product_in_cart ? ($product_in_cart->service_day == $dayKey ? 'selected' : '') : '' }}>{{ __($day) }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            <div class="service_time_div col-sm-4">
+                                                                <label for="">{{ __('Time') }}</label>
+                                                                <input type="time" id="service_start_time" value="{{ $product_in_cart ? $product_in_cart->$product_in_cart  : ''  }}" class="form-control">
+                                                            </div>
+                                                            
+                                                        </div>
+
+                                                    </div>
                                                 @endif
 
                                             </div>
-
-                                        </div>
-                                        <input type="hidden" id="is_long_term_service" value="1">
-                                        <div class="offset-lg-2 col-lg-10 p-0">
-                                            <div class='select_timing row'>
-                                                <div class="service_date_div col-4">
-                                                    <label for="">{{ __('Date') }}</label>
-                                                    <select class="form-control selectize-select" id="service_date"
-                                                        name="date">
-                                                        @for ($i = 1; $i <= 28; $i++)
-                                                            <option value="{{ $i }}" {{ $product_in_cart ? ($product_in_cart->service_date == $i ? 'selected' : '') : '' }}>{{ $i }}
-                                                            </option>
-                                                            @if ($i == 28)
-                                                                <option value="0"  {{ $product_in_cart ? ($product_in_cart->service_date == 0 ? 'selected' : '') : '' }}> {{ __('Last day of month') }}
-                                                                </option>
-                                                            @endif
-                                                        @endfor
-                                                    </select>
-                                                </div>
-                                                <div class="service_day_div col-4">
-                                                    <label for="">{{ __('Day') }}</label>
-                                                    <select class="form-control selectize-select" id="service_day"
-                                                        name="day">
-                                                        @foreach (config('constants.weekDay') as $dayKey => $day)
-                                                            <option value="{{ $dayKey }}"  {{ $product_in_cart ? ($product_in_cart->service_day == $dayKey ? 'selected' : '') : '' }}>{{ __($day) }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                <div class="service_time_div col-4">
-                                                    <label for="">{{ __('Time') }}</label>
-                                                    <input type="time" id="service_start_time" value="{{ $product_in_cart ? $product_in_cart->$product_in_cart  : ''  }}" class="form-control">
-                                                </div>
-                                                <div class="col-3">
-                                                    <label for=""></label>
-                                                    <a href="#" data-toggle="modal" data-target="#addtocart"
-                                                        class="btn btn-solid  px-2 mt-3 py-1 w-100 {{ $product_in_cart ? 'btn-disabled' : 'addToCart' }}">{{ $product_in_cart ?__('Added') :__('Add To Cart') }}</a>
-                                                </div>
+                                            <div class="col-3">
+                                                <label for=""></label>
+                                                <a href="#" data-toggle="modal" data-target="#addtocart"
+                                                    class="btn btn-solid  px-2 mt-3 py-1 w-100 {{ $product_in_cart ? 'btn-disabled' : 'addToCart' }}">{{ $product_in_cart ?__('Added') :__('Add To Cart') }}</a>
                                             </div>
 
                                         </div>
+                                        
                                         @if (!empty($product->translation) &&
                                             isset($product->translation[0]) &&
                                             $product->translation[0]->body_html != '')

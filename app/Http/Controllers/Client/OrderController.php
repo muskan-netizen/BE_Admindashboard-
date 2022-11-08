@@ -793,7 +793,7 @@ class OrderController extends BaseController
         $orderPlacedNo = '';
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
-        try {
+        // try {
 
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
@@ -942,13 +942,13 @@ class OrderController extends BaseController
                     'message' => __('Order Status Updated Successfully.'.(($orderPlacedNo)? ' Order No : '.$orderPlacedNo:''))
                 ]);
             }
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollback();
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => $e->getMessage()
+        //     ]);
+        // }
     }
     /// ******************   insert In Vendor Order Dispatch Status   ************************ ///////////////
     public function insertInVendorOrderDispatchStatus($request)
@@ -1116,28 +1116,31 @@ class OrderController extends BaseController
             if($dispatch_domain_Appointment && $dispatch_domain_Appointment != false){
                 $Appointment = 0;
                 foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
-
-                    if ( ($prod->product->is_long_term_service !=1 ) && isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 12) {
-                        $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
-                        //echo $Appointment . 'app';
-                        //echo $checkdeliveryFeeAdded->delivery_fee . '$checkdeliveryFeeAdded->delivery_fee';
-
-                        if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
-
-                            $dispatch_domain=[
-                                'service_key'      => $dispatch_domain_Appointment->appointment_service_key,
-                                'service_key_code' => $dispatch_domain_Appointment->appointment_service_key_code,
-                                'service_key_url'  => $dispatch_domain_Appointment->appointment_service_key_url,
-                                'service_type'     => 'appointment'
-                            ];
-                            //pr($checkdeliveryFeeAdded);
-                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id,$dispatch_domain ,$request);
-                            if ($order_dispatchs && $order_dispatchs == 1) {
-                                $Appointment = 1;
-                                return 1;
+                /**if its not long_term_service */
+                    if($prod->product->is_long_term_service !=1 ){
+                        if ( isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 12) {
+                            $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
+                            if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
+    
+                                $dispatch_domain=[
+                                    'service_key'      => $dispatch_domain_Appointment->appointment_service_key,
+                                    'service_key_code' => $dispatch_domain_Appointment->appointment_service_key_code,
+                                    'service_key_url'  => $dispatch_domain_Appointment->appointment_service_key_url,
+                                    'service_type'     => 'appointment'
+                                ];
+                                
+                                $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id,$dispatch_domain ,$request);
+                                if ($order_dispatchs && $order_dispatchs == 1) {
+                                    $Appointment = 1;
+                                    return 1;
+                                }
                             }
                         }
                     }
+                    else{
+                        pr('is long term service');
+                    }
+                   
                     //pr('ad');
                 }
             }
@@ -1148,32 +1151,36 @@ class OrderController extends BaseController
             if($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false){
                 $OnDemand = 0;
                 foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                    if(($prod->product->is_long_term_service !=1 )){
 
-
-                    if ( ($prod->product->is_long_term_service !=1 ) && isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
-
-                      //  $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
-                        //echo $Appointment . 'app';
-
-                        if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false && $OnDemand == 0  && $checkdeliveryFeeAdded->delivery_fee > 0) {
-
-
-
-                            $dispatch_domain=[
-                                'service_key'      => $dispatch_domain_OnDemand->dispacher_home_other_service_key,
-                                'service_key_code' => $dispatch_domain_OnDemand->dispacher_home_other_service_key_code,
-                                'service_key_url'  => $dispatch_domain_OnDemand->dispacher_home_other_service_key_url,
-                                'service_type'     => 'on_demand'
-                            ];
-
-
-                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain ,$request);
-                            if ($order_dispatchs && $order_dispatchs == 1) {
-                                $OnDemand = 1;
-                                return 1;
+                        if (  isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
+    
+                            // $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
+                            // echo $Appointment . 'app';
+    
+                            if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false && $OnDemand == 0  && $checkdeliveryFeeAdded->delivery_fee > 0) {
+    
+    
+    
+                                $dispatch_domain=[
+                                    'service_key'      => $dispatch_domain_OnDemand->dispacher_home_other_service_key,
+                                    'service_key_code' => $dispatch_domain_OnDemand->dispacher_home_other_service_key_code,
+                                    'service_key_url'  => $dispatch_domain_OnDemand->dispacher_home_other_service_key_url,
+                                    'service_type'     => 'on_demand'
+                                ];
+    
+    
+                                $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain ,$request);
+                                if ($order_dispatchs && $order_dispatchs == 1) {
+                                    $OnDemand = 1;
+                                    return 1;
+                                }
                             }
                         }
+                    }else{ //for long term service
+
                     }
+
                 }
             }
         }
@@ -1188,26 +1195,7 @@ class OrderController extends BaseController
                 return 1;
 
         }
-
-
-        // $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
-        // if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
-        //     $ondemand = 0;
-
-        //     foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
-        //         if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
-        //             $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
-        //             if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false && $ondemand == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0.00) {
-        //                 $order_dispatchs = $this->placeRequestToDispatchOnDemand($request->order_id, $request->vendor_id, $dispatch_domain_ondemand);
-        //                 if ($order_dispatchs && $order_dispatchs == 1) {
-        //                     $ondemand = 1;
-        //                     return 1;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-       // \Log::info('getDispatchLaundryDomain');
+           // \Log::info('getDispatchLaundryDomain');
         /////////////// **************** for laundry accept order *************** ////////////////
         $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
 

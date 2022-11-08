@@ -2174,6 +2174,8 @@ $(document).ready(function () {
         $(".spinner-box").show();
         OrderStorage.setStorageSingle('cartData',[]);
         OrderStorage.setStorageSingle('cartProductCount',0);
+        OrderStorage.setStorageSingle('cartProductCount',0);
+        OrderStorage.setStorageSingle('cartFirstProductId','');
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -2193,6 +2195,8 @@ $(document).ready(function () {
                         OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
                         if (cart_details.products.length > 0) {
                             OrderStorage.setStorageSingle('cartProductCount',cart_details.products.length);
+                            OrderStorage.setStorageSingle('cartFirstProductId',cart_details.products[0].product_id);
+                            OrderStorage.setStorageSingle('LongTermServiceAdded',cart_details.products[0].is_long_term_service);
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
 
@@ -2809,18 +2813,26 @@ $(document).ready(function () {
             return false;
 
         }
+    
         if($('#is_long_term_service').length > 0){
-            var service_start_time     =  $('#service_start_time').val();
+            if(product_id == OrderStorage.getStorage('cartFirstProductId')  ){
+                Swal.fire({
+                    text: _language.getLanString('Product Already added in cart'),
+                    icon: "warning",
+                    button: "OK",
+                });
+                return false;
+            }
+
+            var service_start_time  =  $('#service_start_time').val();
             if(service_start_time == '' || service_start_time== undefined){
                 Swal.fire({
                     text: _language.getLanString('Please enter service timing'),
                     icon: "warning",
                     button: "OK",
                 });
-               
                 return false;
             }
-           
         }
 
         $(".productAddonSetOptions").each(function (index) {
@@ -2858,12 +2870,16 @@ $(document).ready(function () {
                 var service_day     =  $('#service_day').val();
                 var service_date     =  $('#service_date').val();
                 var service_start_time   =  $('#service_start_time').val();
-                if ((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) {
+                if ((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1) || (OrderStorage.getStorage('LongTermServiceAdded') == 1 ) ) {
+                    var modelText = _language.getLanString('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?');
+                    if(OrderStorage.getStorage('LongTermServiceAdded') == 1){
+                        modelText = _language.getLanString('You can only buy Single Long Term Serivce . Do you want to remove this Serivce to continue ?');
+                    }
                     var start_date =  $('#start_time').val();
                     var end_date =  $('#end_time').val();
                     var incremental_hrs =  $('#incremental_hrs').val();
                     var total_booking_time =  $('#total_hrs').val();
-                  
+                    $("#single_vendor_order_modal_text").html(modelText);
                     $("#single_vendor_remove_cart_btn").attr({
                         'data-product_id': product_id,
                         'data-variant_id': $('#prod_variant_id').val(),
@@ -3384,7 +3400,11 @@ $(document).ready(function () {
 
             var sVendorResponse = checkIsolateSingleVendor(vendor_id);
             if (sVendorResponse.status == 'Success') {
-                if ((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) {
+                if ((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1) || (OrderStorage.getStorage('LongTermServiceAdded') == 1) ) {
+                    var modelText = _language.getLanString('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?');
+                    if(OrderStorage.getStorage('LongTermServiceAdded') == 1){
+                        modelText = _language.getLanString('You can only buy Single Long Term Serivce . Do you want to remove this Serivce to continue ?');
+                    }
                     $("#single_vendor_remove_cart_btn").attr({
                         'data-product_id': product_id,
                         'data-variant_id': variant_id,
@@ -3393,6 +3413,7 @@ $(document).ready(function () {
                         'data-element_id': that.attr('id'),
                         'data-page': 'vendorProducts'
                     });
+                    $("#single_vendor_order_modal_text").html(modelText);
                     $("#single_vendor_order_modal").modal('show');
                 } else {
                     submitAddtoCartProductsAddons(that, addonids, addonoptids, product_id, variant_id, quantity, vendor_id);

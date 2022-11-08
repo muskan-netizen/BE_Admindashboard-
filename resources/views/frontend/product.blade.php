@@ -295,9 +295,6 @@
                                     <div id="variant_response">
                                         <span class="text-danger mb-2 mt-2"></span>
                                     </div>
-                                    @if($product->category->categoryDetail->type_id == 10)
-                                        @include('frontend.product-part.booking-slot')
-                                    @endif
                                     
                                     <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'block'; ?>">
                                         @if($product->inquiry_only == 0)

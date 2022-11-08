@@ -83,6 +83,7 @@ class OrderController extends FrontController
 
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
+      
         $pastOrders = Order::with([
             'vendors' => function ($q) {
                 $q->where('order_status_option_id', 6);
@@ -269,10 +270,13 @@ class OrderController extends FrontController
 
         $client_preferences = ClientPreference::select('*')->where('id', '>', 0)->first();
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
-        //   dd($activeOrders->toArray());
+
+        /**   get user long term orders */
+       $longTermOrder = $this->getUserLongTermService($user, $langId , $currency_id);
+         // dd($longTermOrder->toArray());
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee]);
+        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee,'longTermOrder'=>$longTermOrder]);
     }
 
     public function getOrderSuccessPage(Request $request)
@@ -873,6 +877,7 @@ class OrderController extends FrontController
             $total_other_taxes=0.00;
             $additionalPrice=0.00;
             $totalAdditionalPrice = 0.00;
+            $is_long_term_order = 0;
 
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if(!empty($request->other_taxes_string)){
@@ -1098,9 +1103,9 @@ class OrderController extends FrontController
                     $order_product->additional_increments_hrs_min = $vendor_cart_product->additional_increments_hrs_min;
 
                     $order_product->save();
-                 /** for long Term Service */
+                    /** for long Term Service */
                     if($vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts){
-                      
+                        $is_long_term_order = 1;
                         $service_start_date =  $vendor_cart_product->service_start_date ??   Carbon::now()->format('Y-m-d H:i:s');
                         $service_end_date = Carbon::parse( $service_start_date )->addMonths($vendor_cart_product->product->service_duration)->setTimezone('UTC')->format('Y-m-d H:i:s');
                         $LongTermSericeData=[
@@ -1233,7 +1238,7 @@ class OrderController extends FrontController
                         $res =   $this->bookingSlot($data);
                        //pr($res);
                     }
-                   // pr($order_product);
+                    // pr($order_product);
                     if (!empty($vendor_cart_product->addon)) {
                         
                         foreach ($vendor_cart_product->addon as $ck => $addon) {
@@ -1251,11 +1256,11 @@ class OrderController extends FrontController
                         }
                     }
                    
-                $vendor_service_fee_percentage_amount = 0;
-                if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                    $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100;
-                    $payable_amount += $vendor_service_fee_percentage_amount;
-                }
+                    $vendor_service_fee_percentage_amount = 0;
+                    if ($vendor_cart_product->vendor->service_fee_percent > 0) {
+                        $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                        $payable_amount += $vendor_service_fee_percentage_amount;
+                    }
 
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
                     if ($cart_addons) {
@@ -1285,7 +1290,7 @@ class OrderController extends FrontController
                     }
                    
                 }
-        //        $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
+                //  $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
                 //echo  "    payable_amount==".$payable_amount;
                 }
                 $payable_amount+= $vendor_total_container_charges;
@@ -1484,6 +1489,7 @@ class OrderController extends FrontController
             $order->fixed_fee_amount = $fixed_fee_amount;
             $order->additional_price = $totalAdditionalPrice;
             $order->total_container_charges = $total_container_charges;
+            $order->is_long_term            = $is_long_term_order;
             if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                 $order->payment_status = 1;
             }

@@ -2,7 +2,7 @@ $(function(){
     var longTermServiceTable = '' ;
     initServiceDataTable();
     $(document).on("click",".addServiceBtn",function() {
-        
+        $('#add-service input[name=long_term__service_id]').val();
         $('#add-service .modal-title').html('Add Service');
         var html = `<input type="file" id="service_image" name="file" class="dropify form-control" data-default-file="" required />`;
         $('.service_image').html(html);

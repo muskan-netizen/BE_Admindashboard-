@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\{ApiResponser,CartManager};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
 class CartController extends FrontController
 {
     use ApiResponser,CartManager;
@@ -420,7 +420,7 @@ class CartController extends FrontController
                 'start_date_time'     => $start_date,
                 'end_date_time'       => $request->has('end_date') ? $request->end_date : null,
                 'additional_increments_hrs_min' => $request->has('incremental_hrs') ? $request->incremental_hrs : null,
-                'total_booking_time'  =>  $total_booking_time,
+                'total_booking_time'  => $total_booking_time,
                 'service_day'         => $request->has('service_day') ? $request->service_day : null,
                 'service_date'        => $request->has('service_date') ? $request->service_date : null,
                 'service_period'      => $request->has('service_period') ? $request->service_period : null,
@@ -428,7 +428,14 @@ class CartController extends FrontController
             ];
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
-
+            /** check is long term is added to cart */
+            $checkLongTermService = CartProduct::where('cart_id', $cart_detail->id)->with('product')->first();
+            $isLongTermService  = 0;
+           
+            if(!empty($checkLongTermService->product)){
+                $isLongTermService = $checkLongTermService->product->is_long_term_service ;
+            }
+           
             if ($luxury_option) {
                 $checkCartLuxuryOption = CartProduct::where('luxury_option_id', '!=', $luxury_option->id)->where('cart_id', $cart_detail->id)->first();
                 if ($checkCartLuxuryOption) {
@@ -448,6 +455,11 @@ class CartController extends FrontController
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
             }
+            /** delete is long term is added from cart */
+            if($isLongTermService){
+                CartProduct::where('cart_id', $cart_detail->id)->delete();
+            }
+
 
             $cartProduct = CartProduct::where('product_id', $request->product_id)->where('variant_id', $request->variant_id)->where('cart_id', $cart_detail->id)->first();
             if(!$cartProduct){
@@ -2047,11 +2059,26 @@ class CartController extends FrontController
         try {
             if($vendorData->vendor_id)
             {
+                
                 Session()->put('vid',$vendorData->vendor_id);
 
-                if($preferences->static_delivey_fee != 1)
+                $getAdditionalPreference = getAdditionalPreference(['is_free_delivery_by_roles']);
+                $skip_delivery_fees = false;
+                
+                if($getAdditionalPreference['is_free_delivery_by_roles'] == 1 ){
+                    $product_id = $vendorData->vendorProducts[0]['product_id'];
+                    $result = ProductDeliveryFeeByRole::where('product_id', $product_id)->where('role_id', Auth::user()->role_id)
+                    ->where('is_free_delivery', 1)->first();
+                    if($result != null){
+                        $skip_delivery_fees = true;
+                    }
+                }
+                if( $skip_delivery_fees == true ){
+                    // skip
+                }
+                else if($preferences->static_delivey_fee != 1)
                 {
-
+                    //pr( $getAdditionalPreference);
                     //Dispatcher Delivery changes and estimated delivery duration code
                     $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del, $dispatcher_tags);
                     if (!empty($deliver_response_array[0])){
