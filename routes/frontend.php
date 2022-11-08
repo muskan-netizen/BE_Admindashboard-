@@ -298,11 +298,10 @@ Route::group(['middleware' => ['domain']], function () {
 	// Route::post('payment/paylink/notify', 'Front\PaylinkGatewayController@paylinkNotify')->name('payment.paylinkNotify');
 
 	Route::post('payment/razorpay', 'Front\RazorpayGatewayController@razorpayPurchase')->name('payment.razorpayPurchase');
-	// Route::get("/payment/razorpay/view", function(){
-	// 	return View::make("frontend.razorpay_view");
-	//  })->name('razorpay.view');
+	
 	Route::post('payment/razorpay/pay', 'Front\RazorpayGatewayController@razorpayCompletePurchase')->name('payment.razorpayCompletePurchase');
 	Route::get('payment/razorpay/notify', 'Front\RazorpayGatewayController@razorpayNotify')->name('payment.razorpayNotify');
+	Route::get('payment/razorpay/payout/notify', 'Front\RazorpayGatewayController@razorpayPayoutNotify')->name('payment.razorpay.payout.notify');
 
 
 	//Cashfree
@@ -357,6 +356,9 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/autocomplete-search', 'Front\SearchController@postAutocompleteSearch')->name('autocomplete');
 	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
 	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
+
+	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
+	
 	Route::get('/updateLocation', 'Front\UserhomeController@setHyperlocalAddress')->name('updateLocation');
 	Route::get('/homeTest', 'Front\UserhomeController@indexTest')->name('homeTest');
 	Route::get('/homeTemplateOne', 'Front\UserhomeController@indexTemplateOne')->name('indexTemplateOne');

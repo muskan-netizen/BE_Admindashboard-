@@ -1,3 +1,28 @@
+
+<style>
+    .cross-sell .img-outer-box.position-relative img,
+    .upsell-sell .img-outer-box.position-relative img {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+    .cross-sell .img-outer-box.position-relative,
+    .upsell-sell  .img-outer-box.position-relative {
+        padding-bottom: 100%;
+    }
+    .cross-sell .media-body,
+    .upsell-sell .media-body{padding: 0 10px;}
+    .cross-sell .media-body .product-description,
+    .upsell-sell .media-body .product-description {
+        text-align: left;
+        padding: 0;
+    }
+    .cross-sell .slick-slide>div {
+        margin: 0 12px;
+    }
+    </style>
+
 @php $serviceType =  Session::get('vendorType'); @endphp
 
 @if($cart_details->totalQuantity<=0)
@@ -15,8 +40,9 @@
     </div>
 
     @else
+    
+    <div class="container mt-3 mb-5">
 
-    <div class="container">
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
@@ -161,13 +187,13 @@
                         <div class="row align-items-md-center">
                           
                             <div class="col-md-3 order-md-1">
-                                <h4 class="cart_product_name">{{$vendor_product->product->category_name->name }}</h4>
-                                <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{$vendor_product->product->translation_one ? $vendor_product->product->translation_one->title :  $vendor_product->product->sku }}</strong></h4>
+                                <h4 class="cart_product_name">{{@$vendor_product->product->category_name->name }}</h4>
+                                <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{@$vendor_product->product->translation_one ?@ $vendor_product->product->translation_one->title :  @$vendor_product->product->sku }}</strong></h4>
                                 <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "{{$vendor_product->product->translation_one ? $vendor_product->product->translation_one->title :  $vendor_product->product->sku }}" />
                                 @if(isset($vendor_product->pvariant->vset))
                                 @foreach($vendor_product->pvariant->vset as $vset)
                                     @if($vset->variant_detail->trans)
-                                        <label><span><b>{{$vset->variant_detail->trans->title }}:</b></span> {{$vset->option_data->trans->title }}</label>
+                                        <label><span><b>{{@$vset->variant_detail->trans->title }}:</b></span> {{@$vset->option_data->trans->title }}</label>
                                     @endif
                                 @endforeach
                                 @endif
@@ -191,7 +217,6 @@
                                 @else
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
                                 @endif
-                                
                             </div>
                             @endif
                             @if($serviceType ==  'rental')
@@ -213,7 +238,6 @@
                                     </div>
                                 
                                 </div>
-                               
                             </div>
                             @elseif( $serviceType ==  'appointment')
                             <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -242,6 +266,10 @@
                                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{$vendor_product->cart_product_prescription }} {{ __('Prescription Added')}}</strong></h4>
                                             @endif
                                         @endif
+                                    @endif
+
+                                    @if(isset($vendor_product->product->product_delivery_fee) && $vendor_product->product->product_delivery_fee >0)
+                                    <div class="float-left mt-2">Delivery Fee : <span style="color: #000;font-size: 14px;font-weight: 500;">{{Session::get('currencySymbol')}}{{$vendor_product->product->product_delivery_fee}}</span></div>
                                     @endif
                                 </div>
                             @endif
@@ -912,4 +940,116 @@
             {{-- Schedual code end at down --}}
         </div>
 
+
+
+        <div class="container">
+
+            @if(count($cart_details->upSell_products)>0)
+                <h3 class="mb-2 mt-4">{{__('Frequently bought together')}}</h3>
+                <div class="row">
+                    <div class="col-12 p-0">
+                        <div class="product-4 product-m">
+                            @foreach($cart_details->upSell_products as $product)
+    
+                                <a class="common-product-box scale-effect text-center" href="{{$product->vendor->slug.'/product/'.$product->url_slug}}">
+                                    <div class="img-outer-box position-relative">
+                                        <img class="blur-up lazyload" data-src="{{$product->image_url}}" alt="">
+                                        <div class="pref-timing">
+                                            <!--<span>5-10 min</span>-->
+                                        </div>
+                                        <i class="fa fa-heart-o fav-heart position-absolute" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="media-body align-self-center">
+                                        <div class="inner_spacing px-0">
+                                            <div class="product-description">
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <h6 class="card_title ellips">{{$product->translation_title}}</h6>
+                                                    <!--<span class="rating-number">2.0</span>-->
+                                                </div>
+                                                <p>{{$product->vendor_name}}</p>
+                                                <p class="border-bottom pb-1">In {{$product->category_name}}</p>
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <b>@if($product->inquiry_only == 0)
+                                                        {{ Session::get('currencySymbol') }}{{ decimal_format($product->variant_price)}}
+                                                    @endif
+                                                </b>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+    
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+    
+        @if(count($cart_details->crossSell_products)>0)
+                <h3 class="mb-2 mt-3">{{__('You might be interested in')}}</h3>
+                <div class="row">
+                    <div class="col-12 p-0">
+                        <div class="product-4 product-m">
+                            @foreach($cart_details->crossSell_products as $product)
+    
+                                <a class="common-product-box scale-effect text-center" href="{{$product->vendor->slug .'/product/'. $product->url_slug}}">
+                                    <div class="img-outer-box position-relative">
+                                        <img class="blur-up lazyload" data-src="{{$product->image_url}}" alt="">
+                                            <div class="pref-timing">
+                                            </div>
+                                            <i class="fa fa-heart-o fav-heart position-absolute" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="media-body align-self-center">
+                                        <div class="inner_spacing px-0">
+                                            <div class="product-description">
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <h6 class="card_title ellips">{{$product->translation_title}}</h6>
+                                                </div>
+                                                <p>{{$product->vendor_name}}</p>
+                                                <p class="border-bottom pb-1">In {{$product->category_name}}</p>
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <b>
+                                                        @if($product->inquiry_only == 0)
+                                                        {{ Session::get('currencySymbol') }}{{decimal_format($product->variant_price)}}
+                                                    @endif</b>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+    
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+
 @endif
+
+
+<script>
+    $(document).ready(function(){
+        $(".upsell-sell").slick({
+            arrows: true,
+            dots: false,
+            infinite: true,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 1, slidesToScroll: 2 } }
+            ]
+        });
+
+        $(".cross-sell").slick({
+            arrows: true,
+            dots: false,
+            infinite: true,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 1, slidesToScroll: 2 } }
+            ]
+        });
+    });
+</script>

@@ -215,7 +215,7 @@ a.agentInfo.d-block.black-box {
 .ellipsis{
     text-overflow: ellipsis;
     overflow: hidden;
-    white-space: nowrap;
+    /* white-space: nowrap; */
 }
 body .order-page .order_head {
     text-transform: capitalize;
@@ -233,3 +233,8 @@ body #page-container .vendors {
 .order_detail.order_detail_data ul.status_box img,
 .order_detail.order_detail_data ul.status_box a,
 .order_detail.order_detail_data ul.status_box li label{display: inline-block;font-size: 10px;}
+
+#main-menu.menu-slider li.active a {
+    color: var(--theme-deafult);
+    border-bottom: 1px solid var(--theme-deafult);
+}

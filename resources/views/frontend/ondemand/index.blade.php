@@ -20,6 +20,7 @@ use Illuminate\Support\Arr;
             <div class="modal-body text-center">
                 <input type="hidden" id="vendor_id" value="">
                 <input type="hidden" id="cartproduct_id" value="">
+                <input type="hidden" id="product_id" value="">
                 <h6 class="m-0 px-3">{{__('Are You Sure You Want To Remove This Item?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">

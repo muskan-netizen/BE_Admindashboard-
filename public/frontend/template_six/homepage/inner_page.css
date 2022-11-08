@@ -20,16 +20,10 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2{padding: 5px 0;}a.v
 .coupon_box{background:#f3f9ff;padding:5px 10px;width:300px}.search-location-result h4,.select-location h4{font-size:14px;font-weight:400}
 .scheduled-ride-list{position:absolute;top:0;left:0;background:#fff;width:100%;padding:0;height:100%;display:none;z-index:1}.scheduled-ride-list-heading{padding:0 24px}.scheduled-ride-list-heading h3{color:#000;font-size:20px;font-weight:600;margin:23px 0}.skip-clear{cursor:pointer}.date-radio-list{height:calc(100% - 156px);overflow-y:auto}.date-radio-list .form-check{display:block;width:100%;margin:0;padding:24px 0 24px 70px}.radio input[type=radio]{position:absolute;opacity:0}.date-radio-list .form-check label{cursor:pointer;font-size:18px;line-height:24px;color:#000;font-weight:600;margin:0}.radio input[type=radio]:checked+.radio-label:before{background-color:#000;border-color:#000;box-shadow:inset 0,0,0 0 #f4f4f4}.radio input[type=radio]+.radio-label:before{content:"";background:0 0;border-radius:100%;border:2px solid #757575;display:inline-block;width:24px;height:24px;position:absolute;left:25px;top:24px;margin-right:1em;vertical-align:top;cursor:pointer;text-align:center;transition:all .4s ease;transition-duration:.25s;transition-timing-function:cubic-bezier(0.8,0.2,0.6,1)}.radio input[type=radio]:checked+.radio-label::after{opacity:1}.scheduleTime{margin:15px 0 0}.date-radio-list .form-check::after{content:"";width:calc(100% - 70px);height:1px;background-color:#ddd;display:block;position:absolute;bottom:0;right:0}.scheduleTime select{border:0;border-radius:50px;padding:5px 10px;background:#fff;margin-right:10px}.date-radio-list .form-check:active,.date-radio-list .form-check:focus,.date-radio-list .form-check:hover{background:#eef3fe}.date-radio-list:after{content:"";position:absolute;bottom:88px;width:100%;height:239px;left:0;background-image:linear-gradient(rgba(255,255,255,0),#fff 90%)}.scheduled-footer{padding:16px 24px}.scheduled-footer button{background-color:#f6f6f6;color:#77797a;border:0;width:100%;font-size:20px;font-weight:600;min-height:56px}
 
-@media (min-width: 1024px){
-.ds{position: absolute;left: 24px;}
-.booking-experience{height: calc(100vh - 50px);position: absolute;width: 400px;top: 50px;}
-}
-@media (max-width: 991px){
-body .cab-booking #booking-map{height: 50vh!important;position: relative !important;top: 0;}
-.title-36{font-size:24px;line-height:34px;}
-body .booking-experience{height: 100%;position: relative;width: 100%;left: 0;top: 0;margin-bottom: 160px;}
-.cab-booking{height: 100%;}
-}
+
+
+
+
 /* ============================== cab booking code css =============================== */
 
 .cart-main-box-inside ul,
@@ -170,6 +164,7 @@ tr.wishlist-row{font-size: 14px;}
 .pricingtable .p-2{padding:0!important}
 .al_body_template_six .pricingtable .btn-solid{letter-spacing:4px;text-shadow:3px 3px #000;font-size:16px}
 .al_body_template_six .pricingtable .btn-solid:hover{border:2px solid transparent;background-color:transparent}
+.al_body_template_six .al_new_wrapper_design .vendor-description{padding:10px 0px !important;}
 .al_body_template_six .displayProducts .product-box{overflow:hidden;padding:0 0 10px;background-color:#fff;box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);border-radius:15px;-webkit-transform:scale(.95);transform:scale(.95);-webkit-transition:.3s ease-in-out;transition:.3s ease-in-out;display:block}.al_body_template_six .displayProducts .product-box:hover{-webkit-transform:scale(1);transform:scale(1)}
 .al_body_template_six .displayProducts .product-box .product-image{background-color:#f5f5f5;position:relative;padding-bottom:100%!important;height:100%!important}.al_body_template_six .displayProducts .product-box .product-image img{position:absolute;margin:auto;top:0;bottom:0;left:0;right:0;max-width:100%;max-height:100%;object-fit:contain}.al_body_template_six .displayProducts .product-box .media-body{padding:0 10px}.al_body_template_six .displayProducts .product-box .media-body h6 b{font-weight:400;color:var(--top-header-color)}.al_body_template_six .displayProducts .product-box .media-body h3{font-size:16px;margin-bottom:0}.al_body_template_six .displayProducts .product-box .media-body h3 label,.al_body_template_six .displayProducts .product-box .media-body h3 b{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.al_body_template_six .displayProducts .product-box .media-body .rating{position:absolute;top:10px;right:10px;color:var(--theme-deafult)}
 .al_body_template_six .displayProducts .product-box .media-body h4,
@@ -469,9 +464,35 @@ span.registerLink{text-align: center;width: 100%;margin-top: 10px;display: block
 .alFourTemplateOrderSucces .order-success-sec  .order-detail li{color: #777;font-weight: 400;}
 .alFourTemplateOrderSucces .order-success-sec  .order-detail li span{color: var(--theme-deafult);font-weight: 400; margin-left: 15px;}
 
+.al_body_template_six .categories-product-list .search_form {border-radius: 10px;overflow: hidden;}
+.al_body_template_six .categories-product-list .search_form button {background: #eee;}
+.al_body_template_six .categories-product-list .search_form input {background-color: #eee;}
+
 /* ================= dark css ================= */
 .dark .tip_label{background: transparent;}
 
 @media(max-width:1400px){
 .pricingtable-header.position-absolute .price-value{font-size: 14px;}
 }
+@media (min-width: 1024px){
+    .ds{position: absolute;left: 24px;}
+    .booking-experience{height: calc(100vh - 50px);position: absolute;width: 400px;top: 50px;}
+    }
+    @media (max-width: 991px){
+    body .cab-booking #booking-map{height: 50vh!important;position: relative !important;top: 0;}
+    .title-36{font-size:24px;line-height:34px;}
+    body .booking-experience{height: 100%;position: relative;width: 100%;left: 0;top: 0;margin-bottom: 160px;}
+    .cab-booking{height: 100%;}
+    }
+    
+    
+    @media (max-width: 767px){
+        .al_body_template_six.homeHeader .product-bottom-bar {
+            padding: 20px !important;
+        }
+        img#vendorStoriesImg {
+            width: 60px;
+        }
+    }
+
+

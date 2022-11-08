@@ -265,6 +265,7 @@ body .alFullMapForm .scheduled-footer .btn {
                         <div class="col ride-price pl-2 text-right">
                             <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
                         </div>
+                    
                     </div>
                 </div>
             </label>
@@ -367,8 +368,8 @@ body .alFullMapForm .scheduled-footer .btn {
                 <span class="code-text">{{__('Select a promo code')}}</span>
             </label>
 
-            <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" id="promo_code_list_btn_cab_booking">Apply</a>
-            <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" style="display:none;">Remove</a>
+                    <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" id="promo_code_list_btn_cab_booking">Apply</a>
+                    <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" style="display:none;">Remove</a>
 
         </div>
         <% if((result.faqlist) && (result.faqlist) > 0 ){ %>

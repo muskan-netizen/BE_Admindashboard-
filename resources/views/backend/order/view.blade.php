@@ -33,8 +33,8 @@ $timezone = Auth::user()->timezone;
                 <div class="page-title-box d-flex justify-content-between ">
                     <h4 class="page-title">{{ __("Order Detail") }}</h4>
                     <div class="al_back_btn">
-                        <a class="al_print_btn_back mr-2" href="{{ url()->previous() }}">Back</a>
-                        <button class="al_print_btn badge badge-info" onclick='printDiv();'>Print <img src=""> </button>
+                        <a class="al_print_btn_back mr-2" href="{{ url()->previous() }}">{{ __("Back") }}</a>
+                        <button class="al_print_btn badge badge-info" onclick='printDiv();'>{{ __("Print") }} <img src=""> </button>
                     </div>
                 </div>
 
@@ -64,10 +64,10 @@ $timezone = Auth::user()->timezone;
                         <div class="card-body">
                             <h4 class="header-title mb-3">{{__('Cancel Order Request')}}</h4>
                             <button type="button" class="complete_request_btn btn btn-sm btn-info" title='Approve' data-status="1" data-id="{{$order->vendors->first()->cancel_request->id}}">
-                                <i class='fa fa-check mr-1'></i> Approve
+                                <i class='fa fa-check mr-1'></i> {{__('Approve')}}
                             </button>
                             <button type="button" class="complete_request_btn btn btn-sm btn-danger" title='Reject' data-status="2" data-id="{{$order->vendors->first()->cancel_request->id}}">
-                                <i class='fa fa-times mr-1'></i> Reject
+                                <i class='fa fa-times mr-1'></i> {{__('Reject')}}
                             </button>
                         </div>
                     </div>
@@ -269,7 +269,7 @@ $timezone = Auth::user()->timezone;
                         </h4>
                         @if($order->luxury_option_id == 2)
                             @foreach($order->vendors as $vendor)
-                                <p>{{ $vendor->dineInTableName }} | Category : {{ $vendor->dineInTableCategory }} | Capacity : {{ $vendor->dineInTableCapacity }}</p>
+                                <p>{{ $vendor->dineInTableName }} | {{ __("Category") }} : {{ $vendor->dineInTableCategory }} | {{ __("Capacity") }} : {{ $vendor->dineInTableCapacity }}</p>
                             @endforeach
                         @endif
                         @if($order->product_schedule_type == 'schedule')
@@ -445,13 +445,27 @@ $timezone = Auth::user()->timezone;
                                             <td>{{$clientCurrency->currency->symbol}}@money($container_charges)</td>
                                         </tr>
                                     @endif
-                                    @php
+                                    @if($client_preference_detail->is_tax_price_inclusive)
+                                            
+                                        @php  //taxable_amount
+                                            $adminRevenue = ($revenue + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
 
-                                        $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
+                                            //taxable_amount
+                                            $storeRevenue = ($sub_total + $order->fixed_fee_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+                                    
+                                        @endphp
 
-                                        $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+                                    @else
 
-                                    @endphp
+                                        @php
+
+                                            $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
+
+                                            $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+
+                                        @endphp
+                                    @endif
+
 
                                     {{-- @if(Auth::user()->is_superadmin) --}}
                                     <tr>
@@ -488,7 +502,7 @@ $timezone = Auth::user()->timezone;
                                         <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                                         <td>
                                             {{-- <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}</div> --}}
-                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($adminRevenue+$storeRevenue + @$vendor->additional_price)}}</div>
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount,2)}}</div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -828,7 +842,7 @@ $timezone = Auth::user()->timezone;
                         that.addClass("completed");
                         if (status_option_id == 2) {
                             if(reload_page ==1 || reload_page == '1'){
-                                setTimeout(function(){location.reload();}, 2500);
+                                // setTimeout(function(){location.reload();}, 2500);
                             }
                             that.next('li').remove();
                         }
@@ -839,7 +853,7 @@ $timezone = Auth::user()->timezone;
                         $('#text_muted_' + status_option_id).html('<small class="text-muted">' + response.created_date + '</small>');
                         if (status_option_id == 2 || status_option_id == 4)
                             $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                        //location.reload();
+                        location.reload();
                     },
                 });
             }else{

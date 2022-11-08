@@ -174,6 +174,33 @@ $checkSlot = findSlot('', $vendor->id, '');
                     </a>
                         <div class="row">
                             <div class="col-12">
+                                <div class="col-sm-6 offset-sm-3">
+                                    <div class="row mt-2 d-flex align-items-center mb-sm-2 justify-content-center">
+                                        <div class="col-6 vendor-search-bar mb-sm-0 mb-2">
+                                            <div class="radius-bar w-100">
+                                                <div class="search_form d-flex align-items-center border">
+                                                    <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                                    <input class="form-control border-0 typeahead" type="search"
+                                                        placeholder="{{ __('Search') }}" id="vendor_search_box">
+                                                </div>
+                                                <div class="list-box style-4" style="display:none;" id="search_box_main_div">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 text-right pl-0"><span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span>
+                                            <select name="order_type" id='order_type' class="product_tag_filter p-1">
+                                                <option value="featured">{{ __('Featured') }}</option>
+                                                <option value="a_to_z">{{ __('A to Z') }}</option>
+                                                <option value="z_to_a">{{ __('Z to A') }}</option>
+                                                <option value="low_to_high">{{ __('Cost : Low to High') }}</option>
+                                                <option value="high_to_low">{{ __('Cost : High to Low') }}</option>
+                                                <option value="rating">{{ __('Avg. Customer Review') }}</option>
+                                                <option value="newly_added">{{ __('Newest Arrivals') }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="row vendor-products-wrapper">
                                     <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
                                         <nav class="scrollspy-menu ">
@@ -188,31 +215,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6 alScrollspyProduct">
-                                            <div class="row mt-2 d-flex align-items-start mb-sm-2 justify-content-center">
-                                                <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
-                                                    <div class="radius-bar w-100">
-                                                        <div class="search_form d-flex align-items-center border">
-                                                            <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
-                                                            <input class="form-control border-0 typeahead" type="search"
-                                                                placeholder="{{ __('Search') }}" id="vendor_search_box">
-                                                        </div>
-                                                        <div class="list-box style-4" style="display:none;" id="search_box_main_div">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-5 text-right pl-0"><span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span>
-                                                    <select name="order_type" id='order_type' class="product_tag_filter p-1">
-                                                        <option value="featured">{{ __('Featured') }}</option>
-                                                        <option value="a_to_z">{{ __('A to Z') }}</option>
-                                                        <option value="z_to_a">{{ __('Z to A') }}</option>
-                                                        <option value="low_to_high">{{ __('Cost : Low to High') }}</option>
-                                                        <option value="high_to_low">{{ __('Cost : High to Low') }}</option>
-                                                        <option value="rating">{{ __('Avg. Customer Review') }}</option>
-                                                        <option value="newly_added">{{ __('Newest Arrivals') }}</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-
+                                          
                                             <div class="col-12 d-sm-flex justify-content-start mb-2 p-0">
                                                 @if (isset($tags) && !empty($tags))
                                                     @foreach ($tags as $key => $tag)
