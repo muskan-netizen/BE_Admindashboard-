@@ -1286,4 +1286,8 @@ trait cartManager{
         return $cart;
       }
 
+    public function hideSecretKeys($res){
+        return $res->makeHidden(['map_key','map_secret', 'mail_password', 'mail_host', 'mail_username', 'sms_secret', 
+        'sms_key', 'sms_from', 'sms_credentials' ]);
+    }
 }
