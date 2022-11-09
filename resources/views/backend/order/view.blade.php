@@ -152,7 +152,7 @@
                                         <p>#{{ $order->order_number }}</p>
                                     </div>
                                 </div>
-                                @if (!in_array($order->luxury_option_id, [6, 8]))
+                                @if (!in_array($order->luxury_option_id, [6, 8]) && $order->is_long_term !=1 )
                                     @if (isset($order->vendors) &&
                                         empty($order->vendors->first()->dispatch_traking_url) &&
                                         $order->vendors->first()->delivery_fee > 0 &&
@@ -550,11 +550,17 @@
                                                             <div class="outer_div p-2">
                                                                 <h6>{{ __('Long Term Service Schedule') }}</h6>
                                                                 <table class="wp-table w-100">
+                                                                @php
+                                                                $showRoute = !empty($product->longTermSchedule->product) ??($product->longTermSchedule->product->Requires_last_mile ==1 ? 1 : 0);
+                                                               
+                                                                @endphp
                                                                     <tr>
                                                                         <th width="20%">#</th>
-                                                                        <th width="40%">{{ __('Scheduled date time') }}
-                                                                        </th>
-                                                                        <th width="40%">{{ __('Status') }}</th>
+                                                                        <th width="40%">{{ __('Scheduled date time') }}</th>
+                                                                        <th width="20%">{{ __('Service Status') }}</th>
+                                                                        @if(!empty($product->longTermSchedule->product) && $product->longTermSchedule->product->Requires_last_mile ==1 )
+                                                                        <th width="20%">{{ __('Service Route') }}</th>   
+                                                                        @endif
                                                                     </tr>
                                                                     @foreach ($product->longTermSchedule->schedule as $key => $schedule)
                                                                         <tr>
@@ -564,6 +570,15 @@
                                                                             </td>
                                                                             <td> <span class="badge {{  $schedule->status ==0 ? 'badge-info' : 'badge-success'}}  mr-2">{{  $schedule->status ==0 ? __('Pending') : __('Complete')}}</span>
                                                                             </td>
+                                                                            @if($showRoute ==1 )
+                                                                            <td>
+                                                                                @if( $schedule->dispatch_traking_url !='')
+                                                                                <a href="{{ $schedule->dispatch_traking_url }}"
+                                                                                        target="_blank">{{ __('Track') }}</a>
+                                                                                @endif
+                                                                                 <span class="badge badge-info mr-2"> {{ $schedule->DispatchStatus->first() ? $schedule->DispatchStatus[0]->status_data['driver_status'] ?? '' : 'na' }} </span>
+                                                                            </td>
+                                                                            @endif
                                                                         </tr>
                                                                     @endforeach
                                                                 </table>

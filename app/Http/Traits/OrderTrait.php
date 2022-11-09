@@ -10,7 +10,7 @@ use App\Models\Client as CP;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
-use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus};
+use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus,OrderLongTermServiceSchedule};
 use App\Http\Traits\{ValidatorTrait};
 
 trait OrderTrait{
@@ -226,8 +226,7 @@ trait OrderTrait{
                         'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
                     );
                 }
-                Log::info('send agent id to driver');
-                Log::info($agent);
+               
                 if ($customer->dial_code == "971") {
                     // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                     $customerno = "0" . $customer->phone_number;
@@ -485,5 +484,338 @@ trait OrderTrait{
         }
         return $longTermOrders;
     }
+
+    public function checkIfanyServiceProductLastMileon($request)
+    {
+    
+        $order_dispatchs = 2;
+        $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+       // pr( $checkdeliveryFeeAdded);
+        $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
+       /// pr($checkdeliveryFeeAdded->products->first());
+        $totalSchudelCount = @$checkdeliveryFeeAdded->products->first()->LongTermService->service_quentity;
+        $serviceProductLastMile = @$checkdeliveryFeeAdded->products->first()->LongTermService->product->Requires_last_mile;
+        $product_dispatcher_tag  = @$checkdeliveryFeeAdded->products->first()->LongTermService->product->tags;
+        $preference = ClientPreference::first();
+       
+        /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
+        if ($luxury_option_id == 8) { // only for appointment type
+            $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
+            if($dispatch_domain_Appointment && $dispatch_domain_Appointment != false){
+                $Appointment = 0;
+             
+                /**if its not long_term_service */
+                   
+                    if ( isset($product_dispatcher_tag) && !empty($product_dispatcher_tag) ) {
+                        if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
+
+                            $dispatch_domain=[
+                                'service_key'      => $dispatch_domain_Appointment->appointment_service_key,
+                                'service_key_code' => $dispatch_domain_Appointment->appointment_service_key_code,
+                                'service_key_url'  => $dispatch_domain_Appointment->appointment_service_key_url,
+                                'service_type'     => 'appointment'
+                            ];
+                            
+                            $order_dispatchs = $this->placeRequestToDispatchServiceProduct($request->order_id, $request->vendor_id,$dispatch_domain ,$request);
+                            if ($order_dispatchs && $order_dispatchs == 1) {
+                                $Appointment = 1;
+                                return 1;
+                            }
+                        }
+                    }
+                
+            }
+        }
+        if ($luxury_option_id == 6) { // only for on_demand type
+            $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
+
+            if($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false){
+                $OnDemand = 0;
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                 
+                        if (  isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
+    
+                            // $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
+                            // echo $Appointment . 'app';
+    
+                            if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false && $OnDemand == 0  && $checkdeliveryFeeAdded->delivery_fee > 0) {
+    
+    
+    
+                                $dispatch_domain=[
+                                    'service_key'      => $dispatch_domain_OnDemand->dispacher_home_other_service_key,
+                                    'service_key_code' => $dispatch_domain_OnDemand->dispacher_home_other_service_key_code,
+                                    'service_key_url'  => $dispatch_domain_OnDemand->dispacher_home_other_service_key_url,
+                                    'service_type'     => 'on_demand'
+                                ];
+    
+    
+                                $order_dispatchs = $this->placeRequestToDispatchServiceProduct($request->order_id, $request->vendor_id, $dispatch_domain ,$request);
+                                if ($order_dispatchs && $order_dispatchs == 1) {
+                                    $OnDemand = 1;
+                                    return 1;
+                                }
+                            }
+                        }
+                   
+                }
+            }
+        }
+
+        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url)){
+            
+            $dispatch_domain=[
+                'service_key'      => $preference->delivery_service_key   ,
+                'service_key_code' => $preference->delivery_service_key_code,
+                'service_key_url'  => $preference->delivery_service_key_url,
+                'service_type'     => 'delivery'
+            ];
+            //pr($dispatch_domain);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+                $order_dispatchs = $this->placeRequestToDispatchServiceProduct($request->order_id, $request->vendor_id, $dispatch_domain,$request);
+            }
+        
+
+            if ($order_dispatchs && $order_dispatchs == 1)
+                return 1;
+
+        }
+       
+           // \Log::info('getDispatchLaundryDomain');
+        /////////////// **************** for laundry accept order *************** ////////////////
+        // $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
+
+        // if ($dispatch_domain_laundry && $dispatch_domain_laundry != false) {
+        //     $laundry = 0;
+
+        //     foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+        //         $isNotLongTerm = 1;
+        //         if( $islongTermInDB = 1 ){
+        //             if( $prod->product->is_long_term_service ==1 ){
+        //                 $isNotLongTerm = 0;
+        //             }
+        //         }
+
+               
+        //         if (( $isNotLongTerm ==1 ) && $prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
+
+        //             $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
+        //             if ($dispatch_domain_laundry && $dispatch_domain_laundry != false && $laundry == 0) {
+
+        //                 for ($x = 1; $x <= 2; $x++) {
+
+        //                     if ($x == 1) {
+        //                         $team_tag = $dispatch_domain_laundry->laundry_pickup_team ?? null;
+        //                         $colm = $x;
+        //                     }
+
+        //                     if ($x == 2) {
+        //                         $team_tag = $dispatch_domain_laundry->laundry_dropoff_team ?? null;
+        //                         $colm = $x;
+        //                     }
+
+
+        //                     //\Log::info('placeRequestToDispatchLaundry');
+        //                     $order_dispatchs = $this->placeRequestToDispatchLaundry($request->order_id, $request->vendor_id, $dispatch_domain_laundry, $team_tag, $colm);
+        //                 }
+
+        //                 if ($order_dispatchs && $order_dispatchs == 1) {
+        //                     $laundry = 1;
+        //                     return 1;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+
+
+        return 2;
+    }
+
+     // place Request To Dispatch for LongTerm Service 
+     public function placeRequestToDispatchServiceProduct($order, $vendor, $dispatch_domain,$request)
+     {
+       
+        try {
+ 
+             $order = Order::find($order); 
+          
+             $customer = User::find($order->user_id);
+             $cus_address = UserAddress::find($order->address_id);
+             $tasks = array();
+             $task_type = 'schedule';
+             $schedule_time = '';
+             $return_response = 2;
+             $paymentSentAlready = 0;
+             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+          
+             $order_vendor = OrderVendor::with('products.product','products.LongTermService.schedule')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+             $product =$order_vendor->products->first();
+             $schedules = $order_vendor->products->first()->LongTermService->schedule;
+             
+             
+                 $allocation_type = 'a';
+                 $agent = '';
+                 if ($order->payment_option_id == 1 ) {
+                     $cash_to_be_collected = 'Yes';
+                     $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                 } else {
+                     $cash_to_be_collected = 'No';
+                     $payable_amount = 0.00;
+                 }
+               // pr($payable_amount);
+                 $tasks = array();
+                 $meta_data = '';
+     
+                 $unique = Auth::user()->code;
+                 $team_tag = $unique . "_" . $vendor;
+               
+ 
+                 $task_type_id = $dispatch_domain['service_type'] == 'appointment' ?  3 : 1;
+                 $service_time = $product->product->first() ? $product->product->minimum_duration_min : 0;
+             
+                 $tasks[] = array(
+                     'task_type_id' => $task_type_id,
+                     'latitude'     => $vendor_details->latitude ?? '',
+                     'longitude'    => $vendor_details->longitude ?? '',
+                     'short_name'   => '',
+                     'address'      => $vendor_details->address ?? '',
+                     'post_code'    => '',
+                     'barcode'      => '',
+                     'flat_no'     => null,
+                     'email'       => $vendor_details->email ?? null,
+                     'phone_number' => $vendor_details->phone_no ?? null,
+                     'appointment_duration' =>  $dispatch_domain['service_type'] == 'appointment' ?  $service_time  : null ,
+                 );
+                 if($product->dispatch_agent_id){
+                     $allocation_type = 'm';
+                     $agent = $product->dispatch_agent_id;
+                 }
+                 if($dispatch_domain['service_type'] != 'appointment' ){
+                     $tasks[] = array(
+                         'task_type_id' => 2,
+                         'latitude' => $cus_address->latitude ?? '',
+                         'longitude' => $cus_address->longitude ?? '',
+                         'short_name' => '',
+                         'address' => $cus_address->address ?? '',
+                         'post_code' => $cus_address->pincode ?? '',
+                         'barcode' => '',
+                         'flat_no'     => $cus_address->house_number ?? null,
+                         'email'       => $customer->email ?? null,
+                         'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
+                     );
+                 }
+               //pr($tasks);
+                 if ($customer->dial_code == "971") {
+                     // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                     $customerno = "0" . $customer->phone_number;
+                 } else {                
+                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
+                 }
+                 $client = CP::orderBy('id', 'asc')->first();
+                
+                //  send all payment to fist order 
+            
+              
+                $postdata =  [
+                    'order_number'  =>  $order->order_number,
+                    'customer_name' => $customer->name ?? 'Dummy Customer',
+                    'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                    'customer_dial_code' => $customer->dial_code ?? null,
+                    'customer_email' => $customer->email ?? null,
+                    'recipient_phone' => $customerno ?? rand(111111, 11111),
+                    'recipient_email' => $customer->email ?? null,
+                    'task_description' => "Order From :" . $vendor_details->name,
+                    'allocation_type' => $allocation_type,
+                    'task_type' => $task_type,
+                    'schedule_time' => $schedule_time ?? null,
+                    'cash_to_be_collected' => $payable_amount ?? 0.00,
+                    'barcode' => '',
+                    'order_team_tag' => $team_tag,
+                    'call_back_url' => $call_back_url ?? null,
+                    'task' => $tasks,
+                    'is_restricted' => $order_vendor->is_restricted,
+                    'vendor_id' => $vendor_details->id,
+                    'order_vendor_id' => @$order_vendor->id,
+                    'dbname' => @$client->database_name,
+                    'order_id' => @$order->id,
+                    'customer_id' => @$order->user_id,
+                    'user_icon' => $customer->image,
+                    'agent'     => $agent,
+                    'task_type_id' =>$task_type_id, //  for add agent booking in case of appointment
+                    'service_time' =>  $service_time
+                ];
+            
+                
+                if($order_vendor->is_restricted == 1)
+                {
+                    $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                    $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+                }
+                //pr($postdata);
+                 $paymentSentAlready = 0;
+                 foreach($schedules as $key => $schedule){
+                   
+                    if( $paymentSentAlready == 0){
+                        $paymentSentAlready =1;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                    $dynamic = uniqid($order->id . $vendor . $product->product_id.($key=1));
+        
+                    $call_back_url = route('dispatch-order-service-status-update', $dynamic);
+                    $postdata['call_back_url'] = $call_back_url;
+                    $postdata['schedule_time'] = $schedule->schedule_date;
+                    $postdata['cash_to_be_collected'] = $payable_amount;
+                   
+
+                    $client = new Client([
+                        'headers' => [
+                            'personaltoken' => $dispatch_domain['service_key'],
+                            'shortcode'     => $dispatch_domain['service_key_code'],
+                            'content-type'  => 'application/json'
+                        ]
+                    ]);
+                     
+                    $url = $dispatch_domain['service_key_url'];
+                    $res = $client->post(
+                        $url . '/api/task/create',
+                        ['form_params' => ($postdata)]
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['task_id'] > 0) {
+                        $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
+    
+                    
+                        $schedule->web_hook_code                  = $dynamic;
+                        $schedule->dispatch_traking_url           = $dispatch_traking_url ;
+                        $schedule->dispatcher_status_option_id    = 1 ;
+                        $schedule->order_status_option_id         = 1 ;
+                        $schedule->save();
+                        
+                        $update = VendorOrderProductDispatcherStatus::updateOrCreate([
+                            'dispatcher_id' => null,
+                            'order_id' =>  $request->order_id,
+                            'dispatcher_status_option_id' => 1,
+                            'vendor_id' =>  $request->vendor_id,
+                            'long_term_schedule_id' =>$schedule->id
+                        ]);
+                    
+                    }
+                 }
+            
+             return 1;
+         } catch (\Exception $e) {
+             //return 2;
+             return response()->json([
+                 'status' => 'error',
+                 'message' => $e->getMessage()
+             ]);
+         }
+     }
+    
 
 }

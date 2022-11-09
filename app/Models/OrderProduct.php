@@ -139,4 +139,7 @@ class OrderProduct extends Model{
     public function Routes(){
       return $this->hasMany('App\Models\OrderProductDispatchRoute', 'order_vendor_product_id', 'id')->with('DispatchStatus');
     }
+    public function LongTermService(){
+      return $this->hasOne('App\Models\OrderLongTermServices', 'order_product_id', 'id');
+    }
 }

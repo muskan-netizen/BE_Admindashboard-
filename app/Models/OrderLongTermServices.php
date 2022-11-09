@@ -21,4 +21,7 @@ class OrderLongTermServices extends Model
     public function product(){
         return $this->hasOne('App\Models\Product', 'id', 'service_product_id');
     }
+    public function orderProduct(){
+        return $this->belongsTo('App\Models\OrderProduct', 'order_product_id', 'id');
+    }
 }

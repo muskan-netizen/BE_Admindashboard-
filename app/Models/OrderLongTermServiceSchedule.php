@@ -9,4 +9,11 @@ class OrderLongTermServiceSchedule extends Model
 {
     use HasFactory;
     protected $fillable = ['order_long_term_services_id', 'schedule_date'];
+
+    public function OrderService(){
+        return $this->hasOne('App\Models\OrderLongTermServices', 'id', 'order_long_term_services_id');
+    }
+    public function DispatchStatus(){
+        return $this->hasMany('App\Models\VendorOrderProductDispatcherStatus', 'long_term_schedule_id', 'id')->orderBy('id','DESC');
+    }
 }

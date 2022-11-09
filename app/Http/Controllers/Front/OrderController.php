@@ -878,7 +878,7 @@ class OrderController extends FrontController
             $additionalPrice=0.00;
             $totalAdditionalPrice = 0.00;
             $is_long_term_order = 0;
-
+            $checkLongTermInDB =checkColumnExists('products','is_long_term_service');
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if(!empty($request->other_taxes_string)){
                 foreach(explode(":",$request->other_taxes_string) as $row){
@@ -1087,7 +1087,12 @@ class OrderController extends FrontController
 
                     $order_product->product_name = $vendor_cart_product->product->title ?? $vendor_cart_product->product->sku;
 
+                    $product_dispatcher_tag = $vendor_cart_product->product->tags;
+                    if(($checkLongTermInDB ==1)){
+
+                    }
                     $order_product->product_dispatcher_tag = $vendor_cart_product->product->tags;
+
                     $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
                     $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
                     $order_product->schedule_slot = !empty($vendor_cart_product->schedule_slot)? $vendor_cart_product->schedule_slot : '';
@@ -1103,8 +1108,9 @@ class OrderController extends FrontController
                     $order_product->additional_increments_hrs_min = $vendor_cart_product->additional_increments_hrs_min;
 
                     $order_product->save();
+               
                     /** for long Term Service */
-                    if($vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts){
+                    if( ($checkLongTermInDB ==1) && $vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts){
                         $is_long_term_order = 1;
                         $service_start_date =  $vendor_cart_product->service_start_date ??   Carbon::now()->format('Y-m-d H:i:s');
                         $service_end_date = Carbon::parse( $service_start_date )->addMonths($vendor_cart_product->product->service_duration)->setTimezone('UTC')->format('Y-m-d H:i:s');

@@ -318,7 +318,7 @@ class CartController extends FrontController
             ])->find($request->product_id);
            
              /** if product is not lonf term */ 
-            if($productDetail->is_long_term_service !=1){
+            if(checkColumnExists('products','is_long_term_service') && $productDetail->is_long_term_service !=1){
                 /** if product type is not equal to on demand and appointment
                  **/ 
                         
@@ -432,7 +432,7 @@ class CartController extends FrontController
             $checkLongTermService = CartProduct::where('cart_id', $cart_detail->id)->with('product')->first();
             $isLongTermService  = 0;
            
-            if(!empty($checkLongTermService->product)){
+            if(checkColumnExists('products','is_long_term_service') && !empty($checkLongTermService->product)){
                 $isLongTermService = $checkLongTermService->product->is_long_term_service ;
             }
            

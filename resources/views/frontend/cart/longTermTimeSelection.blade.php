@@ -8,7 +8,7 @@
             <h6 class="product-title mt-0">{{ __('Service Time') }}:<br>
             </h6>
             <select class="form-control selectize-select"
-                id="service_period" name="service_period">
+                id="service_period" name="service_period" disabled>
                 @foreach (config('constants.Period') as $key => $value)
                     @if (in_array($key, $vendor_product->product->ServicePeriods))
                         <option value="{{ $key }}" {{ $vendor_product->service_period == $key ? 'selected' : '' }} >

@@ -811,15 +811,19 @@ class OrderController extends BaseController
                     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
                 }
-                $orderData = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
+                $orderData = OrderVendor::with('orderDetail')->where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type=='D') {
                         //Create Shipping request for dispatcher
-                       // \Log::info('11');
-                        $order_dispatch = $this->checkIfanyProductLastMileon($request);
-                    //  pr($order_dispatch);
+                        //\Log::info('11');
+                        if( checkColumnExists('orders','is_long_term') &&   $orderData->orderDetail->is_long_term ==1){
+                            $order_dispatch = $this->checkIfanyServiceProductLastMileon($request);
+
+                        }else{
+                            $order_dispatch = $this->checkIfanyProductLastMileon($request);
+                        }
                         if ($order_dispatch && $order_dispatch == 1){
                             $stats = $this->insertInVendorOrderDispatchStatus($request);
                             $orderPlaced = true;
@@ -1104,7 +1108,7 @@ class OrderController extends BaseController
 
     public function checkIfanyProductLastMileon($request)
     {
-
+        $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
         $order_dispatchs = 2;
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
        // pr( $checkdeliveryFeeAdded);
@@ -1117,7 +1121,14 @@ class OrderController extends BaseController
                 $Appointment = 0;
                 foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                 /**if its not long_term_service */
-                    if($prod->product->is_long_term_service !=1 ){
+                $isNotLongTerm = 1;
+                if( $islongTermInDB = 1 ){
+                    if( $prod->product->is_long_term_service ==1 ){
+                        $isNotLongTerm = 0;
+                    }
+                }
+                
+                    if( $isNotLongTerm ==1 ){
                         if ( isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 12) {
                             $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
                             if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
@@ -1138,7 +1149,7 @@ class OrderController extends BaseController
                         }
                     }
                     else{
-                        pr('is long term service');
+                        
                     }
                    
                     //pr('ad');
@@ -1151,8 +1162,14 @@ class OrderController extends BaseController
             if($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false){
                 $OnDemand = 0;
                 foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
-                    if(($prod->product->is_long_term_service !=1 )){
-
+                    $isNotLongTerm = 1;
+                    if( $islongTermInDB = 1 ){
+                        if( $prod->product->is_long_term_service ==1 ){
+                            $isNotLongTerm = 0;
+                        }
+                    }
+                    
+                    if( $isNotLongTerm ==1 ){
                         if (  isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
     
                             // $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
@@ -1203,8 +1220,15 @@ class OrderController extends BaseController
             $laundry = 0;
 
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                $isNotLongTerm = 1;
+                if( $islongTermInDB = 1 ){
+                    if( $prod->product->is_long_term_service ==1 ){
+                        $isNotLongTerm = 0;
+                    }
+                }
+
                
-                if (( $prod->product->is_long_term_service !=1 ) && $prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
+                if (( $isNotLongTerm ==1 ) && $prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
 
                     $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
                     if ($dispatch_domain_laundry && $dispatch_domain_laundry != false && $laundry == 0) {
