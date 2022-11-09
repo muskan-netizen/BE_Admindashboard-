@@ -60,7 +60,17 @@
                                     </div>
                                 </div>
                                 @endif
-
+                                <div class="col-md-4 col-6 mb-3">
+                                    <h4 class="header-title">{{ __("Admin Sign In Image") }}</h4>
+                                    <div class="mb-0 text-left alDropFile">
+                                        <label>{{ __("Admin Sign In Image") }}(1920x1080)</label>
+                                        <input type="file" accept="image/*" data-default-file="{{getAdditionalPreference(['admin_signin_image'])['admin_signin_image'] ? "https://images.royoorders.com/insecure/fill/600/400/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/".getAdditionalPreference(['admin_signin_image'])['admin_signin_image'] : ''}}" data-plugins="dropify" name="admin_sign_in_image" class="dropify ss_form_submit" id="image" />
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                        <label class="logo-size d-block text-center mt-1">{{ __("Image Size") }} 1920x768</label>
+                                    </div>
+                                </div>
                                 <div class="col-md-4 col-6  mb-3">
                                     <h4 class="header-title">{{ __("Color") }}</h4>
                                     <div class="form-group">
