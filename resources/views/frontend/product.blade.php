@@ -495,6 +495,7 @@
                                 </div>
 
                             </div>
+                            
                         </div>
                         <div class="row mt-4">
                             <div class="col-md-8">
@@ -566,25 +567,38 @@
                                 </section>
                                 @endif
                             </div>
-                            <div class="col-md-4">
+                            @if( !empty($coupon_list) )
+                                <div class="col-md-4">
                                     <div class="aside_bar">
                                         <h5>Available offers</h5>
-                                        <span><i class="fa fa-tag" aria-hidden="true"></i><strong>Bank Offer</strong> 5% Cashback on Flipkart Axis Bank Card<small>T&C</small></span>
-                                        <span><i class="fa fa-tag" aria-hidden="true"></i><strong>Partner Offer</strong> Sign up for Flipkart Pay Later and get Flipkart Gift Card worth up to ₹500*<small>Know More</small></span>
-                                        <ul>
-                                            <li>100% Original Products</li>
-                                            <li>Pay on delivery might be available</li>
-                                            <li>Easy 30 days returns and exchanges</li>
-                                            <li>Try & Buy might be available</li>
-                                        </ul>
-                                        <form>
+                                            <div class="discriptions">
+                                                @foreach($coupon_list as $m_key => $m_val)
+                                                   <p> <small> Description :</small> <span>{{ $m_val['short_desc'] ?? '' }} </span> </p>
+                                                   <p> <small> Coupon Code :  </small><span>{{ $m_val['name'] ?? '' }} </span> </p>
+                                                   <p>  <small>Coupon Type :  </small><span>{{ $m_val['promo_type_title'] ?? '' }} </span> </p>
+                                                   <p> 
+                                                    <small>
+                                                    @if($m_val['promo_type_id'] == 1)
+                                                         Amount : 
+                                                    @else
+                                                        Percentage : 
+                                                    @endif
+                                                    </small>
+                                                    <span>{{decimal_format($m_val['amount'])}}</span>
+                                                    </p>
+                                                    <hr>
+                                                @endforeach
+                                            </div>
+                                        
+                                        <!-- <form>
                                             <div class="form-group">
                                                 <input type="text" class="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Promo Code">
                                                 <button type="submit" class="btn btn-primary">Apply</button>
                                             </div>
-                                        </form>
+                                        </form> -->
                                     </div>
                                 </div>
+                            @endif
                             </div>
                     </div>
 
@@ -1161,7 +1175,13 @@
         $(".suggested-product").slick({
             infinite: true,
             slidesToShow: 4,
-            slidesToScroll: 1
+            slidesToScroll: 1,
+            responsive: [
+            { breakpoint: 1199, settings: { slidesToShow: 3, slidesToScroll: 1, infinite: true, dots: false, centerMode: true, } },
+            { breakpoint: 991, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, } },
+            { breakpoint: 767, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true, } },
+            { breakpoint: 576, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true, centerPadding: '0', } }
+        ]
         });
         </script>
 

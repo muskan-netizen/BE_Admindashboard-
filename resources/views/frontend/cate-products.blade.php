@@ -52,7 +52,14 @@
                 </div>
             </div>
             <div class="row mb-5 homepageSix">
-                <div class="collection-filter col-lg-3">
+                <div class="collection-filter col-lg-3 main-fillter">
+                        <ul class="breadcrumb p-0 mb-2">
+                            <li class="breadcrumb-item align-items-center"><a href="javascript:void(0)">Home <i class="fa fa-angle-right" aria-hidden="true"></i> <span>Pharmacy <i class="fa fa-angle-right" aria-hidden="true"></i>
+                                </span><span class="active">Healthcare Device</span></a>
+                            </li>
+                        </ul>
+                    <aside class="side_fillter">
+                       
                     <!-- side-bar colleps block stat -->
                     @if( count($category->brands) > 0 || count($variantSets) > 0 )
                     <div class="collection-filter-block bg-transparent p-0 m-0">
@@ -219,9 +226,10 @@
                         </div>
                     </div>
                     @endif
+                    </aside>
                 </div>
                 
-                <div class="collection-content col-lg-9">
+                <div class="collection-content col-lg-9 outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
@@ -271,8 +279,8 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts" id="category_products_filter">
-                                        <div class="col-12 text-right mt-2">
-                                            <select name="order_type" id='order_type' class="sortingFilter p-1">
+                                        <div class="col-12 custom_filtter mt-2">
+                                        <!-- <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Sort By')}}</option>
                                                 <option value="featured">{{_('Featured')}}</option>
                                                 <option value="a_to_z">{{_('A to Z')}}</option>
@@ -281,7 +289,17 @@
                                                 <option value="high_to_low">{{_('Cost : High to Low')}}</option>
                                                 <option value="rating">{{_('Avg. Customer Review')}}</option>
                                                 <option value="newly_added">{{_('Newest Arrivals')}}</option>
-                                            </select>
+                                            </select> -->
+                                            <ul>
+                                                <li><span>{{__('Sort By:')}}</span></li>
+                                                <li><a href="javascript:void(0)" class="active">{{_('Featured')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{_('A to Z')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{_('Z to A')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{_('Cost : Low to High')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{_('Cost : High to Low')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{_('Avg. Customer Review')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{_('Newest Arrivals')}}</a></li>
+                                            </ul>
                                         </div>
                                         <div class="product-wrapper-grid">
                                             <div class="row margin-res">
@@ -296,7 +314,7 @@
                                                     $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                 }*/ ?>
                                                 <div class="col-xl-3 col-md-3 col-6 mt-3">
-                                                    <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="product-box scale-effect mt-0">
+                                                    <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="product-box scale-effect mt-0 product-card-box position-relative al_box_third_template al">
                                                         <div class="product-image">
                                                             <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
                                                         </div>
@@ -312,15 +330,19 @@
                                                                         @endif
                                                                     @endif
                                                                 </h3>
-                                                                <h6 class="mt-0 mb-1"><b>{{$data->vendor->name}}</b></h6>
-                                                                @if (strlen($data->translation_description) >= 65)
-                                                                    <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>
-                                                                @else
-                                                                    <p>{{ $data->translation_description }}</p>
-                                                                @endif
-                                                                @if($data->inquiry_only == 0)
-                                                                    <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
-                                                                @endif
+                                                                <div class="product-description_list border-bottom">
+                                                                    <span class="flag-discount">30% Off</span>
+                                                                    <h6 class="mt-0 mb-1"><b>{{$data->vendor->name}}</b></h6>
+                                                                    @if (strlen($data->translation_description) >= 65)
+                                                                        <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>
+                                                                    @else
+                                                                        <p>{{ $data->translation_description }}</p>
+                                                                    @endif
+                                                                    </div>
+                                                                    @if($data->inquiry_only == 0)
+                                                                        <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                    @endif
+                                                                
                                                             </div>
                                                         </div>
                                                     </a>
