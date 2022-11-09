@@ -1,4 +1,56 @@
 /*--------------template 8 detail page css-------------*/
+body.al_body_template_eight .category-related-product.suggested-product.slick-initialized.slick-slider .flag-discount {
+    color: #fff;
+    display: block;
+    float: left;
+    padding: 5px 10px;
+    background: #E09378;
+    font-size: 14px;
+    font-weight: 400;
+    position: absolute;
+    top: 10px;
+    left: 0;
+}
+body.al_body_template_eight .category-related-product.suggested-product.slick-initialized.slick-slider .flag-discount::before {
+    top: 0;
+    border-width: 22px 15px 0 0;
+    border-color: #E09378 transparent transparent transparent;
+}
+body.al_body_template_eight .category-related-product.suggested-product.slick-initialized.slick-slider .flag-discount::after {
+    bottom: 0;
+    border-width: 0 15px 22px 0;
+    border-color: transparent transparent #E09378 transparent;
+}
+
+body.al_body_template_eight .category-related-product.suggested-product.slick-initialized.slick-slider .flag-discount::before, .flag-discount::after {
+    content: "";
+    position: absolute;
+    left: 99%;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    display: block;
+}
+body.al_body_template_eight .category-related-product.suggested-product.slick-initialized.slick-slider span.rating {
+    top: 12px;
+    position: absolute;
+    right: 12px;
+    height: 22px;
+    width: 50px;
+    background-color: #409a40;
+    line-height: 22px;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgb(0 0 0 / 5%);
+    color: #fff;
+    text-align: center;
+    padding-right: 0;
+    font-size: 12px;
+}
+
+
+
+
+
 body.al_body_template_eight .category-related-product .product-card-box {
     background-color: #fff !important;
     padding: 0px !important;
@@ -11,6 +63,9 @@ body.al_body_template_eight .category-related-product .product-card-box img {
     height: 320px;
     object-fit: cover;
     border-radius: 10px 10px 0 0;
+}
+body.al_body_template_eight .aside_bar .discriptions {
+    padding: 20px;
 }
 body.al_body_template_eight .category-related-product .product-card-box .media-body.align-self-start .al_clock b {
     color: #e9248d;
@@ -474,7 +529,7 @@ body.al_body_template_eight form#editProfileForm form input.form-control {
         width: 100%;
         max-width: 100%;
         flex: 100%;
-        z-index: -1;
+        height:auto;
     }
     .collection-product-wrapper .product-top-filter .filter-main-btn, .filter-main-btn span {
         margin-top: -100px;
@@ -491,7 +546,6 @@ body.al_body_template_eight form#editProfileForm form input.form-control {
     }
     body.al_body_template_eight.homeHeader .collection-filter-block {
         border: none !important;
-        padding: 12px 20px !important;
     }
     .offer-slider.al .col-12.p-0{display: flex;}
     .product-wrapper-grid .col-xl-3.col-md-3.col-6.mt-3 {
@@ -499,8 +553,26 @@ body.al_body_template_eight form#editProfileForm form input.form-control {
         max-width: 33%;
         flex: 33%;
     }
+    body.al_body_template_eight.homeHeader .main-fillter .side_fillter{height:auto !important;}
+    body.al_body_template_eight .outter-fillter-data .product-top-filter {
+        display: none;
+    }
+    body.al_body_template_eight .outter-fillter-data .custom_filtter ul li span:after{display: none;}
 }
 @media(max-width:767px){
+    body.al_body_template_eight .outter-fillter-data .product-top-filter {
+        display: none;
+    }
+    body.al_body_template_eight .outter-fillter-data .custom_filtter ul li span:after{display: none;}
+    .outter-fillter-data .product-wrapper-grid .col-xl-3.col-md-3.col-6.mt-3 {
+        width: 50%;
+        max-width: 50%;
+        flex: 50%;
+    }
+    body.al_body_template_eight.homeHeader .main-fillter .side_fillter{height:auto !important;}
+    body.al_body_template_eight .breadcrumb-section.bg-transparent {
+        padding: 0px 0 10px !important;
+    }
     body.al_body_template_eight .similar-product img {
         height: 190px;
     }
@@ -533,14 +605,12 @@ body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .colle
     position: inherit !important;
     top: 0;
     height: auto;
-    overflow-y: inherit;
-    background: #f2f2f2;
-    padding: 20px;
     width: 100%;
     max-width: 100%;
     flex: 100%;
     left: 0 !important;
     right: 0;
+    z-index:9;
 }
 body.al_body_template_eight.homeHeader .common-banner img {
     width: 100%;
@@ -641,14 +711,14 @@ body.al_body_template_eight ul.exzoom_img_ul img {
     height: 100%;
 }
 body.al_body_template_eight .aside_bar {
-    border-radius: 0 0 8px 8px;
+    border-radius:8px;
     border: 1px solid#d5d5d5;
     min-height: 470px;
     /* position: sticky;
     top: 180px; */
 }
 body.al_body_template_eight .aside_bar h5 {
-    border-radius: 4px 4px 0 0;
+    border-radius: 8px 8px 0 0;
     position: relative;
     background-color: #f3f3f3;
     -webkit-transition: all .1s linear;
@@ -854,9 +924,9 @@ body.al_body_template_eight .outter-fillter-data .custom_filtter ul li span:afte
     width: 39px;
     bottom: -13px;
 }
-body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider .irs-from, .irs-single, .irs-to {
+/* body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider .irs-from, .irs-single, .irs-to {
     visibility: inherit !important;
-}
+} */
 body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider .irs-to {
     background-color: red;
     color: #fff;
@@ -935,4 +1005,21 @@ body.al_body_template_eight .outter-fillter-data .flag-discount::after {
     bottom: 0;
     border-width: 0 15px 22px 0;
     border-color: transparent transparent #E09378 transparent;
+}
+body.al_body_template_eight .aside_bar .discriptions p {
+    display: flex;
+    align-items: center;
+}
+body.al_body_template_eight .aside_bar .discriptions p span {
+    margin: 0;
+    padding: 0 10px;
+    font-size: 15px;
+    text-align: left;
+    color: #424040;
+}
+body.al_body_template_eight .aside_bar .discriptions p small {
+    font-size: 16px;
+    text-align: left;
+    color: #000;
+    font-weight: 500;
 }
