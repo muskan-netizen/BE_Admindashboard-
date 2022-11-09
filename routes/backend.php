@@ -137,7 +137,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('web-styling/updateWebStylesNew', 'Client\WebStylingController@updateWebStylesNew')->name('styling.updateWebStylesNew');
         Route::get('web-styling/get-html-data-in-modal', 'Client\WebStylingController@getHtmlDatainModal')->name('get-html-data-in-modal');
         Route::get('web-styling/get-image-data-in-modal', 'Client\WebStylingController@getImageDatainModal')->name('get-image-data-in-modal');
+        Route::get('web-styling/get-product-data-in-modal', 'Client\WebStylingController@getProductDatainModal')->name('get-products-data-in-modal');
         Route::put('web-styling/update-image-data-in-modal', 'Client\WebStylingController@updateImageDatainModal')->name('update-image-data-in-modal');
+        Route::put('web-styling/update-products-data-in-modal', 'Client\WebStylingController@updateProductsDatainModal')->name('update-products-data-in-modal');
         Route::post('web-styling/updateDarkMode', 'Client\WebStylingController@updateDarkMode')->name('styling.updateDarkMode');
         Route::post('homepagelabel/saveOrder', 'Client\WebStylingController@saveOrder');
         Route::post('pickuplabel/saveOrder', 'Client\WebStylingController@saveOrderPickup');
@@ -147,6 +149,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('web-styling/pickup-delete-section/{id}', 'Client\WebStylingController@deletePickupSection')->name('pickup.delete.section');
         Route::post('web-styling/updateHomePageStyle', 'Client\WebStylingController@updateHomePageStyle')->name('web.styling.updateHomePageStyle');
         Route::post('web-styling/update-contact-up', 'Client\WebStylingController@updateContactUs')->name('web.styling.update_contact_up');
+        Route::post('web-styling/update-single-category-products', 'Client\WebStylingController@updateSingleCategoryProducts')->name('web.styling.update_single_category_products');
         Route::get('app-styling', 'Client\AppStylingController@index')->name('appStyling.index')->middleware('onlysuperadmin');
         Route::post('app-styling/updateFont', 'Client\AppStylingController@updateFont')->name('styling.updateFont');
         Route::post('app-styling/updateColor', 'Client\AppStylingController@updateColor')->name('styling.updateColor');
