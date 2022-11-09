@@ -1623,10 +1623,12 @@ class AuthController extends BaseController
                 DB::commit(); //Commit transaction after all the operations
                 return response()->json(['massage' => __('User Deleted Successfully')], 200);
                 //code...
-            } catch (Exception $e) {
-                DB::rollBack();
-                return response()->json(['massage' => __('Something went wrong!')], 400);
-               
-            }
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['massage' => __('Something went wrong!')], 400);
+            
+        }
+
     }
 }
