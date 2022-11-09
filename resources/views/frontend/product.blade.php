@@ -524,14 +524,25 @@
                             <div class="col-md-3">
                                 <div class="aside_bar">
                                     <h5>Available offers</h5>
-                                    <span><i class="fa fa-tag" aria-hidden="true"></i><strong>Bank Offer</strong> 5% Cashback on Flipkart Axis Bank Card<small>T&C</small></span>
-                                    <span><i class="fa fa-tag" aria-hidden="true"></i><strong>Partner Offer</strong> Sign up for Flipkart Pay Later and get Flipkart Gift Card worth up to ₹500*<small>Know More</small></span>
-                                    <ul>
-                                        <li>100% Original Products</li>
-                                        <li>Pay on delivery might be available</li>
-                                        <li>Easy 30 days returns and exchanges</li>
-                                        <li>Try & Buy might be available</li>
-                                    </ul>
+                                    
+                                    {{-- <ul> --}}
+                                    <div>
+                                        @if( !empty($coupon_list) )
+                                            @foreach($coupon_list as $m_key => $m_val)
+                                                Coupon Description : {{ $m_val['short_desc'] ?? '' }} <br>
+                                                Coupon Code : {{ $m_val['name'] ?? '' }} <br>
+                                                Coupon Type : {{ $m_val['promo_type_title'] ?? '' }} <br>
+                                                @if($m_val['promo_type_id'] == 1)
+                                                    Amount : 
+                                                @else
+                                                    Percentage : 
+                                                @endif
+                                                {{decimal_format($m_val['amount'])}}
+                                                <hr>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                    {{-- </ul> --}}
                                     <form>
                                         <div class="form-group">
                                             <input type="text" class="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Promo Code">
