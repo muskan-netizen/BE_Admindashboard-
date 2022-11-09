@@ -181,7 +181,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        $product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles')->where('id', $id)->firstOrFail();
+        $product = Product::with('brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles')->where('id', $id)->firstOrFail();
 
         $type = Type::all();
         $countries = Country::all();

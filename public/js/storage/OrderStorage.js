@@ -1,7 +1,8 @@
 /**
- * custom spinner Js 
  * Store all portal localstorage
+ * @Author Mr amit mehra and Mr Harbans singh
  */
+
 const OrderStorage = {
     setStorageAll(type_id,slot_id,type) {
        

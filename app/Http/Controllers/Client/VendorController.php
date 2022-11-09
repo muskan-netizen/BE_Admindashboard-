@@ -29,8 +29,10 @@ use App\Exports\VendorSimpelExport;
 use App\Exports\VendorProductExport;
 use DB,Log;
 use App\Models\VendorRegistrationDocument;
+use App\Services\InventoryService;
 use App\Models\VendorSocialMediaUrls;
 use Exception;
+use Illuminate\Support\Facades\Http;
 
 class VendorController extends BaseController
 {
@@ -660,8 +662,8 @@ class VendorController extends BaseController
         $categories = Category::with('primary')->select('id', 'slug')
                         ->where('id', '>', '1')->where('status', '!=', '2')->where('type_id', '1')
                         ->where('can_add_products', 1)->orderBy('parent_id', 'asc')->where('status', 1)->orderBy('position', 'asc')->get();
-        $products = Product::with(['media.image', 'primary', 'category.cat', 'brand','variant' => function($v){
-                            $v->select('id','product_id', 'quantity', 'price')->groupBy('product_id');
+        $products = Product::with(['media.image', 'primary', 'category.cat', 'vendor','brand','variant' => function($v){
+                            $v->select('id','product_id', 'quantity', 'price', 'barcode')->groupBy('product_id');
                     }])->select('id', 'sku','vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count')
                     ->where('vendor_id', $id)->get();
         $product_count = $products->count();
@@ -676,7 +678,7 @@ class VendorController extends BaseController
                         })->where('status', 1)->orderBy('position', 'asc')
                         ->orderBy('id', 'asc')
                         ->orderBy('parent_id', 'asc')->get();
-        $products = Product::with(['media.image', 'primary', 'category.cat', 'brand', 'variant' => function ($v) {
+        $products = Product::with(['media.image', 'primary', 'category.cat', 'vendor', 'brand', 'variant' => function ($v) {
             $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
         }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count', 'title')
             ->where('vendor_id', $id)->get()->sortBy('primary.title', SORT_REGULAR, false);
@@ -796,15 +798,16 @@ class VendorController extends BaseController
             $ordring = $request->order[0]['dir'] ?? 'asc';
         }
         $client_preference_detail =ClientPreference::select('id','business_type')->first();
-        $product = Product::with(['media.image', 'primary', 'category.cat', 'brand', 'variant' => function ($v) {
-            $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
+        $product = Product::with(['media.image', 'primary', 'category.cat','vendor', 'brand', 'variant' => function ($v) {
+            $v->select('id', 'product_id', 'quantity', 'price', 'barcode', 'expiry_date')->groupBy('product_id');
         }])->select('products.id', 'products.sku', 'products.vendor_id', 'products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title','products.global_product_id')
         ->join('product_translations', 'product_translations.product_id', '=', 'products.id')
         ->orderBy('product_translations.title', $ordring)
         ->groupBy('products.id')
         ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
 
-            // pr($product->toSql());
+        $need_sync_with_order = Vendor::where('id', $vendor_id)->value('need_sync_with_order');
+            // pr($product->get()->toArray());
         $datatable = Datatables::of($product)
             ->addIndexColumn()
             ->addColumn('single_product_check', function ($product) use ($request) {
@@ -856,7 +859,13 @@ class VendorController extends BaseController
 
 
                 return $action;
-            });
+            })
+            ->addColumn('expiry_date', function ($product) use ($request) {
+                return $product->variant->first() ? $product->variant->first()->expiry_date : '-';
+            }) 
+            ->addColumn('bar_code', function ($product) use ($request) {
+                return $product->variant->first() ? $product->variant->first()->barcode : '-';
+            }); 
 
 
             $datatable->addColumn('product_name', function ($product) use ($request) {
@@ -867,7 +876,7 @@ class VendorController extends BaseController
                 return $action;
             })
             ->addColumn('product_category', function ($product) use ($request) {
-                return $product->category ? $product->category->cat->name : 'N/A';
+                return $product->category && $product->category->cat && $product->category->cat->name ? $product->category->cat->name : 'N/A';
             });
 
             if ($client_preference_detail->business_type != 'taxi'){
@@ -914,8 +923,13 @@ class VendorController extends BaseController
 
             });
 
-
-            return $datatable->rawColumns(['single_product_check', 'product_image', 'product_name', 'action' ])->make(true);
+            $columg_arr = ['single_product_check', 'product_image', 'product_name' ];
+            if($need_sync_with_order != 1){
+                array_push($columg_arr, 'action');
+            }
+            
+            return $datatable->rawColumns($columg_arr)->make(true);
+            
     }
 
 
@@ -2437,6 +2451,26 @@ class VendorController extends BaseController
 
     public function vendorProductExport(Request $request) {
         return Excel::download(new VendorProductExport($request->id), 'vendor_products.xlsx');
+    }
+
+    public function getInvetoryToken()
+    {
+// dd("asdf");
+        $preference = InventoryService::checkIfInventoryOn();
+        if($preference){
+            $email = Auth::user()->email;
+           
+            $response = Http::get($preference->inventory_service_key_url."/admin/generate_inventory_login_token", [
+                'email' => $email
+            ]);
+            // $response->body();
+           $token =  $response->json();
+           
+            return response()->json(['success' => true,'data' => $token['data']?? null]);
+        }else{
+            return $this->errorResponse(['success' => false,'message'=>'Not Found'], 401);
+        }
+        
     }
 
 
