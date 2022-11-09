@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, ProductVariant, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation, Tag,Facilty};
+use App\Models\{Client, ClientPreference, ProductVariant, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation, Tag,Facilty, Role, CategoryRole};
 use GuzzleHttp\Client as GCLIENT;
 
 class CategoryController extends BaseController
@@ -188,11 +188,11 @@ class CategoryController extends BaseController
 
      //   $del = CategoryTranslation::where('category_id',$id)->whereNotIn('id',$get_multi_cat)->delete();
 
-        $category = Category::with('translationSetUnique', 'tags')->where('id', $id)->first();
+        $category = Category::with('translationSetUnique', 'tags','primary')->where('id', $id)->first();
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
             ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
             ->where('client_languages.client_code', Auth::user()->code)
-            ->where('client_languages.is_active', 1)
+            ->where('client_languages.is_active', 1)            
             ->orderBy('client_languages.is_primary', 'desc')->get();
         $existlangs = $langIds = array();
         foreach ($langs as $key => $value) {
@@ -204,6 +204,22 @@ class CategoryController extends BaseController
         $parCategory = Category::with('translation_one')->select('id', 'slug')->where('categories.id', '!=', $id)->where('status', '!=', $this->blocking)->whereIn('type_id', ['1', '3', '6', '8','9','11'])->where('deleted_at', NULL)->get();
         $dispatcher_warning_page_options = DispatcherWarningPage::where('status', 1)->get();
         $dispatcher_template_type_options = DispatcherTemplateTypeOption::where('status', 1)->get();
+
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
+        if($getAdditionalPreference['is_price_by_role'] == 1){
+            $roles = Role::get();
+            if($roles != null){
+                foreach($roles as $role){
+                    $category_role = CategoryRole::where('category_id', $id)->where('role_id', $role->id)->first();
+                    if($category_role != null){
+                        $role->is_added = true;
+                    }else{
+                        $role->is_added = false;
+                    }
+                }
+            }
+        }
 
 
         $returnHTML = view('backend.catalog.edit-category')->with(['typeArray' => $type, 'category' => $category,  'languages' => $langs, 'is_vendor' => $is_vendor, 'parCategory' => $parCategory, 'langIds' => $langIds, 'existlangs' => $existlangs, 'tagList' => $tagList, 'dispatcher_warning_page_options' => $dispatcher_warning_page_options, 'dispatcher_template_type_options' => $dispatcher_template_type_options, 'preference' => $preference])->render();
@@ -368,6 +384,32 @@ class CategoryController extends BaseController
                 }
                 CategoryTag::insert($tagArray);
             }
+
+            // category role
+            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+            
+            if($getAdditionalPreference['is_price_by_role'] == 1){
+                if($request->has('role')){
+                    $roles = $request->role;
+                    
+                    $role_array = [];
+                    foreach($roles as $key => $role){
+                        array_push($role_array, $key);
+
+                        $category_role = CategoryRole::where('category_id', $cate->id)->where('role_id', $key)->first();
+                        if($category_role == null){
+                            $category_role = new CategoryRole();
+                        }
+                        $category_role->category_id = $cate->id;
+                        $category_role->role_id = $key;
+                        $category_role->save();
+                    }
+                    
+                    // delete those role which are not there in array
+                    CategoryRole::where('category_id', $cate->id)->whereNotIn('role_id', $role_array)->delete();
+                }
+            }
+
             return $cate->id;
         } catch (Exception $e) {
             pr($e->getMessage());

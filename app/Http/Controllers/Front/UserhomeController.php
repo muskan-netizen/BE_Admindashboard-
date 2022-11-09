@@ -666,7 +666,7 @@ class UserhomeController extends FrontController
                     $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
                         $query->select('vendor_id')
                         ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                    });
+                    });                                                                     
                 }
             }
         }

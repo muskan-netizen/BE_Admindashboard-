@@ -116,6 +116,7 @@ class OrderController extends BaseController
             $total_discount = 0;
             $taxable_amount = 0;
             $payable_amount = 0;
+            $additional_price=0;
             $tax_category_ids = [];
             $user = Auth::user();
             $language_id = $user->language ?? 1;
@@ -180,7 +181,19 @@ class OrderController extends BaseController
                         }
                     }
 
-                            
+                    $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+                    $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+                    $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+                    $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
+                    $total_subscription_discount = 0;
+               
+                    if($cart_products[0]->luxury_option_id=="4"){
+                        $additional_price=($cart_products[0]->additional_increments_hrs_min/$cart_products[0]['product']['variants'][0]->incremental_price_per_min);
+                    }
+                 
+                    /* calculate total fixed fee amount */
+                    // pr($cart_products[0]->additional_increments_hrs_min);
+                //    pr($additional_price);   
 
                     $order = new Order;
                     $order->user_id = $user->id;
@@ -194,8 +207,10 @@ class OrderController extends BaseController
                     $order->comment_for_vendor = $cart->comment_for_vendor ?? null;
                     $order->schedule_pickup = $cart->schedule_pickup ?? null;
                     $order->schedule_dropoff = $cart->schedule_dropoff ?? null;
+                    $order->additional_price = $additional_price ?? null;
                     // $order->specific_instructions = $cart->specific_instructions ?? null;
                     $order->specific_instructions = $request->specific_instructions ?? null;
+                
                     $order->is_gift = $request->is_gift ?? 0;
                     $order->user_latitude = $latitude ? $latitude : null;
                     $order->user_longitude = $longitude ? $longitude : null;
@@ -221,13 +236,6 @@ class OrderController extends BaseController
                         $order_prescription->save();
                     }
                   
-                    $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
-                    $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-                    $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
-                    $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
-                    $total_subscription_discount = 0;
-                    
-                    /* calculate total fixed fee amount */
                     $total_fixed_fee_amount =0.00;
                     $pro_vendors=array();
                     foreach($cart_products as $row){
@@ -358,6 +366,7 @@ class OrderController extends BaseController
                                         else if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
                                            // Log::info($vendor_cart_product->vendor->timeofLineOfSightDistance);
                                            // Log::info($order_vendor->order_pre_time);
+                                           $OrderVendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
                                             if($order_vendor->order_pre_time)
                                             $order_vendor->user_to_vendor_time = $vendor_cart_product->vendor->timeofLineOfSightDistance - $order_vendor->order_pre_time;
                                         }
@@ -372,6 +381,10 @@ class OrderController extends BaseController
                             $order_product->order_vendor_id = $order_vendor->id;
                             $order_product->order_id = $order->id;
                             $order_product->price = $variant->price;
+                            $order_product->additional_increments_hrs_min = @$vendor_cart_product->additional_increments_hrs_min;
+                    $order_product->start_date_time = $vendor_cart_product->start_date_time;
+                    $order_product->end_date_time = $vendor_cart_product->end_date_time;
+                    $order_product->total_booking_time = @$vendor_cart_product->total_booking_time; 
                             $order_product->markup_price = $variant->markup_price;
                             $order_product->container_charges = $variant->container_charges;
                             $order_product->taxable_amount = $product_taxable_amount;
@@ -381,6 +394,7 @@ class OrderController extends BaseController
                             $order_product->created_by = $vendor_cart_product->created_by;
                             $order_product->user_product_order_form = $vendor_cart_product->user_product_order_form;
                             $order_product->variant_id = $vendor_cart_product->variant_id;
+                            $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee)?$vendor_cart_product->product_delivery_fee:0;
                             $product_variant_sets = '';
                             if (isset($vendor_cart_product->variant_id) && !empty($vendor_cart_product->variant_id)) {
                                 $var_sets = ProductVariantSet::where('product_variant_id', $vendor_cart_product->variant_id)->where('product_id', $vendor_cart_product->product->id)
@@ -471,13 +485,13 @@ class OrderController extends BaseController
                         }
                         //Start applying service fee on vendor products total
                         $vendor_service_fee_percentage_amount = 0;
-                        if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                            $vendor_service_fee_percentage_amount = (($vendor_products_total_amount+$opt_quantity_price-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                        // if ($vendor_cart_product->vendor->service_fee_percent > 0) {
+                        //     $vendor_service_fee_percentage_amount = (($vendor_products_total_amount+$opt_quantity_price-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
 
-
-                            $vendor_payable_amount += $vendor_service_fee_percentage_amount;
-                            $payable_amount += $vendor_service_fee_percentage_amount;
-                        }
+                        
+                        //     $vendor_payable_amount += $vendor_service_fee_percentage_amount;
+                        //     $payable_amount += $vendor_service_fee_percentage_amount;
+                        // }
                         //End applying service fee on vendor products total
                         $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                         $order_vendor->service_fee_percentage_amount = $vendor_service_fee_percentage_amount;
@@ -520,7 +534,9 @@ class OrderController extends BaseController
                         $order_status->order_vendor_id = $order_vendor->id;
                         $order_status->save();
                     }
-                    $payable_amount = $payable_amount + $total_taxes;
+                    
+                    $payable_amount = $payable_amount + $total_taxes + $additional_price;
+                
                     $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
 
                     // calculate subscription discount
@@ -584,7 +600,13 @@ class OrderController extends BaseController
                     $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
-                    $order->payable_amount = $payable_amount;
+
+                    if (!$client_preference->is_tax_price_inclusive) {
+                        $order->payable_amount = $payable_amount;
+                    }else{
+                        $order->payable_amount = $payable_amount - $order->taxable_amount;
+                    }
+
                     $order->fixed_fee_amount = $fixed_fee_amount;
                     $order->total_container_charges = $total_container_charges;
                     if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
@@ -650,6 +672,7 @@ class OrderController extends BaseController
                         $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
                         $super_admin = User::where('is_superadmin', 1)->pluck('id');
                         $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code);
+                        
                         // $user_admins = User::where(function ($query) {
                         //     $query->where(['is_superadmin' => 1]);
                         // })->pluck('id')->toArray();

@@ -445,13 +445,27 @@ $timezone = Auth::user()->timezone;
                                             <td>{{$clientCurrency->currency->symbol}}@money($container_charges)</td>
                                         </tr>
                                     @endif
-                                    @php
+                                    @if($client_preference_detail->is_tax_price_inclusive)
+                                            
+                                        @php  //taxable_amount
+                                            $adminRevenue = ($revenue + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
 
-                                        $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
+                                            //taxable_amount
+                                            $storeRevenue = ($sub_total + $order->fixed_fee_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+                                    
+                                        @endphp
 
-                                        $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+                                    @else
 
-                                    @endphp
+                                        @php
+
+                                            $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
+
+                                            $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+
+                                        @endphp
+                                    @endif
+
 
                                     {{-- @if(Auth::user()->is_superadmin) --}}
                                     <tr>

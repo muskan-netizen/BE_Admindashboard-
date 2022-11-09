@@ -22,6 +22,7 @@ use App\Http\Controllers\Client\ClientSlotController;
 use App\Http\Controllers\Client\DriverRegistrationDocumentController;
 use App\Http\Controllers\Client\ProductFaqController;
 use App\Http\Controllers\Client\EstimationController;
+use App\Http\Controllers\Client\RazorpayGatwayController;
 use App\Http\Controllers\Client\StaticDropoffController;
 
 Route::get('email-test', function () {
@@ -83,6 +84,11 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         // Route::get('account/vendor/payout', [VendorPayoutController::class, 'index'])->name('account.vendor.payout');
         // Route::get('account/vendor/payout/filter', [VendorPayoutController::class, 'filter'])->name('account.vendor.payout.filter');
         Route::get('account/vendor/payout/get/create-account-details', [VendorPayoutController::class, 'createAccountDetails'])->name('account.vendor.payout.createAccountDetails');
+        Route::post('vendor/payout/create-razorpay-details', [RazorpayGatwayController::class, 'razorpay_create_contact'])->name('vendor.razorpay_connect');
+        Route::post('vendor/payout/create-razorpay-add-funds', [RazorpayGatwayController::class, 'razorpay_add_funds_accounts'])->name('vendor.add.fund.account');
+
+        
+
         Route::get('account/vendor/payout/requests', [VendorPayoutController::class, 'vendorPayoutRequests'])->name('account.vendor.payout.requests');
         Route::get('account/vendor/payout/requests/filter', [VendorPayoutController::class, 'vendorPayoutRequestsFilter'])->name('account.vendor.payout.requests.filter');
 
@@ -105,6 +111,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('hardDeleteEverything', 'Client\ManageContentController@hardDeleteEverything')->name('config.hardDeleteEverything');
         Route::get('customize', 'Client\ClientPreferenceController@getCustomizePage')->name('configure.customize')->middleware('onlysuperadmin');
         Route::post('configUpdate/{code}', 'Client\ClientPreferenceController@update')->name('configure.update');
+        Route::post('configUpdate', 'Client\ClientPreferenceController@updateTaxInclusivePrice')->name('configure.taxinclusive');
         Route::post('additionalUpdate', 'Client\ClientPreferenceController@additionalupdate')->name('additional.update');
         Route::post('updateIsPriceEnable', 'Client\ClientPreferenceController@updateIsPriceEnable')->name('customize.updateIsPriceEnable');
         Route::post('configUpdateAdditional/{code}', 'Client\ClientPreferenceController@updateAdditional')->name('configure.updateAdditional');
@@ -387,6 +394,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/update_all', 'Client\VendorController@updateActions')->name('vendor.updateall');
 
         Route::post('subscription/payment/stripe', 'Client\StripeGatewayController@subscriptionPaymentViaStripe')->name('subscription.payment.stripe');
+        Route::post('subscription/payment/flutterwave', 'Client\FlutterwaveController@createHash')->name('vendor.subscription.payment');
 
         // Vendor Payout via gateway
         Route::get('verify/oauth/token/stripe', 'Client\StripeGatewayController@verifyOAuthToken')->name('verify.oauth.token.stripe');

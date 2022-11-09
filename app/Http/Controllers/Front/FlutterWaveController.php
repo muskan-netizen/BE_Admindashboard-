@@ -55,6 +55,12 @@ class FlutterWaveController extends FrontController
       $time = $request->order_number;
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'cart','date'=>date('Y-m-d')]);
 
+     }elseif($request->from == 'pickup_delivery')
+     {
+      $request->amt = $amt;
+      $time = $request->order_number;
+      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'pickup_delivery','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
+      //,'payment_from'=>$request->device??'web'
      }elseif($request->from == 'wallet')
      {
       $time = ($request->transaction_id)??'W_'.time();
@@ -107,47 +113,47 @@ class FlutterWaveController extends FrontController
    }  
 
 
-   public function webViewPay(Request $request)
-   {
-        $request->request->add(['amt'=>$request->amount,'from'=>$request->from,'order_number'=>$request->order_no??time()]);
-        $data = json_decode($this->createHash($request));
-        $inputs = '
-        <input type="text" value="'.$data->hash.'" name="hash"/>
-        <input type="number" value="'.$data->amount.'" name="amount"/>
-        <input type="text" value="mobile payment" name="description">
-        <input type="email" value="'.$data->email.'" name="email">
-        <input type="text" value="Kongadel" name="merchant_id">
-        <input type="text" value="'.$data->reference.'" name="reference">
-        <input type="text" value="'.$data->firstname.'" name="firstname">
-        <input type="text" value="'.$data->lastname.'" name="lastname">
-        <input type="text" value="'.$data->phone.'" name="phone">
-        <input type="text" value="'.$data->callback.'" name="callback">
-        <input type="text" value="'.$data->customerId.'" name="customerId">
-        ';
-        return view('frontend.payment_gatway.kongapay_view', compact('inputs'));
-   }
+  //  public function webViewPay(Request $request)
+  //  {
+  //       $request->request->add(['amt'=>$request->amount,'from'=>$request->from,'order_number'=>$request->order_no??time()]);
+  //       $data = json_decode($this->createHash($request));
+  //       $inputs = '
+  //       <input type="text" value="'.$data->hash.'" name="hash"/>
+  //       <input type="number" value="'.$data->amount.'" name="amount"/>
+  //       <input type="text" value="mobile payment" name="description">
+  //       <input type="email" value="'.$data->email.'" name="email">
+  //       <input type="text" value="Kongadel" name="merchant_id">
+  //       <input type="text" value="'.$data->reference.'" name="reference">
+  //       <input type="text" value="'.$data->firstname.'" name="firstname">
+  //       <input type="text" value="'.$data->lastname.'" name="lastname">
+  //       <input type="text" value="'.$data->phone.'" name="phone">
+  //       <input type="text" value="'.$data->callback.'" name="callback">
+  //       <input type="text" value="'.$data->customerId.'" name="customerId">
+  //       ';
+  //       return view('frontend.payment_gatway.kongapay_view', compact('inputs'));
+  //  }
 
-   public function kongapayPurchase(Request $request)
-   {
-       $amount = $request->amount;
-       $user = auth()->user();
-       $action = isset($request->action) ? $request->action : ''; 
-       $params = '?amount=' . $amount.'&auth_token='.$user->auth_token.'&from='.$action;
-       if($action == 'cart'){
-           $params = $params . '&order_no=' . $request->order_number.'&app=1';
-       }elseif($action == 'wallet'){
-         //app = 2 is for wallet
-        $params = $params .'&app=2&transaction_id=W_'.time();
-       }elseif($action == 'subscription'){
-        //app = 2 is for wallet
-       $params = $params .'&app=3&subscription_id='.'S_'.time().'_'.$request->subscription_id;
-      }elseif($action == 'tip'){
-        //app = 2 is for wallet
-       $params = $params .'&app=3&order_no='.$request->order_number;
-      }
+  //  public function kongapayPurchase(Request $request)
+  //  {
+  //      $amount = $request->amount;
+  //      $user = auth()->user();
+  //      $action = isset($request->action) ? $request->action : ''; 
+  //      $params = '?amount=' . $amount.'&auth_token='.$user->auth_token.'&from='.$action;
+  //      if($action == 'cart'){
+  //          $params = $params . '&order_no=' . $request->order_number.'&app=1';
+  //      }elseif($action == 'wallet'){
+  //        //app = 2 is for wallet
+  //       $params = $params .'&app=2&transaction_id=W_'.time();
+  //      }elseif($action == 'subscription'){
+  //       //app = 2 is for wallet
+  //      $params = $params .'&app=3&subscription_id='.'S_'.time().'_'.$request->subscription_id;
+  //     }elseif($action == 'tip'){
+  //       //app = 2 is for wallet
+  //      $params = $params .'&app=3&order_no='.$request->order_number;
+  //     }
 
-       return $this->successResponse(url($request->serverUrl.'payment/flutterwave/api/'.$params)); 
-   }
+  //      return $this->successResponse(url($request->serverUrl.'payment/flutterwave/api/'.$params)); 
+  //  }
 
 
 
@@ -162,8 +168,47 @@ class FlutterWaveController extends FrontController
             return $this->completeOrderTip($request,$payment);
         }elseif($payment->type=='subscription'){
             return $this->completeOrderSubs($request,$payment);
-        }
+        }elseif($payment->type=='pickup_delivery'){
+          return $this->completeOrderPickup($request,$payment);
+      }
+
    }
+
+
+   public function completeOrderPickup(Request $request,$payment)
+    {
+      $order = Order::where('order_number',$request->tx_ref)->first();
+        if(isset($request->tx_ref) && ($request->status == 'successful' || $request->status == 'completed'))
+          {
+            if ($order) {
+                $order->payment_status = 1;
+                $order->save();
+                $payment_exists = Payment::where('transaction_id', $request->order_no)->first();
+                if (!$payment_exists) {
+                    $payment = new Payment();
+                    $payment->date = date('Y-m-d');
+                    $payment->type = 'pickup_delivery';
+                    $payment->order_id = $order->id;
+                    $payment->payment_option_id = 30;
+                    $payment->user_id = $order->user_id;
+                    $payment->transaction_id = $request->TransID;
+                    $payment->balance_transaction = $order->payable_amount;
+                    $payment->save();
+                }
+                
+                $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 30, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransID]);
+                $plaseOrderForPickup = new PickupDeliveryController();
+                $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+                return Redirect::to(route('front.booking.details',$order->order_number));
+            }
+        }else{
+            //Failed transaction case
+            $data = Payment::where('transaction_id',$request->order_no)->first();
+            $data->delete();
+
+            return Redirect::to(route('user.wallet'))->with('error',$request->message);
+        }
+    }
 
 
    public function completeOrderCart(Request $request)
