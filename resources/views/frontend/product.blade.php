@@ -497,7 +497,7 @@
                             </div>
                         </div>
                         <div class="row mt-4">
-                            <div class="col-md-8">
+                            <div class="col-md-9">
                                 @if($client_preference_detail && $client_preference_detail->rating_check == 1)
                                 <section class="tab-product custom-tabs">
                                     <div class="row">
@@ -566,7 +566,7 @@
                                 </section>
                                 @endif
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                     <div class="aside_bar">
                                         <h5>Available offers</h5>
                                         <span><i class="fa fa-tag" aria-hidden="true"></i><strong>Bank Offer</strong> 5% Cashback on Flipkart Axis Bank Card<small>T&C</small></span>
@@ -1161,7 +1161,13 @@
         $(".suggested-product").slick({
             infinite: true,
             slidesToShow: 4,
-            slidesToScroll: 1
+            slidesToScroll: 1,
+            responsive: [
+            { breakpoint: 1199, settings: { slidesToShow: 3, slidesToScroll: 1, infinite: true, dots: false, centerMode: true, } },
+            { breakpoint: 991, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, } },
+            { breakpoint: 767, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true, } },
+            { breakpoint: 576, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true, centerPadding: '0', } }
+        ]
         });
         </script>
 
