@@ -253,10 +253,6 @@ class PaymentOptionController extends BaseController{
         return $gateway->order($request);
     }
 
-    public function postPaymentVia_mvodafone(Request $request){
-        $gateway = new MvodafoneController();
-        return $gateway->createPayLinkApp($request);
-    }
     public function postPaymentVia_openpay(Request $request){
         $gateway = new OpenpayPaymentController();
         return $gateway->beforePayment($request);
@@ -747,15 +743,17 @@ class PaymentOptionController extends BaseController{
         // Auto accept order
         $orderController = new OrderController();
         $orderController->autoAcceptOrderIfOn($order->id);
+        // \Log::info(json_encode($order));
 
         // Remove cart
-        $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-        Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-        CartAddon::where('cart_id', $cart->id)->delete();
-        CartCoupon::where('cart_id', $cart->id)->delete();
-        CartProduct::where('cart_id', $cart->id)->delete();
-        CartProductPrescription::where('cart_id', $cart->id)->delete();
-        CartDeliveryFee::where('cart_id', $cart->id)->delete();
+        // $cart = Cart::select('id')->where('status', '0')->where('user_id', $order->user_id)->first();
+        // \Log::info(json_encode($cart));
+        // Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+        // CartAddon::where('cart_id', $cart->id)->delete();
+        // CartCoupon::where('cart_id', $cart->id)->delete();
+        // CartProduct::where('cart_id', $cart->id)->delete();
+        // CartProductPrescription::where('cart_id', $cart->id)->delete();
+        // CartDeliveryFee::where('cart_id', $cart->id)->delete();
 
         // Send Notification
         if (!empty($order->vendors)) {

@@ -28,9 +28,6 @@ class ProductsImport implements ToCollection{
             try {
 
                 foreach ($rows as $row) {
-
-                    \Log::info(json_encode($row));
-
                     $checker = 0;
                     if ($row[0] != "SKU") { //header of excel check
 
@@ -39,8 +36,8 @@ class ProductsImport implements ToCollection{
                             $checker = 1;
                         }
                         if (Product::where('sku', $row[0])->exists()) { //if sku or handle is empty
-                            // $error[] = "Row " . $i . " : Product with this sku already exist";
-                            // $checker = 1;
+                            $error[] = "Row " . $i . " : Product with this sku already exist";
+                            $checker = 1;
                         }
                         // if ($row[3] == "") { //check if published is empty
                         //     $error[] = "Row " . $i . " : Please mark published either true or false";
