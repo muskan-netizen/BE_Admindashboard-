@@ -107,397 +107,421 @@
                                 </div>
                             </div>
                         </div>--}}
-                        <div class="row">
-                            <div class="col-lg-6 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
-                                {{-- <div class="product__carousel">
-                                    <div class="gallery-parent">
-                                        @php
-                                            if($product->variant->first()->media->isNotEmpty()){
-                                                $product->media = $product->variant->first()->media;
-                                            }
-
-                                            if($product->media->isEmpty()){
-                                                $arr = [
-                                                    'image' => (object)[
-                                                        'path' => [
-                                                            'image_fit' => \Config::get('app.FIT_URl'),
-                                                            'image_path' => \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png').'@webp'
-                                                        ]
-                                                    ]
-                                                ];
-                                                $coll = (object)collect($arr)->all();
-                                                $product->media[] = $coll;
-                                            }
-                                        @endphp
-
-                                        <div class="swiper-container gallery-top">
-                                            <div class="swiper-wrapper">
-                                            @if(!empty($product->media))
+                        <section class="buy_details">
+                            <div class="row">
+                                <div class="col-md-1 pl-0">
+                                    <div class="exzoom_nav side_nav_img">
+                                                @if(!empty($product->media))
                                                 @foreach($product->media as $k => $image)
-                                                    @php
-                                                        if(isset($image->pimage)){
-                                                            $img = $image->pimage->image;
-                                                        }else{
-                                                            $img = $image->image;
-                                                        }
-                                                    @endphp
-                                                    <div class="swiper-slide easyzoom easyzoom--overlay">
-                                                        <a href="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}">
-                                                        <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}" alt="">
-                                                        </a>
-                                                    </div>
+                                                @php
+                                                                if(isset($image->pimage)){
+                                                                    $img = $image->pimage->image;
+                                                                }else{
+                                                                    $img = $image->image;
+                                                                }
+                                                            @endphp
+                                                    @if(!is_null($img))
+                                                    <span class="img_active">
+                                                        <img class="blur-up lazyloaded pro_imgs myimage1"
+                                                            data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}"
+                                                            width="60" height="60"
+                                                            src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
+                                                    </span>
+                                                    @endif
                                                 @endforeach
-                                            @endif
+                                                @endif
                                             </div>
+                                </div>
+                                <div class="col-lg-6 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                                    {{-- <div class="product__carousel">
+                                        <div class="gallery-parent">
+                                            @php
+                                                if($product->variant->first()->media->isNotEmpty()){
+                                                    $product->media = $product->variant->first()->media;
+                                                }
 
-                                            <div class="swiper-button-next swiper-button-white"></div>
-                                            <div class="swiper-button-prev swiper-button-white"></div>
-                                        </div>
-                                        <div class="swiper-container gallery-thumbs">
-                                            <div class="swiper-wrapper">
+                                                if($product->media->isEmpty()){
+                                                    $arr = [
+                                                        'image' => (object)[
+                                                            'path' => [
+                                                                'image_fit' => \Config::get('app.FIT_URl'),
+                                                                'image_path' => \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png').'@webp'
+                                                            ]
+                                                        ]
+                                                    ];
+                                                    $coll = (object)collect($arr)->all();
+                                                    $product->media[] = $coll;
+                                                }
+                                            @endphp
+
+                                            <div class="swiper-container gallery-top">
+                                                <div class="swiper-wrapper">
                                                 @if(!empty($product->media))
                                                     @foreach($product->media as $k => $image)
-                                                    @php
-                                                        if(isset($image->pimage)){
-                                                            $img = $image->pimage->image;
-                                                        }else{
-                                                            $img = $image->image;
-                                                        }
-                                                    @endphp
-                                                    <div class="swiper-slide">
-                                                        <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" alt="">
-                                                    </div>
-                                                    @endforeach
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> --}}
-
-                                <div class="exzoom hidden w-100">
-                                    <div class="exzoom_img_box mb-2">
-                                        <ul class='exzoom_img_ul'>
-                                        @if(!empty($product->media))
-                                          
-                                            @foreach($product->media as $k => $image)
-                                                    @php
-                                                        if(isset($image->pimage)){
-                                                            $img = $image->pimage->image;
-                                                        }else{
-                                                            $img = $image->image;
-                                                        }
-                                                    @endphp
-                                            @endforeach
-                                            @if(!is_null($img))
-                                            <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
-                                            @endif
-                                        @endif
-                                        </ul>
-                                    </div>
-                                    @if(count($product->media) > 1)
-                                    <div class="exzoom_nav">
-                                        @if(!empty($product->media))
-                                        @foreach($product->media as $k => $image)
-                                        @php
-                                                        if(isset($image->pimage)){
-                                                            $img = $image->pimage->image;
-                                                        }else{
-                                                            $img = $image->image;
-                                                        }
-                                                    @endphp
-                                            @if(!is_null($img))
-                                            <span class="">
-                                                <img class="blur-up lazyloaded pro_imgs myimage1"
-                                                    data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}"
-                                                    width="60" height="60"
-                                                    src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
-                                            </span>
-                                            @endif
-                                        @endforeach
-                                        @endif
-                                    </div>
-                                    <p class="exzoom_btn">
-                                        <a href="javascript:void(0);" class="exzoom_prev_btn">
-                                            < </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
-                                        </a>
-                                    </p>
-                                    @endif
-                                </div>
-                                <div id="myresult" class="img-zoom-result"></div>
-                            </div>
-
-                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-6'; } else { echo 'offset-lg-6 col-lg-6'; } @endphp rtl-text p-0">
-                                <div class="product-right inner_spacing pl-sm-3 p-0">
-                                    <h2 class="mb-0">
-                                        {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
-                                    </h2>
-                                    <span class="rating main-rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
-                                    <h6 class="sold-by">
-                                        <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
-                                    </h6>
-                                    @if($client_preference_detail)
-                                        @if($client_preference_detail->rating_check == 1)
-                                            @if($product->averageRating > 0)
-                                                <span class="rating">{{ decimal_format($product->averageRating) }} <i class="fa fa-star text-white p-0"></i></span>
-                                            @endif
-                                        @endif
-                                    @endif
-                                    <div class="description_txt mt-3">
-                                        <p>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description : ''}}</p>
-                                    </div>
-                                    <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
-                                    <input type="hidden" name="start_time" id="start_time" value="">
-                                    <input type="hidden" name="end_time" id="end_time" value="">
-
-                                    <div id="product_variant_wrapper">
-                                        <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
-                                        @if($product->inquiry_only == 0)
-                                            <h3 id="productPriceValue" class="mb-md-3">
-                                                <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
-                                                @if($product->variant[0]->compare_at_price > 0 )
-                                                    <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
-                                                @endif
-                                            </h3>
-                                        @endif
-                                    </div>
-                                    <div class="border-product al_disc">
-                                        <h6 class="product-title">{{__('Product Details')}}</h6>
-                                        <p></p>
-                                        {!!(!empty($product->translation) && isset($product->translation[0])) ?
-                                            $product->translation[0]->body_html : ''!!}
-                                    </div>
-                                    <div id="product_variant_options_wrapper">
-                                        @if(!empty($product->variantSet))
-                                            @php
-                                                $selectedVariant = isset($product->variant[0]) ? $product->variant[0]->id : 0;
-                                                if($product->minimum_order_count > 0)
-                                                $product->minimum_order_count = $product->minimum_order_count;
-                                                else
-                                                $product->minimum_order_count = 1;
-                                            @endphp
-                                            @foreach($product->variantSet as $key => $variant)
-                                                @if($variant->type == 1 || $variant->type == 2)
-                                                <div class="size-box">
-                                                    <ul class="productVariants">
-                                                        <li class="firstChild">{{$variant->title}}</li>
-                                                        <li class="otherSize">
-                                                            @foreach($variant->option2 as $k => $optn)
-                                                            <?php $var_id = $variant->variant_type_id;
-                                                            $opt_id = $optn->variant_option_id;
-                                                            $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
-                                                            ?>
-                                                            <label class="radio d-inline-block txt-14 mr-2">{{$optn->title}}
-                                                                <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
-                                                                <span class="checkround"></span>
-                                                            </label>
-                                                            @endforeach
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                                @else
-                                                @endif
-                                            @endforeach
-                                        @endif
-                                    </div>
-                                    <div id="variant_response">
-                                        <span class="text-danger mb-2 mt-2"></span>
-                                    </div>
-                                    @if($product->category->categoryDetail->type_id == 10)
-                                        @include('frontend.product-part.booking-slot')
-                                    @endif
-                                    
-                                    
-
-                                    @if(!empty($product->addOn) && $product->addOn->count() > 0)
-                                    <div class="border-product">
-                                        <h6 class="product-title">{{ __('Addon List')}}</h6>
-
-                                        <div id="addon-table">
-                                            @foreach($product->addOn as $row => $addon)
-                                                <div class="addon-product">
-                                                    <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
                                                         @php
-                                                            $min_select = '';
-                                                            $minText = __('Minimum');
-                                                            $maxText = __('Maximum');
-                                                            $andText = __('and');
-                                                            if($addon->min_select > 0){
-                                                                $min_select = $minText.' '.$addon->min_select;
-                                                            }
-                                                            $max_select = '';
-                                                            if($addon->max_select > 0){
-                                                                $max_select = $maxText.' '.$addon->max_select;
-                                                            }
-                                                            if( ($min_select != '') && ($max_select != '') ){
-                                                                $min_select = $min_select.' '.$andText.' ';
+                                                            if(isset($image->pimage)){
+                                                                $img = $image->pimage->image;
+                                                            }else{
+                                                                $img = $image->image;
                                                             }
                                                         @endphp
-                                                        @if( ($min_select != '') || ($max_select != '') )
-                                                            <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
-                                                        @endif
-                                                    </h4>
+                                                        <div class="swiper-slide easyzoom easyzoom--overlay">
+                                                            <a href="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}">
+                                                            <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}" alt="">
+                                                            </a>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                                </div>
 
-                                                    <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
-                                                        @foreach($addon->setoptions as $k => $option)
-                                                        <div class="checkbox checkbox-success form-check-inline mb-1">
-                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price * $option->multiplier}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
-                                                            <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
-                                                                {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price * $option->multiplier).')' }}</label>
+                                                <div class="swiper-button-next swiper-button-white"></div>
+                                                <div class="swiper-button-prev swiper-button-white"></div>
+                                            </div>
+                                            <div class="swiper-container gallery-thumbs">
+                                                <div class="swiper-wrapper">
+                                                    @if(!empty($product->media))
+                                                        @foreach($product->media as $k => $image)
+                                                        @php
+                                                            if(isset($image->pimage)){
+                                                                $img = $image->pimage->image;
+                                                            }else{
+                                                                $img = $image->image;
+                                                            }
+                                                        @endphp
+                                                        <div class="swiper-slide">
+                                                            <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" alt="">
                                                         </div>
                                                         @endforeach
-                                                    </div>
+                                                    @endif
                                                 </div>
-                                            @endforeach
+                                            </div>
                                         </div>
+                                    </div> --}}
 
+                                    <div class="exzoom hidden w-100">
+                                        <div class="exzoom_img_box mb-2">
+                                            <ul class='exzoom_img_ul img-sidebar'>
+                                            @if(!empty($product->media))
+                                            
+                                                @foreach($product->media as $k => $image)
+                                                        @php
+                                                            if(isset($image->pimage)){
+                                                                $img = $image->pimage->image;
+                                                            }else{
+                                                                $img = $image->image;
+                                                            }
+                                                        @endphp
+                                                @endforeach
+                                                @if(!is_null($img))
+                                                <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
+                                                @endif
+                                            @endif
+                                            </ul>
+                                        </div>
+                                        @if(count($product->media) > 1)
+                                        <!-- <div class="exzoom_nav">
+                                            @if(!empty($product->media))
+                                            @foreach($product->media as $k => $image)
+                                            @php
+                                                            if(isset($image->pimage)){
+                                                                $img = $image->pimage->image;
+                                                            }else{
+                                                                $img = $image->image;
+                                                            }
+                                                        @endphp
+                                                @if(!is_null($img))
+                                                <span class="">
+                                                    <img class="blur-up lazyloaded pro_imgs myimage1"
+                                                        data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}"
+                                                        width="60" height="60"
+                                                        src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
+                                                </span>
+                                                @endif
+                                            @endforeach
+                                            @endif
+                                        </div> -->
+                                        <p class="exzoom_btn">
+                                            <a href="javascript:void(0);" class="exzoom_prev_btn">
+                                                < </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
+                                            </a>
+                                        </p>
+                                        @endif
+                                    </div>
+                                    <div id="myresult" class="img-zoom-result"></div>
+                                </div>
 
-                                        {{--<table class="table table-centered table-nowrap table-striped d-none" id="addon-table">
-                                            <tbody>
+                                <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-5'; } else { echo 'offset-lg-5 col-lg-5'; } @endphp rtl-text p-0">
+                                    <div class="product-right inner_spacing pl-sm-3 p-0">
+                                        <h2 class="mb-0">
+                                            {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
+                                        </h2>
+                                        <span class="rating main-rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
+                                        <h6 class="sold-by">
+                                            <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
+                                        </h6>
+                                        @if($client_preference_detail)
+                                            @if($client_preference_detail->rating_check == 1)
+                                                @if($product->averageRating > 0)
+                                                    <span class="rating">{{ decimal_format($product->averageRating) }} <i class="fa fa-star text-white p-0"></i></span>
+                                                @endif
+                                            @endif
+                                        @endif
+                                        <div class="description_txt mt-3">
+                                            <p>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description : ''}}</p>
+                                        </div>
+                                        <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
+                                        <input type="hidden" name="start_time" id="start_time" value="">
+                                        <input type="hidden" name="end_time" id="end_time" value="">
+
+                                        <div id="product_variant_wrapper">
+                                            <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
+                                            @if($product->inquiry_only == 0)
+                                                <h3 id="productPriceValue" class="mb-md-3">
+                                                    <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
+                                                    @if($product->variant[0]->compare_at_price > 0 )
+                                                        <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
+                                                    @endif
+                                                </h3>
+                                            @endif
+                                        </div>
+                                        <div class="border-product al_disc">
+                                            <h6 class="product-title">{{__('Product Details')}}</h6>
+                                            <p></p>
+                                            {!!(!empty($product->translation) && isset($product->translation[0])) ?
+                                                $product->translation[0]->body_html : ''!!}
+                                        </div>
+                                        <div id="product_variant_options_wrapper">
+                                            @if(!empty($product->variantSet))
+                                                @php
+                                                    $selectedVariant = isset($product->variant[0]) ? $product->variant[0]->id : 0;
+                                                    if($product->minimum_order_count > 0)
+                                                    $product->minimum_order_count = $product->minimum_order_count;
+                                                    else
+                                                    $product->minimum_order_count = 1;
+                                                @endphp
+                                                @foreach($product->variantSet as $key => $variant)
+                                                    @if($variant->type == 1 || $variant->type == 2)
+                                                    <div class="size-box">
+                                                        <ul class="productVariants">
+                                                            <li class="firstChild">{{$variant->title}}</li>
+                                                            <li class="otherSize">
+                                                                @foreach($variant->option2 as $k => $optn)
+                                                                <?php $var_id = $variant->variant_type_id;
+                                                                $opt_id = $optn->variant_option_id;
+                                                                $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
+                                                                ?>
+                                                                <label class="radio d-inline-block txt-14 mr-2">{{$optn->title}}
+                                                                    <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
+                                                                    <span class="checkround"></span>
+                                                                </label>
+                                                                @endforeach
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    @else
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                        <div id="variant_response">
+                                            <span class="text-danger mb-2 mt-2"></span>
+                                        </div>
+                                        @if($product->category->categoryDetail->type_id == 10)
+                                            @include('frontend.product-part.booking-slot')
+                                        @endif
+                                        
+                                        
+
+                                        @if(!empty($product->addOn) && $product->addOn->count() > 0)
+                                        <div class="border-product">
+                                            <h6 class="product-title">{{ __('Addon List')}}</h6>
+
+                                            <div id="addon-table">
                                                 @foreach($product->addOn as $row => $addon)
-                                                <tr>
-                                                    <td>
-                                                        <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet">{{$addon->title}}
+                                                    <div class="addon-product">
+                                                        <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
                                                             @php
                                                                 $min_select = '';
+                                                                $minText = __('Minimum');
+                                                                $maxText = __('Maximum');
+                                                                $andText = __('and');
                                                                 if($addon->min_select > 0){
-                                                                    $min_select = 'Minimum '.$addon->min_select;
+                                                                    $min_select = $minText.' '.$addon->min_select;
                                                                 }
                                                                 $max_select = '';
                                                                 if($addon->max_select > 0){
-                                                                    $max_select = 'Maximum '.$addon->max_select;
+                                                                    $max_select = $maxText.' '.$addon->max_select;
                                                                 }
                                                                 if( ($min_select != '') && ($max_select != '') ){
-                                                                    $min_select = $min_select.' and ';
+                                                                    $min_select = $min_select.' '.$andText.' ';
                                                                 }
                                                             @endphp
                                                             @if( ($min_select != '') || ($max_select != '') )
-                                                                <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
+                                                                <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
                                                             @endif
                                                         </h4>
-                                                    </td>
-                                                </tr>
-                                                <tr class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
-                                                    <td>
-                                                        @foreach($addon->setoptions as $k => $option)
-                                                        <div class="checkbox checkbox-success form-check-inline">
-                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
-                                                            <label class="pl-2" for="inlineCheckbox_{{$row.'_'.$k}}">
-                                                                {{$option->title .' ($'.decimal_format($option->price).')' }}</label>
+
+                                                        <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
+                                                            @foreach($addon->setoptions as $k => $option)
+                                                            <div class="checkbox checkbox-success form-check-inline mb-1">
+                                                                <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price * $option->multiplier}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
+                                                                <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
+                                                                    {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price * $option->multiplier).')' }}</label>
+                                                            </div>
+                                                            @endforeach
                                                         </div>
-                                                        @endforeach
-                                                    </td>
-                                                </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>--}}
-                                    </div>
-                                    @endif
-                                    @php
-                                        // check if vendor is closed or not, if closed then get slots otherwise no need.
-                                        if($vendor_info->is_vendor_closed == 1)
-                                            $checkSlot = findSlot('',$product->vendor->id,'');
-                                        else
-                                            $checkSlot = 0;
-                                    @endphp
-                                    <div class="btn-wrapper d-flex align-items-center">
-                                        <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
-                                            @if($product->inquiry_only == 0)
-                                            <div class="product-description border-product pb-0">
-                                                <h6 class="product-title mt-0">{{__('Quantity')}}:
-                                                    @if($product->has_inventory && !$product->variant[0]->quantity > 0 && $product->sell_when_out_of_stock != 1)
-                                                        <span id="outofstock" style="color: red;">{{ __('Out of Stock')}}</span>
-                                                    @else
-                                                    @php
-                                                    $product_quantity_in_cart = $product_in_cart->quantity??0;
-                                                    @endphp
-                                                    <input type="hidden" value="{{$product->has_inventory}}" id="hasInventory">
-                                                    <input type="hidden" id="instock" value="{{ ($product->variant[0]->quantity - $product_quantity_in_cart)}}">
-                                                    @endif
-                                                </h6>
-                                                @if(!$product->has_inventory || $product->variant[0]->quantity > 0 || $product->sell_when_out_of_stock == 1)
-                                                @if($product->minimum_order_count > 1)
-                                                {{-- <p class="mb-1 product_price">   {{__('Minimum Quantity') }} : {{ $product->minimum_order_count }} </p>
-                                                <p class="mb-1 product_price">   {{__('Batch') }} : {{ $product->batch_count }} </p> --}}
-                                                @endif
-                                                <div class="qty-box mb-3">
-                                                    <div class="input-group">
-                                                        <span class="input-group-prepend">
-                                                            <button type="button" class="btn quantity-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="fa fa-minus" aria-hidden="true"></i>
-                                                            </button>
-                                                        </span>
-                                                        <input type="text" name="quantity"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="quantity" class="form-control input-qty-number quantity_count"  value="{{$product->minimum_order_count??1}}" data-minimum_order_count={{$product->minimum_order_count}}>
-                                                        <span class="input-group-prepend quant-plus">
-                                                            <button type="button" class="btn quantity-right-plus" data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}>
-                                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                                            </button>
-                                                        </span>
                                                     </div>
+                                                @endforeach
+                                            </div>
+
+
+                                            {{--<table class="table table-centered table-nowrap table-striped d-none" id="addon-table">
+                                                <tbody>
+                                                    @foreach($product->addOn as $row => $addon)
+                                                    <tr>
+                                                        <td>
+                                                            <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet">{{$addon->title}}
+                                                                @php
+                                                                    $min_select = '';
+                                                                    if($addon->min_select > 0){
+                                                                        $min_select = 'Minimum '.$addon->min_select;
+                                                                    }
+                                                                    $max_select = '';
+                                                                    if($addon->max_select > 0){
+                                                                        $max_select = 'Maximum '.$addon->max_select;
+                                                                    }
+                                                                    if( ($min_select != '') && ($max_select != '') ){
+                                                                        $min_select = $min_select.' and ';
+                                                                    }
+                                                                @endphp
+                                                                @if( ($min_select != '') || ($max_select != '') )
+                                                                    <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
+                                                                @endif
+                                                            </h4>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
+                                                        <td>
+                                                            @foreach($addon->setoptions as $k => $option)
+                                                            <div class="checkbox checkbox-success form-check-inline">
+                                                                <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
+                                                                <label class="pl-2" for="inlineCheckbox_{{$row.'_'.$k}}">
+                                                                    {{$option->title .' ($'.decimal_format($option->price).')' }}</label>
+                                                            </div>
+                                                            @endforeach
+                                                        </td>
+                                                    </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>--}}
+                                        </div>
+                                        @endif
+                                        @php
+                                            // check if vendor is closed or not, if closed then get slots otherwise no need.
+                                            if($vendor_info->is_vendor_closed == 1)
+                                                $checkSlot = findSlot('',$product->vendor->id,'');
+                                            else
+                                                $checkSlot = 0;
+                                        @endphp
+                                        <div class="btn-wrapper d-flex align-items-center">
+                                            <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
+                                                @if($product->inquiry_only == 0)
+                                                <div class="product-description border-product pb-0">
+                                                    <h6 class="product-title mt-0">{{__('Quantity')}}:
+                                                        @if($product->has_inventory && !$product->variant[0]->quantity > 0 && $product->sell_when_out_of_stock != 1)
+                                                            <span id="outofstock" style="color: red;">{{ __('Out of Stock')}}</span>
+                                                        @else
+                                                        @php
+                                                        $product_quantity_in_cart = $product_in_cart->quantity??0;
+                                                        @endphp
+                                                        <input type="hidden" value="{{$product->has_inventory}}" id="hasInventory">
+                                                        <input type="hidden" id="instock" value="{{ ($product->variant[0]->quantity - $product_quantity_in_cart)}}">
+                                                        @endif
+                                                    </h6>
+                                                    @if(!$product->has_inventory || $product->variant[0]->quantity > 0 || $product->sell_when_out_of_stock == 1)
+                                                    @if($product->minimum_order_count > 1)
+                                                    {{-- <p class="mb-1 product_price">   {{__('Minimum Quantity') }} : {{ $product->minimum_order_count }} </p>
+                                                    <p class="mb-1 product_price">   {{__('Batch') }} : {{ $product->batch_count }} </p> --}}
+                                                    @endif
+                                                    <div class="qty-box mb-3">
+                                                        <div class="input-group">
+                                                            <span class="input-group-prepend">
+                                                                <button type="button" class="btn quantity-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="fa fa-minus" aria-hidden="true"></i>
+                                                                </button>
+                                                            </span>
+                                                            <input type="text" name="quantity"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="quantity" class="form-control input-qty-number quantity_count"  value="{{$product->minimum_order_count??1}}" data-minimum_order_count={{$product->minimum_order_count}}>
+                                                            <span class="input-group-prepend quant-plus">
+                                                                <button type="button" class="btn quantity-right-plus" data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}>
+                                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                </button>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    @endif
                                                 </div>
                                                 @endif
+
                                             </div>
-                                            @endif
-
-                                        </div>
-                                        <div class="product-buttons">
-                                            @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
-                                            @if($is_inwishlist_btn && $is_available)
-                                            <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
-                                                {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
-                                            </button>
-                                            @endif
-                                            @if($product->inquiry_only == 0)
-                                            @php
-                                            if($product->sell_when_out_of_stock == 1 && $product->variant[0]->quantity == 0){
-                                                $product_quantity_in_cart = 1;
-                                                $product->variant[0]->quantity = 2;
-                                            }
-                                            else
-                                            $product_quantity_in_cart = $product_in_cart->quantity??0;
-
-
-                                            @endphp
-                                            @if($is_available == 1)
-                                                <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
-                                            @endif
-
-                                                @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
-                                                <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
-                                                @elseif($vendor_info->is_vendor_closed == 1 && $vendor_info->closed_store_order_scheduled == 1)
-                                                <p class="text-danger">{{ __('We are not accepting orders right now. You can schedule this for '). $checkSlot}}.</p>
+                                            <div class="product-buttons">
+                                                @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
+                                                @if($is_inwishlist_btn && $is_available)
+                                                <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
+                                                    {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
+                                                </button>
                                                 @endif
-                                            @else
-                                                <a href="#" data-toggle="modal" data-target="#inquiry_form" class="btn btn-solid inquiry_mode">{{ __('Inquire Now')}}</a>
-                                            @endif
-                                            @endif
+                                                @if($product->inquiry_only == 0)
+                                                @php
+                                                if($product->sell_when_out_of_stock == 1 && $product->variant[0]->quantity == 0){
+                                                    $product_quantity_in_cart = 1;
+                                                    $product->variant[0]->quantity = 2;
+                                                }
+                                                else
+                                                $product_quantity_in_cart = $product_in_cart->quantity??0;
+
+
+                                                @endphp
+                                                @if($is_available == 1)
+                                                    <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                                @endif
+
+                                                    @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
+                                                    <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
+                                                    @elseif($vendor_info->is_vendor_closed == 1 && $vendor_info->closed_store_order_scheduled == 1)
+                                                    <p class="text-danger">{{ __('We are not accepting orders right now. You can schedule this for '). $checkSlot}}.</p>
+                                                    @endif
+                                                @else
+                                                    <a href="#" data-toggle="modal" data-target="#inquiry_form" class="btn btn-solid inquiry_mode">{{ __('Inquire Now')}}</a>
+                                                @endif
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
-                                    {{-- @dump($product) --}}
-                                    <!-- <div class="border-product al_disc">
-                                        <h6 class="product-title">{{__('Product Details')}}</h6>
-                                        <p></p>
-                                        {!!(!empty($product->translation) && isset($product->translation[0])) ?
-                                            $product->translation[0]->body_html : ''!!}
-                                    </div> -->
-                                    <div class="border-product">
-                                        <h6 class="product-title">{{__('Share It')}}</h6>
-                                        <div class="product-icon w-100">
-                                            <!-- <ul class="product-social"> -->
-                                                {!! $shareComponent !!}
-                                                <!-- <li><a href="#"><i class="fa fa-twitter"></i></a></li> -->
-                                                <!-- <li><a href="#"><i class="fa fa-facebook"></i></a></li> -->
-                                                <!-- <li><a href="#"><i class="fa fa-google-plus"></i></a></li> -->
-                                                <!-- <li><a href="#"><i class="fa fa-instagram"></i></a></li> -->
-                                            <!-- </ul>   -->
+                                        {{-- @dump($product) --}}
+                                        <!-- <div class="border-product al_disc">
+                                            <h6 class="product-title">{{__('Product Details')}}</h6>
+                                            <p></p>
+                                            {!!(!empty($product->translation) && isset($product->translation[0])) ?
+                                                $product->translation[0]->body_html : ''!!}
+                                        </div> -->
+                                        <div class="border-product">
+                                            <h6 class="product-title">{{__('Share It')}}</h6>
+                                            <div class="product-icon w-100">
+                                                <!-- <ul class="product-social"> -->
+                                                    {!! $shareComponent !!}
+                                                    <!-- <li><a href="#"><i class="fa fa-twitter"></i></a></li> -->
+                                                    <!-- <li><a href="#"><i class="fa fa-facebook"></i></a></li> -->
+                                                    <!-- <li><a href="#"><i class="fa fa-google-plus"></i></a></li> -->
+                                                    <!-- <li><a href="#"><i class="fa fa-instagram"></i></a></li> -->
+                                                <!-- </ul>   -->
+                                            </div>
                                         </div>
+
+                                        
                                     </div>
 
-                                    
                                 </div>
-
                             </div>
-                            
-                        </div>
-                        <div class="row mt-4">
+                        </section>
+                        <div class="row mt-1">
                             <div class="col-md-8">
                                 @if($client_preference_detail && $client_preference_detail->rating_check == 1)
                                 <section class="tab-product custom-tabs">
@@ -1183,6 +1207,18 @@
             { breakpoint: 576, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true, centerPadding: '0', } }
         ]
         });
+
+
+      
+
+        $(document).ready(function() {
+            $(".img_active").click(function(){
+               
+                $(".img_active").find('img').removeClass("active");
+                $(this).find('img').addClass("active");
+            });
+        });
+            
         </script>
 
 @endsection

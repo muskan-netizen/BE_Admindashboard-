@@ -8,8 +8,9 @@
                 <div class="img-outer-box position-relative"> 
                     @if(count($scp->media) > 0)
                         <div class="exzoom_nav">
-                            @if(!empty($scp->media))
-                            @foreach($scp->media as $k => $image)
+                            @if(!empty($scp->media) && !empty($scp->media->first()))
+                            @php $image = $scp->media->first() @endphp
+                            
                             @php
                                 if(isset($image->pimage))
                                     $img = $image->pimage->image;
@@ -24,7 +25,7 @@
                                         src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
                                 </span>
                                 @endif
-                            @endforeach
+                            
                         @endif
                         </div>
                         <p class="exzoom_btn">
