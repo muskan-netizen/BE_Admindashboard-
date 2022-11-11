@@ -4,14 +4,15 @@ namespace App\Http\Traits;
 use DB;
 use Auth;
 use HttpRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
-use App\Models\Client as CP;
 use GuzzleHttp\Client;
+use Illuminate\Http\Request;
+use App\Models\Client as CP;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-
-use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus,OrderLongTermServiceSchedule};
+use Illuminate\Support\Facades\Http;
 use App\Http\Traits\{ValidatorTrait};
+
+use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus,OrderLongTermServiceSchedule,UserDevice};
 
 trait OrderTrait{
     use ValidatorTrait;
@@ -434,11 +435,22 @@ trait OrderTrait{
             ->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
            // pr($longTermOrders->toArray());
         foreach ($longTermOrders as $order) {
+           // pr($order->vendors->first()->order_status_option_id);
+            // if($order->vendors[0]['order_status_option_id'] ==6){
+            //     $orderStatus = 'Past';   
+            //  }
+             //elseif($order->vendors->first()->order_status_option_id ==3){
+            //     $orderStatus = 'rejecte';
+            // }elseif($order->vendors->first()->order_status_option_id ==3){
+            //     $orderStatus = 'rejecte';
+            // }
+            $orderStatus = '';
             foreach ($order->vendors as $vendor) {
+              
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
 
-                $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
-
+                $vendor->order_status =ucfirst( $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '');
+                //pr($vendor->order_status);
                 foreach ($vendor->products as $product) {
 
                     $product->longTermSchedule =  OrderLongTermServices::with(['schedule','product.primary','addon.set','addon.option','addon.option.translation' => function ($q) use ($langId) {
@@ -490,29 +502,30 @@ trait OrderTrait{
     
         $order_dispatchs = 2;
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-       // pr( $checkdeliveryFeeAdded);
+        // pr( $checkdeliveryFeeAdded);
         $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
-       /// pr($checkdeliveryFeeAdded->products->first());
+        /// pr($checkdeliveryFeeAdded->products->first());
         $totalSchudelCount = @$checkdeliveryFeeAdded->products->first()->LongTermService->service_quentity;
         $serviceProductLastMile = @$checkdeliveryFeeAdded->products->first()->LongTermService->product->Requires_last_mile;
         $product_dispatcher_tag  = @$checkdeliveryFeeAdded->products->first()->LongTermService->product->tags;
+        $product_category_type_id  = @$checkdeliveryFeeAdded->products->first()->LongTermService->product->category->categoryDetail->type_id ?? 0;
         $preference = ClientPreference::first();
        
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
         if ($luxury_option_id == 8) { // only for appointment type
-            $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
-            if($dispatch_domain_Appointment && $dispatch_domain_Appointment != false){
+            
+            if ($preference->need_appointment_service == 1 && !empty($preference->appointment_service_key_code) && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_url))
                 $Appointment = 0;
              
                 /**if its not long_term_service */
                    
                     if ( isset($product_dispatcher_tag) && !empty($product_dispatcher_tag) ) {
-                        if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
+                        if ( $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
 
                             $dispatch_domain=[
-                                'service_key'      => $dispatch_domain_Appointment->appointment_service_key,
-                                'service_key_code' => $dispatch_domain_Appointment->appointment_service_key_code,
-                                'service_key_url'  => $dispatch_domain_Appointment->appointment_service_key_url,
+                                'service_key'      => $preference->appointment_service_key,
+                                'service_key_code' => $preference->appointment_service_key_code,
+                                'service_key_url'  => $preference->appointment_service_key_url,
                                 'service_type'     => 'appointment'
                             ];
                             
@@ -524,44 +537,37 @@ trait OrderTrait{
                         }
                     }
                 
-            }
+            
         }
+      
         if ($luxury_option_id == 6) { // only for on_demand type
-            $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
-
-            if($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false){
+            if ($preference->need_dispacher_home_other_service == 1 && !empty($preference->dispacher_home_other_service_key) && !empty($preference->dispacher_home_other_service_key_code) && !empty($preference->dispacher_home_other_service_key_url))
+            {
+              
                 $OnDemand = 0;
-                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
-                 
-                        if (  isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
-    
-                            // $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
-                            // echo $Appointment . 'app';
-    
-                            if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false && $OnDemand == 0  && $checkdeliveryFeeAdded->delivery_fee > 0) {
-    
-    
-    
-                                $dispatch_domain=[
-                                    'service_key'      => $dispatch_domain_OnDemand->dispacher_home_other_service_key,
-                                    'service_key_code' => $dispatch_domain_OnDemand->dispacher_home_other_service_key_code,
-                                    'service_key_url'  => $dispatch_domain_OnDemand->dispacher_home_other_service_key_url,
-                                    'service_type'     => 'on_demand'
-                                ];
-    
-    
-                                $order_dispatchs = $this->placeRequestToDispatchServiceProduct($request->order_id, $request->vendor_id, $dispatch_domain ,$request);
-                                if ($order_dispatchs && $order_dispatchs == 1) {
-                                    $OnDemand = 1;
-                                    return 1;
-                                }
-                            }
+            
+                if ( isset($product_dispatcher_tag) && !empty($product_dispatcher_tag) && $product_category_type_id == 8 ) {
+                    if ( $checkdeliveryFeeAdded->delivery_fee > 0) {
+                        
+                        $dispatch_domain=[
+                            'service_key'      => $preference->dispacher_home_other_service_key,
+                            'service_key_code' => $preference->dispacher_home_other_service_key_code,
+                            'service_key_url'  => $preference->dispacher_home_other_service_key_url,
+                            'service_type'     => 'on_demand'
+                        ];
+                     
+                        $order_dispatchs = $this->placeRequestToDispatchServiceProduct($request->order_id, $request->vendor_id, $dispatch_domain ,$request);
+                        if ($order_dispatchs && $order_dispatchs == 1) {
+                            $OnDemand = 1;
+                            return 1;
                         }
-                   
+                    }
                 }
+                   
+                
             }
         }
-
+        
         if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url)){
             
             $dispatch_domain=[
@@ -580,62 +586,19 @@ trait OrderTrait{
                 return 1;
 
         }
-       
-           // \Log::info('getDispatchLaundryDomain');
-        /////////////// **************** for laundry accept order *************** ////////////////
-        // $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
-
-        // if ($dispatch_domain_laundry && $dispatch_domain_laundry != false) {
-        //     $laundry = 0;
-
-        //     foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
-        //         $isNotLongTerm = 1;
-        //         if( $islongTermInDB = 1 ){
-        //             if( $prod->product->is_long_term_service ==1 ){
-        //                 $isNotLongTerm = 0;
-        //             }
-        //         }
-
-               
-        //         if (( $isNotLongTerm ==1 ) && $prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
-
-        //             $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
-        //             if ($dispatch_domain_laundry && $dispatch_domain_laundry != false && $laundry == 0) {
-
-        //                 for ($x = 1; $x <= 2; $x++) {
-
-        //                     if ($x == 1) {
-        //                         $team_tag = $dispatch_domain_laundry->laundry_pickup_team ?? null;
-        //                         $colm = $x;
-        //                     }
-
-        //                     if ($x == 2) {
-        //                         $team_tag = $dispatch_domain_laundry->laundry_dropoff_team ?? null;
-        //                         $colm = $x;
-        //                     }
-
-
-        //                     //\Log::info('placeRequestToDispatchLaundry');
-        //                     $order_dispatchs = $this->placeRequestToDispatchLaundry($request->order_id, $request->vendor_id, $dispatch_domain_laundry, $team_tag, $colm);
-        //                 }
-
-        //                 if ($order_dispatchs && $order_dispatchs == 1) {
-        //                     $laundry = 1;
-        //                     return 1;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
-
-
         return 2;
     }
 
+    /**
+     * placeRequestToDispatchServiceProduct
+     *
+     * @param  mixed $request
+     * @return void
+     * place Request To Dispatch for LongTerm Service 
+     */
      // place Request To Dispatch for LongTerm Service 
-     public function placeRequestToDispatchServiceProduct($order, $vendor, $dispatch_domain,$request)
-     {
+    public function placeRequestToDispatchServiceProduct($order, $vendor, $dispatch_domain,$request)
+    {
        
         try {
  
@@ -815,7 +778,67 @@ trait OrderTrait{
                  'message' => $e->getMessage()
              ]);
          }
-     }
+    }
     
+    /**
+     * updateBooking
+     *
+     * @param  mixed $request
+     * @return void
+     * update long term order booking  update 
+     */
+    public function updateLongTermBooking($request){
+
+         try {
+            $BookingSchedule  = OrderLongTermServiceSchedule::with('OrderService.orderProduct.order')->find($request->service_id);
+            if(  $BookingSchedule){
+                // cancel order to dispatcher
+                $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $BookingSchedule->dispatch_traking_url);
+                $response = Http::get($dispatch_traking_url);
+                //order cancelled 
+                $orderUserId[]              =  @$BookingSchedule->OrderService->orderProduct->order->user_id ?? 0;
+                $order_number               =  @$BookingSchedule->OrderService->orderProduct->order->order_number ?? '';
+                $BookingSchedule->status    = 1;
+                $BookingSchedule->save(); 
+                $this->sendOrderBookingNotification( $orderUserId,$order_number);
+            }
+           return $BookingSchedule;
+         } catch (Exception $e) {
+             return $this->errorResponse([], $e->getMessage());
+         }
+    }  
+    public function sendOrderBookingNotification($user_ids, $order_number, $NotificationTemplateId='1')
+    {
+        $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+
+       
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+            
+            $body_content ="Your Long term Booking no:({order_id}) has been Completed";
+            $body_content = str_ireplace("{order_id}", "#" . $order_number, $body_content);
+            $subject = 'Long term booking Completed';
+            if ($body_content) {
+               
+                $data = [
+                    "registration_ids" => $devices,
+                    "notification" => [
+                        'title' =>$subject,
+                        'body'  => $body_content,
+                        'sound' => "notification.wav",
+                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                    
+                        "android_channel_id" => "sound-channel-id"
+                    ],
+                    "data" => [
+                        'title' => $subject,
+                        'body'  => $body_content,
+                    ],
+                    "priority" => "high"
+                ];
+                sendFcmCurlRequest($data);
+            }
+        }
+    }
 
 }

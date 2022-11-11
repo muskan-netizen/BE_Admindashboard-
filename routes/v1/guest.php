@@ -1,5 +1,9 @@
 <?php
-Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () {
+Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () { 
+
+    Route::post('dispatcher/check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromDispatcher');
+
+    Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
 
     Route::post('check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromInventory');
 

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\CabBookingLayout;
+use Carbon\Carbon;
 use DB;
 use Log;
 class HomePageLabelSeederDefault extends Seeder
@@ -84,6 +85,26 @@ class HomePageLabelSeederDefault extends Seeder
             'title'    => 'Long Term Service',
             'slug'     => 'long_term_service',
             'order_by' => 7,
+        ]);
+        
+        $already = CabBookingLayout::where('slug', 'recently_viewed')->count();
+
+        if($already == 0)
+        $home_page = CabBookingLayout::insertGetId([
+            'title'      => 'Recently Viewed',
+            'slug'       => 'recently_viewed',
+            'order_by'   => 7,
+            'created_at' => Carbon::now(),
+        ]);
+
+        $already = CabBookingLayout::where('slug', 'spotlight_deals')->count();
+
+        if($already == 0)
+        $home_page = CabBookingLayout::insertGetId([
+            'title'      => 'Spotlight Deals',
+            'slug'       => 'spotlight_deals',
+            'order_by'   => 8,
+            'created_at' => Carbon::now(),
         ]);
 
     }

@@ -600,7 +600,13 @@ class OrderController extends BaseController
                     $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
-                    $order->payable_amount = $payable_amount;
+
+                    if (!$client_preference->is_tax_price_inclusive) {
+                        $order->payable_amount = $payable_amount;
+                    }else{
+                        $order->payable_amount = $payable_amount - $order->taxable_amount;
+                    }
+
                     $order->fixed_fee_amount = $fixed_fee_amount;
                     $order->total_container_charges = $total_container_charges;
                     if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
@@ -624,6 +630,7 @@ class OrderController extends BaseController
                         }
                         
                         CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
@@ -1538,16 +1545,20 @@ class OrderController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
-                if(!empty($smsTemplates)){
-                    $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
-                    $smsTemplates = str_replace("{amount}", $currSymbol . decimal_format($order->payable_amount), $smsTemplates);
-                    $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
-                }else{
-                    $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
-                }
+
+                $keyData = ['{user_name}'=>$user->name??'','{amount}'=>$currSymbol . $order->payable_amount,'{order_number}'=>$order->order_number??''];
+                $body = sendSmsTemplate('order-place-Successfully',$keyData);
+
+               // $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
+                // if(!empty($smsTemplates)){
+                //     $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
+                //     $smsTemplates = str_replace("{amount}", $currSymbol . decimal_format($order->payable_amount), $smsTemplates);
+                //     $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
+                // }else{
+                //     $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
+                // }
                 if (!empty($prefer->sms_provider)) {
-                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body,'order-place-Successfully');
                 }
             }
         } catch (\Exception $ex) {

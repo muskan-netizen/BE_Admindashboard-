@@ -73,6 +73,7 @@ class OrderController extends FrontController
      */
     public function orders(Request $request, $domain = '')
     {
+
         $user = Auth::user();
         if(empty($user->timezone))
         {
@@ -83,7 +84,7 @@ class OrderController extends FrontController
 
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
-      
+        $checkLongTerm = checkColumnExists('orders','is_long_term');
         $pastOrders = Order::with([
             'vendors' => function ($q) {
                 $q->where('order_status_option_id', 6);
@@ -101,8 +102,12 @@ class OrderController extends FrontController
                     $q2->where('payment_option_id', 1);
                 });
             })
-            ->where('orders.user_id', $user->id)
-            ->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+            ->where('orders.user_id', $user->id);
+            if($checkLongTerm){
+                $pastOrders->where('orders.is_long_term', 0);
+            }    
+                
+            $pastOrders     =  $pastOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
         $activeOrders = Order::with([
             'vendors' => function ($q) {
                 $q->where('order_status_option_id', '!=', 6);
@@ -122,8 +127,12 @@ class OrderController extends FrontController
                     $q2->where('payment_option_id', 1);
                 });
             })
-            ->where('orders.user_id', $user->id)
-            ->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+            ->where('orders.user_id', $user->id);
+            if($checkLongTerm){
+                $activeOrders->where('orders.is_long_term', 0);
+            }    
+        $activeOrders = $activeOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+        
         foreach ($activeOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
@@ -166,7 +175,7 @@ class OrderController extends FrontController
             }
         }
       //  pr($activeOrders->toArray());exit();
-       // return $pastOrders;
+
         foreach ($pastOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
@@ -199,7 +208,11 @@ class OrderController extends FrontController
                 $q->whereHas('products.productReturn');
             }
         ])->whereHas('vendors.products.productReturn')
-            ->where('orders.user_id', $user->id)->orderBy('orders.id', 'DESC')->paginate(20);
+            ->where('orders.user_id', $user->id);
+            if($checkLongTerm){
+                $returnOrders->where('orders.is_long_term', 0);
+            }  
+        $returnOrders  =   $returnOrders->orderBy('orders.id', 'DESC')->paginate(20);
         foreach ($returnOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 foreach ($vendor->products as $product) {
@@ -236,8 +249,11 @@ class OrderController extends FrontController
                     $q2->where('payment_option_id', 1);
                 });
             })
-            ->where('orders.user_id', $user->id)
-            ->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+            ->where('orders.user_id', $user->id);
+            if($checkLongTerm){
+                $rejectedOrders->where('orders.is_long_term', 0);
+            }  
+        $rejectedOrders = $rejectedOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
 
         foreach ($rejectedOrders as $order) {
             foreach ($order->vendors as $vendor) {
@@ -270,9 +286,10 @@ class OrderController extends FrontController
 
         $client_preferences = ClientPreference::select('*')->where('id', '>', 0)->first();
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
-
-        /**   get user long term orders */
-       $longTermOrder = $this->getUserLongTermService($user, $langId , $currency_id);
+        $longTermOrder = [];
+        /** get user long term orders */
+        if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1 && checkColumnExists('products','is_long_term_service'))
+        $longTermOrder = $this->getUserLongTermService($user, $langId , $currency_id);
          // dd($longTermOrder->toArray());
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
@@ -466,10 +483,12 @@ class OrderController extends FrontController
                 }
                 $provider = $prefer->sms_provider;
                 $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
-                $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . $order->payable_amount . " for order number " . $order->order_number . " has been placed successfully.";
-            //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+              
+                $keyData = ['{user_name}'=>$user->name??'','{amount}'=>$currSymbol . $order->payable_amount,'{order_number}'=>$order->order_number??''];
+                $body = sendSmsTemplate('order-place-Successfully',$keyData);
+
                 if (!empty($prefer->sms_provider)) {
-                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 }
             }
         } catch (\Exception $ex) {
@@ -576,11 +595,16 @@ class OrderController extends FrontController
                     $prod->pvariant->quantity_price = number_format($quantity_price, 2);
                     $payable_amount = $payable_amount + $quantity_price;
                     $taxData = array();
+                    $is_tax_price_inclusive = ClientPreference::value('is_tax_price_inclusive');
                     if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                             $rate = round($tax_value->tax_rate);
                             $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                            $product_tax = $quantity_price * $rate / 100;
+                            if(!$is_tax_price_inclusive){
+                                $product_tax = $quantity_price * $rate / 100; 
+                            }else{
+                                $product_tax = ($quantity_price * $rate) / (100 + $rate); 
+                            }
                             $taxData[$tckey]['identifier'] = $tax_value->identifier;
                             $taxData[$tckey]['rate'] = $rate;
                             $taxData[$tckey]['tax_amount'] = number_format($tax_amount, 2);
@@ -738,7 +762,7 @@ class OrderController extends FrontController
 
             $fixed_fee_amount=$request->total_fixed_fee_amount??0.00;
             DB::beginTransaction();
-            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area','stop_order_acceptance_for_users')->first();
+            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area','stop_order_acceptance_for_users','is_tax_price_inclusive')->first();
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (!empty($request->user_id))) {
@@ -1363,7 +1387,14 @@ class OrderController extends FrontController
                 $OrderVendor->delivery_fee = $delivery_fee;
                 $OrderVendor->subtotal_amount = $actual_amount;
                 $OrderVendor->discount_amount = $vendor_discount_amount;
-                $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
+
+                //check if is_tax_price_inclusive is on than no tax 
+                if (!$preferences->is_tax_price_inclusive) {
+                    $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
+                }else{
+                    $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / (100+$rate), 2);
+                }
+
                 $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);
                 $new_vendor_taxable_amount = floatval($new_vendor_taxable_amount);
                 $total_taxable_amount+=$new_vendor_taxable_amount;
@@ -1442,6 +1473,20 @@ class OrderController extends FrontController
             }
             $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
             $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
+            
+            $tip_amount = 0;
+            if (isset($request->tip)) {
+                $request->tip = str_replace(',', '', $request->tip);
+                $tip_amount = floatval($request->tip);
+                if( ($tip_amount != '') && ($tip_amount > 0) ){
+                    $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
+                    $order->tip_amount = $tip_amount;
+                }
+                
+            }
+            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
+
+
             $wallet_amount_used = 0;
             if ($user) {
                 if ($user->balanceFloat > 0) {
@@ -1458,22 +1503,7 @@ class OrderController extends FrontController
                 }
             }
             $payable_amount = $payable_amount - $wallet_amount_used;
-            $tip_amount = 0;
-            if (isset($request->tip)) {
-                $request->tip = str_replace(',', '', $request->tip);
-                $tip_amount = floatval($request->tip);
-                if( ($tip_amount != '') && ($tip_amount > 0) ){
-                    $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
-                    $order->tip_amount = $tip_amount;
-                }
-                
-            }
-            //echo  " Total payable_amount1=".$payable_amount."; <br>";
-            //echo  " tip_amount=".$tip_amount." fixed_fee_amount=".$fixed_fee_amount." total_taxable_amount=".$total_taxable_amount."; <br>";
 
-            
-            // $payable_amount = $payable_amount + $tip_amount + $total_taxable_amount+$total_other_taxes;
-            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
             //echo  " Total payable_amount2=".$payable_amount."; <br>";
             $order->total_service_fee = $total_service_fee;
             $order->total_delivery_fee = $total_delivery_fee;
@@ -1491,7 +1521,13 @@ class OrderController extends FrontController
             $order->scheduled_slot = (($cart->scheduled_slot)?$cart->scheduled_slot:null);
             $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
             $order->luxury_option_id = $luxury_option->id;
-            $order->payable_amount = $payable_amount;
+
+            if(!$preferences->is_tax_price_inclusive) {
+                $order->payable_amount = decimal_format($payable_amount);
+            }else{
+                $order->payable_amount = decimal_format($payable_amount - $total_other_taxes);
+            }
+
             $order->fixed_fee_amount = $fixed_fee_amount;
             $order->additional_price = $totalAdditionalPrice;
             $order->total_container_charges = $total_container_charges;

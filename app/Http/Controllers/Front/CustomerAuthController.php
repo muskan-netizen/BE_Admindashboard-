@@ -29,9 +29,12 @@ use App\Http\Controllers\Client\VendorController;
 use Math;
 use SimpleXMLElement;
 use Log;
+use App\Http\Traits\ProductActionTrait;
+
 class CustomerAuthController extends FrontController
 {
     use ApiResponser;
+    use ProductActionTrait;
 
     private $folderName = '/vendor/extra_docs';
 
@@ -231,7 +234,6 @@ class CustomerAuthController extends FrontController
                 }
 
                 if(!empty($req->phone_number) && isset($preferences) && ($preferences->verify_phone == 0)){
-
                     $validator = $req->validate([
                         'phone_number' => 'string|min:7|max:15|unique:users'
                     ]);
@@ -352,9 +354,11 @@ class CustomerAuthController extends FrontController
                         $to = '+' . $user->dial_code . $user->phone_number;
                     }
                     $provider = $prefer->sms_provider;
-                    $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                   // $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                    $keyData = ['{user_name}'=>ucwords($user->name)];
+                    $body = sendSmsTemplate('user-signup-sms',$keyData);
                     // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
-                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
 
                     if( $prefer->verify_phone == 1 ){
                         $response['send_otp'] = 1;
@@ -446,6 +450,12 @@ class CustomerAuthController extends FrontController
             } else {
                 Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
             }
+
+            if($this->checkIfTemplateEightEnable()){
+                $this->LoginActionRecentView($userid);
+            }
+            
+
             $message = __('Logged in successfully');
             $redirect_to = '';
             if(session()->has('url.intended')){
@@ -603,6 +613,11 @@ class CustomerAuthController extends FrontController
                     } else {
                         Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
                     }
+                     
+            if($this->checkIfTemplateEightEnable()){
+                $this->LoginActionRecentView($userid);
+            }
+            
                     $message = 'Logged in successfully';
                     $redirect_to = '';
                     if(session()->has('url.intended')){
@@ -950,6 +965,11 @@ class CustomerAuthController extends FrontController
             }
             // vendor additional data
             $this->addDataSaveVendor($request , $vendor->id);
+             
+            if($this->checkTemplateForAction(8)){
+                $this->LoginActionRecentView($user->id);
+            }
+            
 
             $content = '';
             $email_template = EmailTemplate::where('id', 1)->first();
@@ -1102,3 +1122,4 @@ class CustomerAuthController extends FrontController
 
 
 }
+

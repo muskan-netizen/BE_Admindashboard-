@@ -77,7 +77,7 @@ class VendorSubscriptionController extends BaseController
         else{
             return response()->json(["status"=>"Error", "message" => "Subscription plan not active"]);
         }
-        $code = array('stripe');
+        $code = array('stripe','razorpay');
         $ex_codes = array('cod');
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
         foreach ($payment_options as $k => $payment_option) {
@@ -115,21 +115,25 @@ class VendorSubscriptionController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function purchaseSubscriptionPlan(Request $request, $domain = '', $id, $slug = '')
+    public function purchaseSubscriptionPlan(Request $request, $domain = '', $id='', $slug = '')
     {
+        $id = $id??$request->vendor_id;
         $user = Auth::user();
         $vendor = Vendor::where('id', $id)->first();
         $subscription_plan = SubscriptionPlansVendor::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
+
         $last_subscription = SubscriptionInvoicesVendor::with(['plan', 'features.feature'])
             ->where('user_id', $user->id)
             ->where('vendor_id', $id)
             ->where('subscription_id', $subscription_plan->id)
             ->where('status_id', 2)
             ->orderBy('end_date', 'desc')->first();
+
         if( ($vendor) && ($subscription_plan) ){
             $subscription_invoice = new SubscriptionInvoicesVendor;
             $subscription_invoice->vendor_id = $vendor->id;
             $subscription_invoice->user_id = $user->id;
+
             $subscription_invoice->subscription_id = $subscription_plan->id;
             $subscription_invoice->slug = strtotime(Carbon::now()).'_'.$slug;
             $subscription_invoice->payment_option_id = $request->payment_option_id;
@@ -155,6 +159,7 @@ class VendorSubscriptionController extends BaseController
             }elseif($subscription_plan->frequency == 'yearly'){
                 $end_date = Carbon::parse($start_date)->addYears(1)->subDays(1)->toDateString();
             }
+
             $next_date = Carbon::parse($end_date)->addDays(1)->toDateString();
             $subscription_invoice->start_date = $start_date;
             $subscription_invoice->next_date = $next_date;

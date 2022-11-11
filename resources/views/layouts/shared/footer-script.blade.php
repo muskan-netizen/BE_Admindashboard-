@@ -45,7 +45,10 @@ if (Session::has('toaster')) {
 <script src="{{ asset('assets/js/alert/alert.js') }}"></script>
 
 {{-- <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" ></script> --}}
-
+{{-- add translation file  --}}
+@include('layouts.language')
+@yield('headerJs')
+{{-- end translation file  --}}
 
 {{-- <script src="{{asset('assets/libs/datetimepicker/jquery.datetimepicker.min.js')}}"></script> --}}
 @if((!empty($socket_url)))

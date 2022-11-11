@@ -530,7 +530,7 @@
                                                                     @endphp
                                                                     <h6>{{ __('Product Name') }}:  <a href="{{ $Service_product_url }}" target="_blank" > {{  $product->longTermSchedule->product->primary->title }}  </a></h6>
 
-                                                                    <h6>{{ __('Service product Quantity') }}:  {{  $product->longTermSchedule->service_quentity }}  </h6>
+                                                                    <h6>{{ __('No. of Bookings') }}:  {{  $product->longTermSchedule->service_quentity }}  </h6>
                                                                     
                                                                     <h6>{{ __('Service Time:') }}:  {{  __(config('constants.Period.'.$product->longTermSchedule->service_period))}}  </h6>
                                                                     
@@ -552,13 +552,15 @@
                                                                 <table class="wp-table w-100">
                                                                 @php
                                                                 $showRoute = !empty($product->longTermSchedule->product) ??($product->longTermSchedule->product->Requires_last_mile ==1 ? 1 : 0);
-                                                               
+                                                                if($vendor->delivery_fee <=0){
+                                                                    $showRoute = 0;
+                                                                }
                                                                 @endphp
                                                                     <tr>
                                                                         <th width="20%">#</th>
                                                                         <th width="40%">{{ __('Scheduled date time') }}</th>
                                                                         <th width="20%">{{ __('Service Status') }}</th>
-                                                                        @if(!empty($product->longTermSchedule->product) && $product->longTermSchedule->product->Requires_last_mile ==1 )
+                                                                        @if($showRoute==1 )
                                                                         <th width="20%">{{ __('Service Route') }}</th>   
                                                                         @endif
                                                                     </tr>
@@ -568,16 +570,20 @@
                                                                             <td><a href="javascript:void(0)"
                                                                                    >{{ date('d M Y h:i A', strtotime(dateTimeInUserTimeZone($schedule->schedule_date, $timezone)))   }}</a>
                                                                             </td>
-                                                                            <td> <span class="badge {{  $schedule->status ==0 ? 'badge-info' : 'badge-success'}}  mr-2">{{  $schedule->status ==0 ? __('Pending') : __('Complete')}}</span>
+                                                                            <td> <span class="badge {{  $schedule->status ==0 ? 'badge-info' : 'badge-success'}}  mr-2">{{  $schedule->status ==0 ? __('Pending') : __('Completed')}}</span>
+                                                                                @if($schedule->status ==0)
+                                                                                    <a class="Complete_longTermBoking badge badge-success" href="JavaScript:void(0)" data-service_id="{{ $schedule->id }}" >{{  __('Complete Booking')}}</a>
+                                                                                @endif
                                                                             </td>
                                                                             @if($showRoute ==1 )
-                                                                            <td>
-                                                                                @if( $schedule->dispatch_traking_url !='')
-                                                                                <a href="{{ $schedule->dispatch_traking_url }}"
-                                                                                        target="_blank">{{ __('Track') }}</a>
-                                                                                @endif
-                                                                                 <span class="badge badge-info mr-2"> {{ $schedule->DispatchStatus->first() ? $schedule->DispatchStatus[0]->status_data['driver_status'] ?? '' : 'na' }} </span>
-                                                                            </td>
+                                                                                <td>
+                                                                                    @if( $schedule->dispatch_traking_url !='' && $schedule->status ==0 )
+                                                                                    <a href="{{ $schedule->dispatch_traking_url }}"
+                                                                                            target="_blank">{{ __('Track') }}</a>
+                                                                                    @endif
+                                                                                  
+                                                                                     <span class="badge badge-info mr-2"> {{ $schedule->status ==0 ? ( $schedule->DispatchStatus->first() ? $schedule->DispatchStatus[0]->status_data['driver_status'] ?? '' : 'na') : __('Completed') }} </span>
+                                                                                </td>
                                                                             @endif
                                                                         </tr>
                                                                     @endforeach
@@ -659,13 +665,27 @@
                                                 <td>{{ $clientCurrency->currency->symbol }}@money($container_charges)</td>
                                             </tr>
                                         @endif
-                                        @php
+                                    @if($client_preference_detail->is_tax_price_inclusive)
                                             
-                                            $adminRevenue = $revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee - $adminDiscount;
-                                            
-                                            $storeRevenue = $sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee - $adminRevenue - $vendorDiscount;
-                                            
+                                        @php  //taxable_amount
+                                            $adminRevenue = ($revenue + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
+
+                                            //taxable_amount
+                                            $storeRevenue = ($sub_total + $order->fixed_fee_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+                                    
                                         @endphp
+
+                                    @else
+
+                                        @php
+
+                                            $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
+
+                                            $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+
+                                        @endphp
+                                    @endif
+
 
                                         {{-- @if (Auth::user()->is_superadmin) --}}
                                         <tr>
@@ -1125,7 +1145,13 @@
                                 $.NotificationApp.send("Success", response.message, "top-right",
                                     "#5ba035", "success");
                             //location.reload();
-                            //setTimeout(function(){location.reload();}, 3000);
+                           setTimeout(function(){location.reload();}, 3000);
+                        },
+                        beforeSend: function() {
+                            spinnerJS.showSpinner();
+                        },
+                        complete: function() {
+                            spinnerJS.hideSpinner();
                         },
                     });
                 } else {
@@ -1138,8 +1164,39 @@
         $('#Order_category_kyc_document').click(function() {
             $('#caregory_kyc_form').modal('show');
         });
-
-
+        
+       // if($('.Complete_longTermBoking').lenght > 0){
+            $(document).on('click', '.Complete_longTermBoking', function(e) {
+               
+                let service_id = $(this).attr('data-service_id');
+                console.log(service_id);
+                var formData = { service_id:service_id}
+                updateLongTermBooking(formData);
+            });
+        //}
+        async function updateLongTermBooking(formData){
+          
+            axios.post(`/client/long_term_service/updateBooking`, formData)
+            .then(async response => {
+                console.log(response);
+                //var data = response.data.variant_data;
+               
+                if(response.data.success){
+                    $.NotificationApp.send("Success", response.data.message, "top-right",
+                                    "#5ba035", "success");
+                } else{
+                    $.NotificationApp.send("Error",  _language.getLanString('Something went wrong, try again later!'), "top-right",
+                                    "#ab0535", "error");
+                
+                }
+            })
+            .catch(e => {
+              console.log(e);
+                   $.NotificationApp.send("Error",  _language.getLanString('Something went wrong, try again later!'), "top-right",
+                                    "#ab0535", "error");
+            })  
+            setTimeout(function(){location.reload();}, 3000);  
+        } 
         $("#create_dispatch_request").click(function() {
             Swal.fire({
                 title: "{{ __('Are you sure?') }}",

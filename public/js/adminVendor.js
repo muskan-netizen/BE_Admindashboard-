@@ -68,7 +68,7 @@ async function deleteService(id){
 
 }
 
-function setProductVariant(product_id,selected_variant='',service_product_id=''){
+async function setProductVariant(product_id,selected_variant='',service_product_id=''){
     console.log(service_product_id);
     axios.post(`/client/product/getVariant`, {product_id: product_id,service_product_id:service_product_id})
     .then(async response => {
@@ -107,6 +107,7 @@ function GetServiceData(service_id) {
                 $("#add-service input[name=sku]").val(service.sku);
                 $("#add-service input[name=serice_price]").val( (Math.round(service?.variant[0]?.price * 100) / 100).toFixed(2) );
                 $("#add-service input[name=product_quantity]").val(service.long_term_products.quantity);
+                $("#add-service input[name=service_duration]").val(service.service_duration);
                 // select product 
                 var $select = $("#service_product_list").selectize();
                 var selectize = $select[0].selectize;
@@ -117,11 +118,11 @@ function GetServiceData(service_id) {
             
                 
              
-                var $service_duration = $("#service_duration").selectize();
-                var duration_selectize = $service_duration[0].selectize;
-                duration_selectize.setValue(service.service_duration);
+                // var $service_duration = $("#service_duration").selectize();
+                // var duration_selectize = $service_duration[0].selectize;
+                // duration_selectize.setValue(service.service_duration);
              
-                setProductVariant(service.long_term_products.product_id,'',service.long_term_products.id)
+                await setProductVariant(service.long_term_products.product_id,'',service.long_term_products.id)
                 var image = service.image;
                 var html = `<input type="file" id="service_image" name="file" class="dropify form-control" data-default-file="${image}" required />`;
                 $('.service_image').html(html);

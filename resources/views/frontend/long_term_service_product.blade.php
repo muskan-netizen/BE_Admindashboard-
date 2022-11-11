@@ -250,7 +250,7 @@
 
                                                     </h5>
                                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <h6 class="product-title mt-0">{{ __('Quantity') }}:
+                                                        <h6 class="product-title mt-0">{{ __('No. of Bookings') }}:
                                                             <span class="ml-3">
                                                                 {{ !empty($LongTermProducts->long_term_product) ? $LongTermProducts->long_term_product->quantity : '' }}
                                                             </span>
@@ -273,7 +273,7 @@
                                                     <div class="row addon-product mb-2">
                                                         @foreach ($LongTermProducts->addOn as $row => $addon)
                                                             @if (array_key_exists($addon->addon_id, $LongTermProducts->product_addon))
-                                                                <div class="col-md-4 d-flex justify-content-between align-items-center">
+                                                                <div class="col-md-12 d-flex justify-content-between align-items-center">
                                                                     <b addon_id="{{ $addon->addon_id }}"
                                                                         class="text-capitalize">{{ $addon->title }}:</b>
                                                                     @if ($addon->setoptions->isNotEmpty())

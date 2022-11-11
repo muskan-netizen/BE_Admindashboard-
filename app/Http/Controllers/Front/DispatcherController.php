@@ -355,7 +355,7 @@ class DispatcherController extends FrontController
                                                             'vendor_id'          =>  @$checkiftokenExist->OrderService->orderProduct->vendor_id,
                                                             'type'              =>  $request->task_type??1
                                                         ]);
-                            OrderLongTermServiceSchedule::where('id', $checkiftokenExist->id)->update(['order_status_option_id' => $request->status_option_id]);
+                            OrderLongTermServiceSchedule::where('id', $checkiftokenExist->id)->update(['order_status_option_id' => $request->status_option_id,'status'=>1]);
     
                     }
                     // get total rout count of order vendor

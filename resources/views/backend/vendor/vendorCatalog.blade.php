@@ -238,13 +238,13 @@ pr($products->toArray());
                                             <div class="vendor-search mb-sm-0 mb-2">
                                                 <input class="form-control" id="vendor_search" type="search" placeholder="Product Search" aria-controls="vendor_product_table">
                                             </div>
-
+                                            @if($vendor['need_sync_with_order'] != 1)
                                             <a class="btn btn-info  waves-effect waves-light text-sm-right action_product_button" dataid="0"
                                                 id="action_product_button" href="javascript:void(0);"
                                                 style="display: none;"><i class="mdi mdi-plus-circle mr-1"></i>
                                                 {{ __('Action') }}
                                             </a>
-
+                                            @endif
                                             <a class="btn btn-info waves-effect waves-light ml-1 text-sm-right @if($vendor->status == 1) importProductBtn @endif  {{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"
                                                 {{ $vendor->status == 1 ? '' : 'disabled' }}><i
@@ -254,12 +254,12 @@ pr($products->toArray());
                                             <a class="btn btn-info waves-effect waves-light text-sm-right mx-1" dataid="0" href="{{ route('vendor.product.export', $vendor->id) }}"><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Export') }}
                                             </a>
-
+                                            @if($vendor['need_sync_with_order'] != 1)
                                             <a class="btn btn-info waves-effect waves-light text-sm-right alAddProductBtn  @if($vendor->status == 1) addProductBtn @endif {{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Product') }}
                                             </a>
-
+                                            @endif
                                     </div>
                                     <div class="col-md-12">
                                         <div class="table-responsive">
@@ -276,7 +276,9 @@ pr($products->toArray());
                                                             <th>{{ __('Quantity') }}</th>
                                                             <th>{{ __('Price') }}</th>
                                                         @endif
+                                                        <th>{{ __('Bar Code') }}</th>
                                                         <th>{{ __('Status') }}</th>
+                                                        <th>{{ __('Expiry Date') }}</th>
                                                         @if ($client_preference_detail->business_type != 'taxi')
                                                             <th>{{ __('New') }}</th>
                                                             <th>{{ __('Featured') }}</th>
@@ -313,7 +315,7 @@ pr($products->toArray());
                                                         <th>#</th>
                                                         <th>{{ __('Name') }}</th>
                                                         <th>{{ __('Product Name') }}</th>
-                                                        <th>{{ __('Quantity') }}</th>
+                                                        <th>{{ __('No. of Bookings') }}</th>
                                                         <th>{{ __('Period') }}</th>
                                                         <th>{{ __('Price') }}</th>
                                                         <th>{{ __('Action') }}</th>
@@ -411,7 +413,7 @@ pr($products->toArray());
                         <div class="row">
                             <div class="col-6">
                                 <div class="form-group" id="product_quantityInput">
-                                    {!! Form::label('title', __('Quantity of Product'), ['class' => 'control-label']) !!}
+                                    {!! Form::label('title', __('No. of Bookings'), ['class' => 'control-label']) !!}
                                     {!! Form::text('product_quantity',null ,['class'=>'form-control', 'id' => 'quantity', 'placeholder' => '10', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
@@ -433,13 +435,14 @@ pr($products->toArray());
                             </div>
                             <div class="col-12">
                                 <div class="form-group" id="service_durationInput">
-                                    {!! Form::label('title', __('Select Time Duration'),['class' => 'control-label']) !!}
-                                        <select class="form-control selectizeInput" id="service_duration" name="service_duration">
+                                    {!! Form::label('title', __('Select Time Duration (Months)'),['class' => 'control-label']) !!}
+                                    <input type="number" class="form-control" min='1' name="service_duration" placeholder="{{ __('No. of Months') }}">
+                                        {{-- <select class="form-control selectizeInput" id="service_duration" name="service_duration">
                                             <option value="1">1 {{ __('Month') }}</option>
                                             <option value="3">3 {{ __('Months') }}</option>
                                             <option value="6">6 {{ __('Months') }}</option>
                                             <option value="12">1 {{ __('Year') }}</option>
-                                        </select>
+                                        </select> --}}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
@@ -1425,7 +1428,9 @@ pr($products->toArray());
                     {data: 'product_brand', name: 'product_brand', orderable: false, searchable: false},
                     {data: 'product_quantity', name: 'product_quantity', orderable: false, searchable: false},
                     {data: 'product_price', name: 'product_price', orderable: false, searchable: false},
+                    {data: 'bar_code', name: 'bar_code', orderable: false, searchable: false},
                     {data: 'product_is_live', name: 'product_is_live', orderable: false, searchable: false},
+                    {data: 'expiry_date', name: 'expiry_date', orderable: false, searchable: false},
                     {data: 'product_is_new', name: 'product_is_new', orderable: false, searchable: false},
                     {data: 'product_is_featured', name: 'product_is_featured', orderable: false, searchable: false},
                     {data: 'product_last_mile', name: 'product_last_mile', orderable: false, searchable: false},

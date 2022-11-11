@@ -8,15 +8,15 @@ use DataTables;
 use Validation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,OrderTrait};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController,ProductController};
-use App\Models\{Product,ProductVariant,ProductTranslation,LongTermServiceProductAddons,ProductImage, LongTermServiceProducts, ClientPreference,LongTermServicePeriod};
+use App\Models\{Product,ProductVariant,ProductTranslation,LongTermServiceProductAddons,ProductImage, LongTermServiceProducts, ClientPreference,LongTermServicePeriod,OrderLongTermServiceSchedule};
 class LongTermServiceController extends BaseController
 {
-    use ApiResponser;
+    use ApiResponser,OrderTrait;
     /**
      * Display a listing of the resource.
      *
@@ -25,7 +25,7 @@ class LongTermServiceController extends BaseController
     public function index(Request $request,$domain = '',$vendor_id)
     {
         //echo $vendor_id;
-        $LongTermService = Product::with('primary','LongTermProducts.product','media.image','variant')->where(['vendor_id'=>$vendor_id,'is_long_term_service'=>'1'])->get();
+        $LongTermService = Product::with('primary','LongTermProducts','ServicePeriod','media.image','variant')->where(['vendor_id'=>$vendor_id,'is_long_term_service'=>'1'])->get();
         //pr($LongTermService->toArray());
         return Datatables::of($LongTermService)
         ->addIndexColumn()
@@ -52,13 +52,17 @@ class LongTermServiceController extends BaseController
         })
         ->addColumn('time_period', function ($LongTermService)  {
             $title= '';
-            if($LongTermService->service_period=='days'){
-                $title= __('Daily');
-            }elseif($LongTermService->service_period == 'months'){
-                $title= __('Monthly');
-            }else{
-                $title= __('Weekly');
+            if($LongTermService->ServicePeriod){
+                foreach($LongTermService->ServicePeriod->pluck('service_period') as $key=> $period){
+                    if($key ==0){
+                        $title= config('constants.Period.'.$period);
+                    }else{
+                        $title= $title.','. config('constants.Period.'.$period);
+                    }
+                }
+                
             }
+           
             return $title;
         })
         ->editColumn('price', function ($LongTermService)  {
@@ -206,7 +210,7 @@ class LongTermServiceController extends BaseController
      */
     public function show($id)
     {
-        //
+ 
     }
 
     /**
@@ -273,5 +277,21 @@ class LongTermServiceController extends BaseController
         }
         return $random_string;
     }
-
+    
+    /**
+     * updateBooking
+     *
+     * @param  mixed $request
+     * @return void
+     * update long term order booking  update 
+     */
+    public function updateBooking(Request $request){
+        try {
+           
+            $res = $this->updateLongTermBooking($request);
+            return response()->json(array('success' => true,'message'=>__('Long term booking successfully completed.')));
+        } catch (Exception $e) {
+             return $this->errorResponse([], $e->getMessage());
+        }
+    }
 }

@@ -2174,8 +2174,8 @@ $(document).ready(function () {
         $(".spinner-box").show();
         OrderStorage.setStorageSingle('cartData',[]);
         OrderStorage.setStorageSingle('cartProductCount',0);
-        OrderStorage.setStorageSingle('cartProductCount',0);
-        OrderStorage.setStorageSingle('cartFirstProductId','');
+        OrderStorage.setStorageSingle('LongTermServiceAdded','');
+        OrderStorage.setStorageSingle('cartFirstProductId',''); 
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -2799,7 +2799,7 @@ $(document).ready(function () {
 
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
-       
+        var addLongTerm = 0;
         if (Product_quantity <= 0) {
             Swal.fire({
                 // title: "Warning!",
@@ -2815,6 +2815,7 @@ $(document).ready(function () {
         }
     
         if($('#is_long_term_service').length > 0){
+            addLongTerm =1;
             if(product_id == OrderStorage.getStorage('cartFirstProductId')  ){
                 Swal.fire({
                     text: _language.getLanString('Product Already added in cart'),
@@ -2823,6 +2824,7 @@ $(document).ready(function () {
                 });
                 return false;
             }
+         
 
             var service_start_time  =  $('#service_start_time').val();
             if(service_start_time == '' || service_start_time== undefined){
@@ -2835,6 +2837,29 @@ $(document).ready(function () {
             }
         }
 
+       async function showRemoveCart(modelText){
+            var start_date =  $('#start_time').val();
+            var end_date =  $('#end_time').val();
+            var incremental_hrs =  $('#incremental_hrs').val();
+            var total_booking_time =  $('#total_hrs').val();
+            $("#single_vendor_order_modal_text").html(modelText);
+            $("#single_vendor_remove_cart_btn").attr({
+                'data-product_id': product_id,
+                'data-variant_id': $('#prod_variant_id').val(),
+                'data-quantity': $('.quantity_count').val(),
+                'data-vendor_id': vendor_id,
+                'data-page': 'productDetail',
+                'data-start_time':start_date,
+                'data-end_time':end_date,
+                'data-incremental_hrs':incremental_hrs,
+                'data-service_period':service_period,
+                'data-service_day':service_day,
+                'data-service_date':service_date,
+                'data-service_start_time':service_start_time,
+                'data-total_hrs':total_booking_time
+            });
+            $("#single_vendor_order_modal").modal('show');
+        }
         $(".productAddonSetOptions").each(function (index) {
             var min_select = $(this).attr("data-min");
             var max_select = $(this).attr("data-max");
@@ -2870,32 +2895,12 @@ $(document).ready(function () {
                 var service_day     =  $('#service_day').val();
                 var service_date     =  $('#service_date').val();
                 var service_start_time   =  $('#service_start_time').val();
-                if ((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1) || (OrderStorage.getStorage('LongTermServiceAdded') == 1 ) ) {
+                if (((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) || (OrderStorage.getStorage('LongTermServiceAdded') == 1 ) || (OrderStorage.getStorage('cartProductCount') > 0 &&  addLongTerm ==1 ) ) {
                     var modelText = _language.getLanString('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?');
-                    if(OrderStorage.getStorage('LongTermServiceAdded') == 1){
-                        modelText = _language.getLanString('You can only buy Single Long Term Serivce . Do you want to remove this Serivce to continue ?');
+                    if(OrderStorage.getStorage('LongTermServiceAdded') == 1 || addLongTerm ==1 ){
+                        modelText = _language.getLanString('You can only buy Single Long Term Serivce . Do you want to remove  all your cart products to continue ?');
                     }
-                    var start_date =  $('#start_time').val();
-                    var end_date =  $('#end_time').val();
-                    var incremental_hrs =  $('#incremental_hrs').val();
-                    var total_booking_time =  $('#total_hrs').val();
-                    $("#single_vendor_order_modal_text").html(modelText);
-                    $("#single_vendor_remove_cart_btn").attr({
-                        'data-product_id': product_id,
-                        'data-variant_id': $('#prod_variant_id').val(),
-                        'data-quantity': $('.quantity_count').val(),
-                        'data-vendor_id': vendor_id,
-                        'data-page': 'productDetail',
-                        'data-start_time':start_date,
-                        'data-end_time':end_date,
-                        'data-incremental_hrs':incremental_hrs,
-                        'data-service_period':service_period,
-                        'data-service_day':service_day,
-                        'data-service_date':service_date,
-                        'data-service_start_time':service_start_time,
-                        'data-total_hrs':total_booking_time
-                    });
-                    $("#single_vendor_order_modal").modal('show');
+                   showRemoveCart(modelText);
                 } else {
                     var variant_id = $('#prod_variant_id').val();
                     var start_date =  $('#start_time').val();

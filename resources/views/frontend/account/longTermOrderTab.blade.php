@@ -135,35 +135,14 @@ padding: 7px 15px;
                                                 <span
                                                     class="badge badge-info ml-2 my-1">{{ __($luxury_option_name) }}</span>
                                             @endif
-                                            @if (!empty($order->scheduled_date_time))
-                                                <span class="badge badge-success ml-2">{{ __('Scheduled') }}</span>
-                                                <span class="ml-2 text-right">
-                                                    Slots:
-                                                    @if ($clientPreference->scheduling_with_slots == 1 && $clientPreference->business_type == 'laundry')
-                                                        {{ 'Pickup: ' . date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone))) . ' ' . $order->scheduled_slot . ' | ' }}
-
-                                                        @if ($order->dropoff_scheduled_slot != '')
-                                                            {{ 'Dropoff: ' . date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_dropoff, $timezone))) . ' ' . $order->dropoff_scheduled_slot }}
-                                                        @else
-                                                            Dropoff: N/A
-                                                        @endif
-                                                    @else
-                                                        {{ $order->scheduled_slot ? dateTimeInUserTimeZone($order->scheduled_date_time, $timezone) . '. Slot: ' . $order->scheduled_slot : dateTimeInUserTimeZone($order->scheduled_date_time, $timezone) }}
-                                                    @endif
-                                                </span>
-                                            @elseif(!empty($vendor->ETA))
-                                                @if ($clientPreference->hide_order_prepare_time != 1)
-                                                    <span class="ml-2">{{ __('Your order will arrive by') }}
-                                                        {{ $vendor->ETA }}</span>
-                                                @endif
-                                            @endif
+                                            
                                             @if ($order->is_gift == '1')
                                                 <div class="gifted-icon">
                                                     <img class="p-1 align-middle"
                                                         src="{{ asset('assets/images/gifts_icon.png') }}"
                                                         alt="">
-                                                    <span class="align-middle">This
-                                                        is a gift.</span>
+                                                    <span class="align-middle">{{__('This
+                                                        is a gift.')}}</span>
                                                 </div>
                                             @endif
                                             @if ($clientData->socket_url != '')
@@ -179,6 +158,11 @@ padding: 7px 15px;
                                                         data-order_id="{{ $order->id }}">{{ __('Driver Chat') }}</a>
                                                 @endif
                                             @endif
+                                            {{-- @if ($vendor->order_status )
+                                                <div class="gifted-icon">
+                                                    <span class="align-middle text-Capitalize">{{$vendor->order_status}}</span>
+                                                </div>
+                                            @endif --}}
                                         </div>
                                     @endif
                                     <span class="left_arrow pulse"></span>

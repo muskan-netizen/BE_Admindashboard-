@@ -379,8 +379,7 @@ body .alFullMapForm .scheduled-footer .btn {
                 <span class="code-text">{{__('Select a promo code')}}</span>
             </label>
 
-                    <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.
-                        %>" id="promo_code_list_btn_cab_booking">Apply</a>
+                    <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" id="promo_code_list_btn_cab_booking">Apply</a>
                     <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" style="display:none;">Remove</a>
 
         </div>
@@ -420,79 +419,31 @@ body .alFullMapForm .scheduled-footer .btn {
                 <input type="hidden" id="stripe_token" name="stripe_token" value="">
                 <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-tollamount="<%= result.toll_fee%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
             </div>
-            <span id="show_error_of_booking" class="error"></span>
+            <!--<div class="col-6">
+                <button class="btn btn-solid w-100" id="pickup_later" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_later">Pickup Later</button>
+            </div>-->
+        </div>
+    </div>
+</script>
 
-            <div class="payment-promo-container p-2">
-                <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
-                    <span id="payment_type">
-                        <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
-                    </span>
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                </h4>
-                <div class="row">
-                    <div class="col-12">
-                    <%
-                    var payableAmout = '';
-                    if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){
-                        payableAmout = result.subscription_discount;
-                    }
-
-                    %>
-                        <input type="hidden" id="stripe_token" name="stripe_token" value="">
-                        <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-tollamount="<%= result.toll_fee%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
-                    </div>
-                    <!--<div class="col-6">
-                        <button class="btn btn-solid w-100" id="pickup_later" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_later">Pickup Later</button>
-                    </div>-->
-                </div>
-            </div>
-        </script>
-
-        <script type="text/template" id="payment_methods_template">
-            <% if(payment_options != '') { %>
-                <form method="POST" id="cab_payment_method_form">
-                    @csrf
-                    @method('POST')
-                    <% _.each(payment_options, function(payment_option, k){%>
-                        <div>
-                            <label class="radio mt-2">
-                                <span><%= payment_option.title %></span>
-                                <input type="radio" class="select_cab_payment_method" name="select_cab_payment_method" id="radio-<%= payment_option.slug %>" value="<%= payment_option.id %>" data-payment_method="<%= payment_option.id %>">
-                                <span class="checkround"></span>
-                            </label>
-                            <% if(payment_option.code == 'stripe') { %>
-                                <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper d-none">
-                                    <div class="form-control">
-                                        <label class="d-flex flex-row pt-1 pb-1 mb-0">
-                                            <div id="stripe-card-element"></div>
-                                        </label>
-                                    </div>
-                                    <span class="error text-danger" id="stripe_card_error"></span>
-                                </div>
-                            <% } %>
-                            <% if(payment_option.slug == 'yoco') { %>
-                                <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper d-none">
-                                    <div class="form-control">
-                                        <div id="yoco-card-frame">
-                                        <!-- Yoco Inline form will be added here -->
-                                        </div>
-                                    </div>
-                                    <span class="error text-danger" id="yoco_card_error"></span>
-                                </div>
-                            <% } %>
-                        </div>
-                    <% }); %>
-                    {{-- <div>
-                        <label class="radio mt-2">
-                            <span>{{__('Wallet/Card')}}</span>
-                            <input type="radio" class="select_cab_payment_method" name="select_cab_payment_method" id="radio-wallet" value="2" data-payment_method="2">
-                            <span class="checkround"></span>
-                        </label>
-                    </div> --}}
-                    <div class="modal-footer d-block text-center">
-                        <div class="row">
-                            <div class="col-sm-12 p-0 d-flex flex-fill">
-                                <button type="button" class="btn btn-solid ml-1 select_payment_option_done">{{__('Done')}}</button>
+<script type="text/template" id="payment_methods_template">
+    <% if(payment_options != '') { %>
+        <form method="POST" id="cab_payment_method_form">
+            @csrf
+            @method('POST')
+            <% _.each(payment_options, function(payment_option, k){%>
+                <div>
+                    <label class="radio mt-2">
+                        <span><%= payment_option.title %></span>
+                        <input type="radio" class="select_cab_payment_method" name="select_cab_payment_method" id="radio-<%= payment_option.slug %>" value="<%= payment_option.id %>" data-payment_method="<%= payment_option.id %>">
+                        <span class="checkround"></span>
+                    </label>
+                    <% if(payment_option.code == 'stripe') { %>
+                        <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper d-none">
+                            <div class="form-control">
+                                <label class="d-flex flex-row pt-1 pb-1 mb-0">
+                                    <div id="stripe-card-element"></div>
+                                </label>
                             </div>
                             <span class="error text-danger" id="stripe_card_error"></span>
                         </div>

@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Front;
 
-
+use App\Http\Controllers\Api\v1\VendorSubscriptionController;
+use App\Http\Controllers\Client\VendorSubscriptionController as ClientVendorSubscriptionController;
 use Log;
 use Auth;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\OrderController;
-use App\Models\{User, UserVendor, Cart,CaregoryKycDoc, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax};
+use App\Models\{User, UserVendor, Cart,CaregoryKycDoc, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, Vendor};
 
 class RazorpayGatewayController extends FrontController
 {
@@ -37,6 +38,10 @@ class RazorpayGatewayController extends FrontController
         $this->api = new Api($api_key, $api_secret_key);
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'INR';
+   
+        $this->token = base64_encode($api_key.':'.$api_secret_key);
+        $this->api_url = 'https://api.razorpay.com/v1/';
+    
     }
 
     public function razorpayPurchase(Request $request) 
@@ -198,6 +203,11 @@ class RazorpayGatewayController extends FrontController
             $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
             $returnUrl = route('user.subscription.plans');
             return $returnUrl;
+        }elseif($request->payment_from == 'vendor_subscription'){
+            $request->request->add(['payment_option_id' => 10, 'transaction_id' => $transactionId, 'amount' => $request->amount/100]);
+            $subscriptionController = new ClientVendorSubscriptionController();
+            $subscriptionController->purchaseSubscriptionPlan($request, '', $request->vendor_id,$request->subscription_id);
+            return true;
         }
         return route('order.return.success');
     }
@@ -230,4 +240,6 @@ class RazorpayGatewayController extends FrontController
             }
             return route('order.return.success');
     }
+
+
 }

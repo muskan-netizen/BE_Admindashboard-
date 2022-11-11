@@ -397,7 +397,9 @@ class CartController extends FrontController
             $oldquantity = $isnew = 0;
             $service_start_date   = '';
             $start_date  = $request->has('start_date') ? $request->start_date : null;
+            $isLongTermProduct =0;
             if( $request->has('service_start_time')){
+                $isLongTermProduct  =1;
                 $client_timezone = DB::table('clients')->first('timezone');
                 $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
                 $time = '2022-10-27 '.$request->service_start_time; /**only need time */
@@ -456,7 +458,7 @@ class CartController extends FrontController
                 }
             }
             /** delete is long term is added from cart */
-            if($isLongTermService){
+            if($isLongTermService || ($isLongTermProduct ==1) ){
                 CartProduct::where('cart_id', $cart_detail->id)->delete();
             }
 
@@ -1996,6 +1998,7 @@ class CartController extends FrontController
         }
 
         $client_preference_detail = ClientPreference::first();
+        $client_preference_detail  = $this->hideSecretKeys($client_preference_detail);
 
         $expected_vendors = [];
     //    $expected_vendors = $this->searchProductExpection($cart_details);
@@ -2049,10 +2052,13 @@ class CartController extends FrontController
             return $all_vendors;
     }
 
+    /***
+     * Fetch all delivery fee option
+     * totalRoute = number to total route witch we have send to dispatcher
+     */
 
-
-        //Fetch all delivery fee option
-    public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del='', $dispatcher_tags='')
+     
+    public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del='', $dispatcher_tags='',$totalRoute = '1')
     {
         $option = array();
         $delivery_count = 0;
@@ -2082,7 +2088,7 @@ class CartController extends FrontController
                     //Dispatcher Delivery changes and estimated delivery duration code
                     $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del, $dispatcher_tags);
                     if (!empty($deliver_response_array[0])){
-                        $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format($deliver_response_array[0]['delivery_fee'], 2, '.', ''):'0.00';
+                        $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format(($deliver_response_array[0]['delivery_fee']*$totalRoute), 2, '.', ''):'0.00';
                         $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
                         $option[] = array(
                             'type'=>'D',
