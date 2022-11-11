@@ -827,12 +827,44 @@ body.al_body_template_eight .dashboard-left {
     body.al_body_template_eight .login_img {
         border-radius: 0 0 10px 10px !important;
     }
-    
+    body.al_body_template_eight .dashboard-left {
+        min-height: auto !important;
+        height: auto;
+        width: 100% !important;
+        max-width: 100%;
+        z-index: 1;
+    }
+    body.al_body_template_eight .dashboard-right .card-box .btn-solid {
+        padding: 13px 15px;
+    }
+    body.al_body_template_eight .collection-mobile-back {
+        display: none;
+    }
+    body.al_body_template_eight .account-sidebar{display: none;}
 }
 /*-------------------mobile view css----------*/
 @media(max-width:767px){
     body.al_body_template_eight .recet-pw .login_img {
         border-radius: 10px 10px 0 0 !important;
+    }
+    body.al_body_template_eight .dashboard-left {
+        width: 100% !important;
+    }
+    body.al_body_template_eight .dashboard-left {
+        min-height: auto !important;
+        height: auto;
+    }
+    body.al_body_template_eight .box-account.box-info button {
+        font-size: 12px;
+    }
+    body.al_body_template_eight .box-account.box-info .card-box {
+        padding: 10px;
+    }
+    body.al_body_template_eight .row.my-md-3.mt-5.pt-4 {
+        margin-top: 0 !important;
+    }
+    body.al_body_template_eight .dashboard-left .collection-mobile-back {
+        display: none;
     }
     body.al_body_template_eight .main-signup-page {
         padding-top: 30px !important;
