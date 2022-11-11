@@ -366,7 +366,7 @@ class OrderController extends BaseController
                                         else if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
                                            // Log::info($vendor_cart_product->vendor->timeofLineOfSightDistance);
                                            // Log::info($order_vendor->order_pre_time);
-                                           $OrderVendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
+                                           //$OrderVendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
                                             if($order_vendor->order_pre_time)
                                             $order_vendor->user_to_vendor_time = $vendor_cart_product->vendor->timeofLineOfSightDistance - $order_vendor->order_pre_time;
                                         }
