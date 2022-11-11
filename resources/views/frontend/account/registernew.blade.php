@@ -42,61 +42,28 @@
     </style>
 @endsection
 @section('content')
-    <section class="wrapper-main pt-lg-3 alSectionTop d-flex align-items-center">
+    <section class="wrapper-main pt-lg-3 alSectionTop d-flex align-items-center main-signup-page">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-12 mb-lg-0 mb-3 text-center">
+            <div class="row bg_inner">
+                <div class="col-md-6 p-0">
+                    <div class="login_img">
+                        <img src="{{asset('images/template-8/login-img.png')}}" class="img-fluid">
+                    </div>
+                </div>
+                <div class="col-lg-6 pl-3">
                     <h3 class="mb-2">{{ __('New Customer') }}</h3>
-
-                    @if (session('preferences'))
-                        @if (session('preferences')->fb_login == 1 || session('preferences')->twitter_login == 1 || session('preferences')->google_login == 1 || session('preferences')->apple_login == 1)
-                            <ul class="social-links d-flex align-items-center mx-auto mb-4 mt-3">
-                                @if (session('preferences')->google_login == 1)
-                                    <li>
-                                        <a href="{{ url('auth/google') }}">
-                                            <img src="{{ asset('front-assets/images/google.svg') }}">
-                                        </a>
-                                    </li>
-                                @endif
-                                @if (session('preferences')->fb_login == 1)
-                                    <li>
-                                        <a href="{{ url('auth/facebook') }}">
-                                            <img src="{{ asset('front-assets/images/facebook.svg') }}">
-                                        </a>
-                                    </li>
-                                @endif
-                                @if (session('preferences')->twitter_login)
-                                    <li>
-                                        <a href="{{ url('auth/twitter') }}">
-                                            <img src="{{ asset('front-assets/images/twitter.svg') }}">
-                                        </a>
-                                    </li>
-                                @endif
-                                @if (session('preferences')->apple_login == 1)
-                                    <li>
-                                        <a href="javascript::void(0);">
-                                            <img src="{{ asset('front-assets/images/apple.svg') }}">
-                                        </a>
-                                    </li>
-                                @endif
-                            </ul>
-                            <div class="divider_line m-auto">
-                                <span>{{ __('OR') }}</span>
-                            </div>
-                        @endif
-                    @endif
                     <div class="row mt-3">
                         @if (session('preferences'))
-                        <div class="{{ (session('preferences')->concise_signup == 1)? 'mx-auto':'offset-xl-2 col-xl-8 text-left' }}">
+                        <div class="{{ (session('preferences')->concise_signup == 1)? 'mx-auto':'col-xl-12 text-left' }}">
                             <form name="register" id="register" enctype="multipart/form-data" action="{{ route('customer.register') }}"
-                                class="px-lg-4" method="post"> @csrf
+                                 method="post"> @csrf
                                 @if(session('preferences')->concise_signup == 1)
                                 <input type="hidden" name="name" value="guest">
                                 <input type="hidden" name="email" id="guest-email" value="">
                                 @endif
                                 <div class="row form-group mb-0 {{ (session('preferences')->concise_signup == 1)? 'mx-auto':'' }}">
                                     @if(session('preferences')->concise_signup == 0)
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-12">
                                         <label for="">{{ __('Full Name') }}</label>
                                         <input type="text" class="form-control @error('name') is-invalid @enderror"
                                             placeholder="{{ __('Full Name') }}" name="name" value="{{ old('name') }}">
@@ -107,7 +74,7 @@
                                         @enderror
                                     </div>
                                     @endif
-                                    <div class="col-md-{{ (session('preferences')->concise_signup == 1)? '12 text-left':'6' }} mb-3">
+                                    <div class="col-md-{{ (session('preferences')->concise_signup == 1)? '12 text-left':'12' }} ">
                                         <label for="">{{ __('Phone No.') }}</label>
                                         <input type="tel"
                                             class="form-control @error('phone_number') is-invalid @enderror"
@@ -127,7 +94,7 @@
                                 </div>
                                 <div class="row form-group mb-0 {{ (session('preferences')->concise_signup == 1)? 'mx-auto':'' }}">
                                     @if(session('preferences')->concise_signup == 0)
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-12">
                                         <label for="">{{ __('Email') }}</label>
                                         <input type="email" class="form-control @error('email') is-invalid @enderror"
                                             placeholder="{{ __('Email') }}" name="email" value="{{ old('email') }}">
@@ -138,7 +105,7 @@
                                         @enderror
                                     </div>
                                     @endif
-                                    <div class="col-md-{{ (session('preferences')->concise_signup == 1)? '12 text-left':'6' }} mb-3">
+                                    <div class="col-md-{{ (session('preferences')->concise_signup == 1)? '12 text-left':'12' }}">
                                         <label for="">{{ __('Password') }}</label>
                                         <div class="position-relative">
                                             <input type="password" id="password-field"
@@ -310,6 +277,44 @@
                         </div>
                         @endif
                     </div>
+                    
+                    @if (session('preferences'))
+                        @if (session('preferences')->fb_login == 1 || session('preferences')->twitter_login == 1 || session('preferences')->google_login == 1 || session('preferences')->apple_login == 1)
+                            <div class="divider_line mt-3">
+                                <span>{{ __('OR') }}</span>
+                            </div>    
+                            <ul class="social-media-links d-flex align-items-center justify-content-center mb-4 mt-3">
+                                @if (session('preferences')->google_login == 1)
+                                    <li>
+                                        <a href="{{ url('auth/google') }}">
+                                            <img src="{{ asset('front-assets/images/google.svg') }}">
+                                        </a>
+                                    </li>
+                                @endif
+                                @if (session('preferences')->fb_login == 1)
+                                    <li>
+                                        <a href="{{ url('auth/facebook') }}">
+                                            <img src="{{ asset('front-assets/images/facebook.svg') }}">
+                                        </a>
+                                    </li>
+                                @endif
+                                @if (session('preferences')->twitter_login)
+                                    <li>
+                                        <a href="{{ url('auth/twitter') }}">
+                                            <img src="{{ asset('front-assets/images/twitter.svg') }}">
+                                        </a>
+                                    </li>
+                                @endif
+                                @if (session('preferences')->apple_login == 1)
+                                    <li>
+                                        <a href="javascript::void(0);">
+                                            <img src="{{ asset('front-assets/images/apple.svg') }}">
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
+                        @endif
+                    @endif
                 </div>
             </div>
         </div>

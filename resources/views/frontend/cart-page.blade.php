@@ -45,9 +45,15 @@
 
         <div class="row">
             <div class="col-12">
-                <div class="page-title-box">
-                    <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
+            <div class="row mb-md-1 alFourTemplateCartButtons mt-2 pt-2">
+                <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
+                    <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
+                        {{__('Continue Shopping')}}</a>
                 </div>
+            </div>
+                <!-- <div class="page-title-box">
+                    <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
+                </div> -->
                 <div class="cart_response mt-3 mb-3 d-none">
                     <div class="alert p-0" role="alert"></div>
                 </div>
@@ -62,12 +68,6 @@
 <div class="row">
 
     <div class="col-lg-8" id="cart_template">
-    <div class="row mb-md-1 alFourTemplateCartButtons mt-2 pt-2 border-top">
-                <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
-                    <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
-                        {{__('Continue Shopping')}}</a>
-                </div>
-            </div>
         <div class="shoping_cart px-3 py-2">
             <div class="row border-bottom">
                         <div class="col-6">

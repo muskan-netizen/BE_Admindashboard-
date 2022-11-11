@@ -8,47 +8,20 @@
 @php
 $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 @endphp
-<section class="wrapper-main py-lg-5 py-3 d-flex align-items-center">
+<section class="wrapper-main py-lg-5 py-3 d-flex align-items-center main-login-page">
     <div class="container">
         <div class="row align-items-center h-100" id="login-section">
-            <div class="col-lg-6 mb-lg-0 mb-3 text-center pb-sm-0 {{(@$getAdditionalPreference['is_phone_signup'] == 1) ? 'offset-lg-3' : 'border-right' }}">
-                <h3 class="mb-2">{{ __('Login To Your Account') }}</h3>
-                @if(session('preferences'))
-                @if(@session('preferences')->fb_login == 1 || @session('preferences')->twitter_login == 1 || @session('preferences')->google_login == 1 || @session('preferences')->apple_login == 1)
-                <ul class="social-links d-flex align-items-center mx-auto mb-4 mt-3">
-                    @if(@session('preferences')->google_login == 1)
-                    <li>
-                        <a href="{{url('auth/google')}}">
-                            <img src="{{asset('front-assets/images/google.svg')}}" alt="">
-                        </a>
-                    </li>
-                    @endif
-                     @if(@session('preferences')->fb_login == 1)
-                    <li>
-                        <a href="{{url('auth/facebook')}}"><img src="{{asset('front-assets/images/facebook.svg')}}" alt=""></a>
-                    </li>
-                    @endif
-                    @if(@session('preferences')->twitter_login)
-                    <li>
-                        <a href="{{url('auth/twitter')}}"><img src="{{asset('front-assets/images/twitter.svg')}}" alt=""></a>
-                    </li>
-                    @endif
-                    @if(@session('preferences')->apple_login == 1)
-                    <li>
-                        <a href="javascript::void(0);">
-                            <img src="{{asset('front-assets/images/apple.svg')}}">
-                        </a>
-                    </li>
-                    @endif
-                </ul>
-                <div class="divider_line m-auto">
-                    <span>OR</span>
+            <div class="col-md-6 p-0">
+                <div class="login_img">
+                    <img src="{{asset('images/template-8/login-img.png')}}" class="img-fluid">
                 </div>
-                @endif
-                @endif
+            </div>
+            <div class="col-lg-6 pl-3 mb-lg-0 mb-3 text-center pb-sm-0 {{(@$getAdditionalPreference['is_phone_signup'] == 1) ? 'offset-lg-3' : 'border-right' }}">
+                <h3 class="mb-2">{{ __('Login To Your Account') }}</h3>
+               
                 <div class="row mt-3 arabic-language">
-                    <div class="offset-xl-2 col-xl-8 text-left">
-                        {{-- <form name="login" id="login" action="{{route('customer.loginData')}}"  class="px-lg-4" method="post">
+                    <div class="col-xl-12 text-left">
+                        {{-- <form name="login" id="login" action="{{route('customer.loginData')}}" method="post">
                             @csrf
                             <div class="form-group">
                                 <label for="">{{ __('Email') }}</label>
@@ -90,7 +63,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                                 </div>
                             </div>
                         </form> --}}
-                        <form id="login-form-new" class="px-lg-4" action="">
+                        <form id="login-form-new" class="" action="">
                         @csrf
                         <input type="hidden" name="device_type" value="web">
                         <input type="hidden" name="device_token" value="web">
@@ -101,34 +74,79 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                             <div class="form-group">
                                 <input type="text" class="form-control" id="username" placeholder="{{ __('Email or Phone Number') }}" required="" name="username" value="{{ old('username')}}">
                             </div>
-                            <div class="form-group" id="password-wrapper" style="display:none; position:relative">
+                            <div class="form-group" id="password-wrapper" style="">
                                 <input id="password-field" type="password" class="form-control pr-3" name="password" placeholder="{{ __('Password') }}">
                                 <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>
-                                <a class="font-14" href="javascript:void(0)" id="send_password_reset_link" style="right:10px;">{{__('Forgot')}}</a>
+                                <!-- <a class="font-14" href="javascript:void(0)" id="send_password_reset_link" style="right:10px;">{{__('Forgot')}}</a> -->
                             </div>
+                            <div class="form-group" id="password-wrapper" style="">
+                                <a class="font-14" href="javascript:void(0)" id="send_password_reset_link" style="right:10px;">{{__('Forgot Password')}}</a>
+                                @if(@$getAdditionalPreference['is_phone_signup'] != 1)
+                                <a href="{{route('customer.register')}}" class="create_acount text-right float-right">{{ __('Create An Account') }}</a>
+                                @endif
+                            </div>
+                            <!-- @if(@$getAdditionalPreference['is_phone_signup'] != 1)
+                            <div class="col-lg-6 text-center">
+                                <h3 class="mb-md-3 mb-2">{{ __('New Customer') }}</h3>
+                                <div class="create_box">
+                                    {{-- <h6>{{ __('Create An Account') }}</h6> --}}
+                                    {{-- <p>{{ __('Sign up for a free account at our store. Registration is quick and easy. It allows you to be able to order from our shop. To start shopping click register.') }}</p> --}}
+                                    <h6>{{ __('Create a free account and join us!') }}</h6>
+                                    <a href="{{route('customer.register')}}" class="btn btn-solid mt-2">{{ __('Create An Account') }}</a>
+                                </div>
+                            </div>
+                            @endif -->
                             <div class="form-group">
                                 <span id="error-msg" class="font-14 text-danger" style="display:none"></span>
                                 <span id="success-msg" class="font-14 text-success" style="display:none"></span>
                             </div>
                             <div class="form-group">
-                                <button class="btn btn-solid w-100 login_continue_btn" type="submit">{{__('Continue')}}</button>
+                                <button class="btn btn-solid w-100 login_continue_btn mt-3" type="submit">{{__('Continue')}}</button>
                             </div>
                         </div>
                         </form>
                     </div>
+                    <div class="col-md-12">
+                        <div class="divider_line mt-3">
+                            <span>OR</span>
+                        </div>
+                    </div>
+                        <div class="col-md-12">
+                            @if(session('preferences'))
+                            @if(@session('preferences')->fb_login == 1 || @session('preferences')->twitter_login == 1 || @session('preferences')->google_login == 1 || @session('preferences')->apple_login == 1)
+                            <ul class="social-media-links d-flex align-items-center justify-content-center mb-4 mt-3">
+                                @if(@session('preferences')->google_login == 1)
+                                <li>
+                                    <a href="{{url('auth/google')}}">
+                                        <img src="{{asset('front-assets/images/google.svg')}}" alt="">
+                                    </a>
+                                </li>
+                                @endif
+                                @if(@session('preferences')->fb_login == 1)
+                                <li>
+                                    <a href="{{url('auth/facebook')}}"><img src="{{asset('front-assets/images/facebook.svg')}}" alt=""></a>
+                                </li>
+                                @endif
+                                @if(@session('preferences')->twitter_login)
+                                <li>
+                                    <a href="{{url('auth/twitter')}}"><img src="{{asset('front-assets/images/twitter.svg')}}" alt=""></a>
+                                </li>
+                                @endif
+                                @if(@session('preferences')->apple_login == 1)
+                                <li>
+                                    <a href="javascript::void(0);">
+                                        <img src="{{asset('front-assets/images/apple.svg')}}">
+                                    </a>
+                                </li>
+                                @endif
+                            </ul>
+                            @endif
+                            @endif
+                        </div>
                 </div>
+
             </div>
-            @if(@$getAdditionalPreference['is_phone_signup'] != 1)
-            <div class="col-lg-6 text-center">
-                <h3 class="mb-md-3 mb-2">{{ __('New Customer') }}</h3>
-                <div class="create_box">
-                    {{-- <h6>{{ __('Create An Account') }}</h6> --}}
-                    {{-- <p>{{ __('Sign up for a free account at our store. Registration is quick and easy. It allows you to be able to order from our shop. To start shopping click register.') }}</p> --}}
-                    <h6>{{ __('Create a free account and join us!') }}</h6>
-                    <a href="{{route('customer.register')}}" class="btn btn-solid mt-2">{{ __('Create An Account') }}</a>
-                </div>
-            </div>
-            @endif
+           
         </div>
         <div class="row justify-content-center" id="verify-phone-section" style="display:none">
             <div class="verify-login-code">
