@@ -16,7 +16,7 @@ use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditio
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
-use Log;
+
 
 // Returns the values of the additional preferences.
 if (!function_exists('checkColumnExists')) {
