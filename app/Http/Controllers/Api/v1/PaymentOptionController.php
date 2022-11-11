@@ -650,6 +650,7 @@ class PaymentOptionController extends BaseController{
                     $payment_exists = Payment::where('transaction_id', $transaction_id)->first();
                     if (!$payment_exists) {
                         $this->csavePaymentOrderPickup($request,$order);
+                        $url = OrderVendor::where('order_id',$order->id)->select('dispatch_traking_url')->first();
                     }
                 }
            } elseif($request->action == 'wallet'){
@@ -662,7 +663,7 @@ class PaymentOptionController extends BaseController{
                 $request->request->add(['payment_option_id' => '30']);
                  $this->savePaymentSubscriptionDetails($request);
             }
-            return $this->successResponse('', __('Payment completed successfully'), 200);
+            return $this->successResponse(['dispatch_traking_url'=>$url->dispatch_traking_url??''], __('Payment completed successfully'), 200);
         }
         catch(Exception $ex){
             return $this->errorResponse($ex->getMessage(), 400);
@@ -723,9 +724,11 @@ class PaymentOptionController extends BaseController{
 
     public function csavePaymentOrderPickup(Request $request,$order)
     {
-        $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 30, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransID]);
+       // $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 30, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransID]);
+        $orderDeatils = array('order_number'=> $order->order_number, 'payment_option_id' => 30, 'amount' => $order->payable_amount, 'transaction_id' => $request->transaction_id);
+
         $plaseOrderForPickup = new PickupDeliveryController();
-        $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+        $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($orderDeatils);
         return true;
     }
 
