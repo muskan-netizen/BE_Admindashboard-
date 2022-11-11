@@ -21,6 +21,7 @@ use App\Models\Cart;
 use App\Models\EmailTemplate;
 use App\Models\UserAddress;
 use App\Models\{Product, OrderProductRating, ClientPreference,UserDevice, NotificationTemplate};
+use Twilio\Rest\Client as TwilioClient;
 
 trait ApiResponser
 {
