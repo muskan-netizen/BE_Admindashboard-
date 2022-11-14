@@ -528,7 +528,6 @@ class CartController extends BaseController
         $deliver_fee_charges = 0;
         $total_markup_fee_tax = 0;
         $total_taxable_amount = 0;
-  
         $preferences = ClientPreference::first();
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         if (!$cart) {
@@ -755,7 +754,7 @@ class CartController extends BaseController
                         $proSum = $proSum + $quantity_price + $quantity_container_charges;
                         $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                         $total_container_charges = $total_container_charges + $quantity_container_charges;
-                        $prod->luxury_option_id= $prod->luxury_option_id;
+                        $prod->luxury_option_id= $prod->luxury_option_id??'';
                         if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
                             $prod->cartImg = $prod->pvariant->image->imagedata;
                         } else {
@@ -1228,7 +1227,7 @@ class CartController extends BaseController
         $total_subscription_discount = $total_subscription_discount + $subscription_discount;
 
         $cart_product_luxury_id = CartProduct::where('cart_id', $cartID)->select('luxury_option_id', 'vendor_id','additional_increments_hrs_min')->first();
-        if ($cart_product_luxury_id) {
+        if (isset($cart_product_luxury_id) && isset($cart_product_luxury_id->luxury_option_id)) {
             if ($cart_product_luxury_id->luxury_option_id == 2 || $cart_product_luxury_id->luxury_option_id == 3) {
                 $vendor_address = Vendor::where('id', $cart_product_luxury_id->vendor_id)->select('address')->first();
                 $cart->address = $vendor_address->address;
@@ -1376,7 +1375,7 @@ class CartController extends BaseController
             ['label' => '15%', 'value' => decimal_format(0.15 * $cal_tip_value_total)]
         );
         
-    if(!empty($cart_product_luxury_id) && $cart_product_luxury_id->luxury_option_id=='4'){
+    if (isset($cart_product_luxury_id) && isset($cart_product_luxury_id->luxury_option_id) && $cart_product_luxury_id->luxury_option_id ==4) {
     $additional_price=($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min);
     $cart->total_payable_amount= number_format((float)$cart->total_payable_amount+$additional_price, 2, '.', '');
         $cart->additional_price=$additional_price;

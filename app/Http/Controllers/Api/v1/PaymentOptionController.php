@@ -223,6 +223,11 @@ class PaymentOptionController extends BaseController{
         return $gateway->createHashApp($request);
     }
 
+    public function postPaymentVia_mvodafone(Request $request){
+        $gateway = new MvodafoneController();
+        return $gateway->createPayLinkApp($request);
+    }
+
     public function postPaymentVia_toyyibpay(Request $request){ 
 
         //for getting server main url from header        
@@ -248,10 +253,6 @@ class PaymentOptionController extends BaseController{
         return $gateway->order($request);
     }
 
-    public function postPaymentVia_mvodafone(Request $request){
-        $gateway = new MvodafoneController();
-        return $gateway->createPayLinkApp($request);
-    }
     public function postPaymentVia_openpay(Request $request){
         $gateway = new OpenpayPaymentController();
         return $gateway->beforePayment($request);

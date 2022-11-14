@@ -9,9 +9,12 @@ use Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed};
+use Carbon\Carbon;
+use App\Http\Traits\ProductActionTrait;
 class ProductController extends FrontController{
     private $field_status = 2;
+    use ProductActionTrait;
 
     public function __construct()
     {
@@ -87,7 +90,11 @@ class ProductController extends FrontController{
 
 
         $p_id = $product->id;
+        if($this->checkTemplateForAction(8)){
+            $this->RecentView($p_id);
+        }
         
+
         $product = Product::with([
             'variant' => function ($sel) {
                 $sel->groupBy('product_id');
@@ -283,6 +290,7 @@ class ProductController extends FrontController{
             }else{
                 $product_page = "product";
             }
+          
             return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference]);
 
         }

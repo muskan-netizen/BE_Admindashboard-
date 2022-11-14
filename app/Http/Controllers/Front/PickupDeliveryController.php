@@ -51,18 +51,31 @@ class PickupDeliveryController extends FrontController{
     }
 
     public function getOrderTrackingDetails(Request $request, $domain = ''){
-
-       $order = OrderVendor::where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
-   
+        
+        $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
+       
        $response = Http::get($request->new_dispatch_traking_url);
 
         if(count($order) > 0) {
             if($response->status() == 200){
-                if(($response['agent_location'] != '') && ($order['dispatcher_status'] === __('Hold on! We are looking for drivers nearby!'))){
-                    //$order['dispatcher_status'] = __('Hold on! We are looking for drivers nearby!');
-                    $order['dispatcher_status'] = __('Your driver has been assigned!');
-                 }
-                // dd($order->dispatcher_status);
+                if(($order['dispatcher_status'] === __('Hold on! We are looking for drivers nearby!'))){
+                    if($order['order_detail']['scheduled_date_time']){ //  show scheduled ride
+                        $user = Auth::user();
+                        if(empty($user->timezone))
+                        {
+                            $client_timezone = DB::table('clients')->first('timezone'); 
+                            $user->timezone = $client_timezone->timezone ?? $user->timezone;
+                        }     
+                        $date = Carbon::parse($order['order_detail']['scheduled_date_time'], 'UTC');
+                        $date->setTimezone( $user->timezone);
+                        $schudelDate =  $date->format('d M ,y H:i A');; //$date->isoFormat('d.m.Y, H:i A');
+                       //date("F j, Y, g:i a"); //dateTimeInUserTimeZone($order['order_detail']['scheduled_date_time'], $user->timezone) 
+                        $order['dispatcher_status'] = __('You have successfully scheduled your ride for:') . $schudelDate   ;
+                    }
+                    if ($response['agent_location'] != ''){
+                        $order['dispatcher_status'] = __('Your driver has been assigned!');
+                    }
+                }
                 $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order['order_id'] ,'vendor_id' =>$order['vendor_id'] ])->latest()->first();
                 $order_driver_rating = OrderDriverRating::where('order_id', $request->order_id)->first();
                 $order['dispatcher_status_type']=  $type ?  $type->type :1;
@@ -426,8 +439,9 @@ class PickupDeliveryController extends FrontController{
     */
      public function createOrder(Request $request){
          //pr($request->all());
-        DB::beginTransaction();
+       
         try {
+            DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
             {
                 $timezone = $request->time_zone;
