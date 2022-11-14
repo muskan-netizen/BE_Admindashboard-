@@ -140,7 +140,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                                                 name="all_vendor_id" id="all-vendor_check"></th>
                                                     <th>{{ __('Icon') }}</th>
                                                     <th>{{ __('Name') }}</th>
-                                                    <th>{{ _('Status') }}</th>
+                                                    <th>{{ __('Status') }}</th>
                                                     <th>{{ __('Address') }}</th>
                                                     <th>{{ __('Offers') }}</th>
                                                     <th class="text-center">{{ __('Can Add') }} <br> {{ __('Category') }}</th>
