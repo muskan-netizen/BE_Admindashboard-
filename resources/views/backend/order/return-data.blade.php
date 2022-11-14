@@ -14,8 +14,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if(isset($orders[$status]) && count($orders[$status]))    
-                    @foreach ($orders[$status] as $order)
+                   
+                    @if(isset($orders) && count($orders))    
+                    @foreach ($orders as $order)
                     <tr data-id="{{ $order->id }}" class="show-return-product-modal"  data-status="{{$status}}">
                         <td>
                             #{{$order->order->order_number??''}}
