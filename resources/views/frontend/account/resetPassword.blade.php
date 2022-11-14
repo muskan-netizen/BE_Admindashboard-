@@ -63,83 +63,40 @@
 @endsection
 @section('content')
 
-<section class="register-page section-b-space main-signup-page mt-5 pt-5 pb-0 recet-pw">
+<section class="register-page section-b-space">
     <div class="container">
-        <div class="row bg_inner">
-                <div class="col-md-6 p-0">
-                    <div class="login_img">
-                        <img src="{{asset('images/template-8/login-img.png')}}" class="img-fluid">
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="alert alert-success" role="alert" style="display:none;"></div>
-                        <!-- <div class="card-header">{{__('Reset Password')}}</div> -->
-                        <h3 class="mt-3 mb-2 pl-3">{{__('Reset Password')}}</h3>
-                            <div class="card-body pt-0 pb-0">
-                                <form method="POST" id="reset_password_form">
-                                @csrf
-                                <input type="hidden" name="token" value="{{ $token }}">
-                                <div class="form-group row">
-                                    <label for="password" class="col-md-12 col-form-label">{{__('Password')}}</label>
-                                    <div class="col-md-12">
-                                        <input id="password" placeholder="Password" type="password" class="form-control" name="password" autocomplete="new-password" id="password">
-                                        <span class="invalid-feedback" role="alert" id="password_err"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="password-confirm" class="col-md-12 col-form-label">{{__('Confirm Password')}}</label>
-                                    <div class="col-md-12">
-                                        <input type="password" placeholder="Confirm Password" class="form-control" name="password_confirmation" autocomplete="new-password" id="password_confirmation">
-                                        <span class="invalid-feedback" role="alert" id="password_confirmation_err"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group row mb-0">
-                                <div class="col-md-12">
-                                        <button type="button" class="btn btn-solid w-100 login_continue_btn mt-3" id="reset_password_btn">{{__('Reset Password')}}</button>
-                                    </div>
-                                </div>
-                            </form>
-                            @if (session('preferences'))
-                        @if (session('preferences')->fb_login == 1 || session('preferences')->twitter_login == 1 || session('preferences')->google_login == 1 || session('preferences')->apple_login == 1)
-                            <div class="divider_line mt-3">
-                                <span>{{ __('OR') }}</span>
-                            </div>    
-                            <ul class="social-media-links d-flex align-items-center justify-content-center mb-4 mt-3">
-                                @if (session('preferences')->google_login == 1)
-                                    <li>
-                                        <a href="{{ url('auth/google') }}">
-                                            <img src="{{ asset('front-assets/images/google.svg') }}">
-                                        </a>
-                                    </li>
-                                @endif
-                                @if (session('preferences')->fb_login == 1)
-                                    <li>
-                                        <a href="{{ url('auth/facebook') }}">
-                                            <img src="{{ asset('front-assets/images/facebook.svg') }}">
-                                        </a>
-                                    </li>
-                                @endif
-                                @if (session('preferences')->twitter_login)
-                                    <li>
-                                        <a href="{{ url('auth/twitter') }}">
-                                            <img src="{{ asset('front-assets/images/twitter.svg') }}">
-                                        </a>
-                                    </li>
-                                @endif
-                                @if (session('preferences')->apple_login == 1)
-                                    <li>
-                                        <a href="javascript::void(0);">
-                                            <img src="{{ asset('front-assets/images/apple.svg') }}">
-                                        </a>
-                                    </li>
-                                @endif
-                            </ul>
-                        @endif
-                    @endif
+     <div class="row justify-content-center">
+         <div class="col-md-8">
+            <div class="card">
+                <div class="alert alert-success" role="alert" style="display:none;"></div>
+                 <div class="card-header">{{__('Reset Password')}}</div>
+                      <div class="card-body">
+                        <form method="POST" id="reset_password_form">
+                           @csrf
+                        <input type="hidden" name="token" value="{{ $token }}">
+                        <div class="form-group row">
+                            <label for="password" class="col-md-4 col-form-label text-md-right">{{__('Password')}}</label>
+                            <div class="col-md-6">
+                                <input id="password" type="password" class="form-control" name="password" autocomplete="new-password" id="password">
+                                <span class="invalid-feedback" role="alert" id="password_err"></span>
+                            </div>
                         </div>
-                    </div>
+                        <div class="form-group row">
+                            <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{__('Confirm Password')}}</label>
+                            <div class="col-md-6">
+                                <input type="password" class="form-control" name="password_confirmation" autocomplete="new-password" id="password_confirmation">
+                                <span class="invalid-feedback" role="alert" id="password_confirmation_err"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row mb-0">
+                           <div class="col-md-6 offset-md-4">
+                                <button type="button" class="btn btn-primary" id="reset_password_btn">{{__('Reset Password')}}</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
+            </div>
+        </div>
     </div>
 </div>
 </section>
