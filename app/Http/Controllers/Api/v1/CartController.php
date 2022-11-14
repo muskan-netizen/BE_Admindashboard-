@@ -245,7 +245,6 @@ class CartController extends BaseController
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
             }
-
             if ($cart_detail->id > 0) {
                 $oldquantity = $isnew = 0;
                 $cart_product_detail = [
@@ -1377,7 +1376,7 @@ class CartController extends BaseController
             ['label' => '15%', 'value' => decimal_format(0.15 * $cal_tip_value_total)]
         );
         
-    if($cart_product_luxury_id->luxury_option_id=='4'){
+    if(!empty($cart_product_luxury_id) && $cart_product_luxury_id->luxury_option_id=='4'){
     $additional_price=($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min);
     $cart->total_payable_amount= number_format((float)$cart->total_payable_amount+$additional_price, 2, '.', '');
         $cart->additional_price=$additional_price;
