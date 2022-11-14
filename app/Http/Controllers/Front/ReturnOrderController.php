@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\Web\OrderProductRatingRequest;
 use App\Http\Requests\Web\OrderProductReturnRequest;
-use App\Models\{Client, ClientPreference, EmailTemplate, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, User, UserDevice, UserVendor};
+use App\Models\{Client, ClientPreference, EmailTemplate, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, User, UserDevice, UserVendor, OrderCancelRequest};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
 use App\Models\Client as CP;
@@ -297,7 +297,7 @@ class ReturnOrderController extends FrontController{
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function vendorOrderForCancel(Request $request, $domain = '')
+    public function z(Request $request, $domain = '')
     {
 
         DB::beginTransaction();
@@ -413,5 +413,17 @@ class ReturnOrderController extends FrontController{
                 'message' => $e->getMessage()
             ]);
         }
+    }
+
+    public function vendorOrderForCancelReq(Request $request){
+        $reject_reason = urldecode($request->reject_reason);
+
+        $order_cancel_request = new OrderCancelRequest();
+        $order_cancel_request->order_id = $request->order_id;
+        $order_cancel_request->order_vendor_id = $request->order_vendor_id;
+        // $order_cancel_request->vendor_id = $checkiftokenExist->vendor_id;
+        $order_cancel_request->reject_reason = $reject_reason;
+        $order_cancel_request->status = 0;
+        $order_cancel_request->save();
     }
 }

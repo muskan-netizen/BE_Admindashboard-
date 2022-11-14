@@ -323,24 +323,28 @@
                                                                                                     target="_blank">{{ __('Details') }}</a>
                                                                                                 </li>
                                                                                             @endif
+    
                                                                                             @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
                                                                                             <?php
                                                                                             if($clientPreference->business_type == 'laundry'){
                                                                                                 $pickup_cancelling_charges = $clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges;
                                                                                             }
                                                                                         ?>
-
                                                                                             <h6 class="m-0">
                                                                                                @if ($clientPreference->business_type == 'laundry')
                                                                                                     <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
                                                                                                         {{ __('Cancel Order') }}
                                                                                                     </label>
                                                                                                 @else
-                                                                                                <label class="rating-star cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
-                                                                                                    {{ __('Cancel Order') }}
-                                                                                                </label>
+                                                                                                    <label class="rating-star cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                                        {{ __('Cancel Order') }}
+                                                                                                    </label>
                                                                                                 @endif
                                                                                             </h6>
+                                                                                            @elseif($vendor->order_status_option_id==2  && $client_preference_detail->is_cancel_order_user == 1 && $vendor->vendor->cancel_order_in_processing == 1)
+                                                                                                <label class="rating-star request_cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}" >
+                                                                                                    {{ __('Cancel Order') }}
+                                                                                                </label>
                                                                                             @endif
                                                                                             @if ($vendor->dineInTable)
                                                                                                 <li>
@@ -1870,6 +1874,31 @@
   </div>
 <!-- end cancel order -->
 
+<!-- start request cancel order -->
+<div class="modal fade vendor-order-cancel order_popop" id="cancel_request_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <div id="cancel-order-form-modal">
+            <form id="addRejectReqForm" method="post" class="text-center" enctype="multipart/form-data">
+                @csrf
+                <input_type="hidden" name="order_id" id="req_order_id">
+                <input_type="hidden" name="order_vendor_id" id="req_order_vendor_id">
+                <p id="error-case" style="color:red;"></p>
+                <label style="font-size:medium;">Enter reason for cancel the order. <small>(Optional)</small> </label>
+                <textarea class="reject_reason w-100" data-name="reject_reason" name="reject_reason" id="reject_reason" cols="50" rows="5"></textarea>
+                <button type="button" class="btn btn-info waves-effect waves-light addrejectReqSubmit">{{ __("Submit") }}</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- end request cancel order -->
+
     <!-- tip after order complete -->
     @include('frontend.modals.tip_after_order')
 
@@ -2231,6 +2260,16 @@
     });
     ////////// cancel order end
 
+    $('body').on('click', '.request_cancel_order', function (event) {
+        event.preventDefault();
+        var id = $(this).data('id');
+        var order_vendor_id = $(this).data('order_vendor_id');
+        $('#cancel_request_order').modal('show');
+        $('#req_order_id').attr('value', id);
+        $('#req_order_vendor_id').attr('value',order_vendor_id);
+        /* $('#cancel-order-form-modal').html(markup); */
+    });
+
     // Added by Ovi
     // Check Slot Availability
     $(document).on("change", ".schedule_pickup_slot_select", function()
@@ -2270,6 +2309,43 @@
         });
     });
 
+    $('.addrejectReqSubmit').on('click', function(e) {
+        e.preventDefault();
+        var reject_reason = $('#reject_reason').val();
+        var order_id = $('#req_order_id').attr("value");
+        /* var vendor_id = "{{$order_vendor->vendor_id??0}}"; */
+        var order_vendor_id = $('#req_order_vendor_id').attr("value");
+        $.ajax({
+            url: "{{ route('order.cancel.req.customer') }}",
+            type: "POST",
+            data: {
+                /* vendor_id: vendor_id, */
+                order_id: order_id,
+                reject_reason: reject_reason,
+                "_token": "{{ csrf_token() }}",
+                order_vendor_id: order_vendor_id,
+                /* pickup_cancelling_charges: pickup_cancelling_charges,
+                pickup_order_date: pickup_order_date,
+                order_number: order_number, */
+            },
+            success: function(response) {
+                console.log(response);
+                /* if (response.status == 'success') {
+                    // $(".modal .close").click();
+                    location.reload();
+                } else if (response.status == 'error') {
+                    $('#error-case').empty();
+                    $('#error-case').append(response.message);
+                } */
+            },
+            error: function(response) {
+                if (response.status == 'error') {
+                    $('#error-case').empty();
+                    $('#error-case').append(response.message);
+                }
+            }
+        });
+    });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>

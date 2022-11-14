@@ -546,6 +546,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::get('get-vendor-order-for-cancel', 'Front\ReturnOrderController@getVendorOrderForCancel')->name('get-vendor-order-for-cancel');
 		Route::post('vendor-order-for-cancel', 'Front\ReturnOrderController@vendorOrderForCancel')->name('order.cancel.customer');
 
+		Route::post('vendor-order-for-cancel-req', 'Front\ReturnOrderController@vendorOrderForCancelReq')->name('order.cancel.req.customer');
 	});
 	// Return product
 	Route::group(['prefix' => 'looking'], function () {
