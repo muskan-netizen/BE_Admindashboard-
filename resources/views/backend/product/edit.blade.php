@@ -104,7 +104,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 </label>
             </div>
         </div>
-        @if($product->vendor->need_sync_with_order != 1)
+        @if(@$product->vendor->need_sync_with_order && $product->vendor->need_sync_with_order != 1)
             <div class="col-4 text-right" style="margin: auto;">
                 <button type="submit" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> {{ __("Submit") }}</button>
             </div>

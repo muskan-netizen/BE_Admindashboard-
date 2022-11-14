@@ -805,9 +805,11 @@ class VendorController extends BaseController
         ->orderBy('product_translations.title', $ordring)
         ->groupBy('products.id')
         ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
-
-        $need_sync_with_order = Vendor::where('id', $vendor_id)->value('need_sync_with_order');
-            // pr($product->get()->toArray());
+        $need_sync_with_order = 0;
+        if(checkColumnExists('vendors', 'need_sync_with_order'))
+            $need_sync_with_order = Vendor::where('id', $vendor_id)->value('need_sync_with_order');
+        }  
+        // pr($product->get()->toArray());
         $datatable = Datatables::of($product)
             ->addIndexColumn()
             ->addColumn('single_product_check', function ($product) use ($request) {
