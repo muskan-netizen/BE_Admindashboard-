@@ -60,7 +60,8 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '44', 'path' => 'conekta/conekta-php', 'code' => 'conekta', 'title' => 'Conekta', 'off_site' => '1', 'status' => '0'),
         array('id' => '45', 'path' => 'laravel_payment/telr', 'code' => 'telr', 'title' => 'Telr', 'off_site' => '1', 'status' => '0'),
         array('id' => '46', 'path' => '', 'code' => 'mastercard', 'title' => 'Mastercard', 'off_site' => '1', 'status' => '0'),
-        array('id' => '47', 'path' => 'khalti/khalti', 'code' => 'khalti', 'title' => 'Khalti', 'off_site' => '1', 'status' => '0')
+        array('id' => '47', 'path' => 'khalti/khalti', 'code' => 'khalti', 'title' => 'Khalti', 'off_site' => '1', 'status' => '0'),
+        array('id' => '48', 'path' => '', 'code' => 'mtn_momo', 'title' => 'Mtn Momo', 'off_site' => '1', 'status' => '0')
       );
 
       if($option_count == 0)

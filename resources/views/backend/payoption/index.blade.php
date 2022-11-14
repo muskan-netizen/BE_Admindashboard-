@@ -1009,6 +1009,8 @@
                                     <input type="text" name="service_type" id="service_type" class="form-control" value="{{$service_type}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
+
+                           
                         </div>
                     </div>
                     @endif
@@ -1083,6 +1085,31 @@
                                     <label for="khalti_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
                                     <input type="password" name="khalti_secret_key" id="khalti_secret_key" class="form-control" value="{{$api_secret_key}}" @if($opt->status == 1) required @endif>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'mtn_momo') )
+                    <div class="mt-2" id="mtn_momo_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="company_token" class="mr-3">{{ __("Subscription Key") }}</label>
+                                    <input type="text" name="subscription_key" id="subscription_key" class="form-control" value="{{$company_token}}" @if($opt->status == 1) required @endif>
+                                    <p id="subscription_key_error"></p>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="reference_id" class="mr-3">{{ __("Reference Id") }}</label>
+                                    <input type="text" name="reference_id" id="reference_id" class="form-control" value="{{$service_type}}" @if($opt->status == 1) required @endif>
+                                    <p id="reference_id_error"></p>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-2 mx-auto">
+                                <a class="btn btn-primary" id="generate_mtn_momo_api_key" href="javascript:void(0)">Generate Api Key</a>
                             </div>
                         </div>
                     </div>
@@ -1314,5 +1341,36 @@
             $("#" + code + "_payout_fields_wrapper").find('input').removeAttr('required');
         }
     });
+
+    
+
+    $( "#mtn_momo_fields_wrapper" ).delegate( "#generate_mtn_momo_api_key", "click", function() {
+        var subscription_key    = $("#subscription_key").val();
+        var reference_id        = $("#reference_id").val();
+        if(subscription_key == ''){
+            $("#subscription_key_error").empty();
+            $("#reference_id_error").empty();
+            $("#subscription_key_error").html('<p>Please enter subscription key</p>');
+        }else if(reference_id == ''){
+            $("#subscription_key_error").empty();
+            $("#reference_id_error").empty();
+            $("#reference_id_error").html('<p>Please enter reference id key</p>');
+        }else{
+            $("#subscription_key_error").empty();
+            $("#reference_id_error").empty();
+            console.log('OK');
+
+            $.ajax({
+               type:'POST',
+               url:"{{ route('payoption.mtn_momo_api_key') }}",
+               data: {'_token': "{{ csrf_token() }}",'subscription_key':subscription_key,'reference_id':reference_id},
+               success:function(respones) {
+                  var obj = jQuery.parseJSON(respones);
+                  console.log(obj.status);
+               }
+            });
+        }
+    });
+
 </script>
 @endsection

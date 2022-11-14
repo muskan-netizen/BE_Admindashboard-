@@ -7,6 +7,7 @@ use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Traits\ToasterResponser;
+use App\Http\Traits\MtnMomoPaymentManager;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
@@ -16,6 +17,7 @@ use App\Models\{Client, ClientPreference, PaymentOption, PayoutOption};
 class PaymentOptionController extends BaseController
 {
     use ToasterResponser;
+    use MtnMomoPaymentManager;
     private $folderName = 'payoption';
 
     public function __construct()
@@ -31,7 +33,7 @@ class PaymentOptionController extends BaseController
     public function index()
     {
         
-        $payment_codes = array('cod', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti');
+        $payment_codes = array('cod', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti','mtn_momo');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
 
         $payout_codes = array('cash', 'stripe', 'pagarme','razorpay');
@@ -741,4 +743,24 @@ class PaymentOptionController extends BaseController
         }
         return redirect('client/category')->with('success', 'Brand order updated successfully!');
     }
+
+    /**
+     *  Generate Mtn momo payment gateway api key
+     * 
+     */
+
+     public function MtnmomoApiKey(Request $request){
+        $subscription_key   = $request->subscription_key;
+        $reference_id       = $request->reference_id;
+        $create_user        = MtnMomoPaymentManager::createApiUser($subscription_key,$reference_id);
+        $result             = json_decode($create_user,true);
+        if($result['status'] == 201){
+            $api_data        = MtnMomoPaymentManager::createApiKey($subscription_key,$reference_id);
+            return json_encode(['status'=>201,'api_key'=>$api_data['apiKey'],'message'=>'Api key generate successfully.']);
+        }else{
+            return $create_user;
+        }
+       
+
+     }
 }
