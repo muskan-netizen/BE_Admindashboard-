@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, HomeProduct, Product, WebStyling,WebStylingOption};
+use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, HomeProduct, Product, ClientPreferenceAdditional, WebStyling,WebStylingOption};
 use Illuminate\Http\Request;
 use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
@@ -142,7 +142,15 @@ class WebStylingController extends BaseController{
             if($request->has('sign_up_image')){
                 $client_preferences->signup_image = Storage::disk('s3')->put('favicon', $request->sign_up_image, 'public');
             }
-          
+
+            if($request->has('admin_sign_in_image')){
+                $admin_sign_in_image = Storage::disk('s3')->put('admin_sign_in_image', $request->admin_sign_in_image, 'public');
+                $user = Client::first();
+                ClientPreferenceAdditional::updateOrCreate(
+                ['key_name' => 'admin_signin_image'],['key_name' => 'admin_signin_image', 'key_value' => $admin_sign_in_image,'client_code'=>$user->code]
+                );
+            }
+            
             foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
                 $iconFiledName     = config('constants.VendorTypesIcon.'.$vendor_typ_key);
                 if($request->has($iconFiledName)){

@@ -120,7 +120,7 @@ class CategoryController extends BaseController
                         sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
                 $vendorData = $vendorData->whereIn('id', $ses_vendors);
             }
-            $vendorData = $vendorData->whereHas('product',function($q) use( $category_id)
+            $vendorData = $vendorData->whereHas('product',function($q) use($category_id)
             {
                 return $q->where('category_id',$category_id);
             })->where($mod_type, 1)->with('slot')->where('status', 1)->whereIn('id', $vendor_ids)->withAvg('product', 'averageRating')->paginate($limit, $page);
