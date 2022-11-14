@@ -22,7 +22,7 @@
 @php
     $user = Auth::user();
 @endphp
-<section class="section-b-space new-pages mt-5 pt-5">
+<section class="section-b-space new-pages mt-5 pt-5 custom-vender-outter">
     <div class="container custom-container">
         <div class="row">
             <div class="col-12 py-2">

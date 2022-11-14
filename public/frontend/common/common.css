@@ -579,6 +579,7 @@ body.al_body_template_eight section.section-b-space.new-pages .custom-container 
     max-width: 20%;
 }
 /*------------login page css---------*/
+
 body.al_body_template_eight .main-login-page div#login-section {
     box-shadow:0 4px 14px 0 rgb(0 0 0 / 21%);
     width: 80%;
@@ -845,11 +846,62 @@ body.al_body_template_eight .dashboard-left {
         display: none;
     }
     body.al_body_template_eight .account-sidebar{display: none;}
+    body.al_body_template_eight form#vendor_signup_form .form-row .col.mb-3 {
+        width: 20%;
+        max-width: 20%;
+        flex: 20%;
+    }
+    body.al_body_template_eight .al_details_vendor, .al_vendor_signup{padding:0 !important;}
+    body.al_body_template_eight .container.custom-container {
+        width: 90%;
+    }
+    body.al_body_template_eight .al_custom_modal.col-md-12.pt-2.border-top .col-md-4 {
+        width: 50%;
+        max-width: 50%;
+        flex: 50%;
+    }
 }
 /*-------------------mobile view css----------*/
 @media(max-width:767px){
+    body.al_body_template_eight form#vendor_signup_form .form-row .col.mb-3 {
+        width: 33%;
+        max-width: 33%;
+        flex: 33%;
+    }
+    body.al_body_template_eight .collection-product-wrapper .product-top-filter .filter-main-btn {
+        display: none;
+    }
+    body.al_body_template_eight .al_custom_modal.col-md-12.pt-2.border-top .col-md-4 {
+        width: 100%;
+        max-width: 100%;
+        flex: 100%;
+    }
+    body.al_body_template_eight .custom-vender-outter {
+        margin-top: 0 !important;
+    }
+    body.al_body_template_eight .al_details_vendor, .al_vendor_signup{padding:0 !important;}
+    body.al_body_template_eight .container.custom-container {
+        width: 90%;
+    }
+    body.al_body_template_eight section.section-b-space.new-pages .custom-container button#register_btn {
+        width: 100%;
+        max-width: 100%;
+    }
     body.al_body_template_eight .recet-pw .login_img {
         border-radius: 10px 10px 0 0 !important;
+    }
+    body.al_body_template_eight div#profile-modal {
+        z-index: 999999999;
+    }
+    body.al_body_template_eight div#add_edit_address {
+        z-index: 999999999;
+    }
+    body.al_body_template_eight form#add_edit_address_form .input-group.address-input-group input {
+        width: 80% !important;
+    }
+    body.al_body_template_eight div#add_edit_address .modal-dialog-centered {
+        border: 1px solid#ccc;
+        background-color: #fff;
     }
     body.al_body_template_eight .dashboard-left {
         width: 100% !important;
