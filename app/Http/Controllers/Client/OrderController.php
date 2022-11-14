@@ -784,7 +784,7 @@ class OrderController extends BaseController
         $orderPlacedNo = '';
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
-        // try {
+         try {
 
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
@@ -939,13 +939,13 @@ class OrderController extends BaseController
                     'message' => __('Order Status Updated Successfully.' . (($orderPlacedNo) ? ' Order No : ' . $orderPlacedNo : ''))
                 ]);
             }
-        // } catch (\Exception $e) {
-        //     DB::rollback();
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => $e->getMessage()
-        //     ]);
-        // }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
     }
     /// ******************   insert In Vendor Order Dispatch Status   ************************ ///////////////
     public function insertInVendorOrderDispatchStatus($request)
