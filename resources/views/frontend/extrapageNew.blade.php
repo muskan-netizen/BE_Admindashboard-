@@ -22,8 +22,8 @@
 @php
     $user = Auth::user();
 @endphp
-<section class="section-b-space new-pages">
-    <div class="container">
+<section class="section-b-space new-pages mt-5 pt-5">
+    <div class="container custom-container">
         <div class="row">
             <div class="col-12 py-2">
                 <h2 class="mb-3">{{$page_detail->translations->first() ? $page_detail->translations->first()->title : $page_detail->primary->title}}</h2>
@@ -39,7 +39,7 @@
 
                 <!-- vendor_form other form-->
                 <div class="row justify-content-center ">
-                    <div class="col-lg-10">
+                    <div class="col-lg-12">
                         <div class="alert alert-success" role="alert" id="success_msg" style="display: none;"></div>
                         <h2 class="mb-0">{{__('Personal Details')}}</h2>
                         {{--<div class="needs-validation vendor-signup ">
@@ -242,7 +242,7 @@
                                                 $vendor_DynamicTypeName = $vendor_typ_key == "dinein" ? 'Dine-In' : $vendor_typ_value ;
                                             @endphp
                                             @if($client_preferences->$clientVendorTypes == 1 )
-                                                <div class="col-md-2 col-4 mb-3">
+                                                <div class="col mb-3">
                                                     <label for="">{{getDynamicTypeName($vendor_DynamicTypeName)}}</label>
                                                     <div class="mt-md-1">
                                                         <input type="checkbox" data-plugin="switchery" checked data-color="#43bee1" id="{{$VendorTypesName}}" name="{{$VendorTypesName}}">
