@@ -1085,59 +1085,59 @@ class UserhomeController extends FrontController
         //pr( $products->toArray());
     }
 
-    public function longTermServiceProducts($venderIds, $langId, $currency = 'USD', $where = '', $type,$p_dim ='260/100' )
-    {
+    // public function longTermServiceProducts($venderIds, $langId, $currency = 'USD', $where = '', $type,$p_dim ='260/100' )
+    // {
        
-        $products = Product::byLongTermProductCategoryServiceType($type)->byProductLongTerm()->with([
-            'vendor','LongTermProducts.product',
-            'media' => function ($q) {
-                $q->groupBy('product_id');
-            }, 'media.image',
-            'translation' => function ($q) use ($langId) {
-                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
-            },
-            'variant' => function ($q) use ($langId) {
-                $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
-                $q->groupBy('product_id');
-            },
-        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','is_long_term_service')
-        ->whereHas('LongTermProducts.product', function($q){$q->where('is_live',1); });
+    //     $products = Product::byLongTermProductCategoryServiceType($type)->byProductLongTerm()->with([
+    //         'vendor','LongTermProducts.product',
+    //         'media' => function ($q) {
+    //             $q->groupBy('product_id');
+    //         }, 'media.image',
+    //         'translation' => function ($q) use ($langId) {
+    //             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+    //         },
+    //         'variant' => function ($q) use ($langId) {
+    //             $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+    //             $q->groupBy('product_id');
+    //         },
+    //     ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','is_long_term_service')
+    //     ->whereHas('LongTermProducts.product', function($q){$q->where('is_live',1); });
        
-        if ($where !== '') {
-            $products = $products->where($where, 1);
-        }
+    //     if ($where !== '') {
+    //         $products = $products->where($where, 1);
+    //     }
      
-       //$venderIds = ['8'];
-        $products = $products->whereHas('vendor', function($q) use ($type,$venderIds){
-                    $q->where('status',1);
-                    $q->whereIn('id',$venderIds);
-                    $q->where($type, 1);
-                })->take(10)->inRandomOrder()->get();
+    //    //$venderIds = ['8'];
+    //     $products = $products->whereHas('vendor', function($q) use ($type,$venderIds){
+    //                 $q->where('status',1);
+    //                 $q->whereIn('id',$venderIds);
+    //                 $q->where($type, 1);
+    //             })->take(10)->inRandomOrder()->get();
      
-        $return = [];
-        if (!empty($products)) {
-            foreach ($products as $key => $value) {
-                $multiply = Session::get('currencyMultiplier') ?? 1;
-                $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
-                $image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . $p_dim . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-                $return[] = array(
-                    'tag_title' => $title??'0',
-                    'image_url' => $image_url,
-                    'sku' => $value->sku,
-                    'title' => Str::limit($title, 18, '..'),
-                    'url_slug' => $value->url_slug,
-                    'averageRating' => number_format($value->averageRating, 1, '.', ''),
-                    'inquiry_only' => $value->inquiry_only,
-                    'vendor_name' => $value->vendor ? $value->vendor->name : '',
-                    'vendor' => $value->vendor,
-                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->price * $multiply,',')),
-                    'category' => ''
-                );
-            }
-        }
-       return $return;
+    //     $return = [];
+    //     if (!empty($products)) {
+    //         foreach ($products as $key => $value) {
+    //             $multiply = Session::get('currencyMultiplier') ?? 1;
+    //             $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
+    //             $image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . $p_dim . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+    //             $return[] = array(
+    //                 'tag_title' => $title??'0',
+    //                 'image_url' => $image_url,
+    //                 'sku' => $value->sku,
+    //                 'title' => Str::limit($title, 18, '..'),
+    //                 'url_slug' => $value->url_slug,
+    //                 'averageRating' => number_format($value->averageRating, 1, '.', ''),
+    //                 'inquiry_only' => $value->inquiry_only,
+    //                 'vendor_name' => $value->vendor ? $value->vendor->name : '',
+    //                 'vendor' => $value->vendor,
+    //                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->price * $multiply,',')),
+    //                 'category' => ''
+    //             );
+    //         }
+    //     }
+    //    return $return;
         
-    }
+    // }
 
     public function changePrimaryData(Request $request)
     {
