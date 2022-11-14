@@ -376,7 +376,7 @@ padding: 7px 15px;
                                                         </a>
                                                     </h6>
 
-                                                    <h6 class="m-0 d-flex justify-content-between">{{ __('Service product Quantity') }}:
+                                                    <h6 class="m-0 d-flex justify-content-between">{{ __('No. of Bookings') }}:
                                                         <span>{{ $product->longTermSchedule->service_quentity }}</span>
                                                     </h6>
 

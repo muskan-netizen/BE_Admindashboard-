@@ -301,9 +301,18 @@ class OrderController extends FrontController
         $currency_id = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
-        $order = Order::with(['products.vendor','products.pvariant.vset', 'products.pvariant.translation' => function ($q) use ($langId) {
-            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
-            $q->where('language_id', $langId);}, 'address'])->findOrfail($request->order_id);
+        $order = Order::with(['products.vendor','products.pvariant.vset', 
+                                'products.pvariant.translation' => function ($q) use ($langId) {
+                                    $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+                                    $q->where('language_id', $langId);
+                                }, 'address']);
+        if( checkColumnExists('orders','is_long_term') ){
+            $order =    $order->with(['products.LongTermService.product','products.LongTermService.product.translation_one' => function ($q) use ($langId) {
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+                            $q->where('language_id', $langId);
+                        }]);
+        }
+        $order =    $order->findOrfail($request->order_id);
         
 
         $fixedFeeNomenclatures = $this->fixedFee($langId);
@@ -319,7 +328,7 @@ class OrderController extends FrontController
             $total_other_taxes+=(float)$row;
         }
         $order->total_other_taxes_amount=$total_other_taxes;
-        // dd($order);
+        //pr($order->toArray());
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFeeNomenclatures'));
     }

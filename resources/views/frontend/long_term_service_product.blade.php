@@ -265,7 +265,7 @@
                                                     </div>
 
                                                 </div>
-                                                    @if ($LongTermProducts->long_term_product->addons->isNotEmpty())
+                                                @if ($LongTermProducts->long_term_product->addons->isNotEmpty())
                                                     <div class="border-product p-0">
                                                         <h6 class="product-title">{{ __('Addon') }}</h6>
                                                     </div>
@@ -288,55 +288,56 @@
                                                         @endforeach
 
                                                     </div>
-                                                    <input type="hidden" id="is_long_term_service" value="1">
-                                                    <div class="col-12 p-0">
-                                                        <div class='select_timing row'>
-                                                            <div class="hsProductTiming col-sm-4">
-                                                                <label class="mt-0">{{ __('Service Time') }}:<br>
-                                                                </label>
-                                                                <select class="form-control selectize-select"
-                                                                    id="service_period" name="service_period">
-                                                                    @foreach (config('constants.Period') as $key => $value)
-                                                                        @if (in_array($key, $product->ServicePeriods))
-                                                                            <option value="{{ $key }}" {{ $product_in_cart ? ($product_in_cart->service_period == $key ? 'selected' : '') : '' }}>
-                                                                                {{ __($value) }}</option>
-                                                                        @endif
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                            <div class="service_date_div col-sm-4">
-                                                                <label for="">{{ __('Date') }}</label>
-                                                                <select class="form-control selectize-select" id="service_date"
-                                                                    name="date">
-                                                                    @for ($i = 1; $i <= 28; $i++)
-                                                                        <option value="{{ $i }}" {{ $product_in_cart ? ($product_in_cart->service_date == $i ? 'selected' : '') : '' }}>{{ $i }}
-                                                                        </option>
-                                                                        @if ($i == 28)
-                                                                            <option value="0"  {{ $product_in_cart ? ($product_in_cart->service_date == 0 ? 'selected' : '') : '' }}> {{ __('Last day of month') }}
-                                                                            </option>
-                                                                        @endif
-                                                                    @endfor
-                                                                </select>
-                                                            </div>
-                                                            <div class="service_day_div col-sm-4">
-                                                                <label for="">{{ __('Day') }}</label>
-                                                                <select class="form-control selectize-select" id="service_day"
-                                                                    name="day">
-                                                                    @foreach (config('constants.weekDay') as $dayKey => $day)
-                                                                        <option value="{{ $dayKey }}"  {{ $product_in_cart ? ($product_in_cart->service_day == $dayKey ? 'selected' : '') : '' }}>{{ __($day) }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                            <div class="service_time_div col-sm-4">
-                                                                <label for="">{{ __('Time') }}</label>
-                                                                <input type="time" id="service_start_time" value="{{ $product_in_cart ? $product_in_cart->$product_in_cart  : ''  }}" class="form-control">
-                                                            </div>
-                                                            
-                                                        </div>
-
-                                                    </div>
                                                 @endif
+                                                <input type="hidden" id="is_long_term_service" value="1">
+                                                <div class="col-12 p-0">
+                                                    <div class='select_timing row'>
+                                                        <div class="hsProductTiming col-sm-4">
+                                                            <label class="mt-0">{{ __('Service Time') }}:<br>
+                                                            </label>
+                                                            <select class="form-control selectize-select"
+                                                                id="service_period" name="service_period">
+                                                                @foreach (config('constants.Period') as $key => $value)
+                                                                    @if (in_array($key, $product->ServicePeriods))
+                                                                        <option value="{{ $key }}" {{ $product_in_cart ? ($product_in_cart->service_period == $key ? 'selected' : '') : '' }}>
+                                                                            {{ __($value) }}</option>
+                                                                    @endif
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="service_date_div col-sm-4">
+                                                            <label for="">{{ __('Date') }}</label>
+                                                            <select class="form-control selectize-select" id="service_date"
+                                                                name="date">
+                                                                @for ($i = 1; $i <= 28; $i++)
+                                                                    <option value="{{ $i }}" {{ $product_in_cart ? ($product_in_cart->service_date == $i ? 'selected' : '') : '' }}>{{ $i }}
+                                                                    </option>
+                                                                    @if ($i == 28)
+                                                                        <option value="0"  {{ $product_in_cart ? ($product_in_cart->service_date == 0 ? 'selected' : '') : '' }}> {{ __('Last day of month') }}
+                                                                        </option>
+                                                                    @endif
+                                                                @endfor
+                                                            </select>
+                                                        </div>
+                                                        <div class="service_day_div col-sm-4">
+                                                            <label for="">{{ __('Day') }}</label>
+                                                            <select class="form-control selectize-select" id="service_day"
+                                                                name="day">
+                                                                @foreach (config('constants.weekDay') as $dayKey => $day)
+                                                                    <option value="{{ $dayKey }}"  {{ $product_in_cart ? ($product_in_cart->service_day == $dayKey ? 'selected' : '') : '' }}>{{ __($day) }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="service_time_div col-sm-4">
+                                                            <label for="">{{ __('Time') }}</label>
+                                                            <input type="time" id="service_start_time" value="{{ $product_in_cart ? $product_in_cart->$product_in_cart  : ''  }}" class="form-control">
+                                                        </div>
+                                                        
+                                                    </div>
+
+                                                </div>
+                                                
 
                                             </div>
                                             <div class="col-3">

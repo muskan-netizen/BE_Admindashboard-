@@ -277,7 +277,7 @@ trait cartManager{
       {
 
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
-   
+        $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
         $this->config();
         $address = [];
         $category_array = [];
@@ -337,16 +337,24 @@ trait cartManager{
             },'vendorProducts.product.productcategory'=> function ($q1)  {
                 $q1->select('id', 'type_id');
             },
-            'vendorProducts.product.ServicePeriod',
-            'vendorProducts.product.LongTermProduct',
-            'vendorProducts.LongTermProducts',
+           
             'vendorProducts.addon.option' => function ($qry) use ($langId) {
                 $qry->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
                 $qry->select('addon_options.id', 'addon_options.price', 'apt.title', 'addon_options.addon_id', 'apt.language_id');
                 $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                 // $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
-        ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        ]);
+        if($islongTermInDB ==1){
+        $cartData = $cartData->with(['vendorProducts.product.ServicePeriod',
+            'vendorProducts.product.LongTermProduct',
+            'vendorProducts.LongTermProducts.product.translation_one' => function ($q) use ($langId) {
+                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+                $q->where('language_id', $langId);
+            },
+            'vendorProducts.LongTermProducts.product']);
+        }
+        $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
  
        //Get All Taxes    
        $taxRates = $this->getTaxes();
@@ -502,7 +510,7 @@ trait cartManager{
                     $prod->product->ServicePeriods = [];
                     $prod->service_start_time = '';
                     $prod->is_long_term_service = 0;
-                    if($prod->product->is_long_term_service ==1){
+                    if($islongTermInDB ==1 && $prod->product->is_long_term_service ==1){
                         $vendorData->is_long_term_service = 1;
                         if($prod->product->ServicePeriod){
                             $prod->product->ServicePeriods = $prod->product->ServicePeriod->pluck('service_period')->toArray();
@@ -723,7 +731,7 @@ trait cartManager{
                                 $checkLastMile = 1;
                                 $lastMileDate['tags'] = $prod->product->tags;
                             } /** check lont term product product last mile  */
-                            else if( ($prod->product->is_long_term_service ==1) && !empty($prod->product->LongTermProduct) && $prod->product->LongTermProduct->first()->Requires_last_mile ==1){
+                            else if( ($islongTermInDB ==1) && ($prod->product->is_long_term_service ==1) && !empty($prod->product->LongTermProduct) && $prod->product->LongTermProduct->first()->Requires_last_mile ==1){
                                
                                 $checkLastMile = 1;
                                 $lastMileDate['tags'] = $prod->product->LongTermProduct->first()->tags;
@@ -1123,7 +1131,6 @@ trait cartManager{
             $myDate = date('Y-m-d');
             if($cart->vendorCnt==1){
                 $vendorId = $cartData[0]->vendor_id;
-
                 $cart->scheduled->scheduled_date_time = $cartData[0]->scheduled_date_time;
                 $cart->scheduled->slot = $cartData[0]->schedule_slot;
 
@@ -1201,16 +1208,16 @@ trait cartManager{
                 });
 
                 $category_kyc_document_ids =  $category_query->pluck('id');
-            //     $category_kyc_category_ids =  $category_query->categoryMapping->pluck('category_id');
-              // pr( $category_query->first()->toArray());
+                //  $category_kyc_category_ids =  $category_query->categoryMapping->pluck('category_id');
+                 // pr( $category_query->first()->toArray());
                 $category_kyc_document_ids = $category_kyc_document_ids->isNotEmpty() ? $category_kyc_document_ids->toArray() : [];
 
 
                 $category_kyc_count =  $category_query->count();
 
                 $is_alrady_submit = CaregoryKycDoc::whereIn('category_kyc_document_id', $category_kyc_document_ids)->where('cart_id',$cart_id)->count();
-            //     echo  $is_alrady_submit." <br>";
-            //    pr($category_kyc_document_ids);
+                // echo  $is_alrady_submit." <br>";
+                // pr($category_kyc_document_ids);
                 if( $category_kyc_count  > 0 && ($is_alrady_submit  !=  $category_kyc_count )){
                     $cart->category_kyc_count = $category_kyc_count;
                     $cart->category_rendem_id = rand(9,10);
