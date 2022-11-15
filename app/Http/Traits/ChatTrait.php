@@ -3,6 +3,7 @@ namespace App\Http\Traits;
 use App\Models\{Order,OrderVendor,UserDevice,ClientPreference};
 use Auth;
 use GuzzleHttp\Client as GCLIENT;
+use Log;
 
 trait ChatTrait{
 
@@ -59,6 +60,7 @@ trait ChatTrait{
         }
        
         $client_preferences = ClientPreference::select('fcm_server_key','favicon')->first();
+        Log::info($removeAuth);
         $devices            = UserDevice::whereNotNull('device_token')->whereIn('user_id',$removeAuth)->pluck('device_token') ?? [];
         
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
