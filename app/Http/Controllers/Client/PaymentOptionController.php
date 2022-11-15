@@ -633,6 +633,19 @@ class PaymentOptionController extends BaseController
                                 'api_key' => $request->khalti_public_key,
                                 'api_secret_key' => $request->khalti_secret_key
                             ));
+
+                        case 'mtn_momo':
+                            $validatedData = $request->validate([
+                                'subscription_key' => 'required',
+                                'reference_id' => 'required',
+                                'api_key' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'subscription_key' => $request->subscription_key,
+                                'reference_id' => $request->reference_id,
+                                'api_key' => $request->api_key,
+                            ));
+                            break;
                         
 
                     }
@@ -762,5 +775,31 @@ class PaymentOptionController extends BaseController
         }
        
 
+     }
+
+     public function GenerateAccressToken(){
+        $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://sandbox.momodeveloper.mtn.com/collection/token',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_HTTPHEADER => array(
+                'X-Target-Environment: sandbox',
+                'Ocp-Apim-Subscription-Key: 8cd27bfbf6274bdbb509a9f465ca6427',
+                'Content-Type: application/json',
+                'Authorization: Basic YmY1NmJmYzktYmRiNi00YWMwLThlYjktMTgwZGI5YTFkYTM5OmIwMjViNjI5MGExNzQ2ZTViZDAxMWI3MmViZTIyMjAw'
+            ),
+            ));
+
+            $response = curl_exec($curl);
+
+            curl_close($curl);
+            return $response;
      }
 }
