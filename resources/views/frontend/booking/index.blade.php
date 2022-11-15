@@ -765,6 +765,11 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var initial_country_code = "{{ Session::get('default_country_code','US') }}";
     var add_rider_url = "{{route('rider.create')}}";
     var remove_rider_url = "{{route('rider.remove')}}";
+    @if($client_preference_detail->distance_unit_for_time == "mile")
+    var distance_unit = "IMPERIAL";
+    @else
+    var distance_unit = "METRIC";
+    @endif
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
             event.preventDefault();

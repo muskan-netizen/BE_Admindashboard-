@@ -1508,11 +1508,16 @@ $(document).ready(function () {
     function getDistance(){
             //Find the distance
             var distanceService = new google.maps.DistanceMatrixService();
+            if(distance_unit == "IMPERIAL"){
+                var unitSystem = google.maps.UnitSystem.IMPERIAL;
+            }else{
+                var unitSystem = google.maps.UnitSystem.METRIC;
+            }
             distanceService.getDistanceMatrix({
             origins: [$("#pickup_location").val()],
             destinations: [$("#destination_location").val()],
             travelMode: google.maps.TravelMode.DRIVING,
-            unitSystem: google.maps.UnitSystem.METRIC,
+            unitSystem: unitSystem,
             durationInTraffic: true,
             avoidHighways: false,
             avoidTolls: false
