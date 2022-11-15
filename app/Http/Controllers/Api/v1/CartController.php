@@ -245,7 +245,6 @@ class CartController extends BaseController
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
             }
-
             if ($cart_detail->id > 0) {
                 $oldquantity = $isnew = 0;
                 $cart_product_detail = [
