@@ -32,7 +32,6 @@ body .alFullMapForm .scheduled-footer .btn {
     <div class="alFullMapForm col-md-12 p-0 position-absolute">
         <div class="booking-experienceNew ds bc">
             <div class="address-form">
-
                 @if(isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
                 <div class="tip_radio_controls_book_friend text-center mt-2">
                     <input type="radio" class="tip_radio is_for_friend" id="for_me" name="is_for_friend" value="0">
@@ -118,7 +117,7 @@ body .alFullMapForm .scheduled-footer .btn {
                             </div>
 
                         @endif
-                        <div class="loader cab-booking-main-loader"></div>
+                        <div class="cab-booking-loader"></div>
                         <div class="location-list style-4">
                                 <a class="select-location row align-items-center" id="get-current-location" href="javascript:void(0)">
                                     <div class="col-2 text-center pl-4">
@@ -818,6 +817,11 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var initial_country_code = "{{ Session::get('default_country_code','US') }}";
     var add_rider_url = "{{route('rider.create')}}";
     var remove_rider_url = "{{route('rider.remove')}}";
+    @if($client_preference_detail->distance_unit_for_time == "mile")
+    var distance_unit = "IMPERIAL";
+    @else
+    var distance_unit = "METRIC";
+    @endif
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
             event.preventDefault();

@@ -136,8 +136,6 @@ function getOrderDriverDetails(dispatch_traking_url,order_id) {
 
 
 $(document).ready(function () {
-   
-    $('.cab-booking-main-loader').hide();
     var selected_address = '';
     // const styles = [{"stylers":[{"visibility":"on"},{"saturation":-100},{"gamma":0.54}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"water","stylers":[{"color":"#4d4946"}]},{"featureType":"poi","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels.text","stylers":[{"visibility":"simplified"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.local","elementType":"labels.text","stylers":[{"visibility":"simplified"}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"gamma":0.48}]},{"featureType":"transit.station","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"geometry.stroke","stylers":[{"gamma":7.18}]}];
     const styles = [];
@@ -564,7 +562,7 @@ $(document).ready(function () {
         let destination_location = $('#destination_location').val();
         if(pickup_location && destination_location){
             $('.location-list').hide();
-            $('.cab-booking-main-loader').show();
+            add_spinner('.cab-booking-loader');
             $.ajax({
                 data: {locations: post_data, schedule_date_delivery:schedule_datetime},
                 type: "POST",
@@ -572,7 +570,6 @@ $(document).ready(function () {
                 url: autocomplete_urls,
                 success: function(response) {
                     if(response.status == 'Success'){
-                        // $('.cab-booking-main-loader').hide();
                         $('#vendor_main_div').html('');
                         if(response.data.length != 0){
                             let vendors_template = _.template($('#vendors_template').html());
@@ -586,7 +583,6 @@ $(document).ready(function () {
                         }else{
                             $("#vendor_main_div").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
                         }
-                       // $('.cab-booking-main-loader').hide();
                     }
                 }
             });
@@ -610,7 +606,6 @@ $(document).ready(function () {
     });
 
     $(document).on("change",".is_cab_pooling",function() {
-        $('.cab-booking-main-loader').show();
         getListOfCabs();
     });
 
@@ -626,7 +621,6 @@ $(document).ready(function () {
                 
                 if(currentVal > input.attr('min')) {
                     input.val(currentVal - 1).change();
-                    $(".cab-detail-main-loader").show();
                     getVehicleDetail(product_id);
                 } 
                 if(parseInt(input.val()) == input.attr('min')) {
@@ -637,7 +631,6 @@ $(document).ready(function () {
     
                 if(currentVal < input.attr('max')) {
                     input.val(currentVal + 1).change();
-                    $(".cab-detail-main-loader").show();
                     getVehicleDetail(product_id);
                 }
                 if(parseInt(input.val()) == input.attr('max')) {
@@ -782,12 +775,11 @@ $(document).ready(function () {
             data: {locations:locations, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling},
             url: get_vehicle_list+'/'+vendor_id+'/'+category_id,
             beforeSend: function(){
-                //$('.cab-booking-main-loader').show();
-                add_spinner('.cab-booking-main-loader');
+                add_spinner('.cab-booking-loader');
             },
             success: function(response) {
                 if(response.status == 'Success'){
-                    remove_spinner('.cab-booking-main-loader');
+                    remove_spinner('.cab-booking-loader');
                     $('#search_product_main_div').html('');
                     $('#search_product_rider_main_div').html('');
                     if(response.data.length != 0){
@@ -824,8 +816,7 @@ $(document).ready(function () {
                 }
             },
             complete:function(data){
-                remove_spinner('.cab-booking-main-loader');
-                //$('.cab-booking-main-loader').hide();
+                remove_spinner('.cab-booking-loader');
             }
         });
     }
@@ -938,7 +929,7 @@ $(document).ready(function () {
     });
     function getVehicleDetail(product_id, rider_id=0)
     {
-        $('.cab-booking-main-loader').show();
+        add_spinner('.cab-booking-loader');
         var locations = [];
         var pickup_location_latitude = $('input[name="pickup_location_latitude[]"]').map(function(){return this.value;}).get();
         var pickup_location_longitude = $('input[name="pickup_location_longitude[]"]').map(function(){return this.value;}).get();
@@ -970,10 +961,9 @@ $(document).ready(function () {
             data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling, no_seats_for_pooling:no_seats_for_pooling},
             url: get_product_detail+'/'+product_id,
             success: function(response) {
-                $(".cab-detail-main-loader").hide();
+                remove_spinner('.cab-booking-loader');
                 if(response.status == 'Success'){
                     $('#cab_detail_box').html('');
-                    $('.cab-booking-main-loader').hide();
                     if(response.data.length != 0){
                         // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
                         //     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -1217,7 +1207,6 @@ $(document).ready(function () {
        
             $('.cab-detail-box').attr("style", "display: block !important");
             $('.scheduled-ride-list').attr("style", "display: none !important");
-            $('.cab-booking-main-loader').show();
             getListOfCabs();
         }else{
 
@@ -1571,11 +1560,16 @@ $(document).ready(function () {
     function getDistance(){
             //Find the distance
             var distanceService = new google.maps.DistanceMatrixService();
+            if(distance_unit == "IMPERIAL"){
+                var unitSystem = google.maps.UnitSystem.IMPERIAL;
+            }else{
+                var unitSystem = google.maps.UnitSystem.METRIC;
+            }
             distanceService.getDistanceMatrix({
             origins: [$("#pickup_location").val()],
             destinations: [$("#destination_location").val()],
             travelMode: google.maps.TravelMode.DRIVING,
-            unitSystem: google.maps.UnitSystem.METRIC,
+            unitSystem: unitSystem,
             durationInTraffic: true,
             avoidHighways: false,
             avoidTolls: false
@@ -1871,8 +1865,7 @@ function getScheduleDateTime(thisObj){
 
     $('.cab-detail-box').attr("style", "display: block !important");
     $('.scheduled-ride-list').attr("style", "display: none !important");
-    //window.location.reload();
-    $('.cab-booking-main-loader').show();
+    
     getListOfCabs();
 }
 
