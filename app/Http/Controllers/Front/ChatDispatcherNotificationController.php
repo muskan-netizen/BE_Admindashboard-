@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use DB;
+use Log;
 use Auth;
 use Session;
 use DataTables;
@@ -34,7 +35,7 @@ class ChatDispatcherNotificationController extends FrontController
     }
 
     public function sendNotificationToUserByDispatcher(Request $request){
-       
+        Log::info($request->all());
         //try {
             $notiFY = $this->sendNotification($request,'from_dispatcher');
             return response()->json([ 'notiFY'=>$notiFY , 'status' => true, 'message' => __('sent!!!')]);
