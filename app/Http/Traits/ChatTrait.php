@@ -45,6 +45,7 @@ trait ChatTrait{
     public function sendNotification($request,$from='')
     {
         $data = $request->all();
+        Log::info($data);
         if($from=='from_dispatcher'){
             $username =  $data['username'];
             $removeAuth = array_values(array_column($request->all()['user_ids'], 'auth_user_id'));
