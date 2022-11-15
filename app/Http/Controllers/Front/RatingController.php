@@ -17,6 +17,7 @@ use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderPro
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\OrderTrait;
 use GuzzleHttp\Client as GCLIENT;
+use Illuminate\Support\Facades\Http;
 class RatingController extends FrontController{
 
     use ApiResponser, OrderTrait;
@@ -80,11 +81,13 @@ class RatingController extends FrontController{
              $order_details = OrderProduct::where('id',$request->order_vendor_product_id)->whereHas('order',function($q){$q->where('user_id',Auth::id());})->first();
              if($order_details)
              $order_deliver = VendorOrderStatus::where(['order_id' => $order_details->order_id,'vendor_id' => $order_details->vendor_id,'order_status_option_id' => 6])->count();
- 
+
              if($order_deliver > 0){
                  $checkdriverdetail = OrderVendor::where('order_id',$order_details->order_id)->first();
                  if(isset($checkdriverdetail->dispatch_traking_url) && $checkdriverdetail->dispatch_traking_url!=NULL)
                  {
+                    // dd($checkdriverdetail->dispatch_traking_url);
+                    $dispacther = Http::get($checkdriverdetail->dispatch_traking_url);
                     $ratings = OrderDriverRating::updateOrCreate([
                         'order_id' => $order_details->order_id,                 
                         'user_id' => Auth::id()],['rating' => $request->rating,'review' => $request->review??$request->hidden_review]);
@@ -243,5 +246,29 @@ class RatingController extends FrontController{
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
+    }
+
+    /**
+     * Rating api for driver when order is delivered to user 
+     */
+    public function driverAgentRating(Request $request) {
+        
+        try {
+            if( !empty($request->order_id) ) {
+                $order = Order::where('id', $request->order_id)->first();
+                if( !empty($order) ) {
+                    $order->driver_rating = $request->driver_rating;
+                    $order->save();
+                    return $this->successResponse('', 'Thanks for rating.', 200);
+                }
+                else {
+                    return $this->errorResponse('Order not found !', 400);
+                }
+            }
+        }
+        catch(\Exception $e) {
+            return $this->errorResponse('Something went wrong !', 400);
+        }
+
     }
 }

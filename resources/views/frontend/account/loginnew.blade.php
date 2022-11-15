@@ -278,6 +278,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
     });
 
     $(document).delegate("#login-form-new", "submit", function(e){
+       
     // $(document).delegate(".login_continue_btn, .verifyPhone", "click", function(e){
         e.preventDefault();
         var uname = $.trim($("#username").val());
@@ -329,6 +330,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
         }
         if(!error){
             var form_inputs = $("#login-form-new").serializeArray();
+            
             $.each(form_inputs, function(i, input) {
                 if(input.name == 'full_number'){
                     input.value = phone;

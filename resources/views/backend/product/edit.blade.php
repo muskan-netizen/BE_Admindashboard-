@@ -104,9 +104,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 </label>
             </div>
         </div>
-        <div class="col-4 text-right" style="margin: auto;">
-            <button type="submit" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> {{ __("Submit") }}</button>
-        </div>
+        @if(@$product->vendor->need_sync_with_order && $product->vendor->need_sync_with_order != 1)
+            <div class="col-4 text-right" style="margin: auto;">
+                <button type="submit" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> {{ __("Submit") }}</button>
+            </div>
+        @endif
     </div>
     <a href="{{route('vendor.catalogs',$product->vendor_id)}}">{{ $product->vendor->name}} </a>
     <div class="row mb-2">
