@@ -237,6 +237,8 @@ class ProductController extends BaseController
                 }
             }
           
+            $product->product_media = $data_image;
+            $product->share_link = getServerURL() . $product->vendor->slug . '/product/' . $product->url_slug;
             if( checkColumnExists('products','is_long_term_service') && $product->is_long_term_service == 1){
                 $product_id = $product->LongTermProducts->product_id;
                 $url_slug   = $product->LongTermProducts->product->url_slug;
@@ -257,8 +259,7 @@ class ProductController extends BaseController
                     'data' => $response,
                 ]);
             }
-            $product->product_media = $data_image;
-            $product->share_link = getServerURL() . $product->vendor->slug . '/product/' . $product->url_slug;
+           
             $response['products'] = $product;
             $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related);
             $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell);
