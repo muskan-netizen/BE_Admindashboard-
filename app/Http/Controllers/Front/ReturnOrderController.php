@@ -297,7 +297,7 @@ class ReturnOrderController extends FrontController{
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function z(Request $request, $domain = '')
+    public function vendorOrderForCancel(Request $request, $domain = '')
     {
 
         DB::beginTransaction();
@@ -416,14 +416,30 @@ class ReturnOrderController extends FrontController{
     }
 
     public function vendorOrderForCancelReq(Request $request){
-        $reject_reason = urldecode($request->reject_reason);
+        $checkReqIfExist = OrderCancelRequest::where(['order_id' => $request->order_id, 'order_vendor_id' => $request->order_vendor_id, 'vendor_id' =>  $request->vendor_id])->first();
+        
+        if(empty($checkReqIfExist)){
+            $reject_reason = urldecode($request->reject_reason);
 
-        $order_cancel_request = new OrderCancelRequest();
-        $order_cancel_request->order_id = $request->order_id;
-        $order_cancel_request->order_vendor_id = $request->order_vendor_id;
-        // $order_cancel_request->vendor_id = $checkiftokenExist->vendor_id;
-        $order_cancel_request->reject_reason = $reject_reason;
-        $order_cancel_request->status = 0;
-        $order_cancel_request->save();
+            $order_cancel_request = new OrderCancelRequest();
+            $order_cancel_request->order_id = $request->order_id;
+            $order_cancel_request->order_vendor_id = $request->order_vendor_id;
+            $order_cancel_request->vendor_id = $request->vendor_id;
+            $order_cancel_request->reject_reason = $reject_reason;
+            $order_cancel_request->status = 0;
+            if($order_cancel_request->save()){
+                return response()->json(['status' => 'success', 'message' => __('Order cancel request send successfully.')]);
+            }else{
+                return response()->json(['status' => 'error', 'message' => __('Something went wrong.')]);
+            }
+        }elseif($checkReqIfExist->status == 'Pending'){
+            return response()->json(['status' => 'error', 'message' => __('Order cancel request already send. Please wait for admin approval.')]);
+        }elseif($checkReqIfExist->status == 'Approved'){
+            return response()->json(['status' => 'error', 'message' => __('Order cancel request approved by admin.')]);
+        }elseif($checkReqIfExist->status == 'Rejected'){
+            return response()->json(['status' => 'error', 'message' => __('Order cancel request rejected by admin.')]);
+        }else{
+            return response()->json(['status' => 'error', 'message' => __('Something went wrong. Please try again later.')]);
+        }
     }
 }

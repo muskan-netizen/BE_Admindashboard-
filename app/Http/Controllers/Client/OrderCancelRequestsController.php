@@ -176,6 +176,7 @@ class OrderCancelRequestsController extends BaseController
             $user = Auth::user();
             $id = $request->id;
             $status = $request->status;
+            $vendor_reject_reason = $request->vendor_reject_reason;
             $cancel_req = OrderCancelRequest::where('id', $id)->first();
             if(!$cancel_req){
                 return $this->errorResponse('Invalid Data', 422);
@@ -229,6 +230,7 @@ class OrderCancelRequestsController extends BaseController
             
             $cancel_req->status = $status;
             $cancel_req->updated_by = $user->id;
+            $cancel_req->vendor_reject_reason = $vendor_reject_reason;
             $cancel_req->update();
             DB::commit();
             $this->sendCancelOrderRequestStatusNotification($currentOrderStatus, $status);

@@ -29,6 +29,9 @@
             font-size:10px;
             color:red;
         }
+        li.bg-txt i {
+            font-size: 15px;
+        }
     </style>
 @endsection
 @section('content')
@@ -289,7 +292,7 @@
                                                                                 @endif
                                                                                 <span class="left_arrow pulse"></span>
                                                                                 <div class="row">
-                                                                                    <div class="col-5 col-sm-3">
+                                                                                    <div class="col-6 col-sm-4">
                                                                                         <h5 class="m-0">
                                                                                             {{ __('Order Status') }}</h5>
                                                                                         <ul class="status_box mt-1 pl-0">
@@ -341,10 +344,16 @@
                                                                                                     </label>
                                                                                                 @endif
                                                                                             </h6>
-                                                                                            @elseif($vendor->order_status_option_id==2  && $client_preference_detail->is_cancel_order_user == 1 && $vendor->vendor->cancel_order_in_processing == 1)
-                                                                                                <label class="rating-star request_cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}" >
-                                                                                                    {{ __('Cancel Order') }}
-                                                                                                </label>
+                                                                                            @elseif($vendor->order_status_option_id==2 && $client_preference_detail->is_cancel_order_user == 1 && $vendor->vendor->cancel_order_in_processing == 1)
+                                                                                                @if(empty($order->reqCancelOrder))
+                                                                                                    <label class="rating-star request_cancel_order" data-order_vendor_id="{{$vendor->order_id??0}}" data-id="{{$vendor->id??0}}" data-vendor_id="{{$vendor->vendor_id??0}}" style="width: auto;display: inline-block;">
+                                                                                                        {{ __('Cancel Order') }}
+                                                                                                    </label>
+                                                                                                @elseif($order->reqCancelOrder->status == 'Pending')
+                                                                                                    <li class="bg-txt"><span class="badge badge-info" style="font-size:12px">{{ __('Cancel Order Pending') }}</span></li>
+                                                                                                @elseif($order->reqCancelOrder->status == 'Rejected')
+                                                                                                    <li class="bg-txt"><span class="badge badge-danger mr-2" style="font-size:12px">{{ __('Cancel Order Rejected') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$order->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
+                                                                                                @endif
                                                                                             @endif
                                                                                             @if ($vendor->dineInTable)
                                                                                                 <li>
@@ -367,7 +376,7 @@
 
                                                                                         </ul>
                                                                                     </div>
-                                                                                    <div class="col-7 col-sm-4">
+                                                                                    <div class="col-6 col-sm-3">
                                                                                         <ul
                                                                                             class="product_list p-0 m-0 text-center">
                                                                                             @foreach ($vendor->products as $product)
@@ -1887,6 +1896,7 @@
                 @csrf
                 <input_type="hidden" name="order_id" id="req_order_id">
                 <input_type="hidden" name="order_vendor_id" id="req_order_vendor_id">
+                <input_type="hidden" name="req_vendor_id" id="req_vendor_id">
                 <p id="error-case" style="color:red;"></p>
                 <label style="font-size:medium;">Enter reason for cancel the order. <small>(Optional)</small> </label>
                 <textarea class="reject_reason w-100" data-name="reject_reason" name="reject_reason" id="reject_reason" cols="50" rows="5"></textarea>
@@ -2262,11 +2272,13 @@
 
     $('body').on('click', '.request_cancel_order', function (event) {
         event.preventDefault();
-        var id = $(this).data('id');
-        var order_vendor_id = $(this).data('order_vendor_id');
+        var order_vendor_id = $(this).data('id');
+        var id = $(this).data('order_vendor_id');
+        var vendor_id = $(this).data('vendor_id');
         $('#cancel_request_order').modal('show');
         $('#req_order_id').attr('value', id);
         $('#req_order_vendor_id').attr('value',order_vendor_id);
+        $('#req_vendor_id').attr('value',vendor_id);
         /* $('#cancel-order-form-modal').html(markup); */
     });
 
@@ -2313,30 +2325,36 @@
         e.preventDefault();
         var reject_reason = $('#reject_reason').val();
         var order_id = $('#req_order_id').attr("value");
-        /* var vendor_id = "{{$order_vendor->vendor_id??0}}"; */
+        var vendor_id = $('#req_vendor_id').attr("value");
         var order_vendor_id = $('#req_order_vendor_id').attr("value");
         $.ajax({
             url: "{{ route('order.cancel.req.customer') }}",
             type: "POST",
             data: {
-                /* vendor_id: vendor_id, */
+                vendor_id: vendor_id,
                 order_id: order_id,
                 reject_reason: reject_reason,
                 "_token": "{{ csrf_token() }}",
-                order_vendor_id: order_vendor_id,
-                /* pickup_cancelling_charges: pickup_cancelling_charges,
-                pickup_order_date: pickup_order_date,
-                order_number: order_number, */
+                order_vendor_id: order_vendor_id
             },
             success: function(response) {
-                console.log(response);
-                /* if (response.status == 'success') {
-                    // $(".modal .close").click();
-                    location.reload();
-                } else if (response.status == 'error') {
-                    $('#error-case').empty();
-                    $('#error-case').append(response.message);
-                } */
+                if(response.status == 'success'){
+                    $("#cancel_request_order #reject_reason").val('');
+                    $("#cancel_request_order .close").click();
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message,
+                        confirmButtonText: 'Ok',
+                    });
+                }else if (response.status == 'error') {
+                    $("#cancel_request_order #reject_reason").val('');
+                    $("#cancel_request_order .close").click();
+                    Swal.fire({
+                        icon: 'warning',
+                        text: response.message,
+                        confirmButtonText: 'Ok',
+                    });
+                }
             },
             error: function(response) {
                 if (response.status == 'error') {
