@@ -60,6 +60,7 @@ trait ChatTrait{
         }
        
         $client_preferences = ClientPreference::select('fcm_server_key','favicon')->first();
+        Log::info('noti user_id');
         Log::info($removeAuth);
         $devices            = UserDevice::whereNotNull('device_token')->whereIn('user_id',$removeAuth)->pluck('device_token') ?? [];
         
