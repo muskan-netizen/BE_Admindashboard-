@@ -1208,6 +1208,7 @@ class VendorController extends BaseController
             $vendor->need_container_charges = ($request->has('need_container_charges') && $request->need_container_charges == 'on') ? 1 : 0;
             $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
             $vendor->cancel_order_in_processing = ($request->has('cancel_order_in_processing') && $request->cancel_order_in_processing == 'on') ? 1 : 0;
+            $vendor->return_auto_approve = ($request->has('return_auto_approve') && $request->return_auto_approve == 'on') ? 1 : 0;
             // $vendor->cron_for_service_area = ($request->has('cron_for_service_area') && $request->cron_for_service_area == 'on') ? 1 : 0;
             if($request->has('slot_minutes')){
                 $vendor->slot_minutes   = ($request->slot_minutes>0)?$request->slot_minutes:0;

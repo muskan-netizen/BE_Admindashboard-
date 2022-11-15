@@ -207,6 +207,11 @@
                         <input type="checkbox" data-plugin="switchery" name="cancel_order_in_processing" class="form-control" data-color="#43bee1" @if($vendor->cancel_order_in_processing == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
 
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Return Auto Approve'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="return_auto_approve" class="form-control" data-color="#43bee1" @if($vendor->return_auto_approve == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
                     <div class="col-md-12" id="auto_reject_timeInput" style="display:{{$vendor->auto_accept_order == 1 ? 'none' : 'block'}}">
                         <div class="form-group">
                             {!! Form::label('title', __('Auto Reject Time(In minutes, 0 for no rejection)'),['class' => 'control-label']) !!}

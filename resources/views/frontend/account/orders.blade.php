@@ -333,7 +333,7 @@
                                                                                                 $pickup_cancelling_charges = $clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges;
                                                                                             }
                                                                                         ?>
-                                                                                            <h6 class="m-0">
+                                                                                            <li class="d-block"><h6 class="m-0">
                                                                                                @if ($clientPreference->business_type == 'laundry')
                                                                                                     <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
                                                                                                         {{ __('Cancel Order') }}
@@ -343,7 +343,7 @@
                                                                                                         {{ __('Cancel Order') }}
                                                                                                     </label>
                                                                                                 @endif
-                                                                                            </h6>
+                                                                                            </h6></li>
                                                                                             @elseif($vendor->order_status_option_id==2 && $client_preference_detail->is_cancel_order_user == 1 && $vendor->vendor->cancel_order_in_processing == 1)
                                                                                                 @if(empty($order->reqCancelOrder))
                                                                                                     <label class="rating-star request_cancel_order" data-order_vendor_id="{{$vendor->order_id??0}}" data-id="{{$vendor->id??0}}" data-vendor_id="{{$vendor->vendor_id??0}}" style="width: auto;display: inline-block;">
