@@ -40,16 +40,20 @@ trait ConektaPaymentManager{
     $this->init();
     $customer = $this->createCustomer($data);
     $after_url = $data['payment_from']."/".$data['come_from'].'/'.$data['amount']."/".($data["order_number"]??0);
+
+   $success_url = $this->url.'/payment/conekta/status?q=success&payment_from='.$data['payment_from'].'&come_from='.$data['come_from'].'&amount='.$data['amount'].'&order_number='.($data["order_number"]??0);
+   $failure_url = $this->url.'/payment/conekta/status?q=failure&payment_from='.$data['payment_from'].'&come_from='.$data['come_from'].'&amount='.$data['amount'].'&order_number='.($data["order_number"]??0);
     $validOrderWithCheckout = array(
       'line_items'=> $data['line_items'],
       'checkout' => array(
         'allowed_payment_methods' => array("card", "bank_transfer"),
         'type' => 'HostedPayment',
-        'success_url' => $this->url."/success/".$after_url,
-        'failure_url' => $this->url."/failure/".$after_url,
+        'success_url' =>$success_url,
+        'failure_url' => $failure_url,
         'monthly_installments_enabled' => true,
         'monthly_installments_options' => array(3, 6, 9, 12),
-        "redirection_time" => 4 //Tiempo de Redirección al Success/Failure URL, umbrales de 4 a 20 seg.
+        "redirection_time" => 4, //Tiempo de Redirección al Success/Failure URL, umbrales de 4 a 20 seg.
+        'is_redirect_on_failure'       => true
       ),
       'customer_info' => array(
         'customer_id'   =>  $customer->id
