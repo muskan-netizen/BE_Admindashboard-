@@ -605,7 +605,7 @@
 			<div class="row">
 				<div class="col-md-3">
 					<div class=" top-heading mt-5 pt-5">
-					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Recommended Vender', true)}}</h2>
+					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Recommended Vendor', true)}}</h2>
 				<a class="" href="{{route('vendor.all')}}">{{__("See all")}} <img class="btn-arrow" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""></a>
 					</div>
 				</div>
@@ -694,7 +694,7 @@
 		</section>
 		{{--  && (count($homePageData['nav_categories']) != 0) --}}
 		@elseif($homePageLabel->slug == 'nav_categories' && (count($homePageLabel->nav_categories) != 0))
-		<section class="popular-brands left-shape_ position-relative">
+		<section class="popular-brands left-shape_ position-relative bg-light-gray">
 			<div class="container">
 				<div class="al_top_heading text-center d-flex align-items-center">
 					<h2 class="h2-heading">{{$homePageLabel->slug=='nav_categories' ? __('Categories') : __($homePageLabel->title)}}</h2>
@@ -724,7 +724,7 @@
 				</div>
 				<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 					<div class="row">
-							@foreach ($homePageData[$homePageLabel->slug] as $vendor )
+							@foreach ($homePageData[$homePageLabel->slug] as $product )
 							@include('frontend.home_page_8.spotlight_deals')
 							@endforeach
 						</div>
@@ -748,24 +748,101 @@
 				</div>
 			</div>
 		</section>
-		@else
-		@if(count($homePageData[$homePageLabel->slug]) != 0)
-		<section class="home-headings">
+		@elseif($homePageLabel->slug == 'single_category_products' && (count($homePageData[$homePageLabel->slug]) != 0))
+		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container">
-				<div class="row">
-					<div class="col-md-12 text-center">
-						<div class="top-heading d-flex justify-content-between">
-						<h2 class="h2-heading"> @php
-							echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
-							@endphp </h2>
-							<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+			<div class="top-heading d-flex justify-content-between">
+				<h2 class="h2-heading mb-3"> @php
+					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
+					@endphp </h2>
+					<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+			</div>
+			<div class="row">
+				<div class="col-12">
+					<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+						<div class="row">
+							@foreach ($homePageData[$homePageLabel->slug] as $product )
+							@include('frontend.home_page_8.single_category_products')
+							@endforeach
+						</div>
 					</div>
+				</div>
+			</div>
+			</div>
+		</section>
+		</section>
+		@elseif($homePageLabel->slug == 'selected_products' && (count($homePageData[$homePageLabel->slug]) != 0))
+		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}} bg-light-gray" id="{{$homePageLabel->slug.$key}}">
+			<div class="container">
+				<div class="top-heading d-flex justify-content-between">
+					<h2 class="h2-heading mb-3"> @php
+						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
+						@endphp </h2>
+						<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+							<div class="row">
+								@foreach ($homePageData[$homePageLabel->slug] as $product )
+								@include('frontend.home_page_8.selected_products')
+								@endforeach
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
 		</section>
+		@elseif($homePageLabel->slug == 'most_popular_products' && (count($homePageData[$homePageLabel->slug]) != 0))
+		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+			<div class="container">
+				<div class="top-heading d-flex justify-content-between">
+					<h2 class="h2-heading mb-3"> @php
+						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
+						@endphp </h2>
+						<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+							<div class="row">
+								@foreach ($homePageData[$homePageLabel->slug] as $product )
+								@include('frontend.home_page_8.most_popular_products')
+								@endforeach
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		@else
+		@if(count($homePageData[$homePageLabel->slug]) != 0)
+		<!-- <section class="home-headings">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12 text-center">
+						<div class="top-heading d-flex justify-content-between">
+							<h2 class="h2-heading"> @php
+								echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
+								@endphp </h2>
+								<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+						</div>
+					</div>
+				</div>
+			</div>
+		</section> -->
 		<section class="main-product mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container">
+				<div class="row">
+					<div class="col-md-12 text-center">
+						<div class="top-heading d-flex justify-content-between">
+							<h2 class="h2-heading"> @php
+								echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
+								@endphp </h2>
+								<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+						</div>
+					</div>
+				</div>
 			<div class="product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 				<div class="row">
 							@foreach ($homePageData[$homePageLabel->slug] as $product )

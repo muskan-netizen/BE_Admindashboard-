@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\Web\OrderProductRatingRequest;
 use App\Http\Requests\Web\OrderProductReturnRequest;
-use App\Models\{Client, ClientPreference, EmailTemplate, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, User, UserDevice, UserVendor, VendorOrderDispatcherStatus};
+use App\Models\{Client, ClientPreference, EmailTemplate, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, User, UserAddress, UserDevice, UserVendor, VendorOrderDispatcherStatus};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
 use App\Models\Client as CP;
@@ -123,6 +123,7 @@ class ReturnOrderController extends BaseController{
 
             }
             if(isset($returns)) {
+
                 $this->sendSuccessNotification($user->id, $order_details->vendor_id);
                 $this->sendSuccessEmail($request);
                 return $this->successResponse($returns,'Return Submitted.');
@@ -132,6 +133,16 @@ class ReturnOrderController extends BaseController{
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
+    }
+
+    # get prefereance if last mile on or off and all details updated in config
+    public function getDispatchDomain()
+    {
+        $preference = ClientPreference::first();
+        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+            return $preference;
+        else
+            return false;
     }
 
     public function sendSuccessNotification($id, $vendorId){
@@ -323,4 +334,7 @@ class ReturnOrderController extends BaseController{
             ]);
         }
     }
+
+
+    
 }

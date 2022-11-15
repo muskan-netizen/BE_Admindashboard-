@@ -116,8 +116,39 @@ class HomePageLabelSeederDefault extends Seeder
         $home_page = CabBookingLayout::insertGetId([
             'title'      => 'NavCategories',
             'slug'       => 'nav_categories',
-            'order_by'   => 9,
+            'order_by'   => 10,
             'created_at' => Carbon::now(),
         ]);
+
+        $already = CabBookingLayout::where('slug', 'single_category_products')->count();
+        if($already == 0){
+            $home_page = CabBookingLayout::insertGetId([
+                'title'      => 'Single Category Products',
+                'slug'       => 'single_category_products',
+                'order_by'   => 11,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+
+        $already = CabBookingLayout::where('slug', 'selected_products')->count();
+        if($already == 0){
+            $home_page = CabBookingLayout::insertGetId([
+                'title'      => 'Selected Products',
+                'slug'       => 'selected_products',
+                'order_by'   => 11,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+
+        $already = CabBookingLayout::where('slug', 'most_popular_products')->count();
+        if($already == 0){
+            $home_page = CabBookingLayout::insertGetId([
+                'title'      => 'Most Popular Products',
+                'slug'       => 'most_popular_products',
+                'order_by'   => 12,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+        
     }
 }

@@ -15,7 +15,17 @@
     ::-webkit-scrollbar-thumb:hover{
     background: #555;
     }
-
+    .result-item-name.product_heading h4{
+        font-size:14px;
+        font-weight: bold;
+    }
+    .result-item-name.product_heading {
+        background: #f2f2f2;
+        width: 100%;
+        padding: 5px;
+       
+      }
+      
 .file.file--upload i.fa{color:#fff}
 header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#top-tab{display: inline-block;max-width: 100%;white-space: nowrap;}
 .top-header.site-topbar.al_custom_head{background-color:#fff}.top-header.site-topbar{background:var(--top-header-color);padding:5px 0;display:list-item}.location-bar.d-inline-flex.align-items-center.position-relative{width:100%;border-right:1px solid #bbb}.al_custom_head.site-topbar .location-bar i{color:var(--theme-deafult)!important;font-size:18px}
@@ -117,8 +127,9 @@ z-index:1111;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-
     border-top: 1px solid #ddd;
     -webkit-transition: .5s;
     transition: .5s;
-    background: #1D1D1D;
-    padding: 20px 0 0;
+    background: #fff;
+    padding: 12px 0 0;
+    box-shadow: 0 4px 14px 0 rgb(0 0 0 / 8%);
 }
 .al_body_template_eight #al_new_design .pixelstrap li a {
     letter-spacing: 0;
@@ -127,7 +138,7 @@ z-index:1111;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-
     font-weight: 400;
     font-size: 14px;
     line-height: 16px;
-    color: #FFFFFF;
+    color: #222;
 }
 .al_body_template_eight .al_custom_head .onhover-dropdown span:before, .al_custom_head.top-header .header-dropdown li a, .al_custom_head.top-header .header-dropdown li span {
     display: block;
@@ -207,8 +218,8 @@ body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
     height: 100px !important;
     padding-top: 5px !important;
 }
-body.al_body_template_eight.homeHeader #al_new_design .pixelstrap ul {
-    top: 85px !important;
+body.al_body_template_eight #al_new_design .pixelstrap ul {
+    top: 85px;
 }
 .al_body_template_eight .menu-navigation.alThreeMenu li.al_main_category {
     padding: 0 20px;
@@ -247,7 +258,7 @@ body.al_body_tebody.al_body_template_eight.homeHeader .menu-navigation.alThreeMe
     align-items: center;
 }
 body.al_body_template_eight.homeHeader #al_new_design .pixelstrap ul {
-    top: 37px;
+    top: 70px;
 }
 body.al_body_template_eight ul#header_cart_main_ul {
     display: flex;
@@ -283,6 +294,9 @@ body.al_body_template_eight ul#header_cart_main_ul li .total {
 @media(max-width:767px){
 .al_body_template_eight .menu-slider.slick-slider {
         display: none !important;
+    }
+    .al_body_template_eight .al_toggle-menu {
+        top: -6px;
     }
     header#al_new_design.site-header.fixed-bar {
         z-index: 999999999;

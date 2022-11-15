@@ -104,9 +104,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 </label>
             </div>
         </div>
-        <div class="col-4 text-right" style="margin: auto;">
-            <button type="submit" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> {{ __("Submit") }}</button>
-        </div>
+        @if($product->vendor->need_sync_with_order != 1)
+            <div class="col-4 text-right" style="margin: auto;">
+                <button type="submit" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> {{ __("Submit") }}</button>
+            </div>
+        @endif
     </div>
     <a href="{{route('vendor.catalogs',$product->vendor_id)}}">{{ $product->vendor->name}} </a>
     <div class="row mb-2">
@@ -594,6 +596,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <input type="checkbox" bid="" id="inquiry_only" data-plugin="switchery" name="inquiry_only" class="chk_box" data-color="#43bee1" @if($product->inquiry_only == 1) checked @endif>
                         </div>
                         @endif
+                       
                         @if($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
@@ -604,6 +607,28 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 @endforeach
                                 @endif
                             </select>
+                        </div>
+                        @elseif($product->category->categoryDetail->type_id == 1)
+                        <div class="col-md-6 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Individual Delivery Fee'),['class' => 'control-label']) !!}
+                            <input type="checkbox" bid="" id="individual_delivery_fee" data-plugin="switchery" name="individual_delivery_fee" class="chk_box" data-color="#43bee1" @if($product->individual_delivery_fee == 1) checked @endif>
+                        </div>
+                        <div class="col-md-6 justify-content-between mb-2" id="dispatcher_tags_div">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
+                                </div>
+                                <div class="col-md-7">
+                                    <select class="selectize-select1 form-control" name="tags">
+                                        
+                                        @if($agent_dispatcher_tags != null && count($agent_dispatcher_tags))
+                                        @foreach($agent_dispatcher_tags as $key => $tags)
+                                        <option value="{{ $tags['name'] }}" @if($product->tags == $tags['name']) selected="selected" @endif>{{ ucfirst($tags['name']) }}</option>
+                                        @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         @endif
 
@@ -721,6 +746,21 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             @endif
                         @endif
                     </div>
+
+                    {{-- product free delivery fees --}}
+                    @if($getAdditionalPreference['is_free_delivery_by_roles'] == '1')
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="control-label">Free Delivery (Select Roles)</label>
+                                <select class="form-control select2-multiple" name="free_delivery_roles[]" data-toggle="select2" multiple="multiple" placeholder="Select role...">
+                                    @foreach($allRoles as $allRole)
+                                        <option value="{{$allRole->id}}" @if(in_array($allRole->id, $selectedRoles)) selected @endif>{{ $allRole->role }}</option>
+                                    @endforeach
+                                </select>
+
+                            </div>
+                        </div>
+                    @endif
                     {{--@endif--}}
 
 
@@ -1905,6 +1945,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
         editProductOrderForm(product_faq_id);
     });
+
     function editProductOrderForm(product_faq_id){
         let language_id = $('#option_client_language').val();
         $('#add_product_faq_modal input[name=product_faq_id]').val(product_faq_id);

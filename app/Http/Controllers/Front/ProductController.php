@@ -437,6 +437,7 @@ class ProductController extends FrontController{
                     $variantData = array();
                 }
                 $data['variant'] = $variantData;
+                
                 return response()->json(array('status' => 'Success', 'data' => $data));
             }
 

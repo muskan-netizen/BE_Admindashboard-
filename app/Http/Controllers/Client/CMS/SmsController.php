@@ -28,6 +28,7 @@ class SmsController extends Controller
         $sms_template = SmsTemplate::where('id', $request->email_template_id)->firstOrFail();
         $sms_template->subject = $request->subject;
         $sms_template->content = $request->content;
+        $sms_template->template_id = $request->template_id;
         $sms_template->save();
         return $this->successResponse($sms_template, 'Sms Template Updated Successfully.');
     }
