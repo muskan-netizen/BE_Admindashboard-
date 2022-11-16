@@ -292,13 +292,13 @@
                                             </select> -->
                                             <ul>
                                                 <li><span>{{__('Sort By:')}}</span></li>
-                                                <li><a href="javascript:void(0)" class="active">{{_('Featured')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{_('A to Z')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{_('Z to A')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{_('Cost : Low to High')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{_('Cost : High to Low')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{_('Avg. Customer Review')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{_('Newest Arrivals')}}</a></li>
+                                                <li><a href="javascript:void(0)" class="active">{{__('Featured')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{__('A to Z')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{__('Z to A')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{__('Cost : Low to High')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{__('Cost : High to Low')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{__('Avg. Customer Review')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{__('Newest Arrivals')}}</a></li>
                                             </ul>
                                         </div>
                                         <div class="product-wrapper-grid">
