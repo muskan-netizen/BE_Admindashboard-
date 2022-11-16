@@ -49,6 +49,7 @@ $.ajaxSetup({
             $('#pickup_later').attr('disabled', false);
             if(response.status == '200'){
                 $('#cab_detail_box').html('');
+               
                 var orderSuccessData = _.extend({ Helper: NumberFormatHelper },{result: response.data, product_image: response.data.product_image});
                 let order_success_template = _.template($('#order_success_template').html());
                 $("#cab_detail_box").append(order_success_template(orderSuccessData)).show();
@@ -78,6 +79,7 @@ function getOrderDriverDetails(dispatch_traking_url,order_id,product_image) {
             var order_status_new = response.data.order_details.dispatcher_status;
                 
             showroute(alltask,agent_location,map,product_image);
+            console.log(response.data.order_details.dispatcher_status);
             $("#dispatcher_status_show").html(response.data.order_details.dispatcher_status);
             if(response.data.agent_location != null){
                 $('#searching_main_div').remove();

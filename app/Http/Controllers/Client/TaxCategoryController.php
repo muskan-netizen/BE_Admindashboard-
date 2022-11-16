@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{TaxRate, TaxCategory, TaxRateCategory};
+use App\Models\{ClientPreference, TaxRate, TaxCategory, TaxRateCategory};
 use Illuminate\Support\Facades\Storage;
 
 class TaxCategoryController extends BaseController
@@ -20,11 +20,11 @@ class TaxCategoryController extends BaseController
     public function index()
     {
         $taxCates = TaxCategory::orderBy('id', 'desc')->get();
-
+        $preferences = ClientPreference::select('is_tax_price_inclusive')->first();
         $taxRates = TaxRate::with('category')->orderBy('id', 'desc')->get();
        // dd($taxRates->toArray());
         
-        return view('backend/tax/index')->with(['taxCates' => $taxCates, 'taxRates' => $taxRates]);
+        return view('backend/tax/index')->with(['taxCates' => $taxCates, 'taxRates' => $taxRates,'preference'=>$preferences]);
     }
     /**
      * Show the form for editing the specified resource.
@@ -61,6 +61,7 @@ class TaxCategoryController extends BaseController
         $tax->description = $request->description;
         $tax->save();
         if($tax->id > 0){
+            session()->put('success','Tax category created Successfully!');
             return response()->json([
                 'status'=>'success',
                 'message' => 'Tax category created Successfully!',
@@ -88,6 +89,8 @@ class TaxCategoryController extends BaseController
         $tax->code = $request->code;
         $tax->description = $request->description;
         $tax->save();
+
+        session()->put('success','Tax category updated Successfully!');
         
         return response()->json([
             'status'=>'success',
@@ -106,6 +109,6 @@ class TaxCategoryController extends BaseController
     public function destroy($domain = '', $id)
     {
         $tax = TaxCategory::where('id', $id)->delete();
-        return redirect('client/tax')->with('success', 'Tax category updated successfully!');
+        return redirect('client/tax')->with('success', 'Tax category deleted successfully!');
     }
 }

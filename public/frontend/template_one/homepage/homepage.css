@@ -175,8 +175,8 @@ body.al_body_template_one  #page-container .footer-theme .sub-title .contact-lis
 .al_body_template_one .offer-slider .common-product-box.scale-effect.mb-2 .col-8{padding-left: 0;}
 .al_body_template_one .al_white_bg_round .scrollspy-menu{background-color: transparent;box-shadow: none;border-radius: 0;}
 .al_body_template_one .product-bottom-bar .row{margin: 0;}
-.al_body_template_one .vender-icon.mr-sm-3{margin-top: -150px;margin-left: 20px;position: relative;}
-.al_body_template_one .vendor-description .vendor-reviwes{padding: 0;position: absolute;right: -20px;top:0px;}
+/* .al_body_template_one .vender-icon.mr-sm-3{margin-top: -150px;margin-left: 20px;position: relative;} */
+.al_body_template_one .vendor-description .vendor-reviwes{padding: 0;position: absolute;right:auto;top:0px;}
 .al_body_template_one .vender-icon img{border:4px solid #fff;}
 .al_body_template_one .delivery_address button.close{padding: 0;text-align: right;z-index: 9999;position: relative;right: 0;top: 0;}
 .al_body_template_one .shopping-cart h5.d-flex.align-items-center.justify-content-between.pb-2{padding-bottom: 0 !important;margin-bottom: 0 !important;}

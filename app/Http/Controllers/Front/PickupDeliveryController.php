@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,OrderLocations,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,User, UserAddress,Order,SubscriptionInvoicesUser,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail, VendorCategory,VendorOrderDispatcherStatus,ProductFaq,ClientLanguage, Payment, PaymentOption,Rider,LuxuryOption};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, PaymentOption};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -25,7 +25,7 @@ class PickupDeliveryController extends FrontController{
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
-        $code = array('cod', 'dpo', 'razorpay','stripe','paystack', 'payfast','authorize_net','payphone', 'khalti'); 
+        $code = array('cod', 'dpo', 'razorpay','stripe','paystack', 'payfast','authorize_net','payphone', 'khalti','flutterwave'); 
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials' ,'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
@@ -51,22 +51,37 @@ class PickupDeliveryController extends FrontController{
     }
 
     public function getOrderTrackingDetails(Request $request, $domain = ''){
-
-       $order = OrderVendor::where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
-   
+        
+        $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
+       
        $response = Http::get($request->new_dispatch_traking_url);
 
         if(count($order) > 0) {
             if($response->status() == 200){
-                if(($response['agent_location'] != '') && ($order['dispatcher_status'] === __('Hold on! We are looking for drivers nearby!'))){
-                    //$order['dispatcher_status'] = __('Hold on! We are looking for drivers nearby!');
-                    $order['dispatcher_status'] = __('Your driver has been assigned!');
-                 }
-                // dd($order->dispatcher_status);
+                if(($order['dispatcher_status'] === __('Hold on! We are looking for drivers nearby!'))){
+                    if($order['order_detail']['scheduled_date_time']){ //  show scheduled ride
+                        $user = Auth::user();
+                        if(empty($user->timezone))
+                        {
+                            $client_timezone = DB::table('clients')->first('timezone'); 
+                            $user->timezone = $client_timezone->timezone ?? $user->timezone;
+                        }     
+                        $date = Carbon::parse($order['order_detail']['scheduled_date_time'], 'UTC');
+                        $date->setTimezone( $user->timezone);
+                        $schudelDate =  $date->format('d M ,y H:i A');; //$date->isoFormat('d.m.Y, H:i A');
+                       //date("F j, Y, g:i a"); //dateTimeInUserTimeZone($order['order_detail']['scheduled_date_time'], $user->timezone) 
+                        $order['dispatcher_status'] = __('You have successfully scheduled your ride for:') . $schudelDate   ;
+                    }
+                    if ($response['agent_location'] != ''){
+                        $order['dispatcher_status'] = __('Your driver has been assigned!');
+                    }
+                }
                 $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order['order_id'] ,'vendor_id' =>$order['vendor_id'] ])->latest()->first();
+                $order_driver_rating = OrderDriverRating::where('order_id', $request->order_id)->first();
                 $order['dispatcher_status_type']=  $type ?  $type->type :1;
                 $response = $response->json();
                 $response['order_details'] = $order;
+                $response['order_driver_rating'] = $order_driver_rating;
                 return $this->successResponse($response);
             } else {
 
@@ -160,8 +175,10 @@ class PickupDeliveryController extends FrontController{
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
-        $product->original_tags_price = $tags_price;
-        $product->tags_price = decimal_format($tags_price);
+        $product->original_tags_price = $tags_price['delivery_fee'] + $tags_price['toll_fee'];
+        $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
+        $product->toll_fee = decimal_format($tags_price['toll_fee']);
+        $product->toll_less_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
         $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
@@ -175,6 +192,7 @@ class PickupDeliveryController extends FrontController{
         }
         foreach ($product->variant as $k => $v) {
             $product->variant[$k]->price = $product->tags_price;
+            $product->variant[$k]->toll_fee = $product->toll_fee;
             $product->variant[$k]->multiplier = 1;
         }
         $loyalty_amount_saved = 0;
@@ -283,8 +301,8 @@ class PickupDeliveryController extends FrontController{
                     $product->image_url = $image_url;
                     $product->name = $product->translation->first() ? $product->translation->first()->title :'';
                     $product->description = $product->translation->first() ? $product->translation->first()->meta_description :'';
-                    $product->original_tags_price = $tags_price;
-                    $product->tags_price = decimal_format($tags_price);
+                    $product->original_tags_price = $tags_price['delivery_fee'] + $tags_price['toll_fee'];
+                    $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->price = $product->tags_price;
@@ -385,12 +403,12 @@ class PickupDeliveryController extends FrontController{
 
 
      # get delivery fee from dispatcher
-     public function getDeliveryFeeDispatcher($request,$product=null, $schedule_datetime_del = ''){
+     public function getDeliveryFeeDispatcher($request, $product=null, $schedule_datetime_del = ''){
         try {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             if ($dispatch_domain && $dispatch_domain != false) {
                 $all_location = array();
-                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del];
+                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => 'IN_FASTAG', 'VehicleEmissionType' => 'GASOLINE', 'travelMode' => 'TAXI'];
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/get-delivery-fee',
@@ -399,7 +417,9 @@ class PickupDeliveryController extends FrontController{
                 $response = json_decode($res->getBody(), true);
                 //pr($response);
                 if($response && $response['message'] == 'success'){
-                    return $response['total'];
+                    return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?$response['toll_fee']:0.00);
+                }else{
+                    return array('delivery_fee' => 0, 'toll_fee' => 0);
                 }
             }
         }catch(\Exception $e){
@@ -419,8 +439,9 @@ class PickupDeliveryController extends FrontController{
     */
      public function createOrder(Request $request){
          //pr($request->all());
-        DB::beginTransaction();
+       
         try {
+            DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
             {
                 $timezone = $request->time_zone;
@@ -438,7 +459,7 @@ class PickupDeliveryController extends FrontController{
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
-                $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
+                $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
                 if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                     DB::commit();
                     $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
@@ -635,6 +656,7 @@ class PickupDeliveryController extends FrontController{
                 $order_vendor->save();
                 $variant = $product->variants->where('product_id', $request->product_id)->first();
                 $variant->price = $request->amount;
+                $variant->toll_price = $request->tollamount;
                 $quantity_price = 0;
                 $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
                 $divider = isset($divider) ? $divider : 1;
@@ -662,6 +684,7 @@ class PickupDeliveryController extends FrontController{
                 $order_product->order_vendor_id = $order_vendor->id;
                 $order_product->order_id = $order->id;
                 $order_product->price = $variant->price;
+                $order_product->toll_price = $variant->toll_price;
                 $order_product->quantity = 1;
                 $order_product->vendor_id = $vendor->id;
                 $order_product->product_id = $product->id;
@@ -879,9 +902,11 @@ class PickupDeliveryController extends FrontController{
                     'dbname' => $client->database_name,
                     'order_id' => $order->id,
                     'customer_id' => $order->user_id,
-                    'user_icon' => $customer->image
+                    'user_icon' => $customer->image,
+                    'toll_passes' => 'IN_FASTAG',
+                    'VehicleEmissionType' => 'GASOLINE',
+                    'travelMode' => 'TAXI'
                 ];
-                
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);
@@ -895,7 +920,7 @@ class PickupDeliveryController extends FrontController{
 
                     $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->with(['vendor'])->first();
                     
-                    if($or_ids->vendor->auto_accept_order==1):
+                    if($or_ids->vendor->auto_accept_order==1){
                         $update_vendor = VendorOrderStatus::updateOrCreate([
                             'order_id' =>  $order->id,
                             'order_status_option_id' => 2,
@@ -903,9 +928,10 @@ class PickupDeliveryController extends FrontController{
                             'order_vendor_id' =>  $or_ids->id]);
 
                         OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
-                    else:
+                    }
+                    else {
                         OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['dispatcher_status_option_id' => 1]);
-                    endif;
+                    }
 
                     $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
                     'order_id' =>  $order->id,

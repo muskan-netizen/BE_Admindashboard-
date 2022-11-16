@@ -3286,16 +3286,25 @@ span.registerLink {
     margin-left: 15px;
 }
 
+.al_body_template_six .categories-product-list .search_form {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.al_body_template_six .categories-product-list .search_form button {
+    background: #eee;
+}
+
+.al_body_template_six .categories-product-list .search_form input {
+    background-color: #eee;
+}
+
 /* ================= dark css ================= */
 .dark .tip_label {
     background: transparent;
 }
 
-@media(max-width:1400px) {
-    .pricingtable-header.position-absolute .price-value {
-        font-size: 14px;
-    }
-}
+
 
 @media (max-width:576px) {
     .al_body_template_six .al_new_wrapper_design .vendor-description {
@@ -3304,5 +3313,62 @@ span.registerLink {
 
     .mobile-searchbarr select {
         width: 100%;
+    }
+}
+
+@media(max-width:1400px) {
+    .pricingtable-header.position-absolute .price-value {
+        font-size: 14px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .ds {
+        position: absolute;
+        left: 24px;
+    }
+
+    .booking-experience {
+        height: calc(100vh - 50px);
+        position: absolute;
+        width: 400px;
+        top: 50px;
+    }
+}
+
+@media (max-width: 991px) {
+    body .cab-booking #booking-map {
+        height: 50vh !important;
+        position: relative !important;
+        top: 0;
+    }
+
+    .title-36 {
+        font-size: 24px;
+        line-height: 34px;
+    }
+
+    body .booking-experience {
+        height: 100%;
+        position: relative;
+        width: 100%;
+        left: 0;
+        top: 0;
+        margin-bottom: 160px;
+    }
+
+    .cab-booking {
+        height: 100%;
+    }
+}
+
+
+@media (max-width: 767px) {
+    .al_body_template_six.homeHeader .product-bottom-bar {
+        padding: 20px !important;
+    }
+
+    img#vendorStoriesImg {
+        width: 60px;
     }
 }

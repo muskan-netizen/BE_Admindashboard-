@@ -21,6 +21,7 @@
         });
     }
     $(".openCategoryModal").click(function(e) {
+        localStorage.removeItem('edit_cat');
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -33,6 +34,7 @@
         if (id > 0) {
             uri = "<?php echo url('client/category'); ?>" + '/' + id + '/edit';
         }
+        localStorage.setItem('edit_cat',id);
         $.ajax({
             type: "get",
             url: uri,
@@ -136,7 +138,8 @@
     });
     $(document).on('change', '#client-cat-language', function() {
         var languageId = $(this).val();
-        var categoryId = $('#category_id').val();
+        //var categoryId = $('#category_id').val();
+        var categoryId = localStorage.edit_cat;
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')

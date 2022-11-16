@@ -160,7 +160,7 @@
 
                         <div class="row">
                             <div class="col-12">
-                                <div class="col-sm-6 mobile-searchbarr offset-sm-3">
+                                <div class="col-sm-6 offset-sm-3">
                                     <div class="row  d-flex align-items-start justify-content-center m-0">
                                         <div class="col-7 vendor-search-bar mb-sm-0 mb-2 p-0">
                                             <div class="radius-bar w-100">
@@ -450,7 +450,8 @@
                                                                         <p class="mb-1 product_price">   {{__('Batch') }} : {{ $prod->batch_count }} </p> --}}
                                                                     @endif
 
-                                                                    <p class="mb-1 product_price ">
+                                                                    <p class="mb-1 product_price">
+
                                                                         {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,',') }}
                                                                         @if ($prod->variant[0]->compare_at_price > 0)
                                                                             <span
@@ -473,7 +474,7 @@
                                                                                         name="{{ 'var_' . $var_id }}"
                                                                                         vid="{{ $var_id }}"
                                                                                         class="changeVariant dataVar{{ $var_id }}">
-                                                                                        <option value="Select Varient" >
+                                                                                        <option value="" disabled>
                                                                                             {{ $variant->title }}
                                                                                         </option>
                                                                                         @foreach ($variant->option2 as $k => $optn)
@@ -483,7 +484,7 @@
                                                                                             ?>
                                                                                             <option
                                                                                                 value="{{ $opt_id }}"
-                                                                                                >
+                                                                                                {{ $selected }}>
                                                                                                 {{ $optn->title }}
                                                                                             </option>
                                                                                         @endforeach

@@ -57,6 +57,12 @@ top: 145px;
 .al_body_template_two .suppliers-box .suppliers-img-outer img{object-fit: contain;width: 100% !important;height: 100%;}
 .al_body_template_two footer#footer section.section-b-space.light-layout{padding-top: 0 !important;}
 .al_body_template_two .store-btn.mb-3.d-flex.align-items-left.justify-content-start{margin-bottom: 0 !important;}
+.al_body_template_two .vendor-search-bar .radius-bar {
+    display: block !important;
+    position: relative;
+    bottom: 0;
+    z-index: 1;
+}
 }
 
 /* Order Placed css start */

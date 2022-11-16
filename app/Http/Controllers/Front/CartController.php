@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\{ApiResponser,CartManager};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
 class CartController extends FrontController
 {
     use ApiResponser,CartManager;
@@ -279,6 +279,7 @@ class CartController extends FrontController
     public function postAddToCart(Request $request, $domain = '')
     {
        // pr($request->all());
+      
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
@@ -380,6 +381,7 @@ class CartController extends FrontController
             }
             // total booking time for rental case 
             $total_booking_time = $request->has('total_booking_time') ? $request->total_booking_time : null;
+         
 
             // total booking time as single service duration time as per service for get totel service time multiply by quantity
             if(in_array($luxury_option->id,[6,8])){
@@ -1924,7 +1926,10 @@ class CartController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function getCartData($domain = '', Request $request)
-    {   $cart_details = null;
+    {   
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+        
+        $cart_details = null;
         $user = Auth::user();
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
@@ -1957,6 +1962,7 @@ class CartController extends FrontController
         }
 
         $client_preference_detail = ClientPreference::first();
+        $client_preference_detail  = $this->hideSecretKeys($client_preference_detail);
 
         $expected_vendors = [];
     //    $expected_vendors = $this->searchProductExpection($cart_details);
@@ -1977,7 +1983,7 @@ class CartController extends FrontController
                 }
             }
 
-            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm])->render();
+            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference])->render();
         }
         return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'']);
     }
@@ -2013,7 +2019,7 @@ class CartController extends FrontController
 
 
         //Fetch all delivery fee option
-    public function getDeliveryOptions($vendorData,$preferences,$payable_amount,$address,$schedule_datetime_del='')
+    public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del='', $dispatcher_tags='')
     {
         $option = array();
         $delivery_count = 0;
@@ -2022,11 +2028,24 @@ class CartController extends FrontController
             {
                 Session()->put('vid',$vendorData->vendor_id);
 
-                if($preferences->static_delivey_fee != 1)
+                $getAdditionalPreference = getAdditionalPreference(['is_free_delivery_by_roles']);
+                $skip_delivery_fees = false;
+                if($getAdditionalPreference['is_free_delivery_by_roles'] == 1 ){
+                    $product_id = $vendorData->vendorProducts[0]['product_id'];
+                    $result = ProductDeliveryFeeByRole::where('product_id', $product_id)->where('role_id', Auth::user()->role_id)
+                    ->where('is_free_delivery', 1)->first();
+                    if($result != null){
+                        $skip_delivery_fees = true;
+                    }
+                }
+                if( $skip_delivery_fees == true ){
+                    // skip
+                }
+                else if($preferences->static_delivey_fee != 1)
                 {
 
                     //Dispatcher Delivery changes and estimated delivery duration code
-                    $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del);
+                    $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del, $dispatcher_tags);
                     if (!empty($deliver_response_array[0])){
                         $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format($deliver_response_array[0]['delivery_fee'], 2, '.', ''):'0.00';
                         $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
@@ -2166,7 +2185,7 @@ class CartController extends FrontController
 
 
     # get delivery fee from dispatcher
-    public function getDeliveryFeeDispatcher($vendor_id, $schedule_datetime_del='')
+    public function getDeliveryFeeDispatcher($vendor_id, $schedule_datetime_del='', $dispatcher_tags='')
     {
       
         try {
@@ -2186,7 +2205,7 @@ class CartController extends FrontController
                         'latitude' => $cus_address->latitude ?? 30.717288800000,
                         'longitude' => $cus_address->longitude ?? 76.803508700000
                     );
-                    $postdata =  ['locations' => $location, 'schedule_datetime_del' => $schedule_datetime_del];
+                    $postdata =  ['locations' => $location, 'schedule_datetime_del' => $schedule_datetime_del, 'agent_tag' => (!empty($dispatcher_tags)?$dispatcher_tags:'')];
                     
                     $vendorType =  (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
                     if($vendorType == 'appointment'){

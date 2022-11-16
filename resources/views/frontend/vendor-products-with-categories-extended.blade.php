@@ -174,7 +174,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                     </a>
                         <div class="row">
                             <div class="col-12">
-                                <div class="col-sm-6 offset-3">
+                                <div class="col-sm-6 offset-sm-3">
                                     <div class="row mt-2 d-flex align-items-center mb-sm-2 justify-content-center">
                                         <div class="col-6 vendor-search-bar mb-sm-0 mb-2">
                                             <div class="radius-bar w-100">
