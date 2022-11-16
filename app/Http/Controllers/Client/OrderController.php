@@ -1373,7 +1373,8 @@ class OrderController extends BaseController
                 'dbname' => $client->database_name,
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
-                'user_icon' => $customer->image
+                'user_icon' => $customer->image,
+                'vendor_name' => $vendor_details->name ?? null
             ];
             //pr($postdata);
             if ($orderVendorDetails->is_restricted == 1) {

@@ -535,6 +535,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		
 		Route::post('update-driver-rating', 'Front\RatingController@updateDriverRating')->name('update.driver.rating');
 		Route::get('get-driver-rating', 'Front\RatingController@getDriverRating')->name('get-driver-rating-details');
+		Route::post('driver-agent-rating', 'Api\v1\RatingController@driverAgentRating')->name('driver-agent-rating');
 	});
 	// Return product
 	Route::group(['prefix' => 'return-order'], function () {

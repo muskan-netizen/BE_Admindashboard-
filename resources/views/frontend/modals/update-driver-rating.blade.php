@@ -75,7 +75,7 @@
         <span class="text-danger" id="error-msg"></span>
         <span class="text-success" id="success-msg"></span>
         <div class="col-md-12">
-            <button class="btn btn-solid buttonload" type="submit" id="review_form_button">{{__('Submit Your Review')}}</button>
+            <button class="btn btn-solid buttonload" type="submit" id="review_agent_form_button">{{__('Submit Your Review')}}</button>
         </div>
 
     </div>
@@ -101,7 +101,7 @@ $(document).ready(function (e) {
     });
 
 
-    $('#review_form_button').on('click',function(e){
+    $('#review_agent_form_button').on('click',function(e){
         $('#only_set_radio').val(0);
         $(this).closest("form").submit();
     });
@@ -127,6 +127,7 @@ let review = $('#exampleFormControlTextarea1').val();
 $.ajax({
 type:'POST',
 url: "{{ route('update.driver.rating')}}",
+<?php /*url: "{{ route('driver-agent-rating')}}", */?>
 data: formdata,
 cache:false,
 // contentType: false,
@@ -140,12 +141,12 @@ if(data.status == 'Success')
         $(location).prop('href', url);           
     }else{
         $('#error-msg').text(data.message);
-        $("#review_form_button").html('Submit Your Review').prop('disabled', false);
+        $("#review_agent_form_button").html('Submit Your Review').prop('disabled', false);
     }
 },
 error: function(data){
     $('#error-msg').text(data.message);
-    $("#review_form_button").html('Submit Your Review').prop('disabled', false);
+    $("#review_agent_form_button").html('Submit Your Review').prop('disabled', false);
 }
 });
 

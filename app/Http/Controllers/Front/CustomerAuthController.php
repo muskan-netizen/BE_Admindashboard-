@@ -90,6 +90,8 @@ class CustomerAuthController extends FrontController
             $login_page = "template_four.account.loginnew";
         }elseif($set_template->template_id == 6){
             $login_page = "template_six.account.loginnew";
+        }elseif($set_template->template_id == 8){
+            $login_page = "template_eight.account.loginnew";
         } else{
             $login_page = "account.loginnew";
         }
@@ -127,6 +129,8 @@ class CustomerAuthController extends FrontController
             $register_page = "template_four.account.registernew";
         }elseif($set_template->template_id == 6){
             $register_page = "template_six.account.registernew";
+        }elseif($set_template->template_id == 8){
+            $register_page = "template_eight.account.registernew";
         }else{
             $register_page = "account.registernew";
         }
