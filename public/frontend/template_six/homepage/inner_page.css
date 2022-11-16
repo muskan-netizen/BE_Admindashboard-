@@ -195,7 +195,7 @@ section#alTaxiBookingWrapper {
 }
 
 .location-inputs .dots::after {
-    top: 12px;
+    ` top: 12px;
     left: -22px
 }
 
