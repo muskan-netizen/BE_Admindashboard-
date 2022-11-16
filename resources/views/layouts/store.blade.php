@@ -65,7 +65,8 @@ if(isset($set_template))
   }
   elseif($set_template->template_id == 8)
     $body_class = "al_body_template_eight";
-    
+  elseif($set_template->template_id == 9)
+    $body_class = "al_body_template_nine";
 }
 
 
