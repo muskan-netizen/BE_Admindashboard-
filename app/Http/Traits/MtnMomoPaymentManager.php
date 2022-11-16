@@ -61,6 +61,7 @@ trait MtnMomoPaymentManager{
   }
 
   public function createApiKey($subscription_key,$reference_id){
+    
     $curl = curl_init();
     curl_setopt_array($curl, array(
       CURLOPT_URL => 'https://sandbox.momodeveloper.mtn.com/v1_0/apiuser/'.$reference_id.'/apikey',

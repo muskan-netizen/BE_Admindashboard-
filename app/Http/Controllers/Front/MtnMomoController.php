@@ -45,13 +45,15 @@ class MtnMomoController extends FrontController
         $this->api_key          = $json->api_key;
         $this->token            = base64_encode($this->reference_id.':'.$this->api_key);
         if ($payOpt->test_mode == '1') {
-            $this->appUrl = 'https://sandbox.momodeveloper.mtn.com/';
+            $this->appUrl       = 'https://sandbox.momodeveloper.mtn.com/';
+            $this->environment  = 'sandbox';
         } else {
-            $this->appUrl = 'https://sandbox.momodeveloper.mtn.com/';
+            $this->appUrl       = 'https://sandbox.momodeveloper.mtn.com/';
+            $this->environment  = 'sandbox';
         }
 
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'FJD';
+        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'EUR';
     }
 
     public function orderNumber($request)
@@ -104,7 +106,11 @@ class MtnMomoController extends FrontController
 
     public function createTocken(Request $request, UrlGenerator $url)
     {
-        $curl = curl_init();
+            $data                   = [];
+            $data['amt']            = $request->amt;
+            $data['order_number']   = $request->order_number;
+            $data['from']           = $request->from;
+            $curl = curl_init();
 
             curl_setopt_array($curl, array(
             CURLOPT_URL => $this->appUrl.'collection/token/',
@@ -123,9 +129,107 @@ class MtnMomoController extends FrontController
             ));
 
             $response = curl_exec($curl);
-
+            $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+           
             curl_close($curl);
-            return $response;
+
+            if($status == 200){
+                $result = json_decode($response,true);
+              
+                if($result['token_type'] == 'access_token'){
+                    $token = $result['access_token'];
+                    return self::RequestToPay($token,$data);
+                }
+                
+            }else if($status == 401){
+                return json_encode(['status'=>401,'message'=>'Unauthorized.']);
+            }else if($status == 500){
+                return json_encode(['status'=>401,'message'=>'Internal Server Error']);
+            }
+    }
+
+    public function RequestToPay($token,$data)
+    {
+        
+        $amount         = $data['amt'];
+        $from           = $data['from'];
+        $order_number   = $data['order_number'];
+        $payOpt         = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'mtn_momo')->where('status', 1)->first();
+        if ($payOpt->test_mode == '1') {
+            $currency   = 'EUR';
+            $partyId    = '46733123454';
+        }else{
+            $currency   = $this->currency;
+            $partyId    = '46733123454';
+        }
+
+       
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => $this->appUrl.'collection/v1_0/requesttopay/',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS =>'{
+        "amount":'.$amount.',
+        "currency": '.$currency.',
+        "externalId":'.$order_number.',
+        "payer": {
+            "partyIdType": "MSISDN",
+            "partyId": '.$partyId.'
+        },
+        "payerMessage": "Paying for Driver tester code",
+        "payeeNote": "Drivers name"
+        }',
+        CURLOPT_HTTPHEADER => array(
+            'X-Reference-Id: '.$this->reference_id,
+            'X-Target-Environment: '.$this->environment,
+            'Ocp-Apim-Subscription-Key: '.$this->subscription_key,
+            'Authorization: Bearer '.$token,
+            'Content-Type: application/json'
+        ),
+        ));
+       
+        
+
+        $response = curl_exec($curl);
+        $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+       
+        curl_close($curl);
+        if($status == '202'){
+            dd($token);
+            return self::GetpaymentTransaction($token);
+        }
+    }
+
+    public function GetpaymentTransaction($token)
+    {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => $this->appUrl.'collection/v1_0/requesttopay/'.$this->reference_id,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_HTTPHEADER => array(
+            'X-Target-Environment: '.$this->environment,
+            'Ocp-Apim-Subscription-Key: '.$this->subscription_key,
+            'Authorization: Bearer '.$token,
+        ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        dd($response);
     }
 
     public function createAppTocken(Request $request)
