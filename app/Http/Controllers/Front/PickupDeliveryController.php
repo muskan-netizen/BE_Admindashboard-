@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,OrderLocations,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,User, UserAddress,Order,SubscriptionInvoicesUser,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail, VendorCategory,VendorOrderDispatcherStatus,ProductFaq,ClientLanguage, Payment, PaymentOption,Rider,LuxuryOption, OrderDriverRating};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, PaymentOption};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -51,18 +51,31 @@ class PickupDeliveryController extends FrontController{
     }
 
     public function getOrderTrackingDetails(Request $request, $domain = ''){
-
-       $order = OrderVendor::where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
-   
+        
+        $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
+       
        $response = Http::get($request->new_dispatch_traking_url);
 
         if(count($order) > 0) {
             if($response->status() == 200){
-                if(($response['agent_location'] != '') && ($order['dispatcher_status'] === __('Hold on! We are looking for drivers nearby!'))){
-                    //$order['dispatcher_status'] = __('Hold on! We are looking for drivers nearby!');
-                    $order['dispatcher_status'] = __('Your driver has been assigned!');
-                 }
-                // dd($order->dispatcher_status);
+                if(($order['dispatcher_status'] === __('Hold on! We are looking for drivers nearby!'))){
+                    if($order['order_detail']['scheduled_date_time']){ //  show scheduled ride
+                        $user = Auth::user();
+                        if(empty($user->timezone))
+                        {
+                            $client_timezone = DB::table('clients')->first('timezone'); 
+                            $user->timezone = $client_timezone->timezone ?? $user->timezone;
+                        }     
+                        $date = Carbon::parse($order['order_detail']['scheduled_date_time'], 'UTC');
+                        $date->setTimezone( $user->timezone);
+                        $schudelDate =  $date->format('d M ,y H:i A');; //$date->isoFormat('d.m.Y, H:i A');
+                       //date("F j, Y, g:i a"); //dateTimeInUserTimeZone($order['order_detail']['scheduled_date_time'], $user->timezone) 
+                        $order['dispatcher_status'] = __('You have successfully scheduled your ride for:') . $schudelDate   ;
+                    }
+                    if ($response['agent_location'] != ''){
+                        $order['dispatcher_status'] = __('Your driver has been assigned!');
+                    }
+                }
                 $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order['order_id'] ,'vendor_id' =>$order['vendor_id'] ])->latest()->first();
                 $order_driver_rating = OrderDriverRating::where('order_id', $request->order_id)->first();
                 $order['dispatcher_status_type']=  $type ?  $type->type :1;
@@ -426,8 +439,9 @@ class PickupDeliveryController extends FrontController{
     */
      public function createOrder(Request $request){
          //pr($request->all());
-        DB::beginTransaction();
+       
         try {
+            DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
             {
                 $timezone = $request->time_zone;
@@ -893,7 +907,6 @@ class PickupDeliveryController extends FrontController{
                     'VehicleEmissionType' => 'GASOLINE',
                     'travelMode' => 'TAXI'
                 ];
-                
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);
@@ -907,7 +920,7 @@ class PickupDeliveryController extends FrontController{
 
                     $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->with(['vendor'])->first();
                     
-                    if($or_ids->vendor->auto_accept_order==1):
+                    if($or_ids->vendor->auto_accept_order==1){
                         $update_vendor = VendorOrderStatus::updateOrCreate([
                             'order_id' =>  $order->id,
                             'order_status_option_id' => 2,
@@ -915,9 +928,10 @@ class PickupDeliveryController extends FrontController{
                             'order_vendor_id' =>  $or_ids->id]);
 
                         OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
-                    else:
+                    }
+                    else {
                         OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['dispatcher_status_option_id' => 1]);
-                    endif;
+                    }
 
                     $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
                     'order_id' =>  $order->id,

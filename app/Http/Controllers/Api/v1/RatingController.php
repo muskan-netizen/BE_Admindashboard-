@@ -36,7 +36,7 @@ class RatingController extends BaseController{
                 $ratings = OrderProductRating::updateOrCreate(['order_vendor_product_id' => $request->order_vendor_product_id,
                 'order_id' => $request->order_id,
                 'product_id' => $request->product_id,
-                'user_id' => Auth::id()],['rating' => $request->rating,'review' => $request->review??null]);
+                'user_id' => Auth::id()],['rating' => $request->rating,'review' => $request->review??'']);
                 if ($image = $request->file('files')) {
                     foreach ($image as $files) {
                     $file =  substr(md5(microtime()), 0, 15).'_'.$files->getClientOriginalName();

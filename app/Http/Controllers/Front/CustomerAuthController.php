@@ -177,6 +177,7 @@ class CustomerAuthController extends FrontController
             }
             $this->checkCookies($userid);
             $user_cart = Cart::where('user_id', $userid)->first();
+           
             if ($user_cart) {
                 $unique_identifier_cart = Cart::where('unique_identifier', session()->get('_token'))->first();
                 if ($unique_identifier_cart) {
@@ -358,9 +359,11 @@ class CustomerAuthController extends FrontController
                         $to = '+' . $user->dial_code . $user->phone_number;
                     }
                     $provider = $prefer->sms_provider;
-                    $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                   // $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                    $keyData = ['{user_name}'=>ucwords($user->name)];
+                    $body = sendSmsTemplate('user-signup-sms',$keyData);
                     // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
-                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
 
                     if( $prefer->verify_phone == 1 ){
                         $response['send_otp'] = 1;
@@ -454,20 +457,24 @@ class CustomerAuthController extends FrontController
             }
 
             if($this->checkTemplateForAction(8)){
+               
                 $this->LoginActionRecentView($userid);
             }
             
-
-            $message = __('Logged in successfully');
+            $message = ('Logged in successfully');
             $redirect_to = '';
+     
             if(session()->has('url.intended')){
+              
                 $redirect_to = session()->get('url.intended');
                 session()->forget('url.intended');
             }else{
+          
                 $redirect_to = route('user.verify');
             }
             $req->request->add(['is_phone'=>1, 'redirect_to'=>$redirect_to]);
             $response = $req->all();
+           
             return $this->successResponse($response, $message);
         }
         else {
@@ -477,6 +484,7 @@ class CustomerAuthController extends FrontController
 
     /*** Login user via username ***/
     public function loginViaUsername(Request $request, $domain = ''){
+       
         try{
             $errors = array();
 
@@ -486,6 +494,7 @@ class CustomerAuthController extends FrontController
 
             if(preg_match($phone_regex, $username))
             {
+            
                 $validator = Validator::make($request->all(), [
                     'username'  => 'required',
                     'dialCode'  => 'required',
@@ -493,6 +502,7 @@ class CustomerAuthController extends FrontController
                 ]);
 
                 if($validator->fails()){
+                    
                     foreach($validator->errors()->toArray() as $error_key => $error_value){
                         $errors['error'] = __($error_value[0]);
                         return response()->json($errors, 422);
@@ -562,11 +572,14 @@ class CustomerAuthController extends FrontController
             }
             elseif (preg_match($email_regex, $username))
             {
+                
+                
                 $validator = Validator::make($request->all(), [
                     'username'  => 'required'
                 ]);
 
                 if($validator->fails()){
+                  
                     foreach($validator->errors()->toArray() as $error_key => $error_value){
                         $errors['error'] = __($error_value[0]);
                         return response()->json($errors, 422);
@@ -590,12 +603,15 @@ class CustomerAuthController extends FrontController
                         }
                     }
                     if($Authuser->is_superadmin == 1 || $Authuser->is_admin == 1){
+                       
                         Auth::logout();
                         Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1]);
                     }
                     $this->checkCookies($userid);
                     $user_cart = Cart::where('user_id', $userid)->first();
+                    
                     if ($user_cart) {
+                        
                         $unique_identifier_cart = Cart::where('unique_identifier', session()->get('_token'))->first();
                         if ($unique_identifier_cart) {
                             $unique_identifier_cart_products = CartProduct::where('cart_id', $unique_identifier_cart->id)->get();
@@ -613,16 +629,21 @@ class CustomerAuthController extends FrontController
                             $unique_identifier_cart->delete();
                         }
                     } else {
+                       
                         Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
                     }
-                     
-                    // if($this->checkIfTemplateEightEnable()){
-                    //     $this->LoginActionRecentView($userid);
-                    // }
+                 
+                    
+                    if($this->checkTemplateForAction(8)){
+                    
+                        $this->LoginActionRecentView($userid);
+                    }
             
                     $message = 'Logged in successfully';
                     $redirect_to = '';
+                    
                     if(session()->has('url.intended')){
+                        
                         $redirect_to = session()->get('url.intended');
                         session()->forget('url.intended');
                     }else{
@@ -634,6 +655,7 @@ class CustomerAuthController extends FrontController
                 }
                 $checkEmail = User::where('email', $username)->first();
                 if ($checkEmail) {
+                  
                     if($checkEmail->status != 1){
                         if(session()->get("locale") == "ar"){
                             return $this->errorResponse(__('أنت غير مخول للوصول إلى هذا الحساب'), 404);

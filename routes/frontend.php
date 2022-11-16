@@ -11,14 +11,13 @@
 		echo \Hash::make('dispatcher@765');
 		//throw new Exception('My first Sentry error!');
 	});
-
-
+	
 Route::group(['middleware' => ['domain']], function () {
 	//easypay test
 	Route::get('testpayment', 'Front\EasypaisaControllertest@testpayment')->name('testpayment');
 	Route::get('response', 'Front\EasypaisaControllertest@response')->name('response_payment');
     Route::get('responseConf', 'Front\EasypaisaControllertest@responseConformation')->name('responseConformation');
-
+	Route::any('webhook/quick-api', 'Front\QuickApiController@webhooks')->name('quick-api');
 	Route::any('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
 	Route::any('webhook/ship-rocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
 	Route::any('webhook/dunzo','DunzoController@dunzoWebhook')->name('dunzoWebhook');

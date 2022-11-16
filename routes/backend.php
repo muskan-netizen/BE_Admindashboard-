@@ -510,6 +510,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
 
 Route::get('/search11', [SearchController::class, 'search']);
+
 Route::group(['middleware' => 'auth:client', 'prefix' => '/admin'], function () {
     Route::get('/', 'Client\DashBoardController@index')->name('home');
     Route::get('{first}/{second}/{third}', 'Client\RoutingController@thirdLevel')->name('third');

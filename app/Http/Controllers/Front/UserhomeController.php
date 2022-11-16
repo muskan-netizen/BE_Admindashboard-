@@ -470,13 +470,12 @@ class UserhomeController extends FrontController
 
             if (count($home_page_labels) == 0)
                 $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
-
-            $request->merge(['type'=>Session::get('vendorType'),'noTinJson'=>1] );
+            $request->request->add(['type'=>Session::get('vendorType')??'delivery','noTinJson'=>1] );
             $homePageData = $this->postHomePageData($request);
-// dd($navCategories);
-            $home_page_labels = $home_page_labels->map(function($da) use ($homePageData,$navCategories) {
-                if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' && $da->slug!='nav_categories'){
-                    $da[$da->slug] = $homePageData[$da->slug];
+
+            $home_page_labels = $home_page_labels->map(function($da) use ($homePageData) {
+                if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' ){
+                    $da[$da->slug] = @$homePageData[$da->slug];
                 }
                 if( $da->slug == 'nav_categories'  ){
                     // dd($da->slug);
@@ -641,6 +640,18 @@ class UserhomeController extends FrontController
         }else{
             $brands = [];
         }
+
+        $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+                ->where('id', '>', '1')
+                // ->where('is_core', 1)
+                ->whereNotIn('type_id', [4, 5])
+                ->where(function ($q) {
+                    $q->whereNull('vendor_id');
+                })->orderBy('position', 'asc')
+                ->orderBy('id', 'asc')
+                ->where('status', 1)
+                ->orderBy('parent_id', 'asc')->get();
+
 
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);

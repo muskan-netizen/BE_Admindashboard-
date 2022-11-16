@@ -87,7 +87,11 @@ class ProductController extends FrontController{
 
 
         $p_id = $product->id;
+        if($this->checkTemplateForAction(8)){
+            $this->RecentView($p_id);
+        }
         
+
         $product = Product::with([
             'variant' => function ($sel) {
                 $sel->groupBy('product_id');
