@@ -937,10 +937,12 @@
                                                                                             
 
                                                                                             @if($vendor->order_status_option_id == 9) 
-
-                                                                                                {{$vendor->OrderStatusOption->title}}
-                                                                                                       
+                                                                                                @if($vendor->dispatcher_status_option_id == 5) 
+                                                                                                <button class="btn btn-solid" >  {{__('Replaced')}}</button>
                                                                                                 @else
+                                                                                                <button class="btn btn-solid" > {{$vendor->OrderStatusOption->title}} </button>
+                                                                                                @endif     
+                                                                                            @else
                                                                                            
                                                                                                 @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request)
                                                                                                 @if(@$returnable)
@@ -956,10 +958,7 @@
                                                                                                 @endif
 
                                                                                                 @if(@$replaceable)
-                                                                                                    <button
-                                                                                                        class="replace-order-product btn btn-solid"
-                                                                                                        data-id="{{ $order->id ?? 0 }}"
-                                                                                                        data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
+                                                                                                    <button class="replace-order-product btn btn-solid" data-id="{{ $order->id ?? 0 }}" data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
                                                                                                         
                                                                                                          {{ __('Replace') }}
                                                                                                     </button>

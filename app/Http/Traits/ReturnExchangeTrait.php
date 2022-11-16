@@ -273,6 +273,9 @@ trait ReturnExchangeTrait{
         $OrderVendor->vendor_id = $orderVendorProductOld->vendor_id;
         $OrderVendor->vendor_dinein_table_id = null;
         $OrderVendor->order_status_option_id = $orderStatusPlaced;
+        if(checkColumnExists('order_vendors','exchange_order_vendor_id')){
+            $OrderVendor->exchange_order_vendor_id = $orderVendorProductOld->id;
+        }
         $OrderVendor->save();
 
         return $OrderVendor;
@@ -327,7 +330,14 @@ trait ReturnExchangeTrait{
     protected function markAsExchangePending($orderVendorProduct)
     {
         $replace_pending = 9;
-        OrderVendor::where('id', $orderVendorProduct->order_vendor_id)->update(['order_status_option_id' => $replace_pending]);
+        $updateData = ['order_status_option_id' => $replace_pending, 'dispatcher_status_option_id' => null ];
+        if(checkColumnExists('order_vendors','exchange_order_vendor_id')){
+            $updateData['is_exchanged'] = 1;
+        }
+        OrderVendor::where('id', $orderVendorProduct->order_vendor_id)
+        ->update($updateData);
         return true;
     }
+
+   
 }
