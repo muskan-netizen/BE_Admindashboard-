@@ -4444,6 +4444,7 @@ $(document).ready(function () {
             case 47:
                 paymentViaKhalti('', '');
             break;
+           
         }
 
     }
@@ -4899,6 +4900,19 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+
+            case '48':
+
+                console.log('address_id',address_id,'payment_option_id',payment_option_id,'tip',tip);
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    console.log('order',order);
+                    paymentViaMtnMomo(address_id, order, payment_from='cart');
+                }
+                else{
+                    return false;
+                }
+            break;
         }
 
     }
@@ -5115,6 +5129,9 @@ $(document).ready(function () {
             case 47:
                 paymentViaKhalti('', '');
                 break;
+            case 48:
+                console.log('test');
+            break;
         }
     }
 

@@ -1086,7 +1086,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var error_Slot_is_required = "{{__('Slot is required')}}";
     var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
     var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
-
+    var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
     if(!latitude){
         @if(!empty($client_preference_detail->Default_latitude))
             latitude = "{{$client_preference_detail->Default_latitude}}";
