@@ -812,6 +812,82 @@ body.al_body_template_eight.homeHeader .outer-categories .collection-content.col
 body.al_body_template_eight.homeHeader .outer-categories .outter-fillter-data .col-12.text-right.mt-2 {
     display: none;
 }
+body.al_body_template_eight div#cancel_order button.close {
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    background: #e9248d;
+    opacity: 1;
+    text-align: center;
+    color: #fff;
+    border-radius: 50%;
+    line-height: 37px;
+    position: absolute;
+    right: -15px;
+    top: -18px;
+}
+body.al_body_template_eight div#cancel_order div#cancel-order-form-modal form button {
+    background-color: #e9248d;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-top: 14px;
+}
+body.al_body_template_eight div#cancel_order div#cancel-order-form-modal form label {
+    text-align: left;
+    font-size: 20px !important;
+    color: #000;
+    margin: 0px 0 20px;
+}
+body.al_body_template_eight div#repeat_cart_modal .modal-content h5 {
+    font-size: 22px;
+    font-weight: bold;
+}
+body.al_body_template_eight div#repeat_cart_modal .modal-content h6 {
+    font-size: 16px;
+}
+body.al_body_template_eight div#topup_wallet button.close {
+    padding: 0;
+    margin: 0;
+    background: #e9248d;
+    opacity: 1;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    border-radius: 50%;
+    position: absolute;
+    right: -10px;
+    top: -10px;
+}
+body.al_body_template_eight div#transfer_wallet button.close {
+    padding: 0;
+    margin: 0;
+    background: #e9248d;
+    opacity: 9;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    border-radius: 50%;
+    position: absolute;
+    right: -12px;
+    top: -9px;
+}
+body.al_body_template_eight div#proceed_to_pay_modal button.close {
+    padding: 0;
+    margin: 0;
+    background: #e9248d;
+    opacity: 9;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    border-radius: 50%;
+    position: absolute;
+    right: -12px;
+    top: -9px;
+}
 /*-------------ipad css--------*/
 @media(max-width:991px){
     body.al_body_template_eight .recet-pw .login_img img {
@@ -957,6 +1033,13 @@ body.al_body_template_eight.homeHeader .outer-categories .outter-fillter-data .c
         max-width: 50%;
         flex: 50%;
     }
+    body.al_body_template_eight section.section-b-space.ratio_asos.alProductCategories .col-sm-6.offset-sm-3 {
+        margin-left: 30%;
+        margin-bottom: 30px;
+    }
+    body.al_body_template_eight .product_variant_quantity_wrapper {
+        text-align: right;
+    }
 }
 /*-------------------mobile view css----------*/
 @media(max-width:767px){
@@ -964,6 +1047,43 @@ body.al_body_template_eight.homeHeader .outer-categories .outter-fillter-data .c
         width: 33%;
         max-width: 33%;
         flex: 33%;
+    }
+    body.al_body_template_eight div#view_all_address_div .row.w-100 {
+        margin: 0 !important;
+    }
+    body.al_body_template_eight div#address_template_main_div .row.w-100 {
+        margin: 0;
+    }
+    body.al_body_template_eight section.section-b-space.ratio_asos.alProductCategories .col-sm-6.offset-sm-3 {
+        margin-left: 0;
+        margin-bottom: 30px;
+    }
+    body.al_body_template_eight div#cart_template .col-6.col-md-2.mb-1.mb-md-0.order-md-2.p-0 {
+        padding-left: 12px !important;
+    }
+    body.al_body_template_eight section.section-b-space.ratio_asos.alProductCategories .col-12.col-lg-3.d-lg-inline-block.d-none {
+        display: block !important;
+    }
+    body.al_body_template_eight .side-menu-open {
+        top: 115px !important;
+    }
+    body.al_body_template_eight .categories-product-list{
+        padding: 20px;
+    }
+    body.al_body_template_eight .product_variant_quantity_wrapper {
+        text-align: right;
+    }
+    body.al_body_template_eight .sub-title {
+        margin-bottom: 15px !important;
+    }
+    body.al_body_template_eight .footer-theme .sub-title li {
+        padding-top: 10px;
+    }
+    body.al_body_template_eight .aside_bar {
+        margin-bottom:20px;
+    }
+    body.al_body_template_eight .collection-wrapper.al h2 {
+        margin-top: 30px;
     }
     .outer-categories .collection-content.col-lg-9.outter-fillter-data .product-top-filter {
         display: block;
