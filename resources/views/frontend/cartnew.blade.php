@@ -126,6 +126,11 @@ font-size: 12px;padding: 6.7px 10px;}
 .al_body_template_two .show-prescription-doc {width:100%;}
 .item-show-cart h4 {font-size:14px !important;}
 .product_title_add span {font-size: 12px;}
+.single_cart_heading h3 {font-size: 18px;}
+#cart_template .col-5.text-lg-right label.radio {padding-left: 0px;}
+.cart-design .alFourTemplateCartButtons a.shoping i{transform: translate(0px, -2px);}
+.al_body_template_one .cart-summary .tip_label {padding: 5px 8px;}
+
 }
 
 /*cart page responsive css */
