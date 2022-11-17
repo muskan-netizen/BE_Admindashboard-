@@ -2,7 +2,9 @@
     \Session::forget('success');
 @endphp
 @include('backend.modal.modalPopup')
-
+@if(checkColumnExists('client_preferences', 'need_inventory_service'))
+    @include('backend.modal.inventoryPopup')
+@endif
 @yield('popup-js')
 <div class="d-none" id ="nearmap">
 <!-- Footer Start -->

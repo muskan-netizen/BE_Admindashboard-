@@ -47,6 +47,11 @@
     .box-info table tr:first-child td {
         padding-top: .85rem;
     }
+    .wishlist_product {
+    height: 550px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 </style>
 @endsection
 @section('content')
@@ -78,7 +83,7 @@ $timezone = Auth::user()->timezone;
                         <div class="page-title">
                             <h2>{{__(getNomenclatureName('Wishlist', true)) }}</h2>
                         </div>
-                        <div class="box-account box-info mt-md-3 mt-2">
+                        <div class="box-account wishlist_product box-info mt-md-3 mt-2">
                             <div class="row">
                                 <div class="col-sm-12 table-responsive table-responsive-xs">
                                     <table class="table wishlist-table border">
