@@ -1208,7 +1208,7 @@ if (!function_exists('sendSmsTemplate')) {
     function sendSmsTemplate($slug,$data)
     {
         $smsTemp = SmsTemplate::where('slug',$slug)->select('content','tags','template_id')->first();
-        $smsBody = $smsTemp->content;
+        $smsBody = $smsTemp->content ?? '';
         if(isset($smsTemp->tags) && !empty($smsTemp->tags))
         {
             $tages = explode(',',$smsTemp->tags);
