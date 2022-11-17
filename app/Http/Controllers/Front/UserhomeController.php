@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Contracts\Session\Session as SessionSession;
-use App\Models\{Currency, Banner, MobileBanner, FaqTranslations, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency,Client, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption, SubscriptionInvoicesVendor, Order, VendorOrderStatus,CabBookingLayoutTranslation,ShowSubscriptionPlanOnSignup,VendorCities};
+use App\Models\{Currency, Banner, MobileBanner, FaqTranslations, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency,Client, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption, SubscriptionInvoicesVendor, Order, VendorOrderStatus,CabBookingLayoutTranslation,ShowSubscriptionPlanOnSignup, TaxCategory, VendorCities};
 use Illuminate\Contracts\View\View;
 use Illuminate\View\View as ViewView;
 use Redirect;
@@ -21,10 +21,11 @@ use DB;
 use Illuminate\Http\Response;
 use Cookie;
 use App\Http\Traits\{OrderTrait,ProductActionTrait};
+use App\Http\Traits\HomePage\{HomePageTrait};
 
 class UserhomeController extends FrontController
 {
-    use ApiResponser, OrderTrait,ProductActionTrait;
+    use ApiResponser, OrderTrait,ProductActionTrait, HomePageTrait;
     private $field_status = 2;
     public $cities = [];
 
@@ -665,7 +666,7 @@ class UserhomeController extends FrontController
                     $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
                         $query->select('vendor_id')
                         ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                    });
+                    });                                                                     
                 }
             }
         }
@@ -794,60 +795,9 @@ class UserhomeController extends FrontController
         if (($preferences) && ($preferences->is_hyperlocal == 1)) {
             $trendingVendors = $trendingVendors->sortBy('lineOfSightDistance')->values()->all();
         }
-        $mostSellingVendors = Vendor::with('slot.day', 'slotDate')->select('vendors.*',DB::raw('count(vendor_id) as max_sales'))->join('order_vendors','vendors.id','=','order_vendors.vendor_id')->whereIn('vendors.id',$vendor_ids)->where('vendors.status', 1)->groupBy('order_vendors.vendor_id')->orderBy(DB::raw('count(vendor_id)'),'desc');
-
-        // add hyperlocal check to get vendors
-        if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-
-            if (!empty($latitude) && !empty($longitude)) {
-                $mostSellingVendors = $mostSellingVendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
-                    $query->select('vendor_id')
-                    ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                });
-            }
-        }
-        $mostSellingVendors = $mostSellingVendors->get();
-
-        if ((!empty($mostSellingVendors) && count($mostSellingVendors) > 0)) {
-            foreach ($mostSellingVendors as $key => $value) {
-                $value->vendorRating = $this->vendorRating($value->products);
-                // $value->name = Str::limit($value->name, 15, '..');
-                if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                    $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
-                }
-                $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
-                $categoriesList = '';
-                foreach ($vendorCategories as $key => $category) {
-                    if ($category->category) {
-                        $categoriesList = $categoriesList . @$category->category->translation_one->name;
-                        if ($key !=  $vendorCategories->count() - 1) {
-                            $categoriesList = $categoriesList . ', ';
-                        }
-                    }
-                }
-                $value->categoriesList = $categoriesList;
-
-                $value->is_vendor_closed = 0;
-                if($value->show_slot == 0){
-                    if( ($value->slotDate->isEmpty()) && ($value->slot->isEmpty()) ){
-                        $value->is_vendor_closed = 1;
-                    }else{
-                        $value->is_vendor_closed = 0;
-                        if($value->slotDate->isNotEmpty()){
-                            $value->opening_time = Carbon::parse($value->slotDate->first()->start_time)->format('g:i A');
-                            $value->closing_time = Carbon::parse($value->slotDate->first()->end_time)->format('g:i A');
-                        }elseif($value->slot->isNotEmpty()){
-                            $value->opening_time = Carbon::parse($value->slot->first()->start_time)->format('g:i A');
-                            $value->closing_time = Carbon::parse($value->slot->first()->end_time)->format('g:i A');
-                        }
-                    }
-                }
-            }
-        }
-        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-            $mostSellingVendors = $mostSellingVendors->sortBy('lineOfSightDistance')->values()->all();
-        }
-
+        
+        //get Most Selling Vendors
+        $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
         $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);
         $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
         $feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
@@ -909,6 +859,19 @@ class UserhomeController extends FrontController
           
         if($this->checkTemplateForAction(8)){
             $recently_viewed = $this->productvendorProducts($vendor_ids, $language_id, $currency_id, '', $request->type,$p_dim);
+            $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
+
+            $single_category_product_ids = $this->getSingleCategoryProducts(); // get single selected category's products
+            $single_category_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $single_category_product_ids);
+            
+            $selected_product_ids = $this->getSelectedProducts(); // get single selected category's products
+            $selected_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $selected_product_ids);
+
+            $popular_product_ids = $this->getMostPopularProducts();  // get selected products to display 
+            $popular_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $popular_product_ids);
+
+            $top_rated_products_ids = $this->getTopRatedProducts();  // get selected products to display 
+            $top_rated_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $top_rated_products_ids);
         }
         /**  Recent order */
             $activeOrders = [];
@@ -986,7 +949,7 @@ class UserhomeController extends FrontController
                 'brands' => $brands,
                 'vendors' => $vendors,
                 'new_products' => $new_products,
-                'top_rated'       => $new_products,
+                'top_rated'       => $top_rated_products,
                 'recently_viewed' => $recently_viewed,
                 'homePageLabels' => $home_page_labels,
                 'featured_products' => $feature_products,
@@ -994,7 +957,10 @@ class UserhomeController extends FrontController
                 'cities' => $this->cities,
                 'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:[],
                 'best_sellers'     => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
-                'spotlight_deals'  => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
+                'spotlight_deals'  => (!empty($spot_light_products) && count($spot_light_products) > 0)?$spot_light_products:[],
+                'single_category_products'  => (!empty($single_category_products) && count($single_category_products) > 0)?$single_category_products:[],
+                'selected_products'  => (!empty($selected_products) && count($selected_products) > 0)?$selected_products:[],
+                'most_popular_products'  => (!empty($popular_products) && count($popular_products) > 0)?$popular_products:[],
                 'recent_orders' => $activeOrders,
             ];
             // dd( $data);
@@ -1757,5 +1723,30 @@ class UserhomeController extends FrontController
         Session::put('vendorType', $request->type);
 
         return response()->json(["status" => true]);
+    }
+
+
+    public function homePageSection()
+    {
+        $vendors = Vendor::where('status', 1)->select('id', 'name', 'slug');
+        if (Auth::user()->is_superadmin == 0) {
+            $vendors = $vendors->whereHas('permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $vendors = $vendors->get();
+        $taxCategory = TaxCategory::all();
+
+        $p_categories = Category::with(['parent', 'translation_one'])
+            ->whereIn('type_id', ['1', '3', '7', '8', '9'])
+            ->where('id', '>', '1')
+            ->where('deleted_at', NULL)
+            ->where('status', 1)
+            ->orderBy('parent_id', 'asc')
+            ->orderBy('position', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        return view('backend.tools.index')->with(['vendors' => $vendors, 'taxCategory' => $taxCategory, 'categories' => $p_categories]);
     }
 }

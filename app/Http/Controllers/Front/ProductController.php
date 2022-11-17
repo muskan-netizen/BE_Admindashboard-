@@ -9,12 +9,9 @@ use Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed};
-use Carbon\Carbon;
-use App\Http\Traits\ProductActionTrait;
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption};
 class ProductController extends FrontController{
     private $field_status = 2;
-    use ProductActionTrait;
 
     public function __construct()
     {
@@ -90,11 +87,7 @@ class ProductController extends FrontController{
 
 
         $p_id = $product->id;
-        if($this->checkTemplateForAction(8)){
-            $this->RecentView($p_id);
-        }
         
-
         $product = Product::with([
             'variant' => function ($sel) {
                 $sel->groupBy('product_id');
@@ -137,7 +130,7 @@ class ProductController extends FrontController{
             }]);
         }
         
-        $product = $product->with('related')->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags' )
+        $product = $product->with('related')->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags', 'brand_id', 'category_id' )
             ->whereHas('vendor',function($q) use($vendor){
                 $q->where('slug',$vendor);
             })->where('url_slug', $url_slug)
@@ -290,8 +283,23 @@ class ProductController extends FrontController{
             }else{
                 $product_page = "product";
             }
-          
-            return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference]);
+            
+            $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = '';
+            $suggested_product = Product::with(['media.image', 'vendor', 'translation']);
+            
+            if( !empty($product->category_id) ) 
+                $suggested_category_products = $suggested_product->where('category_id', $product->category_id)->orderby('id', 'desc')->limit(20)->get();
+
+            if( !empty($product->brand_id) ) 
+                $suggested_brand_products = $suggested_product->where('brand_id', $product->brand_id)->orderby('id', 'desc')->limit(20)->get();
+            
+            if( !empty($product->vendor_id) ) 
+                $suggested_vendor_products = $suggested_product->where('vendor_id', $product->vendor_id)->orderby('id', 'desc')->limit(20)->get();
+
+            $promoCodeController = new PromoCodeController();
+            $coupon_list = $promoCodeController->coupon_code_list($product->id, $product->vendor_id);
+
+            return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list]);
 
         }
    }
@@ -437,6 +445,7 @@ class ProductController extends FrontController{
                     $variantData = array();
                 }
                 $data['variant'] = $variantData;
+                
                 return response()->json(array('status' => 'Success', 'data' => $data));
             }
 

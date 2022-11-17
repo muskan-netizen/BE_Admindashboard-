@@ -90,6 +90,8 @@ class CustomerAuthController extends FrontController
             $login_page = "template_four.account.loginnew";
         }elseif($set_template->template_id == 6){
             $login_page = "template_six.account.loginnew";
+        }elseif($set_template->template_id == 8){
+            $login_page = "template_eight.account.loginnew";
         } else{
             $login_page = "account.loginnew";
         }
@@ -127,6 +129,8 @@ class CustomerAuthController extends FrontController
             $register_page = "template_four.account.registernew";
         }elseif($set_template->template_id == 6){
             $register_page = "template_six.account.registernew";
+        }elseif($set_template->template_id == 8){
+            $register_page = "template_eight.account.registernew";
         }else{
             $register_page = "account.registernew";
         }
@@ -449,7 +453,7 @@ class CustomerAuthController extends FrontController
                 Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
             }
 
-            if($this->checkIfTemplateEightEnable()){
+            if($this->checkTemplateForAction(8)){
                 $this->LoginActionRecentView($userid);
             }
             
@@ -612,9 +616,9 @@ class CustomerAuthController extends FrontController
                         Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
                     }
                      
-            if($this->checkIfTemplateEightEnable()){
-                $this->LoginActionRecentView($userid);
-            }
+                    // if($this->checkIfTemplateEightEnable()){
+                    //     $this->LoginActionRecentView($userid);
+                    // }
             
                     $message = 'Logged in successfully';
                     $redirect_to = '';

@@ -23,14 +23,16 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\AhoyController;
-use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, Role, VendorSection,VendorMultiBanner};
+use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, Role, VendorSection,VendorMultiBanner, VendorMinAmount};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
 use App\Exports\VendorProductExport;
 use DB,Log;
 use App\Models\VendorRegistrationDocument;
+use App\Services\InventoryService;
 use App\Models\VendorSocialMediaUrls;
 use Exception;
+use Illuminate\Support\Facades\Http;
 
 class VendorController extends BaseController
 {
@@ -772,7 +774,21 @@ class VendorController extends BaseController
                     ->orderBy('client_languages.is_primary', 'desc')->get();
 
         $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
-        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'taxRates'=>$taxRates,'files'=>$files,'facilties'=>$facilties,'vendor_facilty_ids'=> $vendor_facilty_ids,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls,'client_languages'=>$client_languages]);
+
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
+        $roles = Role::get();
+        if($getAdditionalPreference['is_price_by_role'] == 1){
+            if($roles){
+                foreach($roles as $role){
+                    $role->order_min_amount = VendorMinAmount::where('role_id', $role->id)->where('vendor_id', $id)->value('order_min_amount');
+                }
+            }
+        }
+        
+
+
+        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'taxRates'=>$taxRates,'files'=>$files,'facilties'=>$facilties,'vendor_facilty_ids'=> $vendor_facilty_ids,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls,'client_languages'=>$client_languages, 'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference]);
     }
     // vendor product datatable
     public function VendorProductFilter(Request $request,$domain='',$vendor_id)
@@ -790,7 +806,7 @@ class VendorController extends BaseController
         ->groupBy('products.id')
         ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
 
-            // pr($product->get()->toArray());
+            // pr($product->toSql());
         $datatable = Datatables::of($product)
             ->addIndexColumn()
             ->addColumn('single_product_check', function ($product) use ($request) {
@@ -1199,8 +1215,6 @@ class VendorController extends BaseController
             $vendor->service_fee_percent        = $request->service_fee_percent;
        
             //$vendor->add_category = ($request->has('add_category') && $request->add_category == 'on') ? 1 : 0;
-            // $vendor->show_slot  = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
-           
             $msg = 'commission configuration';
 
             $vendor->service_charges_tax = ($request->has('service_charges_tax') && $request->service_charges_tax == 'on') ? 1 : 0;
@@ -1279,6 +1293,17 @@ class VendorController extends BaseController
                 }
             }
         }
+
+        // vendor min amount by role
+        if(isset($request->order_min_amount_arr)){
+            $min_amounts = $request->order_min_amount_arr;
+            foreach($min_amounts  as $key => $min_amount ){
+                $where = ['vendor_id' => $id, 'role_id' => $key];
+                $create = ['vendor_id' => $id, 'role_id' => $key, 'order_min_amount' => $min_amount ];
+                VendorMinAmount::updateOrCreate($where, $create);
+            }
+        }
+        
         $return_json   = $request->has('return_json') && $request->return_json ? $request->return_json : 0;
         if($return_json ==  1 ){
             return $this->successResponse($vendor,__("Vendor update successfully!"));
@@ -2414,6 +2439,26 @@ class VendorController extends BaseController
 
     public function vendorProductExport(Request $request) {
         return Excel::download(new VendorProductExport($request->id), 'vendor_products.xlsx');
+    }
+
+    public function getInvetoryToken()
+    {
+// dd("asdf");
+        $preference = InventoryService::checkIfInventoryOn();
+        if($preference){
+            $email = Auth::user()->email;
+           
+            $response = Http::get($preference->inventory_service_key_url."/admin/generate_inventory_login_token", [
+                'email' => $email
+            ]);
+            // $response->body();
+           $token =  $response->json();
+           
+            return response()->json(['success' => true,'data' => $token['data']?? null]);
+        }else{
+            return $this->errorResponse(['success' => false,'message'=>'Not Found'], 401);
+        }
+        
     }
 
 

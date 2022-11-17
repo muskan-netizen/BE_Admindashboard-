@@ -338,7 +338,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
         <div class="col-xl-3 col-lg-3 mb-3">
             <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
                 @csrf
-            <!-- Pickup & Delivery section start -->
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <!-- Pickup & Delivery section start -->
             <div class="card-box h-100">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
@@ -1566,13 +1567,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                 </span>
                             </div>
                         </div>
-                        <div class="col-lg-6 my-2" id="slots_with_service_area_div">
-                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="slots_with_service_area" class="mr-2 mb-0">{{__('Food Truck Service')}}<small class="d-block pr-5">{{__('Enable or disable multiple service area for trucks')}}</small></label>
-                            <span> <input type="checkbox" data-plugin="switchery" name="slots_with_service_area" id="slots_with_service_area" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->slots_with_service_area == '1')) checked='checked' @endif>
-                                </span>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
             </form>

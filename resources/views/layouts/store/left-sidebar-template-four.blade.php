@@ -315,18 +315,7 @@ $pages = \App\Models\Page::with([
                                         <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off" >
                                         <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
                                     </div>
-                                    <script type="text/template" id="search_box_main_div_template">
-                                    <a class="text-right al_search_viewall d-block mr-2 mb-1" id="search_viewall" href="#">{{__("View All")}}</a>
-                                    <div class="row mx-0">
-                                        <% _.each(results, function(result, k){%>
-                                        <a class="col-12 text-center al_search_results list-items pt-2" href="<%=result.redirect_url %>">
-                                            <img class="blur-up lazyload" data-src="<%=result.image_url%>" alt="">
-                                            <div class="result-item-name">
-                                                <b><%=result.name %></b>
-                                            </div>
-                                        </a> <%}); %>
-                                    </div>
-                                    </script>
+                                    @include('layouts.store.search_template')
                                     <ul class="d-lg-flex align-items-center m-0 al_addCart daad d-md-block d-none">
                                         <li class="onhover-div pl-0 ml-xl-3 ml-lg-1 shake-effect">
                                             @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)

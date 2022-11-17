@@ -135,15 +135,8 @@ class CategoryController extends FrontController{
         $listData = $this->listData($langId, $category->id, $redirect_to);
       //  pr($listData);
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
-        $np = $this->productList($vendorIds, $langId, $curId, 'is_new');
-
-        foreach($np as $new){
-            $new->translation_title = (!empty($new->translation->first())) ? $new->translation->first()->title : $new->sku;
-            $new->variant_multiplier = (!empty($new->variant->first())) ? $new->variant->first()->multiplier : 1;
-            $new->variant_price = (!empty($new->variant->first())) ? $new->variant->first()->price : 0;
-        }
-        $newProducts = ($np->count() > 0) ? array_chunk($np->toArray(), ceil(count($np) / 2)) : $np;
-        
+        // $newProducts =  $this->getNewProducts($vendorIds, $langId, $curId);
+        $newProducts = [];
         if($page == 'pickup/delivery'){
             if(!Auth::user()){
                 return redirect()->route('customer.login');
@@ -199,6 +192,18 @@ class CategoryController extends FrontController{
                     abort(404);
                 }
         }
+    }
+
+    public function getNewProducts($vendorIds, $langId, $curId)
+    {
+        $np = $this->productList($vendorIds, $langId, $curId, 'is_new');
+
+        foreach($np as $new){
+            $new->translation_title = (!empty($new->translation->first())) ? $new->translation->first()->title : $new->sku;
+            $new->variant_multiplier = (!empty($new->variant->first())) ? $new->variant->first()->multiplier : 1;
+            $new->variant_price = (!empty($new->variant->first())) ? $new->variant->first()->price : 0;
+        }
+        return $newProducts = ($np->count() > 0) ? array_chunk($np->toArray(), ceil(count($np) / 2)) : $np;
     }
 
     public function listData($langId, $category_id, $type = ''){
@@ -385,13 +390,8 @@ class CategoryController extends FrontController{
         })
         ->groupBy('product_variant_sets.variant_type_id')->get();
         $redirect_to = $category->type->redirect_to;
-        $np = $this->productList([$vendor->id], $langId, $curId, 'is_new');
-        foreach($np as $new){
-            $new->translation_title = (!empty($new->translation->first())) ? $new->translation->first()->title : $new->sku;
-            $new->variant_multiplier = (!empty($new->variant->first())) ? $new->variant->first()->multiplier : 1;
-            $new->variant_price = (!empty($new->variant->first())) ? $new->variant->first()->price : 0;
-        }
-        $newProducts = ($np->count() > 0) ? array_chunk($np->toArray(), ceil(count($np) / 2)) : $np;
+        // $newProducts =  $this->getNewProducts([$vendor->id], $langId, $curId,);
+        $newProducts = [];
 
         $products = Product::with(['media.image',
             'translation' => function($q) use($langId){

@@ -2724,6 +2724,9 @@ class VendorController extends BaseController{
         }
     }
 
+   
+    
+
 
 
     /******************    ---- vendor data sync with inventory -----   ******************/

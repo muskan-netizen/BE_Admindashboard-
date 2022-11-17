@@ -71,9 +71,10 @@
                 <input type="file" accept="image/*" data-plugins="dropify" name="icon_two" class="dropify" data-default-file="{{ !is_null($category->icon_two ) ? $category->icon_two['proxy_url'].'80/80'.$category->icon_two['image_path'] : ''}}" />
                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 ">
                 <label>Banner image</label>
-                <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$category->image['proxy_url'].'1000/200'.$category->image['image_path']}}" />
+                <input type="hidden" name="remove_image" id="remove_image" value="" />
+                <input type="file" accept="image/*" data-plugins="dropify"  name="image" class="dropify_banner_image" data-default-file="{{$category->image['proxy_url'].'1000/200'.$category->image['image_path']}}" />
                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
             </div>
         </div>
@@ -94,34 +95,37 @@
                     </select>
                 </div>
                 <div class="row rowYK">
-                    @foreach($category->translationSetUnique as $trans)
-                    @if($trans->language_id == 1)
-                    <div class="col-md-6">
-                        <div class="form-group" id="nameInputEdit">
-                            <label for="title" class="control-label">Name</label>
-                                <input class="form-control" required="required" name="cat_lang[name]" id="cat-lang-name" type="text" value="{{$trans->name}}">
-                                <span class="invalid-feedback" role="alert"><strong></strong></span>
+                  
+                    {{-- @foreach($category->translationSetUnique as $trans) --}}
+                    {{-- @if($trans->language_id == 1) --}}
+                    @if(!empty($category->primary))
+                        <div class="col-md-6">
+                            <div class="form-group" id="nameInputEdit">
+                                <label for="title" class="control-label">Name</label>
+                                    <input class="form-control" required="required" name="cat_lang[name]" id="cat-lang-name" type="text" value="{{$category->primary->name}}">
+                                    <span class="invalid-feedback" role="alert"><strong></strong></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="title" class="control-label">Meta Description</label>
+                                <textarea class="form-control" rows="3" name="cat_lang[meta_description]" id="cat-lang-meta-description" cols="50">{{$category->primary->meta_description}}</textarea>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="title" class="control-label">Meta Description</label>
-                            <textarea class="form-control" rows="3" name="cat_lang[meta_description]" id="cat-lang-meta-description" cols="50">{{$trans->meta_description}}</textarea>
+                        <input type="hidden" id="category_id" value="{{$category->id}}">
+                        <input name="cat_lang[language_id]" id="cat-lang-language-id" type="hidden" value="{{$category->primary->langId}}">
+                        <input name="cat_lang[trans_id]" id="cat-lang-trans-id" type="hidden" value="{{$category->primary->id}}">
+                        <div class="col-md-6">
+                            <div class="form-group" id="meta_titleInput">
+                                <label for="title" class="control-label">Meta Title</label>
+                                <input class="form-control" name="cat_lang[meta_title]" id="cat-lang-meta-title" type="text" value="{{$category->primary->meta_title}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="title" class="control-label">Meta Keywords</label>
+                                <textarea class="form-control" rows="3" name="cat_lang[meta_keywords]" id="cat-lang-meta-keywords" cols="50">{{$category->primary->meta_keywords}}</textarea>
+                            </div>
                         </div>
-                    </div>
-                    <input type="hidden" id="category_id" value="{{$category->id}}">
-                    <input name="cat_lang[language_id]" id="cat-lang-language-id" type="hidden" value="{{$trans->langId}}">
-                    <input name="cat_lang[trans_id]" id="cat-lang-trans-id" type="hidden" value="{{$trans->id}}">
-                    <div class="col-md-6">
-                        <div class="form-group" id="meta_titleInput">
-                            <label for="title" class="control-label">Meta Title</label>
-                            <input class="form-control" name="cat_lang[meta_title]" id="cat-lang-meta-title" type="text" value="{{$trans->meta_title}}">
-                        </div>
-                        <div class="form-group">
-                            <label for="title" class="control-label">Meta Keywords</label>
-                            <textarea class="form-control" rows="3" name="cat_lang[meta_keywords]" id="cat-lang-meta-keywords" cols="50">{{$trans->meta_keywords}}</textarea>
-                        </div>
-                    </div>
                     @endif
-                    @endforeach
+                    {{-- @endif --}}
+                    {{-- @endforeach --}}
                 </div>
             </div>
         </div>
@@ -217,5 +221,15 @@ $(function() {
         }
     });
 
-});
+}); 
+$('.dropify_banner_image').dropify();
+$(document).on('click', '.dropify-clear', function(e){
+    e.preventDefault();
+    // alert('Remove Hit'); //Here you can manage you ajax request to delete 
+                         //file from database.
+                        
+     if($(this).siblings('.dropify_banner_image').attr('class') == 'dropify_banner_image'){
+        $('#remove_image').val(1);
+     }         
+  });
 </script>

@@ -431,6 +431,32 @@
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
                                 @endif
+
+                                @if($home_page_label->slug == 'selected_products')
+                                <a class="action-icon openProductsModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
+                                    <i class="mdi mdi-pencil"></i>
+                                </a>
+                                @endif
+
+                                @if($home_page_label->slug == 'single_category_products')
+                                <div class="language-input style-4">
+                                <div class="row no-gutters flex-nowrap align-items-center my-2">
+                                <div class="col pl-1">
+                                    <select class="form-control" id='product_category' name="product_category"  data-placeholder="Choose ..." required>
+                                        <option value="">{{ __("Select Product Category") }}</option>
+                                        @foreach($single_category_products['categories'] as $category)
+                                        <option value="{{$category->id}}" @if(@$selected_single_category_products->category_id == $category->id) selected="selected" @endif>
+                                            @if(!is_null($category->parent) && $category->parent_id > 1)
+                                            {{@$category->parent->translation_one->name}}-> @endif
+                                            {{@$category->translation_one->name}}
+                                            @if(!is_null($category->vendor)) ({{@$category->vendor->name}}) @endif
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                </div>
+                                </div>
+                                @endif
                                 @if($home_page_label->slug == 'dynamic_page')
                                 <a class="action-icon edit_dynamic_page" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
                                     <i class="mdi mdi-pencil"></i>
@@ -533,12 +559,83 @@
             </div>
             <form id="save_edit_banner_form" method="post" enctype="multipart/form-data">
                 @csrf
-                @method('PUT')
+                @method('POST')
                 <div class="modal-body" id="editCardBox">
 
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light submitEditForm">{{ __("Submit") }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="home_products" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="home_productsLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __("Add Products") }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <form id="save_home_products_form" method="post" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <div class="modal-body" >
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="row">
+
+                                <div class="col-md-5 col-5 mb-3">
+
+                                    <label>{{ __("Choose Categories") }}</label>
+                                    <select class="form-control" id='categoryForProducts' name="product_category" data-placeholder="Choose ..." required>
+                                        <option value="">{{ __("Select Product Category") }}</option>
+                                        @foreach($categories as $category)
+                                        <option value="{{$category->id}}" >
+                                            @if(!is_null($category->parent) && $category->parent_id > 1)
+                                            {{@$category->parent->translation_one->name}}-> @endif
+                                            {{@$category->translation_one->name}}
+                                            @if(!is_null($category->vendor)) ({{@$category->vendor->name}}) @endif
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-5 col-5 mb-3">
+                                        <label>{{ __("Select Products") }}</label>
+                                        <div id="editProductsBox">
+                                            <select class="form-control" id='product_id' name="product_id" data-placeholder="Choose ..." required>
+                                                <option value="">{{ __("Select Product") }}</option>
+                                            </select>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12 col-12 mb-3">
+                                    <label>{{ __("Selected Products") }}</label>
+                                    <select class="form-control select2-multiple" id='product_ids' data-toggle="select2" name="product_ids[]" multiple data-placeholder="Choose ..." required>
+                                        <option value="">{{ __("Select Product") }}</option>
+                                        @foreach($products as $product)
+                                        <option value="{{$product->id}}" selected="selected">
+                                            {{$product->translation[0]->title}}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info waves-effect waves-light submitHomeProductsForm">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>
@@ -649,6 +746,7 @@ $(document).on('click', '.deletePickupSection', function() {
         zIndex: 9999
     }
     $(document).ready(function() {
+        $('.select2-multiple').select2();
         var color1 = new jscolor('#primary_color_option', options);
     });
 
@@ -986,6 +1084,64 @@ $(document).on('click', '.deletePickupSection', function() {
         });
     });
 
+    $(".openProductsModal").click(function (e) {
+        $('#home_products').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+    $(document).on( 'change','#product_id', function (e) {
+        var productId  = $(this).val();
+        var text  = $("#product_id option:selected").text();
+        console.log(productId, ' ', text);
+        if ($('#product_ids').find("option[value='" + productId + "']").length) {
+           
+        } else { 
+            // Create a DOM Option and pre-select by default
+            var newOption = new Option(text, productId, true, true);
+
+            // Append it to the select
+            $('#product_ids').append(newOption).trigger('change');
+          
+        } 
+    });
+    $(document).on( 'change','#categoryForProducts', function (e) {
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    e.preventDefault();
+
+    var uri = "{{route('get-products-data-in-modal')}}";
+
+    var category_id = $(this).val();
+
+
+    $.ajax({
+        type: "get",
+        url: uri,
+        data: {category_id:category_id},
+        dataType: 'json',
+        beforeSend: function(){
+            $(".loader_box").show();
+        },
+        success: function (data) {
+            if(data.success){
+                $('#home_products #editProductsBox').html(data.html);
+            }
+           
+        },
+        error: function (data) {
+            console.log('data2');
+        },
+        complete: function(){
+            $('.loader_box').hide();
+        }
+    });
+    });
+
 
 
     $(document).on('click', '.submitEditForm', function(e) {
@@ -993,6 +1149,15 @@ $(document).on('click', '.deletePickupSection', function() {
         var form =  document.getElementById('save_edit_banner_form');
         var formData = new FormData(form);
         var url =  "{{route('update-image-data-in-modal')}}";
+        saveData(formData, 'edit', url);
+
+    });
+
+    $(document).on('click', '.submitHomeProductsForm', function(e) {
+        e.preventDefault();
+        var form =  document.getElementById('save_home_products_form');
+        var formData = new FormData(form);
+        var url =  "{{route('update-products-data-in-modal')}}";
         saveData(formData, 'edit', url);
 
     });

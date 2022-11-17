@@ -1170,5 +1170,18 @@ if (!function_exists('getMinutes')) {
     }
 }
 
-
+// Returns the values of the additional preferences.
+if (!function_exists('checkTableExists')) {
+    /** check if column exits in table
+    * @param string $tableName
+    * @return boolean true or false
+    */
+    function checkTableExists($tableName){
+        if (Schema::hasTable($tableName)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+}
 

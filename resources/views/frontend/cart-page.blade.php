@@ -1,3 +1,28 @@
+
+<style>
+    .cross-sell .img-outer-box.position-relative img,
+    .upsell-sell .img-outer-box.position-relative img {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+    .cross-sell .img-outer-box.position-relative,
+    .upsell-sell  .img-outer-box.position-relative {
+        padding-bottom: 100%;
+    }
+    .cross-sell .media-body,
+    .upsell-sell .media-body{padding: 0 10px;}
+    .cross-sell .media-body .product-description,
+    .upsell-sell .media-body .product-description {
+        text-align: left;
+        padding: 0;
+    }
+    .cross-sell .slick-slide>div {
+        margin: 0 12px;
+    }
+    </style>
+
 @php $serviceType =  Session::get('vendorType'); @endphp
 
 @if($cart_details->totalQuantity<=0)
@@ -15,13 +40,20 @@
     </div>
 
     @else
+    
+    <div class="container mt-3 mb-5">
 
-    <div class="container">
         <div class="row">
             <div class="col-12">
-                <div class="page-title-box">
-                    <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
+            <div class="row mb-md-1 alFourTemplateCartButtons mt-2 pt-2">
+                <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
+                    <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
+                        {{__('Continue Shopping')}}</a>
                 </div>
+            </div>
+                <!-- <div class="page-title-box">
+                    <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
+                </div> -->
                 <div class="cart_response mt-3 mb-3 d-none">
                     <div class="alert p-0" role="alert"></div>
                 </div>
@@ -49,6 +81,7 @@
                             </div>
                         </div>
             </div>
+            
             <div class="row border-bottom product_title_add py-1 no-gutters">
                     <div class="col-md-4 col">
                         <span>{{ __('Product Details') }}</span>
@@ -191,7 +224,6 @@
                                 @else
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
                                 @endif
-                                
                             </div>
                             @endif
                             @if($serviceType ==  'rental')
@@ -213,7 +245,6 @@
                                     </div>
                                 
                                 </div>
-                               
                             </div>
                             @elseif( $serviceType ==  'appointment')
                             <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -242,6 +273,10 @@
                                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{$vendor_product->cart_product_prescription }} {{ __('Prescription Added')}}</strong></h4>
                                             @endif
                                         @endif
+                                    @endif
+
+                                    @if(isset($vendor_product->product->product_delivery_fee) && $vendor_product->product->product_delivery_fee >0)
+                                    <div class="float-left mt-2">Delivery Fee : <span style="color: #000;font-size: 14px;font-weight: 500;">{{Session::get('currencySymbol')}}{{$vendor_product->product->product_delivery_fee}}</span></div>
                                     @endif
                                 </div>
                             @endif
@@ -414,7 +449,7 @@
                 --}}
         <div class="row my-2">
             @if(!$cart_details->guest_user)
-                <div class="col-lg-6 ">
+                <div class="col-lg-6">
                 @if($product->is_promo_code_available > 0)
                         <div class="coupon_box w-100 d-flex align-content-center">
                             <img class="blur-up lazyload" data-src="{{ asset('assets/images/discount_icon.svg') }}">
@@ -432,7 +467,7 @@
                 @endif
             </div>
         @endif
-                    <div class="col-lg-6">
+                <div class="col-lg-6">
                         @if($product->delOptions)
                             <div class="row mb-1 d-flex align-items-center   @if($product->promo_free_deliver == 1  ) {{$product->promo_free_deliver }} org_price @endif ">
                                 <div class="col-5 text-lg-right">
@@ -515,18 +550,11 @@
 
             @endforeach
 
-            <div class="row mb-md-1 alFourTemplateCartButtons mt-2 pt-2 border-top">
-                <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
-                    <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
-                        {{__('Continue Shopping')}}</a>
-                </div>
-            </div>
+
         </div>
 
 
-            <div class="col-lg-12 left_box new_cart mt-4 p-3" id="left_address">
-                {!!$cart_details->left_section!!}
-            </div>
+           
 
 
 
@@ -541,7 +569,12 @@
     {{-- Start Right Section --}}
     <div class="col-lg-4">
         <div class="row m-0">
-         <div class="cart-summary p-2 pb-4">
+            <div class="col-lg-12 cart-summary  p-2 pb-4 mr-3" id="left_address">
+                {!!$cart_details->left_section!!}
+            </div>
+        </div>
+        <div class="row m-0">
+         <div class="cart-summary mt-4 p-2 pb-4">
             <div class="col-12 mb-2">
                 <h5 class="order_text">{{ __('Order Summary') }}</h5>
             </div>
@@ -912,4 +945,116 @@
             {{-- Schedual code end at down --}}
         </div>
 
+
+
+        <div class="container">
+
+            @if(count($cart_details->upSell_products)>0)
+                <h3 class="mb-2 mt-4">{{__('Frequently bought together')}}</h3>
+                <div class="row">
+                    <div class="col-12 p-0">
+                        <div class="product-4 product-m">
+                            @foreach($cart_details->upSell_products as $product)
+    
+                                <a class="common-product-box scale-effect text-center" href="{{$product->vendor->slug.'/product/'.$product->url_slug}}">
+                                    <div class="img-outer-box position-relative">
+                                        <img class="blur-up lazyload" data-src="{{$product->image_url}}" alt="">
+                                        <div class="pref-timing">
+                                            <!--<span>5-10 min</span>-->
+                                        </div>
+                                        <i class="fa fa-heart-o fav-heart position-absolute" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="media-body align-self-center">
+                                        <div class="inner_spacing px-0">
+                                            <div class="product-description">
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <h6 class="card_title ellips">{{$product->translation_title}}</h6>
+                                                    <!--<span class="rating-number">2.0</span>-->
+                                                </div>
+                                                <p>{{$product->vendor_name}}</p>
+                                                <p class="border-bottom pb-1">In {{$product->category_name}}</p>
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <b>@if($product->inquiry_only == 0)
+                                                        {{ Session::get('currencySymbol') }}{{ decimal_format($product->variant_price)}}
+                                                    @endif
+                                                </b>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+    
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+    
+        @if(count($cart_details->crossSell_products)>0)
+                <h3 class="mb-2 mt-3">{{__('You might be interested in')}}</h3>
+                <div class="row">
+                    <div class="col-12 p-0">
+                        <div class="product-4 product-m">
+                            @foreach($cart_details->crossSell_products as $product)
+    
+                                <a class="common-product-box scale-effect text-center" href="{{$product->vendor->slug .'/product/'. $product->url_slug}}">
+                                    <div class="img-outer-box position-relative">
+                                        <img class="blur-up lazyload" data-src="{{$product->image_url}}" alt="">
+                                            <div class="pref-timing">
+                                            </div>
+                                            <i class="fa fa-heart-o fav-heart position-absolute" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="media-body align-self-center">
+                                        <div class="inner_spacing px-0">
+                                            <div class="product-description">
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <h6 class="card_title ellips">{{$product->translation_title}}</h6>
+                                                </div>
+                                                <p>{{$product->vendor_name}}</p>
+                                                <p class="border-bottom pb-1">In {{$product->category_name}}</p>
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <b>
+                                                        @if($product->inquiry_only == 0)
+                                                        {{ Session::get('currencySymbol') }}{{decimal_format($product->variant_price)}}
+                                                    @endif</b>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+    
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+
 @endif
+
+
+<script>
+    $(document).ready(function(){
+        $(".upsell-sell").slick({
+            arrows: true,
+            dots: false,
+            infinite: true,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 1, slidesToScroll: 2 } }
+            ]
+        });
+
+        $(".cross-sell").slick({
+            arrows: true,
+            dots: false,
+            infinite: true,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 1, slidesToScroll: 2 } }
+            ]
+        });
+    });
+</script>

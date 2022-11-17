@@ -114,6 +114,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('vendor-dasboard-data', 'Api\v1\RevenueController@getDashboardDetails');
         Route::post('get-vendor-profile', 'Api\v1\VendorController@getVendorDetails');
+        
         Route::post('update-vendor-profile', 'Api\v1\VendorController@updateVendorDetails');
         Route::post('get-vendor-transactions', 'Api\v1\VendorController@getVendorTransactions');
         //Route::post('get-vendor-transactions', 'Api\v1\VendorController@getOrdersList');
@@ -139,6 +140,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('update-product-rating', 'Api\v1\RatingController@updateProductRating');
             Route::get('get-product-rating', 'Api\v1\RatingController@getProductRating');
             Route::post('update-driver-rating', 'Api\v1\RatingController@updateDriverRating');
+            Route::get('get-driver-rating', 'Api\v1\RatingController@getDriverRating');
+            // Route::post('driver-agent-rating', 'Api\v1\RatingController@driverAgentRating');
         });
         Route::post('upload-file', 'Api\v1\RatingController@uploadFile');
          // Return order
