@@ -9,7 +9,7 @@
     .main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}
 </style>
 <!-- section start -->
-<section class="section-b-space ratio_asos">
+<section class="section-b-space ratio_asos outer-categories">
     <div class="collection-wrapper">
         <div class="container">
             <div class="row">
@@ -25,13 +25,19 @@
                 </div>
             </div>
             <div class="row mb-5 homepageSix">
-                <div class="collection-filter col-lg-3">
+                <div class="collection-filter col-lg-3 main-fillter">
                     <div class="collection-filter-block bg-transparent p-0">
                         <!-- <div class="collection-mobile-back">
                             <span class="filter-back d-lg-none d-inline-block">
                                 <i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}
                             </span>
                         </div> -->
+                        <ul class="breadcrumb p-0 mb-2">
+                            <li class="breadcrumb-item align-items-center"><a href="javascript:void(0)">Home <i class="fa fa-angle-right" aria-hidden="true"></i> <span>Pharmacy <i class="fa fa-angle-right" aria-hidden="true"></i>
+                                </span><span class="active">Healthcare Device</span></a>
+                            </li>
+                        </ul>
+                        <aside class="side_fillter">
                         @if(!empty($variantSets) && count($variantSets) > 0)
                           @foreach($variantSets as $key => $sets)
                             <div class="collection-collapse-block border-0 mb-2 open">
@@ -78,10 +84,11 @@
                                 </div>
                             </div>
                         </div>
+                        </aside>
                     </div>
                     <!-- side-bar single product slider start -->
                     @if(!empty($newProducts) && count($newProducts) > 0)
-                    <div class="theme-card">
+                    <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
@@ -99,7 +106,7 @@
                                         }*/ ?>
                                         <div class="common-product-box scale-effect  mb-2">
                                             <a class="row w-100" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                                <div class="col-4">
+                                                <div class="col-4 p-0">
                                                     <div class="img-outer-box position-relative  pr-0">
                                                         <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
                                                         <div class="pref-timing">
@@ -175,7 +182,7 @@
                     </div>
                     @endif
                 </div>
-                <div class="collection-content col-lg-9">
+                <div class="collection-content col-lg-9 outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
@@ -187,7 +194,17 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-12">
+                                            <div class="col-12 custom_filtter mt-2">
+                                                <ul>
+                                                    <li><span>Sort By:</span></li>
+                                                    <li><a href="javascript:void(0)" class="active">Featured</a></li>
+                                                    <li><a href="javascript:void(0)">A to Z</a></li>
+                                                    <li><a href="javascript:void(0)">Z to A</a></li>
+                                                    <li><a href="javascript:void(0)">Cost : Low to High</a></li>
+                                                    <li><a href="javascript:void(0)">Cost : High to Low</a></li>
+                                                    <li><a href="javascript:void(0)">Avg. Customer Review</a></li>
+                                                    <li><a href="javascript:void(0)">Newest Arrivals</a></li>
+                                                </ul>
                                                 <div class="product-filter-content border-left">
                                                     {{-- <div class="collection-view border-left">
                                                         <ul>
@@ -286,15 +303,15 @@
                                                     $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                 }*/ ?>
                                                 <div class="col-md-3 col-6 col-grid-box mt-3">
-                                                    <div class="main-prod">
-                                                        <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="product-box scale-effect mt-0 al_box_third_template ">
+                                                        <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="product-box scale-effect mt-0 product-card-box position-relative al_box_third_template al">
                                                             <div class="product-image">
                                                                 <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
                                                             </div>
-                                                            <div class="media-body align-self-center">
+                                                            <div class="media-body align-self-center card-text">
                                                                 <div class="inner_spacing w-100">
-                                                                    <h3 class="d-flex align-items-center justify-content-between">
-                                                                        <label class="mb-0"><b>{{ $data->translation_title }}</b></label>
+                                                                <span class="flag-discount">30% Off</span>
+                                                                    <h3 class="d-flex align-items-center justify-content-between text-left">
+                                                                        <label class="mb-0 mt-0"><b>{{ $data->translation_title }}</b></label>
                                                                         @if($client_preference_detail)
                                                                             @if($client_preference_detail->rating_check == 1)
                                                                                 @if($data->averageRating > 0)
@@ -315,7 +332,6 @@
                                                                 </div>
                                                             </div>
                                                         </a>
-                                                    </div>
                                                 </div>
                                                 @endforeach
                                               @else
