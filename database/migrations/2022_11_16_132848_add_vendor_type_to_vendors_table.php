@@ -14,7 +14,7 @@ class AddVendorTypeToVendorsTable extends Migration
     public function up()
     {
         Schema::table('vendors', function (Blueprint $table) {
-            $table->tinyInteger('vendor_type')->default(1)->comment('1 for Seller, 2 for Vendor');
+            $table->tinyInteger('is_seller')->default(0)->comment('1 for Seller, 0 for Vendor');
         });
     }
 
@@ -26,7 +26,7 @@ class AddVendorTypeToVendorsTable extends Migration
     public function down()
     {
         Schema::table('vendors', function (Blueprint $table) {
-            $table->dropColumn('vendor_type');
+            $table->dropColumn('is_seller');
         });
     }
 }

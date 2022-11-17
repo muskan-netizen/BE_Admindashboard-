@@ -218,7 +218,7 @@
                                         <label for="vendortype">{{__('Vendor Type')}}</label>
                                         <select name="vendor_type" id="vendor_type" class="form-control">
                                             <option value="1">Seller</option>
-                                            <option value="2">Vendor</option>
+                                            <option value="0">Vendor</option>
                                         </select>
                                     </div>
                                     {{-- <div class="col-md-4 mb-3" id="nameInput">

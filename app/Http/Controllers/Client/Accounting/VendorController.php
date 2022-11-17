@@ -63,7 +63,7 @@ class VendorController extends Controller{
             if((!empty($from_date)) && (!empty($to_date))){
                 $query->between($from_date." 00:00:00", $to_date." 23:59:59");
             }
-        }])->where('status', '!=', '2')->orderBy('id', 'desc');
+        }])->where('status', '!=', '2')->where('is_seller', 0)->orderBy('id', 'desc');
 
         if (Auth::user()->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {

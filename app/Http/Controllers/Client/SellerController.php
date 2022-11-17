@@ -34,7 +34,7 @@ use App\Models\VendorSocialMediaUrls;
 use Exception;
 use Illuminate\Support\Facades\Http;
 
-class VendorController extends BaseController
+class SellerController extends BaseController
 {
     use ToasterResponser;
     use ApiResponser;
@@ -68,7 +68,7 @@ class VendorController extends BaseController
         //     $takeaway_check = $client_preference->takeaway_check;
         //     $delivery_check = $client_preference->delivery_check;
         // }
-        $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->where('status', $request->status)->where('is_seller', 0)->orderBy('id', 'desc');
+        $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->where('status', $request->status)->where('is_seller', 1)->orderBy('id', 'desc');
         if (Auth::user()->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
@@ -77,8 +77,8 @@ class VendorController extends BaseController
         $vendors = $vendors->get();
         foreach ($vendors as $vendor) {
             $offers = [];
-            $vendor->show_url = route('vendor.catalogs', $vendor->id);
-            $vendor->destroy_url = route('vendor.destroy', $vendor->id);
+            $vendor->show_url = route('seller.catalogs', $vendor->id);
+            $vendor->destroy_url = route('seller.destroy', $vendor->id);
             $vendor->add_category_option = ($vendor->add_category == 0) ? __('No') : __('Yes');
             if($vendor->show_slot == 1){
                 $vendor->show_slot_option ="Open";
@@ -130,7 +130,7 @@ class VendorController extends BaseController
        // pr($csvVendors->toArray());
         $vendor_docs = collect(new VendorDocs);
         $client_preferences = ClientPreference::first();
-        $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->where('is_seller', 0)->with('slot')->orderBy('id', 'desc');
+        $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->where('is_seller', 1)->with('slot')->orderBy('id', 'desc');
         if ($user->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -185,7 +185,7 @@ class VendorController extends BaseController
             $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
 
 
-            return view('backend/vendor/index')->with([
+            return view('backend/seller/index')->with([
                 'vendors' => $vendors,
                 'vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,
                 'vendor_for_ondemand' => $vendor_for_ondemand,
@@ -638,7 +638,7 @@ class VendorController extends BaseController
     }
 
     /**   show vendor page - catalog tab      */
-    public function vendorCatalog($domain = '', $id){
+    public function sellerCatalog($domain = '', $id){
         $product_categories = [];
         $active = array();
         $type = Type::all();

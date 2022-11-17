@@ -958,7 +958,7 @@ class CustomerAuthController extends FrontController
             $vendor->longitude = $request->longitude;
             $vendor->desc = $request->vendor_description;
             $vendor->slug = Str::slug($request->name, "-");
-            $vendor->vendor_type = $request->vendor_type;
+            $vendor->is_seller = $request->vendor_type;
             $vendor->save();
             $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
             if ($vendor_registration_documents->count() > 0) {
@@ -1135,25 +1135,18 @@ class CustomerAuthController extends FrontController
 
     public function zillowGetData()
     {
-
-
-
-
         $params = (array('address' => '7356 CARTER AVE', 'citystatezip' => 'NEWARK'));
 
         $params['zws-id'] = 'X1-ZWz16b0yk0045n_8mfo0';
-			$url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);
-			$result = new SimpleXMLElement($url, 0, true);dd($params);
+        $url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);
+        $result = new SimpleXMLElement($url, 0, true);dd($params);
 
-			// save this in object so that we could reuse it
-			if ( isset($result->response->results->result->zpid) ) {
-				$this->zpid = (string)$result->response->results->result->zpid;
-			}
-
-			return $result->response;
-
+        // save this in object so that we could reuse it
+        if ( isset($result->response->results->result->zpid) ) {
+            $this->zpid = (string)$result->response->results->result->zpid;
+        }
+        return $result->response;
     }
-
 
     // public function getDatazillo($params);
     // {
@@ -1168,7 +1161,5 @@ class CustomerAuthController extends FrontController
 
 	// 		return $result;
     // }
-
-
 }
 

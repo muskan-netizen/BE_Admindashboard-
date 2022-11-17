@@ -129,6 +129,22 @@
                                     </a>
                                 </li>
                             @endif
+
+                            @if(in_array('sellers',$allowed) || Auth::user()->is_superadmin == 1)
+                                <li>
+                                    <a href="{{route('seller.index')}}">
+                                    <span class="icon-vendor"></span>
+                                    @php
+                                        $vendormenu = getNomenclatureName('Sellers', true);
+                                        $vendormenulabel = ($vendormenu=="Sellers")?__('Sellers'):__($vendormenu);
+
+                                    @endphp
+                                        {{-- <span>{{getNomenclatureName('Vendors', true)}}</span> --}}
+                                        <span>{{ __($vendormenulabel) }}</span>
+                                    </a>
+                                </li>
+                            @endif
+
                             @if(count(array_intersect($accounting_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="#sidebaraccounting" data-toggle="collapse">
