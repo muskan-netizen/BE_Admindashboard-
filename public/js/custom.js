@@ -4903,7 +4903,7 @@ $(document).ready(function () {
 
             case '48':
 
-                console.log('address_id',address_id,'payment_option_id',payment_option_id,'tip',tip);
+                //console.log('address_id',address_id,'payment_option_id',payment_option_id,'tip',tip);
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
                     console.log('order',order);
@@ -5130,7 +5130,8 @@ $(document).ready(function () {
                 paymentViaKhalti('', '');
                 break;
             case 48:
-                console.log('test');
+               // paymentViaMtnMomo('', payment_option_id, '');
+               
             break;
         }
     }

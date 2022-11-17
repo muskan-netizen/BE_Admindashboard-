@@ -26,10 +26,12 @@ use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Routing\UrlGenerator;
 use Log;
+use App\Http\Traits\MtnMomoPaymentManager;
 
 class MtnMomoController extends FrontController
 {
     use ApiResponser;
+    use MtnMomoPaymentManager;
 
     private $companyToken;
     private $appUrl;
@@ -106,10 +108,17 @@ class MtnMomoController extends FrontController
 
     public function createTocken(Request $request, UrlGenerator $url)
     {
+        
             $data                   = [];
-            $data['amt']            = $request->amt;
-            $data['order_number']   = $request->order_number;
-            $data['from']           = $request->from;
+            if($request->from == 'cart'){
+                $data['amt']            = $request->amt;
+                $data['order_number']   = $request->order_number;
+                $data['from']           = $request->from;
+            }else if($request->from == 'wallet'){
+                $data['amt']            = $request->amt;
+                $data['from']           = $request->from;
+            }   
+           
             $curl = curl_init();
 
             curl_setopt_array($curl, array(
@@ -150,23 +159,30 @@ class MtnMomoController extends FrontController
 
     public function RequestToPay($token,$data)
     {
+       
+        if($data['from'] == 'cart'){
+            $amount         = $data['amt'];
+            $from           = $data['from'];
+            $order_number   = $data['order_number'];
+        }elseif($data['from'] == 'wallet'){
+            $amount         = $data['amt'];
+            $from           = $data['from'];
+            $order_number   = 'wallet';
+        }
         
-        $amount         = $data['amt'];
-        $from           = $data['from'];
-        $order_number   = $data['order_number'];
         $payOpt         = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'mtn_momo')->where('status', 1)->first();
         if ($payOpt->test_mode == '1') {
             $currency   = 'EUR';
-            $partyId    = '46733123454';
+            $partyId    = mt_rand(1000000000,9999999999);
         }else{
             $currency   = $this->currency;
-            $partyId    = '46733123454';
+            $partyId    = '46733123433';
         }
 
-       
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-        CURLOPT_URL => $this->appUrl.'collection/v1_0/requesttopay/',
+        $this->reference_id = MtnMomoPaymentManager::gen_uuid_4();
+        $curl_1 = curl_init();
+        curl_setopt_array($curl_1, array(
+        CURLOPT_URL => $this->appUrl.'collection/v1_0/requesttopay',
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
@@ -194,24 +210,21 @@ class MtnMomoController extends FrontController
         ),
         ));
        
-        
-
-        $response = curl_exec($curl);
-        $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-       
-        curl_close($curl);
+        $response = curl_exec($curl_1);
+        $status = curl_getinfo($curl_1, CURLINFO_HTTP_CODE);
+      
+        curl_close($curl_1);
         if($status == '202'){
-            dd($token);
-            return self::GetpaymentTransaction($token);
+            return self::GetpaymentTransaction($token,$this->reference_id,$data);
         }
     }
 
-    public function GetpaymentTransaction($token)
+    public function GetpaymentTransaction($token,$reference_id,$data)
     {
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-        CURLOPT_URL => $this->appUrl.'collection/v1_0/requesttopay/'.$this->reference_id,
+        CURLOPT_URL => $this->appUrl.'collection/v1_0/requesttopay/'.$reference_id,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
@@ -227,337 +240,121 @@ class MtnMomoController extends FrontController
         ));
 
         $response = curl_exec($curl);
-
+        $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
-        dd($response);
-    }
-
-    public function createAppTocken(Request $request)
-    {
-        $request->from = $request->action;
-        $order_number =  $this->orderNumber($request);
-        $user = Auth::user();
-        $redirectUrl = $request->serverUrl.'payment/dpo/redirect/?order_no='.$order_number.'&payment_via=app&status=200&utoken='.$user->auth_token;
-        $total_amount = $this->getDollarCompareAmount($request->amt);
-        $total_amount = round($total_amount);
-        $name = explode(' ',$user->name);
-        $customerFirstName = $name[0];
-        $customerLastName = !empty($name[1])? $name[1] : '';
-        $xml = "<API3G>
-                    <CompanyToken>".$this->companyToken."</CompanyToken>
-                    <Request>createToken</Request>
-                    <Transaction>
-                        <PaymentAmount>".$total_amount."</PaymentAmount>
-                        <PaymentCurrency>".$this->currency."</PaymentCurrency>
-                        <CompanyRef>tr1ss1212bnbv</CompanyRef>
-                        <RedirectURL>".$redirectUrl."</RedirectURL>
-                        <BackURL>http://www.domain.com/backurl.php </BackURL>
-                        <CompanyRefUnique>0</CompanyRefUnique>
-                        <PTL>100000</PTL>
-                        <CompanyAccRef>www</CompanyAccRef>
-                        <PTLtype>minutes</PTLtype>
-                        <DefaultPayment>XP</DefaultPayment>
-                        <AllowRecurrent></AllowRecurrent>
-                        <customerFirstName>".$customerFirstName."</customerFirstName>
-                        <customerLastName>".$customerLastName."</customerLastName>
-                        <customerEmail>".$user->email."</customerEmail>
-                        <customerPhone>".$user->phone_number."</customerPhone>
-                    </Transaction>
-                    <Services>
-                        <Service>
-                            <ServiceType>".$this->serviceType."</ServiceType>
-                            <ServiceDescription>Airlines Service</ServiceDescription>
-                            <ServiceTypeName>Airlines Service</ServiceTypeName>
-                            <ServiceDate>2022/06/25 06:52</ServiceDate>
-                        </Service>
-                    </Services>
-                </API3G>";
-                
-        
-        $result = $this->postCurl($xml);
-        $paymentTocken = $this->xml2array($result);
-        if(!empty($paymentTocken['TransToken'])){
-            return $this->successResponse($this->appUrl.'payv2.php?ID='.$paymentTocken['TransToken']);
-        }
-    }
-
-    private function postCurl($xml){
-    
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-        CURLOPT_URL => $this->appUrl.'API/v6/',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS =>$xml,
-        CURLOPT_HTTPHEADER => array(
-            'Content-Type: application/xml'
-            // 'Cookie: AFIDENT=1A5B897A-277F-42B3-8E52-E67B0434944A'
-        ),
-        ));
-
-        $response = curl_exec($curl);
-        curl_close($curl);
-        return simplexml_load_string($response);
-        // return $response;
-    }
-
-    function xml2array ( $xmlObject, $out = array () )
-    {
-        foreach ( (array) $xmlObject as $index => $node )
-            $out[$index] = ( is_object ( $node ) ) ? xml2array ( $node ) : $node;
-
-        return $out;
-    }
-
-
-    public function successPage(Request $request)
-    {   
-        if(isset($request->auth_token))
-        {
-            $user = User::find($request->auth_token);
-            auth()->login($user);
-        }
-        //sucess Status 0000
-        $request->request->add(['status'=>'0000']);
-        $payment = Payment::where('transaction_id',$request->order_no)->first();
-        if($payment->type=='cart'){
-            return $this->completeOrderCart($request,$payment);
-        }elseif($payment->type=='wallet'){
-            return $this->completeOrderWallet($request,$payment);
-        }elseif($payment->type=='tip'){
-            return $this->completeOrderTip($request,$payment);
-        }elseif($payment->type=='subscription'){
-            return $this->completeOrderSubs($request,$payment);
-        }elseif($payment->type=='pickup_delivery'){
-            return $this->completeOrderPickup($request,$payment);
-        }
-    }
-
-    public function failPage(Request $request)
-    {   
-        if(isset($request->auth_token))
-            {
-                $user = User::find($request->auth_token);
-                auth()->login($user);
+        if($status == 200){
+            $result = json_decode($response,true);
+            $payment_status = $result['status'];
+            if($payment_status == 'SUCCESSFUL'){
+                $transactionId = $result['financialTransactionId'];
+                return self::sucessPayment($data,$transactionId);
             }
-        //Failed Status 101
-        $request->request->add(['status'=>'101']);
-        $payment = Payment::where('transaction_id',$request->order_no)->first();
-        if($payment->type=='cart'){
-            return $this->completeOrderCart($request,$payment);
-        }elseif($payment->type=='wallet'){
-            return $this->completeOrderWallet($request,$payment);
-        }elseif($payment->type=='tip'){
-            return $this->completeOrderTip($request,$payment);
-        }elseif($payment->type=='subscription'){
-            return $this->completeOrderSubs($request,$payment);
-        }elseif($payment->type=='pickup_delivery'){
-            return $this->completeOrderPickup($request,$payment);
         }
+       
+
     }
 
-    public function completeOrderPickup(Request $request,$payment)
+    public function sucessPayment($request, $transactionId)
     {
-        $order = Order::where('order_number',$request->order_no)->first();
-        if(isset($request->order_no) && isset($request->TransID))
+       
+        if($request['from'] == "app")
         {
+            $user = User::where('auth_token', $request->auth_token)->first();
+            Auth::login($user);
+        }
+        $user = Auth::user();
+    	// $transactionId = $pamyent->id;
+    	if($request['from'] == 'cart'){
+            $order_number = $request['order_number'];
+            $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
             if ($order) {
                 $order->payment_status = 1;
                 $order->save();
-                $payment_exists = Payment::where('transaction_id', $request->order_no)->first();
+                $payment_exists = Payment::where('transaction_id', $transactionId)->first();
                 if (!$payment_exists) {
-                    $payment = new Payment();
-                    $payment->date = date('Y-m-d');
-                    $payment->type = 'pickup_delivery';
-                    $payment->order_id = $order->id;
-                    $payment->payment_option_id = 32;
-                    $payment->user_id = $order->user_id;
-                    $payment->transaction_id = $request->TransID;
-                    $payment->balance_transaction = $order->payable_amount;
-                    $payment->save();
+                    Payment::insert([
+                        'date' => date('Y-m-d'),
+                        'order_id' => $order->id,
+                        'transaction_id' => $transactionId,
+                        'balance_transaction' => $request['amt'],
+                        'type' => 'cart'
+                    ]);
+
+                    // Auto accept order
+                    $orderController = new OrderController();
+                    $orderController->autoAcceptOrderIfOn($order->id);
+                    $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+
+
+                    // Remove cart
+                    CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+                    Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                    CartAddon::where('cart_id', $cart->id)->delete();
+                    CartCoupon::where('cart_id', $cart->id)->delete();
+                    CartProduct::where('cart_id', $cart->id)->delete();
+                    CartProductPrescription::where('cart_id', $cart->id)->delete();
+                    // send success sms
+                    $this->sendSuccessSMS($request, $order);
+                    // Send Notification
+                    if (!empty($order->vendors)) {
+                        foreach ($order->vendors as $vendor_value) {
+                            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                            $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                            $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                        }
+                    }
+                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                    $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                    $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                }
+                if($request['from'] == 'app')
+                {
+                    $returnUrl = route('payment.gateway.return.response').'/?gateway=mtn_momo'.'&status=200&transaction_id='.$transactionId.'&order='.$order_number;
+                }else{
+                    $returnUrl = route('order.return.success');
                 }
                 
-                $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 32, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransID]);
-                $plaseOrderForPickup = new PickupDeliveryController();
-                $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
-                return Redirect::to(route('front.booking.details',$order->order_number));
+                return $returnUrl;
             }
-        }else{
-            //Failed transaction case
-            $data = Payment::where('transaction_id',$request->order_no)->first();
-            $data->delete();
-
-            return Redirect::to(route('user.wallet'))->with('error',$request->message);
-        }
-    }
-
-
-
-    public function completeOrderCart($request)
-    {
-        $order = Order::where('order_number', $request->order_no)->first();
-        if (isset($request->order_no) && $request->status == '0000') {
-            //Success from cart
-            $order->payment_status = '1';
-            $order->save();
-            // Auto accept order
-            $orderController = new OrderController();
-            $orderController->autoAcceptOrderIfOn($order->id);
-            $cart = Cart::where('user_id', auth()->id())->select('id')->first();
-            $cartid = $cart->id;
-            Cart::where('id', $cartid)->update([
-                'schedule_type' => null, 'scheduled_date_time' => null,
-                'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
-            ]);
-            CaregoryKycDoc::where('cart_id',$cartid)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
-            CartAddon::where('cart_id', $cartid)->delete();
-            CartCoupon::where('cart_id', $cartid)->delete();
-            CartProduct::where('cart_id', $cartid)->delete();
-            CartProductPrescription::where('cart_id', $cartid)->delete();
-            // send sms 
-            $this->sendSuccessSMS($request, $order);
-            Payment::create(['amount' => 0, 'transaction_id' => $request->TransID, 'balance_transaction' => $order->payable_amount, 'type' => 'cart', 'date' => date('Y-m-d'), 'order_id' => $order->id]);
-
-            // Send Notification
-            if (!empty($order->vendors)) {
-                foreach ($order->vendors as $vendor_value) {
-                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
-                    $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
-                    $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
-                }
-            }
-            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
-            $super_admin = User::where('is_superadmin', 1)->pluck('id');
-            $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
-
-            if(!empty($request->payment_via)){
-                 if (empty($request->TransID)) {
-                    return $this->errorResponse('', 400);
-                }
+        } elseif($request['from']  == 'wallet'){
+            $request->wallet_amount =  $request['amt'];
+            $request->transaction_id =  $transactionId;
+            $walletController = new WalletController();
+            $walletController->creditWallet($request);
+            if($request['from'] == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=mtn_momo'.'&status=200&transaction_id='.$transactionId;
             }else{
-                if (isset($request->TransID) && $request->TransID != '') {
-                    return Redirect::to(route('order.success', [$order->id]));
-                } else {
-                    
-                }
+                $returnUrl = route('user.wallet');
             }
-            
-        } else {
-            $data = Payment::where('transaction_id', $request->order_no)->first();
-            $data->delete();
-            //Failed from cart
-            $user = auth()->user();
-            $wallet = $user->wallet;
-            if (isset($order->wallet_amount_used)) {
-                $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number]);
-            }
-
-            if(!empty($request->payment_via)){
-                return $this->errorResponse('', 400);
-            }else{
-                return Redirect::to(route('showCart'))->with('error','Transaction failed.');
-            }
-            
+            return $returnUrl;
         }
-    }
-
-
-    public function completeOrderWallet($request)
-    {
-        $data = Payment::where('transaction_id', $request->order_no)->first();
-        if (isset($request->order_no) && $request->status == '0000') {  
-            $user = auth()->user();
-            if(!empty($request->payment_via)){
-                $user = User::where('auth_token', $request->utoken)->first();
-            }
-            $wallet = $user->wallet;
-            $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->order_no . '</b>']);
-
-            if(!empty($request->payment_via)){
-                if (empty($request->TransID)) {
-                   return $this->errorResponse('', 400);
-                }
-            }else{
-                if (isset($request->TransID) && $request->TransID != '') {
-                    return Redirect::to(route('user.wallet'))->with('success','Wallet updated successfully.');
-                } else {
-                    return Redirect::to(route('user.wallet'))->with('error','Transaction failed.');
-                }
-            }
-        } else {
-            $data->delete();
-            if(!empty($request->payment_via)){
-                return $this->errorResponse('', 400);
-            }else{
-                return Redirect::to(route('user.wallet'))->with('error','Transaction failed.');
-            }
-            
-        }
-        return $this->successResponse($request->getTransactionReference());
-    }
-
-
-    public function completeOrderSubs($request)
-    {
-        $user = auth()->user();
-        if(!empty($request->payment_via)){
-            $user = User::where('auth_token', $request->utoken)->first();
-        }
-        $data = Payment::where('transaction_id', $request->order_no)->first();
-        if (isset($request->order_no) && $request->status == '0000') {
-            $subscription = explode('_', $request->order_no);
-            $request->request->add(['user_id' => $user->id, 'payment_option_id' =>42, 'amount' => $data->balance_transaction, 'transaction_id' => $request->order_no]);
-            $subscriptionController = new UserSubscriptionController();
-            $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription[2]);
-
-            if(!empty($request->payment_via)){
-                if (empty($request->TransID)) {
-                    return $this->errorResponse('', 400);
-                }
-            }else{
-                if (isset($request->TransID) && $request->TransID != '') {
-                    return Redirect::to(route('user.subscription.plans'))->with('success', 'Subscription added successfully.');
-                } else {
-                }
-            }
-            
-        } else {
-            $data->delete();
-            return Redirect::to(route('user.subscription.plans'))->with('error','Transaction failed.');
-        }
-        return $this->successResponse($request->getTransactionReference());
-    }
-
-    public function completeOrderTip($request)
-    {
-        $data = Payment::where('transaction_id', $request->order_no)->first();
-        if (isset($request->order_no) && $request->status == '0000') {
-            $order_number = explode('_', $request->order_no);
-            $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[2], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $request->order_no]);
+        elseif($request['from'] == 'tip'){
+            $request->request->add(['order_number' => $request->order_number, 'tip_amount' => $request->amount, 'transaction_id' => $transactionId]);
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
-            if(!empty($request->payment_via)){
-                if (empty($request->TransID)) {
-                    return $this->errorResponse('', 400);
-                }
+            if($request['from'] == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=mtn_momo'.'&status=200&transaction_id='.$transactionId; 
             }else{
-                if (isset($request->TransID) && $request->TransID != '') {
-                    return Redirect::to(route('user.orders'))->with('success','Tip amount added successfuly.');
-                } else {
-                    
-                }
+                $returnUrl = route('user.orders');
             }
-        } else {
-            $data->delete();
-            return Redirect::to(route('user.orders'))->with('error','Transaction failed.');
+            return $returnUrl;
         }
-        return $this->successResponse($request->getTransactionReference());
+        elseif($request['from'] == 'subscription'){
+            $request->request->add(['payment_option_id' => 12, 'transaction_id' => $transactionId]);
+            $subscriptionController = new UserSubscriptionController();
+            $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
+            if($request['from'] == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=mtn_momo'.'&status=200&transaction_id='.$transactionId; 
+            }else{
+                $returnUrl = route('user.subscription.plans');
+            }
+            return $returnUrl;
+        }
+        return route('order.return.success');
     }
-
+   
 
 }

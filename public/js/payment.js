@@ -3018,16 +3018,14 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
             url: create_mtn_momo_token,
             data: rowData,
             success: function(resp) {
-                console.log(resp);
-
-                /*if(resp != ''){
-                    window.location.replace(resp);
+                if(resp != ''){
+                    window.location.href = resp;
                 }else{
                     alert('Tray Again');
-                }*/
+                }
           },
-          error: function(error) {
-              console.log(error);
+          error: function(resp) {
+              window.location.href = resp.responseText;
           }
         
         });
