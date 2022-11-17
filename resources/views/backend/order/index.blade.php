@@ -332,14 +332,20 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                     </li>
                                     <% } } %>
 
-
-
+                                    <% if(order.total_toll_amount > 0 || order.total_toll_amount < 0) { %>
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Toll Fee') }}</label>
+                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_toll_amount) %></span>
+                                        </li>
+                                    <% } %>
+                                    
                                     <% if(order.total_service_fee > 0 || order.total_service_fee < 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                             <label class="m-0">{{ __('Service Fee') }}</label>
                                             <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_service_fee) %></span>
                                         </li>
-                                        <% } %>
+                                    <% } %>
+
                                     <% if(order.fixed_fee_amount > 0 || order.fixed_fee_amount < 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                             <label class="m-0">{{ __($fixedFee) }}</label>
