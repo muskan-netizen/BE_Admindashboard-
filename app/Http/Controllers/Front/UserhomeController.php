@@ -960,7 +960,7 @@ class UserhomeController extends FrontController
                 'brands' => $brands,
                 'vendors' => $vendors,
                 'new_products' => $new_products,
-                'top_rated'       => $top_rated_products,
+                'top_rated'       => $top_rated_products ?? '',
                 'recently_viewed' => $recently_viewed,
                 'homePageLabels' => $home_page_labels,
                 'featured_products' => $feature_products,

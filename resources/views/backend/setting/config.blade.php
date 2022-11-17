@@ -1323,7 +1323,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                      <div class="col-md-4">
                         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                           <label for="enquire_mode" class="mr-2 mb-0">{{ __("Inquiry Mod") }}<small class="d-block pr-5">{{ _('Set products to be only available for Inquiry and hide the price.') }}</small></label>
+                           <label for="enquire_mode" class="mr-2 mb-0">{{ __("Inquiry Mod") }}<small class="d-block pr-5">{{ __('Set products to be only available for Inquiry and hide the price.') }}</small></label>
                            <span><input type="checkbox" data-plugin="switchery" name="enquire_mode" id="	enquire_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->enquire_mode == '1')) checked='checked' @endif></span>
                         </div>
                      </div>

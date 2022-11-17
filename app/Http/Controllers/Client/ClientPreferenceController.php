@@ -401,6 +401,7 @@ class ClientPreferenceController extends BaseController{
                 'on_demand_check'=> 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,rental_check,laundry_check,appointment_check',
                 'laundry_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,rental_check,appointment_check',
                 'appointment_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check,rental_check',
+                'p2p_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check,rental_check,p2p_check',
 
             ];
             // atleast one is required

@@ -120,7 +120,7 @@ class TypeSeeder extends Seeder
                 'id' => 13,
                 'sequence' => 12,
                 'title' => 'P2P',
-                'service_type' => 'appointment_service',
+                'service_type' => 'products_service',
                 'image' => 'P2P.png',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
                 
