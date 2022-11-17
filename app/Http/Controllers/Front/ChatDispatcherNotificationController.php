@@ -35,13 +35,13 @@ class ChatDispatcherNotificationController extends FrontController
     }
 
     public function sendNotificationToUserByDispatcher(Request $request){
-        Log::info($request->all());
-        //try {
+       
+        try {
             $notiFY = $this->sendNotification($request,'from_dispatcher');
             return response()->json([ 'notiFY'=>$notiFY , 'status' => true, 'message' => __('sent!!!')]);
-        // } catch (\Throwable $th) {
-        //     return response()->json(['status' => false, 'notiFY' => [] , 'message' => __('No Data found !!!')]);
-        // }
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'notiFY' => [] , 'message' => __('No Data found !!!')]);
+        }
 
     }
 

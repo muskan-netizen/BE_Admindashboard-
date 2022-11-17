@@ -380,7 +380,7 @@ border-right: 1px solid var(--theme-deafult) !important;}
 .radio-btns input[type="checkbox"]{z-index: -1;position: absolute;display: none;}
 .radio-btns.long-radio input[type="checkbox"]+label .customCheckbox{width: auto;border-radius: 50px;height: auto;line-height: normal;padding: 10px 14px;}
 .radio-btns input[type="radio"]+label .customCheckbox{display: inline-block;box-sizing: border-box;position: relative;width: 49px;height: 49px;line-height: 49px;text-align: center;padding: 0;border-radius: 50%;z-index: 1;color: #1f2431;background: #f3f3f3;overflow: hidden;transition: all .5s;cursor: pointer;}
-.footer-card{background: #fff;padding: 20px;position: -webkit-sticky;position: sticky;bottom: 0;z-index: 30;background-color: #fff;float: left;clear: left;width: 100%;box-shadow: 0 16px 32px 0 rgb(0,0,0 / 5%)!important;}
+.footer-card{background: #fff;padding: 20px;position: -webkit-sticky;position: sticky;bottom: 0;z-index: 1;background-color: #fff;float: left;clear: left;width: 100%;box-shadow: 0 16px 32px 0 rgb(0,0,0 / 5%)!important;}
 #header_cart_main_ul_ondemand .alVendorProductTotals{display: block;position: relative;padding-right: 0;}
 #header_cart_main_ul_ondemand .close-circle{position: absolute;right: 0;top: 7px;}
 .action-icon.d-block.mb-3{margin-bottom: 0!important;}
@@ -448,6 +448,8 @@ body.al_body_template_three.dark .sm-horizontal{background-color: transparent;}
 body[dir=rtl] .al_footer_template_three ul{text-align: right;}
 body[dir=rtl] .al_footer_template_three ul li{padding-right: 0px !important;}
 .al_body_template_three h2.category-head{top: 140px;}
+.al_body_template_three .tip_radio_controls{text-align: left;}
+.al_body_template_three .tip_label{padding: 5px 8px;}
 }
 
 
@@ -493,3 +495,4 @@ margin-left: 5px;
 }
 /*=================== search page style================= */
 .product-box .front a{position: relative;padding-bottom: 100%;}
+.booking-experience .address-form .where-to-go .title.title-36 {font-size: 24px;}

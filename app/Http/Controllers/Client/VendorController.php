@@ -1228,6 +1228,8 @@ class VendorController extends BaseController
             $vendor->commission_fixed_per_order = $request->commission_fixed_per_order;
             $vendor->commission_monthly         = $request->commission_monthly;
             $vendor->service_fee_percent        = $request->service_fee_percent;
+            $vendor->fixed_service_charge       = ($request->has('fixed_service_charge') && $request->fixed_service_charge == 'on') ? 1 : 0;
+            $vendor->service_charge_amount      = $request->has('service_charge_amount') ? $request->service_charge_amount : 0.00;
        
             //$vendor->add_category = ($request->has('add_category') && $request->add_category == 'on') ? 1 : 0;
             $msg = 'commission configuration';

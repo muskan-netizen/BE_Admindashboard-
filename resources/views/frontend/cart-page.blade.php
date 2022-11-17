@@ -91,15 +91,15 @@
                         <span>{{ __('Price') }}</span>
                     </div>
                     @if($serviceType ==  'rental')
-                        <div class="col-md-2 text-center">
+                        <div class="col-md-2 col text-center">
                             <span>Duration By(min)</span>
                         </div>
                     @else
-                    <div class="col-md-2 text-center">
+                    <div class="col-md-2 col text-center">
                         <span>{{ __('Quantity') }}</span>
                     </div>
                     @endif
-                    <div class="col-md-4 text-center">
+                    <div class="col-md-4 col text-center">
                         <span>Total</span>
                     </div>
 

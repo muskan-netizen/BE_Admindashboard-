@@ -84,7 +84,9 @@ header#al_new_design {
 .booking-experience{box-shadow:0 4px 16px rgb(0,0%,0 / 15%);overflow:hidden;background:#fff;position:absolute;top:0;}
 .loader-outer .spinner-border{width:150px;height:150px}
 .location-box{background-color:var(--theme-deafult);position:relative;padding:20px;}
-.title-36{font-size:30px;line-height:normal;font-weight:600}
+.title-36{
+    font-size:30px;
+    line-height:normal;font-weight:600}
 .title{color:#fff}
 .location-inputs li{position:relative;min-height:44px;margin:0 0 10px}
 .location-inputs .title-24{font-size:16px;line-height:30px;font-weight:400}
