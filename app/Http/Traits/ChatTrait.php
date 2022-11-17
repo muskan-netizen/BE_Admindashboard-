@@ -3,6 +3,7 @@ namespace App\Http\Traits;
 use App\Models\{Order,OrderVendor,UserDevice,ClientPreference};
 use Auth;
 use GuzzleHttp\Client as GCLIENT;
+use Log;
 
 trait ChatTrait{
 
@@ -44,6 +45,7 @@ trait ChatTrait{
     public function sendNotification($request,$from='')
     {
         $data = $request->all();
+        Log::info($data);
         if($from=='from_dispatcher'){
             $username =  $data['username'];
             $removeAuth = array_values(array_column($request->all()['user_ids'], 'auth_user_id'));
@@ -59,6 +61,8 @@ trait ChatTrait{
         }
        
         $client_preferences = ClientPreference::select('fcm_server_key','favicon')->first();
+        Log::info('noti user_id');
+        Log::info($removeAuth);
         $devices            = UserDevice::whereNotNull('device_token')->whereIn('user_id',$removeAuth)->pluck('device_token') ?? [];
         
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {

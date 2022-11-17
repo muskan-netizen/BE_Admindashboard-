@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use DB;
+use DB, Log;
 use Config;
 use Validation;
 use Carbon\Carbon;
@@ -36,7 +36,7 @@ class RatingController extends BaseController{
                 $ratings = OrderProductRating::updateOrCreate(['order_vendor_product_id' => $request->order_vendor_product_id,
                 'order_id' => $request->order_id,
                 'product_id' => $request->product_id,
-                'user_id' => Auth::id()],['rating' => $request->rating,'review' => $request->review??null]);
+                'user_id' => Auth::id()],['rating' => $request->rating,'review' => $request->review??'']);
                 if ($image = $request->file('files')) {
                     foreach ($image as $files) {
                     $file =  substr(md5(microtime()), 0, 15).'_'.$files->getClientOriginalName();
@@ -79,6 +79,7 @@ class RatingController extends BaseController{
      */
     public function updateDriverRating(OrderDriverRatingRequest $request){
         try {
+            
             //return $request->all();
             $user = Auth::user();
             $checkdriverdetail = OrderVendor::where('order_id',$request->order_id)->first();
@@ -209,5 +210,47 @@ class RatingController extends BaseController{
         }
     }
 
+    /**
+     * Rating api for driver when order is delivered to user 
+     */
+    public function driverAgentRating(Request $request) {
+        
+        try {
+            if( !empty($request->order_vendor_product_id) ) {
+                $order_product = OrderProduct::where('id',$request->order_vendor_product_id)->first();
+                if($order_product) {
+                    $order = Order::where('id', $order_product->order_id)->first();
+                    if( !empty($order) ) {
+                        $order->driver_rating = $request->rating;
+                        $order->save();
+                        return $this->successResponse('', 'Thanks for rating.', 200);
+                    }
+                }
+            }
+            return $this->errorResponse('Order not found !', 400);
+        }
+        catch(\Exception $e) {
+            return $this->errorResponse('Something went wrong !', 400);
+        }
 
+    }
+
+
+    /**
+     * driver ratings details
+    */
+    public function getDriverRating(Request $request){
+        try {
+            //dd($request->all());
+            $rating_details = OrderDriverRating::where('id',$request->id)->first();
+            if(isset($rating_details)){
+                return $this->successResponse($rating_details,'Rating Details.');
+            }
+            
+            return $this->errorResponse('Invalid rating', 404);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
 }

@@ -209,12 +209,28 @@
                     </div>
                     @endif
 
-                     <div class="col-md-12">
-                        <div class="form-group" id="order_min_amountInput">
-                            {!! Form::label('title',  __('Absolute Min Order Value [AMOV]'),['class' => 'control-label']) !!}
-                            <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{$vendor->order_min_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')
+                        @if(isset($roles))
+                            @foreach($roles as $role)
+                                <div class="col-md-12">
+                                    <div class="form-group" id="order_min_amountInput">
+                                        @php
+                                            $label = 'Absolute Min Order Value ['.$role->role.']';
+                                        @endphp
+                                        {!! Form::label('title',  $label,['class' => 'control-label']) !!}
+                                        <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount_arr[{{$role->id}}]" type="text" value="{{$role->order_min_amount ?? '0.00' }}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    @else
+                        <div class="col-md-12">
+                            <div class="form-group" id="order_min_amountInput">
+                                {!! Form::label('title',  __('Absolute Min Order Value [AMOV]'),['class' => 'control-label']) !!}
+                                <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{$vendor->order_min_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
 
                     @if($client_preference_detail->static_delivey_fee == 1)
@@ -752,34 +768,35 @@
                             $mediaIcons = [];
                             @endphp
 
-                            @forelse($socialMediaUrls as $socialMediaUrl)
+                            @if (isset($socialMediaUrls))
+                                @forelse($socialMediaUrls as $socialMediaUrl)
 
-                            <tr align="center">
-                            @php
-                            $mediaIcons[] = $socialMediaUrl->icon;
-                            @endphp
-                                <td>
-                                    <i class="fab fa-{{$socialMediaUrl->icon}}  social-media-{{$socialMediaUrl->icon}}" aria-hidden="true"></i>
-                                </td>
-                                <td>
-                                    <a href="{{$socialMediaUrl->url}}" class="social-media-url-{{$socialMediaUrl->icon}}" target="_blank">{{$socialMediaUrl->url}}</a>
-                                </td>
-                                <td>
-                                    <div>
-                                        <div class="inner-div">
-                                            <button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
-                                                <i class="mdi mdi-delete"></i>
-                                            </button>
+                                <tr align="center">
+                                @php
+                                $mediaIcons[] = $socialMediaUrl->icon;
+                                @endphp
+                                    <td>
+                                        <i class="fab fa-{{$socialMediaUrl->icon}}  social-media-{{$socialMediaUrl->icon}}" aria-hidden="true"></i>
+                                    </td>
+                                    <td>
+                                        <a href="{{$socialMediaUrl->url}}" class="social-media-url-{{$socialMediaUrl->icon}}" target="_blank">{{$socialMediaUrl->url}}</a>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <div class="inner-div">
+                                                <button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
+                                                    <i class="mdi mdi-delete"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr align="center">
-                                <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
-                            </tr>
-                            @endforelse
-
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr align="center">
+                                    <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                                </tr>
+                                @endforelse
+                            @endif
                             </tbody>
                         </table>
                         <input type="hidden" id="added-icons" value="{{ json_encode($mediaIcons) }}">

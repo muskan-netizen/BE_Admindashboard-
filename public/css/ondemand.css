@@ -75,6 +75,9 @@ border-color: var(--theme-deafult);
 border-width: 3px;
 }
 .alCustomHomeServiceRadio::-webkit-scrollbar {height: 4px;}
+.alCustomHomeServiceRadio::-webkit-scrollbar-thumb {
+    background: var(--theme-deafult);
+  }
 .alCustomHomeServiceRadio{flex-wrap: nowrap;white-space: nowrap;overflow: auto;}
 .alCustomHomeServiceRadio .item{display: inline-block;margin-bottom: 6px;}
 a.agentInfo.d-block.selected_agent h6 {

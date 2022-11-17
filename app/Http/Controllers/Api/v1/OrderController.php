@@ -366,7 +366,7 @@ class OrderController extends BaseController
                                         else if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
                                            // Log::info($vendor_cart_product->vendor->timeofLineOfSightDistance);
                                            // Log::info($order_vendor->order_pre_time);
-                                           $OrderVendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
+                                           //$OrderVendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
                                             if($order_vendor->order_pre_time)
                                             $order_vendor->user_to_vendor_time = $vendor_cart_product->vendor->timeofLineOfSightDistance - $order_vendor->order_pre_time;
                                         }
@@ -394,6 +394,7 @@ class OrderController extends BaseController
                             $order_product->created_by = $vendor_cart_product->created_by;
                             $order_product->user_product_order_form = $vendor_cart_product->user_product_order_form;
                             $order_product->variant_id = $vendor_cart_product->variant_id;
+                            $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee)?$vendor_cart_product->product_delivery_fee:0;
                             $product_variant_sets = '';
                             if (isset($vendor_cart_product->variant_id) && !empty($vendor_cart_product->variant_id)) {
                                 $var_sets = ProductVariantSet::where('product_variant_id', $vendor_cart_product->variant_id)->where('product_id', $vendor_cart_product->product->id)
@@ -599,7 +600,13 @@ class OrderController extends BaseController
                     $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
-                    $order->payable_amount = $payable_amount;
+
+                    if (!$client_preference->is_tax_price_inclusive) {
+                        $order->payable_amount = $payable_amount;
+                    }else{
+                        $order->payable_amount = $payable_amount - $order->taxable_amount;
+                    }
+
                     $order->fixed_fee_amount = $fixed_fee_amount;
                     $order->total_container_charges = $total_container_charges;
                     if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
@@ -611,7 +618,7 @@ class OrderController extends BaseController
                     // exit();
                     // $ex_gateways = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24,25,28]; // if Stripe, paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree,easebuzz,vnpay
                     // need to add weebhook for razorpay (10) and remove from ex_gateways
-                    $ex_gateways = [1,2,3,14,15,16,10,20,21,22,23,26,38,42];
+                    $ex_gateways = [1,2,3,14,15,16,10,20,21,22,23,26,38,42,30];
                     //Delete cart if payment is done from these gateways
                     if (in_array($request->payment_option_id, $ex_gateways)) {
 
@@ -623,6 +630,7 @@ class OrderController extends BaseController
                         }
                         
                         CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
@@ -1537,16 +1545,20 @@ class OrderController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
-                if(!empty($smsTemplates)){
-                    $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
-                    $smsTemplates = str_replace("{amount}", $currSymbol . decimal_format($order->payable_amount), $smsTemplates);
-                    $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
-                }else{
-                    $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
-                }
+
+                $keyData = ['{user_name}'=>$user->name??'','{amount}'=>$currSymbol . $order->payable_amount,'{order_number}'=>$order->order_number??''];
+                $body = sendSmsTemplate('order-place-Successfully',$keyData);
+
+               // $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
+                // if(!empty($smsTemplates)){
+                //     $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
+                //     $smsTemplates = str_replace("{amount}", $currSymbol . decimal_format($order->payable_amount), $smsTemplates);
+                //     $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
+                // }else{
+                //     $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
+                // }
                 if (!empty($prefer->sms_provider)) {
-                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body,'order-place-Successfully');
                 }
             }
         } catch (\Exception $ex) {
@@ -2398,7 +2410,7 @@ class OrderController extends BaseController
                         $res = $this->sendSuccessEmail($request, $order);
 
                         // $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
-                        $ex_gateways = [1,2,3,14,15,16,20,21,22,23,26,38];
+                        $ex_gateways = [1,2,3,14,15,16,20,21,22,23,26,38,30];
                         // if (!in_array($request->payment_option_id, $ex_gateways)) {
                         //     Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         //     CartCoupon::where('cart_id', $cart->id)->delete();
