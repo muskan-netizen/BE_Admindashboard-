@@ -95,10 +95,10 @@ $timezone = Auth::user()->timezone;
                                                     </div>
                                                 </th>
                                                 <th scope="col">{{__('Image')}}</th>
-                                                <th scope="col">{{__('Product Name')}}</th>
+                                                <th scope="col">{{__(getNomenclatureName('Product Name', true)) }}</th>
                                                 <th scope="col">{{__('Price')}}</th>
                                                 <th scope="col">{{__('Date Added')}}</th>
-                                                <th scope="col">{{__('Stock Status')}}</th>
+                                                <th scope="col">{{__(getNomenclatureName('Stock Status',true))}}</th>
                                                 <th scope="col"></th>
                                             </tr>
                                         </thead>
