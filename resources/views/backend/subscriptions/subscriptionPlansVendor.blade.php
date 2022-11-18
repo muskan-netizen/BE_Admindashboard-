@@ -181,7 +181,7 @@
                                                 <table class="table table-centered table-nowrap table-striped" id="awaiting_approval_subscriptions_datatable" width="100%">
                                                     <thead>
                                                         <tr>
-                                                            <th>{{ __('Vendor Name') }}</th>
+                                                            <th>{{ __(getNomenclatureName('Vendor Name',true)) }}</th>
                                                             <th>{{ __('Plan') }}</th>
                                                             <th>{{ __('Price') }}</th>
                                                             <th>{{ __('Features') }}</th>
