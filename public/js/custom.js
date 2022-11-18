@@ -4444,6 +4444,9 @@ $(document).ready(function () {
             case 47:
                 paymentViaKhalti('', '');
             break;
+            case 48:
+                paymentViaMtnMomo('', payment_option_id, '');
+            break;
            
         }
 
@@ -5130,7 +5133,7 @@ $(document).ready(function () {
                 paymentViaKhalti('', '');
                 break;
             case 48:
-               // paymentViaMtnMomo('', payment_option_id, '');
+               paymentViaMtnMomo('', payment_option_id, '');
                
             break;
         }

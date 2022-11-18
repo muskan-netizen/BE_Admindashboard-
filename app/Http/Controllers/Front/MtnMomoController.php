@@ -107,8 +107,7 @@ class MtnMomoController extends FrontController
     }
 
     public function createTocken(Request $request, UrlGenerator $url)
-    {
-        
+    {   
             $data                   = [];
             if($request->from == 'cart'){
                 $data['amt']            = $request->amt;
@@ -117,7 +116,18 @@ class MtnMomoController extends FrontController
             }else if($request->from == 'wallet'){
                 $data['amt']            = $request->amt;
                 $data['from']           = $request->from;
-            }   
+            }
+            else if($request->from == 'subscription'){
+                $data['amt']            = $request->amt;
+                $data['from']           = $request->from;
+                $data['subsid']         = $request->subsid;
+            }
+            
+            else if($request->from == 'tip'){
+                $data['amt']            = $request->amt;
+                $data['from']           = $request->from;
+                $data['order_number']   = $request->order_number;
+            }  
            
             $curl = curl_init();
 
@@ -168,7 +178,19 @@ class MtnMomoController extends FrontController
             $amount         = $data['amt'];
             $from           = $data['from'];
             $order_number   = 'wallet';
-        }
+        } else if($data['from'] == 'subscription'){
+            $amount         = $data['amt'];
+            $from           = $data['from'];
+            $subsid         = $data['subsid'];
+            $order_number   = 'subscription';
+        } 
+        else if($data['from'] == 'tip'){
+            $amount         = $data['amt'];
+            $from           = $data['from'];
+            $order_number   = $data['order_number'];
+        } 
+        
+        
         
         $payOpt         = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'mtn_momo')->where('status', 1)->first();
         if ($payOpt->test_mode == '1') {
@@ -317,8 +339,11 @@ class MtnMomoController extends FrontController
                 return $returnUrl;
             }
         } elseif($request['from']  == 'wallet'){
-            $request->wallet_amount =  $request['amt'];
-            $request->transaction_id =  $transactionId;
+            $request['wallet_amount'] =  $request['amt'];
+            $request['transaction_id'] =  $transactionId;
+           
+            $request = new \Illuminate\Http\Request($request);
+           
             $walletController = new WalletController();
             $walletController->creditWallet($request);
             if($request['from'] == 'app')
@@ -330,7 +355,12 @@ class MtnMomoController extends FrontController
             return $returnUrl;
         }
         elseif($request['from'] == 'tip'){
-            $request->request->add(['order_number' => $request->order_number, 'tip_amount' => $request->amount, 'transaction_id' => $transactionId]);
+
+            $request['tip_amount']      =   $request['amt'];
+            $request['order_number']    =   $request['order_number'];
+            $request['transaction_id']  =   $transactionId;
+            $request = new \Illuminate\Http\Request($request);
+           
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
             if($request['from'] == 'app')
@@ -342,7 +372,14 @@ class MtnMomoController extends FrontController
             return $returnUrl;
         }
         elseif($request['from'] == 'subscription'){
-            $request->request->add(['payment_option_id' => 12, 'transaction_id' => $transactionId]);
+            $request['transaction_id']      =  $transactionId;
+            $request['payment_option_id']   = 48;
+            $request['subsid']              = $request['subsid'];
+            $request['subscription_id']     = $request['subsid'];
+            $request['amount']              = $request['amt'];
+          
+            $request = new \Illuminate\Http\Request($request);
+          
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
             if($request['from'] == 'app')
