@@ -166,7 +166,7 @@ class PickupDeliveryController extends FrontController{
             $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
         }
 
-        $product = Product::with(['category.categoryDetail','media.image', 'translation' => function($q) use($language_id){
+        $product = Product::with(['category.categoryDetail','media.image', 'vendor', 'translation' => function($q) use($language_id){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
                         },'variant' => function($q) use($language_id){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
@@ -175,10 +175,11 @@ class PickupDeliveryController extends FrontController{
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
-        $product->original_tags_price = $tags_price['delivery_fee'] + $tags_price['toll_fee'];
-        $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
+        $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
+        $product->original_tags_price = $tags_price['delivery_fee'];
+        $product->tags_price = decimal_format($tags_price['delivery_fee']);
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
-        $product->toll_less_tags_price = decimal_format($tags_price['delivery_fee']);
+        $product->total_tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee'] + $product->service_charge_amount);
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
         $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
@@ -191,7 +192,7 @@ class PickupDeliveryController extends FrontController{
             $product->friend_phone_name = $rider->phone_number;
         }
         foreach ($product->variant as $k => $v) {
-            $product->variant[$k]->price = $product->tags_price;
+            $product->variant[$k]->price = $product->total_tags_price;
             $product->variant[$k]->toll_fee = $product->toll_fee;
             $product->variant[$k]->multiplier = 1;
         }
@@ -211,8 +212,8 @@ class PickupDeliveryController extends FrontController{
         }
         $product->loyalty_amount_saved = decimal_format((float)$loyalty_amount_saved ?? 0);
 
-        if($product->loyalty_amount_saved > $product->tags_price)
-        $product->loyalty_amount_saved = $product->tags_price;
+        if($product->loyalty_amount_saved > $product->total_tags_price)
+        $product->loyalty_amount_saved = $product->total_tags_price;
 
         $subscription_features = array();
         $user_subscription = null;
@@ -231,7 +232,7 @@ class PickupDeliveryController extends FrontController{
             if ($user_subscription) {
                 foreach ($user_subscription->features as $feature) {
                     if ($feature->feature_id == 2) {
-                        $product->subscription_discount = $product->tags_price - ($feature->percent_value * $product->tags_price / 100);
+                        $product->subscription_discount = $product->total_tags_price - ($feature->percent_value * $product->total_tags_price / 100);
                         $product->subscription_percent_value = $feature->percent_value;
                     }
                 }
@@ -266,7 +267,7 @@ class PickupDeliveryController extends FrontController{
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $language_id = Session::get('customerLanguage');
             $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude',
-                        'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery')
+                        'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'fixed_service_charge', 'service_charge_amount')
                         ->where('id', $vid)->first();
             if(!$vendor){
                 return response()->json(['error' => 'No record found.'], 200);
@@ -299,9 +300,10 @@ class PickupDeliveryController extends FrontController{
                     $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
                     $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'93/93'.$product->media->first()->image->path['image_path'] : '';
                     $product->image_url = $image_url;
+                    $product->service_charge_amount  = ($vendor->fixed_service_charge == 1)?$vendor->service_charge_amount:0.00;
                     $product->name = $product->translation->first() ? $product->translation->first()->title :'';
                     $product->description = $product->translation->first() ? $product->translation->first()->meta_description :'';
-                    $product->original_tags_price = $tags_price['delivery_fee'] + $tags_price['toll_fee'];
+                    $product->original_tags_price = $tags_price['delivery_fee'] + $tags_price['toll_fee'] + $product->service_charge_amount;
                     $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                     foreach ($product->variant as $k => $v) {
@@ -565,6 +567,8 @@ class PickupDeliveryController extends FrontController{
         $request->payment_option_id = $request->payment_option_id ??1;
         if ($user) {
             $loyalty_amount_saved = 0;
+            $total_service_fee = 0;
+            $total_toll_amount = 0;
             $redeem_points_per_primary_currency = '';
             $loyalty_card = LoyaltyCard::where('status', '0')->first();
             if ($loyalty_card) {
@@ -722,6 +726,12 @@ class PickupDeliveryController extends FrontController{
                         $vendor_discount_amount +=$final_coupon_discount_amount;
                     }
                 }
+                $total_toll_amount +=(isset($request->tollamount))?$request->tollamount:0.00;
+                $total_service_fee +=(isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
+
+                $vendor_payable_amount +=(isset($request->tollamount))?$request->tollamount:0.00;
+                $vendor_payable_amount +=(isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
+
                 $order_vendor->coupon_id = $coupon_id;
                 $order_vendor->coupon_code = $coupon_name;
                 $order_vendor->order_status_option_id = 1;
@@ -730,6 +740,8 @@ class PickupDeliveryController extends FrontController{
                 $order_vendor->taxable_amount = $vendor_taxable_amount;
                 $order_vendor->discount_amount= $vendor_discount_amount;
                 $order_vendor->payment_option_id = $request->payment_option_id;
+                $order_vendor->toll_amount = (isset($request->tollamount))?$request->tollamount:0.00;
+                $order_vendor->service_fee_percentage_amount = (isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
                     if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
@@ -757,10 +769,12 @@ class PickupDeliveryController extends FrontController{
                         $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                     }
                 }
-                $order->total_delivery_fee = $total_delivery_fee;
-                $order->loyalty_points_used = $loyalty_points_used;
+                $order->total_delivery_fee   = $total_delivery_fee;
+                $order->loyalty_points_used  = $loyalty_points_used;
                 $order->loyalty_amount_saved = $loyalty_amount_saved;
-                $finalAmount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved;
+                $order->total_toll_amount    = $total_toll_amount;
+                $order->total_service_fee    = $total_service_fee;
+                $finalAmount                 = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved + $total_toll_amount + $total_service_fee;
                 if ($user) {
                     $now = Carbon::now()->toDateTimeString();
                     $user_subscription = SubscriptionInvoicesUser::with('features')
