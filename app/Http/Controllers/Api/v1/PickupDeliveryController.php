@@ -56,7 +56,7 @@ class PickupDeliveryController extends BaseController{
                 return response()->json(['error' => __('No record found.')], 200);
             }
 
-            $products = Product::with(['category.categoryDetail', 'inwishlist' => function($qry) use($userid){
+            $products = Product::with(['category.categoryDetail', 'vendor', 'inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },
                         'media.image', 'translation' => function($q) use($langId){
@@ -85,8 +85,10 @@ class PickupDeliveryController extends BaseController{
             if(!empty($products)){
                 foreach ($products as $key => $product) {
                     $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
-                    $product->tags_price = $tags_price['delivery_fee']??0 + $tags_price['toll_fee']??0;
+                    $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
                     $product->toll_fee   = $tags_price['toll_fee']??0;
+                    $product->tags_price = $tags_price['delivery_fee']??0;
+                    $product->total_tags_price = $product->tags_price + $product->toll_fee + $product->service_charge_amount;
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->price = $product->tags_price;
@@ -295,6 +297,8 @@ class PickupDeliveryController extends BaseController{
         $request->payment_option_id = $request->payment_option_id ??1;
         if ($user) {
             $loyalty_amount_saved = 0;
+            $total_service_fee = 0;
+            $total_toll_amount = 0;
             $redeem_points_per_primary_currency = '';
             $loyalty_card = LoyaltyCard::where('status', '0')->first();
             if ($loyalty_card) {
@@ -447,6 +451,12 @@ class PickupDeliveryController extends BaseController{
                         $vendor_discount_amount +=$final_coupon_discount_amount;
                     }
                 }
+                $total_toll_amount +=(isset($request->tollamount))?$request->tollamount:0.00;
+                $total_service_fee +=(isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
+
+                $vendor_payable_amount +=(isset($request->tollamount))?$request->tollamount:0.00;
+                $vendor_payable_amount +=(isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
+
                 $order_vendor->coupon_id = $coupon_id;
                 $order_vendor->coupon_code = $coupon_name;
                 $order_vendor->order_status_option_id = 1;
@@ -455,6 +465,8 @@ class PickupDeliveryController extends BaseController{
                 $order_vendor->taxable_amount = $vendor_taxable_amount;
                 $order_vendor->discount_amount= $vendor_discount_amount;
                 $order_vendor->payment_option_id = $request->payment_option_id;
+                $order_vendor->toll_amount = (isset($request->tollamount))?$request->tollamount:0.00;
+                $order_vendor->service_fee_percentage_amount = (isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
                     if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
@@ -482,9 +494,12 @@ class PickupDeliveryController extends BaseController{
                         $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                     }
                 }
+                
                 $order->total_delivery_fee = $total_delivery_fee;
                 $order->loyalty_points_used = $loyalty_points_used;
                 $order->loyalty_amount_saved = $loyalty_amount_saved;
+                $order->total_toll_amount    = $total_toll_amount;
+                $order->total_service_fee    = $total_service_fee;
 
                 
 
@@ -499,11 +514,11 @@ class PickupDeliveryController extends BaseController{
                         if ($feature->feature_id == 2) {
                             $subscriptionAmount = $request->amount - ($feature->percent_value * $request->amount / 100);
                             $order->subscription_discount = $request->amount - $subscriptionAmount;
-                            $order->payable_amount = $subscriptionAmount;
+                            $order->payable_amount = $subscriptionAmount + $total_toll_amount + $total_service_fee;
                         }
                     }
                 }else{
-                    $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved;
+                    $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved + $total_toll_amount + $total_service_fee;
                 }
 
 
@@ -544,7 +559,8 @@ class PickupDeliveryController extends BaseController{
             $vendor_id = $vendorId->vendor_id;
             $productId = OrderVendorProduct::where('order_vendor_id',$vendorId->id)->select('product_id')->first();
             $tasks = OrderLocations::where('order_id',$order->id)->select('tasks')->first();
-            $request = (object)array_merge($request,['product_id'=>$productId->product_id,'tasks'=>json_decode($tasks->tasks)]);
+            $request->request->add(['product_id', $productId->product_id]);
+            $request->request->add(['tasks', json_decode($tasks->tasks)]);
             if (!empty($request->transaction_id)) {
                 $order->payment_status = 1;
             }
