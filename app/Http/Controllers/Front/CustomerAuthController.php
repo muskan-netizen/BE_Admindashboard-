@@ -614,9 +614,9 @@ class CustomerAuthController extends FrontController
                         Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
                     }
                      
-            if($this->checkIfTemplateEightEnable()){
-                $this->LoginActionRecentView($userid);
-            }
+            // if($this->checkIfTemplateEightEnable()){
+            //     $this->LoginActionRecentView($userid);
+            // }
             
                     $message = 'Logged in successfully';
                     $redirect_to = '';

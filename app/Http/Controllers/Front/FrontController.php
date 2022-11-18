@@ -79,6 +79,63 @@ class FrontController extends Controller
         }
         return '1';
 	}
+
+    protected function sendSmsNew($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
+        try{
+            $body = $body['body']??'';
+            $template_id = $body['template_id']??''; //sms Template_id
+            $client_preference =  getClientPreferenceDetail();
+            if($client_preference->sms_provider == 1)
+            {
+                if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
+                    $client = new TwilioClient($client_preference->sms_key, $client_preference->sms_secret);
+                    $send =  $client->messages->create($to, ['from' => $client_preference->sms_from, 'body' => $body]);
+                    // Log::info('SMS twilio respons');
+                    // Log::info($send);
+                }else{
+                    return 2;
+                }
+
+            }elseif($client_preference->sms_provider == 2) //for mtalkz gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->mTalkz_sms($to,$body,$crendentials,$template_id);
+            }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->mazinhost($to,$body,$crendentials);
+            }elseif($client_preference->sms_provider == 4) //for unifonic gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->unifonic($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 5) //for arkesel_sms gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->arkesel_sms($to,$body,$crendentials);
+                if( isset($send->code) && $send->code != 'ok'){
+                    return '2';
+                }
+            }else{
+                if(!empty($sms_secret) && !empty($sms_from)){
+                    $client = new TwilioClient($sms_key, $sms_secret);
+                    $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+                    // Log::info('SMS twilio respons');
+                    // Log::info($send);
+                }else{
+                    return 2;
+                }
+            }
+            //return $send;
+        }
+        catch(\Exception $e){
+            Log::info('SMS logs');
+            Log::info($e->getMessage());
+            return '2';
+        }
+        return '1';
+	}
+
     public function testsms(Request $request)
     {
         $prefer = ClientPreference::select('sms_credentials', 

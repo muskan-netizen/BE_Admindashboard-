@@ -262,19 +262,19 @@ class CampaignController extends BaseController
             
             $option = '';
             if($request->push_url_option == '2'){
-                $categorySlug = Category::where('id',$request->push_url_option_value)->select('slug')->first();
-                $option = '/category/'.$categorySlug->slug;
+                $categorySlug = Category::where('id',$request->push_url_option_value)->first();
+                $option = 'category/'.$categorySlug->translation_one->name.'/'.$request->push_url_option_value;
             }else if($request->push_url_option == '3'){
-                $vendorSlug = Vendor::where('id',$request->push_url_option_value)->select('slug')->first();
-                $option = '/vendor/'.$vendorSlug->slug;
+                $vendorSlug = Vendor::where('id',$request->push_url_option_value)->select('name')->first();
+                $option = 'vendor/'.$vendorSlug->name.'/'.$request->push_url_option_value;
             }
-            $client = Client::select('sub_domain','custom_domain')->where('id', '>', 0)->first();
-            if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
-            $redirect_url_link = "https://" . $client->custom_domain.$option;
-            else
-            $redirect_url_link = "https://" . $client->sub_domain . env('SUBMAINDOMAIN').$option;
+            // $client = Client::select('sub_domain','custom_domain')->where('id', '>', 0)->first();
+            // if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
+            // $redirect_url_link = "https://" . $client->custom_domain.$option;
+            // else
+            // $redirect_url_link = "https://" . $client->sub_domain . env('SUBMAINDOMAIN').$option;
 
-            $campaign->push_url_option_value = (($request->push_url_option == '1')?$request->push_url_option_value:$redirect_url_link);
+            $campaign->push_url_option_value = (($request->push_url_option == '1')?$request->push_url_option_value:$option);
 
         }        
         $campaign->send_to = $request->send_to;

@@ -70,6 +70,7 @@ class UserController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function sendToken(Request $request, $domain = '', $uid = 0){
+        try{
         $notified = 0;
         $user = User::where('id', Auth::user()->id)->first();
         if (!$user) {
@@ -95,9 +96,12 @@ class UserController extends FrontController{
                 $user->phone_token_valid_till = $newDateTime;
                 $provider = $data->sms_provider;
                 $to = '+'.$request->dial_code.str_replace(' ', '', $request->phone);
-                $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
+
+                //$body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
+                $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp];
+                $body = sendSmsTemplate('verify-account',$keyData);
                 if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
-                    $send = $this->sendSms($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                    $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
                     if ($send) {
                         $notified = 1;
                     }
@@ -150,6 +154,12 @@ class UserController extends FrontController{
         } else {
             return redirect()->back()->with('err_user', __('Provider service is not configured. Please contact administration.'));
         }
+    }catch(\Execption $e)
+    {
+        Log::info('SMS logs');
+        Log::info($e->getMessage());
+        return response($e->getMessage(),400);
+    }
     }
 
     /**

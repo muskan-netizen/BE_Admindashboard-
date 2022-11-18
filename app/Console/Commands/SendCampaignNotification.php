@@ -172,7 +172,7 @@ class SendCampaignNotification extends Command
                                 }
                                 break;
                             case '3':
-                                //send push                                
+                                //send push                             
                                 $redirect_URL = $singlenotification->campaign->push_url_option_value;
                                 $data = [
                                     "registration_ids" => [$singlenotification->device_token],
@@ -188,7 +188,8 @@ class SendCampaignNotification extends Command
                                     "data" => [
                                         'title' => $singlenotification->campaign->push_title,
                                         'body'  => $singlenotification->campaign->push_message_body,
-                                        'type' => "reminder_notification"
+                                        'type' => "reminder_notification",
+                                        'click_action' => $redirect_URL,
                                     ],
                                     "priority" => "high"
                                 ];
