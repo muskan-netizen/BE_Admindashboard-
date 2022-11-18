@@ -1875,6 +1875,10 @@ class VendorController extends BaseController
             $product_categories_hierarchy = $this->getCategoryOptionsHeirarchy($product_categories_build, $langId);
             foreach($product_categories_hierarchy as $k => $cat){
                 $myArr = array(1,3,7,8,9,10,12);
+                if( getClientPreferenceDetail()->p2p_check ) {
+                    $myArr[] = 13;
+                }
+
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
                     unset($product_categories_hierarchy[$k]);
                 }

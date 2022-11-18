@@ -10,7 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption};
+use App\Http\Traits\{ProductActionTrait};
 class ProductController extends FrontController{
+    
+    use ProductActionTrait;
+
     private $field_status = 2;
 
     public function __construct()
@@ -140,7 +144,6 @@ class ProductController extends FrontController{
             })->where('url_slug', $url_slug)
             ->where('is_live', 1)
             ->firstOrFail();
-        // pr($product->toArray());   
         $doller_compare = 1;
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         if($clientCurrency){

@@ -893,6 +893,10 @@ class CustomerAuthController extends FrontController
             }else{
                 $user = User::where('id', $request->user_id)->first();
                 $user->title = $request->title;
+                // if user is already exists then mark as a admin
+                if( getClientPreferenceDetail()->p2p_check ) {
+                    $user->is_admin = 1;
+                }
                 $user->save();
             }
             $vendor = new Vendor();
