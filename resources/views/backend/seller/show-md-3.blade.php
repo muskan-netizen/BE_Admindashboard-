@@ -108,7 +108,7 @@
         </div>
     </div>
 </div> -->
-<div class="card-box">
+{{-- <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
             <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" id="slot-configs" method="post">
@@ -291,13 +291,13 @@
                             </div>
                         @endif
                     @endif
-                    {{-- <div class="col-md-12">
+                    <div class="col-md-12">
                         <div class="form-group" id="social_link">
                             {!! Form::label('title', 'Dynamic Html',['class' => 'control-label']) !!}
                             <textarea class="form-control" id="edit_description" rows="9" name="dynamic_html" cols="100">{{$vendor->dynamic_html}}
                             </textarea>
                         </div>
-                    </div> --}}
+                    </div>
 
 
                     <div class="col-12">
@@ -307,13 +307,13 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 
 
 @if(Auth::user()->is_superadmin == 1)
 
 @if(isset($checkAhoyShip) && $checkAhoyShip != 0)
-<div class="card-box">
+{{-- <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
             <form name="config-form" action="{{route('vendor.config.ahoy.pickuplocation', $vendor->id)}}" class="needs-validation" method="post">
@@ -345,7 +345,7 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 @endif
 
 @if(isset($checkShip) && $checkShip != 0)
@@ -373,7 +373,7 @@
 </div>
 @endif
 
-<div class="card-box">
+{{-- <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
             <form name="config-form" action="{{route('vendor.config.update.profile', $vendor->id)}}" class="needs-validation" method="post">
@@ -395,9 +395,9 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 
-<div class="card-box">
+{{-- <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
             <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
@@ -406,7 +406,7 @@
                     <div class="col-md-12">
                         <h4 class="mb-2"> <span class="">{{ __("Commission") }}</span> ({{ __("Visible For Admin") }})</h4>
                     </div>
-                </div> --}}
+                </div> 
 
                 <div class="row">
 
@@ -523,12 +523,12 @@
                             <input class="form-control" name="commission_fixed_per_order" type="text" value="{{$vendor->commission_fixed_per_order}}" onkeypress="return isNumberKey(event)">
                         </div>
                     </div>
-                    <!-- <div class="col-md-12">
+                    <div class="col-md-12">
                         <div class="form-group" id="commission_monthlyInput">
                             {!! Form::label('title', 'Commission Monthly',['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="commission_monthly" type="text" value="{{$vendor->commission_monthly}}">
                         </div>
-                    </div> -->
+                    </div>
                     <div class="col-md-12">
                         <div class="form-group" id="service_fee_percentInput">
                             {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
@@ -542,10 +542,10 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 
 @if($client_preference_detail->business_type == 'laundry')
-<div class="card-box">
+{{-- <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
             <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
@@ -597,7 +597,7 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 @endif
 <style type="text/css">
     #nestable_list_1 ol,

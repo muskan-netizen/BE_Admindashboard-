@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['demo' => 'creative', 'title' => getNomenclatureName('vendors', true)])
+@extends('layouts.vertical', ['demo' => 'creative', 'title' => getNomenclatureName('seller', true)])
 
 @section('css')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
@@ -122,7 +122,7 @@
         </div>
         <div class="row">
             <div class="col-lg-4 col-xl-3">
-                @include('backend.vendor.show-md-3')
+                @include('backend.seller.show-md-3')
             </div>
             <div class="col-lg-8 col-xl-9">
                 <div class="">

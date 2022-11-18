@@ -960,7 +960,12 @@ class CustomerAuthController extends FrontController
             $vendor->slug = Str::slug($request->name, "-");
             $vendor->is_seller = $request->vendor_type;
             $vendor->save();
-            $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
+            if($request->vendor_type == 0){
+                $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21]);    
+            }else{
+                $permission_details = Permissions::whereIn('id', [1,2,12,17,18,19,20,21,28]);
+            }
+            $permission_details = $permission_details->get();   
             if ($vendor_registration_documents->count() > 0) {
                 foreach ($vendor_registration_documents as $vendor_registration_document) {
                     $doc_name = str_replace(" ", "_", $vendor_registration_document->primary->slug);
@@ -1075,9 +1080,11 @@ class CustomerAuthController extends FrontController
 
             }
             DB::commit();
+            $is_seller = $request->vendor_type;
+            $msg_text = isset($is_seller) && $is_seller == 0 ? 'Vendor' : 'Seller';
             return response()->json([
                 'status' => 'success',
-                'message' => 'Vendor Registration Created Successfully!',
+                'message' => $msg_text.' Registration Created Successfully!',
             ]);
         } catch (Exception $e) {
             DB::rollback();
