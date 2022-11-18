@@ -466,7 +466,7 @@ class PickupDeliveryController extends BaseController{
                 $order_vendor->discount_amount= $vendor_discount_amount;
                 $order_vendor->payment_option_id = $request->payment_option_id;
                 $order_vendor->toll_amount = (isset($request->tollamount))?$request->tollamount:0.00;
-                $order_vendor->fixed_service_charge_amount = (isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
+                $order_vendor->service_fee_percentage_amount = (isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
                     if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
@@ -559,7 +559,6 @@ class PickupDeliveryController extends BaseController{
             $vendor_id = $vendorId->vendor_id;
             $productId = OrderVendorProduct::where('order_vendor_id',$vendorId->id)->select('product_id')->first();
             $tasks = OrderLocations::where('order_id',$order->id)->select('tasks')->first();
-            //$request = (object)array_merge($request,['product_id'=>$productId->product_id,'tasks'=>json_decode($tasks->tasks)]);
             $request->request->add(['product_id', $productId->product_id]);
             $request->request->add(['tasks', json_decode($tasks->tasks)]);
             if (!empty($request->transaction_id)) {

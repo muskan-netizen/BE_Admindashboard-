@@ -741,7 +741,7 @@ class PickupDeliveryController extends FrontController{
                 $order_vendor->discount_amount= $vendor_discount_amount;
                 $order_vendor->payment_option_id = $request->payment_option_id;
                 $order_vendor->toll_amount = (isset($request->tollamount))?$request->tollamount:0.00;
-                $order_vendor->fixed_service_charge_amount = (isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
+                $order_vendor->service_fee_percentage_amount = (isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
                     if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {

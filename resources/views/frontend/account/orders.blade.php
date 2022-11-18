@@ -438,12 +438,12 @@
                                                                                                 </li>
                                                                                             @endif
 
-                                                                                            @if ($vendor->fixed_service_charge_amount > 0)
+                                                                                            @if ($vendor->service_fee_percentage_amount > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                                     <label
                                                                                                         class="m-0">{{ __('Service Fee') }}</label>
-                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->fixed_service_charge_amount
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->service_fee_percentage_amount
                                                                                                         *
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
