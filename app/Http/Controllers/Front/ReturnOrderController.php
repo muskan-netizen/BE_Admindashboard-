@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\Web\OrderProductRatingRequest;
 use App\Http\Requests\Web\OrderProductReturnRequest;
-use App\Models\{Client, ClientPreference, EmailTemplate, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, User, UserDevice, UserVendor};
+use App\Models\{Client, ClientPreference, EmailTemplate, ExchangeReason, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, Product, User, UserDevice, UserVendor};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
 use App\Models\Client as CP;
@@ -59,6 +59,35 @@ class ReturnOrderController extends FrontController{
     }
 
 
+    public function getReplaceOrderDatailModel(Request $request){
+        try {
+            $order_details = Order::with(['vendors.products.productReturn','products.productRating', 'user', 'address',
+            'vendors'=>function($qw)use($request){
+                $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
+            },'vendors.products'=>function($qw)use($request){
+                $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
+            },'vendors.products.pvariant.media.pimage.image',
+            'products'=>function($qw)use($request){
+                $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
+            }])->whereHas('vendors',function($q)use($request){
+                $q->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
+            })
+            ->where('orders.user_id', Auth::user()->id)->where('orders.id', $request->id)->orderBy('orders.id', 'DESC')->first();
+
+            if(isset($order_details)){
+
+                if ($request->ajax()) {
+                 return \Response::json(\View::make('frontend.modals.replace-product-order', array('order' => $order_details))->render());
+                }
+            }
+            return $this->errorResponse('Invalid order', 404);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+
     /**
      * order details in for return order
     */
@@ -91,6 +120,120 @@ class ReturnOrderController extends FrontController{
                     }
                 }
                 return view('frontend.account.return-order')->with(['order' => $order_details,'navCategories' => $navCategories,'reasons' => $reasons]);
+            }
+            return $this->errorResponse('Invalid order', 404);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * order details in for return order
+    */
+    public function getReplaceProducts(Request $request, $domain = ''){
+        try {
+
+            $langId = Session::get('customerLanguage');
+            $navCategories = $this->categoryNav($langId);
+            $reasons = ExchangeReason::where('status','Active')->orderBy('order','asc')->get();
+            $order_details = Order::with(['vendors.products' => function ($q1)use($request){
+                $q1->where('id', $request->replace_ids);
+            }, 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image',
+            'products' => function ($q1)use($request){
+                $q1->where('id', $request->replace_ids);
+            },'products.productRating', 'user', 'address'])
+            ->whereHas('vendors.products',function($q)use($request){
+                $q->where('id', $request->replace_ids);
+            })->where('orders.user_id', Auth::user()->id)->where('id', $request->order_id)->orderBy('orders.id', 'DESC')->first();
+
+$vendor_id = 0;
+            if(isset($order_details)){
+                foreach($order_details->vendors as $key => $vendor){
+                    $vendor_id = $vendor->vendor_id;
+                    // dd($vendor_id);
+                    foreach($vendor->products as $product){
+                        if($product->pvariant->media->isNotEmpty()){
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'];
+                        }elseif($product->media->isNotEmpty()){
+                            $product->image_url = $product->media->first()->image->path['image_fit'].'74/100'.$product->media->first()->image->path['image_path'];
+                        }else{
+                            $product->image_url = ($product->image) ? $product->image['image_fit'].'74/100'.$product->image['image_path'] : '';
+                        }
+                    }
+                }
+
+
+
+
+
+                $user = Auth::user();
+                $p_id = $request->replace_ids;
+                $product = Product::with([
+                    'variant' => function ($sel) {
+                        $sel->groupBy('product_id');
+                    },
+                    'variant.set' => function ($sel) {
+                        $sel->select('product_variant_id', 'variant_option_id');
+                    },
+                    'variant.media.pimage.image', 'related', 'upSell', 'crossSell', 'vendor', 'media.image', 'translation' => function ($q) use ($langId) {
+                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+                        $q->where('language_id', $langId);
+                    },
+                    'addOn' => function ($q1) use ($langId) {
+                        $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
+                        $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
+                        $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
+                        $q1->where('set.status', 1)->where('ast.language_id', $langId);
+                    },
+                    'variantSet' => function ($z) use ($langId, $p_id) {
+                        $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+                        $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
+                        $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                        $z->where('vt.language_id', $langId);
+                        $z->where('product_variant_sets.product_id', $p_id);
+                        $z->where('vr.status', 1);
+                    },
+                    'variantSet.option2' => function ($zx) use ($langId, $p_id) {
+                        $zx->where('vt.language_id', $langId)
+                            ->where('product_variant_sets.product_id', $p_id);
+                    },
+                    'addOn.setoptions' => function ($q2) use ($langId) {
+                        $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                        $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
+                        $q2->where('apt.language_id', $langId);
+                    },
+                    'category.categoryDetail.allParentsAccount'
+                ]);
+                
+                $product = $product->whereHas('vendor',function($q) use($vendor_id){
+                        $q->where('id',$vendor_id);
+                    })
+                    ->where('is_live', 1)
+                    ->firstOrFail();
+
+                    $preferences = Session::get('preferences');
+                    $is_available = true;
+                    if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+                        if($product){
+                            $productVendorId = $product->vendor_id;
+                            $vendors = $this->getServiceAreaVendors();
+                            if(!in_array($productVendorId, $vendors)){
+                                $is_available = false;
+                            }
+                        }
+                    }
+
+
+
+
+
+
+
+
+
+
+                return view('frontend.account.replace-order')->with(['product' => $product,'is_available'=>$is_available,'order' => $order_details,'navCategories' => $navCategories,'reasons' => $reasons]);
             }
             return $this->errorResponse('Invalid order', 404);
 

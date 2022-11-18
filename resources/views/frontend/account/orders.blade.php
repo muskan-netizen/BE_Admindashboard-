@@ -805,7 +805,23 @@
                                                                                     <div class="col-7 col-sm-4 row">
                                                                                         <div class="col-6 col-sm-6">
                                                                                             <ul class="product_list p-0 m-0 text-center">
+                                                                                            @php 
+                                                                                            $returnable = 0;
+                                                                                            $replaceable = 0;
+                                                                                            @endphp
                                                                                                 @foreach ($vendor->products as $product)
+                                                                                                    @php 
+                                                                                                        
+                                                                                                        if($product->product->returnable == 1){
+                                                                                                            $returnable = 1;
+                                                                                                        }
+                                                                                                        if($product->product->replaceable == 1){
+                                                                                                            $replaceable = 1;
+                                                                                                        }
+                                                                                                    @endphp  
+                                                                                                    
+
+                                                                                                    
                                                                                                     @if ($vendor->vendor_id == $product->vendor_id)
                                                                                                         @php
                                                                                                             $pro_rating = $product->productRating->rating ?? 0;
@@ -917,8 +933,9 @@
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
-
+                                                                                                    
                                                                                             @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request)
+                                                                                            @if(@$returnable)
                                                                                                 <button
                                                                                                     class="return-order-product btn btn-solid"
                                                                                                     data-id="{{ $order->id ?? 0 }}"
@@ -926,6 +943,18 @@
                                                                                                     <td class="text-center"
                                                                                                         colspan="3">
                                                                                                         {{ __('Return') }}
+                                                                                                </button>
+                                                                                            @endif
+                                                                                            @endif
+
+                                                                                            @if(@$returnable)
+                                                                                                <button
+                                                                                                    class="replace-order-product btn btn-solid"
+                                                                                                    data-id="{{ $order->id ?? 0 }}"
+                                                                                                    data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
+                                                                                                    <td class="text-center"
+                                                                                                        colspan="3">
+                                                                                                        {{ __('Replace') }}
                                                                                                 </button>
                                                                                             @endif
 
@@ -1854,6 +1883,20 @@
         </div>
     </div>
 
+    <div class="modal fade replace-order" id="replace_order_model" tabindex="-1" aria-labelledby="return_orderLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <div id="replace-order-form-modal"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <!-- start cancel order -->
 <div class="modal fade vendor-order-cancel order_popop" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -2124,6 +2167,16 @@
             $.get('/return-order/get-order-data-in-model?id=' + id + '&vendor_id=' + vendor_id, function(markup) {
                 $('#return_order_model').modal('show');
                 $('#return-order-form-modal').html(markup);
+            });
+        });
+
+        $('body').on('click', '.replace-order-product', function(event) {
+            event.preventDefault();
+            var id = $(this).data('id');
+            var vendor_id = $(this).data('vendor_id');
+            $.get('/return-order/get-replace-order-data-in-model?id=' + id + '&vendor_id=' + vendor_id, function(markup) {
+                $('#replace_order_model').modal('show');
+                $('#replace-order-form-modal').html(markup);
             });
         });
 
