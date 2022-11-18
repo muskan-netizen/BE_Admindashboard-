@@ -449,6 +449,7 @@ body .alFullMapForm .scheduled-footer .btn {
                     <% } %>
                 </div>
             <% }); %>
+<<<<<<< HEAD
             {{-- <div>
                 <label class="radio mt-2">
                     <span>{{__('Wallet/Card')}}</span>
@@ -457,6 +458,37 @@ body .alFullMapForm .scheduled-footer .btn {
                 </label>
             </div> --}}
             <div class="modal-footer d-block text-center">
+=======
+        </script>
+
+        <script type="text/template" id="order_success_template">
+            <div class="bg-white p-2">
+                <div class="w-100 h-100">
+                    <img src="<%= product_image %>" alt="">
+                </div>
+                <div class="cab-location-details" id="searching_main_div">
+                    <h4><b>{{__(getNomenclatureName('Searching For Nearby Drivers',true))}}</b></h4>
+                    <div class="new-loader"></div>
+                </div>
+                <div class="cab-location-details" id="driver_details_main_div" style="display:none;">
+                   <div class="row align-items-center">
+
+                        <div class="col-4">
+                           <div class="taxi-img">
+                               <img src="" id="driver_image">
+                           </div>
+                        </div>
+
+                        <div class="col-8" >
+                            <h4 id="driver_name"><b><%= result.user_name %></b></h4>
+                            <p class="mb-0" id="driver_phone_number"><%= result.phone_number %></p>
+                        </div>
+
+                   </div>
+                </div>
+            </div>
+            <div class="cab-amount-details px-2">
+>>>>>>> HotFixPetverse
                 <div class="row">
                     <div class="col-sm-12 p-0 d-flex flex-fill">
                         <button type="button" class="btn btn-solid ml-1 select_payment_option_done">{{__('Done')}}</button>

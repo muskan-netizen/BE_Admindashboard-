@@ -173,7 +173,6 @@ class SendCampaignNotification extends Command
                                 break;
                             case '3':
                                 //send push                                
-                                //$redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/viewcart";
                                 $redirect_URL = $singlenotification->campaign->push_url_option_value;
                                 $data = [
                                     "registration_ids" => [$singlenotification->device_token],
@@ -183,6 +182,7 @@ class SendCampaignNotification extends Command
                                         'sound' => "default",
                                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                                         'click_action' => $redirect_URL,
+                                        'image'=>(!empty($singlenotification->campaign)) ? $singlenotification->campaign->push_image['proxy_url'] . '200/200' . $singlenotification->campaign->push_image['image_path'] : '',
                                         "android_channel_id" => "default-channel-id"
                                     ],
                                     "data" => [

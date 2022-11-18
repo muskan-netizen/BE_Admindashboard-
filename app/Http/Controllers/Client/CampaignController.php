@@ -259,7 +259,23 @@ class CampaignController extends BaseController
             $campaign->push_title = $request->push_title;
             $campaign->push_message_body = $request->push_message_body;
             $campaign->push_url_option = $request->push_url_option;
-            $campaign->push_url_option_value = $request->push_url_option_value;
+            
+            $option = '';
+            if($request->push_url_option == '2'){
+                $categorySlug = Category::where('id',$request->push_url_option_value)->select('slug')->first();
+                $option = '/category/'.$categorySlug->slug;
+            }else if($request->push_url_option == '3'){
+                $vendorSlug = Vendor::where('id',$request->push_url_option_value)->select('slug')->first();
+                $option = '/vendor/'.$vendorSlug->slug;
+            }
+            $client = Client::select('sub_domain','custom_domain')->where('id', '>', 0)->first();
+            if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
+            $redirect_url_link = "https://" . $client->custom_domain.$option;
+            else
+            $redirect_url_link = "https://" . $client->sub_domain . env('SUBMAINDOMAIN').$option;
+
+            $campaign->push_url_option_value = (($request->push_url_option == '1')?$request->push_url_option_value:$redirect_url_link);
+
         }        
         $campaign->send_to = $request->send_to;
         $campaign->schedule_datetime = $request->schedule_datetime;
@@ -309,7 +325,7 @@ class CampaignController extends BaseController
                     {                             
                         if($request->type==3)
                         {
-                            $getdevicedetail = UserDevice::where('user_id',$users[$j]->id)->latest()->first();
+                            $getdevicedetail = UserDevice::where('user_id',$users[$j]->id)->orderBy('id','DESC')->first();
                             if($getdevicedetail)
                             {
                                 $roasterdata[] = array(
@@ -359,7 +375,7 @@ class CampaignController extends BaseController
                     {
                         if($request->type==3)
                         {
-                            $getdevicedetail = UserDevice::where('user_id',$vendors[$j]->user_id)->latest()->first();
+                            $getdevicedetail = UserDevice::where('user_id',$vendors[$j]->user_id)->orderBy('id','DESC')->first();
                             if($getdevicedetail)
                             {
                                 $roasterdata[] = array(
@@ -480,9 +496,9 @@ class CampaignController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request){
-        Campaign::where('id', $request->campaign_id)->delete();
-        CampaignRoster::where('campaign_id',$request->campaign_id)->delete();
+    public function destroy($domain = '', $id){
+        Campaign::where('id', $id)->delete();
+        CampaignRoster::where('campaign_id',$id)->delete();
         return redirect()->back()->with('success', 'Campaign deleted successfully!');
     }
 
