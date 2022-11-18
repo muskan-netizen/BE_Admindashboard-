@@ -908,26 +908,15 @@ class CustomerAuthController extends FrontController
                 }
             }
 
-            // if($client_preference){
-            //     if($client_preference->dinein_check == 1){$count++;}
-            //     if($client_preference->takeaway_check == 1){$count++;}
-            //     if($client_preference->delivery_check == 1){$count++;}
-            // }
             if($count > 1){
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
                     $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
                     $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
                     
                 }
-                // $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
-                // $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
-                // $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
             }
             else{
                 $vendor->$single_vendor_type = 1;
-                // $vendor->dine_in = $client_preference->dinein_check == 1 ? 1 : 0;
-                // $vendor->takeaway = $client_preference->takeaway_check == 1 ? 1 : 0;
-                // $vendor->delivery = $client_preference->delivery_check == 1 ? 1 : 0;
             }
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
