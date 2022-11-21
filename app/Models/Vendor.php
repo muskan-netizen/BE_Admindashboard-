@@ -196,4 +196,8 @@ class Vendor extends Model implements Auditable{
           return json_decode($this->razorpay_bank_json);
     }
 
+    public function VendorAdditionalInfo(){
+      return $this->hasOne(\App\Models\VendorAdditionalInfo::class);
+    }
+
 }

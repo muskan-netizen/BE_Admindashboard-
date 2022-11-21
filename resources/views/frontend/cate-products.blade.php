@@ -310,7 +310,7 @@
                                                 <li><a href="javascript:void(0)">{{_('Avg. Customer Review')}}</a></li>
                                                 <li><a href="javascript:void(0)">{{_('Newest Arrivals')}}</a></li>
                                             </ul>
->>>>>>> template_7
+
                                         </div>
                                         <div class="product-wrapper-grid">
                                             <div class="row margin-res">
