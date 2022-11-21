@@ -26,7 +26,7 @@ class ProductController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request, $domain = '',$vendor,$url_slug){
-
+        
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
 
@@ -287,7 +287,6 @@ class ProductController extends FrontController{
             }else{
                 $product_page = "product";
             }
-            
             $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = '';
             $suggested_product = Product::with(['media.image', 'vendor', 'translation']);
             
