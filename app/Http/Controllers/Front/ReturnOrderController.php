@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\Web\OrderProductRatingRequest;
 use App\Http\Requests\Web\OrderProductReturnRequest;
-use App\Models\{Client, ClientPreference, EmailTemplate, ExchangeReason, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, Product, User, UserDevice, UserVendor};
+use App\Models\{Client, ClientPreference, EmailTemplate, ExchangeReason, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, Product, ProductVariantSet, User, UserAddress, UserDevice, UserVendor};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
 use App\Models\Client as CP;
@@ -227,13 +227,13 @@ $vendor_id = 0;
 
 
 
+                    $addresses = UserAddress::where('user_id', $user->id)->where('status',1)->orderBy('is_primary','Desc')->get();
 
 
 
 
 
-
-                return view('frontend.account.replace-order')->with(['product' => $product,'is_available'=>$is_available,'order' => $order_details,'navCategories' => $navCategories,'reasons' => $reasons]);
+                return view('frontend.account.replace-order')->with(['addresses' => $addresses, 'product' => $product,'is_available'=>$is_available,'order' => $order_details,'navCategories' => $navCategories,'reasons' => $reasons]);
             }
             return $this->errorResponse('Invalid order', 404);
 
@@ -298,6 +298,181 @@ $vendor_id = 0;
         }
     }
 
+
+    /**
+     * return  order product
+    */
+    public function updateProductReplace(Request $request){
+        try {
+            DB::beginTransaction();
+            // dd($request->all());
+            $orderVendorProductOld = OrderProduct::find($request->order_vendor_product_id);
+            // dd($orderVendorProductOld);
+            $order =  $this->saveOrder($request);
+            $order_vender =  $this->saveOrderVendor($order, $orderVendorProductOld);
+            $Order_vendor_product =  $this->saveOrderVendorProduct($request, $order, $orderVendorProductOld, $order_vender);
+            $vendor_order_status =  $this->saveVendorOrderStatus($order, $orderVendorProductOld, $order_vender);
+            DB::commit();
+            $this->sendSuccessSMS($request, $order);
+
+            return $this->successResponse($order);
+        } catch (Exception $e) {
+            DB::rollback();
+            return $this->errorResponse($e->getMessage(), 400);
+        }
+    }
+
+
+    public function saveVendorOrderStatus($order, $orderVendorProductOld, $order_vender)
+    {
+        $order_status = new VendorOrderStatus();
+        $order_status->order_id = $order->id;
+        $order_status->vendor_id = $orderVendorProductOld->vendor_id;
+        $order_status->order_vendor_id = $order_vender->id;
+        $order_status->order_status_option_id = 1;
+        $order_status->save();
+        return $order_status;
+    }
+    private function saveOrderVendorProduct($request, $order, $orderVendorProductOld, $order_vender)
+    {
+        $currency_id = Session::get('customerCurrency');
+        $language_id = Session::get('customerLanguage');
+        $order_product = new OrderProduct;
+        $order_product->order_id = $order->id;
+        $order_product->price = 0;
+        $order_product->markup_price = 0;
+        $order_product->additional_increments_hrs_min = 0;
+        $order_product->start_date_time = null;
+        $order_product->end_date_time = null;
+        $order_product->product_delivery_fee = 0;
+        /**
+         * for rental case total_booking_time as a total time 
+         * for on_demand and appointment total booking time as single service duration time as per service for get totel service time multiply by quantity
+         */
+        $order_product->total_booking_time = 0; 
+        
+        $order_product->container_charges = 0;
+        $order_product->order_vendor_id = $order_vender->id;
+        $order_product->taxable_amount = 0;
+        $order_product->incremental_price = 0;
+
+        $order_product->quantity = $orderVendorProductOld->quantity;
+        $order_product->vendor_id = $orderVendorProductOld->vendor_id;
+        $order_product->product_id = $orderVendorProductOld->product_id;
+        $order_product->user_product_order_form = null;
+        $product_category = Product::where('id', $orderVendorProductOld->product_id)->first();
+        if ($product_category) {
+            $order_product->category_id = $product_category->category_id;
+        }
+        $order_product->created_by = null;
+        $order_product->variant_id = $request->variant_id;
+        $product_variant_sets = '';
+        if (isset($request->variant_id) && !empty($request->variant_id)) {
+            $var_sets = ProductVariantSet::where('product_variant_id', $request->variant_id)->where('product_id', $orderVendorProductOld->product_id)
+                ->with([
+                    'variantDetail.trans' => function ($qry) use ($language_id) {
+                        $qry->where('language_id', $language_id);
+                    },
+                    'optionData.trans' => function ($qry) use ($language_id) {
+                        $qry->where('language_id', $language_id);
+                    }
+                ])->get();
+            if (count($var_sets)) {
+                foreach ($var_sets as $set) {
+                    if (isset($set->variantDetail) && !empty($set->variantDetail)) {
+                        $product_variant_set = @$set->variantDetail->trans->title . ":" . @$set->optionData->trans->title . ", ";
+                        $product_variant_sets .= $product_variant_set;
+                    }
+                }
+            }
+        }
+
+        $order_product->product_variant_sets = $product_variant_sets;
+        if (!empty($product_category->title)) {
+            $product_category->title = $product_category->title;
+        } elseif (empty($product_category->title)  && !empty($product_category->translation)) {
+            $product_category->title = $product_category->translation[0]->title;
+        } else {
+            $product_category->title = $product_category->sku;
+        }
+
+
+
+        $order_product->product_name = $product_category->title ?? $product_category->sku;
+
+        $order_product->product_dispatcher_tag = $product_category->tags;
+        $order_product->schedule_type =  null;
+        $order_product->scheduled_date_time =  null;
+        $order_product->schedule_slot =  '';
+        if(checkColumnExists('order_vendor_products', 'dispatch_agent_id')){
+        $order_product->dispatch_agent_id =  null;
+        }
+        if ($product_category->pimage) {
+            $order_product->image = $product_category->pimage->first() ? $product_category->pimage->first()->path : '';
+        }
+        // added some columen for rental case 
+        $order_product->start_date_time = null;
+        $order_product->end_date_time = null;
+        $order_product->additional_increments_hrs_min = 0;
+
+        $order_product->save();
+
+        return $order_product;
+    }
+
+
+    private function saveOrderVendor($order, $orderVendorProductOld)
+    {
+        /* Update details related to order vendor */
+        $user = Auth::user();
+        $OrderVendor = new OrderVendor();
+        $OrderVendor->status = 0;
+        $OrderVendor->user_id = $user->id;
+        $OrderVendor->order_id = $order->id;
+        $OrderVendor->vendor_id = $orderVendorProductOld->vendor_id;
+        $OrderVendor->vendor_dinein_table_id = null;
+        $OrderVendor->order_status_option_id = 2;
+        $OrderVendor->save();
+
+        return $OrderVendor;
+    }
+
+    private function saveOrder($request)
+    {
+        /* Generate order object */
+
+        $user = Auth::user();
+
+
+        $order = new Order;
+        $order->user_id = $user->id;
+        $order->order_number = generateOrderNo();
+
+        $order->address_id = $request->address_id;
+        $cus_address = UserAddress::find($request->address_id);
+        $latitude = $cus_address->latitude ?? Session::get('latitude');
+        $longitude = $cus_address->longitude ?? Session::get('longitude');
+
+        /* Uodating client other details in order object */
+        $order->payment_option_id = 0;
+        $order->payment_status = 1;
+        $order->total_other_taxes = 0;
+        $order->comment_for_pickup_driver =  null;
+        $order->comment_for_dropoff_driver = null;
+        $order->comment_for_vendor =  null;
+        $order->schedule_pickup  =  null;
+        $order->schedule_dropoff =  null;
+        $order->fixed_fee_amount = 0.00;
+        $order->specific_instructions =  null;
+        $order->is_gift =  0;
+        $order->user_latitude = $latitude ? $latitude : null;
+        $order->user_longitude = $longitude ? $longitude : null;
+        
+        /* Save initial details of order */
+        $order->save();
+
+        return $order;
+    }
     public function sendSuccessNotification($id, $vendorId){
         $super_admin = User::where('is_superadmin', 1)->pluck('id');
         $user_vendors = UserVendor::where('vendor_id', $vendorId)->pluck('user_id');
