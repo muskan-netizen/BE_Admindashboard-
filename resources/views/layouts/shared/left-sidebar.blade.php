@@ -1,3 +1,6 @@
+@php
+    $getAdditionalPreference = getAdditionalPreference(['is_seller_module']);
+@endphp
 <div class="left-side-menu">
     <div class="logo-box m-hide d-lg-block">
         @php
@@ -130,7 +133,7 @@
                                 </li>
                             @endif
 
-                            @if(in_array('sellers',$allowed) || Auth::user()->is_superadmin == 1)
+                            @if(@$getAdditionalPreference['is_seller_module'] == '1')
                                 <li>
                                     <a href="{{route('seller.index')}}">
                                     <span class="icon-vendor"></span>

@@ -1167,7 +1167,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
    </div>
 
    @php
-   $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable','is_price_by_role', 'is_free_delivery_by_roles', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_vendor_product_admin_approval']);
+   $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable','is_price_by_role', 'is_free_delivery_by_roles', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module']);
    @endphp
    <div class="row">
       {{-- hubspot form --}}
@@ -1632,10 +1632,10 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                <div class="col-md-4">
                   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                      <label for="is_seller_vendor_product_admin_approval_switch" class="mr-2 mb-0">{{__('Seller/Vendor Product Approval By Admin')}}<small class="d-block pr-5">{{__("Enable to show Seller/Vendor Product Approval by Admin")}}</small></label>
+                      <label for="is_seller_module_switch" class="mr-2 mb-0">{{__('Show Seller Module')}}<small class="d-block pr-5">{{__("Enable to show Seller Module")}}</small></label>
                       <span>
-                          <input type="checkbox" data-plugin="switchery" name="is_seller_vendor_product_admin_approval_switch" id="is_seller_vendor_product_admin_approval_switch" class="form-control checkbox_change" data-className="is_seller_vendor_product_admin_approval" data-color="#43bee1" @if( $getAdditionalPreference['is_seller_vendor_product_admin_approval'] == '1') checked='checked' @endif>
-                          <input type="hidden" @if($getAdditionalPreference['is_seller_vendor_product_admin_approval'] == 1) value="1" @else value="0" @endif name="is_seller_vendor_product_admin_approval" id="is_seller_vendor_product_admin_approval"/>
+                          <input type="checkbox" data-plugin="switchery" name="is_seller_module_switch" id="is_seller_module_switch" class="form-control checkbox_change" data-className="is_seller_module" data-color="#43bee1" @if( $getAdditionalPreference['is_seller_module'] == '1') checked='checked' @endif>
+                          <input type="hidden" @if($getAdditionalPreference['is_seller_module'] == 1) value="1" @else value="0" @endif name="is_seller_module" id="is_seller_module"/>
                       </span>
                   </div>
                </div>

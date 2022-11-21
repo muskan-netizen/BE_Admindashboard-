@@ -791,12 +791,13 @@ class SellerController extends BaseController
         return view('backend.seller.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'taxRates'=>$taxRates,'files'=>$files,'facilties'=>$facilties,'vendor_facilty_ids'=> $vendor_facilty_ids,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls,'client_languages'=>$client_languages, 'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference]);
     }
     // vendor product datatable
-    public function VendorProductFilter(Request $request,$domain='',$vendor_id)
+    public function SellerProductFilter(Request $request,$domain='',$vendor_id)
     {
         $ordring = 'asc';
         if(!empty($request->order)){
             $ordring = $request->order[0]['dir'] ?? 'asc';
         }
+        $status = $request->get('status_filter');
         $client_preference_detail =ClientPreference::select('id','business_type')->first();
         $product = Product::with(['media.image', 'primary', 'category.cat','vendor', 'brand', 'variant' => function ($v) {
             $v->select('id', 'product_id', 'quantity', 'price', 'barcode', 'expiry_date')->groupBy('product_id');
@@ -805,6 +806,10 @@ class SellerController extends BaseController
         ->orderBy('product_translations.title', $ordring)
         ->groupBy('products.id')
         ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
+
+        if (!empty($request->get('status_filter'))) {
+            $product = $product->where('is_live', $status);
+        }
 
         $need_sync_with_order = Vendor::where('id', $vendor_id)->value('need_sync_with_order');
             // pr($product->get()->toArray());

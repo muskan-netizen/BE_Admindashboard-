@@ -232,7 +232,13 @@
                                         <h4 class="mb-0"> {{ __('Catalog') }}</h4>
                                     </div>
                                     <div class="col-md-10 d-md-flex align-items-center justify-content-end mb-3">
-
+                                            <div class="form-group mb-0 mr-2">
+                                                <select class="form-control" id="prodStatus" style="border-radius:30px;">
+                                                    <option value="">All</option>
+                                                    <option value="1">Approved</option>
+                                                    <option value="0">Draft</option>
+                                                </select>
+                                            </div>
                                             <div class="vendor-search mb-sm-0 mb-2">
                                                 <input class="form-control" id="vendor_search" type="search" placeholder="Product Search" aria-controls="vendor_product_table">
                                             </div>
@@ -243,11 +249,11 @@
                                                 {{ __('Action') }}
                                             </a>
                                             @endif
-                                            <a class="btn btn-info waves-effect waves-light ml-1 text-sm-right @if($vendor->status == 1) importProductBtn @endif  {{ $vendor->status == 1 ? '' : 'disabled' }}"
+                                            {{-- <a class="btn btn-info waves-effect waves-light ml-1 text-sm-right @if($vendor->status == 1) importProductBtn @endif  {{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"
                                                 {{ $vendor->status == 1 ? '' : 'disabled' }}><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
-                                            </a>
+                                            </a> --}}
 
                                             <a class="btn btn-info waves-effect waves-light text-sm-right mx-1" dataid="0" href="{{ route('vendor.product.export', $vendor->id) }}"><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Export') }}
@@ -1417,6 +1423,10 @@
            let search = $('#vendor_search').val();
            datatable_intent(search);
         });
+        $("#prodStatus").change(function() {
+            let status = $(this).val();
+            datatable_intent();
+        });
         function datatable_intent(search =''){
             $('#vendor_product_table').DataTable({
                 "responsive": true,
@@ -1442,9 +1452,10 @@
                 },
 
                 ajax: {
-                    url: "{{url('client/vendor/product/list').'/'.$vendor->id}}",
+                    url: "{{url('client/seller/product/list').'/'.$vendor->id}}",
                     data: function (d) {
                         d.search = $('input[type="search"]').val();
+                        d.status_filter = $('#prodStatus option:selected').val();
                     }
                 },
                 columns: dataTableColumn(),

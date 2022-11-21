@@ -31,7 +31,7 @@
             </div>
         </div>
         @php
-            $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration']);
+            $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module']);
         @endphp
         @if($page_detail->primary->type_of_form == 1)
 
@@ -214,13 +214,15 @@
                                         <input type="text" class="form-control" name="name" value="">
                                         <span class="invalid-feedback" id="name_error"><strong></strong></span>
                                     </div>
-                                    <div class="col-md-6 mb-3" id="nameInput">
-                                        <label for="vendortype">{{__('Vendor Type')}}</label>
-                                        <select name="vendor_type" id="vendor_type" class="form-control">
-                                            <option value="1">Seller</option>
-                                            <option value="0">Vendor</option>
-                                        </select>
-                                    </div>
+                                    @if(@$getAdditionalPreference['is_seller_module'] == '1')
+                                        <div class="col-md-6 mb-3" id="nameInput">
+                                            <label for="vendortype">{{__('Vendor Type')}}</label>
+                                            <select name="vendor_type" id="vendor_type" class="form-control">
+                                                <option value="1">Seller</option>
+                                                <option value="0">Vendor</option>
+                                            </select>
+                                        </div>
+                                    @endif
                                     {{-- <div class="col-md-4 mb-3" id="nameInput">
                                         <label for="validationCustom01">{{__('Phone Number')}}</label>
                                         <input type="text" class="form-control" name="phone_no" value="">

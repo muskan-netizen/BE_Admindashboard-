@@ -228,17 +228,17 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 pr($product->toArray()); @endphp --}}
                 @if($product->category->categoryDetail->type_id != 7)
                 <div class="card-box">
-                    
+                    {{-- @dd($product->vendor) --}}
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Pricing Information") }}</h5>
                     @if($product->has_variant == 0)
                     <div class="row mb-2">
-                        @if(@$product->vendor->is_seller == 0 && Auth::user()->is_superadmin == 1)
+                        @if(@$product->vendor->is_seller == 1 && Auth::user()->is_superadmin == 1)
                             <div class="col-4 mb-2">
                                 {!! Form::label('title', __('Cost price'), ['class' => 'control-label']) !!}
                                 @include('backend.primary_currency')
                                 {!! Form::text('cost_price', decimal_format($product->variant[0]->cost_price), ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                             </div>
-                        @elseif (@$product->vendor->is_seller == 0)
+                        @elseif (@$product->vendor->is_seller == 1)
                             <div class="col-4 mb-2">
                                 {!! Form::label('title', __('Cost price'), ['class' => 'control-label']) !!}
                                 @include('backend.primary_currency')
@@ -246,7 +246,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </div>
                         @endif
 
-                        @if(@$product->vendor->is_seller == 1 || Auth::user()->is_superadmin == 1 )
+                        @if(@$product->vendor->is_seller == 0 || Auth::user()->is_superadmin == 1 )
                             <div class="col-4 mb-2">
                                 {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
                                 @include('backend.primary_currency')
