@@ -426,6 +426,28 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+
+                                                                                            @if ($vendor->toll_amount > 0)
+                                                                                                <li
+                                                                                                    class="d-flex align-items-center justify-content-between">
+                                                                                                    <label
+                                                                                                        class="m-0">{{ __('Toll Fee') }}</label>
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->toll_amount
+                                                                                                        *
+                                                                                                        $clientCurrency->doller_compare)}}</span>
+                                                                                                </li>
+                                                                                            @endif
+
+                                                                                            @if ($vendor->service_fee_percentage_amount > 0)
+                                                                                                <li
+                                                                                                    class="d-flex align-items-center justify-content-between">
+                                                                                                    <label
+                                                                                                        class="m-0">{{ __('Service Fee') }}</label>
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->service_fee_percentage_amount
+                                                                                                        *
+                                                                                                        $clientCurrency->doller_compare)}}</span>
+                                                                                                </li>
+                                                                                            @endif
                                                                                             <li
                                                                                                 class="grand_total d-flex align-items-center justify-content-between">
                                                                                                 <label
@@ -568,6 +590,18 @@
                                                                                         <span>{{ Session::get('currencySymbol') }}{{decimal_format(($vendor->total_container_charges) * $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+
+                                                                                @if ($order->total_toll_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Toll Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_toll_amount
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
+
                                                                                 @if ($order->total_service_fee > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -1663,6 +1697,8 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+
+
                                                                                             <li
                                                                                                 class="grand_total d-flex align-items-center justify-content-between">
                                                                                                 <label
