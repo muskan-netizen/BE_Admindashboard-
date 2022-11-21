@@ -551,8 +551,7 @@ class PickupDeliveryController extends BaseController{
 
      // order update for pickup delivery
      public function orderUpdateAfterPaymentPickupDelivery($request){
-            //echo $request->order_number;
-            $order = Order::where('order_number',$request['order_number'])->first();
+            $order = Order::where('order_number', $request->order_number)->first();
             $vendorId = OrderVendor::where('order_id',$order->id)->first();
             $vendor_id = $vendorId->vendor_id;
             $productId = OrderVendorProduct::where('order_vendor_id',$vendorId->id)->select('product_id')->first();
@@ -572,7 +571,6 @@ class PickupDeliveryController extends BaseController{
                 $payment->type = 'pickup/delivery';
                 $payment->save();
             }
-     
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$vendor_id);
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = Auth::user();
@@ -617,10 +615,7 @@ class PickupDeliveryController extends BaseController{
                 if(isset($request->task_type) && !empty($request->task_type))
                 {
                     $request->task_type = $request->task_type;
-                    $schedule_datetime_del = null;
-
-                    // $tasktype = ($request->task_type=='later')?'schedule':$request->task_type;
-                    // $request->task_type = $tasktype;                    
+                    $schedule_datetime_del = null;                   
                     $request->order_time = $schedule_datetime_del;
                 }else{
                     $request->task_type = 'schedule';
@@ -698,7 +693,6 @@ class PickupDeliveryController extends BaseController{
                                                     'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                     'content-type' => 'application/json']
                                                         ]);
-                //pr($postdata);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post(
                     $url.'/api/task/create',
