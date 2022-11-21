@@ -178,7 +178,7 @@ class ReturnOrderController extends FrontController{
         $notification_content = NotificationTemplate::where('id', 3)->first();
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
-            
+
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -186,7 +186,7 @@ class ReturnOrderController extends FrontController{
                     'body'  => $notification_content->content,
                 ]
             ];
-            
+
             sendFcmCurlRequest($data);
         }
     }
@@ -212,7 +212,7 @@ class ReturnOrderController extends FrontController{
                 if($email_template){
                     //for changeing the value upto 2 decimal
                     $order_vendor_product->price = number_format((float)$order_vendor_product->price, 2, '.', '') ?? $order_vendor_product->price;
-                    
+
                     $email_template_content = $email_template->content;
                     $email_template_content = str_ireplace("{product_image}", $order_vendor_product->image['image_fit'].'200/200'.$order_vendor_product->image['image_path'], $email_template_content);
                     $email_template_content = str_ireplace("{product_name}", $order_vendor_product->product->title, $email_template_content);
@@ -257,7 +257,7 @@ class ReturnOrderController extends FrontController{
             $orderCancellationPercentage = 0;
             if(($client_preferences->order_cancellation_time > 0)){
                 $orderData = Order::find($order_vendor->order_id);
-                
+
                 // get what time order placed according to current time
                 $orderPlacedTime = (strtotime(now()) - strtotime($orderData->created_at)) / 60; // in minutes
                 if($orderPlacedTime > $client_preferences->order_cancellation_time){
@@ -265,7 +265,7 @@ class ReturnOrderController extends FrontController{
                 }
             }
 
-            
+
             if($client_preferences->business_type == 'laundry'){
                 return \Response::json(\View::make('frontend.modals.vendor-cancel-order')->with([
                     'order_vendor' => $order_vendor,
@@ -363,7 +363,7 @@ class ReturnOrderController extends FrontController{
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id,
                     'reject_reason' => $request->reject_reason,  'cancelled_by' => Auth::id(),
                 ]);
-             
+
 
                 if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
                     if(isset($orderData->luxury_option->title) && $orderData->luxury_option->title == "pick_drop"){
@@ -399,7 +399,7 @@ class ReturnOrderController extends FrontController{
                     $credit_amount = $return_response['vendor_return_amount'] ; //$currentOrderStatus->payable_amount;
                     $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #'. $currentOrderStatus->orderDetail->order_number.' ('.$currentOrderStatus->vendor->name.')']);
                 }
-                // diarise loyalty 
+                // diarise loyalty
                 $orderData->loyalty_points_used    =  $orderData->loyalty_points_used - $return_response['vendor_loyalty_points'];
                 $orderData->loyalty_amount_saved   =  $orderData->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];
                 $orderData->loyalty_points_earned  =  $orderData->loyalty_points_earned - $return_response['vendor_loyalty_points_earned'];
