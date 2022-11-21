@@ -1072,7 +1072,14 @@ if (!function_exists('getServiceTypesCategory')) {
                 $service_types = ['laundry_service'];
             } elseif ($vendorType == "appointment") {
                 $service_types = ['appointment_service'];
+            } 
+            // elseif ($vendorType == "p2p") {
+            //     $service_types = ['products_service'];
+            // }
+            elseif ($vendorType == "p2p") {
+                $service_types = ['p2p'];
             }
+
             if ($client_preference->business_type == 'taxi') {
                 $service_types = ['pick_drop_service'];
             } elseif ($client_preference->business_type == 'laundry') {
@@ -1083,7 +1090,12 @@ if (!function_exists('getServiceTypesCategory')) {
             if ($client_preference->business_type == 'laundry') {
                 $service_types = ['laundry_service'];
             }
-
+            // if ($client_preference->business_type == 'p2p') {
+            //     $service_types = ['products_service'];
+            // }
+            if ($client_preference->business_type == 'p2p') {
+                $service_types = ['p2p'];
+            }
             $types =  $types->whereIn('service_type', $service_types);
             $types_id = $types->pluck('id')->toArray();
             return $types_id;
@@ -1116,9 +1128,14 @@ if (!function_exists('getCategoryTypes')) {
             case "rental":
                 $typeArray = ['rental'];
                 break;
-
+            case "p2p":
+                $typeArray = ['p2p'];
+                break;
             case "super_app":
-                $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment'];
+                $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment' ];
+                if( clientPrefrenceModuleStatus('p2p_check') ) {
+                    $typeArray[] = 'p2p';
+                }
                 break;
             default:
                 $typeArray = ['delivery', 'dinein', 'takeaway', 'pick_drop', 'on_demand', 'appointment'];
@@ -1154,6 +1171,9 @@ if (!function_exists('getCategoryTypesServices')) {
                 break;
             case "super_app":
                 $typeArray = ['pick_drop_service', 'on_demand_service', 'appointment_service', 'rental_service', 'products_service'];
+                if( clientPrefrenceModuleStatus('p2p_check') ) {
+                    $typeArray[] = 'p2p';
+                }
                 break;
             default:
                 $typeArray = ['products_service', 'pick_drop_service', 'on_demand_service', 'appointment_service'];
@@ -1248,5 +1268,11 @@ function inventorySyncOnOff($vendor_id)
         }
     } else {
         return false;
+    }
+}
+
+if( !function_exists('clientPrefrenceModuleStatus') ) {
+    function clientPrefrenceModuleStatus($module_name) {
+        return ClientPreference::first()->pluck($module_name);
     }
 }

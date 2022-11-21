@@ -155,7 +155,7 @@
                                 <span class="bar-line"></span>
                                 <span class="bar-line"></span>
                             </div>
-                            <span>{{ _('Menu') }}</span>
+                            <span>{{ __('Menu') }}</span>
                         </a>
 
                         <div class="row">
