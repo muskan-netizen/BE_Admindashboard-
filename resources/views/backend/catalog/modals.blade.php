@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">{{ __("Add Variant") }}</h4>
+                <h4 class="modal-title">{{ __("Add ".getNomenclatureName('Variant')) }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="addVariantForm" method="post" enctype="multipart/form-data" action="{{route('variant.store')}}">
@@ -22,7 +22,7 @@
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">{{ __("Edit Variant") }}</h4>
+                <h4 class="modal-title">{{ __("Edit ".getNomenclatureName('Variant')) }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="editVariantForm" method="post" enctype="multipart/form-data">
