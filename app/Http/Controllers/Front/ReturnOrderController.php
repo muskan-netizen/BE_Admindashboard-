@@ -308,7 +308,6 @@ class ReturnOrderController extends FrontController{
                     $query->where('vendor_id', $vendor_id);
                 }
             ))->find($request->order_id);
-
             $today = date('Y-m-d');
             $user = Auth::user();
 

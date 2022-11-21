@@ -890,11 +890,12 @@ class CartController extends BaseController
                                  }
                                 
                                 if($prod->product->individual_delivery_fee == 1) {
-                                    $deliveryCharges_real = ($vendorTotalDeliveryFee + $previousdeliveryfee + $deliveryCharges);
-                                    $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $deliveryCharges;
+                                    $quantity_deliveryCharges = $deliveryCharges*$prod->quantity;
+                                    $deliveryCharges_real = ($vendorTotalDeliveryFee + $previousdeliveryfee + $quantity_deliveryCharges);
+                                    $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $quantity_deliveryCharges;
                                     $previousdeliveryfee = 0;
-                                    CartProduct::where('cart_id', $cart->id)->where('vendor_id', $vendorData->vendor->id)->where('product_id', $prod->product->id)->update(['product_delivery_fee'=>$deliveryCharges]);
-                                    $prod->product->product_delivery_fee = $deliveryCharges;
+                                    CartProduct::where('cart_id', $cart->id)->where('vendor_id', $vendorData->vendor->id)->where('product_id', $prod->product->id)->update(['product_delivery_fee'=>$quantity_deliveryCharges]);
+                                    $prod->product->product_delivery_fee = $quantity_deliveryCharges;
                                     
                                 }else{
                                     $deliveryCharges_real = ($vendorTotalDeliveryFee + $deliveryCharges);

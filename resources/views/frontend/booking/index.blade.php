@@ -336,8 +336,8 @@ body .alFullMapForm .scheduled-footer .btn {
                 <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
                 ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
             <% if(result.toll_fee > 0){ %>
-                <span class="d-flex align-items-center justify-content-between mt-2"><b><%= result.name %></b> <label><sub class="ling-throgh" id
-                ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_less_tags_price%></b></label></span>
+                <span class="d-flex align-items-center justify-content-between mt-2"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
+                ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
             <% } %>
             
             <% if(result.service_charge_amount > 0){ %>
