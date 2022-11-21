@@ -433,5 +433,81 @@
     });
     //End Product Tag Script
 
-    
+    // Attribute script
+    $(".addAttributbtn").click(function(e) {
+        console.log('click function called');
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        e.preventDefault();
+        var did = $(this).attr('dataid');
+        $.ajax({
+            type: "get",
+            url: "{{route('attribute.create')}}",
+            data: '',
+            dataType: 'json',
+            success: function(data) {
+                $('#addAttributemodal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#addAttributeForm #AddAttributeBox').html(data.html);
+                $('.dropify').dropify();
+                $('.selectize-select').selectize();
+
+                var picker = new jscolor('#add-hexa-colorpicker-1', options);
+            },
+            error: function(data) {
+                console.log('data2');
+            }
+        });
+
+    });
+
+
+    $('.editAttributeBtn').on('click', function(e) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        e.preventDefault();
+        var did = $(this).attr('dataid');
+        $.ajax({
+            type: "get",
+            url: "{{url('client/attribute')}}" + '/' + did + '/edit',
+            data: '',
+            dataType: 'json',
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            success: function(data) {
+                $('#editVariantmodal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#editVariantForm #editVariantBox').html(data.html);
+                $('.dropify').dropify();
+                $('.selectize-select').selectize();
+                $("#editVariantForm .hexa-colorpicker").each(function() {
+                    var ids = $(this).attr('id');
+                    try {
+                        var picker = new jscolor('#' + ids, options);
+                    } catch (err) {
+                        console.log(err.message);
+                    }
+                });
+                var getURI = document.getElementById('submitEditHidden').value;
+                document.getElementById('editVariantForm').action = data.submitUrl;
+            },
+            error: function(data) {
+                console.log('data2');
+            },
+            complete: function() {
+                $('.loader_box').hide();
+            }
+        });
+    });
 </script>
