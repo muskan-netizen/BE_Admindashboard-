@@ -4,7 +4,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     {!! Form::label('title', __('Select Category'),['class' => 'control-label']) !!}
-                    <select class="selectize-select form-control" id="cateSelectBox" name="cate_id">
+                    <select class="selectize-select form-control" required id="cateSelectBox" name="cate_id">
                         <option value="">{{ __("Select Category") }}...</option>
                         @foreach($categories as $cate)
                             <option value="{{$cate['id']}}">{{$cate['hierarchy']}}</option>
@@ -21,7 +21,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     {!! Form::label('title', __('Type'),['class' => 'control-label']) !!}
-                    <select class="form-control selectize-select dropDownType" name="type" dataFor="add">
+                    <select class="form-control selectize-select dropDownType"  name="type" dataFor="add">
                         <option value="1">{{ __("DropDown") }}</option>
                         <option value="2">{{ __("Color") }}</option>
                     </select>

@@ -128,7 +128,7 @@
                     <h6 class="text-center"><b> <% if(result.scheduled_date_time != null){%>
                         {{__('Ride Scheduled')}}
                         <%} else {%>
-                            {{__('Searching For Nearby Drivers')}}
+                            {{getNomenclatureName('Searching For Nearby Drivers',true)}}
                         <%}%>
                     </b></h6>
                     <div class="new-loader">

@@ -78,7 +78,7 @@ $(document).ready(function() {
             ajaxData.order_number = order.order_number;
 
         } else if (cabElement.length > 0) {
-            total_amount = cabElement.data('amount');
+            total_amount = cabElement.data('totalamount');
             ajaxData.payment_form = 'pickup_delivery';
             ajaxData.order_number = order.order_number;
             ajaxData.reload_route = order.route;
