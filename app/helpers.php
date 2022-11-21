@@ -85,9 +85,9 @@ if (!function_exists('sendFcmCurlRequest')) {
     function sendFcmCurlRequest($data)
     {
         $client_preferences = ClientPreference::first();
-        if (!empty($client_preferences->fcm_server_key)) {
+         if (!empty($client_preferences->fcm_server_key)) {
             $headers = [
-                'Authorization: key=' . $client_preferences->fcm_server_key,
+                'Authorization: key='.$client_preferences->fcm_server_key,
                 'Content-Type: application/json',
             ];
             $ch = curl_init();

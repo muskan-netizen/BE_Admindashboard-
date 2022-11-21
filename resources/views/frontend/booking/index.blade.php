@@ -335,6 +335,24 @@ body .alFullMapForm .scheduled-footer .btn {
             <div class="cab-location-details">
                 <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
                 ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
+            <% if(result.toll_fee > 0){ %>
+                <span class="d-flex align-items-center justify-content-between mt-2"><b><%= result.name %></b> <label><sub class="ling-throgh" id
+                ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_less_tags_price%></b></label></span>
+            <% } %>
+            
+            <% if(result.service_charge_amount > 0){ %>
+                <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
+                ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
+            <% } %>
+
+            <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>
+                <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
+                ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
+            <% } %>
+                <input type="hidden" id="hddn_amount_toll_fee" value="<%= (result.toll_fee)%>"/>
+                <input type="hidden" id="hddn_real_amount" value="<%= (result.tags_price)%>"/>
+                <input type="hidden" id="hddn_currency_symbol" value="{{Session::get('currencySymbol')}}"/>
+                <input type="hidden" id="hddn_service_charge_amount" value="<%= (result.service_charge_amount)%>"/>
                 <p><%= result.description %></p>
             </div>
         </div>
@@ -368,8 +386,8 @@ body .alFullMapForm .scheduled-footer .btn {
                 <span class="code-text">{{__('Select a promo code')}}</span>
             </label>
 
-                    <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" id="promo_code_list_btn_cab_booking">Apply</a>
-                    <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" style="display:none;">Remove</a>
+                    <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" id="promo_code_list_btn_cab_booking">Apply</a>
+                    <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" style="display:none;">Remove</a>
 
         </div>
         <% if((result.faqlist) && (result.faqlist) > 0 ){ %>
@@ -406,7 +424,7 @@ body .alFullMapForm .scheduled-footer .btn {
 
             %>
                 <input type="hidden" id="stripe_token" name="stripe_token" value="">
-                <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
+                <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
             </div>
             <!--<div class="col-6">
                 <button class="btn btn-solid w-100" id="pickup_later" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_later">Pickup Later</button>
@@ -449,7 +467,7 @@ body .alFullMapForm .scheduled-footer .btn {
                     <% } %>
                 </div>
             <% }); %>
-<<<<<<< HEAD
+
             {{-- <div>
                 <label class="radio mt-2">
                     <span>{{__('Wallet/Card')}}</span>
@@ -458,37 +476,6 @@ body .alFullMapForm .scheduled-footer .btn {
                 </label>
             </div> --}}
             <div class="modal-footer d-block text-center">
-=======
-        </script>
-
-        <script type="text/template" id="order_success_template">
-            <div class="bg-white p-2">
-                <div class="w-100 h-100">
-                    <img src="<%= product_image %>" alt="">
-                </div>
-                <div class="cab-location-details" id="searching_main_div">
-                    <h4><b>{{__(getNomenclatureName('Searching For Nearby Drivers',true))}}</b></h4>
-                    <div class="new-loader"></div>
-                </div>
-                <div class="cab-location-details" id="driver_details_main_div" style="display:none;">
-                   <div class="row align-items-center">
-
-                        <div class="col-4">
-                           <div class="taxi-img">
-                               <img src="" id="driver_image">
-                           </div>
-                        </div>
-
-                        <div class="col-8" >
-                            <h4 id="driver_name"><b><%= result.user_name %></b></h4>
-                            <p class="mb-0" id="driver_phone_number"><%= result.phone_number %></p>
-                        </div>
-
-                   </div>
-                </div>
-            </div>
-            <div class="cab-amount-details px-2">
->>>>>>> HotFixPetverse
                 <div class="row">
                     <div class="col-sm-12 p-0 d-flex flex-fill">
                         <button type="button" class="btn btn-solid ml-1 select_payment_option_done">{{__('Done')}}</button>
@@ -527,7 +514,7 @@ body .alFullMapForm .scheduled-footer .btn {
             <img src="<%= product_image %>" alt="">
         </div>
         <div class="cab-location-details" id="searching_main_div">
-            <h4><b>{{__('Searching For Nearby Drivers')}}</b></h4>
+            <h4><b>{{__(getNomenclatureName('Searching For Nearby Drivers',true))}}</b></h4>
             <div class="new-loader"></div>
         </div>
         <div class="cab-location-details" id="driver_details_main_div" style="display:none;">
@@ -797,6 +784,11 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var initial_country_code = "{{ Session::get('default_country_code','US') }}";
     var add_rider_url = "{{route('rider.create')}}";
     var remove_rider_url = "{{route('rider.remove')}}";
+    @if($client_preference_detail->distance_unit_for_time == "mile")
+    var distance_unit = "IMPERIAL";
+    @else
+    var distance_unit = "METRIC";
+    @endif
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
             event.preventDefault();

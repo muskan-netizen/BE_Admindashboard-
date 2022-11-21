@@ -52,6 +52,7 @@ class SendCampaignNotification extends Command
     {
         $clients = Client::select('database_name', 'sub_domain')->get();
         $intervalTime = Carbon::now();
+        $add1Minute = Carbon::now()->addMinutes(1);
         foreach ($clients as $client) {
             $database_name = 'royo_' . $client->database_name;
             // Log::info("checking cart start: {$database_name}!");
@@ -77,7 +78,8 @@ class SendCampaignNotification extends Command
                 $client_preferences = ClientPreference::first();   
                  
                 // CampaignRoster::where('id',6287)->delete();
-                $notifications = CampaignRoster::where('notification_time', '<=', $intervalTime)->where('status',0)->with('campaign','user')->get();
+                //$notifications = CampaignRoster::where('notification_time', '<=', '2022-11-10 11:29:00')->where('notification_time', '>=', $add1Minute)->where('status',0)->with('campaign','user')->get();
+                $notifications = CampaignRoster::whereBetween('notification_time', [$intervalTime, $add1Minute])->where('status',0)->with('campaign','user')->get();
                 if($notifications)
                 {
                     // //test sms

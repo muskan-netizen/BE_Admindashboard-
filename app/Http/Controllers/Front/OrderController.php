@@ -1444,6 +1444,9 @@ class OrderController extends FrontController
                         $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
                         $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
                     }
+                    $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
+                    $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                    $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                 }else{
                     $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
 
@@ -1525,7 +1528,6 @@ class OrderController extends FrontController
     public function sendOrderPushNotificationVendors($user_ids, $orderData)
     {
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-      
         $from = '';
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon', 'vendor_fcm_server_key')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
@@ -1554,8 +1556,7 @@ class OrderController extends FrontController
                 ],
                 "priority" => "high"
             ];
-           Log::info('data for notification '.json_encode($data));
-            if(!empty($from)){
+             if(!empty($from)){
                 // helper function
                 sendFcmCurlRequest($data);
             }

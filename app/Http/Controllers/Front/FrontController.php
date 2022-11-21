@@ -79,11 +79,10 @@ class FrontController extends Controller
         }
         return '1';
 	}
-
     protected function sendSmsNew($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
             $body = $body['body']??'';
-            $template_id = $body['template_id']??''; //sms Template_id
+            $template_id = $body['template_id']??'';
             $client_preference =  getClientPreferenceDetail();
             if($client_preference->sms_provider == 1)
             {
@@ -129,13 +128,10 @@ class FrontController extends Controller
             //return $send;
         }
         catch(\Exception $e){
-            Log::info('SMS logs');
-            Log::info($e->getMessage());
             return '2';
         }
         return '1';
 	}
-
     public function testsms(Request $request)
     {
         $prefer = ClientPreference::select('sms_credentials', 
