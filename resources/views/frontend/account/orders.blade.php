@@ -448,7 +448,6 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
-
                                                                                             <li
                                                                                                 class="grand_total d-flex align-items-center justify-content-between">
                                                                                                 <label
@@ -604,7 +603,6 @@
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                
                                                                                 @if ($order->total_service_fee > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -1673,6 +1671,8 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+
+
                                                                                             <li
                                                                                                 class="grand_total d-flex align-items-center justify-content-between">
                                                                                                 <label

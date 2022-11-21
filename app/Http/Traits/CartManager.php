@@ -709,7 +709,7 @@ trait cartManager{
                                 if (count($deliveries)>1) {
                                     foreach ($deliveries as $k=> $opt) {
                                         if($prod->product->individual_delivery_fee == 1) {
-                                            $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($vendorTotalDeliveryFee + $previousdeliveryfee + $opt['rate']).'</option>';
+                                            $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($vendorTotalDeliveryFee + $previousdeliveryfee + ($opt['rate']*$prod->quantity)).'</option>';
                                         }else{
                                             $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($vendorTotalDeliveryFee + $opt['rate']).'</option>';
                                         }
@@ -717,7 +717,7 @@ trait cartManager{
                                 } else {
                                     foreach ($deliveries as $k=> $opt) {
                                         if($prod->product->individual_delivery_fee == 1) {
-                                            $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($vendorTotalDeliveryFee + $previousdeliveryfee + $opt['rate']).'</option>';
+                                            $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($vendorTotalDeliveryFee + $previousdeliveryfee + ($opt['rate']*$prod->quantity)).'</option>';
                                         }else{
                                             $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($vendorTotalDeliveryFee + $opt['rate']).'</option>';
                                         }
@@ -744,11 +744,12 @@ trait cartManager{
                             }
 
                             if($prod->product->individual_delivery_fee == 1) {
-                                $deliveryCharges_real = ($vendorTotalDeliveryFee + $previousdeliveryfee + $deliveryCharges);
-                                $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $deliveryCharges;
+                                $quantity_deliveryCharges = $deliveryCharges*$prod->quantity;
+                                $deliveryCharges_real = ($vendorTotalDeliveryFee + $previousdeliveryfee + $quantity_deliveryCharges);
+                                $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $quantity_deliveryCharges;
                                 $previousdeliveryfee = 0;
-                                CartProduct::where('cart_id', $cart->id)->where('vendor_id', $vendorData->vendor->id)->where('product_id', $prod->product->id)->update(['product_delivery_fee'=>$deliveryCharges]);
-                                $prod->product->product_delivery_fee = $deliveryCharges;
+                                CartProduct::where('cart_id', $cart->id)->where('vendor_id', $vendorData->vendor->id)->where('product_id', $prod->product->id)->update(['product_delivery_fee'=>$quantity_deliveryCharges]);
+                                $prod->product->product_delivery_fee = $quantity_deliveryCharges;
                             }else{
                                 $deliveryCharges_real = ($vendorTotalDeliveryFee + $deliveryCharges);
                                 $previousdeliveryfee = $deliveryCharges;
