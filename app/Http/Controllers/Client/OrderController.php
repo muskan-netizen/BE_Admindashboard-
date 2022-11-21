@@ -1834,7 +1834,7 @@ class OrderController extends BaseController
             $rejected_html = view('backend.order.return-data')->with(['orders' => $rejected_orders, 'status' => 'Rejected'])->render();
             return $this->successResponse(['pending_html' => $pending_html, 'accepted_html' => $accepted_html, 'rejected_html' => $rejected_html], '', 201);
         } catch (\Throwable $th) {
-            return $this->errorResponse($e->getMessage(), 400);
+            return $this->errorResponse($th->getMessage(), 400);
         }
     }
 
