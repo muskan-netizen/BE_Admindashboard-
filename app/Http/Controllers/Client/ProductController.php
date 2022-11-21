@@ -731,7 +731,7 @@ class ProductController extends BaseController
             <thead>
                 <th>Image</th>
                 <th>Name</th>
-                <th>Variants</th>
+                <th>'.getNomenclatureName('Variant').'</th>
                 <th>Price</th>
                 <th>Compare at price</th>
                 <th>Cost Price</th>

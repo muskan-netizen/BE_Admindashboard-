@@ -408,19 +408,19 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     <div class="card-box" >
                         <div class="row mb-2 bg-light">
                             <div class="col-8" style="margin:auto;">
-                                <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
+                                <h5 class="text-uppercase mt-0 bg-light p-2">{{ __(getNomenclatureName('Variant')." Information") }}</h5>
                             </div>
                             @if(!empty($productVariants))
                             <div class="col-4 p-2 mt-0 text-right" style="margin:auto; ">
-                                <button type="button" class="btn btn-info makeVariantRow"> {{ __("Make Variant Sets") }}</button>
+                                <button type="button" class="btn btn-info makeVariantRow"> {{ __("Make ".getNomenclatureName('Variant')." Sets") }}</button>
                             </div>
                             @endif
                         </div>
-                        <p>{{ __("Select or change category to get variants") }}</p>
+                        <p>{{ __("Select or change category to get ".getNomenclatureName('Variant')) }}</p>
 
                         <div class="row" style="width:100%; overflow-x: scroll;">
                             <div id="variantAjaxDiv" class="col-12 mb-2">
-                                <h5 class="">{{__('Variant List')}}</h5>
+                                <h5 class="">{{__(getNomenclatureName('Variant').' List')}}</h5>
                                 <div class="row mb-2">
                                     @foreach($productVariants as $vk => $var)
                                     <div class="col-sm-3">
