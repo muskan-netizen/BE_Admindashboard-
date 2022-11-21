@@ -209,12 +209,28 @@
                     </div>
                     @endif
 
-                     <div class="col-md-12">
-                        <div class="form-group" id="order_min_amountInput">
-                            {!! Form::label('title',  __('Absolute Min Order Value [AMOV]'),['class' => 'control-label']) !!}
-                            <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{$vendor->order_min_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')
+                        @if(isset($roles))
+                            @foreach($roles as $role)
+                                <div class="col-md-12">
+                                    <div class="form-group" id="order_min_amountInput">
+                                        @php
+                                            $label = 'Absolute Min Order Value ['.$role->role.']';
+                                        @endphp
+                                        {!! Form::label('title',  $label,['class' => 'control-label']) !!}
+                                        <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount_arr[{{$role->id}}]" type="text" value="{{$role->order_min_amount ?? '0.00' }}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    @else
+                        <div class="col-md-12">
+                            <div class="form-group" id="order_min_amountInput">
+                                {!! Form::label('title',  __('Absolute Min Order Value [AMOV]'),['class' => 'control-label']) !!}
+                                <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{$vendor->order_min_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
 
                     @if($client_preference_detail->static_delivey_fee == 1)
@@ -502,8 +518,18 @@
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="commission_monthly" type="text" value="{{$vendor->commission_monthly}}">
                         </div>
                     </div> -->
-                    <div class="col-md-12">
-                        <div class="form-group" id="service_fee_percentInput">
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Fixed Service Fee'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="fixed_service_charge" class="form-control" data-color="#43bee1" @if($vendor->fixed_service_charge == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    <div class="col-md-12" id="fixed_service_charge_div" style="display:{{$vendor->fixed_service_charge == 1 ? 'block' : 'none'}}">
+                        <div class="form-group">
+                            {!! Form::label('title', __('Service Fee'),['class' => 'control-label']) !!}
+                            <input class="form-control" name="service_charge_amount" type="text" value="{{$vendor->service_charge_amount}}" min="0" {{$vendor->status == 1 ? '' : 'disabled'}} >
+                        </div>
+                    </div>
+                    <div class="col-md-12" id="service_fee_percentInput" style="display:{{$vendor->fixed_service_charge == 1 ? 'none' : 'block'}}">
+                        <div class="form-group">
                             {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
                             <input class="form-control" name="service_fee_percent" type="text" min="0" maxlength="5" value="{{$vendor->service_fee_percent}}" onkeypress="return isNumberKey(event)" onkeydown="if(this.value.length > 6) return false;">
                         </div>
@@ -1253,6 +1279,18 @@ $( document ).ready(function() {
             $("#need_container_charges").css("display", "none");
         } else {
             $("#need_container_charges").css("display", "block");
+        }
+    })
+
+    $("input[name='fixed_service_charge']").change(function() {
+        if($(this).prop('checked')){
+            $("#fixed_service_charge_div").css("display", "block");
+            $("#service_fee_percentInput").css("display", "none");
+            $("input[name='service_fee_percent']").val(0.00);
+        } else {
+            $("#fixed_service_charge_div").css("display", "none");
+            $("input[name='service_charge_amount']").val(0.00);
+            $("#service_fee_percentInput").css("display", "block");
         }
     })
 </script>

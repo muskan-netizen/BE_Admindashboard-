@@ -338,7 +338,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
         <div class="col-xl-3 col-lg-3 mb-3">
             <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
                 @csrf
-            <!-- Pickup & Delivery section start -->
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <!-- Pickup & Delivery section start -->
             <div class="card-box h-100">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
@@ -1146,6 +1147,190 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             </div>
                             @endforeach
                         </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Enter Drop Location") }}</label>
+                                </div>
+                            </div>
+                            @php
+
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="enter_drop_location_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="enter_drop_location_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Enter Drop Location'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Vendor Name") }}</label>
+                                </div>
+                            </div>
+                            @php
+
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="enter_vendor_name_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="enter_vendor_name_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Vendor Name'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Ride Accepted") }}</label>
+                                </div>
+                            </div>
+                            @php
+
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="ride_accepted_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="ride_accepted_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Ride Accepted'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Searching For Nearby Drivers") }}</label>
+                                </div>
+                            </div>
+                            @php
+
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="search_nearby_driver_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="search_nearby_driver_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Searching For Nearby Drivers'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Hold On! We are looking for drivers nearby!") }}</label>
+                                </div>
+                            </div>
+                            @php
+
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="looking_driver_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="looking_driver_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Hold On! We are looking for drivers nearby!'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Product Name") }}</label>
+                                </div>
+                            </div>
+                            @php
+
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="product_name_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="product_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Product Name'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Stock Status") }}</label>
+                                </div>
+                            </div>
+                            @php
+
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="stock_status_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="stock_status_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Stock Status'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
                     </div>
                 </div>
             </form>
@@ -1566,13 +1751,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                 </span>
                             </div>
                         </div>
-                        <div class="col-lg-6 my-2" id="slots_with_service_area_div">
-                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="slots_with_service_area" class="mr-2 mb-0">{{__('Food Truck Service')}}<small class="d-block pr-5">{{__('Enable or disable multiple service area for trucks')}}</small></label>
-                            <span> <input type="checkbox" data-plugin="switchery" name="slots_with_service_area" id="slots_with_service_area" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->slots_with_service_area == '1')) checked='checked' @endif>
-                                </span>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
             </form>

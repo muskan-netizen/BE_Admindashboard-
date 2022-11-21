@@ -85,6 +85,15 @@ class Category extends Model
         return $this->hasOne(CategoryTag::class)->select('category_id', 'tag');
     }
 
+    public function categoryRoleAssigned()
+    {
+      if(auth()->user() !=null){
+        return $this->hasOne('App\Models\CategoryRole', 'category_id', 'id')->where('role_id', Auth::user()->role_id);
+      }else{
+          return $this->hasOne('App\Models\CategoryRole', 'category_id', 'id')->where('role_id', 1);
+      }
+    }
+
     public function getImageAttribute($value)
     {
       $values = array();
@@ -98,6 +107,7 @@ class Category extends Model
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
       $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
       $values['image_fit'] = \Config::get('app.FIT_URl');
+      $values['image'] = $value;
       return $values;
     }
 
@@ -112,6 +122,7 @@ class Category extends Model
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
       $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
       $values['image_fit'] = \Config::get('app.FIT_URl');
+      $values['icon'] = $value;
       return $values;
     }
 
@@ -126,6 +137,7 @@ class Category extends Model
           $banner['proxy_url'] = \Config::get('app.IMG_URL1');
           $banner['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
           $banner['image_fit'] = \Config::get('app.FIT_URl');
+          $banner['sub_cat_banners'] = $value;
           $values[] = $banner;
         }
       }

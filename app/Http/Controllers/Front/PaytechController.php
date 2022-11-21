@@ -91,6 +91,7 @@ class PaytechController extends FrontController
     public function createHash(Request $request)
     {
         $order_number =  $this->orderNumber($request);
+        $customerCurrency = Session::has('customerCurrency') ? Session::get('customerCurrency') : ( (!empty($customerCurrency)) ? $customerCurrency : 'USD' );
         //['XOF', 'EUR', 'USD', 'CAD','GBP','MAD']
         //orderProductDetails($order_id)
         $amt = $this->getDollarCompareAmount($request->amt);

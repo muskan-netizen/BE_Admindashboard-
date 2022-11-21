@@ -33,7 +33,7 @@ class PaymentOptionController extends BaseController{
             $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash', 'dpo','openpay','userede','upay','conekta','telr','khalti');
         }
         elseif($page == 'pickup_delivery'){
-            $code = array('cod', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti');
+            $code = array('cod', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave');
         }
         else{
             $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti');
@@ -223,6 +223,11 @@ class PaymentOptionController extends BaseController{
         return $gateway->createHashApp($request);
     }
 
+    public function postPaymentVia_mvodafone(Request $request){
+        $gateway = new MvodafoneController();
+        return $gateway->createPayLinkApp($request);
+    }
+
     public function postPaymentVia_toyyibpay(Request $request){ 
 
         //for getting server main url from header        
@@ -248,10 +253,6 @@ class PaymentOptionController extends BaseController{
         return $gateway->order($request);
     }
 
-    public function postPaymentVia_mvodafone(Request $request){
-        $gateway = new MvodafoneController();
-        return $gateway->createPayLinkApp($request);
-    }
     public function postPaymentVia_openpay(Request $request){
         $gateway = new OpenpayPaymentController();
         return $gateway->beforePayment($request);
@@ -639,7 +640,20 @@ class PaymentOptionController extends BaseController{
                         $this->savePaymentCartDetails($request,$order,$user);
                     }
                 }
-            } elseif($request->action == 'wallet'){
+            }
+            elseif($request->action == 'pickup_delivery'){
+                $order_number = $request->order_number;
+                $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                if ($order) {
+                    $order->payment_status = 1;
+                    $order->save();
+                    $payment_exists = Payment::where('transaction_id', $transaction_id)->first();
+                    if (!$payment_exists) {
+                        $this->csavePaymentOrderPickup($request,$order);
+                        $url = OrderVendor::where('order_id',$order->id)->select('dispatch_traking_url')->first();
+                    }
+                }
+           } elseif($request->action == 'wallet'){
                  $this->savePaymentWalletDetails($request);
             }
             elseif($request->action == 'tip'){
@@ -649,7 +663,7 @@ class PaymentOptionController extends BaseController{
                 $request->request->add(['payment_option_id' => '30']);
                  $this->savePaymentSubscriptionDetails($request);
             }
-            return $this->successResponse('', __('Payment completed successfully'), 200);
+            return $this->successResponse(['dispatch_traking_url'=>$url->dispatch_traking_url??''], __('Payment completed successfully'), 200);
         }
         catch(Exception $ex){
             return $this->errorResponse($ex->getMessage(), 400);
@@ -708,6 +722,16 @@ class PaymentOptionController extends BaseController{
         return true;
     }
 
+    public function csavePaymentOrderPickup(Request $request,$order)
+    {
+       // $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 30, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransID]);
+        $orderDeatils = (object) array('order_number'=> $order->order_number, 'payment_option_id' => 30, 'amount' => $order->payable_amount, 'transaction_id' => $request->transaction_id);
+
+        $plaseOrderForPickup = new PickupDeliveryController();
+        $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($orderDeatils);
+        return true;
+    }
+
     function savePaymentCartDetails(Request $request, $order,$user)
     {
         $transaction_id = $request->transaction_id;
@@ -722,15 +746,17 @@ class PaymentOptionController extends BaseController{
         // Auto accept order
         $orderController = new OrderController();
         $orderController->autoAcceptOrderIfOn($order->id);
+        // \Log::info(json_encode($order));
 
         // Remove cart
-        $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-        Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-        CartAddon::where('cart_id', $cart->id)->delete();
-        CartCoupon::where('cart_id', $cart->id)->delete();
-        CartProduct::where('cart_id', $cart->id)->delete();
-        CartProductPrescription::where('cart_id', $cart->id)->delete();
-        CartDeliveryFee::where('cart_id', $cart->id)->delete();
+        // $cart = Cart::select('id')->where('status', '0')->where('user_id', $order->user_id)->first();
+        // \Log::info(json_encode($cart));
+        // Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+        // CartAddon::where('cart_id', $cart->id)->delete();
+        // CartCoupon::where('cart_id', $cart->id)->delete();
+        // CartProduct::where('cart_id', $cart->id)->delete();
+        // CartProductPrescription::where('cart_id', $cart->id)->delete();
+        // CartDeliveryFee::where('cart_id', $cart->id)->delete();
 
         // Send Notification
         if (!empty($order->vendors)) {
