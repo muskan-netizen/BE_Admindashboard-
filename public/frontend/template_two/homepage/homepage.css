@@ -244,6 +244,8 @@ body .category-head {
         bottom: 0;
         z-index: 1;
     }
+
+    .al_body_template_two .page-main-content .collection-product-wrapper .product-wrapper-grid .margin-res .media-body .inner_spacing p {text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 }
 
 /* Order Placed css start */
@@ -348,6 +350,7 @@ body.al_body_template_two .shimmer_effect .grid-row .card_image {
     height: 90px !important;
 }
 
+.al_body_template_two .page-main-content .collection-product-wrapper .product-wrapper-grid .margin-res .media-body .inner_spacing p {text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 
 
 body[dir=rtl] .slick-prev {
@@ -441,9 +444,7 @@ body[dir=rtl] .slick-prev {
         border-radius: 10px;
     }
 
-    .al_body_template_two .modal-backdrop {
-        z-index: inherit;
-    }
+
 
 
 
