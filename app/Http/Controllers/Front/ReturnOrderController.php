@@ -254,6 +254,8 @@ class ReturnOrderController extends FrontController{
 
             $order_vendor = OrderVendor::where('id',$request->id)->first();
 
+            $cancellation_reason = ReturnReason::where(['status' => 'Active', 'type' => 3])->get();
+
             $orderCancellationPercentage = 0;
             if(($client_preferences->order_cancellation_time > 0)){
                 $orderData = Order::find($order_vendor->order_id);
@@ -278,7 +280,7 @@ class ReturnOrderController extends FrontController{
             }else{
                 if(isset($order_vendor)){
                     if ($request->ajax()) {
-                     return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor, 'orderCancellationPercentage' => $orderCancellationPercentage))->render());
+                     return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor, 'orderCancellationPercentage' => $orderCancellationPercentage, 'cancellation_reason' => $cancellation_reason))->render());
                     }
                 }
                 return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor, 'orderCancellationPercentage' => $orderCancellationPercentage))->render());

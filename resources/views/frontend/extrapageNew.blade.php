@@ -218,8 +218,8 @@
                                         <div class="col-md-6 mb-3" id="nameInput">
                                             <label for="vendortype">{{__('Vendor Type')}}</label>
                                             <select name="vendor_type" id="vendor_type" class="form-control">
-                                                <option value="1">Seller</option>
-                                                <option value="0">Vendor</option>
+                                                <option value="1">ClickOKartPartner</option>
+                                                <option value="0">Shopper</option>
                                             </select>
                                         </div>
                                     @endif

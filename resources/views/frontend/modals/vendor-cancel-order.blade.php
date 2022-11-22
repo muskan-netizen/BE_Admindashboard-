@@ -1,5 +1,13 @@
 <form id="addRejectForm" method="post" class="text-center" enctype="multipart/form-data">
     @csrf
+        <div class="form-group">
+            <label for="reason">Select Reason</label>
+            <select class="form-control" id="reason">
+                @foreach ($cancellation_reason as $reason)
+                    <option value="{{$reason->id}}">{{$reason->title}}</option>
+                @endforeach
+            </select>
+        </div>
          <p id="error-case" style="color:red;"></p>
         <label style="font-size:medium;">Enter reason for cancel the order. <small>(Optional)</small> </label>
         <textarea class="reject_reason w-100" data-name="reject_reason" name="reject_reason" id="reject_reason" cols="50" rows="5"></textarea>

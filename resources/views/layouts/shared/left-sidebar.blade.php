@@ -357,9 +357,15 @@
                                             <a href="{{route('cms.sms')}}">{{ __('SMS') }}</a>
                                         </li>
                                     @endif
+                                    @if(in_array('reasons',$allowed) || Auth::user()->is_superadmin == 1)
+                                        <li>
+                                            <a href="{{route('reason.index')}}">{{ __('Reasons') }}</a>
+                                        </li>
+                                    @endif
                                 </ul>
                             </div>
                         </li>
+
                         @if(in_array('catalog',$allowed) || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('category.index')}}">
