@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, ClientPreferenceAdditional, WebStyling,WebStylingOption};
+use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, ClientPreferenceAdditional, OrderDeliveryStatusIcon, WebStyling,WebStylingOption};
 use Illuminate\Http\Request;
 use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use DB,Log;
 use Illuminate\Support\Facades\Validator;
+
 class WebStylingController extends BaseController{
     //
      /**
@@ -64,9 +65,10 @@ class WebStylingController extends BaseController{
         $user = Auth::user();
         $client = Client::where('code', $user->code)->first();
         $payment_methods = PaymentMethod::get();
+        $orderDeliveryIcons = OrderDeliveryStatusIcon::get();
        // pr( $payment_methods->toArray());
 
-        return view('backend/web_styling/index')->with(['clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'payment_methods' => $payment_methods,'themeId'=>$themeId]);
+        return view('backend/web_styling/index')->with(['clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'payment_methods' => $payment_methods,'themeId'=>$themeId,'orderDeliveryIcons'=>$orderDeliveryIcons]);
     }
 
 
@@ -149,6 +151,7 @@ class WebStylingController extends BaseController{
                 }
             }
 
+        
             $client_preferences->web_color = $request->primary_color;
             $client_preferences->cart_enable = $request->cart_enable == 'on' ? 1 : 0;
             $client_preferences->age_restriction = $request->age_restriction == 'on' ? 1 : 0;
@@ -170,6 +173,35 @@ class WebStylingController extends BaseController{
             'message' => 'Web Styling Updated Successfully!'
         ]);
     }
+    public function updateOrderStatusIcons(Request $request){
+        try{
+                $orderIcons = OrderDeliveryStatusIcon::get();
+                foreach($orderIcons as  $k => $value){
+                    $nmm = 'image_'.$value->id;
+                    if($request->has($nmm)){
+                        $orderValue = OrderDeliveryStatusIcon::where('id',$value->id)->first();
+                        $orderVal = Storage::disk('s3')->put('ODSI', $request->$nmm, 'public');
+                        $orderValue->image = $orderVal;
+                        $orderValue->save();
+                    }
+                }
+                
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Delivery Icon Updated Successfully!'
+            ]);
+
+        }catch(\Exception $e)
+        {
+                \Log::info($e->getMessage());
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage()
+                ]);
+        }
+
+    }
+
     public function updatePaymentIcons(Request $request){
         $client_preferences = ClientPreference::first();
         $client_preferences->show_payment_icons = $request->show_payment_icons == 'on' ? 1 : 0;
@@ -177,6 +209,7 @@ class WebStylingController extends BaseController{
         return back()->with('success',__('Payment Method Updated Successfully!'));
 
     }
+
     public function updatePaymentMethods(Request $request){
         $status = $request->has('state') ? $request->state : null;
         $is_show  = ($status == 'true') ? 1 : 0;

@@ -79,6 +79,7 @@ class SendCampaignNotification extends Command
                  
                 // CampaignRoster::where('id',6287)->delete();
                 //$notifications = CampaignRoster::where('notification_time', '<=', '2022-11-10 11:29:00')->where('notification_time', '>=', $add1Minute)->where('status',0)->with('campaign','user')->get();
+                //whereBetween('notification_time', [$intervalTime, $add1Minute])->
                 $notifications = CampaignRoster::whereBetween('notification_time', [$intervalTime, $add1Minute])->where('status',0)->with('campaign','user')->get();
                 if($notifications)
                 {
@@ -105,7 +106,7 @@ class SendCampaignNotification extends Command
                     // ];
                     // dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                     // //$this->sendEmail($client_preferences,$sendto,$subject,$body);
-                    CampaignRoster::where('id',6290)->delete();
+                    // CampaignRoster::where('id',6290)->delete();
                     foreach($notifications as $singlenotification)
                     {
                         //CampaignRoster::where('id',6290)->delete();
@@ -176,6 +177,8 @@ class SendCampaignNotification extends Command
                             case '3':
                                 //send push                             
                                 $redirect_URL = $singlenotification->campaign->push_url_option_value;
+                                $attachmentImg = (!empty($singlenotification->campaign->push_image['proxy_url'])) ? $singlenotification->campaign->push_image['proxy_url'] . '200/200' . $singlenotification->campaign->push_image['image_path'] : '';
+
                                 $data = [
                                     "registration_ids" => [$singlenotification->device_token],
                                     "notification" => [
@@ -184,7 +187,6 @@ class SendCampaignNotification extends Command
                                         'sound' => "default",
                                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                                         'click_action' => $redirect_URL,
-                                        'image'=>(!empty($singlenotification->campaign)) ? $singlenotification->campaign->push_image['proxy_url'] . '200/200' . $singlenotification->campaign->push_image['image_path'] : '',
                                         "android_channel_id" => "default-channel-id"
                                     ],
                                     "data" => [
@@ -195,6 +197,14 @@ class SendCampaignNotification extends Command
                                     ],
                                     "priority" => "high"
                                 ];
+                                if($attachmentImg)
+                                {
+                                    $data['notification']['image'] = $attachmentImg;
+                                }
+
+                                //dd($data);
+                                
+
                                 $result=sendFcmCurlRequest($data);
                                 if($result)
                                 {

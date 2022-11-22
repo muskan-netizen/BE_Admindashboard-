@@ -42,7 +42,7 @@ use App\Models\OrderProductPrescription;
 use App\Models\SubscriptionInvoicesUser;
 use App\Models\UserRegistrationDocuments;
 use App\Models\DriverRegistrationDocument;
-use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption};
+use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption, OrderDeliveryStatusIcon};
 
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -82,6 +82,19 @@ class OrderController extends FrontController
 
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
+
+        $dispatcher_icons = OrderDeliveryStatusIcon::select('image','image_url')->get();
+        // dd($dispatcher_icons);
+        foreach($dispatcher_icons as $icon)
+        {
+            $imgUrl = asset($icon->image);
+            if(!empty($icon->image_url['proxy_url']))
+            {
+                $imgUrl = $icon->image_url['proxy_url'].'40/40'.$icon->image_url['image_path'];
+            }
+           $iconsArray[] =  $imgUrl;
+        }
+        // dd($iconsArray);
         $pastOrders = Order::with([
             'vendors' => function ($q) {
                 $q->where('order_status_option_id', 6);
@@ -158,7 +171,8 @@ class OrderController extends FrontController
 
                 $vendor->vendor_dispatcher_status = $vendor->vendor_dispatcher_status->get();
                 $vendor->vendor_dispatcher_status_count = 6;
-                $vendor->dispatcher_status_icons = [asset('assets/icons/driver_1_1.png'),asset('assets/icons/driver_2_1.png'),asset('assets/icons/driver_4_1.png'),asset('assets/icons/driver_3_1.png'),asset('assets/icons/driver_4_2.png'),asset('assets/icons/driver_5_1.png')];
+                $vendor->dispatcher_status_icons = $iconsArray;
+                // $vendor->dispatcher_status_icons = [asset('assets/icons/driver_1_1.png'),asset('assets/icons/driver_2_1.png'),asset('assets/icons/driver_4_1.png'),asset('assets/icons/driver_3_1.png'),asset('assets/icons/driver_4_2.png'),asset('assets/icons/driver_5_1.png')];
                 // $dispatcher_status_options =VendorOrderDispatcherStatus::where(['order_id'=> $order->id,'vendor_id'=>$vendor->vendor->id,'dispatcher_status_option_id'=>'2'])->first();
                 // $vendor->driver_chat =  $dispatcher_status_options ? 1 : 0 ;
             }

@@ -132,6 +132,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('mobilebanner/toggle', 'Client\MobileBannerController@toggleAllBanner')->name('mobilebanner.toggle');
         Route::get('web-styling', 'Client\WebStylingController@index')->name('webStyling.index')->middleware('onlysuperadmin');
         Route::post('web-styling/updateWebStyles', 'Client\WebStylingController@updateWebStyles')->name('styling.updateWebStyles');
+        Route::post('web-styling/updateOrderIcon', 'Client\WebStylingController@updateOrderStatusIcons')->name('styling.updateOrderStatusIcons');
         Route::post('web-styling/updatePaymentMethods', 'Client\WebStylingController@updatePaymentMethods')->name('styling.updatePaymentMethods');
         Route::post('web-styling/updatePaymentIcons', 'Client\WebStylingController@updatePaymentIcons')->name('styling.updatePaymentIcons');
         Route::post('web-styling/updateWebStylesNew', 'Client\WebStylingController@updateWebStylesNew')->name('styling.updateWebStylesNew');

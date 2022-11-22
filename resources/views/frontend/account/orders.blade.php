@@ -503,7 +503,7 @@
                                                                                 @endif
 
                                                                                 </div>
-                                                                                @if(count($vendor['vendor_dispatcher_status']))
+                                                                                
                                                                                             <div class="step-indicator step-indicator-order">
 
                                                                                                     @foreach ($vendor->dispatcher_status_icons as $key => $icons)
@@ -534,7 +534,7 @@
                                                                                                     @endforeach
 
                                                                                             </div>
-                                                                                            @endif
+                                                                                           
 
 
                                                                             </div>

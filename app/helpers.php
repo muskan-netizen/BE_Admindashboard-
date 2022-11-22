@@ -101,6 +101,7 @@ if (!function_exists('sendFcmCurlRequest')) {
             // if ($result === FALSE) {
             //     die('Oops! FCM Send Error: ' . curl_error($ch));
             // }
+            \Log::info(json_encode($result));
             curl_close($ch);
             return $result;
         } else {
