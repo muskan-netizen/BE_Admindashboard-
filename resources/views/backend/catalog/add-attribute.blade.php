@@ -21,9 +21,10 @@
             <div class="col-md-6">
                 <div class="form-group">
                     {!! Form::label('title', __('Type'),['class' => 'control-label']) !!}
-                    <select class="form-control selectize-select dropDownType"  name="type" dataFor="add">
+                    <select class="form-control selectize-select dropDownTypeAttr"  name="type" dataFor="add">
                         <option value="1">{{ __("DropDown") }}</option>
                         <option value="2">{{ __("Color") }}</option>
+                        <option value="3">{{ __("Radio") }}</option>
                     </select>
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
@@ -68,7 +69,7 @@
                 <h5>{{ __(getNomenclatureName('Attribute') ." Options") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
-                <table class="table table-borderless table-responsive al_table_responsive_data optionTableAdd" id="banner-datatable">
+                <table class="table table-borderless table-responsive al_table_responsive_data optionTableEditAttribute" id="banner-datatable">
                     <tr class="trForClone">
                         <th class="hexacodeClass-add" style="display:none;">{{ __("Color Code") }}</th>
                         @foreach($languages as $langs)
@@ -90,7 +91,7 @@
                 </table>
             </div>
             <div class="col-md-12">
-                <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-Add">{{ __("Add Option") }}</button>
+                <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-attribute-edit">{{ __("Add Option") }}</button>
             </div>
         </div>
     </div>

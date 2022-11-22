@@ -484,14 +484,15 @@
                 $(".loader_box").show();
             },
             success: function(data) {
-                $('#editVariantmodal').modal({
+                $('#editAttributemodal').modal({
                     backdrop: 'static',
                     keyboard: false
                 });
-                $('#editVariantForm #editVariantBox').html(data.html);
+                console.log(data.html);
+                $('#editAttributeForm #editAttributeBox').html(data.html);
                 $('.dropify').dropify();
                 $('.selectize-select').selectize();
-                $("#editVariantForm .hexa-colorpicker").each(function() {
+                $("#editAttributeForm .hexa-colorpicker").each(function() {
                     var ids = $(this).attr('id');
                     try {
                         var picker = new jscolor('#' + ids, options);
@@ -500,7 +501,7 @@
                     }
                 });
                 var getURI = document.getElementById('submitEditHidden').value;
-                document.getElementById('editVariantForm').action = data.submitUrl;
+                document.getElementById('editAttributeForm').action = data.submitUrl;
             },
             error: function(data) {
                 console.log('data2');
@@ -509,5 +510,57 @@
                 $('.loader_box').hide();
             }
         });
+    });
+
+    $(document).on('click', '.addOptionRow-attribute-edit', function(e) {
+        var d = new Date();
+        var n = d.getTime();
+        var $tr = $('.optionTableEditAttribute tbody>tr:first').next('tr');
+        var $clone = $tr.clone();
+        $clone.find(':text').val('');
+        $clone.find('.hexa-colorpicker').attr("id", "hexa-colorpicker-" + n);
+        $clone.find('.lasttd').html('<a href="javascript:void(0);" class="action-icon deleteCurRow"> <i class="mdi mdi-delete"></i></a>');
+        $('.optionTableEditAttribute').append($clone);
+        var picker = new jscolor("#hexa-colorpicker-" + n, options);
+    });
+
+    $("#addAttributemodal").on('click', '.deleteCurRow', function() {
+        $(this).closest('tr').remove();
+    });
+
+    $("#editVariantmodal").on('click', '.deleteCurRow', function() {
+        $(this).closest('tr').remove();
+    });
+
+    $(document).on('click', '.deleteAttribute', function() {
+        var did = $(this).attr('dataid');
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete this attribute.')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $('#attrDeleteForm' + did).submit();
+            }
+        });
+        return false;
+    });
+
+    $(document).on('change', '.dropDownTypeAttr', function() {
+        var did = $(this).val();
+        var dataFor = $(this).attr('dataFor');
+        console.log(dataFor);
+        console.log($('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor));
+        if (did == 1) {
+            $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).hide();
+        } else if(did == 2){
+            $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).show();
+        }else if(did == 3) {
+            $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).hide();
+            $('.radio-div').removeClass('d-none');
+        }
     });
 </script>
