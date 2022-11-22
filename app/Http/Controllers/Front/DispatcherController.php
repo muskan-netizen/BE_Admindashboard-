@@ -581,7 +581,7 @@ class DispatcherController extends FrontController
                             'sound' => "default",
                             "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                             'click_action' => route('order.index'),
-                            "android_channel_id" => "sound-channel-id"
+                            "android_channel_id" => "default-channel-id"
                         ],
                         "data" => [
                             'title' => $title,

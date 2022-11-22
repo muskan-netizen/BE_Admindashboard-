@@ -204,15 +204,17 @@ $(document).ready(function () {
             tasks.push(sample_array);
         });
        
-        let amount = $(this).attr('data-amount');
-        let tollamount = $(this).attr('data-tollamount');
+        let amount                      = $(this).attr('data-amount');
+        let tollamount                  = $(this).attr('data-tollamount');
+        let servicechargeamount         = $(this).attr('data-servicechargeamount');
+        let totalamount                 = $(this).attr('data-totalamount');
         let subscription_payable_amount = $(this).attr('data-subscriptionPayableAmount');
-        let product_image = $(this).attr('data-image');
-        let vendor_id = $(this).attr('data-vendor_id');
-        let coupon_id = $(this).attr('data-coupon_id');
-        let product_id = $(this).attr('data-product_id');
-        let payment_option_id = $(this).attr('data-payment_method');
-        let type = parseFloat($('input[name=is_for_friend]:checked').val());
+        let product_image               = $(this).attr('data-image');
+        let vendor_id                   = $(this).attr('data-vendor_id');
+        let coupon_id                   = $(this).attr('data-coupon_id');
+        let product_id                  = $(this).attr('data-product_id');
+        let payment_option_id           = $(this).attr('data-payment_method');
+        let type                        = parseFloat($('input[name=is_for_friend]:checked').val());
         // alert(type);
         // return false;
         let friendName=$('input[name=friendName]').val();
@@ -224,7 +226,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling},
+            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
@@ -251,7 +253,7 @@ $(document).ready(function () {
                             type: "POST",
                             dataType: 'json',
                             url: payment_stripe_url,
-                            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,stripe_token: stripe_token , payment_form : payment_form,reload_route: reload_route,order_number:order_number },
+                            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: totalamount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,stripe_token: stripe_token , payment_form : payment_form,reload_route: reload_route,order_number:order_number },
                             success: function(resp) {
                                 if (resp.status == 'Success') {
                                     window.location.replace(resp.data);

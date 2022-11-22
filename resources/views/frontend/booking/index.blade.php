@@ -361,24 +361,26 @@ body .alFullMapForm .scheduled-footer .btn {
                         </div>
                     </div>
                     @endif
-                    <% if(result.toll_fee > 0){ %>
-                        <span class="d-flex align-items-center justify-content-between mt-2"><b><%= result.name %></b> <label><sub class="ling-throgh" id
-                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_less_tags_price%></b></label></span>
-
-                        <span class="d-flex align-items-center justify-content-between"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
-                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
-
-                        <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
-                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= (result.tags_price)%></b></label></h4>
-                    <% }else{ %>
-                        <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
+                    <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
+                    <% if(result.toll_fee > 0){ %>
+                        <span class="d-flex align-items-center justify-content-between mt-2"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
                     <% } %>
-                        <input type="hidden" id="hddn_amount_less_toll" value="<%= (result.toll_less_tags_price)%>"/>
+                    
+                    <% if(result.service_charge_amount > 0){ %>
+                        <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
+                    <% } %>
+
+                    <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>
+                        <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
+                    <% } %>
                         <input type="hidden" id="hddn_amount_toll_fee" value="<%= (result.toll_fee)%>"/>
                         <input type="hidden" id="hddn_real_amount" value="<%= (result.tags_price)%>"/>
                         <input type="hidden" id="hddn_currency_symbol" value="{{Session::get('currencySymbol')}}"/>
-                        <p><%= result.description %></p>
+                        <input type="hidden" id="hddn_service_charge_amount" value="<%= (result.service_charge_amount)%>"/>
                     </div>
                 </div>
                 <div class="cab-amount-details px-2">
@@ -403,12 +405,12 @@ body .alFullMapForm .scheduled-footer .btn {
                 </div>
                 <div class="coupon_box d-flex w-100 py-2 align-items-center justify-content-between">
                     <label class="mb-0 ml-1">
-                        <img src="{{asset('assets/images/discount_icon.svg')}}">
-                        <span class="code-text">{{__('Select a promo code')}}</span>
-                    </label>
+                <span class="code-text">{{__('Select a promo code')}}</span>
+            </label>
+>>>>>>> pre_dev
 
-                    <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" id="promo_code_list_btn_cab_booking">Apply</a>
-                    <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" style="display:none;">Remove</a>
+                    <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" id="promo_code_list_btn_cab_booking">Apply</a>
+                    <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" style="display:none;">Remove</a>
 
         </div>
         <% if((result.faqlist) && (result.faqlist) > 0 ){ %>
@@ -445,7 +447,7 @@ body .alFullMapForm .scheduled-footer .btn {
 
             %>
                 <input type="hidden" id="stripe_token" name="stripe_token" value="">
-                <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
+                <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
             </div>
             <!--<div class="col-6">
                 <button class="btn btn-solid w-100" id="pickup_later" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_later">Pickup Later</button>
@@ -534,7 +536,7 @@ body .alFullMapForm .scheduled-footer .btn {
             <img src="<%= product_image %>" alt="">
         </div>
         <div class="cab-location-details" id="searching_main_div">
-            <h4><b>{{__('Searching For Nearby Drivers')}}</b></h4>
+            <h4><b>{{__(getNomenclatureName('Searching For Nearby Drivers',true))}}</b></h4>
             <div class="new-loader"></div>
         </div>
         <div class="cab-location-details" id="driver_details_main_div" style="display:none;">

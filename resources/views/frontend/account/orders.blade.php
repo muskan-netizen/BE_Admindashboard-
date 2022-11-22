@@ -37,7 +37,7 @@
     @endphp
 
     <style type="text/css">
-        .productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}.login-page .theme-card .theme-form input{margin-bottom:5px}.invalid-feedback{display:block}.al_body_template_one .order_popop .modal-body{padding:5px 15px 15px;background:#89898905;box-shadow:4px 10px 6px #838282}.al_body_template_one .order_popop p{font-size:13px;line-height:19px}.al_body_template_one .order_popop .modal-body textarea{border:1px solid#d9d3d3}.al_body_template_one .order_popop .modal-body textarea::placeholder{padding:5px 10px}.al_body_template_one .order_popop .modal-body button.close{position:absolute;right:5px;top:0;padding:0;margin:0}.al_body_template_one .order_popop .modal-body label{display:inline-block;font-size:18px!important;font-weight:400
+        .productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}.login-page .theme-card .theme-form input{margin-bottom:5px}.invalid-feedback{display:block}.al_body_template_one .order_popop .modal-body{padding:5px 15px 15px;background:#89898905;box-shadow:4px 10px 6px #838282}.al_body_template_one .order_popop p{font-size:13px;line-height:19px}.al_body_template_one .order_popop .modal-body textarea{border:1px solid#d9d3d3}.al_body_template_one .order_popop .modal-body textarea::placeholder{padding:5px 10px}.al_body_template_one .order_popop .modal-body button.close{position:absolute;right:5px;top:0;padding:0;margin:0}.al_body_template_one .order_popop .modal-body label{display:inline-block;font-size:18px!important;font-weight:400;}
     </style>
     <section class="section-b-space order-page">
         <div class="container">
@@ -144,7 +144,7 @@
                                                                         <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                                                                     </div>
                                                                     <div class="col-md-3 alOrderStatus">
-                                                                        <h4>{{ __('Vendor Name') }}</h4>
+                                                                        <h4>{{ __(getNomenclatureName('Vendor Name',true)) }}</h4>
                                                                         <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
@@ -324,23 +324,23 @@
                                                                                                 </li>
                                                                                             @endif
                                                                                             @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
-                                                                                            <?php
-                                                                                            if($clientPreference->business_type == 'laundry'){
-                                                                                                $pickup_cancelling_charges = $clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges;
-                                                                                            }
-                                                                                        ?>
+                                                                                                <?php
+                                                                                                    if($clientPreference->business_type == 'laundry'){
+                                                                                                        $pickup_cancelling_charges = $clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges;
+                                                                                                    }
+                                                                                                ?>
 
-                                                                                            <h6 class="m-0">
-                                                                                               @if ($clientPreference->business_type == 'laundry')
-                                                                                                    <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
-                                                                                                        {{ __('Cancel Order') }}
-                                                                                                    </label>
-                                                                                                @else
-                                                                                                <label class="rating-star cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
-                                                                                                    {{ __('Cancel Order') }}
-                                                                                                </label>
-                                                                                                @endif
-                                                                                            </h6>
+                                                                                                <h6 class="m-0">
+                                                                                                @if ($clientPreference->business_type == 'laundry')
+                                                                                                        <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                                            {{ __('Cancel Order') }}
+                                                                                                        </label>
+                                                                                                    @else
+                                                                                                        <label class="rating-star cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                                            {{ __('Cancel Orders') }}
+                                                                                                        </label>
+                                                                                                    @endif
+                                                                                                </h6>
                                                                                             @endif
                                                                                             @if ($vendor->dineInTable)
                                                                                                 <li>
@@ -426,6 +426,28 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+
+                                                                                            @if ($vendor->toll_amount > 0)
+                                                                                                <li
+                                                                                                    class="d-flex align-items-center justify-content-between">
+                                                                                                    <label
+                                                                                                        class="m-0">{{ __('Toll Fee') }}</label>
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->toll_amount
+                                                                                                        *
+                                                                                                        $clientCurrency->doller_compare)}}</span>
+                                                                                                </li>
+                                                                                            @endif
+
+                                                                                            @if ($vendor->service_fee_percentage_amount > 0)
+                                                                                                <li
+                                                                                                    class="d-flex align-items-center justify-content-between">
+                                                                                                    <label
+                                                                                                        class="m-0">{{ __('Service Fee') }}</label>
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->service_fee_percentage_amount
+                                                                                                        *
+                                                                                                        $clientCurrency->doller_compare)}}</span>
+                                                                                                </li>
+                                                                                            @endif
                                                                                             <li
                                                                                                 class="grand_total d-flex align-items-center justify-content-between">
                                                                                                 <label
@@ -440,7 +462,9 @@
                                                                                             </li>
                                                                                             {{-- Check if order is created only --}}
                                                                                             @if ($vendor->status == 0)
-                                                                                                <button  style="font-size:10px; padding: 0 5px; float: right; margin-top: 5px;" data-toggle="modal" data-target="#orderModel{{$order->id}}" class="reschedule_order btn btn-solid" data-id="{{$order->id}}" data-order_vendor_id="{{ $vendor->id ?? 0 }}" data-vendor_id="{{$vendor->id}}">Reschedule</button>
+                                                                                                @if ($vendor->order_status == 'placed')
+                                                                                                    <button  style="font-size:10px; padding: 0 5px; float: right; margin-top: 5px;" data-toggle="modal" data-target="#orderModel{{$order->id}}" class="reschedule_order btn btn-solid" data-id="{{$order->id}}" data-order_vendor_id="{{ $vendor->id ?? 0 }}" data-vendor_id="{{$vendor->id}}">Reschedule</button>
+                                                                                                @endif
                                                                                             @endif
                                                                                         </ul>
                                                                                     </div>
@@ -568,6 +592,17 @@
                                                                                         <span>{{ Session::get('currencySymbol') }}{{decimal_format(($vendor->total_container_charges) * $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+
+                                                                                @if ($order->total_toll_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Toll Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_toll_amount
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
                                                                                 @if ($order->total_service_fee > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -578,6 +613,7 @@
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+
                                                                                 @if ($order->fixed_fee_amount > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -1206,34 +1242,6 @@
                                                                             </div>
                                                                         @endif
                                                                     </div>
-                                                                    <div class="row no-gutters order_data">
-                                                                        <div class="col-md-3">
-                                                                            #{{ $order->order_number }}</div>
-                                                                        <div class="col-md-3">
-                                                                            {{ dateTimeInUserTimeZone($order->created_at, $timezone) }}
-                                                                        </div>
-                                                                        <div class="col-md-3">
-                                                                            <a class="text-capitalize">{{ $order->user->name }}</a>
-                                                                        </div>
-                                                                        @if ($client_preference_detail->business_type != 'taxi')
-                                                                            <div class="col-md-3">
-                                                                                <span class="ellipsis"
-                                                                                    data-toggle="tooltip" data-placement="top"
-                                                                                    title="">
-                                                                                    @if ($order->address)
-                                                                                        {{ $order->address->address }},
-                                                                                        {{ $order->address->street }},
-                                                                                        {{ $order->address->city }},
-                                                                                        {{ $order->address->state }},
-                                                                                        {{ $order->address->country }}
-                                                                                        {{ $order->address->pincode }}
-                                                                                    @else
-                                                                                        NA
-                                                                                    @endif
-                                                                                </span>
-                                                                            </div>
-                                                                        @endif
-                                                                    </div>
                                                                     <div class="row mt-2">
                                                                         <div class="col-md-9 mb-3">
                                                                             @php
@@ -1663,6 +1671,8 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+
+
                                                                                             <li
                                                                                                 class="grand_total d-flex align-items-center justify-content-between">
                                                                                                 <label
@@ -2134,22 +2144,22 @@
                 dataType: 'json',
                 url: cart_details_url,
                 success: function (response) {
-                   
+
                     if (response.data != "") {
                         let cartProducts = response.data.products;
-                        
+
 
                         if (cartProducts != "") {
                             $("#repeat_cart_modal").modal('show');
                             $("#repeat_cart_modal #repeat_cart_button").attr("data-cart_id", response.data.id);
                             $("#repeat_cart_modal #repeat_cart_button").attr("data-order_vendor_id", order_vendor_id);
-                           
+
                         }else{
                             $("#repeat_cart_modal1").modal('show');
                             $("#repeat_cart_modal1 #repeat_cart_button").attr("data-cart_id", response.data.id);
                             $("#repeat_cart_modal1 #repeat_cart_button").attr("data-order_vendor_id", order_vendor_id);
                         }
-                        
+
 
                     }
                 }

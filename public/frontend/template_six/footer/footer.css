@@ -171,7 +171,7 @@ body .footer-theme .sub-title h4, .footer-title h4{margin-bottom: 0;}
 .product-icon.w-100{justify-content: flex-start;}
 .al_body_template_six .vendors .media-body{padding: 0 10px 10px;}
 .al_body_template_six .al_custom_brand .brand-box{padding-bottom:0;}
-.logo a.navbar-brand{height: 30px !important;}
+/* .logo a.navbar-brand{height: 30px !important;} */
 .homeHeader .site-header{height: 75px;}
 .al_QRcode svg{margin-bottom: 0px;}
 .shimmer_effect .headerLoding.loading{height: 40px;top: 10px;width: 90%;}
