@@ -958,13 +958,13 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div> -->
                     
-                    @if($product->vendor->pick_drop == 1 && $configData->is_cab_pooling == 1 && $product->category->categoryDetail->type_id == 7)
-                    <div class="row">
-                        <div class="col-md-6 mb-2 d-flex align-items-center justify-content-between">
+                    @if($product->vendor->pick_drop == 1 && $product->category->categoryDetail->type_id == 7)
+                    <div class="row mb-2">
+                        <div class="col-md-6 d-flex align-items-center justify-content-between">
                             {!! Form::label('title', __('Toll Tax'),['class' => 'control-label']) !!}
                             <input type="checkbox" data-plugin="switchery" name="is_toll_tax" id="is_toll_tax" class="form-control" data-color="#43bee1" @if($product->is_toll_tax == 1) checked @endif>
                         </div>
-                        <div class="col-sm-6 mb-1" id="is_toll_tax_div1" style="display:@if($product->is_toll_tax == 1) @else none @endif;">
+                        <div class="col-sm-6" id="is_toll_tax_div1" style="display:@if($product->is_toll_tax == 1) @else none @endif;">
                             {!! Form::label('title', __('Travel Mode'),['class' => 'control-label']) !!} <a href="https://developers.google.com/maps/documentation/routes_preferred/reference/rest/Shared.Types/RouteTravelMode" target="_blank"><i class="fas fa-info-circle"></i></a>
                             <select class="form-control" name="travel_mode" data-toggle="select2" placeholder="Select Travel Mode...">
                                 @foreach($travelMode as $cel)
@@ -973,7 +973,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </select>
                         </div>
                     </div>
-                    <div class="row" id="is_toll_tax_div2" style="display:@if($product->is_toll_tax == 1) @else none @endif;">
+                    <div class="row mb-2" id="is_toll_tax_div2" style="display:@if($product->is_toll_tax == 1) @else none @endif;">
                         <div class="col-sm-6 mb-1">
                             {!! Form::label('title', __('TollPass eg. IN_FASTAG'),['class' => 'control-label']) !!} <a href="https://developers.google.com/maps/documentation/routes_preferred/reference/rest/Shared.Types/TollPass" target="_blank"><i class="fas fa-info-circle"></i></a>
                             <select class="form-control" name="toll_passes" data-toggle="select2" placeholder="Select Tollpass...">
@@ -991,6 +991,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </select>
                         </div>
                     </div>
+                    @endif
+                    @if($product->vendor->pick_drop == 1 && $configData->is_cab_pooling == 1 && $product->category->categoryDetail->type_id == 7)
                     <div class="row">
                         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                             {!! Form::label('title', __('Available for Pooling'),['class' => 'control-label']) !!}

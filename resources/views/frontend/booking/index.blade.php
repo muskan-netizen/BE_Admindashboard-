@@ -407,7 +407,6 @@ body .alFullMapForm .scheduled-footer .btn {
                     <label class="mb-0 ml-1">
                 <span class="code-text">{{__('Select a promo code')}}</span>
             </label>
->>>>>>> pre_dev
 
                     <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" id="promo_code_list_btn_cab_booking">Apply</a>
                     <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" style="display:none;">Remove</a>
