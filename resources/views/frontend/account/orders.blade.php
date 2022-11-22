@@ -933,37 +933,45 @@
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
-                                                                                                    
-                                                                                            @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request)
-                                                                                            @if(@$returnable)
-                                                                                                <button
-                                                                                                    class="return-order-product btn btn-solid"
-                                                                                                    data-id="{{ $order->id ?? 0 }}"
-                                                                                                    data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
-                                                                                                    <td class="text-center"
-                                                                                                        colspan="3">
-                                                                                                        {{ __('Return') }}
-                                                                                                </button>
-                                                                                            @endif
-                                                                                            @endif
 
-                                                                                            @if(@$returnable)
-                                                                                                <button
-                                                                                                    class="replace-order-product btn btn-solid"
-                                                                                                    data-id="{{ $order->id ?? 0 }}"
-                                                                                                    data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
-                                                                                                    <td class="text-center"
-                                                                                                        colspan="3">
-                                                                                                        {{ __('Replace') }}
-                                                                                                </button>
-                                                                                            @endif
+                                                                                            
 
-                                                                                            <button class="repeat-order-product btn btn-solid mr-2"
-                                                                                                    data-id="{{ $order->id ?? 0 }}"
-                                                                                                    data-order_vendor_id="{{ $vendor->id ?? 0 }}"
-                                                                                                    data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
-                                                                                                    <td class="text-center"
-                                                                                                        colspan="3">{{ __('Repeat Order') }}</button>
+                                                                                            @if($vendor->order_status_option_id == 9) 
+
+                                                                                                {{$vendor->OrderStatusOption->title}}
+                                                                                                       
+                                                                                                @else
+                                                                                           
+                                                                                                @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request)
+                                                                                                @if(@$returnable)
+                                                                                                    <button
+                                                                                                        class="return-order-product btn btn-solid"
+                                                                                                        data-id="{{ $order->id ?? 0 }}"
+                                                                                                        data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
+                                                                                                        <td class="text-center"
+                                                                                                            colspan="3">
+                                                                                                            {{ __('Return') }}
+                                                                                                    </button>
+                                                                                                @endif
+                                                                                                @endif
+
+                                                                                                @if(@$replaceable)
+                                                                                                    <button
+                                                                                                        class="replace-order-product btn btn-solid"
+                                                                                                        data-id="{{ $order->id ?? 0 }}"
+                                                                                                        data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
+                                                                                                        
+                                                                                                         {{ __('Replace') }}
+                                                                                                    </button>
+                                                                                                @endif
+
+                                                                                                <button class="repeat-order-product btn btn-solid mr-2"
+                                                                                                        data-id="{{ $order->id ?? 0 }}"
+                                                                                                        data-order_vendor_id="{{ $vendor->id ?? 0 }}"
+                                                                                                        data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
+                                                                                                        <td class="text-center"
+                                                                                                            colspan="3">{{ __('Repeat Order') }}</button>
+                                                                                            @endif
                                                                                         </ul>
                                                                                     </div>
                                                                                 </div>

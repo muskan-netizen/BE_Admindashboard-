@@ -85,6 +85,7 @@ class OrderController extends FrontController
         $pastOrders = Order::with([
             'vendors' => function ($q) {
                 $q->where('order_status_option_id', 6);
+                $q->orwhere('order_status_option_id', 9);
             },'vendors.vendor',
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
@@ -92,6 +93,7 @@ class OrderController extends FrontController
         ])
             ->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', 6);
+                $q->orwhere('order_status_option_id', 9);
             })
             ->where(function ($q1) {
                 $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
