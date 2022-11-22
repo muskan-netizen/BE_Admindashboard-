@@ -96,8 +96,10 @@ class UserController extends FrontController{
                 $provider = $data->sms_provider;
                 $to = '+'.$request->dial_code.str_replace(' ', '', $request->phone);
                 $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
+                $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp];
+                $body = sendSmsTemplate('verify-account',$keyData);
                 if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
-                    $send = $this->sendSms($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                    $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
                     if ($send) {
                         $notified = 1;
                     }
