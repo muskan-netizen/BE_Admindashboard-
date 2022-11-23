@@ -2,7 +2,7 @@
     @csrf
         <div class="form-group">
             <label for="reason">Select Reason</label>
-            <select class="form-control" id="reason">
+            <select class="form-control" id="return_reason_id" name="return_reason_id">
                 @foreach ($cancellation_reason as $reason)
                     <option value="{{$reason->id}}">{{$reason->title}}</option>
                 @endforeach
@@ -21,6 +21,7 @@
 <script>
      $('.addrejectSubmit').on('click', function(e) {
                 e.preventDefault();
+                var return_reason_id = $('#return_reason_id').val();
                 var reject_reason = $('#reject_reason').val();
                 var pickup_cancelling_charges = "{{@$pickup_cancelling_charges}}";
                 var pickup_order_date = "{{@$pickup_order_date}}";
@@ -33,6 +34,7 @@
                     type: "POST",
                     data: {
                         vendor_id: vendor_id,
+                        return_reason_id: return_reason_id,
                         order_id: order_id,
                         reject_reason: reject_reason,
                         "_token": "{{ csrf_token() }}",

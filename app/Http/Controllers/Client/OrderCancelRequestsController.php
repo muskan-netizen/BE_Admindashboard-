@@ -20,7 +20,7 @@ use App\Models\{AutoRejectOrderCron, Order, OrderStatusOption, OrderCancelReques
 class OrderCancelRequestsController extends BaseController
 {
     use ApiResponser;
-    // use \App\Http\Traits\OrderTrait;
+    use \App\Http\Traits\OrderTrait;
 
     /**
      * Display a listing of the resource.
@@ -192,6 +192,10 @@ class OrderCancelRequestsController extends BaseController
             $order_vendor_id = $cancel_req->order_vendor_id;
             $client_preferences = ClientPreference::first();
             $currentOrderStatus = OrderVendor::with('orderDetail', 'vendor')->where(['id'=>$order_vendor_id, 'vendor_id' => $vendor_id, 'order_id' => $order_id])->first();
+            
+            if($currentOrderStatus->order_status_option_id == 2 && $status == 1){
+                $this->ProductVariantStockIncrease($order_id);
+            }
 
             // If cancel order request has been approved
             if($status == 1){

@@ -754,6 +754,7 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '')
     {
+        // dd($request->all());
         $orderPlaced = true;
         $orderPlacedNo = '';
         DB::beginTransaction();
@@ -941,6 +942,10 @@ class OrderController extends BaseController
 
                 if ($request->status_option_id == 2) {
                     $this->ProductVariantStock($request->order_id);
+                }
+
+                if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 3) {
+                    $this->ProductVariantStockIncrease($request->order_id);
                 }
 
 
