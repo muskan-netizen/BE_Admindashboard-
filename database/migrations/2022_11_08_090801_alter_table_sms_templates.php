@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterTableSmsTemplate extends Migration
+class AlterTableSmsTemplates extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,9 @@ class AlterTableSmsTemplate extends Migration
      */
     public function up()
     {
-        //
+        Schema::table('sms_templates', function (Blueprint $table) {
+            $table->string('template_id')->nullable();
+        });
     }
 
     /**
@@ -23,6 +25,8 @@ class AlterTableSmsTemplate extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('sms_templates', function (Blueprint $table) {
+            Schema::dropIfExists('template_id');
+        });
     }
 }

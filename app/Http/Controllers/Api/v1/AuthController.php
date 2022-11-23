@@ -1088,8 +1088,7 @@ class AuthController extends BaseController
                 }
                 $provider = $prefer->sms_provider;
                 $body = "Please enter OTP " . $phoneCode . " to verify your account.";
-
-                $keyData = ['{user_name}'=>auth()->user()->name??'','{otp_code}'=>$phoneCode];
+                $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
                 $body = sendSmsTemplate('verify-account',$keyData);
                 if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
                     $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);

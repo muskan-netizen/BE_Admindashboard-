@@ -37,10 +37,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('mfc/stk/push', 'Api\v1\CartController@stkPushRequest');
         Route::get('vendor/slots', 'Api\v1\CartController@checkScheduleSlots');
         Route::get('vendor/dropoffslots', 'Api\v1\CartController@checkScheduleDropoffSlots'); // Added By Ovi  // To Get Drop Off Slots
-        Route::post('homepage', 'Api\v1\HomeController2@homepage');
+        Route::post('homepage', 'Api\v1\HomeController@homepage');
         Route::post('get/subcategory/vendor', 'Api\v1\HomeController@getSubcategoryVendor');
         Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
-        Route::post('header', 'Api\v1\HomeController2@headerContent');
+        Route::post('header', 'Api\v1\HomeController@headerContent');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
         Route::get('getAllProductTags', 'Api\v1\ProductController@getAllProductTags');
         Route::post('get-products', 'Api\v1\ProductController@productList');
