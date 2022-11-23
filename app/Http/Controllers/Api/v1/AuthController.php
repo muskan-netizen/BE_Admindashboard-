@@ -51,17 +51,28 @@ class AuthController extends BaseController
      */
     public function login(LoginRequest $loginReq)
     {
-        //dd($loginReq->all());
         $errors = array();
+        if(!is_numeric($loginReq->email)){
         $user = User::with('country')->where('email', $loginReq->email)->first();
         if (!$user) {
             $errors['error'] = __('Invalid email');
             return response()->json($errors, 422);
         }
+
         if (!Auth::attempt(['email' => $loginReq->email, 'password' => $loginReq->password])) {
             $errors['error'] = __('Invalid password');
             return response()->json($errors, 422);
         }
+
+    }else{
+        $user = User::with('country')->where('phone_number', $loginReq->email)->first();
+        if (!Auth::attempt(['phone_number' => $loginReq->email, 'password' => $loginReq->password])) {
+            $errors['error'] = __('Invalid password');
+            return response()->json($errors, 422);
+        }
+
+    }
+        
         $user = Auth::user();
         $prefer = ClientPreference::select('theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
         $verified['is_email_verified'] = $user->is_email_verified;
