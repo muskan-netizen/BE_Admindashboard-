@@ -485,13 +485,13 @@ class OrderController extends BaseController
                         }
                         //Start applying service fee on vendor products total
                         $vendor_service_fee_percentage_amount = 0;
-                        // if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                        //     $vendor_service_fee_percentage_amount = (($vendor_products_total_amount+$opt_quantity_price-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                        if ($vendor_cart_product->vendor->service_fee_percent > 0) {
+                            $vendor_service_fee_percentage_amount = ((($vendor_products_total_amount+$opt_quantity_price)-$price_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
 
                         
-                        //     $vendor_payable_amount += $vendor_service_fee_percentage_amount;
-                        //     $payable_amount += $vendor_service_fee_percentage_amount;
-                        // }
+                            $vendor_payable_amount += $vendor_service_fee_percentage_amount;
+                            $payable_amount += $vendor_service_fee_percentage_amount;
+                        }
                         //End applying service fee on vendor products total
                         $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                         $order_vendor->service_fee_percentage_amount = $vendor_service_fee_percentage_amount;
@@ -581,14 +581,15 @@ class OrderController extends BaseController
                             $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                         }
                     }
-                    $payable_amount = $payable_amount - $wallet_amount_used;
                     $tip_amount = 0;
                     if ((isset($request->tip)) && ($request->tip != '') && ($request->tip > 0)) {
                         $tip_amount = $request->tip;
                         $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                         $order->tip_amount = decimal_format($tip_amount);
                     }
+
                     $payable_amount = $payable_amount + $tip_amount ;
+                    $payable_amount = $payable_amount - $wallet_amount_used;
                     $order->total_service_fee = $total_service_fee;
                     $order->total_delivery_fee = $total_delivery_fee;
                     $order->loyalty_points_used = $loyalty_points_used;
