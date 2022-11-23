@@ -435,15 +435,7 @@ trait OrderTrait{
             ->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
            // pr($longTermOrders->toArray());
         foreach ($longTermOrders as $order) {
-           // pr($order->vendors->first()->order_status_option_id);
-            // if($order->vendors[0]['order_status_option_id'] ==6){
-            //     $orderStatus = 'Past';   
-            //  }
-             //elseif($order->vendors->first()->order_status_option_id ==3){
-            //     $orderStatus = 'rejecte';
-            // }elseif($order->vendors->first()->order_status_option_id ==3){
-            //     $orderStatus = 'rejecte';
-            // }
+          
             $orderStatus = '';
             foreach ($order->vendors as $vendor) {
               
@@ -458,10 +450,12 @@ trait OrderTrait{
                                     $q->where('addon_option_translations.language_id', $langId);
                                     $q->groupBy('addon_option_translations.addon_opt_id', 'addon_option_translations.language_id');
                                 }])->where('order_product_id',$product->id)->first();
-                               // pr(  $product->longTermSchedule->toArray() );
-                        foreach ($product->longTermSchedule->addon as $ck => $addons) {
-                            $addons->option->translation_title = ($addons->option->translation->isNotEmpty()) ? $addons->option->translation->first()->title : '';
-                        }
+                      if(isset($product->longTermSchedule->addon) && !empty($product->longTermSchedule->addon)){
+                          
+                          foreach ($product->longTermSchedule->addon as $ck => $addons) {
+                              $addons->option->translation_title = ($addons->option->translation->isNotEmpty()) ? $addons->option->translation->first()->title : '';
+                          }
+                    }         
                     if ( isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
                         $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
                     } elseif ($product->media->isNotEmpty() && !is_null($product->media->first()->image)) {

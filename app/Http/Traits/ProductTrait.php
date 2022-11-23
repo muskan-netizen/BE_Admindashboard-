@@ -7,16 +7,20 @@ use Illuminate\Support\Collection;
 use Log;
 trait ProductTrait{
 
-    public function getProduct($product_id,$vendor_slug,$url_slug,$user,$langId)
+    public function getProduct($product_id,$vendor_slug,$url_slug,$user='',$langId)
     {
         $product = Product::with([
                 'variant' => function ($sel) {
                     $sel->groupBy('product_id');
                 },
+                'translation_one'=> function ($t) use ($langId) {
+                    $t->where('language_id', $langId);
+                },
                 'variant.set' => function ($sel) {
                     $sel->select('product_variant_id', 'variant_option_id');
                 },
-                'variant.media.pimage.image', 'related', 'upSell', 'crossSell', 'vendor', 'media.image', 'translation' => function ($q) use ($langId) {
+                'variant.media.pimage.image', 'related', 'upSell', 'crossSell', 'vendor', 'media.image',
+                 'translation' => function ($q) use ($langId) {
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                     $q->where('language_id', $langId);
                 },

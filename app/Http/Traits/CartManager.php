@@ -26,8 +26,9 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Traits\{ProductTrait};
 trait cartManager{
-  
+  use ProductTrait;
   public function config()
   {
     $this->user = auth()->user();
@@ -345,15 +346,7 @@ trait cartManager{
                 // $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
         ]);
-        if($islongTermInDB ==1){
-        $cartData = $cartData->with(['vendorProducts.product.ServicePeriod',
-            'vendorProducts.product.LongTermProduct',
-            'vendorProducts.LongTermProducts.product.translation_one' => function ($q) use ($langId) {
-                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
-                $q->where('language_id', $langId);
-            },
-            'vendorProducts.LongTermProducts.product']);
-        }
+        
         $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
  
        //Get All Taxes    
@@ -390,7 +383,6 @@ trait cartManager{
             $closed_store_order_scheduled = 0;
             $deliver_charge = 0;
             $deliveryCharges = 0;
-            $deliveryCharges_real = 0;
             $totalMarkup = 0;
             $delay_date = 0;
             $pickup_delay_date = 0;
@@ -512,12 +504,20 @@ trait cartManager{
                     $prod->is_long_term_service = 0;
                     if($islongTermInDB ==1 && $prod->product->is_long_term_service ==1){
                         $vendorData->is_long_term_service = 1;
+                        $LongTermProducts = $prod->product->LongTermProducts;
                         if($prod->product->ServicePeriod){
                             $prod->product->ServicePeriods = $prod->product->ServicePeriod->pluck('service_period')->toArray();
                         }
                         if($prod->start_date_time !=''){
                             $prod->service_start_time = convertDateTimeInTimeZone($prod->start_date_time, $user_timezone, 'H:i');
                         }
+                        $product_id = $LongTermProducts->product_id;
+                        $url_slug   = $LongTermProducts->product->url_slug;
+                        $vendor_slug=  $vendorData->vendor->slug;
+                        unset($LongTermProducts->product);
+                        $LongTermProducts->product   = $this->getProduct($product_id,$vendor_slug,$url_slug,$user,$langId);
+                       
+                        $prod->long_term_products=$LongTermProducts;
                     }
                  
                   $slotsDate = findSlot('',$vendorData->vendor->id,'','webFormet');

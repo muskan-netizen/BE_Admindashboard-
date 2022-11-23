@@ -3,7 +3,7 @@
     <div class="product">
         <h6 class="product-title mb-0">{{ __('Service Product') }}:
             <span class="ml-1">
-              {{ !empty($vendor_product->long_term_products->product) && isset($vendor_product->long_term_products->product->translation_one) ? $vendor_product->long_term_products->product->translation_one->title : ($vendor_product->long_term_products->product->title ?? "na")  }}
+              {{ !empty($vendor_product->product->long_term_products->product) && isset($vendor_product->product->long_term_products->product->translation_one) ? $vendor_product->product->long_term_products->product->translation_one->title : ($vendor_product->product->long_term_products->product->title ?? "na")  }}
             </span>
         </h5>
         <div class="d-flex justify-content-between align-items-center">
@@ -17,9 +17,7 @@
 </div> 
 <hr class="my-1">
 <div class="row mb-1 d-flex align-items-center LongTermSechudel" id ='LongTermSechudel_{{ $vendor_product->id}}' data-cart_product_id="{{$vendor_product->id}}">
-    {{-- @php
-    pr($vendor_product);
-    @endphp --}}
+
     <div class="col-3 vendor_service_timing" >
         <div class="hsProductTiming">
             <h6 class="product-title mt-0">{{ __('Service Time') }}:<br>
