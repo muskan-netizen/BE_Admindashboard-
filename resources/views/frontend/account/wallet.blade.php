@@ -356,7 +356,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                               <!-- A Stripe Element will be inserted here. -->
                             </div>
                         </div>
-                       
+
                         <span class="error text-danger"id="error-message"></span>
                     </div>
                 <% } %>
@@ -378,7 +378,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                             <!-- form will be added here -->
                         </div>
                         <span class="error text-danger" id="checkout_card_error"></span>
-                    </div>  
+                    </div>
                 <% } %>
                 <% if(payment_option.slug == 'payphone') { %>
                     <div id="pp-button"></div>

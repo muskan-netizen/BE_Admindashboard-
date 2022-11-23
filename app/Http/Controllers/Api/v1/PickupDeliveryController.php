@@ -384,12 +384,12 @@ class PickupDeliveryController extends BaseController{
                 $order_vendor->vendor_id= $vendor->id;
                 $order_vendor->save();
                 $variant = $product->variants->where('product_id', $request->product_id)->first();
-                $variant->price = $request->amount;
+                $variant->price = $request->tags_amount;
                 $variant->toll_price = $request->tollamount;
                 $quantity_price = 0;
                 $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
                 $divider = isset($divider) ? $divider : 1;
-                $price_in_currency = $request->amount / $divider;
+                $price_in_currency = $request->tags_amount / $divider;
                 $price_in_dollar_compare = $price_in_currency * $divider;
                 $quantity_price = $price_in_dollar_compare * 1;
                 $payable_amount = $payable_amount + $quantity_price;
@@ -500,7 +500,6 @@ class PickupDeliveryController extends BaseController{
                 $order->loyalty_amount_saved = $loyalty_amount_saved;
                 $order->total_toll_amount    = $total_toll_amount;
                 $order->total_service_fee    = $total_service_fee;
-
                 
 
                 $now = Carbon::now()->toDateTimeString();
@@ -512,8 +511,8 @@ class PickupDeliveryController extends BaseController{
                 if ($user_subscription) {
                     foreach ($user_subscription->features as $feature) {
                         if ($feature->feature_id == 2) {
-                            $subscriptionAmount = $request->amount - ($feature->percent_value * $request->amount / 100);
-                            $order->subscription_discount = $request->amount - $subscriptionAmount;
+                            $subscriptionAmount = $request->tags_amount - ($feature->percent_value * $request->tags_amount / 100);
+                            $order->subscription_discount = $request->tags_amount - $subscriptionAmount;
                             $order->payable_amount = $subscriptionAmount + $total_toll_amount + $total_service_fee;
                         }
                     }
@@ -553,8 +552,7 @@ class PickupDeliveryController extends BaseController{
 
      // order update for pickup delivery
      public function orderUpdateAfterPaymentPickupDelivery($request){
-            //echo $request->order_number;
-            $order = Order::where('order_number',$request['order_number'])->first();
+            $order = Order::where('order_number', $request->order_number)->first();
             $vendorId = OrderVendor::where('order_id',$order->id)->first();
             $vendor_id = $vendorId->vendor_id;
             $productId = OrderVendorProduct::where('order_vendor_id',$vendorId->id)->select('product_id')->first();
@@ -574,7 +572,6 @@ class PickupDeliveryController extends BaseController{
                 $payment->type = 'pickup/delivery';
                 $payment->save();
             }
-     
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$vendor_id);
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = Auth::user();
@@ -619,10 +616,7 @@ class PickupDeliveryController extends BaseController{
                 if(isset($request->task_type) && !empty($request->task_type))
                 {
                     $request->task_type = $request->task_type;
-                    $schedule_datetime_del = null;
-
-                    // $tasktype = ($request->task_type=='later')?'schedule':$request->task_type;
-                    // $request->task_type = $tasktype;                    
+                    $schedule_datetime_del = null;                   
                     $request->order_time = $schedule_datetime_del;
                 }else{
                     $request->task_type = 'schedule';
@@ -700,7 +694,6 @@ class PickupDeliveryController extends BaseController{
                                                     'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                     'content-type' => 'application/json']
                                                         ]);
-                //pr($postdata);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post(
                     $url.'/api/task/create',
