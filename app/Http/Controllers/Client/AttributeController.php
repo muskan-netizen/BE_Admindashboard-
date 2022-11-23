@@ -139,7 +139,7 @@ class AttributeController extends BaseController
                     ->select('language_id', 'is_primary', 'is_active')
                     ->where('is_active', 1)
                     ->orderBy('is_primary', 'desc')->get();
-        $submitUrl = route('variant.update', $id);
+        $submitUrl = route('attribute.update', $id);
 
         $returnHTML = view('backend.catalog.edit-attribute')->with(['categories' => $categories_hierarchy,  'languages' => $langs, 'variant' => $variant])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML, 'submitUrl' => $submitUrl));
@@ -215,7 +215,7 @@ class AttributeController extends BaseController
             foreach($options as $key => $value) {
 
                 if(!empty($value)){
-                    $varOptTrans = AttributeOptionTranslation::where('language_id', $lid)->where('variant_option_id', $value)->first();
+                    $varOptTrans = AttributeOptionTranslation::where('language_id', $lid)->where('attribute_option_id', $value)->first();
                     if(!$varOptTrans){
                         $varOptTrans = new AttributeOptionTranslation();
                         $varOptTrans->variant_option_id =$exist_options[$key];
@@ -226,7 +226,7 @@ class AttributeController extends BaseController
 
                 }else{
                     $varOptTrans = new AttributeOptionTranslation();
-                    $varOptTrans->variant_option_id =$exist_options[$key];
+                    $varOptTrans->attribute_option_id =$exist_options[$key];
                     $varOptTrans->language_id = $lid;
                     $varOptTrans->title = $request->opt_title[$lid][$key];
                     $varOptTrans->save();

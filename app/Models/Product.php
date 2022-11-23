@@ -378,5 +378,7 @@ class Product extends Model implements Auditable{
       return $value;
     }
 
-
+    public function ProductAttribute() {
+      return $this->hasMany('App\Models\ProductAttribute', 'product_id', 'id');
+    }
 }

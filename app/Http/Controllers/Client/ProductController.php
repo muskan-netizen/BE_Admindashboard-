@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, Attribute, ProductAttribute};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -16,6 +16,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ProductsImport;
 use App\Imports\QrcodesImport;
 use GuzzleHttp\Client as GCLIENT;
+use Carbon\Carbon;
 class ProductController extends BaseController
 {
     use ApiResponser;
@@ -181,7 +182,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        $product = Product::with('brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles')->where('id', $id)->firstOrFail();
+        $product = Product::with('brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles', 'ProductAttribute')->where('id', $id)->firstOrFail();
 
         $type = Type::all();
         $countries = Country::all();
@@ -206,9 +207,16 @@ class ProductController extends BaseController
             ->where('variants.status', '!=', 2)
             ->orderBy('position', 'asc')->get();
 
+        $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
+            ->select('attributes.*')
+            ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
+            ->where('attribute_categories.category_id', $product->category_id)
+            ->where('attributes.status', '!=', 2)
+            ->orderBy('position', 'asc')->get();
+
         $taxCate = TaxCategory::all();
 
-        $celeb_ids = $related_ids = $upSell_ids = $crossSell_ids = $existOptions = $addOn_ids = array();
+        $celeb_ids = $related_ids = $upSell_ids = $crossSell_ids = $existOptions = $addOn_ids = $attribute_value = $attribute_key_value = array();
 
         foreach ($product->addOn as $key => $value) {
             $addOn_ids[] = $value->addon_id;
@@ -236,6 +244,14 @@ class ProductController extends BaseController
                 $celeb_ids[] = $value->celebrity_id;
             }
         }
+
+        if( !empty($product->ProductAttribute) ) {
+            foreach($product->ProductAttribute as $key => $val) {
+                $attribute_value[] = $val->attribute_option_id;
+                $attribute_key_value[$val->attribute_option_id] = $val->key_value;
+            }
+        }
+        
         $otherProducts = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
         $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
         $celebrities = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
@@ -300,7 +316,7 @@ class ProductController extends BaseController
         }
         
 
-        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles ]);
+        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value ]);
     }
 
     /**
@@ -348,6 +364,60 @@ class ProductController extends BaseController
                 $product->{$k} = $val;
             }
 
+            if( clientPrefrenceModuleStatus('p2p_check') ) {
+                if( !empty($request->attribute) ) {
+                    
+                    $insert_arr = [];
+                    $insert_count = 0;
+                    foreach($request->attribute as $key => $value) {
+                        if( is_array($value) ) {
+
+                            foreach($value['option'] as $option_key => $option) {
+                                // dd($option);
+                                if(@$option['value']){
+                                    // dd('fgdfg');
+
+                                    $insert_arr[$insert_count]['product_id'] = $id;
+                                    $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                    $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                    $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+                                    $insert_arr[$insert_count]['key_value'] = $option['option_title'];
+                                    $insert_arr[$insert_count]['is_active'] = 1;
+
+                                }
+                              
+                                
+                                
+                                // if(is_array($inn_val)) {       
+                                //     $insert_arr[$rand]['product_id'] = $id;
+                                //     $insert_arr[$rand]['type'] = $type;
+                                //     $insert_arr[$rand]['attribute_value'] = $inn_val[0] ?? null;
+                                //     $insert_arr[$rand]['attribute_id'] = (int)$inn_val[1] ?? null;
+                                //     $insert_arr[$rand]['is_active'] = 1;
+                                // } else {
+                                //     $exploded_value = explode('___', $inn_val);
+                                    
+                                //     if( !empty($exploded_value) ) {
+                                //         $insert_arr[$rand]['product_id'] = $id;
+                                //         $insert_arr[$rand]['type'] = $type;
+                                //         $insert_arr[$rand]['attribute_value'] = $exploded_value[0] ?? null;
+                                //         $insert_arr[$rand]['attribute_id'] = $exploded_value[1] ?? null;
+                                //         $insert_arr[$rand]['attribute_option_id'] = $exploded_value[2] ?? null;
+                                //     }
+                                // }
+                                $insert_count++;
+                            }
+                        }
+
+                       
+                    }
+                    
+                }
+                // dd($insert_arr);
+                ProductAttribute::where('product_id',$id)->delete();
+                ProductAttribute::insert($insert_arr);
+            }
+            
             $product->sku = $request->sku;
             $product->markup_price = $request->markup_price;
             $product->url_slug = $request->url_slug;

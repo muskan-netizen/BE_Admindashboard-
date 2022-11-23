@@ -398,8 +398,10 @@
                     </div> -->
                 </div>
             </div>
-
-            @if($client_preference_detail->p2p_check == 1) 
+            @php
+            $getAdditionalPreference = getAdditionalPreference(['is_attribute']);
+            @endphp
+            @if( $client_preference_detail->p2p_check == 1 && $getAdditionalPreference['is_attribute'] ) 
                 <div class="">
                     <div class="card-box h-100">
                         <div class="row mb-2">

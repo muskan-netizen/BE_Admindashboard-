@@ -404,6 +404,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     {{-- @include('backend.product.popup.addBlockTimeTablePopup') --}}
                     @include('backend.product.variant')
                 @else
+                
+                    @if( !clientPrefrenceModuleStatus('p2p_check') )
                     @if($productVariants->count() > 0)
                     <div class="card-box" >
                         <div class="row mb-2 bg-light">
@@ -416,6 +418,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </div>
                             @endif
                         </div>
+
                         <p>{{ __("Select or change category to get ".getNomenclatureName('Variant')) }}</p>
 
                         <div class="row" style="width:100%; overflow-x: scroll;">
@@ -541,6 +544,188 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <div id="variantRowDiv" class="col-12"></div>
                         </div>
                     </div>
+                    @endif
+                    @else
+                        <div class="card-box" >
+                            <div class="row mb-2 bg-light">
+                                <div class="col-8" style="margin:auto;">
+                                    <h5 class="text-uppercase mt-0 bg-light p-2">{{ __(getNomenclatureName('Attribute')." Information") }}</h5>
+                                </div>
+                                @if(!empty($productAttributes))
+                                {{-- <div class="col-4 p-2 mt-0 text-right" style="margin:auto; ">
+                                    <button type="button" class="btn btn-info makeVariantRow"> {{ __("Make ".getNomenclatureName('Attribute')." Sets") }}</button>
+                                </div> --}}
+                                @endif
+                            </div>
+
+                            <p>{{ __("Select or change category to get ".getNomenclatureName('Attribute')) }}</p>
+
+                            <div class="row" style="width:100%; overflow-x: scroll;">
+                                <div id="variantAjaxDiv" class="col-12 mb-2">
+                                    <h5 class="">{{__(getNomenclatureName('Attribute').' List')}}</h5>
+                                    <div class="row mb-2">
+                                        
+                                        @foreach($productAttributes as $vk => $var)
+                                        @php $counter = 0; @endphp
+                                        <div class="col-sm-3">
+                                            <label class="control-label">{{$var->title??null}}</label>
+                                        </div>
+                                        <div class="col-sm-9">
+                                           
+                                            @foreach($var->option as $key => $opt)
+                                            
+                                            @if(isset($opt) && !empty($opt->title) && isset($var) && !empty($var->title) )
+
+                                                @if( !empty($var->type) && $var->type == 3 )
+                                                    <div class="form-check-inline pr-3">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
+                                                        <div class="attr_radio_{{$var->id}}">
+                                                        <input type="radio" name="attribute[{{$var->id}}][option][{{$counter}}][value]" class="attr_radio"  
+                                                        value="{{$opt->id}}" @if(in_array($opt->id, $attribute_value)) checked @endif>
+                                                        </div>
+                                                        <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
+                                                    </div>
+
+
+                                                @elseif( !empty($var->type) && $var->type == 4 )
+                                                    <div class="form-check-inline pr-3">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
+                                                        <input type="textbox" name="attribute[{{$var->id}}][option][{{$counter}}][value]"  
+                                                        
+                                                        @if(in_array($opt->id, $attribute_value))  
+                                                        value="{{$attribute_key_value[$opt->id]}}"
+                                                        @else
+                                                        value=""
+                                                        @endif>
+                                                        {{-- <input type="hidden" name="attribute[{{$var->id}}][]" value="{{$opt->attribute_id}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][]" value="{{$opt->id}}"> --}}
+                                                        {{-- <label for="opt_vid_{{$opt->id}}"></label> --}}
+                                                    </div>
+                                                @else
+                                                    <div class="checkbox checkbox-success form-check-inline pr-3">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
+                                                        <input type="checkbox" name="attribute[{{$var->id}}][option][{{$counter}}][value]" value="{{$opt->id}}" @if(in_array($opt->id, $attribute_value)) checked @endif>
+                                                        <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
+                                                    </div>
+                                                @endif
+                                                @php $counter++; @endphp
+                                            @endif
+                                            @endforeach
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                @if($product->has_variant == 1)
+                                <div class="col-12" id="exist_variant_div">
+                                    <h5 class="">{{ __("Applied Variants Set") }}</h5>
+                                    <table class="table table-centered table-nowrap table-striped">
+                                        <thead>
+                                            <th>{{ __("Image") }}</th>
+                                            <th>{{ __("Name") }}</th>
+                                            <th>{{ __("Variants") }}</th>
+                                            <th>{{ __("Price") }}</th>
+                                            {{-- Role Price Column (START) --}}
+                                            @if (isset($getAdditionalPreference['is_price_by_role']))
+                                                @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                                    <th>{{ __("Role's Price") }}</th>
+                                                @endif
+                                            @endif
+                                            {{-- Role Price Column (END) --}}
+                                            <th>{{ __('Compare at price') }}</th>
+                                            <th>{{ __('Cost Price') }}</th>
+                                            <th class="check_inventory">{{ __("Quantity") }}</th>
+                                            <th>{{ __("Action") }}</th>
+                                        </thead>
+                                        <tbody id="product_tbody_{{$product->id}}">
+                                            @foreach($product->variant as $varnt)
+                                            <?php
+                                            $existSet = array();
+
+                                            $mediaPath = Storage::disk('s3')->url('default/default_image.png');
+
+                                            if (!empty($varnt->vimage) && isset($varnt->vimage->pimage->image)) {
+                                                $mediaPath = $varnt->vimage->pimage->image->path['proxy_url'] . '100/100' . $varnt->vimage->pimage->image->path['image_path'];
+                                            }
+                                            $existSet = explode('-', $varnt->sku);
+                                            $vsets = '';
+
+                                            foreach ($varnt->set as $vs) {
+                                                if(isset($vs) && !empty($vs->title)){
+                                                    $vsets .= $vs->title . ', ';
+                                                }
+
+
+                                            }
+                                            ?>
+                                            <tr id="tr_{{$varnt->id}}">
+                                                <td>
+                                                    <div class="image-upload">
+                                                        <label class="file-input uploadImages" for="{{$varnt->id}}">
+                                                            <img src="{{$mediaPath}}" width="30" height="30" for="{{$varnt->id}}" />
+                                                        </label>
+                                                    </div>
+                                                    <div class="imageCountDiv{{$varnt->id}}"></div>
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" name="variant_ids[]" value="{{$varnt->id}}">
+                                                    <input type="hidden" class="exist_sets" value="{{$existSet[(count($existSet) - 1)]}}">
+                                                    <input type="text" name="variant_titles[]" value="{{$varnt->title??null}}">
+                                                </td>
+                                                <td>{{rtrim($vsets, ', ')}}</td>
+                                                <td>
+                                                    @if (isset($getAdditionalPreference['is_price_by_role']))
+                                                        @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                                            <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->getRawOriginal('price') )}}" onkeypress="return isNumberKey(event)">
+                                                        @else
+                                                            <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
+                                                        @endif
+                                                    @endif
+                                                    {{-- <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)"> --}}
+                                                </td>
+                                                {{-- Role Price Column to Enter price with respect to roles (START) --}}
+                                                @if (isset($getAdditionalPreference['is_price_by_role']))
+                                                    @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                                        <td>
+                                                            <a href="javascript:void(0);" title="Add Price Based On Roles" class="action-icon rolePriceModal" data-toggle="modal" data-target="#rolePriceModal" data-varient-id="{{$varnt->id}}" data-product-id="{{$product->id}}">
+                                                                <i class="mdi mdi-loupe"></i>
+                                                            </a>
+                                                        </td>
+                                                    @endif
+                                                @endif
+                                                {{-- Role Price Column to Enter price with respect to roles (END) --}}
+                                                <td>
+                                                    <input type="text" style="width: 100px;" name="variant_compare_price[]" value="{{decimal_format($varnt->compare_at_price)}}" onkeypress="return isNumberKey(event)">
+                                                </td>
+                                                <td>
+                                                    <input type="text" style="width: 70px;" name="variant_cost_price[]" value="{{decimal_format($varnt->cost_price)}}" onkeypress="return isNumberKey(event)">
+                                                </td>
+                                                <td class="check_inventory">
+                                                    <input type="text" style="width: 70px;" name="variant_quantity[]" value="{{$varnt->quantity}}" onkeypress="return isNumberKey(event)">
+                                                </td>
+                                                <td>
+                                                    <a href="javascript:void(0);" data-varient_id="{{$varnt->id}}" class="action-icon deleteExistRow">
+                                                        <i class="mdi mdi-delete"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                @endif
+                                <div id="variantRowDiv" class="col-12"></div>
+                            </div>
+                        </div>
                     @endif
                 @endif
             </div>
@@ -1496,7 +1681,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
     var uploadedDocumentMap = {};
     Dropzone.autoDiscover = false;
+       
+
+
     $(document).ready(function() {
+
         var val = $('#has_inventory').prop('checked');
 
         if (val == true) {
@@ -1872,6 +2061,16 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
 <!-- start product faq -->
 <script>
+    $(document).on("change",".attr_radio", function() {
+        
+    var parentClass = $(this).parent().prop('className');
+    console.log("dfgdfg");
+    var attr_radio_class = $(this).data('class');
+    console.log(attr_radio_class);
+    $("."+parentClass+" .attr_radio").prop('checked', false);
+    $(this).prop('checked', true);
+    // $('.'+attr_radio_class).not(this).prop('checked', false);
+});
  $('#add_product_faq_modal_btn').click(function(e) {
          document.getElementById("productFaqForm").reset();
          $('#add_product_faq_modal input[name=product_faq_id]').val("");

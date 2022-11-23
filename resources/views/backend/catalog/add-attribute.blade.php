@@ -25,6 +25,7 @@
                         <option value="1">{{ __("DropDown") }}</option>
                         <option value="2">{{ __("Color") }}</option>
                         <option value="3">{{ __("Radio") }}</option>
+                        <option value="4">{{ __("Textbox") }}</option>
                     </select>
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>

@@ -488,7 +488,7 @@
                     backdrop: 'static',
                     keyboard: false
                 });
-                console.log(data.html);
+                
                 $('#editAttributeForm #editAttributeBox').html(data.html);
                 $('.dropify').dropify();
                 $('.selectize-select').selectize();

@@ -1273,6 +1273,6 @@ function inventorySyncOnOff($vendor_id)
 
 if( !function_exists('clientPrefrenceModuleStatus') ) {
     function clientPrefrenceModuleStatus($module_name) {
-        return ClientPreference::first()->pluck($module_name);
+        return ClientPreference::first()->value($module_name);
     }
 }
