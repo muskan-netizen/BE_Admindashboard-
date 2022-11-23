@@ -208,8 +208,10 @@ $(document).ready(function () {
             tasks.push(sample_array);
         });
        
-        let amount = $(this).attr('data-amount');
-        let tollamount = $(this).attr('data-tollamount');
+        let amount                      = $(this).attr('data-amount');
+        let tollamount                  = $(this).attr('data-tollamount');
+        let servicechargeamount         = $(this).attr('data-servicechargeamount');
+        let totalamount                 = $(this).attr('data-totalamount');
         let subscription_payable_amount = $(this).attr('data-subscriptionPayableAmount');
         let product_image = $(this).attr('data-image');
         let vendor_id = $(this).attr('data-vendor_id');
@@ -225,7 +227,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,type:type,friendName:friendName,friendPhoneNumber:friendPhoneNumber},
+            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,type:type,friendName:friendName,friendPhoneNumber:friendPhoneNumber},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
@@ -1508,11 +1510,16 @@ $(document).ready(function () {
     function getDistance(){
             //Find the distance
             var distanceService = new google.maps.DistanceMatrixService();
+            if(distance_unit == "IMPERIAL"){
+                var unitSystem = google.maps.UnitSystem.IMPERIAL;
+            }else{
+                var unitSystem = google.maps.UnitSystem.METRIC;
+            }
             distanceService.getDistanceMatrix({
             origins: [$("#pickup_location").val()],
             destinations: [$("#destination_location").val()],
             travelMode: google.maps.TravelMode.DRIVING,
-            unitSystem: google.maps.UnitSystem.METRIC,
+            unitSystem: unitSystem,
             durationInTraffic: true,
             avoidHighways: false,
             avoidTolls: false

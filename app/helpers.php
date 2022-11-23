@@ -1202,7 +1202,7 @@ if (!function_exists('sendSmsTemplate')) {
                 $smsBody = str_replace($tag,$value,$smsBody);
             }
         }
-        $sms = array(['body'=>$smsBody,'template_id'=>$smsTemp->template_id??'']);
+        $sms = array('body'=>$smsBody,'template_id'=>$smsTemp->template_id??'');
         return $sms;
     }
 }

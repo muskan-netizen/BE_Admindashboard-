@@ -725,7 +725,7 @@ class PaymentOptionController extends BaseController{
     public function csavePaymentOrderPickup(Request $request,$order)
     {
        // $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 30, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransID]);
-        $orderDeatils = array('order_number'=> $order->order_number, 'payment_option_id' => 30, 'amount' => $order->payable_amount, 'transaction_id' => $request->transaction_id);
+        $orderDeatils = (object) array('order_number'=> $order->order_number, 'payment_option_id' => 30, 'amount' => $order->payable_amount, 'transaction_id' => $request->transaction_id);
 
         $plaseOrderForPickup = new PickupDeliveryController();
         $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($orderDeatils);

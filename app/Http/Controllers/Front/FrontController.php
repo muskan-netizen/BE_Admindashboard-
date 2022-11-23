@@ -79,7 +79,6 @@ class FrontController extends Controller
         }
         return '1';
 	}
-
     protected function sendSmsNew($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
             $body = $body['body']??'';
