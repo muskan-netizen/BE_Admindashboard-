@@ -63,6 +63,11 @@
                                     <input class="form-control " id="subject" placeholder="Subject" name="subject" type="text">
                                     <span class="text-danger error-text updatetitleError"></span>
                                 </div>
+                                <div class="col-12 mb-2">
+                                    <label for="title" class="control-label">{{ __("Template Id") }}</label>
+                                    <input class="form-control " id="template_id" placeholder="Template Id" name="template_id" type="text">
+                                    <span class="text-danger error-text updatetitleError"></span>
+                                </div>
                                 <div class="col-md-10 mb-2">
                                     <label for="title" class="control-label">{{ __("Content") }}</label>
                                     <textarea class="form-control" id="content" placeholder="Meta Keyword" rows="6" name="meta_keyword" cols="10" maxlength="250"></textarea>
@@ -105,6 +110,7 @@
                         $('#edit_page_content #tags').html(response.data.tags);
                         $('#edit_page_content #subject').val(response.data.subject);
                         $('#edit_page_content #content').val(response.data.content);
+                        $('#edit_page_content #template_id').val(response.data.template_id);
                         //CKEDITOR.instances.content.setData(response.data.content);
                          //$('#edit_page_content #content').summernote({'height':450});
                     }else{
@@ -123,9 +129,10 @@
             var update_url = "{{route('cms.sms.update')}}";
             let subject = $('#edit_page_content #subject').val();
             let content = $('#edit_page_content #content').val();
+            let template_id = $('#edit_page_content #template_id').val();
            // let content = CKEDITOR.instances.content.getData();
             let email_template_id = $('#edit_page_content #sms_template_id').val();
-            var data = { subject: subject, content: content, email_template_id:email_template_id};
+            var data = { subject: subject, content: content, email_template_id:email_template_id, template_id:template_id};
             $.post(update_url, data, function(response) {
               $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
               setTimeout(function() {

@@ -560,9 +560,11 @@ class AuthController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+               // $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
                 // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
-                $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                // $keyData = ['{user_name}'=>ucwords($user->name)]; 
+                // $body = sendSmsTemplate('user-signup-sms',$keyData);
+                // $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
             }
             // if (!empty($prefer->mail_driver) && !empty($prefer->mail_host) && !empty($prefer->mail_port) && !empty($prefer->mail_port) && !empty($prefer->mail_password) && !empty($prefer->mail_encryption)) {
             //     $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
@@ -628,9 +630,11 @@ class AuthController extends BaseController
                     $user->save();
                     $provider = $data->sms_provider;
                     $to = '+' . $request->dial_code . $request->phone_number;
-                    $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
+                   // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
+                    $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp]; 
+                    $body = sendSmsTemplate('verify-account',$keyData);
                     if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
-                        $send = $this->sendSms($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                        $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
                         if ($send ==1) {
                             $message = __('An otp has been sent to your phone. Please check.');
                             return $this->successResponse([], $message);
@@ -1084,8 +1088,11 @@ class AuthController extends BaseController
                 }
                 $provider = $prefer->sms_provider;
                 $body = "Please enter OTP " . $phoneCode . " to verify your account.";
+
+                $keyData = ['{user_name}'=>auth()->user()->name??'','{otp_code}'=>$phoneCode];
+                $body = sendSmsTemplate('verify-account',$keyData);
                 if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
-                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                     if ($send) {
                         $request->request->add(['codeSent' => 1]);
                         $message = __('An otp has been sent to your phone. Please check.');
