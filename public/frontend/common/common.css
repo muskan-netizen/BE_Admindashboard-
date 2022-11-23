@@ -238,3 +238,40 @@ body #page-container .vendors {
     color: var(--theme-deafult);
     border-bottom: 1px solid var(--theme-deafult);
 }
+
+.al_body_template_six .slick-track {
+    margin-left: 0 !important;
+}
+/*------------template_1 css----------*/
+body.al_body_template_one .row.mobile-header.align-items-center.justify-content-between.my-sm-2 {
+    margin: 0 !important;
+}
+body.al_body_template_one .footer-theme .sub-title li {
+    padding-top: 0 !important;
+}
+.al_body_template_six .footer-theme .sub-title .contact-list li {   
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 0;
+}
+.al_body_template_six .col-sm-12.text-center.position-relative.vendor-page-copy {
+    text-align: left !important;
+    padding-left: 50px;
+}
+.al_body_template_six .top-banner-wrapper a.open-social-medialinks {
+    position: absolute;
+    top: 120px;
+    left: 150px;
+}
+.al_body_template_six .collection-product-wrapper .col-12.text-right select {
+    margin-top: 20px;
+}
+.al_body_template_six .vender-peragraph {
+    top: 62px;
+    width: 80%;
+    max-width: 78%;
+    text-align: left !important;
+    left: 300px;
+    position: absolute !important;
+}

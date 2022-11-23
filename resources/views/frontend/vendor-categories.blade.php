@@ -54,7 +54,7 @@
                                             @endif
                                         </div>
                                         @if($vendor->desc)
-                                            <div class="col-md-12 text-center">
+                                            <div class="col-md-12 text-center vender-peragraph">
                                                 <p>{{$vendor->desc}}</p>
                                                 <p>{!! $vendor->short_desc !!}</p>
                                             </div>
