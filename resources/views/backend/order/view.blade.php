@@ -384,11 +384,11 @@
                             <table class="table table-bordered table-centered mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>{{ __('Product Name') }}</th>
-                                        <th>{{ __('Product') }}</th>
-                                        <th>{{ __('Quantity') }}</th>
-                                        <th>{{ __('Price') }}</th>
-                                        <th>{{ __('Total') }}</th>
+                                        <th>{{ __(getNomenclatureName("Product Name",true)) }}</th>
+                                        <th>{{ __("Product") }}</th>
+                                        <th>{{ __("Quantity") }}</th>
+                                        <th>{{ __("Price") }}</th>
+                                        <th>{{ __("Total") }}</th>
                                     </tr>
                                 </thead>
                                 @foreach ($order->vendors as $vendor)

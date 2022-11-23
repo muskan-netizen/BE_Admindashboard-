@@ -425,22 +425,25 @@ class DispatcherController extends FrontController
 
                 switch ($dispatch_status) {
                   case 2:
-                        $request->status_option_id = 2;
+                        // $request->status_option_id = 2;
+                        $request->request->add(['status_option_id'=> '2']);
                         break;
                   case 3:
-                    $request->status_option_id = 4;
+                    // $request->status_option_id = 4;
+                    $request->request->add(['status_option_id'=> '4']);
                     break;
                   case 4:
-                    $request->status_option_id = 5;
+                    // $request->status_option_id = 5;
+                    $request->request->add(['status_option_id'=> '5']);
                     break;
                   case 5:
-                    $request->status_option_id = 6;
+                    // $request->status_option_id = 6;
+                    $request->request->add(['status_option_id'=> '6']);
                     break;
                   default:
                    $request->status_option_id = null;
                 }
                 if(isset($request->status_option_id) && !empty($request->status_option_id) && $request->status_option_id == 6 && $type == 2){
-
                     $checkif= VendorOrderStatus::where(['order_id' =>  $checkiftokenExist->order_id,
                     'order_status_option_id' =>  $request->status_option_id,
                     'vendor_id' =>  $checkiftokenExist->vendor_id,
@@ -719,7 +722,7 @@ class DispatcherController extends FrontController
                             'sound' => "default",
                             "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                             'click_action' => route('order.index'),
-                            "android_channel_id" => "sound-channel-id"
+                            "android_channel_id" => "default-channel-id"
                         ],
                         "data" => [
                             'title' => $title,

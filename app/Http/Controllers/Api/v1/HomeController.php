@@ -37,7 +37,7 @@ class HomeController extends BaseController
         try {
             $homeData = array();
             $client_language = ClientLanguage::select('language_id')->where(['is_primary' => 1, 'is_active' => 1])->first();
-            
+
             $langId = ($request->hasHeader('language') && !empty($request->header('language'))) ? $request->header('language') : (($client_language) ? $client_language->language_id : 1);
             $homeData['profile'] = $preferences = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('id','country_id', 'company_name', 'code', 'sub_domain','database_name', 'logo','dark_logo', 'company_address', 'phone_number', 'email','custom_domain','contact_phone_number','socket_url')->first();
             //dd(Client::with('getPreference')->first()->getPreference->auto_implement_5_percent_tip);
@@ -56,7 +56,7 @@ class HomeController extends BaseController
                         $vendorData["icon"] = config('constants.VendorTypesIcon.'.$vendor_typ_key);
                         //$vendorData["name"] = $clientVendorTypes;
                         $vendorData["type"] = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
-                        
+
                         $vendorMode[] = $vendorData;
                     }
             }
@@ -85,13 +85,13 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->referral_code = $referral_code;
             if(!is_null($passbase))
             {
-                $homeData['profile']->preferences->passbase_check = 1; 
+                $homeData['profile']->preferences->passbase_check = 1;
                 $passbase_creds = json_decode($passbase->credentials);
                 $homeData['profile']->preferences->passbase_api_key = $passbase_creds->publish_key;
             }else{
                 $homeData['profile']->preferences->passbase_check = 0;
             }
-            
+
 
 
             $homeData['languages'] = ClientLanguage::with('language')->select('language_id', 'is_primary')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
@@ -264,8 +264,8 @@ class HomeController extends BaseController
 
 
             $categoryTypes = getServiceTypesCategory($type);
-            
-           
+
+
             $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                 $q->whereIn('type_id',$categoryTypes);
             })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
@@ -289,7 +289,7 @@ class HomeController extends BaseController
                     $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
                 //}
             }
-           
+
             //filter on ratings
             if($venderFilterbest && ($venderFilterbest == 1) ){
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
@@ -297,7 +297,7 @@ class HomeController extends BaseController
             $allVendorData = clone $vendorData;
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->limit(100)->get();
             $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
-            
+
             // \Log::info($vendorData->toSql());
             // \Log::info($venderIds);
             // \Log::info($ses_vendors);
@@ -307,7 +307,7 @@ class HomeController extends BaseController
             $start_date = new DateTime("now", new  DateTimeZone($timezone) );
             $start_date =  $start_date->format('Y-m-d');
             $end_date = Date('Y-m-d', strtotime('+13 days'));
-            
+
 
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
@@ -383,7 +383,7 @@ class HomeController extends BaseController
             if($venderFilterOpen && ($venderFilterOpen == 1) ){
                 $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
             }
-           
+
             $vendorData =   $vendorData->take(5);
 
             // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
@@ -444,10 +444,10 @@ class HomeController extends BaseController
             //         'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
             //     );
             // }
-           
+
 
             $isVendorArea = 0;
-            
+
             // Start Mobile Banners
             $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
             ->where('status', 1)->where('validity_on', 1)
@@ -498,7 +498,7 @@ class HomeController extends BaseController
                     unset($value->redirect_vendor_id);
                 }
             }
-           
+
 
             // End Mobile Banners
             $categories = $this->categoryNav($langId,  $venderIds,$type);
@@ -601,7 +601,7 @@ class HomeController extends BaseController
             $start_date = new DateTime("now", new  DateTimeZone($timezone) );
             $start_date =  $start_date->format('Y-m-d');
             $end_date = Date('Y-m-d', strtotime('+13 days'));
-            
+
 
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
@@ -694,7 +694,7 @@ class HomeController extends BaseController
             ])
             ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products','sub_cat_banners')
             ->where('id', $cid)->first();//->toArray();
-            
+
             // print_r($categories);die;
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories->childs;
@@ -737,7 +737,7 @@ class HomeController extends BaseController
             ->select('id','order_number')
             ->get();
         }
-        
+
 
         return $this->successResponse($temp_orders, '', 200);
     }

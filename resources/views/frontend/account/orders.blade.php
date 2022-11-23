@@ -154,7 +154,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                         <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                                                                     </div>
                                                                     <div class="col-md-3 alOrderStatus">
-                                                                        <h4>{{ __('Vendor Name') }}</h4>
+                                                                        <h4>{{ __(getNomenclatureName('Vendor Name',true)) }}</h4>
                                                                         <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
@@ -334,23 +334,23 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                 </li>
                                                                                             @endif
                                                                                             @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
-                                                                                            <?php
-                                                                                            if($clientPreference->business_type == 'laundry'){
-                                                                                                $pickup_cancelling_charges = $clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges;
-                                                                                            }
-                                                                                        ?>
+                                                                                                <?php
+                                                                                                    if($clientPreference->business_type == 'laundry'){
+                                                                                                        $pickup_cancelling_charges = $clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges;
+                                                                                                    }
+                                                                                                ?>
 
-                                                                                            <h6 class="m-0">
-                                                                                               @if ($clientPreference->business_type == 'laundry')
-                                                                                                    <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
-                                                                                                        {{ __('Cancel Order') }}
-                                                                                                    </label>
-                                                                                                @else
-                                                                                                <label class="rating-star cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
-                                                                                                    {{ __('Cancel Order') }}
-                                                                                                </label>
-                                                                                                @endif
-                                                                                            </h6>
+                                                                                                <h6 class="m-0">
+                                                                                                @if ($clientPreference->business_type == 'laundry')
+                                                                                                        <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                                            {{ __('Cancel Order') }}
+                                                                                                        </label>
+                                                                                                    @else
+                                                                                                        <label class="rating-star cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                                            {{ __('Cancel Orders') }}
+                                                                                                        </label>
+                                                                                                    @endif
+                                                                                                </h6>
                                                                                             @endif
                                                                                             @if ($vendor->dineInTable)
                                                                                                 <li>
@@ -436,6 +436,28 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+
+                                                                                            @if ($vendor->toll_amount > 0)
+                                                                                                <li
+                                                                                                    class="d-flex align-items-center justify-content-between">
+                                                                                                    <label
+                                                                                                        class="m-0">{{ __('Toll Fee') }}</label>
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->toll_amount
+                                                                                                        *
+                                                                                                        $clientCurrency->doller_compare)}}</span>
+                                                                                                </li>
+                                                                                            @endif
+
+                                                                                            @if ($vendor->service_fee_percentage_amount > 0)
+                                                                                                <li
+                                                                                                    class="d-flex align-items-center justify-content-between">
+                                                                                                    <label
+                                                                                                        class="m-0">{{ __('Service Fee') }}</label>
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->service_fee_percentage_amount
+                                                                                                        *
+                                                                                                        $clientCurrency->doller_compare)}}</span>
+                                                                                                </li>
+                                                                                            @endif
                                                                                             <li
                                                                                                 class="grand_total d-flex align-items-center justify-content-between">
                                                                                                 <label
@@ -450,7 +472,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             </li>
                                                                                             {{-- Check if order is created only --}}
                                                                                             @if ($vendor->status == 0)
-                                                                                                <button  style="font-size:10px; padding: 0 5px; float: right; margin-top: 5px;" data-toggle="modal" data-target="#orderModel{{$order->id}}" class="reschedule_order btn btn-solid" data-id="{{$order->id}}" data-order_vendor_id="{{ $vendor->id ?? 0 }}" data-vendor_id="{{$vendor->id}}">Reschedule</button>
+                                                                                                @if ($vendor->order_status == 'placed')
+                                                                                                    <button  style="font-size:10px; padding: 0 5px; float: right; margin-top: 5px;" data-toggle="modal" data-target="#orderModel{{$order->id}}" class="reschedule_order btn btn-solid" data-id="{{$order->id}}" data-order_vendor_id="{{ $vendor->id ?? 0 }}" data-vendor_id="{{$vendor->id}}">Reschedule</button>
+                                                                                                @endif
                                                                                             @endif
                                                                                         </ul>
                                                                                     </div>
@@ -578,6 +602,17 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         <span>{{ Session::get('currencySymbol') }}{{decimal_format(($vendor->total_container_charges) * $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+
+                                                                                @if ($order->total_toll_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Toll Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_toll_amount
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
                                                                                 @if ($order->total_service_fee > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -588,6 +623,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+
                                                                                 @if ($order->fixed_fee_amount > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -1216,34 +1252,6 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                             </div>
                                                                         @endif
                                                                     </div>
-                                                                    <div class="row no-gutters order_data">
-                                                                        <div class="col-md-3">
-                                                                            #{{ $order->order_number }}</div>
-                                                                        <div class="col-md-3">
-                                                                            {{ dateTimeInUserTimeZone($order->created_at, $timezone) }}
-                                                                        </div>
-                                                                        <div class="col-md-3">
-                                                                            <a class="text-capitalize">{{ $order->user->name }}</a>
-                                                                        </div>
-                                                                        @if ($client_preference_detail->business_type != 'taxi')
-                                                                            <div class="col-md-3">
-                                                                                <span class="ellipsis"
-                                                                                    data-toggle="tooltip" data-placement="top"
-                                                                                    title="">
-                                                                                    @if ($order->address)
-                                                                                        {{ $order->address->address }},
-                                                                                        {{ $order->address->street }},
-                                                                                        {{ $order->address->city }},
-                                                                                        {{ $order->address->state }},
-                                                                                        {{ $order->address->country }}
-                                                                                        {{ $order->address->pincode }}
-                                                                                    @else
-                                                                                        NA
-                                                                                    @endif
-                                                                                </span>
-                                                                            </div>
-                                                                        @endif
-                                                                    </div>
                                                                     <div class="row mt-2">
                                                                         <div class="col-md-9 mb-3">
                                                                             @php
@@ -1673,6 +1681,8 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+
+
                                                                                             <li
                                                                                                 class="grand_total d-flex align-items-center justify-content-between">
                                                                                                 <label
@@ -2148,22 +2158,22 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                 dataType: 'json',
                 url: cart_details_url,
                 success: function (response) {
-                   
+
                     if (response.data != "") {
                         let cartProducts = response.data.products;
-                        
+
 
                         if (cartProducts != "") {
                             $("#repeat_cart_modal").modal('show');
                             $("#repeat_cart_modal #repeat_cart_button").attr("data-cart_id", response.data.id);
                             $("#repeat_cart_modal #repeat_cart_button").attr("data-order_vendor_id", order_vendor_id);
-                           
+
                         }else{
                             $("#repeat_cart_modal1").modal('show');
                             $("#repeat_cart_modal1 #repeat_cart_button").attr("data-cart_id", response.data.id);
                             $("#repeat_cart_modal1 #repeat_cart_button").attr("data-order_vendor_id", order_vendor_id);
                         }
-                        
+
 
                     }
                 }
