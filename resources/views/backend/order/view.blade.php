@@ -85,6 +85,15 @@ $timezone = Auth::user()->timezone;
                                 <div class="mb-4">
                                     <h5 class="mt-0">{{__('Order ID')}}:</h5>
                                     <p>#{{$order->order_number}}</p>
+                                    @if(@$order->vendors[0]->exchanged_to_order)
+                                    <h4>{{ __('Exchanged To') }}</h4>
+                                    <a href="{{$order->vendors[0]->exchanged_to_order->vendor_detail_url }}" ><span>#{{ $order->vendors[0]->exchanged_to_order->orderDetail->order_number }}</span></a>
+                                    @endIf
+                                    @if(@$order->vendors[0]->exchanged_of_order)
+                                    <h4>{{ __('Exchange Of') }}</h4>
+                                    <a href="{{$order->vendors[0]->exchanged_of_order->vendor_detail_url }}" ><span># {{$order->vendors[0]->exchanged_of_order->orderDetail->order_number}}</span></a>
+
+                                    @endIf
                                 </div>
                             </div>
                             @if(!in_array($order->luxury_option_id, [6,8]) )
@@ -265,6 +274,15 @@ $timezone = Auth::user()->timezone;
                                 <span class="badge badge-info mr-2">{{$order->luxury_option_name}}</span>
                             @endif
                             {{ __("Items from Order") }} #{{$order->order_number}}
+                            @if(@$order->vendors[0]->exchanged_to_order)
+                                    
+                            {{ __("Exchange To") }}<a href="{{$order->vendors[0]->exchanged_to_order->vendor_detail_url }}" ><span>#{{ $order->vendors[0]->exchanged_to_order->orderDetail->order_number }}</span></a>
+                                    @endIf
+                                    @if(@$order->vendors[0]->exchanged_of_order)
+                                    {{ __("Exchange Of") }}
+                                    <a href="{{$order->vendors[0]->exchanged_of_order->vendor_detail_url }}" ><span># {{$order->vendors[0]->exchanged_of_order->orderDetail->order_number}}</span></a>
+
+                                    @endIf
                             {{-- <a href="{{ route('order.edit.detail',[$order->id,$order->vendors->first()->vendor_id])}}">{{__('Edit Order')}}</a> --}}
                         </h4>
                         @if($order->luxury_option_id == 2)

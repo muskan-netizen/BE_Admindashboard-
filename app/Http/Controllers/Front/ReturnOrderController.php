@@ -139,13 +139,13 @@ class ReturnOrderController extends FrontController{
             $navCategories = $this->categoryNav($langId);
             $reasons = ExchangeReason::where('status','Active')->orderBy('order','asc')->get();
             $order_details = Order::with(['vendors.products' => function ($q1)use($request){
-                $q1->where('id', $request->replace_ids);
+                $q1->where('id', $request->replace_id);
             }, 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image',
             'products' => function ($q1)use($request){
-                $q1->where('id', $request->replace_ids);
+                $q1->where('id', $request->replace_id);
             },'products.productRating', 'user', 'address'])
             ->whereHas('vendors.products',function($q)use($request){
-                $q->where('id', $request->replace_ids);
+                $q->where('id', $request->replace_id);
             })->where('orders.user_id', Auth::user()->id)->where('id', $request->order_id)->orderBy('orders.id', 'DESC')->first();
 
 $vendor_id = 0;
@@ -154,7 +154,7 @@ $vendor_id = 0;
                     $vendor_id = $vendor->vendor_id;
                     // dd($vendor_id);
                     foreach($vendor->products as $product){
-                        if($product->pvariant->media->isNotEmpty()){
+                        if(@$product->pvariant->media && $product->pvariant->media->isNotEmpty()){
                             $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'];
                         }elseif($product->media->isNotEmpty()){
                             $product->image_url = $product->media->first()->image->path['image_fit'].'74/100'.$product->media->first()->image->path['image_path'];
@@ -170,6 +170,7 @@ $vendor_id = 0;
 
                 $user = Auth::user();
                 $p_id = $request->replace_ids;
+                // dd($p_id);
                 $product = Product::with([
                     'variant' => function ($sel) {
                         $sel->groupBy('product_id');
@@ -205,14 +206,31 @@ $vendor_id = 0;
                         $q2->where('apt.language_id', $langId);
                     },
                     'category.categoryDetail.allParentsAccount'
-                ]);
+                ])->where('id', $p_id);
                 
                 $product = $product->whereHas('vendor',function($q) use($vendor_id){
                         $q->where('id',$vendor_id);
                     })
                     ->where('is_live', 1)
                     ->firstOrFail();
-
+                    $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
+                    if($clientCurrency){
+                        $doller_compare = $clientCurrency->doller_compare;
+                    }else{
+                        $clientCurrency = ClientCurrency::where('is_primary','=', 1)->first();
+                        $doller_compare = $clientCurrency->doller_compare ?? 1;
+                    }
+                    foreach ($product->variant as $key => $value) {
+                        if(isset($product->variant[$key])){
+                        $product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
+                        }
+                    }
+                    foreach ($product->addOn as $key => $value) {
+                        foreach ($value->setoptions as $k => $v) {
+                            $v->multiplier = $clientCurrency->doller_compare;
+                        }
+                    }
+                    // dd($product);
                     $preferences = Session::get('preferences');
                     $is_available = true;
                     if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
@@ -309,10 +327,14 @@ $vendor_id = 0;
             DB::beginTransaction();
             
             $orderVendorProductOld = OrderProduct::find($request->order_vendor_product_id); // get exchanged order product
-
+            $orderVendorOld = OrderVendor::find($orderVendorProductOld->order_vendor_id);
+            if(round($orderVendorOld->subtotal_amount)  != round($request->product_a_price)){
+                return $this->errorResponse('Please select product with same price', 200);
+            }
             /****** create new exchange order Start ******************/
             $order =  $this->saveOrder($request);
             $order_vender =  $this->saveOrderVendor($order, $orderVendorProductOld);
+            
             $this->saveOrderVendorProduct($request, $order, $orderVendorProductOld, $order_vender);
             $this->saveVendorOrderStatus($order, $orderVendorProductOld, $order_vender);
 

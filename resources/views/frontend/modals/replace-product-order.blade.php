@@ -15,6 +15,7 @@
             </thead>
             <tbody>
                 @php $continue = 0; @endphp
+                
             @foreach($order->vendors as $key => $vendor)    
                 @foreach($vendor->products as  $key => $product)
                
@@ -25,7 +26,8 @@
                              {{ __($product->productReturn->status) }}
                             @else
                             @php $continue = 1; @endphp
-                            <input id="item_one{{$key}}" type="radio" name="replace_ids" value="{{ $product->id }}" required>
+                            <input id="item_one{{$key}}" type="radio" name="replace_ids" value="{{ $product->product_id }}" required>
+                            <input id="item_two{{$key}}" type="hidden" name="replace_id" value="{{ $product->id }}" required>
                             <input id="item_{{$key}}" type="hidden" name="order_id" value="{{ $order->id }}">
                             @endif
                             <label class="order-items d-flex" for="item_one{{$key}}">  

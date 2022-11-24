@@ -49,11 +49,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         
                         <% if(order.vendors[0].exchanged_of_order && order.vendors[0].exchanged_of_order.order_detail) { %>
                             <h4>{{ __("Exchange of Order") }}</h4>
-                        <span>#<%= order.vendors[0].exchanged_of_order.order_detail.order_number %></span>
+                            <a href="<%= order.vendors[0].exchanged_of_order.vendor_detail_url %>" > <span>#<%= order.vendors[0].exchanged_of_order.order_detail.order_number %></span></a>
                                             <% } %>
                         <% if(order.vendors[0].exchanged_to_order && order.vendors[0].exchanged_to_order.order_detail) { %>
                             <h4>{{ __("Exchanged to Order") }}</h4>
-                        <span>#<%= order.vendors[0].exchanged_to_order.order_detail.order_number %></span>
+                            <a href="<%= order.vendors[0].exchanged_to_order.vendor_detail_url %>" >  <span>#<%= order.vendors[0].exchanged_to_order.order_detail.order_number %></span></a>
                                             <% } %>
                                             </div>
                         <div class="col-md-3 alOrderStatus"><h4>{{ __("Date & Time") }}</h4>

@@ -508,6 +508,14 @@ class OrderController extends BaseController
                     $vendor->vendor_detail_url = route('order.show.detail', [$order->id, @$vendor->vendor_id]);
                 else
                     $vendor->vendor_detail_url = '#';
+
+                if(isset($vendor) && !empty($vendor->vendor_id) && @$vendor->exchanged_to_order){
+                    $vendor->exchanged_to_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_to_order->order_id, @$vendor->exchanged_to_order->vendor_id]);
+                }
+               
+                if(isset($vendor) && !empty($vendor->vendor_id && @$vendor->exchanged_of_order)){
+                    $vendor->exchanged_of_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_of_order->order_id, @$vendor->exchanged_of_order->vendor_id]);
+                }
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? __($vendor_order_status->OrderStatusOption->title) : '';
                 $vendor->order_vendor_id = $vendor_order_status ? $vendor_order_status->order_vendor_id : '';
@@ -628,25 +636,36 @@ class OrderController extends BaseController
             },
             'vendors.dineInTable.category',
             'vendors.cancel_request',
-            'reports'
+            'reports',
+            'vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail'
         ))->findOrFail($order_id);
         //    return $order;
         // set payment option dynamic name
-        if ($order->paymentOption->code == 'stripe') {
-            $order->paymentOption->title = __('Credit/Debit Card (Stripe)');
-        } elseif ($order->paymentOption->code == 'kongapay') {
-            $order->paymentOption->title = 'Pay Now';
-        } elseif ($order->paymentOption->code == 'mvodafone') {
-            $order->paymentOption->title = 'Vodafone M-PAiSA';
-        } elseif ($order->paymentOption->code == 'mobbex') {
-            $order->paymentOption->title = __('Mobbex');
-        } elseif ($order->paymentOption->code == 'offline_manual') {
-            $json = json_decode($order->paymentOption->credentials);
-            $order->paymentOption->title = $json->manule_payment_title;
+        if (@$order->paymentOption->code) {
+            if ($order->paymentOption->code == 'stripe') {
+                $order->paymentOption->title = __('Credit/Debit Card (Stripe)');
+            } elseif ($order->paymentOption->code == 'kongapay') {
+                $order->paymentOption->title = 'Pay Now';
+            } elseif ($order->paymentOption->code == 'mvodafone') {
+                $order->paymentOption->title = 'Vodafone M-PAiSA';
+            } elseif ($order->paymentOption->code == 'mobbex') {
+                $order->paymentOption->title = __('Mobbex');
+            } elseif ($order->paymentOption->code == 'offline_manual') {
+                $json = json_decode($order->paymentOption->credentials);
+                $order->paymentOption->title = $json->manule_payment_title;
+            }
+            $order->paymentOption->title = __($order->paymentOption->title);
         }
-        $order->paymentOption->title = __($order->paymentOption->title);
         $product_schedule_type = '';
         foreach ($order->vendors as $key => $vendor) {
+
+            if(isset($vendor) && !empty($vendor->vendor_id) && @$vendor->exchanged_to_order){
+                $vendor->exchanged_to_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_to_order->order_id, @$vendor->exchanged_to_order->vendor_id]);
+            }
+           
+            if(isset($vendor) && !empty($vendor->vendor_id && @$vendor->exchanged_of_order)){
+                $vendor->exchanged_of_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_of_order->order_id, @$vendor->exchanged_of_order->vendor_id]);
+            }
             foreach ($vendor->products as $key => $product) {
                 // check vendor product for schedule
                 if ($product->schedule_type == 'schedule') {

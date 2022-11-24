@@ -2,7 +2,7 @@
 @section('css')
 @endsection
 @section('content')
-
+@php  $sku = $product->sku;  @endphp
 <section class="section-b-space order-page">
     <div class="container">
         <div class="row my-md-3">
@@ -26,8 +26,7 @@
                         </div>
                         <div class="row">
                             <div class="container">
-                                @foreach($order->vendors as $key => $vendor)
-                                @foreach($vendor->products as $key => $product)
+                                
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
@@ -111,7 +110,16 @@
                                                         <input type="hidden" name="end_time" id="end_time" value="">
                                                         <div id="product_variant_wrapper">
                                                             <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
-
+                                                            
+                                                            @if($product->inquiry_only == 0)
+                                                            <h3 id="productPriceValue" class="mb-md-3">
+                                                                <input type="hidden" name="product_a_price" class="product_a_price" value="{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}" />
+                                                                <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
+                                                                @if($product->variant[0]->compare_at_price > 0 )
+                                                                    <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
+                                                                @endif
+                                                            </h3>
+                                                        @endif
                                                         </div>
 
                                                         <div id="product_variant_options_wrapper">
@@ -151,8 +159,9 @@
                                                             <span class="text-danger mb-2 mt-2"></span>
                                                         </div>
 
-
+                                                       
                                                         @if(!empty($product->addOn) && $product->addOn->count() > 0)
+                                                        
                                                         <div class="border-product">
                                                             <h6 class="product-title">{{ __('Addon List')}}</h6>
 
@@ -232,13 +241,15 @@
                                                             {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                                             $product->translation[0]->body_html : ''!!}
                                                         </div>
+                                                        
 
                                                     </div>
 
                                                 </div>
                                             </div>
                                             <!---------------------------------------------------END-->
-
+                                            @foreach($order->vendors as $key => $vendor)
+                                @foreach($vendor->products as $key => $product)
                                             <input id="item_one{{$key}}" type="hidden" name="return_ids" value="{{ $product->id }}" required>
                                             <!-- <label class="order-items d-flex" for="item_one{{$key}}">
                                                 <div class="item-img mx-1">
@@ -250,12 +261,13 @@
                                                 </div>
                                             </label> -->
                                         </div>
+                                        @endforeach
+                                @endforeach
                                     </td>
 
 
                                 </tr>
-                                @endforeach
-                                @endforeach
+                               
 
 
                                 <input type="hidden" name="order_vendor_product_id" value="{{ $product->id }}">
@@ -411,8 +423,114 @@
 @endsection
 
 @section('script')
+<script type="text/template" id="variant_template">
+    <input type="hidden" name="variant_id" id="prod_variant_id" value="<%= variant.id %>">
+    <% if(variant.product.inquiry_only == 0) { %>
+        <h3 id="productPriceValue" class="mb-md-3">
+        <input type="hidden" name="product_a_price" class="product_a_price" value="<%= Helper.formatPrice(variant.productPrice) %>" />
+            <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price"><%= Helper.formatPrice(variant.productPrice) %></span></b>
+            <% if(variant.compare_at_price > 0 ) { %>
+                <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price"><%= Helper.formatPrice(variant.compare_at_price) %></span></span>
+            <% } %>
+        </h3>
+    <% } %>
+</script>
+<script type="text/javascript">
+    var ajaxCall = 'ToCancelPrevReq';
+    var vendor_id = "{{ $product->vendor_id }}";
+    var product_id = "{{ $product->id }}";
+    var add_to_cart_url = "{{ route('addToCart') }}";
+    $('.changeVariant').click(function() {
+        updatePrice();
+    });
+    function updatePrice()
+    {
+        
+        var variants = [];
+        var options = [];
+        $('.changeVariant').each(function() {
+            var that = this;
+            if (this.checked == true) {
+                variants.push($(that).attr('vid'));
+                options.push($(that).attr('optid'));
+            }
+        });
+        ajaxCall = $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{{ route('productVariant', $sku) }}",
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "variants": variants,
+                "options": options,
+            },
+            beforeSend: function() {
+                if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
+                    ajaxCall.abort();
+                }
+            },
+            success: function(resp) {
+                // console.log(resp);
+                if(resp.status == 'Success'){
+                    $("#variant_response span").html('');
+                    var response = resp.data;
+                    if(response.variant != ''){
+                        if(vendor_type == 'rental'){
+                            // $('.incremental_hrs').val(0);
+                            // $('.base_hours_min').val();
+                            $('.incremental_hrs').val(0);
+                            $('#incremental_hrs_hidden').val(base_hours_min);
+                            $('.incremental-left-minus').click();
+                            //$('#blocktime, #blocktime2').change();
+                        }
+                        
+                        $('#product_variant_wrapper').html('');
+                        let variant_template = _.template($('#variant_template').html());
+                        response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
+                        response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(digit_count);
+                        $("#product_variant_wrapper").append(variant_template({ Helper: NumberFormatHelper, variant:response.variant}));
+                        $('#product_variant_quantity_wrapper').html('');
+                        let variant_quantity_template = _.template($('#variant_quantity_template').html());
+                        $("#product_variant_quantity_wrapper").append(variant_quantity_template({variant:response.variant}));
+                        // console.log(response.variant.quantity);
+                        if(!response.is_available){
+                            $(".addToCart, #addon-table").hide();
+                        }else{
+                            $(".addToCart, #addon-table").show();
+                        }
+                        let variant_image_template = _.template($('#variant_image_template').html());
+                        $(".product__carousel .gallery-parent").html('');
+                        $(".product__carousel .gallery-parent").append(variant_image_template({variant:response.variant}));
+                        // easyZoomInitialize();
+                        // $('.easyzoom').easyZoom();
 
+                        if(response.variant.media != ''){
+                            $(".product-slick").slick({ slidesToShow: 1, slidesToScroll: 1, arrows: !0, fade: !0, asNavFor: ".slider-nav" });
+                            $(".slider-nav").slick({ vertical: !1, slidesToShow: 3, slidesToScroll: 1, asNavFor: ".product-slick", arrows: !1, dots: !1, focusOnSelect: !0 });
+                        }
+                    }
+                }else{
+                    $("#variant_response span").html(resp.message);
+                    $(".addToCart, #addon-table").hide();
+                }
+            },
+            error: function(data) {
 
+            },
+        });
+    }
+    function checkAddOnPrice()
+    {
+        price  = 0;
+        $('.productDetailAddonOption').each(function(){
+            if($(this).prop('checked') == true){
+                var cp = $(this).data('price');
+                price = price + parseFloat(cp);
+            }
+        });
+        return price;
+    }
+</script>
 <script type="text/javascript">
     $(document).ready(function(e) {
 
@@ -483,6 +601,7 @@
                             var url = "{{route('user.orders',['pageType' => 'returnOrders'])}}";
                             $(location).prop('href', url);
                         }
+                        
                     } else {
                         $('#error-msg').text(data.message);
                         $("#return_form_button").html('Request').prop('disabled', false);
@@ -499,7 +618,41 @@
     });
 </script>
 
-
+<script>
+    var addonids = [];
+    var addonoptids = [];
+    $(function() {
+        $(".productDetailAddonOption").click(function(e) {
+            var addon_elem = $(this).closest('tr');
+            var addon_minlimit = addon_elem.data('min');
+            var addon_maxlimit = addon_elem.data('max');
+            if(addon_elem.find(".productDetailAddonOption:checked").length > addon_maxlimit) {
+                this.checked = false;
+            }else{
+                var addonId = $(this).attr("addonId");
+                var addonOptId = $(this).attr("addonOptId");
+                if ($(this).is(":checked")) {
+                    addonids.push(addonId);
+                    addonoptids.push(addonOptId);
+                } else {
+                    addonids.splice(addonids.indexOf(addonId), 1);
+                    addonoptids.splice(addonoptids.indexOf(addonOptId), 1);
+                }
+                if($('.changeVariant').length > 0)
+                {
+                    updatePrice();
+                }else{
+                    addOnPrice = parseFloat(checkAddOnPrice());
+                    org_price = parseFloat($(this).data('original_price')) + addOnPrice;
+                    fixed_price = parseFloat($(this).data('fixed_price')) + addOnPrice;
+                    $('.product_fixed_price').html(fixed_price.toFixed(digit_count));
+                    $('.product_a_price').val(fixed_price.toFixed(digit_count));
+                    $('.product_original_price').html(org_price.toFixed(digit_count));
+                }
+            }
+        });
+    });
+</script>
 
 
 

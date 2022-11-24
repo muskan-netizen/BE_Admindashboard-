@@ -633,7 +633,7 @@
                                         <option value="">{{ __("Select Product") }}</option>
                                         @foreach($products as $product)
                                         <option value="{{$product->id}}" selected="selected">
-                                            {{$product->translation[0]->title}}
+                                            {{$product->translation[0]->title ?? ''}}
                                         </option>
                                         @endforeach
                                     </select>
