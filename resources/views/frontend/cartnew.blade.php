@@ -232,7 +232,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 
         </form>
         @else
-        <div class="row mt-2 mb-4 mb-lg-5">
+        <div class="row mt-5 mb-4 pt-5">
             <div class="col-12 text-center">
                 <div class="cart_img_outer" style="height:200px;">
                     <img class="blur-up lazyload" data-src="{{asset('front-assets/images/empty_cart.png')}}">

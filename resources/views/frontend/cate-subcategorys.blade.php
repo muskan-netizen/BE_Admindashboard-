@@ -33,7 +33,7 @@
             </div>
             <div class="row mb-5 homepageSix">
                 {{-- @dd($category->childs) --}}
-                <div class="collection-filter col-lg-3 al">
+                <div class="collection-filter col-lg-3 al custom-sidebar-card">
                     <div class="theme-card">
 
                     <div class="accordion" id="accordionExample">

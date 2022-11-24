@@ -34,6 +34,9 @@
     margin: 2px;
 }
         
+        li.bg-txt i {
+            font-size: 15px;
+        }
     </style>
 @endsection
 @section('content')
@@ -303,7 +306,7 @@
                                                                                 @endif
                                                                                 <span class="left_arrow pulse"></span>
                                                                                 <div class="row">
-                                                                                    <div class="col-5 col-sm-3">
+                                                                                    <div class="col-6 col-sm-4">
                                                                                         <h5 class="m-0">
                                                                                             {{ __('Order Status') }}</h5>
                                                                                         <ul class="status_box mt-1 pl-0">
@@ -341,24 +344,34 @@
                                                                                                     target="_blank">{{ __('Details') }}</a>
                                                                                                 </li>
                                                                                             @endif
+    
                                                                                             @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
                                                                                             <?php
                                                                                             if($clientPreference->business_type == 'laundry'){
                                                                                                 $pickup_cancelling_charges = $clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges;
                                                                                             }
                                                                                         ?>
-
-                                                                                            <h6 class="m-0">
+                                                                                            <li class="d-block"><h6 class="m-0">
                                                                                                @if ($clientPreference->business_type == 'laundry')
                                                                                                     <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
                                                                                                         {{ __('Cancel Order') }}
                                                                                                     </label>
                                                                                                 @else
-                                                                                                <label class="rating-star cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
-                                                                                                    {{ __('Cancel Order') }}
-                                                                                                </label>
+                                                                                                    <label class="rating-star cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                                        {{ __('Cancel Order') }}
+                                                                                                    </label>
                                                                                                 @endif
-                                                                                            </h6>
+                                                                                            </h6></li>
+                                                                                            @elseif($vendor->order_status_option_id==2 && $client_preference_detail->is_cancel_order_user == 1 && $vendor->vendor->cancel_order_in_processing == 1)
+                                                                                                @if(empty($order->reqCancelOrder))
+                                                                                                    <label class="rating-star request_cancel_order" data-order_vendor_id="{{$vendor->order_id??0}}" data-id="{{$vendor->id??0}}" data-vendor_id="{{$vendor->vendor_id??0}}" style="width: auto;display: inline-block;">
+                                                                                                        {{ __('Cancel Order') }}
+                                                                                                    </label>
+                                                                                                @elseif($order->reqCancelOrder->status == 'Pending')
+                                                                                                    <li class="bg-txt"><span class="badge badge-info" style="font-size:12px">{{ __('Cancel Order Pending') }}</span></li>
+                                                                                                @elseif($order->reqCancelOrder->status == 'Rejected')
+                                                                                                    <li class="bg-txt"><span class="badge badge-danger mr-2" style="font-size:12px">{{ __('Cancel Order Rejected') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$order->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
+                                                                                                @endif
                                                                                             @endif
                                                                                             @if ($vendor->dineInTable)
                                                                                                 <li>
@@ -381,7 +394,7 @@
 
                                                                                         </ul>
                                                                                     </div>
-                                                                                    <div class="col-7 col-sm-4">
+                                                                                    <div class="col-6 col-sm-3">
                                                                                         <ul
                                                                                             class="product_list p-0 m-0 text-center">
                                                                                             @foreach ($vendor->products as $product)
@@ -1719,7 +1732,6 @@
                                                                                         </ul>
                                                                                     </div>
                                                                                 </div>
-                                                                                sdf
                                                                             </div>
                                                                         @endforeach
                                                                     </div>
@@ -1924,6 +1936,40 @@
     </div>
   </div>
 <!-- end cancel order -->
+
+<!-- start request cancel order -->
+<div class="modal fade vendor-order-cancel order_popop" id="cancel_request_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <div id="cancel-order-form-modal">
+            <form id="addRejectReqForm" method="post" class="text-center" enctype="multipart/form-data">
+                @csrf
+                <div class="form-group">
+                    <label for="reason">Select Reason</label>
+                    <select class="form-control" id="return_reason_id" name="return_reason_id">
+                        @foreach ($cancellation_reason as $reason)
+                            <option value="{{$reason->id}}">{{$reason->title}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <input_type="hidden" name="order_id" id="req_order_id">
+                <input_type="hidden" name="order_vendor_id" id="req_order_vendor_id">
+                <input_type="hidden" name="req_vendor_id" id="req_vendor_id">
+                <p id="error-case" style="color:red;"></p>
+                <label style="font-size:medium;">Enter reason for cancel the order. <small>(Optional)</small> </label>
+                <textarea class="reject_reason w-100" data-name="reject_reason" name="reject_reason" id="reject_reason" cols="50" rows="5"></textarea>
+                <button type="button" class="btn btn-info waves-effect waves-light addrejectReqSubmit">{{ __("Submit") }}</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- end request cancel order -->
 
     <!-- tip after order complete -->
     @include('frontend.modals.tip_after_order')
@@ -2296,6 +2342,18 @@
     });
     ////////// cancel order end
 
+    $('body').on('click', '.request_cancel_order', function (event) {
+        event.preventDefault();
+        var order_vendor_id = $(this).data('id');
+        var id = $(this).data('order_vendor_id');
+        var vendor_id = $(this).data('vendor_id');
+        $('#cancel_request_order').modal('show');
+        $('#req_order_id').attr('value', id);
+        $('#req_order_vendor_id').attr('value',order_vendor_id);
+        $('#req_vendor_id').attr('value',vendor_id);
+        /* $('#cancel-order-form-modal').html(markup); */
+    });
+
     // Added by Ovi
     // Check Slot Availability
     $(document).on("change", ".schedule_pickup_slot_select", function()
@@ -2335,6 +2393,51 @@
         });
     });
 
+    $('.addrejectReqSubmit').on('click', function(e) {
+        e.preventDefault();
+        var return_reason_id = $('#return_reason_id').val();
+        var reject_reason = $('#reject_reason').val();
+        var order_id = $('#req_order_id').attr("value");
+        var vendor_id = $('#req_vendor_id').attr("value");
+        var order_vendor_id = $('#req_order_vendor_id').attr("value");
+        $.ajax({
+            url: "{{ route('order.cancel.req.customer') }}",
+            type: "POST",
+            data: {
+                vendor_id: vendor_id,
+                order_id: order_id,
+                reject_reason: reject_reason,
+                "_token": "{{ csrf_token() }}",
+                order_vendor_id: order_vendor_id,
+                return_reason_id: return_reason_id
+            },
+            success: function(response) {
+                if(response.status == 'success'){
+                    $("#cancel_request_order #reject_reason").val('');
+                    $("#cancel_request_order .close").click();
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message,
+                        confirmButtonText: 'Ok',
+                    });
+                }else if (response.status == 'error') {
+                    $("#cancel_request_order #reject_reason").val('');
+                    $("#cancel_request_order .close").click();
+                    Swal.fire({
+                        icon: 'warning',
+                        text: response.message,
+                        confirmButtonText: 'Ok',
+                    });
+                }
+            },
+            error: function(response) {
+                if (response.status == 'error') {
+                    $('#error-case').empty();
+                    $('#error-case').append(response.message);
+                }
+            }
+        });
+    });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>

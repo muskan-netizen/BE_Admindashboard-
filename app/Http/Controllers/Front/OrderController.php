@@ -42,7 +42,7 @@ use App\Models\OrderProductPrescription;
 use App\Models\SubscriptionInvoicesUser;
 use App\Models\UserRegistrationDocuments;
 use App\Models\DriverRegistrationDocument;
-use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption};
+use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption, ReturnReason};
 
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -110,8 +110,9 @@ class OrderController extends FrontController
             },
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
-            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address',
+            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address','reqCancelOrder',
             'vendors.exchanged_of_order.orderDetail'
+
         ])
             ->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', '!=', 6);
@@ -270,12 +271,18 @@ class OrderController extends FrontController
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         }
 
+
+
         $client_preferences = ClientPreference::select('*')->where('id', '>', 0)->first();
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
+
+        $cancellation_reason = ReturnReason::where(['status' => 'Active', 'type' => 3])->get();
+
         //   dd($activeOrders->toArray());
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee]);
+        
+        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee, 'cancellation_reason' => $cancellation_reason]);
     }
 
     public function getOrderSuccessPage(Request $request)

@@ -38,6 +38,11 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\PaymentOption', 'id', 'payment_option_id');
     }
+
+    public function reqCancelOrder()
+    {
+        return $this->hasOne('App\Models\OrderCancelRequest'); //, 'order_id', 'id'
+    }
     public function orderStatusVendor()
     {
         return $this->hasMany('App\Models\VendorOrderStatus', 'order_id', 'id');

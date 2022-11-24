@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\AhoyController;
-use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, Role, VendorSection,VendorMultiBanner, VendorMinAmount};
+use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, Role, VendorSection,VendorMultiBanner, VendorMinAmount, VendorAdditionalInfo};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
 use App\Exports\VendorProductExport;
@@ -68,7 +68,7 @@ class VendorController extends BaseController
         //     $takeaway_check = $client_preference->takeaway_check;
         //     $delivery_check = $client_preference->delivery_check;
         // }
-        $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->where('status', $request->status)->orderBy('id', 'desc');
+        $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->where('status', $request->status)->where('is_seller', 0)->orderBy('id', 'desc');
         if (Auth::user()->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
@@ -130,7 +130,7 @@ class VendorController extends BaseController
        // pr($csvVendors->toArray());
         $vendor_docs = collect(new VendorDocs);
         $client_preferences = ClientPreference::first();
-        $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->orderBy('id', 'desc');
+        $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->where('is_seller', 0)->with('slot')->orderBy('id', 'desc');
         if ($user->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -215,6 +215,8 @@ class VendorController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request){
+        $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration']);
+
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         $rules = array(
             // 'name' => 'required|string|max:150|unique:vendors',
@@ -237,6 +239,31 @@ class VendorController extends BaseController
         $new_model   = $request->has('new_model') && $request->new_model ? $request->new_model : null;
         $vendor      = new Vendor();
         $saveVendor = $this->save($request, $vendor, 'false');
+
+        // Add vendor additional data
+        $additionalData = [];
+        if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1){
+            $additionalData = [
+                // 'vendor_id' => $vendor->id,
+                'company_name' => $request->company_name,
+                'gst_number' => $request->gst_num_Input,
+            ];
+        }
+
+        if(@$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == 1){
+            $additionalData['account_name'] = $request->account_name;
+            $additionalData['bank_name'] = $request->bank_name;
+            $additionalData['account_number'] = $request->account_number;
+            $additionalData['ifsc_code'] = $request->ifsc_code;
+        }
+        // dd($additionalData);
+        if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1 || @$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == 1){
+            $saveVendorAdditionalInfo = VendorAdditionalInfo::updateOrCreate(
+                ['vendor_id'=> $saveVendor], 
+                $additionalData
+            );
+        }
+
         if($new_model){
             $this->addDataSaveVendor($request, $saveVendor  , 'false');
         }
@@ -393,7 +420,8 @@ class VendorController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function edit($domain = '', $id){
-        $vendor = Vendor::where('id', $id)->first();
+        $vendor = Vendor::with(['VendorAdditionalInfo'])->where('id', $id)->first();
+        // dd($vendor);
         $client_preferences = ClientPreference::first();
         $vendor_docs = VendorDocs::where('vendor_id', $id)->get();
         $vendor_registration_documents = VendorRegistrationDocument::get();
@@ -410,6 +438,7 @@ class VendorController extends BaseController
      */
     public function update(Request $request, $domain = '', $id)
     {
+        $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration']);
 
         $rules = array(
             'address' => 'required',
@@ -438,6 +467,31 @@ class VendorController extends BaseController
                 }
             }
         }
+
+        // Add vendor additional data
+        $additionalData = [];
+        if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1){
+            $additionalData = [
+                // 'vendor_id' => $vendor->id,
+                'company_name' => $request->company_name,
+                'gst_number' => $request->gst_num_Input,
+            ];
+        }
+
+        if(@$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == 1){
+            $additionalData['account_name'] = $request->account_name;
+            $additionalData['bank_name'] = $request->bank_name;
+            $additionalData['account_number'] = $request->account_number;
+            $additionalData['ifsc_code'] = $request->ifsc_code;
+        }
+        // dd($additionalData);
+        if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1 || @$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == 1){
+            $saveVendorAdditionalInfo = VendorAdditionalInfo::updateOrCreate(
+                ['vendor_id'=> $request->vendor_id], 
+                $additionalData
+            );
+        }
+
         if ($saveVendor > 0) {
             return response()->json([
                 'status' => 'success',
@@ -1207,6 +1261,8 @@ class VendorController extends BaseController
             $vendor->auto_accept_order = ($request->has('auto_accept_order') && $request->auto_accept_order == 'on') ? 1 : 0;
             $vendor->need_container_charges = ($request->has('need_container_charges') && $request->need_container_charges == 'on') ? 1 : 0;
             $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
+            $vendor->cancel_order_in_processing = ($request->has('cancel_order_in_processing') && $request->cancel_order_in_processing == 'on') ? 1 : 0;
+            $vendor->return_auto_approve = ($request->has('return_auto_approve') && $request->return_auto_approve == 'on') ? 1 : 0;
             // $vendor->cron_for_service_area = ($request->has('cron_for_service_area') && $request->cron_for_service_area == 'on') ? 1 : 0;
             if($request->has('slot_minutes')){
                 $vendor->slot_minutes   = ($request->slot_minutes>0)?$request->slot_minutes:0;

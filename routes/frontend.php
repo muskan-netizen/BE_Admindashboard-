@@ -535,6 +535,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		
 		Route::post('update-driver-rating', 'Front\RatingController@updateDriverRating')->name('update.driver.rating');
 		Route::get('get-driver-rating', 'Front\RatingController@getDriverRating')->name('get-driver-rating-details');
+		Route::post('driver-agent-rating', 'Api\v1\RatingController@driverAgentRating')->name('driver-agent-rating');
 	});
 	// Return product
 	Route::group(['prefix' => 'return-order'], function () {
@@ -548,6 +549,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::get('get-vendor-order-for-cancel', 'Front\ReturnOrderController@getVendorOrderForCancel')->name('get-vendor-order-for-cancel');
 		Route::post('vendor-order-for-cancel', 'Front\ReturnOrderController@vendorOrderForCancel')->name('order.cancel.customer');
 
+		Route::post('vendor-order-for-cancel-req', 'Front\ReturnOrderController@vendorOrderForCancelReq')->name('order.cancel.req.customer');
 	});
 	// Return product
 	Route::group(['prefix' => 'looking'], function () {

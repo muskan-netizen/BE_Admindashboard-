@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\Web\OrderProductRatingRequest;
 use App\Http\Requests\Web\OrderProductReturnRequest;
-use App\Models\{Client, ClientPreference, EmailTemplate, ExchangeReason, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, Product, ProductVariantSet, User, UserAddress, UserDevice, UserVendor};
+use App\Models\{Client, ClientPreference, EmailTemplate, ExchangeReason, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, Product, ProductVariantSet, User, UserAddress, UserDevice, UserVendor, OrderCancelRequest};
+
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
 use App\Models\Client as CP;
@@ -433,6 +434,8 @@ $vendor_id = 0;
 
             $order_vendor = OrderVendor::where('id',$request->id)->first();
 
+            $cancellation_reason = ReturnReason::where(['status' => 'Active', 'type' => 3])->get();
+
             $orderCancellationPercentage = 0;
             if(($client_preferences->order_cancellation_time > 0)){
                 $orderData = Order::find($order_vendor->order_id);
@@ -457,7 +460,7 @@ $vendor_id = 0;
             }else{
                 if(isset($order_vendor)){
                     if ($request->ajax()) {
-                     return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor, 'orderCancellationPercentage' => $orderCancellationPercentage))->render());
+                     return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor, 'orderCancellationPercentage' => $orderCancellationPercentage, 'cancellation_reason' => $cancellation_reason))->render());
                     }
                 }
                 return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor, 'orderCancellationPercentage' => $orderCancellationPercentage))->render());
@@ -478,7 +481,6 @@ $vendor_id = 0;
      */
     public function vendorOrderForCancel(Request $request, $domain = '')
     {
-
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
         try {
@@ -539,7 +541,7 @@ $vendor_id = 0;
                 }
 
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id,
-                    'reject_reason' => $request->reject_reason,  'cancelled_by' => Auth::id(),
+                    'reject_reason' => $request->reject_reason,  'cancelled_by' => Auth::id(), 'return_reason_id' => $request->return_reason_id,
                 ]);
              
 
@@ -591,6 +593,35 @@ $vendor_id = 0;
                 'status' => 'error',
                 'message' => $e->getMessage()
             ]);
+        }
+    }
+
+    public function vendorOrderForCancelReq(Request $request){
+        $checkReqIfExist = OrderCancelRequest::where(['order_id' => $request->order_id, 'order_vendor_id' => $request->order_vendor_id, 'vendor_id' =>  $request->vendor_id])->first();
+        
+        if(empty($checkReqIfExist)){
+            $reject_reason = urldecode($request->reject_reason);
+
+            $order_cancel_request = new OrderCancelRequest();
+            $order_cancel_request->order_id = $request->order_id;
+            $order_cancel_request->order_vendor_id = $request->order_vendor_id;
+            $order_cancel_request->vendor_id = $request->vendor_id;
+            $order_cancel_request->reject_reason = $reject_reason;
+            $order_cancel_request->return_reason_id = $request->return_reason_id;
+            $order_cancel_request->status = 0;
+            if($order_cancel_request->save()){
+                return response()->json(['status' => 'success', 'message' => __('Order cancel request send successfully.')]);
+            }else{
+                return response()->json(['status' => 'error', 'message' => __('Something went wrong.')]);
+            }
+        }elseif($checkReqIfExist->status == 'Pending'){
+            return response()->json(['status' => 'error', 'message' => __('Order cancel request already send. Please wait for admin approval.')]);
+        }elseif($checkReqIfExist->status == 'Approved'){
+            return response()->json(['status' => 'error', 'message' => __('Order cancel request approved by admin.')]);
+        }elseif($checkReqIfExist->status == 'Rejected'){
+            return response()->json(['status' => 'error', 'message' => __('Order cancel request rejected by admin.')]);
+        }else{
+            return response()->json(['status' => 'error', 'message' => __('Something went wrong. Please try again later.')]);
         }
     }
 }
