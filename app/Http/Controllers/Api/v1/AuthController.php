@@ -65,11 +65,83 @@ class AuthController extends BaseController
         }
 
     }else{
-        $user = User::with('country')->where('phone_number', $loginReq->email)->first();
-        if (!Auth::attempt(['phone_number' => $loginReq->email, 'password' => $loginReq->password])) {
-            $errors['error'] = __('Invalid password');
+      
+        $user       = User::where('dial_code', $loginReq->dialCode)->where('phone_number', $loginReq->email)->first();
+
+        if (!$user) {
+            $errors['error'] = __('Invalid phone number');
             return response()->json($errors, 422);
         }
+        $phoneCode  = mt_rand(100000, 999999);
+        $sendTime   = Carbon::now()->addMinutes(10)->toDateTimeString();
+        $user->phone_token = $phoneCode;
+        $user->phone_token_valid_till = $sendTime;
+        $user->save();
+        
+
+        $dialCode       = $loginReq->dialCode;
+        $phone_number   = $loginReq->email;
+        $request = [];
+        $request = ['is_phone' => 1, 'phone_number' => $phone_number, 'phoneCode' => $phoneCode, 'sendTime' => $sendTime, 'codeSent' => 0];
+        $loginReq = new \Illuminate\Http\Request($request);
+
+       
+       
+       
+        $prefer         = ClientPreference::select(
+                            'mail_type',
+                            'mail_driver',
+                            'mail_host',
+                            'mail_port',
+                            'mail_username',
+                            'mail_password',
+                            'mail_encryption',
+                            'mail_from',
+                            'sms_provider',
+                            'sms_key',
+                            'sms_secret',
+                            'sms_from',
+                            'theme_admin',
+                            'distance_unit',
+                            'map_provider',
+                            'date_format',
+                            'time_format',
+                            'map_key',
+                            'sms_provider',
+                            'verify_email',
+                            'verify_phone',
+                            'app_template_id',
+                            'web_template_id'
+                        )->first();
+
+        if ($dialCode == "971") {
+            $to = '+' . $dialCode . "0" . $phone_number;
+        } else {
+            $to = '+' . $dialCode . $phone_number;
+        }
+
+        $keyData = ['{user_name}'=>$user->name??'','{otp_code}'=>$phoneCode,'{app_hash_key}'=>$loginReq->app_hash_key??''];
+        
+        $body = sendSmsTemplate('verify-account',$keyData);
+   
+        $provider = $prefer->sms_provider;
+        $body = "Please enter OTP " . $phoneCode . " to verify your account.";
+        $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
+        $body = sendSmsTemplate('verify-account',$keyData);
+        if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+            $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+            if ($send) {
+                $loginReq->request->add(['codeSent' => 1]);
+                $message = __('An otp has been sent to your phone. Please check.');
+                $response = $loginReq->all();
+                return $this->successResponse($response, $message);
+            } else {
+                return $this->errorResponse(__('Something went wrong in sending OTP. We are sorry to for the inconvenience'), 404);
+            }
+        } else {
+            return $this->errorResponse(__('Provider service is not configured. Please contact administration'), 404);
+        }
+        
 
     }
         
