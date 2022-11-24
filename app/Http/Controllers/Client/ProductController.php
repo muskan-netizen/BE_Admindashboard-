@@ -373,15 +373,14 @@ class ProductController extends BaseController
                         if( is_array($value) ) {
 
                             foreach($value['option'] as $option_key => $option) {
-                                // dd($option);
+                                
                                 if(@$option['value']){
-                                    // dd('fgdfg');
 
                                     $insert_arr[$insert_count]['product_id'] = $id;
                                     $insert_arr[$insert_count]['attribute_id'] = $value['id'];
                                     $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
                                     $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
-                                    $insert_arr[$insert_count]['key_value'] = $option['option_title'];
+                                    $insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
                                     $insert_arr[$insert_count]['is_active'] = 1;
 
                                 }
@@ -413,7 +412,6 @@ class ProductController extends BaseController
                     }
                     
                 }
-                // dd($insert_arr);
                 ProductAttribute::where('product_id',$id)->delete();
                 ProductAttribute::insert($insert_arr);
             }

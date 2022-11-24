@@ -9,7 +9,7 @@ use Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption, Attribute, ProductAttribute};
 use App\Http\Traits\{ProductActionTrait};
 class ProductController extends FrontController{
     
@@ -130,8 +130,9 @@ class ProductController extends FrontController{
                 $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
                 $q2->where('apt.language_id', $langId);
             },
-            'category.categoryDetail.allParentsAccount'
+            'category.categoryDetail.allParentsAccount', 'ProductAttribute', 'ProductAttribute.attributeOption', 'ProductAttribute.attribute'
         ]);
+        // 
         if($user){
             $product = $product->with(['inwishlist' => function ($query) use($user) {
                 $query->where('user_wishlists.user_id', $user->id);
@@ -306,7 +307,57 @@ class ProductController extends FrontController{
             $promoCodeController = new PromoCodeController();
             $coupon_list = $promoCodeController->coupon_code_list($product->id, $product->vendor_id);
 
-            return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list]);
+            // if( !empty($product->ProductAttribute) ) {
+            //     foreach($product->ProductAttribute as $key => $val) {
+            //         $attribute_value[] = $val->attribute_option_id;
+            //         $attribute_key_value[$val->attribute_option_id] = $val->key_value;
+            //     }
+            // }
+            // dd($product);
+            // $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
+            //             ->select('attributes.*')
+            //             ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
+            //             ->where('attribute_categories.category_id', $product->category_id)
+            //             ->where('attributes.status', '!=', 2)
+            //             ->orderBy('position', 'asc')->get();
+
+            // $product_attr = ProductAttribute::with('')->where('product_id', $product->id)->get();
+            // dd($product_attr);
+            $product_attr = [];
+            if( !empty($product->ProductAttribute) ) {
+                foreach( $product->ProductAttribute as $key => $value ) {
+                    
+                    $product_attr[$key]['title'] = optional($value->attribute)->title ?? '';
+                    $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
+                    
+                    if( !empty($value->attribute) && $value->attribute->type != 4) {
+                        $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
+                    }
+                    else {
+                        $product_attr[$key]['value'] = $value['key_value'] ?? '';
+                    }
+                }
+            }
+            
+            $attr_id = '';
+            $attr_array = [];
+            foreach($product_attr as $pro_att_key => $pro_att_val) {
+                
+                if( empty($attr_id) || ($pro_att_val['attribute_id'] != $attr_id) ) {
+                    $attr_id = $pro_att_val['attribute_id'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['attribute_id'] = $pro_att_val['attribute_id'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
+                }
+                else {
+                    $attr_id = $pro_att_val['attribute_id'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['attribute_id'] = $pro_att_val['attribute_id'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
+                }
+            }
+            
+            return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array]);
 
         }
    }

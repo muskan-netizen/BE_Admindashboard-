@@ -275,9 +275,23 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                     </div>
                                     <div class="border-product al_disc">
                                         <h6 class="product-title">{{__('Product Details')}}</h6>
-                                        <p></p>
+                                        <p>Product Attribute</p>
                                         {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                             $product->translation[0]->body_html : ''!!}
+
+                                        @if( clientPrefrenceModuleStatus('p2p_check') )
+                                            @if( !empty($attr_array) )
+                                                @foreach($attr_array as $attr_key => $attr_val)
+                                                    <p>{{ $attr_key }} : 
+                                                    @if( !empty($attr_val) )
+                                                        @foreach($attr_val as $inn_key => $inn_val)
+                                                            {{$inn_val['value']}}
+                                                        @endforeach
+                                                    @endif
+                                                    </p>
+                                                @endforeach
+                                            @endif
+                                    @endif
                                     </div>
                                     <div class="border-product">
                                         <h6 class="product-title">{{__('Share It')}}</h6>

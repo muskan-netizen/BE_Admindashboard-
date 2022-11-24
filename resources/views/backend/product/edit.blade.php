@@ -405,7 +405,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     @include('backend.product.variant')
                 @else
                 
-                    @if( !clientPrefrenceModuleStatus('p2p_check') )
+                    
                     @if($productVariants->count() > 0)
                     <div class="card-box" >
                         <div class="row mb-2 bg-light">
@@ -545,7 +545,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div>
                     @endif
-                    @else
+                    @if( clientPrefrenceModuleStatus('p2p_check') )
                         <div class="card-box" >
                             <div class="row mb-2 bg-light">
                                 <div class="col-8" style="margin:auto;">

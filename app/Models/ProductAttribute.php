@@ -9,4 +9,12 @@ class ProductAttribute extends Model
 {
     use HasFactory;
     protected $fillable = ['product_id', 'is_active', 'attribute_id', 'attribute_option_id', 'key_name', 'key_value'];
+
+    public function attributeOption(){
+        return $this->hasOne('App\Models\AttributeOption', 'id', 'attribute_option_id');
+    }
+
+    public function attribute() {
+        return $this->hasOne('App\Models\Attribute', 'id', 'attribute_id');
+    }
 }
