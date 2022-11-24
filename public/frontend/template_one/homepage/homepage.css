@@ -3,7 +3,10 @@
     white-space: nowrap;
     overflow: hidden;
 }
-a.common-product-box.text-center{position:relative}.menu-navigation.al{width:100%;z-index:0;background-color:#f5f5f5;padding-top:0;padding-bottom:0;border-top:1px solid #ddd;-webkit-transition:.5s;transition:.5s}.al_body_template_one .slick-slide{float:left;height:100%;min-height:1px}
+.al_body_template_one .menu-navigation.al {
+    padding: 6px !important;
+}
+a.common-product-box.text-center{position:relative}.menu-navigation.al{width:100%;z-index:0;background-color:#f5f5f5;padding:5px;border-top:1px solid #ddd;-webkit-transition:.5s;transition:.5s}.al_body_template_one .slick-slide{float:left;height:100%;min-height:1px}
 /*css here----*/
 .customCheckbox{display:inline-block;box-sizing:border-box;position:relative;width:49px;height:49px;line-height:49px;text-align:center;padding:0;border-radius:50%;z-index:1;color:#1f2431;background:#f3f3f3;overflow:hidden;transition:all .5s;cursor:pointer}.radio-btns.long-radio input[type=radio]+label .customCheckbox{width:auto;border-radius:50px;height:auto;line-height:normal;padding:10px 14px}.radio-btns input[type=radio]{z-index:-1;position:absolute;display:none}.productAddonOptionspan_checked{background:var(--theme-deafult);color:#fff}
 /*end here*/
@@ -234,6 +237,20 @@ body.al_body_template_one .top-banner-wrapper{background-color: transparent;box-
 .grid-row.grid-4-4 .cards:nth-child(4){display: none;}
 }
 @media(max-width:767px){
+    body.al_body_template_one section.cab-banner-area.alTaxiBannerStart .container.p-64 {
+        padding: 30px !important;
+    }
+    body.al_body_template_one section.cab-banner-area.alTaxiBannerStart .btn.btn-solid.new-btn {
+        width: 100%;
+    }
+    .al_body_template_one .footer-theme .sub-title .contact-list li {
+        justify-content: flex-start;
+    }
+    .al_body_template_one .suppliers-box .suppliers-img-outer img{object-fit:cover;}
+
+
+
+
 .dark.al_body_template_one a{color: #fff;}
 .al_body_template_one .outer-box{min-height: auto;}
 .al_body_template_one .account-sidebar{width: 45%;margin-top: 20px;margin-bottom: 10px;}
