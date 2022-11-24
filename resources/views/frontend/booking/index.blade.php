@@ -345,13 +345,13 @@ body .alFullMapForm .scheduled-footer .btn {
                                 <div class="input-get-value">
                                     <div class="input-group">
                                         <span class="input-group-btn">
-                                            <button type="button" class="btn btn-danger btn-number-up-down" data-type="minus" data-field="no_seats_for_pooling">
+                                            <button type="button" class="btn btn-danger btn-number-up-down" data-type="minus">
                                                 <i class="fa fa-minus" aria-hidden="true"></i>
                                             </button>
                                         </span>
-                                        <input type="text" name="no_seats_for_pooling" class="form-control seats-number-up-down text-center" value="<%= result.no_seats_for_pooling%>" min="1" max="<%= result.seats_for_booking%>">
+                                        <input type="text" name="no_seats_for_pooling" id="no_seats_for_pooling" class="form-control seats-number-up-down text-center" value="<%= result.no_seats_for_pooling%>" min="1" max="<%= result.seats_for_booking%>">
                                         <span class="input-group-btn">
-                                            <button type="button" class="btn btn-success btn-number-up-down" data-type="plus" data-field="no_seats_for_pooling">
+                                            <button type="button" class="btn btn-success btn-number-up-down" data-type="plus">
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
                                             </button>
                                         </span>

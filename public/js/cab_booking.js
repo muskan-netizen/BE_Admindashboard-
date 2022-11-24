@@ -4,7 +4,7 @@
     headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
     });
 
-   $(document).delegate(".cab_payment_method_selection", "click", function(){
+   $(document).on("click",".cab_payment_method_selection", function(){
         $.ajax({
             type: "GET",
             dataType: 'json',
@@ -135,7 +135,7 @@ function getOrderDriverDetails(dispatch_traking_url,order_id) {
 
 
 
-$(document).ready(function () {
+jQuery(function () {
     var selected_address = '';
     // const styles = [{"stylers":[{"visibility":"on"},{"saturation":-100},{"gamma":0.54}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"water","stylers":[{"color":"#4d4946"}]},{"featureType":"poi","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels.text","stylers":[{"visibility":"simplified"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.local","elementType":"labels.text","stylers":[{"visibility":"simplified"}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"gamma":0.48}]},{"featureType":"transit.station","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"geometry.stroke","stylers":[{"gamma":7.18}]}];
     const styles = [];
@@ -564,12 +564,14 @@ $(document).ready(function () {
         let destination_location = $('#destination_location').val();
         if(pickup_location && destination_location){
             $('.location-list').hide();
-            add_spinner('.cab-booking-loader');
             $.ajax({
                 data: {locations: post_data, schedule_date_delivery:schedule_datetime},
                 type: "POST",
                 dataType: 'json',
                 url: autocomplete_urls,
+                beforeSend: function(){
+                    add_spinner('.cab-booking-loader');
+                },
                 success: function(response) {
                     if(response.status == 'Success'){
                         $('#vendor_main_div').html('');
@@ -611,34 +613,33 @@ $(document).ready(function () {
         getListOfCabs();
     });
 
-    $(document).on("click",".btn-number-up-down",function(e){
-        e.preventDefault();
+    $(document).on("change","#no_seats_for_pooling",function() {
         var product_id = $("#pickup_now").attr('data-product_id');
-        fieldName = $(this).attr('data-field');
+        add_spinner('.cab-booking-loader');
+        getVehicleDetail(product_id);
+    });    
+
+    $(document).on("click",".btn-number-up-down",function(){    
+        var product_id = $("#pickup_now").attr('data-product_id');
         type      = $(this).attr('data-type');
-        var input = $("input[name='"+fieldName+"']");
+        var input = $("input[name='no_seats_for_pooling']");
         var currentVal = parseInt(input.val());
         if (!isNaN(currentVal)) {
             if(type == 'minus') {
                 
                 if(currentVal > input.attr('min')) {
-                    input.val(currentVal - 1).change();
-                    getVehicleDetail(product_id);
+                    input.val(currentVal - 1).trigger('change');
                 } 
                 if(parseInt(input.val()) == input.attr('min')) {
-                    //$(this).attr('disabled', true);
                 }
     
             } else if(type == 'plus') {
     
                 if(currentVal < input.attr('max')) {
-                    input.val(currentVal + 1).change();
-                    getVehicleDetail(product_id);
+                    input.val(currentVal + 1).trigger('change');
                 }
                 if(parseInt(input.val()) == input.attr('max')) {
-                    //$(this).attr('disabled', true);
                 }
-
             }
         } else {
             input.val(1);
@@ -929,6 +930,7 @@ $(document).ready(function () {
         let product_id = $(this).data('product_id');
         getVehicleDetail(product_id);
     });
+
     function getVehicleDetail(product_id, rider_id=0)
     {
         add_spinner('.cab-booking-loader');
