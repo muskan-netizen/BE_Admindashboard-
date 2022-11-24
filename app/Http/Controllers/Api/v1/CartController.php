@@ -621,9 +621,12 @@ class CartController extends BaseController
             $latitude = $loggedin_user->latitude ?? '';
             $longitude = $loggedin_user->longitude ?? '';
         }else{
-            $latitude = ($address) ? $address->latitude : '';
-            $longitude = ($address) ? $address->longitude : '';
+            $latitude = (!empty($address))?$address->latitude:'';
+            $longitude = (!empty($address))?$address->longitude : '';
         }
+        //Log::info($address);
+        //Log::info($address_id);
+        //Log::info($preferences->is_hyperlocal);
         $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = 0.00;
         $total_tax = $total_paying = $total_disc_amount = 0.00;
         $item_count = 0;
@@ -854,13 +857,14 @@ class CartController extends BaseController
                                     );
                                 }
                             }
-                            //dd($prod->product->toArray());
+                            
                             $prod->taxdata = $taxData;
-                            if ($action == 'delivery') {
+                            if ($action == 'delivery' || $action == 'on_demand') {
                                 if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
 
-
-                            $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address, $prod->product->tags);
+                            
+                            $deliveries = $this->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $prod->product->tags);
+                            Log::info($deliveries);
                             $deliveryDuration = 0;
                             if(isset($deliveries[0]))
                             {
