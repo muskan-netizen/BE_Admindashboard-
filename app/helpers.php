@@ -1202,10 +1202,33 @@ if (!function_exists('sendSmsTemplate')) {
                 $smsBody = str_replace($tag,$value,$smsBody);
             }
         }
-        $sms = array(['body'=>$smsBody,'template_id'=>$smsTemp->template_id??'']);
+        $sms = array('body'=>$smsBody,'template_id'=>$smsTemp->template_id??'');
         return $sms;
     }
 }
+
+if (!function_exists('sendSmsTemplate')) {
+    /**
+     * sendSmsTemplate dynamic selection and replace tags
+     */
+    function sendSmsTemplate($slug,$data)
+    {
+        $smsTemp = SmsTemplate::where('slug',$slug)->select('content','tags','template_id')->first();
+        $smsBody = $smsTemp->content;
+        if(isset($smsTemp->tags) && !empty($smsTemp->tags))
+        {
+            $tages = explode(',',$smsTemp->tags);
+            foreach($tages as $tag)
+            {
+                $value = $data[$tag]??'';
+                $smsBody = str_replace($tag,$value,$smsBody);
+            }
+        }
+        $sms = array('body'=>$smsBody,'template_id'=>$smsTemp->template_id??'');
+        return $sms;
+    }
+}
+
 
 
 function inventorySyncOnOff($vendor_id)
