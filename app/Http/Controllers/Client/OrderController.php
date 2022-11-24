@@ -166,7 +166,7 @@ class OrderController extends BaseController
         $filter_order_status = $request->filter_order_status;
         $orders = Order::with(['vendors.products' => function ($q) {
             $q->withoutAppends();
-        }, 'vendors.status', 'orderStatusVendor', 'address', 'user']);
+        }, 'vendors.status', 'orderStatusVendor', 'address', 'user', 'vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
         if ($user->is_superadmin == 0) {
             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -310,7 +310,7 @@ class OrderController extends BaseController
 
 
                 case 'orders_history':
-                    $order_status_options = [6, 3];
+                    $order_status_options = [6, 3, 9];
                     $orders = $orders->with(['vendors' => function ($query) use ($order_status_options, $user) {
                         $query->whereIn('order_status_option_id', $order_status_options);
                         if ($user->is_superadmin == 0) {

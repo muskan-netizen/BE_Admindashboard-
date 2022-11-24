@@ -291,6 +291,7 @@ $vendor_id = 0;
                 $this->sendSuccessEmail($request);
                 return $this->successResponse($returns,'Return Submitted.');
             }
+            $this->markAsReturnPending($order_details);
             return $this->errorResponse('Invalid order', 200);
 
         } catch (Exception $e) {

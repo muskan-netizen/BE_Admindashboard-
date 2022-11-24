@@ -84,16 +84,15 @@ class OrderController extends FrontController
         $navCategories = $this->categoryNav($langId);
         $pastOrders = Order::with([
             'vendors' => function ($q) {
-                $q->where('order_status_option_id', 6);
-                $q->orwhere('order_status_option_id', 9);
+                $q->whereIn('order_status_option_id', [6,9]);
             },'vendors.vendor',
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
-            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address','driver_rating','reports'
-        ])
+            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address','driver_rating','reports',
+            'vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail'
+            ])
             ->whereHas('vendors', function ($q) {
-                $q->where('order_status_option_id', 6);
-                $q->orwhere('order_status_option_id', 9);
+                $q->whereIn('order_status_option_id', [6,9]);
             })
             ->where(function ($q1) {
                 $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
@@ -103,6 +102,7 @@ class OrderController extends FrontController
             })
             ->where('orders.user_id', $user->id)
             ->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+            // dd($pastOrders[1]->vendors[0]);
         $activeOrders = Order::with([
             'vendors' => function ($q) {
                 $q->where('order_status_option_id', '!=', 6);
@@ -110,7 +110,8 @@ class OrderController extends FrontController
             },
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
-            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address'
+            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address',
+            'vendors.exchanged_of_order.orderDetail'
         ])
             ->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', '!=', 6);
@@ -124,6 +125,7 @@ class OrderController extends FrontController
             })
             ->where('orders.user_id', $user->id)
             ->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+            // dd($activeOrders[0]->vendors[0]);
         foreach ($activeOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();

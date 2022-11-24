@@ -182,13 +182,15 @@
                                                                     </h4>
 
                                                                     <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
-                                                                        @foreach($addon->setoptions as $k => $option)
+                                                                    @if($addon->setoptions)   
+                                                                    @foreach($addon->setoptions as $k => $option)
                                                                         <div class="checkbox checkbox-success form-check-inline mb-1">
                                                                             <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price * $option->multiplier}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
                                                                             <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
                                                                                 {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price * $option->multiplier).')' }}</label>
                                                                         </div>
                                                                         @endforeach
+                                                                        @endif
                                                                     </div>
                                                                 </div>
                                                                 @endforeach

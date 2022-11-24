@@ -29,6 +29,11 @@
             font-size:10px;
             color:red;
         }
+.btn.btn-solid{
+    padding: 6px 19px;
+    margin: 2px;
+}
+        
     </style>
 @endsection
 @section('content')
@@ -138,6 +143,15 @@
                                                                     <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Order Number') }}</h4>
                                                                         <span>#{{ $order->order_number }}</span>
+                                                                    
+                                                                        <?php  $is_exchanged_order = 0;  ?>
+                                                                    @if(@$order->vendors[0]->exchanged_of_order)
+                                                                    <?php  $is_exchanged_order = 1;  ?>
+                                                                        <h4>{{ __('Exchanged Order Number') }}</h4>
+                                                                        <span>#{{ $order->vendors[0]->exchanged_of_order->orderDetail->order_number }}</span>
+                                                                       
+                                                                    
+                                                                    @endif
                                                                     </div>
                                                                     <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Date & Time') }}</h4>
@@ -311,7 +325,11 @@
                                                                                                         <img src="{{ asset('assets/images/driver_icon.svg') }}"
                                                                                                             alt="">
                                                                                                     @endif
-                                                                                                    <label class="m-0 in-progress">{{__( ucfirst( $vendor->order_status)) }}</label>
+                                                                                                    <label class="m-0 in-progress">
+                                                                                                    @if(@$is_exchanged_order)
+                                                                                                        {{__('Exchange Order')}}
+                                                                                                    @endif
+                                                                                                    {{__( ucfirst( $vendor->order_status)) }}</label>
                                                                                                 </li>
                                                                                             @endif
 
@@ -662,6 +680,16 @@
                                                                     <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Order Number') }}</h4>
                                                                         <span>#{{ $order->order_number }}</span>
+
+                                                                        @if(@$order->vendors[0]->exchanged_to_order)
+                                                                        <h4>{{ __('Exchanged To') }}</h4>
+                                                                        <span>#{{ $order->vendors[0]->exchanged_to_order->orderDetail->order_number }}</span>
+                                                                        @endIf
+                                                                        @if(@$order->vendors[0]->exchanged_of_order)
+                                                                        <h4>{{ __('Exchange Of') }}</h4>
+                                                                        <span># {{$order->vendors[0]->exchanged_of_order->orderDetail->order_number}}</span>
+
+                                                                        @endIf
                                                                     </div>
                                                                     <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Date & Time') }}</h4>
@@ -815,6 +843,7 @@
                                                                                                         if($product->product->returnable == 1){
                                                                                                             $returnable = 1;
                                                                                                         }
+                                                                                                        
                                                                                                         if($product->product->replaceable == 1){
                                                                                                             $replaceable = 1;
                                                                                                         }
@@ -933,15 +962,16 @@
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
-
                                                                                             
 
-                                                                                            @if($vendor->order_status_option_id == 9) 
-                                                                                                @if($vendor->dispatcher_status_option_id == 5) 
-                                                                                                <button class="btn btn-solid" >  {{__('Replaced')}}</button>
-                                                                                                @else
-                                                                                                <button class="btn btn-solid" > {{$vendor->OrderStatusOption->title}} </button>
-                                                                                                @endif     
+                                                                                            
+                                                                                            @if(@$vendor->is_exchanged_or_returned && $vendor->is_exchanged_or_returned == 1)
+                                                                                                @if($vendor->order_status_option_id == 6)
+                                                                                                    <button class="btn btn-solid" >  {{__('Replaced')}}</button>
+                                                                                                @elseif($vendor->order_status_option_id == 9) 
+                                                                                                        <button class="btn btn-solid" > {{__('Replacement Pending')}} </button>
+                                                                                                @endif
+                                                                                           
                                                                                             @else
                                                                                            
                                                                                                 @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request)
@@ -1242,34 +1272,7 @@
                                                                             </div>
                                                                         @endif
                                                                     </div>
-                                                                    <div class="row no-gutters order_data">
-                                                                        <div class="col-md-3">
-                                                                            #{{ $order->order_number }}</div>
-                                                                        <div class="col-md-3">
-                                                                            {{ dateTimeInUserTimeZone($order->created_at, $timezone) }}
-                                                                        </div>
-                                                                        <div class="col-md-3">
-                                                                            <a class="text-capitalize">{{ $order->user->name }}</a>
-                                                                        </div>
-                                                                        @if ($client_preference_detail->business_type != 'taxi')
-                                                                            <div class="col-md-3">
-                                                                                <span class="ellipsis"
-                                                                                    data-toggle="tooltip" data-placement="top"
-                                                                                    title="">
-                                                                                    @if ($order->address)
-                                                                                        {{ $order->address->address }},
-                                                                                        {{ $order->address->street }},
-                                                                                        {{ $order->address->city }},
-                                                                                        {{ $order->address->state }},
-                                                                                        {{ $order->address->country }}
-                                                                                        {{ $order->address->pincode }}
-                                                                                    @else
-                                                                                        NA
-                                                                                    @endif
-                                                                                </span>
-                                                                            </div>
-                                                                        @endif
-                                                                    </div>
+                                                                   
                                                                     <div class="row mt-2">
                                                                         <div class="col-md-9 mb-3">
                                                                             @php
@@ -1644,6 +1647,7 @@
                                                                                                     <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="{{$vendor->reject_reason}}" aria-hidden="true"></i>
                                                                                                 </li>
                                                                                             @endif
+                                                                                           
                                                                                         </ul>
 
                                                                                     </div>
@@ -1711,6 +1715,7 @@
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
+                                                                                           
                                                                                         </ul>
                                                                                     </div>
                                                                                 </div>
