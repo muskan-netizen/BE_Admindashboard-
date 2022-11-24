@@ -104,7 +104,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                             ({{$listl->language->nativeName}})
                                             @endif
                                         </a>
-                                    </li>
+                                    </li> 
                                 @endforeach
                             </ul>
                         </li>

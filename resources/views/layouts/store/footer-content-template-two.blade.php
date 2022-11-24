@@ -242,7 +242,7 @@ if(session()->has('applocale')){
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body"> 
                 <h6 class="m-0">{{__('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
