@@ -281,7 +281,7 @@ class OrderController extends FrontController
         //   dd($activeOrders->toArray());
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-        
+        // dd($rejectedOrders);
         return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee, 'cancellation_reason' => $cancellation_reason]);
     }
 

@@ -332,7 +332,11 @@
                                                                                                     @if(@$is_exchanged_order)
                                                                                                         {{__('Exchange Order')}}
                                                                                                     @endif
-                                                                                                    {{__( ucfirst( $vendor->order_status)) }}</label>
+                                                                                                    @if(@$order->reqCancelOrder->status == 'Pending')
+                                                                                                        {{__('Cancel Order Pending')}}
+                                                                                                    @else
+                                                                                                        {{__( ucfirst( $vendor->order_status)) }}</label>
+                                                                                                    @endif
                                                                                                 </li>
                                                                                             @endif
 
@@ -367,8 +371,6 @@
                                                                                                     <label class="rating-star request_cancel_order" data-order_vendor_id="{{$vendor->order_id??0}}" data-id="{{$vendor->id??0}}" data-vendor_id="{{$vendor->vendor_id??0}}" style="width: auto;display: inline-block;">
                                                                                                         {{ __('Cancel Order') }}
                                                                                                     </label>
-                                                                                                @elseif($order->reqCancelOrder->status == 'Pending')
-                                                                                                    <li class="bg-txt"><span class="badge badge-info" style="font-size:12px">{{ __('Cancel Order Pending') }}</span></li>
                                                                                                 @elseif($order->reqCancelOrder->status == 'Rejected')
                                                                                                     <li class="bg-txt"><span class="badge badge-danger mr-2" style="font-size:12px">{{ __('Cancel Order Rejected') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$order->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
                                                                                                 @endif
@@ -1654,8 +1656,14 @@
                                                                                         <h5 class="m-0">
                                                                                             {{ __('Order Status') }} </h5>
                                                                                         <ul class="status_box mt-1 pl-0">
-                                                                                            @if (!empty($vendor->order_status))
+                                                                                            @if (!empty($vendor->order_status) && $vendor->order_status == "accepted")
                                                                                                 <li>
+                                                                                                    
+                                                                                                    <label class="m-0 in-progress">{{ __(ucfirst('cancelled')) }} </label>
+                                                                                                    <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="{{$vendor->reject_reason}}" aria-hidden="true"></i>
+                                                                                                </li>
+                                                                                            @else
+                                                                                                <li>                                             
                                                                                                     <label class="m-0 in-progress">{{ __(ucfirst($vendor->order_status)) }} </label>
                                                                                                     <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="{{$vendor->reject_reason}}" aria-hidden="true"></i>
                                                                                                 </li>
