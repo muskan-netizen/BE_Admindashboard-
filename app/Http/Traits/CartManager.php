@@ -489,8 +489,8 @@ trait cartManager{
 
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;
-                $total_service_fee = 0;
-                $total_markup_fee_tax = 0;
+                // $total_service_fee = 0;
+                $total_markup_fee_tax = 0; 
                 /* Getting in Vendor product loop and setting product values*/
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
@@ -872,8 +872,8 @@ trait cartManager{
                                     $payable_amount -= $total_discount_percent;
                                     $coupon_amount_used = $total_discount_percent;
                                 } else {
-                                    $gross_amount = decimal_format($payable_amount - $taxable_amount);
-                                    $percentage_amount = ($coupon_apply_price * $vendorData->coupon->promo->amount / 100);
+                                    $gross_amount = decimal_format($payable_amount - $taxable_amount-$quantity_container_charges);
+                                    $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
                                     $payable_amount -= $percentage_amount;
                                     $coupon_amount_used = $percentage_amount;
                                 }
