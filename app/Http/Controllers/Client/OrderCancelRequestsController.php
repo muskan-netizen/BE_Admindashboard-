@@ -74,7 +74,7 @@ class OrderCancelRequestsController extends BaseController
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         
-        $req = OrderCancelRequest::with(['order', 'vendor', 'order_vendor', 'updated_by_user'])->where('status', $request->status);
+        $req = OrderCancelRequest::with(['order', 'vendor', 'order_vendor', 'updated_by_user', 'reason'])->where('status', $request->status);
         if ($user->is_superadmin == 0) {
             $req = $req->whereHas('order_vendor.vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -106,7 +106,7 @@ class OrderCancelRequestsController extends BaseController
             $req->whereBetween('created_at',[$from_date . " 00:00:00", $to_date . " 23:59:59"]);
         } 
         $req = $req->orderBy('id', 'desc');
-
+        
         return Datatables::of($req)
             ->addColumn('order_number', function($req) {
                 return $req->order ? $req->order->order_number : '';
@@ -129,7 +129,13 @@ class OrderCancelRequestsController extends BaseController
                 return ($req->order_vendor->vendor) ? $req->order_vendor->vendor->name : '';
             })
             ->addColumn('reject_reason', function($req) {
-                return $req->reject_reason;
+                if(!empty($req->return_reason_id) && $req->reason->title == "Other"){
+                    return $req->reject_reason;
+                }elseif(!empty($req->return_reason_id) && $req->reason->title != "Other"){
+                    return $req->reason->title;
+                }else{
+                    return $req->reject_reason;
+                }
             })
             ->editColumn('updated_by', function($req) {
                 return $req->updated_by_user ? $req->updated_by_user->name : '';

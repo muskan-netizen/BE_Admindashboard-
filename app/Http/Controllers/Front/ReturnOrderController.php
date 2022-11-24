@@ -427,6 +427,7 @@ class ReturnOrderController extends FrontController{
             $order_cancel_request->order_vendor_id = $request->order_vendor_id;
             $order_cancel_request->vendor_id = $request->vendor_id;
             $order_cancel_request->reject_reason = $reject_reason;
+            $order_cancel_request->return_reason_id = $request->return_reason_id;
             $order_cancel_request->status = 0;
             if($order_cancel_request->save()){
                 return response()->json(['status' => 'success', 'message' => __('Order cancel request send successfully.')]);

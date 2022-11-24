@@ -1893,6 +1893,14 @@
           <div id="cancel-order-form-modal">
             <form id="addRejectReqForm" method="post" class="text-center" enctype="multipart/form-data">
                 @csrf
+                <div class="form-group">
+                    <label for="reason">Select Reason</label>
+                    <select class="form-control" id="return_reason_id" name="return_reason_id">
+                        @foreach ($cancellation_reason as $reason)
+                            <option value="{{$reason->id}}">{{$reason->title}}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <input_type="hidden" name="order_id" id="req_order_id">
                 <input_type="hidden" name="order_vendor_id" id="req_order_vendor_id">
                 <input_type="hidden" name="req_vendor_id" id="req_vendor_id">
@@ -2322,6 +2330,7 @@
 
     $('.addrejectReqSubmit').on('click', function(e) {
         e.preventDefault();
+        var return_reason_id = $('#return_reason_id').val();
         var reject_reason = $('#reject_reason').val();
         var order_id = $('#req_order_id').attr("value");
         var vendor_id = $('#req_vendor_id').attr("value");
@@ -2334,7 +2343,8 @@
                 order_id: order_id,
                 reject_reason: reject_reason,
                 "_token": "{{ csrf_token() }}",
-                order_vendor_id: order_vendor_id
+                order_vendor_id: order_vendor_id,
+                return_reason_id: return_reason_id
             },
             success: function(response) {
                 if(response.status == 'success'){
