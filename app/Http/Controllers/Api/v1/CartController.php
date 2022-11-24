@@ -856,7 +856,7 @@ class CartController extends BaseController
                             }
                             //dd($prod->product->toArray());
                             $prod->taxdata = $taxData;
-                            if ($action == 'delivery') {
+                            if ($action == 'delivery' || $action == 'on_demand') {
                                 if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
 
 
