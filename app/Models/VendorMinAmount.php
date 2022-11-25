@@ -10,4 +10,5 @@ class VendorMinAmount extends Model
     use HasFactory;
 
     protected $fillable = ['vendor_id', 'role_id', 'order_min_amount'];
+    
 }
