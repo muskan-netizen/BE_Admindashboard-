@@ -11,7 +11,48 @@ body.al_body_template_six.light{visibility: visible;}
 }
 .carousel-inner a.banner-img-outer img{height: 100%;object-fit: cover;}
 
-
+/*-------------homepage 6 css custom-----*/
+.al_body_template_six .nav-cate-img img {
+        width: 100%;
+        object-fit: cover;
+        margin-bottom: 10px;
+        border-radius: 10px 10px 0 0;
+        height: 130px;
+    }
+    .al_body_template_six .alSixMainMenu .slick-slide .al_main_category a .alCategoryName {
+        max-width: 180px;
+        width: 100%;
+        display: block;
+        margin: 0 auto;
+        letter-spacing: 0;
+        text-transform: capitalize !important;
+        height: 45px;
+        overflow: hidden;
+        overflow-wrap: break-word;
+    }
+    .al_body_template_six .alSixMainMenu .pixelstrap .al_main_category_list li a span {
+        text-align: left;
+        font-size: 12px !important;
+        font-weight: normal;
+        text-transform: capitalize;
+    }
+    .al_body_template_six .menu-navigation_al .pixelstrap  li.al_main_category:hover ul.al_main_category_list {
+        display: block;
+        width: 200px !important;
+    }
+    .al_body_template_six  .product-card-box.position-relative.al_box_third_template.al h6.card_title.ellips {
+        color: #000;
+        font-size: 16px;
+        margin-bottom: 0;
+    }
+    .al_body_template_six .alSpaMenuCard.active ul li a {
+        font-size: 18px;
+        text-transform: capitalize;
+        font-weight: 400;
+        line-height: 35px;
+        letter-spacing: 1px;
+    }
+    .al_body_template_six ul#main-menu{flex-wrap: wrap;}
 /* ================================ Shimmer effect Start Form Here =========================================*/
 .container.mb-3.shimmer_effect.alcardCatagory .row{
     display: flex;
@@ -215,8 +256,7 @@ body.al_body_template_six.light{visibility: visible;}
 .al_body_template_six .alSixMainMenu{margin-top: -120px;display: flex;justify-content: center;position: relative;z-index: 9;}
 .al_body_template_six .alSixMainMenu .slick-slide .al_main_category a .alCategoryName{text-transform: uppercase;max-width: 120px;width: 100%;display: block;margin: 0 auto;}
 .al_body_template_six .al_custom_brand .brand-box{overflow: hidden; background-color: #fff;padding: 0 0 10px;border-radius: 15px;box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);}
-.al_body_template_six .alSixMainMenu .slick-slide{background-color: #fff;margin: 0 10px; padding: 0 0 10px;border-radius: 15px;box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);}
-.al_body_template_six .alSixMainMenu .slick-list{overflow: visible;}
+.al_body_template_six .alSixMainMenu .slick-slide{background-color: #fff;margin: 0 10px; padding:10px;border-radius: 15px;box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);}.al_body_template_six .alSixMainMenu .slick-list{overflow: visible;}
 .al_body_template_six .vendors .slick-slide img{margin: 0 auto;}
 .al_body_template_six .vendors .top-heading{margin-bottom: 20px;}
 .al_body_template_six .vendors .slick-list.draggable{padding: 15px 0 !important;margin: 0 40px !important;}

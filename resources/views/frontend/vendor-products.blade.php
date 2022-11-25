@@ -18,7 +18,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <div class="top-banner-wrapper mb-4">
+                    <div class="top-banner-wrapper">
                         @if(!empty($vendor->banner))
                             <div class="common-banner text-center"><img class="img-fluid blur-up lazyload" data-src="{{$vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path']}}" alt=""></div>
                         @endif
@@ -64,7 +64,7 @@
 
                                         </div>
                                         @if($vendor->desc)
-                                            <div class="col-md-12 text-center">
+                                            <div class="col-md-12 text-left vender-peragraph mt-3 mb-5">
                                                 <p>{{$vendor->desc}}</p>
                                                <p> {!! $vendor->short_desc !!}</p>
                                             </div>
@@ -88,7 +88,7 @@
                 </div>
             </div>
             @if(1)
-            <div class="row mb-3 homepageSix">
+            <div class="row mb-3 homepageSix mt-5">
                 <div class="collection-filter col-md-3">
                     <div class="collection-filter-block mb-3 bg-transparent p-0">
                         <div class="collection-mobile-back pt-0 border-0"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
@@ -349,7 +349,7 @@
                                                     </div>
                                                     @endforeach
                                                 @else
-                                                    <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">{{__('No Product Found')}}</h5></div>
+                                                    <div class="col-xl-12 col-12"><h5 class="text-center">{{__('No Product Found')}}</h5></div>
                                                 @endif
                                             </div>
                                         </div>
