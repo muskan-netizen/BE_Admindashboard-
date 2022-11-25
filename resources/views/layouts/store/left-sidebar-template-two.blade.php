@@ -169,7 +169,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
    <div class="container main-menu d-block ">
       <div class="row align-items-center py-md-2 position-initial">
-         {{-- @include('frontend.home_page_2.main_menu') --}}
+         <!-- @include('frontend.home_page_2.main_menu')  -->
          <div class="col-lg-2 col-5">
             <a class="navbar-brand mr-0"  href="{{route('userHome')}}">
                <img id="theme-logo" class="logo-image" alt="" style="height:45px" src="{{$urlImg}}">
@@ -245,7 +245,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
          </div>
       </div>
    </div>
-   @if(count($navCategories))
+
    <div class="menu-navigation al_template_two_menu"> 
                   <div class="container al_count_tabs menu-navigation al d-sm-none d-block">
                      <div class="col-lg-7 main-menu d-block order-lg-1 order-2 ">
@@ -303,6 +303,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </div>
                    </div>
                   </div>
+   @if(count($navCategories))
       <div class="container-fluid"> 
          <div class="row"> 
             <div class="col-12">
@@ -345,9 +346,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
          </div>
       </div>
+   @endif
+
    </div>
 
-   @endif
 </header>
 <div class="offset-top_al @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @else al_offset-top-home @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div>
 <script type="text/template" id="nav_categories_template">

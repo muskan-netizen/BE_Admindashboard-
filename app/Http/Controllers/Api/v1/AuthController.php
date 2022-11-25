@@ -51,17 +51,33 @@ class AuthController extends BaseController
      */
     public function login(LoginRequest $loginReq)
     {
-        //dd($loginReq->all());
+        $phoneCheck = 0;
         $errors = array();
+        if(!is_numeric($loginReq->email)){
         $user = User::with('country')->where('email', $loginReq->email)->first();
         if (!$user) {
             $errors['error'] = __('Invalid email');
             return response()->json($errors, 422);
         }
+
         if (!Auth::attempt(['email' => $loginReq->email, 'password' => $loginReq->password])) {
             $errors['error'] = __('Invalid password');
             return response()->json($errors, 422);
         }
+
+    }else{
+      
+        $user  = User::with('country')->where('phone_number', $loginReq->email)->first();
+        if (!$user) {
+            $errors['error'] = __('Invalid phone number');
+            return response()->json($errors, 422);
+        }
+        $phoneCheck = 1;
+        Auth::login($user);
+        $loginReq->merge(['type'=>'phone','dial_code'=>$loginReq->dialCode,'phone_number'=>$loginReq->email,'sendSms'=>1]);
+        $this->sendToken($loginReq);
+    }
+        
         $user = Auth::user();
         $prefer = ClientPreference::select('theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
         $verified['is_email_verified'] = $user->is_email_verified;
@@ -161,6 +177,7 @@ class AuthController extends BaseController
         $data['cca2'] = $user->country ? $user->country->code : '';
         $data['callingCode'] = $user->country ? $user->country->phonecode : '';
         $data['refferal_code'] = $user_refferal ? $user_refferal->refferal_code : '';
+        $data['is_phone'] = $phoneCheck??0;
         return response()->json(['data' => $data]);
     }
 
@@ -560,12 +577,11 @@ class AuthController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                //$body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
-                
-                $keyData = ['{user_name}'=>ucwords($user->name)];
-                $body = sendSmsTemplate('user-signup-sms',$keyData);
-
-                $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+               // $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
+                // $keyData = ['{user_name}'=>ucwords($user->name)]; 
+                // $body = sendSmsTemplate('user-signup-sms',$keyData);
+                // $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
             }
 
             return response()->json(['data' => $response]);
@@ -594,18 +610,16 @@ class AuthController extends BaseController
             $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
             $newDateTime = Carbon::now()->addMinutes(10)->toDateTimeString();
             if ($request->type == "phone") {
-                if ($user->is_phone_verified == 0) {
+                if ($user->is_phone_verified == 0 || $request->sendSms == 1) {
                     $otp = mt_rand(100000, 999999);
                     $user->phone_token = $otp;
                     $user->phone_token_valid_till = $newDateTime;
                     $user->save();
                     $provider = $data->sms_provider;
                     $to = '+' . $request->dial_code . $request->phone_number;
-                    
-                    $app_hash_key = ((!empty($request->app_hash_key))?" ".$request->app_hash_key:'');
-                    $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp,'{app_hash_key}'=>$app_hash_key];
+                   // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
+                    $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp]; 
                     $body = sendSmsTemplate('verify-account',$keyData);
-
                     if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
                         $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
                         if ($send ==1) {
@@ -1063,6 +1077,9 @@ class AuthController extends BaseController
                 $keyData = ['{user_name}'=>auth()->user()->name??'','{otp_code}'=>$phoneCode,'{app_hash_key}'=>$request->app_hash_key??''];
                 $body = sendSmsTemplate('verify-account',$keyData);
                 $provider = $prefer->sms_provider;
+                $body = "Please enter OTP " . $phoneCode . " to verify your account.";
+                $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
+                $body = sendSmsTemplate('verify-account',$keyData);
                 if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
                     $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                     if ($send) {

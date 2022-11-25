@@ -338,7 +338,7 @@ class OrderController extends BaseController
                                     //$payable_amount = $payable_amount + $product_tax;
                                 }
                             }
-                            if ($action == 'delivery') {
+                            if ($action == 'delivery' || $action == 'on_demand') {
                                 $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                                 if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1) || isset($deliver_fee_data)) {
                                     $order_vendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type??'D';
@@ -1546,20 +1546,11 @@ class OrderController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-
                 $keyData = ['{user_name}'=>$user->name??'','{amount}'=>$currSymbol . $order->payable_amount,'{order_number}'=>$order->order_number??''];
                 $body = sendSmsTemplate('order-place-Successfully',$keyData);
 
-               // $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
-                // if(!empty($smsTemplates)){
-                //     $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
-                //     $smsTemplates = str_replace("{amount}", $currSymbol . decimal_format($order->payable_amount), $smsTemplates);
-                //     $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
-                // }else{
-                //     $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
-                // }
                 if (!empty($prefer->sms_provider)) {
-                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body,'order-place-Successfully');
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 }
             }
         } catch (\Exception $ex) {
@@ -2168,9 +2159,10 @@ class OrderController extends BaseController
                                     }
                                 }
 
-                                if ($action == 'delivery') {
+                                if ($action == 'delivery' || $action == 'on_demand') {
                                     if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) {
                                         $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
+                                        Log::info($delivery_fee);
                                         if (!empty($delivery_fee) && $delivery_count == 0) {
                                             $delivery_count = 1;
                                             $vendor_cart_product->delivery_fee = decimal_format($delivery_fee);
@@ -2754,7 +2746,7 @@ class OrderController extends BaseController
                         'body'  => $body_content,
                         'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                        'click_action' => $redirect_URL,
+                       // 'click_action' => $redirect_URL,
                         "android_channel_id" => "sound-channel-id"
                     ],
                     "data" => [

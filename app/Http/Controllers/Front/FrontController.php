@@ -128,12 +128,12 @@ class FrontController extends Controller
             //return $send;
         }
         catch(\Exception $e){
-            // Log::info('SMS logs');
-            // Log::info($e->getMessage());
             return '2';
         }
         return '1';
 	}
+	
+    
     public function testsms(Request $request)
     {
         $prefer = ClientPreference::select('sms_credentials', 
