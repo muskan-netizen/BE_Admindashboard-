@@ -518,6 +518,7 @@
         var $tr = $('.optionTableEditAttribute tbody>tr:first').next('tr');
         var $clone = $tr.clone();
         $clone.find(':text').val('');
+        $clone.find(':hidden').val('');
         $clone.find('.hexa-colorpicker').attr("id", "hexa-colorpicker-" + n);
         $clone.find('.lasttd').html('<a href="javascript:void(0);" class="action-icon deleteCurRow"> <i class="mdi mdi-delete"></i></a>');
         $('.optionTableEditAttribute').append($clone);
@@ -528,7 +529,7 @@
         $(this).closest('tr').remove();
     });
 
-    $("#editVariantmodal").on('click', '.deleteCurRow', function() {
+    $("#editAttributemodal").on('click', '.deleteCurRow', function() {
         $(this).closest('tr').remove();
     });
 
@@ -552,8 +553,7 @@
     $(document).on('change', '.dropDownTypeAttr', function() {
         var did = $(this).val();
         var dataFor = $(this).attr('dataFor');
-        console.log(dataFor);
-        console.log($('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor));
+        
         if (did == 1) {
             $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).hide();
         } else if(did == 2){
@@ -561,6 +561,8 @@
         }else if(did == 3) {
             $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).hide();
             $('.radio-div').removeClass('d-none');
+        } else if(did == 4) {
+            $('.attr-text-box').removeAttr('required');
         }
     });
 </script>

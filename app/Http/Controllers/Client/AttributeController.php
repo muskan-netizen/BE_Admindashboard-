@@ -191,7 +191,7 @@ class AttributeController extends BaseController
 
                 if(!$varOpt){
                     $varOpt = new AttributeOption();
-                    $varOpt->variant_id = $variant->id;
+                    $varOpt->attribute_id = $variant->id;
                 }
 
                 $varOpt->title = $request->opt_title[$curLangId][$key];
@@ -201,7 +201,7 @@ class AttributeController extends BaseController
             }else{
 
                 $varOpt = new AttributeOption();
-                $varOpt->variant_id = $variant->id;
+                $varOpt->attribute_id = $variant->id;
                 $varOpt->title = $request->opt_title[$curLangId][$key];
                 $varOpt->hexacode = ($request->hexacode[$key] == '') ? '' : $request->hexacode[$key];
                 $varOpt->save();
@@ -218,7 +218,7 @@ class AttributeController extends BaseController
                     $varOptTrans = AttributeOptionTranslation::where('language_id', $lid)->where('attribute_option_id', $value)->first();
                     if(!$varOptTrans){
                         $varOptTrans = new AttributeOptionTranslation();
-                        $varOptTrans->variant_option_id =$exist_options[$key];
+                        $varOptTrans->attribute_option_id =$exist_options[$key];
                         $varOptTrans->language_id = $lid;
                     }
                     $varOptTrans->title = $request->opt_title[$lid][$key];

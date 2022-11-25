@@ -39,7 +39,7 @@
         top: 0;
         opacity: 0;
     }
-
+.form-label label{font-weight: bold;}
     .product-img-box input[type="checkbox"] {
         position: absolute;
         top: 0;
@@ -548,8 +548,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     @if( clientPrefrenceModuleStatus('p2p_check') )
                         <div class="card-box" >
                             <div class="row mb-2 bg-light">
-                                <div class="col-8" style="margin:auto;">
-                                    <h5 class="text-uppercase mt-0 bg-light p-2">{{ __(getNomenclatureName('Attribute')." Information") }}</h5>
+                                <div class="col-8" style="">
+                                    <h5 class="text-uppercase bg-light p-2">{{ __(getNomenclatureName('Attribute')." Information") }}</h5>
                                 </div>
                                 @if(!empty($productAttributes))
                                 {{-- <div class="col-4 p-2 mt-0 text-right" style="margin:auto; ">
@@ -563,63 +563,82 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <div class="row" style="width:100%; overflow-x: scroll;">
                                 <div id="variantAjaxDiv" class="col-12 mb-2">
                                     <h5 class="">{{__(getNomenclatureName('Attribute').' List')}}</h5>
-                                    <div class="row mb-2">
+                                    <div class=" mb-2 form-label">
                                         
                                         @foreach($productAttributes as $vk => $var)
                                         @php $counter = 0; @endphp
-                                        <div class="col-sm-3">
-                                            <label class="control-label">{{$var->title??null}}</label>
-                                        </div>
-                                        <div class="col-sm-9">
-                                           
-                                            @foreach($var->option as $key => $opt)
-                                            
-                                            @if(isset($opt) && !empty($opt->title) && isset($var) && !empty($var->title) )
+                                        <div class="row mb-2">
+                                            <div class="col-sm-3">
+                                                <label class="control-label">{{$var->title??null}}</label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                {{-- @dump($attribute_value) --}}
+                                                @if( !empty($var->type) && $var->type == 1 )
+                                                @foreach($var->option as $key => $opt)
+                                                    <input type="hidden" name="attribute[{{$var->id}}][type]" value="{{$var->type}}">
+                                                    <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
+                                                    <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
+                                                     <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
+                                                    <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}"> 
+                                                    @php  $counter++; @endphp
+                                                    @endforeach
+                                                    <select name="attribute[{{$var->id}}][value][]" id="" class="dropdown_select" multiple>
+                                                        @foreach($var->option as $key => $opt)
+                                                        <option value="{{$opt->id}}" @if(in_array($opt->id, $attribute_value)) selected @endif>{{$opt->title}} - {{$opt->id}}</option>
+                                                        @endforeach
+                                                    </select>
 
-                                                @if( !empty($var->type) && $var->type == 3 )
-                                                    <div class="form-check-inline pr-3">
-                                                        <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
-                                                        <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
-                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
-                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
-                                                        <div class="attr_radio_{{$var->id}}">
-                                                        <input type="radio" name="attribute[{{$var->id}}][option][{{$counter}}][value]" class="attr_radio"  
-                                                        value="{{$opt->id}}" @if(in_array($opt->id, $attribute_value)) checked @endif>
-                                                        </div>
-                                                        <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
-                                                    </div>
-
-
-                                                @elseif( !empty($var->type) && $var->type == 4 )
-                                                    <div class="form-check-inline pr-3">
-                                                        <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
-                                                        <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
-                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
-                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
-                                                        <input type="textbox" name="attribute[{{$var->id}}][option][{{$counter}}][value]"  
-                                                        
-                                                        @if(in_array($opt->id, $attribute_value))  
-                                                        value="{{$attribute_key_value[$opt->id]}}"
-                                                        @else
-                                                        value=""
-                                                        @endif>
-                                                        {{-- <input type="hidden" name="attribute[{{$var->id}}][]" value="{{$opt->attribute_id}}">
-                                                        <input type="hidden" name="attribute[{{$var->id}}][]" value="{{$opt->id}}"> --}}
-                                                        {{-- <label for="opt_vid_{{$opt->id}}"></label> --}}
-                                                    </div>
                                                 @else
-                                                    <div class="checkbox checkbox-success form-check-inline pr-3">
-                                                        <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
-                                                        <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
-                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
-                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
-                                                        <input type="checkbox" name="attribute[{{$var->id}}][option][{{$counter}}][value]" value="{{$opt->id}}" @if(in_array($opt->id, $attribute_value)) checked @endif>
-                                                        <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
-                                                    </div>
+                                                @foreach($var->option as $key => $opt)
+                                                
+                                                @if(isset($opt) && !empty($opt->title) && isset($var) && !empty($var->title) )
+
+                                                    @if( !empty($var->type) && $var->type == 3 )
+                                                        <div class="form-check-inline ">
+                                                            <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
+                                                            <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
+                                                            <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
+                                                            <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
+                                                            <div class="attr_radio_{{$var->id}}">
+                                                            <input type="radio" name="attribute[{{$var->id}}][option][{{$counter}}][value]" class="attr_radio mr-1"  
+                                                            value="{{$opt->id}}" @if(in_array($opt->id, $attribute_value)) checked @endif>
+                                                            </div>
+                                                            <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
+                                                        </div>
+
+
+                                                    @elseif( !empty($var->type) && $var->type == 4 )
+                                                        <div class="form-check-inline ">
+                                                            <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
+                                                            <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
+                                                            <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
+                                                            <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
+                                                            <input class="form-control"type="textbox" name="attribute[{{$var->id}}][option][{{$counter}}][value]"  
+                                                            
+                                                            @if(in_array($opt->id, $attribute_value))  
+                                                            value="{{$attribute_key_value[$opt->id]}}"
+                                                            @else
+                                                            value=""
+                                                            @endif>
+                                                            {{-- <input type="hidden" name="attribute[{{$var->id}}][]" value="{{$opt->attribute_id}}">
+                                                            <input type="hidden" name="attribute[{{$var->id}}][]" value="{{$opt->id}}"> --}}
+                                                            {{-- <label for="opt_vid_{{$opt->id}}"></label> --}}
+                                                        </div>
+                                                    @else
+                                                        <div class="checkbox checkbox-success form-check-inline pr-3">
+                                                            <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
+                                                            <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
+                                                            <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
+                                                            <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
+                                                            <input type="checkbox" name="attribute[{{$var->id}}][option][{{$counter}}][value]" value="{{$opt->id}}" @if(in_array($opt->id, $attribute_value)) checked @endif>
+                                                            <label for="attr_opt_vid_{{$opt->id}}">{{$opt->title}}</label>
+                                                        </div>
+                                                    @endif
+                                                    @php $counter++; @endphp
                                                 @endif
-                                                @php $counter++; @endphp
-                                            @endif
-                                            @endforeach
+                                                @endforeach
+                                                @endif
+                                            </div>
                                         </div>
                                         @endforeach
                                     </div>

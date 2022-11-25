@@ -226,6 +226,67 @@
                         </div>
                     </div>
                     @endif
+
+                    @php $getAdditionalPreference = getAdditionalPreference(['is_attribute']); @endphp
+                    @if( $getAdditionalPreference['is_attribute'] )
+                        <div class="" >
+                            
+                            <div class="row" style="width:100%; overflow-x: scroll;">
+                                <div id="variantAjaxDiv" class="col-12 mb-2">
+                                    <div class="row mb-2">
+                                        
+                                        @foreach($productAttributes as $vk => $var)
+                                        @php $counter = 0; @endphp
+                                        <div class="col-sm-3">
+                                            <label class="control-label">{{$var->title??null}}</label>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            @if( !empty($var->type) && $var->type == 1 )
+                                            <select name="" id="" class="dropdown_select" data-key="{{$var->title}}" multiple>
+                                                @foreach($var->option as $key => $opt)
+                                                <option value="{{$opt->id}}">{{$opt->title}}</option>
+                                                @endforeach
+                                            </select>
+
+                                            @else
+                                            
+                                            @foreach($var->option as $key => $opt)
+                                            
+                                            @if(isset($opt) && !empty($opt->title) && isset($var) && !empty($var->title) )
+
+                                                @if( !empty($var->type) && $var->type == 3 )
+                                                    <div class="form-check-inline pr-3">
+                                                        <div class="attr_radio_{{$var->id}}">
+                                                        <input type="radio" name="attribute[{{$var->id}}][option][{{$counter}}][value]" class="attr_radio"  
+                                                        value="{{$opt->id}}" data-key="{{$var->title}}">
+                                                        </div>
+                                                        <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
+                                                    </div>
+
+
+                                                @elseif( !empty($var->type) && $var->type == 4 )
+                                                    <div class="form-check-inline pr-3">
+                                                        <input type="textbox" name="attribute[{{$var->id}}][option][{{$counter}}][value]" value="">
+                                                    </div>
+                                                @else
+                                                    <div class="checkbox checkbox-success form-check-inline pr-3">
+                                                        <input type="checkbox" name="" value="{{$opt->id}}" class="dynamic_checkbox" data-key="{{$var->title}}">
+                                                        <option value=""></option>
+                                                        <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
+                                                    </div>
+                                                @endif
+                                                @php $counter++; @endphp
+                                            @endif
+                                            @endforeach
+                                            @endif
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    @endif
                     </aside>
                 </div>
                 
@@ -381,6 +442,16 @@
     @endif
 </script>
 <script>
+    $(document).on("change",".attr_radio", function() {
+        
+        var parentClass = $(this).parent().prop('className');
+        
+        var attr_radio_class = $(this).data('class');
+        $("."+parentClass+" .attr_radio").prop('checked', false);
+        $(this).prop('checked', true);
+        
+    });
+
     $('.js-range-slider').ionRangeSlider({
         type: 'double',
         grid: false,
@@ -413,11 +484,45 @@
         filterProducts();
     });
 
+    $('.attr_radio, .dynamic_checkbox, .dropdown_select').change(function() {
+        filterProducts();
+    });
+
     function filterProducts(page='', limit=''){
         var brands = [];
         var variants = [];
         var options = [];
         var vendor_id =$("#vendor_id").val();
+        var dropdown_options = {};
+        var dynamic_options = {};
+        var radio_option = {};
+        var checkbox_option_arr = {};
+        $('.dropdown_select').each(function(i, obj) {
+            dropdown_options[$(this).data('key')] = $(this).val();
+        });
+
+        $('.attr_radio').each(function(i, obj){
+            if(this.checked) {
+                radio_option[$(this).data('key')] = $(this).val();
+            }
+        });
+        
+        $('.dynamic_checkbox').each(function(i, obj){
+            
+            var dataType = typeof checkbox_option_arr[$(this).data('key')];
+            if(dataType == 'undefined') {
+                checkbox_option_arr[$(this).data('key')] = [];
+            }
+            if(this.checked) {
+                checkbox_option_arr[$(this).data('key')].push($(this).val());
+            }
+        });
+        
+        dynamic_options['dropdown_options'] = dropdown_options;
+        dynamic_options['radio_option'] = radio_option;
+        dynamic_options['checkbox_option_arr'] = checkbox_option_arr;
+        console.log(dynamic_options);
+        // return false;
         $('.productFilter').each(function () {
             var that = this;
             if(this.checked == true){
@@ -440,6 +545,7 @@
             "options": options,
             "range": range,
             "order_type" : order_type,
+            "dynamic_options" : dynamic_options
         };
 
         if(limit != ''){

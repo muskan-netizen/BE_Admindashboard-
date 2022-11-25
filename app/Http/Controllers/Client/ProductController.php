@@ -315,7 +315,7 @@ class ProductController extends BaseController
             }
         }
         
-
+        
         return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value ]);
     }
 
@@ -366,45 +366,41 @@ class ProductController extends BaseController
 
             if( clientPrefrenceModuleStatus('p2p_check') ) {
                 if( !empty($request->attribute) ) {
-                    
                     $insert_arr = [];
                     $insert_count = 0;
                     foreach($request->attribute as $key => $value) {
                         if( is_array($value) ) {
-
-                            foreach($value['option'] as $option_key => $option) {
+                            
+                            if( !empty($value['type']) && $value['type'] == 1 ) { // dropdown
+                                $value_arr = $value['value'];
                                 
-                                if(@$option['value']){
-
-                                    $insert_arr[$insert_count]['product_id'] = $id;
-                                    $insert_arr[$insert_count]['attribute_id'] = $value['id'];
-                                    $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
-                                    $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
-                                    $insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
-                                    $insert_arr[$insert_count]['is_active'] = 1;
-
+                                foreach( $value['option'] as $key1 => $val1 ) {
+                                
+                                    if( in_array($val1['option_id'], $value_arr) ) {
+                                
+                                        $insert_arr[$insert_count]['product_id'] = $id;
+                                        $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                        $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                        $insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
+                                        $insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+                                        $insert_arr[$insert_count]['is_active'] = 1;
+                                    }
+                                    $insert_count++;
                                 }
-                              
-                                
-                                
-                                // if(is_array($inn_val)) {       
-                                //     $insert_arr[$rand]['product_id'] = $id;
-                                //     $insert_arr[$rand]['type'] = $type;
-                                //     $insert_arr[$rand]['attribute_value'] = $inn_val[0] ?? null;
-                                //     $insert_arr[$rand]['attribute_id'] = (int)$inn_val[1] ?? null;
-                                //     $insert_arr[$rand]['is_active'] = 1;
-                                // } else {
-                                //     $exploded_value = explode('___', $inn_val);
-                                    
-                                //     if( !empty($exploded_value) ) {
-                                //         $insert_arr[$rand]['product_id'] = $id;
-                                //         $insert_arr[$rand]['type'] = $type;
-                                //         $insert_arr[$rand]['attribute_value'] = $exploded_value[0] ?? null;
-                                //         $insert_arr[$rand]['attribute_id'] = $exploded_value[1] ?? null;
-                                //         $insert_arr[$rand]['attribute_option_id'] = $exploded_value[2] ?? null;
-                                //     }
-                                // }
-                                $insert_count++;
+                            }
+                            else {
+                                foreach($value['option'] as $option_key => $option) {
+                                    if(@$option['value']){
+                                        $insert_arr[$insert_count]['product_id'] = $id;
+                                        $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                        $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                        $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+                                        $insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
+                                        $insert_arr[$insert_count]['is_active'] = 1;
+
+                                    }
+                                    $insert_count++;
+                                }
                             }
                         }
 

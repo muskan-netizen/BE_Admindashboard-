@@ -26,6 +26,7 @@
                         <option value="2">{{ __("Color") }}</option>
                         <option value="3">{{ __("Radio") }}</option>
                         <option value="4">{{ __("Textbox") }}</option>
+                        <option value="5">{{ __("Checkbox") }}</option>
                     </select>
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
@@ -84,7 +85,7 @@
                         </td>
                        @foreach($languages as $key => $langs)
                         <td>
-                            <input type="text" name="opt_color[{{$key}}][]" class="form-control" @if($langs->is_primary == 1) required @endif>
+                            <input type="text" name="opt_color[{{$key}}][]" class="form-control attr-text-box" @if($langs->is_primary == 1) required @endif>
                         </td>
                         @endforeach
                         <td class="lasttd"></td>

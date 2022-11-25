@@ -20,6 +20,17 @@
         .exzoom .exzoom_zoom_outer{display:none}
         }
     .border-product.al_disc ol,.border-product.al_disc ul{padding-left:30px}.border-product.al_disc ol li,.border-product.al_disc ul li{display:list-item;padding-left:0;padding-top:8px;list-style-type:disc;font-size:14px}.border-product.al_disc ol li{list-style-type:decimal}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}
+.container-badge-value span{
+    padding: 0px;
+    margin-right: 10px;
+    color: #6c757d;
+    font-size: 15px;}
+
+.container-badge{display: flex;margin-bottom: 10px;}
+.value-badge{width:100px;font-weight: bold;}
+.container-badge-value{width:calc( 100% - 100px);}
+
+
 </style>
 
 @endsection
@@ -274,21 +285,25 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                         <span class="text-danger mb-2 mt-2"></span>
                                     </div>
                                     <div class="border-product al_disc">
-                                        <h6 class="product-title">{{__('Product Details')}}</h6>
-                                        <p>Product Attribute</p>
+                                        <h6 class="product-title mb-2">{{__('Product Details')}}</h6>
+                                        
                                         {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                             $product->translation[0]->body_html : ''!!}
 
                                         @if( clientPrefrenceModuleStatus('p2p_check') )
                                             @if( !empty($attr_array) )
                                                 @foreach($attr_array as $attr_key => $attr_val)
-                                                    <p>{{ $attr_key }} : 
-                                                    @if( !empty($attr_val) )
-                                                        @foreach($attr_val as $inn_key => $inn_val)
-                                                            {{$inn_val['value']}}
-                                                        @endforeach
-                                                    @endif
-                                                    </p>
+                                                    <div class="container-badge">
+                                                        <div class="value-badge">{{ $attr_key }} : </div>
+                                                        @if( !empty($attr_val) )
+                                                            <div class="container-badge-value">
+                                                                @foreach($attr_val as $inn_key => $inn_val)
+                                                                    <span>{{$inn_val['value']}}</span>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                        
+                                                    </div>
                                                 @endforeach
                                             @endif
                                     @endif
