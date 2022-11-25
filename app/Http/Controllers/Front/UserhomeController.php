@@ -475,7 +475,7 @@ class UserhomeController extends FrontController
 
             $home_page_labels = $home_page_labels->map(function($da) use ($homePageData) {
                 if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' ){
-                    $da[$da->slug] = $homePageData[$da->slug];
+                    $da[$da->slug] = $homePageData[$da->slug] ?? '';
                 }
                 return $da;
                

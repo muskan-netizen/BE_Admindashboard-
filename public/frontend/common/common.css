@@ -245,6 +245,23 @@ body #page-container .vendors {
 
 /*-----------------------template 6---------------*/
 
+body.al_body_template_six .theme-card.custom-inner-card::-webkit-scrollbar {
+    width: 5px;
+  }
+   
+  body.al_body_template_six .theme-card.custom-inner-card::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+  body.al_body_template_six .theme-card.custom-inner-card::-webkit-scrollbar-thumb {
+    background-color: #e9248d;
+}
+body.al_body_template_six .theme-card.custom-inner-card {
+    height: 370px;
+    overflow-y: scroll;
+    border: 1px solid#ccc;
+    padding: 20px;
+    border-radius: 10px;
+}
 body.al_body_template_six.login form#login-form-new input.form-control {
        width: 100% !important;
        margin: 10px 0 10px !important;
@@ -307,8 +324,11 @@ body.al_body_template_six.login form#login-form-new input.form-control {
             margin-top: 21px !important;
             overflow-y: auto !important;
             border-right: 1px solid #D9D9D9;
-            height: 800px;
+            height: auto;
             overflow-x: hidden !important;
+        }
+        .al_body_template_six .product-right .product-buttons {
+            margin: 0 20px 20px 0;
         }
         .al_body_template_six .collection-filter-block {
             border: none !important;
@@ -376,9 +396,9 @@ body.al_body_template_six.login form#login-form-new input.form-control {
         .al_body_template_six .displayProducts {
             margin-top: 0;
         }
-        .al_body_template_six .product-right .product-buttons {
+        /* .al_body_template_six .product-right .product-buttons {
             margin: 20px 20px 0;
-        }
+        } */
         .al_body_template_six .category-related-product .product-card-box {
             background-color: #fff !important;
             padding: 0px !important;
@@ -488,7 +508,7 @@ body.al_body_template_one .footer-theme .sub-title li {
 .al_body_template_six .footer-theme .sub-title .contact-list li {   
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     padding-top: 0;
 }
 .al_body_template_six .col-sm-12.text-center.position-relative.vendor-page-copy {

@@ -187,6 +187,11 @@ body .royo_whatsapp_img{bottom: 11%;}
     .product_tag_filter {
         width: 100%;
     }
+    body.al_body_template_six .d-inline-flex.al_searchType.align-items-center.justify-content-start.px-2.position-relative {
+        position: relative;
+        left:0;
+    }
+    .alLocation.homepage-address{display:none;}
     .al_white_bg_round .scrollspy-menu {
         top: auto !important;
         width: 100%;
@@ -226,7 +231,7 @@ body .royo_whatsapp_img{bottom: 11%;}
     body.al_body_template_six .al_searchType .form-control {
         background-color: transparent;
         padding: 0 0 0 6px;
-        width: 100%;
+        width: 62px;
         font-size: 12px;
     }
     body.al_body_template_six .alFindSec ul li{padding:0 !important;}

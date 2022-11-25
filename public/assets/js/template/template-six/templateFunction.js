@@ -11,8 +11,8 @@ $(function () {
         responsive: [
             { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 1, infinite: true, dots: false, centerMode: true, } },
             { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true, } },
-            { breakpoint: 767, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true, } },
-            { breakpoint: 576, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true, centerPadding: '0', } }
+            { breakpoint: 767, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, } },
+            { breakpoint: 576, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, centerPadding: '0', } }
         ]
     });
     $('.suppliers-slider-vendors').slick({
@@ -27,8 +27,8 @@ $(function () {
         responsive: [
             { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 1, infinite: true, dots: false, centerMode: true, } },
             { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true, } },
-            { breakpoint: 767, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true, } },
-            { breakpoint: 576, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true, centerPadding: '0', } }
+            { breakpoint: 767, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, } },
+            { breakpoint: 576, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, centerPadding: '0', } }
         ]
     });
     $('.suppliers-slider-trending_vendors').slick({
