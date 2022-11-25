@@ -100,6 +100,50 @@ class RazorpayGatwayController extends Controller
             }
            
                 $vendor = Vendor::find($request->vid);
+
+                if(isset($vendor) && !empty($vendor->razorpay_bank_json))
+                {
+
+                    $jsonData = array(
+                        'active'=>false,
+                    ); 
+                    $old_bank   = json_decode($vendor->razorpay_bank_json,true);
+                    $bank_id    = $old_bank['id'];
+                    $result     = $this->patchCurl('fund_accounts/'.$bank_id,$jsonData);
+                    
+                    $bank_account = array(
+                                    'name'=>$request->name,
+                                    'ifsc'=>$request->ifsc,
+                                    'account_number'=>$request->acc_no
+                                ); 
+    
+                    $razorpayContact = json_decode($vendor->razorpay_contact_json);
+
+                    
+                    if(isset($razorpayContact) && !empty($razorpayContact->id) && !empty($vendor->razorpay_bank_json))
+                    {
+
+                       
+                        $jsonData = array(
+                            'contact_id'=>$razorpayContact->id,
+                            'account_type'=>'bank_account',
+                            'bank_account'=>$bank_account
+                        ); 
+                       
+                        $result = $this->postCurl('fund_accounts',$jsonData);
+                       
+                        if(isset($result->id) && !empty($result->id))
+                        {
+                            $vendor->razorpay_bank_json = json_encode($result);
+                            $vendor->save();
+                            return redirect()->back()->with('success','Razorpay Account Added Successfuly!');
+                        }
+                    }else{
+                        return redirect()->back()->with('success','Already Done Account');
+                    }
+
+
+                }
                 $bank_account = array(
                     'name'=>$request->name,
                     'ifsc'=>$request->ifsc,
@@ -138,6 +182,7 @@ class RazorpayGatwayController extends Controller
         try{
                 $vendor = Vendor::find($request->vid);
                 $razorpayBank = $vendor->vendor_bank_json;
+                //dd($razorpayBank);
                 $amount = getDollarCompareAmount($request->amount, $this->currency_id);
                 if(isset($razorpayBank) && !empty($razorpayBank->id))
                 {
@@ -152,6 +197,7 @@ class RazorpayGatwayController extends Controller
                             'reference_id'=>$vendor->id.'@123'
                         ); 
                         $result = $this->postCurl('payouts',$jsonData);
+                       
                         if(isset($result->id) && !empty($result->id))
                         {
                             return response()->json(['status'=>'200','data'=>$result]);
@@ -181,6 +227,33 @@ class RazorpayGatwayController extends Controller
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION,true);
             curl_setopt($ch, CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST,'POST');
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($data));
+            $headers = array();
+            $headers[] = 'Accept: */*';
+            $headers[] = "Authorization: Basic $this->token";
+            $headers[] = 'Content-Type: application/json';
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+                echo 'Error:' . curl_error($ch);
+            }
+            \Log::info($result);
+            curl_close($ch);
+            return json_decode($result); 
+        }
+
+
+        private function patchCurl($endpoint,$data):object{
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL,  $this->api_url.$endpoint);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_ENCODING, '');
+            curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 0);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION,true);
+            curl_setopt($ch, CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST,'PATCH');
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($data));
             $headers = array();
