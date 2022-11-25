@@ -437,7 +437,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="col-12">
                      <div class="form-group mb-0 switchery-demo">
                         <label for="twitter_login" class="d-flex align-items-center justify-content-between">
-                           <h5 class="social_head"><i class="fab fa-twitter"></i> <span>Twitter</span></h5>
+                           <h5 class="social_head"><i class="fab fa-twitter"></i> <span>{{ __("Twitter") }}</span></h5>
                            <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
                         </label>
                         <label for="" class="mr-3">{{ __("Enable") }}</label>
@@ -490,7 +490,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="col-12">
                      <div class="form-group mb-0 switchery-demo">
                         <label for="google_login" class="d-flex align-items-center justify-content-between">
-                           <h5 class="social_head"><i class="fab fa-google"></i> <span>Google</span></h5>
+                           <h5 class="social_head"><i class="fab fa-google"></i> <span>{{ __("Google") }}</span></h5>
                            <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
                         </label>
                         <label for="" class="mr-3">{{ __("Enable") }}</label>
@@ -501,7 +501,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                <div class="row google_row" style="{{((isset($preference) && $preference->google_login == '1')) ? '' : 'display:none;'}}">
                   <div class="col-md-12">
                      <div class="form-group mb-2 mt-2">
-                        <label for="google_client_id">Google {{ __("Client Key") }}</label>
+                        <label for="google_client_id">{{__("Google")}} {{ __("Client Key") }}</label>
                         <input type="text" name="google_client_id" id="google_client_id" placeholder="" class="form-control" value="{{ old('google_client_id', $preference->google_client_id ?? '')}}">
                         @if($errors->has('google_client_id'))
                         <span class="text-danger" role="alert">
@@ -512,7 +512,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-12">
                      <div class="form-group mb-2">
-                        <label for="google_client_secret">Google {{ __("Client Secret") }}</label>
+                        <label for="google_client_secret">{{__("Google")}} {{ __("Client Secret") }}</label>
                         <input type="password" name="google_client_secret" id="google_client_secret" placeholder="" class="form-control" value="{{ old('google_client_secret', $preference->google_client_secret ?? '')}}">
                         @if($errors->has('google_client_secret'))
                         <span class="text-danger" role="alert">
@@ -523,7 +523,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-12">
                      <div class="form-group mb-0">
-                        <label for="google_client_url">Google {{ __("Redirect URL") }}</label>
+                        <label for="google_client_url">{{__("Google")}} {{ __("Redirect URL") }}</label>
                         <input type="text" name="google_client_url" id="google_client_url" placeholder="" class="form-control" value="{{ old('google_client_url', $preference->google_client_url ?? '')}}">
                         @if($errors->has('google_client_url'))
                         <span class="text-danger" role="alert">
@@ -542,7 +542,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="col-12">
                      <div class="form-group mb-0 switchery-demo">
                         <label for="apple_login" class="d-flex align-items-center justify-content-between">
-                           <h5 class="social_head"><i class="fab fa-apple"></i> <span>Apple</span></h5>
+                           <h5 class="social_head"><i class="fab fa-apple"></i> <span>{{ __("Apple") }}</span></h5>
                            <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
                         </label>
                         <label for="" class="mr-3">{{ __("Enable") }}</label>
@@ -1088,7 +1088,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                            <div class="form-group mt-3 mb-0">
                               <label for="customer_support_key">{{ __("API Key") }}</label>
-                              <input type="text" name="customer_support_key" id="customer_support_key" placeholder="Please enter key" class="form-control" value="{{ old('customer_support_key', $preference->customer_support_key ?? '')}}">
+                              <input type="text" name="customer_support_key" id="customer_support_key" placeholder="{{ __('Please enter key') }}" class="form-control" value="{{ old('customer_support_key', $preference->customer_support_key ?? '')}}">
                               @if($errors->has('customer_support_key'))
                               <span class="text-danger" role="alert">
                                  <strong>{{ $errors->first('customer_support_key') }}</strong>
@@ -1098,7 +1098,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                            <div class="form-group mt-3 mb-0">
                               <label for="customer_support_application_id">{{ __("Application ID") }}</label>
-                              <input type="text" name="customer_support_application_id" id="customer_support_application_id" placeholder="Please enter application ID" class="form-control" value="{{ old('customer_support_application_id', $preference->customer_support_application_id ?? '')}}">
+                              <input type="text" name="customer_support_application_id" id="customer_support_application_id" placeholder="{{ __('Please enter application ID') }}" class="form-control" value="{{ old('customer_support_application_id', $preference->customer_support_application_id ?? '')}}">
                               @if($errors->has('customer_support_application_id'))
                               <span class="text-danger" role="alert">
                                  <strong>{{ $errors->first('customer_support_application_id') }}</strong>
@@ -1165,65 +1165,123 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
 
    </div>
+
+   @php
+   $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable','is_price_by_role', 'is_free_delivery_by_roles']);
+   @endphp
    <div class="row">
-      <div class="col-12">
+      {{-- hubspot form --}}
+      <div class="col-xl-4 col-lg-4 mb-3">
          <!-- Social Logins title start -->
          <div class="page-title-box">
             <h4 class="page-title text-uppercase">CRM</h4>
          </div><!-- Social Logins title end -->
-      </div>
+
+         <form method="POST" action="{{route('additional.update')}}">
+            <input type="hidden" name="crm" id="crm" value="1">
+            <input type="hidden" name="send_to" id="send_to" value="configure">
+            @csrf
+               <!-- HubSpot card start -->
+               <div class="card-box h-100">
+                  <div class="row">
+                     <div class="col-12">
+                        <div class="form-group mb-0 switchery-demo">
+                           <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                              <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-hubspot"></i> <span>{{ __("Hubspot") }}</span></h5>
+   
+                              <button class="btn btn-info btn-block save_btn" name="hubspot_submit" type="submit"> {{ __("Save") }} </button>
+                           </label>
+                           <label for="" class="mr-3">{{ __("Enable") }}</label>
+                           <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable" class="form-control checkbox_change" data-className="is_hubspot_enable_hidden" data-color="#43bee1"
+                           @if(@$getAdditionalPreference['is_hubspot_enable'] == '1') checked='checked' value="1"  @endif>
+                           <input type="hidden"  @if(isset($getAdditionalPreference['is_hubspot_enable']) == 1) value="1" @else value="0" @endif  name="is_hubspot_enable"  id="is_hubspot_enable_hidden"/>
+   
+                           {{-- @if((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1')) checked='checked' @endif> --}}
+                        </div>
+                     </div>
+                  </div>
+                  {{-- <input type="hidden" name='custom_mods_config_additional' value='1'>
+                  <input type="hidden" name='is_hubspot' value='1'> --}}
+                  {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
+                  <div class="row hub_row" style="{{((isset($getAdditionalPreference['is_hubspot_enable']) && $getAdditionalPreference['is_hubspot_enable'] == 1)) ? '' : 'display:none;'}}">
+                     <div class="col-12">
+                           <div class="form-group mb-2 mt-2">
+                              <label for="fb_client_id">{{ __("Access token Key") }}</label>
+                              {{-- <input type="password" name="hubspot_access_token" id="hubspot_access_token" placeholder="" class="form-control" value="{{ old('hubspot_access_token', $preference->client_preferences_additional->is_hubspot_enable ?? '')}}"> --}}
+                              <input type="password" name="hubspot_access_token" id="hubspot_access_token" placeholder="" class="form-control" value="{{ old('hubspot_access_token',  $getAdditionalPreference['hubspot_access_token'] ?? '')}}">
+                              @if($errors->has('hubspot_client_id'))
+                              <span class="text-danger" role="alert">
+                                 <strong>{{ $errors->first('hubspot_access_token') }}</strong>
+                              </span>
+                              @endif
+                           </div>
+                     </div>
+                  </div>
+               </div><!-- HubSpot card end -->
+         </form>
+      </div> 
+      {{-- ends here hubspot form --}}
+
+      {{-- Free Delivery By Roles form --}}
+      <div class="col-xl-4 col-lg-4 mb-3">
+         <!-- Social Logins title start -->
+         <div class="page-title-box">
+            <h4 class="page-title text-uppercase">Free Delivery By Roles</h4>
+         </div><!-- Social Logins title end -->
+
+         <form method="POST" action="{{route('additional.update')}}">
+            <input type="hidden" name="crm" id="crm" value="1">
+            <input type="hidden" name="send_to" id="send_to" value="configure">
+            @csrf
+               <!-- HubSpot card start -->
+               <div class="card-box h-100">
+                  <div class="row">
+                     <div class="col-12">
+                        <div class="form-group mb-0 switchery-demo">
+                           <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                              <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-hubspot"></i> <span>{{ __("Free delivery by roles") }}</span></h5>
+   
+                              <button class="btn btn-info btn-block save_btn" name="free_delivery_submit" type="submit"> {{ __("Save") }} </button>
+                           </label>
+                           <label for="" class="mr-3">{{ __("Enable") }}</label>
+                           <input type="checkbox" data-plugin="switchery" id="is_free_delivery_by_roles" class="form-control checkbox_change" data-className="is_free_delivery_by_roles_hidden" data-color="#43bee1"
+                           @if(@$getAdditionalPreference['is_free_delivery_by_roles'] == '1') checked='checked' value="1"  @endif>
+                           <input type="hidden"  @if(isset($getAdditionalPreference['is_free_delivery_by_roles']) == 1) value="1" @else value="0" @endif  name="is_free_delivery_by_roles"  id="is_free_delivery_by_roles_hidden"/>
+   
+                           {{-- @if((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1')) checked='checked' @endif> --}}
+                        </div>
+                     </div>
+                  </div>
+                  {{-- <input type="hidden" name='custom_mods_config_additional' value='1'>
+                  <input type="hidden" name='is_hubspot' value='1'> --}}
+                  {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
+                  @php
+                     $allRoles = \App\Models\Role::get();
+                  @endphp
+                  <hr />
+                  <div class="row hub_row alCustomToggleColor" style="{{((isset($getAdditionalPreference['is_free_delivery_by_roles']) && $getAdditionalPreference['is_free_delivery_by_roles'] == 1)) ? '' : 'display:none;'}}">
+                     <div class="col-12">
+                        <label class="mr-2 mb-0">Apply free delivery to these roles on all products</label>
+
+                        @foreach($allRoles as $allRole)
+                           <div class="form-group mb-2 mt-2">
+                              <label for="fb_client_id">{{ $allRole->role }}</label>
+                              <input type="checkbox" data-plugin="switchery" id="is_free_delivery_by_roles" class="form-control checkbox_change" name="apply_free_del[{{$allRole->id}}]" data-className="is_free_delivery_by_roles_hidden" data-color="#43bee1" value="{{$allRole->id}}">
+                           </div>
+                        @endforeach
+
+                     </div>
+                  </div>
+               </div><!-- HubSpot card end -->
+         </form>
+      </div> 
+      {{-- end Free Delivery By Roles form --}}
+
+
    </div>
 
-   @php
-   $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable']);
-   @endphp
-   <form method="POST" action="{{route('additional.update')}}">
-      <input type="hidden" name="crm" id="crm" value="1">
-      <input type="hidden" name="send_to" id="send_to" value="configure">
-      @csrf
-      <div class="row">
-         <div class="col-xl-3 col-lg-6 mb-3">
-            <!-- HubSpot card start -->
-            <div class="card-box h-100">
-               <div class="row">
-                  <div class="col-12">
-                     <div class="form-group mb-0 switchery-demo">
-                        <label for="fb_login" class="d-flex align-items-center justify-content-between">
-                           <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-hubspot"></i> <span>{{ __("Hubspot") }}</span></h5>
 
-                           <button class="btn btn-info btn-block save_btn" name="hubspot_submit" type="submit"> {{ __("Save") }} </button>
-                        </label>
-                        <label for="" class="mr-3">{{ __("Enable") }}</label>
-                        <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable" class="form-control checkbox_change" data-className="is_hubspot_enable_hidden" data-color="#43bee1"
-                        @if(@$getAdditionalPreference['is_hubspot_enable'] == '1') checked='checked' value="1"  @endif>
-                        <input type="hidden"  @if(isset($getAdditionalPreference['is_hubspot_enable']) == 1) value="1" @else value="0" @endif  name="is_hubspot_enable"  id="is_hubspot_enable_hidden"/>
-
-                        {{-- @if((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1')) checked='checked' @endif> --}}
-                     </div>
-                  </div>
-               </div>
-               {{-- <input type="hidden" name='custom_mods_config_additional' value='1'>
-               <input type="hidden" name='is_hubspot' value='1'> --}}
-               {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
-               <div class="row hub_row" style="{{((isset($getAdditionalPreference['is_hubspot_enable']) && $getAdditionalPreference['is_hubspot_enable'] == 1)) ? '' : 'display:none;'}}">
-                  <div class="col-12">
-                     <div class="form-group mb-2 mt-2">
-
-                        <label for="fb_client_id">{{ __("Access token Key") }}</label>
-                        {{-- <input type="password" name="hubspot_access_token" id="hubspot_access_token" placeholder="" class="form-control" value="{{ old('hubspot_access_token', $preference->client_preferences_additional->is_hubspot_enable ?? '')}}"> --}}
-                        <input type="password" name="hubspot_access_token" id="hubspot_access_token" placeholder="" class="form-control" value="{{ old('hubspot_access_token',  $getAdditionalPreference['hubspot_access_token'] ?? '')}}">
-                        @if($errors->has('hubspot_client_id'))
-                        <span class="text-danger" role="alert">
-                           <strong>{{ $errors->first('hubspot_access_token') }}</strong>
-                        </span>
-                        @endif
-                     </div>
-                  </div>
-               </div>
-            </div><!-- HubSpot card end -->
-         </div>
-      </div>
-   </form>
+   
 
 
 
@@ -1310,7 +1368,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Pre Order Tips')}}<small class="d-block pr-5">{{ __('Manage the option to Tip before the Order') }}.</small></label>
+                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Pre Order Tips')}}<small class="d-block pr-5">{{ __('Manage the option to Tip before the Order.') }}.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="tip_before_order" id="tip_before_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_before_order == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1325,7 +1383,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-4">
                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                       <label for="auto_implement_5_percent_tip" class="mr-2 mb-0">{{__('Auto Implement Tip 5% ')}}<small class="d-block pr-5">{{__('Enable to apply auto implement 5 percent tip.')}}</small></label>
+                       <label for="auto_implement_5_percent_tip" class="mr-2 mb-0">{{__('Auto Implement Tip 5%')}}<small class="d-block pr-5">{{__('Enable to apply auto implement 5 percent tip.')}}</small></label>
                       <span> <input type="checkbox" data-plugin="switchery" name="auto_implement_5_percent_tip" id="auto_implement_5_percent_tip" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->auto_implement_5_percent_tip == '1')) checked='checked' @endif>
                        </span>
                     </div>
@@ -1362,7 +1420,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="minimum_order_batch" class="mr-2 mb-0">{{__('Minimum Order/Increment')}}<small class="d-block pr-5"> {{ __('Set the minimum order and minimum increment per product') }}.</small></label>
+                        <label for="minimum_order_batch" class="mr-2 mb-0">{{__('Minimum Order/Increment')}}<small class="d-block pr-5"> {{ __('Set the minimum order and minimum increment per product.') }}.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="minimum_order_batch" id="minimum_order_batch" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->minimum_order_batch == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1503,14 +1561,32 @@ $sms_crendential = json_decode($preference->sms_credentials);
                </div>
                <div class="col-md-4">
                   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                     <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Show map on search screen')}}<small class="d-block pr-5">{{__("Enable to show activate vendor's in map-view on search screen.")}}</small></label>
+                     <label for="map_on_search_screen" class="mr-2 mb-0">{{__('Show map on search screen')}}<small class="d-block pr-5">{{__("Enable to show activate vendor's in map-view on search screen.")}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="map_on_search_screen" id="map_on_search_screen" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->map_on_search_screen == '1')) checked='checked' @endif>
                      </span>
                   </div>
                </div>
+
+               <div class="col-md-4" id="slots_with_service_area_div">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                      <label for="slots_with_service_area" class="mr-2 mb-0">{{__('Food Truck Service')}}<small class="d-block pr-5">{{__('Enable or disable multiple service area for trucks')}}</small></label>
+                  <span> <input type="checkbox" data-plugin="switchery" name="slots_with_service_area" id="slots_with_service_area" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->slots_with_service_area == '1')) checked='checked' @endif>
+                      </span>
+                  </div>
+              </div>
+                <div class="col-md-4">
+                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                        <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Price By Role')}}<small class="d-block pr-5">{{__("Enable to show price by role on edit's vendor screen.")}}</small></label>
+                        <span>
+                            <input type="checkbox" data-plugin="switchery" name="is_price_by_role_switch" id="is_price_by_role_switch" class="form-control checkbox_change" data-className="is_price_by_role" data-color="#43bee1" @if( $getAdditionalPreference['is_price_by_role'] == '1') checked='checked' @endif>
+                            <input type="hidden" @if($getAdditionalPreference['is_price_by_role'] == 1) value="1" @else value="0" @endif name="is_price_by_role" id="is_price_by_role"/>
+                        </span>
+                    </div>
+                </div>
+
                <div class="col-md-4 d-none">
                   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                     <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Long Term Service')}}<small class="d-block pr-5">{{__("Enable to add long term service.")}}</small></label>
+                     <label for="is_long_term_service" class="mr-2 mb-0">{{__('Long Term Service')}}<small class="d-block pr-5">{{__("Enable to add long term service.")}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="is_long_term_service_switch" id="is_long_term_service_switch" class="form-control checkbox_change" data-className="is_long_term_service"  data-color="#43bee1" @if( @getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == '1') checked='checked' @endif>
                      </span>
                      <input type="hidden"  @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1) value="1" @else value="0" @endif  name="is_long_term_service"  id="is_long_term_service"/>

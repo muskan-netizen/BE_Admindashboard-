@@ -10,9 +10,9 @@ use App\Models\UserVendor;
 
 class ProductVariant extends Model
 {
-	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price','incremental_price_per_min'];
+	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price','incremental_price_per_min','role_id'];
 
-  protected $appends = ['actual_price'];
+  protected $appends = ['actual_price', 'new_price'];
 
 
 	public function getImageAttribute($value)
@@ -28,7 +28,7 @@ class ProductVariant extends Model
       $values['image_fit'] = \Config::get('app.FIT_URl');
       return $values;
     }
-  
+
     public function set(){
 	    return $this->hasMany('App\Models\ProductVariantSet')
 	    		->join('variant_options as opt', 'opt.id', 'product_variant_sets.variant_option_id')
@@ -45,6 +45,9 @@ class ProductVariant extends Model
 		return $this->hasOne('App\Models\ProductVariantImage', 'product_variant_id', 'id')
 	    		->select('product_variant_id', 'product_image_id')->groupBy('product_variant_id');
 	}
+    public function category(){
+        return $this->belongsToMany('App\Models\ProductCategory', 'products','category_id','id');
+    }
 
 	public function media(){
 		return $this->hasMany('App\Models\ProductVariantImage', 'product_variant_id', 'id')->select('product_variant_id', 'product_image_id');
@@ -74,6 +77,15 @@ class ProductVariant extends Model
     public function wishlist(){
        return $this->hasOne('App\Models\UserWishlist', 'product_id', 'product_id')->select('product_id', 'user_id');
     }
+
+    public function productVariantByRole(){
+        if(auth()->user() !=null){
+            return $this->hasOne('App\Models\ProductVariantByRole', 'product_variant_id', 'id')->where('role_id', Auth::user()->role_id);
+        }else{
+            return $this->hasOne('App\Models\ProductVariantByRole', 'product_variant_id', 'id')->where('role_id', 1);
+        }
+		
+	}
 
     public function checkIfInCart()
     {
@@ -112,29 +124,59 @@ class ProductVariant extends Model
     {
        // if vendor actual price = price - markup price
         if(auth()->user() !=null && !auth()->user()->is_admin == 1){
-                return $this->price - $this->markup_price??0;
+            return $this->price - $this->markup_price??0;
         }
-                return $this->price;
+
+        //  price based on role
+        if(auth()->user() !=null){
+            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+            if($getAdditionalPreference['is_price_by_role'] == 1 && $this->productVariantByRole){
+                return $this->productVariantByRole->amount;
+            }
+        }
+        
+        return $this->price;
+    }
+
+    // do not use this. price based on role
+    public function getNewPriceAttribute()
+    {
+
+        if(auth()->user() !=null){
+            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+            if($getAdditionalPreference['is_price_by_role'] == 1 && $this->productVariantByRole){
+                return $this->productVariantByRole->amount;
+            }
+            return $this->price;
+        }
+        return $this->price;
     }
 
     public function getPriceAttribute($value)
     {
         $checkMarkup = 0;
-        $vendor = Product::where('id', $this->product_id)->value('vendor_id');
-        $checkMarkup = Vendor::where('id',$vendor)->value('add_markup_price');
+        $vendor = Product::where('id', $this->product_id)->select('vendor_id','tax_category_id')->first();
+        $checkMarkup = Vendor::where('id',$vendor->vendor_id)->value('add_markup_price');
         //if vendor price add with markup price
            if(auth()->user() !=null && auth()->user()->is_admin == 1){
-            $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor)->first();
+            $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor->vendor_id)->first();
             if($userVendor){
                 return $value;
             }
         }
-           if($checkMarkup){
-                return $value + $this->markup_price??0;
+        if($checkMarkup){
+            return $value + $this->markup_price??0;
+        }
+
+        //  price based on role
+        if(auth()->user() !=null){
+            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+            if($getAdditionalPreference['is_price_by_role'] == 1 && $this->productVariantByRole){
+                return $this->productVariantByRole->amount;
             }
-        
-            return $value;  
-           
+        }
+        return $value;
+
     }
 
     public function getMarkupPriceAttribute($value)
@@ -146,9 +188,9 @@ class ProductVariant extends Model
            if($checkMarkup){
                 return $value;
             }
-        
-            return 0;  
-           
+
+            return 0;
+
     }
 
 }

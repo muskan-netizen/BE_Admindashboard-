@@ -20,7 +20,7 @@
         .exzoom .exzoom_zoom_outer{display:none}
         }
     */
-    .border-product.al_disc ol,.border-product.al_disc ul{padding-left:30px}.border-product.al_disc ol li,.border-product.al_disc ul li{display:list-item;padding-left:0;padding-top:8px;list-style-type:disc;font-size:14px}.border-product.al_disc ol li{list-style-type:decimal}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit} 
+    .border-product.al_disc ol,.border-product.al_disc ul{padding-left:30px}.border-product.al_disc ol li,.border-product.al_disc ul li{display:list-item;padding-left:0;padding-top:8px;list-style-type:disc;font-size:14px}.border-product.al_disc ol li{list-style-type:decimal}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}
 
     .img-zoom-lens {
       position: absolute;
@@ -31,7 +31,7 @@
       opacity: .2;
       display: block;
     }
-    
+
     .img-zoom-result {
         border: 1px solid #d4d4d4;
         width: 100%;
@@ -54,7 +54,7 @@
         z-index: 10;
         display: none;
     }
-     
+
     </style>
 
 @endsection
@@ -64,7 +64,7 @@
 @if(!empty($category))
 @include('frontend.included_files.products_breadcrumb')
 @endif
-@php 
+@php
   $img = '';
 @endphp
 <!-- <div class="toast">
@@ -178,7 +178,7 @@
                                     <div class="exzoom_img_box mb-2">
                                         <ul class='exzoom_img_ul'>
                                         @if(!empty($product->media))
-                                          
+
                                             @foreach($product->media as $k => $image)
                                                     @php
                                                         if(isset($image->pimage)){
@@ -251,14 +251,14 @@
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
                                         @if($product->inquiry_only == 0)
                                             <h3 id="productPriceValue" class="mb-md-3">
-                                                <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}</span></b>
+                                                <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
                                                 @if($product->variant[0]->compare_at_price > 0 )
                                                     <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
                                                 @endif
                                             </h3>
                                         @endif
                                     </div>
-                                   
+
                                     <div id="product_variant_options_wrapper">
                                         @if(!empty($product->variantSet))
                                             @php
@@ -298,7 +298,7 @@
                                     @if($product->category->categoryDetail->type_id == 10)
                                         @include('frontend.product-part.booking-slot')
                                     @endif
-                                    
+
                                     <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'block'; ?>">
                                         @if($product->inquiry_only == 0)
                                         <div class="product-description border-product pb-0">
@@ -890,6 +890,7 @@
     });
     function updatePrice()
     {
+        
         var variants = [];
         var options = [];
         $('.changeVariant').each(function() {
@@ -927,7 +928,7 @@
                             $('.incremental-left-minus').click();
                             //$('#blocktime, #blocktime2').change();
                         }
-                        
+
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
@@ -1098,7 +1099,7 @@
             $('.img-zoom-result').show();
             imageZoom(imageId, "myresult");
         });
-    
+
         $('.myimage1').click(function(){
             var new_image = $(this).attr('src');
             $('#main_image').attr('src',new_image);
@@ -1107,7 +1108,7 @@
             $('.img-zoom-result').hide();
             $('.img-zoom-lens').remove();
         });
-    
+
         </script>
 
 @endsection

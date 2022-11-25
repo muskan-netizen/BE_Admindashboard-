@@ -309,7 +309,7 @@ class CampaignController extends BaseController
                     {                             
                         if($request->type==3)
                         {
-                            $getdevicedetail = UserDevice::where('user_id',$users[$j]->id)->latest()->first();
+                            $getdevicedetail = UserDevice::where('user_id',$users[$j]->id)->orderBy('id','DESC')->first();
                             if($getdevicedetail)
                             {
                                 $roasterdata[] = array(
@@ -359,7 +359,7 @@ class CampaignController extends BaseController
                     {
                         if($request->type==3)
                         {
-                            $getdevicedetail = UserDevice::where('user_id',$vendors[$j]->user_id)->latest()->first();
+                            $getdevicedetail = UserDevice::where('user_id',$vendors[$j]->user_id)->orderBy('id','DESC')->first();
                             if($getdevicedetail)
                             {
                                 $roasterdata[] = array(
@@ -480,9 +480,9 @@ class CampaignController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($domain = '', $id){
-        Campaign::where('id', $id)->delete();
-        CampaignRoster::where('campaign_id',$id)->delete();
+    public function destroy(Request $request){
+        Campaign::where('id', $request->campaign_id)->delete();
+        CampaignRoster::where('campaign_id',$request->campaign_id)->delete();
         return redirect()->back()->with('success', 'Campaign deleted successfully!');
     }
 

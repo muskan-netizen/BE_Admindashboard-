@@ -222,6 +222,7 @@
                         <span class="error text-danger" id="stripe_card_error"></span>
                     </div>
                 <% } %>
+
             <% } %>
         <% }); %>
     <% } %>

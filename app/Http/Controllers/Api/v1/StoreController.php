@@ -1543,7 +1543,7 @@ class StoreController extends BaseController{
 			if($publishtype == "all" ){
 				$products = $products->paginate($limit, $page);
 			}else{
-				$products = $products->where('is_live', 1)->paginate($limit, $page);
+				$products = $products->paginate($limit, $page);
 			}
 			
 			foreach ($products as $product) {

@@ -43,14 +43,14 @@
 
 <!-- New Customize Page -->
 @php
-$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency']);
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role']);
 @endphp
 
    <!--Localization start -->
     <div class="row">
       <div class="col-12">
          <div class="page-title-box">
-            <h4 class="page-title text-uppercase">{{ __("Localization ") }}</h4>
+            <h4 class="page-title text-uppercase">{{ __("Localization") }}</h4>
          </div>
       </div>
     </div>
@@ -338,7 +338,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
         <div class="col-xl-3 col-lg-3 mb-3">
             <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
                 @csrf
-            <!-- Pickup & Delivery section start -->
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <!-- Pickup & Delivery section start -->
             <div class="card-box h-100">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
@@ -1146,6 +1147,190 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             </div>
                             @endforeach
                         </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Enter Drop Location") }}</label>
+                                </div>
+                            </div>
+                            @php
+
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="enter_drop_location_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="enter_drop_location_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Enter Drop Location'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Vendor Name") }}</label>
+                                </div>
+                            </div>
+                            @php
+
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="enter_vendor_name_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="enter_vendor_name_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Vendor Name'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Ride Accepted") }}</label>
+                                </div>
+                            </div>
+                            @php
+
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="ride_accepted_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="ride_accepted_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Ride Accepted'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Searching For Nearby Drivers") }}</label>
+                                </div>
+                            </div>
+                            @php
+
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="search_nearby_driver_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="search_nearby_driver_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Searching For Nearby Drivers'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Hold On! We are looking for drivers nearby!") }}</label>
+                                </div>
+                            </div>
+                            @php
+
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="looking_driver_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="looking_driver_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Hold On! We are looking for drivers nearby!'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Product Name") }}</label>
+                                </div>
+                            </div>
+                            @php
+
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="product_name_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="product_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Product Name'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Stock Status") }}</label>
+                                </div>
+                            </div>
+                            @php
+
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="stock_status_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="stock_status_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Stock Status'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
                     </div>
                 </div>
             </form>
@@ -1157,7 +1342,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
     <div class="row">
       <div class="col-12">
          <div class="page-title-box">
-            <h4 class="page-title text-uppercase">{{ __("User Onboarding ") }}</h4>
+            <h4 class="page-title text-uppercase">{{ __("User Onboarding") }}</h4>
          </div>
       </div>
     </div>
@@ -1197,8 +1382,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                         <div class="col-sm-12">
                             <div class="form-group d-flex justify-content-between">
                                 <label for="Phone_signup" class="mr-3 mb-0">{{ __("Phone SignUp") }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="is_phone_signup_switch" id="is_phone_signup_switch" class="form-control checkbox_change" data-className="is_phone_signup"  data-color="#43bee1" @if( $getAdditionalPreference['is_phone_signup'] == '1') checked='checked' @endif>
-                                <input type="hidden"  @if($getAdditionalPreference['is_phone_signup'] == 1) value="1" @else value="0" @endif  name="is_phone_signup"  id="is_phone_signup"/>
+                                <input type="checkbox" data-plugin="switchery" name="is_phone_signup_switch" id="is_phone_signup_switch" class="form-control checkbox_change" data-className="is_phone_signup"  data-color="#43bee1" @if( @$getAdditionalPreference['is_phone_signup'] == '1') checked='checked' @endif>
+                                <input type="hidden"  @if(@$getAdditionalPreference['is_phone_signup'] == 1) value="1" @else value="0" @endif  name="is_phone_signup"  id="is_phone_signup"/>
                             </div>
                         </div>
                         @foreach($verify_options as $key => $opt)
@@ -1458,7 +1643,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                 <input type="hidden" name="send_to" id="send_to" value="customize">
                 <div class="card-box mb-0 pb-1 h-100">
                     <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="header-title">Refer and Earn</h4>
+                    <h4 class="header-title">{{ __("Refer and Earn") }}</h4>
                     <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
                     <div class="col-xl-12 my-2" id="addCur-160">
@@ -1473,7 +1658,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
             </form>
         </div>
         <!-- Start Google analytics -->
-  
+
         @if(!$preference->client_preferences_additional->isEmpty())
             @foreach($preference->client_preferences_additional as $addiPreference)
                 @if($addiPreference->key_name == 'gtag_id')
@@ -1526,52 +1711,47 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                 <input type="hidden" name="send_to" id="send_to" value="customize">
                 <div class="card-box mb-0 pb-1 h-100">
                     <div class="d-flex align-items-center justify-content-between">
-                        <h4 class="header-title">Slotting & Orders Scheduling </h4>
+                        <h4 class="header-title">{{ __("Slotting & Orders Scheduling") }} </h4>
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
                     <div class="row">
                         <div class="col-lg-6 my-2">
                             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
+                                <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">{{__('Disable Order Scheduling across the platform to limit only to Instant Orders.')}}</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="off_scheduling_at_cart" id="off_scheduling_at_cart" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->off_scheduling_at_cart == '1')) checked='checked' @endif>
                             </span>
                             </div>
                         </div>
+
                         <div class="col-lg-6 my-2">
                             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="delay_order" class="mr-2 mb-0">{{__('Delay Order')}}<small class="d-block pr-5">Option to add delay time per product separately for Dine In/ Delivery/ Takeaway to restrict order to scheduling only with added Delay.</small></label>
+                                <label for="delay_order" class="mr-2 mb-0">{{__('Delay Order')}}<small class="d-block pr-5">{{__('Option to add delay time per product separately for Dine In/ Delivery/ Takeaway to restrict order to scheduling only with added Delay.')}}</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="delay_order" id="delay_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delay_order == '1')) checked='checked' @endif>
                             </span>
                             </div>
                         </div>
                         <div class="col-lg-6 my-2" id="scheduling_with_slots_div" style="display:none;">
                             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="scheduling_with_slots" class="mr-2 mb-0">{{__('Schedule Pickup & Dropoff With Slots')}}<small class="d-block pr-5">Enable or disable schedule pickup & dropoff with slots for laundry.</small></label>
+                                <label for="scheduling_with_slots" class="mr-2 mb-0">{{__('Schedule Pickup & Dropoff With Slots')}}<small class="d-block pr-5">{{__('Enable or disable schedule pickup & dropoff with slots for laundry.')}}</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="scheduling_with_slots" id="scheduling_with_slots" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->scheduling_with_slots == '1')) checked='checked' @endif>
                                 </span>
                             </div>
                         </div>
                         <div class="col-lg-6 my-2" id="same_day_delivery_for_schedule_div" style="display:none;">
                             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Scheduling')}}<small class="d-block pr-5">Enable or disable same day pickup & delivery for scheduling.</small></label>
+                                <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Scheduling')}}<small class="d-block pr-5">{{__('Enable or disable same day pickup & delivery for scheduling.')}}</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="same_day_delivery_for_schedule" id="same_day_delivery_for_schedule" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->same_day_delivery_for_schedule == '1')) checked='checked' @endif>
                                 </span>
                             </div>
                         </div>
                         <div class="col-lg-6 my-2" id="same_day_orders_for_rescheduing_div" style="display:none;">
                             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Rescheduling')}}<small class="d-block pr-5">Enable or disable same day pickup & delivery for rescheduling.</small></label>
+                                <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Rescheduling')}}<small class="d-block pr-5">{{__('Enable or disable same day pickup & delivery for rescheduling.')}}</small></label>
                             <span> <input type="checkbox" data-plugin="switchery" name="same_day_orders_for_rescheduing" id="same_day_orders_for_rescheduing" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->same_day_orders_for_rescheduing == '1')) checked='checked' @endif>
                                 </span>
                             </div>
                         </div>
-                        <div class="col-lg-6 my-2" id="slots_with_service_area_div">
-                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="slots_with_service_area" class="mr-2 mb-0">{{__('Food Truck Service')}}<small class="d-block pr-5">{{__('Enable or disable multiple service area for trucks')}}</small></label>
-                            <span> <input type="checkbox" data-plugin="switchery" name="slots_with_service_area" id="slots_with_service_area" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->slots_with_service_area == '1')) checked='checked' @endif>
-                                </span>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
             </form>
@@ -1721,7 +1901,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                              </select> -->
                          </div>
                          <div class="col-xl-12 my-2 p-0" id="late-cancellation" style="{{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time > 0)? 'display:block;' : 'display:none;'}}">
-                             <label class="primaryCurText">{{ __('Late Cancellation Fee').'(%)' }}</label>
+                             <label class="primaryCurText">{{ __('Late Cancellation Fee') }}(%)</label>
                              <input class="form-control" type="number" min="0" id="cancellation_percentage" name="cancellation_percentage" value="{{ !empty($preference->cancellation_percentage)? $preference->cancellation_percentage : 20}}">
                          </div>
                      </div>
@@ -1731,7 +1911,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
             <div class="col-lg-4 col-xl-3 mb-3">
                 <div class="col-12">
                     <div class="page-title-box">
-                    <h4 class="page-title text-uppercase">{{ __("Token") }}</h4>
+                        <h4 class="page-title text-uppercase">{{ __("Token") }}</h4>
                     </div>
                 </div>
                 <form method="POST" class="h-100" action="{{route('additional.update')}}">
@@ -1744,18 +1924,18 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                         </div>
                         <div class="col-xl-12 my-2 p-0" id="">
                                         <!-- Token card start -->
-                
+
                     <div class="row">
                        <div class="col-12">
                           <div class="form-group mb-0 switchery-demo">
                              <label for="" class="mr-3">{{ __("Enable") }}</label>
-                             <input type="checkbox" data-plugin="switchery" id="is_token_currency_enable" class="form-control checkbox_change" data-className="is_token_currency_enable_hidden" data-color="#43bee1" 
+                             <input type="checkbox" data-plugin="switchery" id="is_token_currency_enable" class="form-control checkbox_change" data-className="is_token_currency_enable_hidden" data-color="#43bee1"
                              @if(@$getAdditionalPreference['is_token_currency_enable'] == '1') checked='checked' value="1"  @endif>
                              <input type="hidden"  @if(isset($getAdditionalPreference['is_token_currency_enable']) == 1) value="1" @else value="0" @endif name="is_token_currency_enable" id="is_token_currency_enable_hidden"/>
                           </div>
                        </div>
                     </div>
-    
+
                     <div class="row token_row" style="{{((isset($getAdditionalPreference['is_token_currency_enable']) && $getAdditionalPreference['is_token_currency_enable'] == 1)) ? '' : 'display:none;'}}">
                        <div class="col-12">
                           <div class="form-group row mt-2 d-flex align-items-center">
@@ -1772,13 +1952,55 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                        </div>
                     </div>
                 <!-- Token card end -->
-    
-                
-    
+
+
+
                         </div>
                     </div>
                 </form>
             </div>
+
+            {{-- Roles Enable setting for price, that is, is_enable_pricing (START) --}}
+            @if (isset($getAdditionalPreference['is_price_by_role']))
+                @if($getAdditionalPreference['is_price_by_role'] == '1')
+                    <div class="col-lg-4 col-xl-3 mb-3">
+                        <div class="col-12">
+                            <div class="page-title-box">
+                            <h4 class="page-title text-uppercase">{{ __("Role") }}</h4>
+                            </div>
+                        </div>
+                        <form method="POST" class="h-100" action="{{route('customize.updateIsPriceEnable')}}">
+                            @csrf
+                            <div class="card-box pb-1 h-100">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <h4 class="header-title ">{{ __('Enable price based on Roles') }}</h4>
+                                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                                </div>
+                                <div class="col-xl-12 my-2 p-0" id="">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group mb-0 switchery-demo">
+                                                @if (isset($roles))
+                                                    @foreach ($roles as $key => $_role)
+
+                                                        <input type="text" name="role[{{ $_role['id'] }}]" id="role{{ $_role['id'] }}" value="{{ $_role['role'] }}">
+                                                        <input type="hidden" name="role_id[{{ $_role['id'] }}]" value="{{ $_role['id'] }}">
+
+                                                        <input type="checkbox"  name="is_enable_pricing[{{ $_role['id'] }}]" data-plugin="switchery" id="is_enable_pricing" class="form-control checkbox_change" data-className="is_enable_pricing_hidden" data-color="#43bee1"
+                                                        @if(@$_role['is_enable_pricing'] == '1') checked='checked' value="1"  @endif data-role-id={{$_role['id']}}>
+                                                        <br>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                @endif
+            @endif
+            {{-- Roles Enable setting for price, that is, is_enable_pricing (END) --}}
      </div>
 
 <div id="add_or_edit_social_media_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
@@ -3110,6 +3332,15 @@ $(document).ready(function(){
     });
 
 </script>
+
+{{-- Insert role_id (Start) --}}
+    {{-- <script>
+        $(".is_enable_pricing_via_role").on("change paste keyup", function() {
+            var role_id = $(this).attr('data-role-id');
+            $('#role_id_for_pricing').val(role_id);
+        });
+    </script> --}}
+{{-- Insert role_id (End) --}}
 
 @if($preference->is_static_dropoff == '1')
     @include('backend.setting.customizeDatatablescript')

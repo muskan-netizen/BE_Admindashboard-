@@ -270,7 +270,8 @@ $(document).ready( async function () {
             dataType: 'json',
             url: `/setSessionIndex?type=${type}`,
             success: function (response) {
-               location.reload();
+               //location.reload();
+               window.location.href = home_page_url;
             }
         });
     }
@@ -922,8 +923,10 @@ $(document).ready( async function () {
                     if($(".nav-tabs.vendor_mods .nav-link").length > 0){
                         vendor_mod = $(".nav-tabs.vendor_mods").attr("data-mod");
                     }
-                    getHomePageCategoryMenu(latitude, longitude, vendor_mod);
-                    getHomePage(latitude, longitude, vendor_mod);
+                    OrderStorage.setStorageSingle('cartProductCount',0);
+                    setSession(vendor_mod);
+                    //getHomePageCategoryMenu(latitude, longitude, vendor_mod);
+                    //getHomePage(latitude, longitude, vendor_mod);
                 }
             }
         });

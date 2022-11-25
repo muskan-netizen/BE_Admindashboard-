@@ -65,21 +65,21 @@
         <div class="col-md-4 text-center mb-2">
             <div class="alProDuctBannerImg">
                 <img src="{{$multiBanner->image['proxy_url'] . '200/100' . $multiBanner->image['image_path']}}" alt="" class="w-100">
-                <span class=""><a class='deleteMultiBanner' data-banner_id="{{$multiBanner->id }}" href="javascript:void(0)"><i class="fa fa-times "  ></i></a></span>    
-            </div> 
+                <span class=""><a class='deleteMultiBanner' data-banner_id="{{$multiBanner->id }}" href="javascript:void(0)"><i class="fa fa-times "  ></i></a></span>
+            </div>
         </div>
         @endforeach
         {{-- <div class="col-md-4 text-center mb-2">
             <div class="alProDuctBannerImg">
                 <img src="https://images.royoorders.com/insecure/fill/200/100/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/vendor/bDZm2MWRNof7IyTlie6E9aQYWUsL1YI7DLCB9dJb.jpg@webp" alt="" class="w-100">
-                <span class=""><i class="fa fa-times"></i></span>    
-            </div> 
+                <span class=""><i class="fa fa-times"></i></span>
+            </div>
         </div>
         <div class="col-md-4 text-center mb-2">
             <div class="alProDuctBannerImg">
                 <img src="https://images.royoorders.com/insecure/fill/200/100/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/vendor/bDZm2MWRNof7IyTlie6E9aQYWUsL1YI7DLCB9dJb.jpg@webp" alt="" class="w-100">
-                <span class=""><i class="fa fa-times"></i></span>    
-            </div> 
+                <span class=""><i class="fa fa-times"></i></span>
+            </div>
         </div> --}}
     </div>
     @endif
@@ -189,6 +189,7 @@
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+                    
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Need Container Charges?'),['class' => 'control-label']) !!}
@@ -209,38 +210,54 @@
                     </div>
                     @endif
 
-                     <div class="col-md-12">
-                        <div class="form-group" id="order_min_amountInput">
-                            {!! Form::label('title', 'Absolute Min Order Value [AMOV]',['class' => 'control-label']) !!}
-                            <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{$vendor->order_min_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')
+                        @if(isset($roles))
+                            @foreach($roles as $role)
+                                <div class="col-md-12">
+                                    <div class="form-group" id="order_min_amountInput">
+                                        @php
+                                            $label = 'Absolute Min Order Value ['.$role->role.']';
+                                        @endphp
+                                        {!! Form::label('title',  $label,['class' => 'control-label']) !!}
+                                        <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount_arr[{{$role->id}}]" type="text" value="{{$role->order_min_amount ?? '0.00' }}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    @else
+                        <div class="col-md-12">
+                            <div class="form-group" id="order_min_amountInput">
+                                {!! Form::label('title',  __('Absolute Min Order Value [AMOV]'),['class' => 'control-label']) !!}
+                                <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{$vendor->order_min_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
 
                     @if($client_preference_detail->static_delivey_fee == 1)
                     <div class="col-md-12">
                         <div class="form-group" id="order_amount_for_delivery_feeInput">
-                            {!! Form::label('title', 'Min Order Value (with Delivery fee) [MOV]',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Min Order Value (with Delivery fee) [MOV]'),['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="order_amount_for_delivery_fee" type="text" value="{{$vendor->order_amount_for_delivery_fee}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     </div>
 
                     <div class="col-md-12">
                         <div class="form-group" id="delivery_fee_minimumInput">
-                            {!! Form::label('title', 'Delivery Fee For Below MOV',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Delivery Fee For Below MOV'),['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="delivery_fee_minimum" type="text" value="{{$vendor->delivery_fee_minimum}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     </div>
 
                     <div class="col-md-12">
                         <div class="form-group" id="delivery_fee_maximumInput">
-                            {!! Form::label('title', 'Delivery Fee For Above MOV',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Delivery Fee For Above MOV'),['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="delivery_fee_maximum" type="text" value="{{$vendor->delivery_fee_maximum}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     </div>
                     @endif
 
-                    
+
                     @if(EasebuzzSubMerchent() == 1)
                     <div class="col-md-12">
                         <div class="form-group" id="social_link">
@@ -502,8 +519,18 @@
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="commission_monthly" type="text" value="{{$vendor->commission_monthly}}">
                         </div>
                     </div> -->
-                    <div class="col-md-12">
-                        <div class="form-group" id="service_fee_percentInput">
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Fixed Service Fee'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="fixed_service_charge" class="form-control" data-color="#43bee1" @if($vendor->fixed_service_charge == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    <div class="col-md-12" id="fixed_service_charge_div" style="display:{{$vendor->fixed_service_charge == 1 ? 'block' : 'none'}}">
+                        <div class="form-group">
+                            {!! Form::label('title', __('Service Fee'),['class' => 'control-label']) !!}
+                            <input class="form-control" name="service_charge_amount" type="text" value="{{$vendor->service_charge_amount}}" min="0" {{$vendor->status == 1 ? '' : 'disabled'}} >
+                        </div>
+                    </div>
+                    <div class="col-md-12" id="service_fee_percentInput" style="display:{{$vendor->fixed_service_charge == 1 ? 'none' : 'block'}}">
+                        <div class="form-group">
                             {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
                             <input class="form-control" name="service_fee_percent" type="text" min="0" maxlength="5" value="{{$vendor->service_fee_percent}}" onkeypress="return isNumberKey(event)" onkeydown="if(this.value.length > 6) return false;">
                         </div>
@@ -751,42 +778,43 @@
                             @php
                             $mediaIcons = [];
                             @endphp
-                            
-                            @forelse($socialMediaUrls as $socialMediaUrl)
-                            
-                            <tr align="center">
-                            @php
-                            $mediaIcons[] = $socialMediaUrl->icon;
-                            @endphp
-                                <td>
-                                    <i class="fab fa-{{$socialMediaUrl->icon}}  social-media-{{$socialMediaUrl->icon}}" aria-hidden="true"></i>
-                                </td>
-                                <td>
-                                    <a href="{{$socialMediaUrl->url}}" class="social-media-url-{{$socialMediaUrl->icon}}" target="_blank">{{$socialMediaUrl->url}}</a>
-                                </td>
-                                <td>
-                                    <div>
-                                        <div class="inner-div">
-                                            <button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
-                                                <i class="mdi mdi-delete"></i>
-                                            </button>
+
+                            @if (isset($socialMediaUrls))
+                                @forelse($socialMediaUrls as $socialMediaUrl)
+
+                                <tr align="center">
+                                @php
+                                $mediaIcons[] = $socialMediaUrl->icon;
+                                @endphp
+                                    <td>
+                                        <i class="fab fa-{{$socialMediaUrl->icon}}  social-media-{{$socialMediaUrl->icon}}" aria-hidden="true"></i>
+                                    </td>
+                                    <td>
+                                        <a href="{{$socialMediaUrl->url}}" class="social-media-url-{{$socialMediaUrl->icon}}" target="_blank">{{$socialMediaUrl->url}}</a>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <div class="inner-div">
+                                                <button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
+                                                    <i class="mdi mdi-delete"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr align="center">
-                                <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
-                            </tr>
-                            @endforelse
-                                
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr align="center">
+                                    <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                                </tr>
+                                @endforelse
+                            @endif
                             </tbody>
                         </table>
                         <input type="hidden" id="added-icons" value="{{ json_encode($mediaIcons) }}">
                     </div>
                 </div>
-            
-            
+
+
         </div>
     </div>
 </div>
@@ -807,7 +835,7 @@
                     <div class="">
                         <label>{{ __('Upload Banner') }}</label>
                         <input type="file" accept="image/*" data-plugins="dropify" name="banner_image" class="dropify" />
-                        
+
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -946,9 +974,9 @@ $( document ).ready(function() {
                 if(res.status == 'Success'){
                     var icon = "success";
                     var addedIcon = 'social-media-' + res.message.icon;
-                    
+
                     console.log('addedIcon', addedIcon);
-                    if ( $('.'+addedIcon).length ) {   
+                    if ( $('.'+addedIcon).length ) {
                         var addedurl = 'social-media-url-'+ res.message.icon;
                         $("."+addedurl).text(res.message.url);
                         $("."+addedurl).attr('href', res.message.url);
@@ -959,7 +987,7 @@ $( document ).ready(function() {
                     }
 
                     $('#social_url').val('');
-                
+
 
                 }else{
                     var icon = "error";
@@ -970,7 +998,7 @@ $( document ).ready(function() {
                     icon: icon,
                     button: "OK",
                 });
-                
+
             },
             error: function(data) {
                 $('#error-msg').text(data.message);
@@ -985,7 +1013,7 @@ $( document ).ready(function() {
     //     var addedIcons = $('#added-icons').val();
     //     var socialIcon = $('#social_icon').val();
     //     var socialUrl = $('#social_url').val();
-        
+
     //     var ajaxUrl = "{{route('vendor.social.media.urls')}}";
 
     // });
@@ -999,7 +1027,7 @@ $( document ).ready(function() {
     });
     $(document).on('click', '.addUrlRow-Add', function(e) {
         var rowCount = $('#social-media-list tr').length;
-        
+
         if(rowCount == 12){
             console.log('rowCount', rowCount);
             return false;
@@ -1010,11 +1038,11 @@ $( document ).ready(function() {
         $clone.find('.lasttd').html('<a href="javascript:void(0);" class="action-icon deleteUrlRow"> <i class="mdi mdi-delete"></i></a>');
         $('.urlTableAdd').append($clone);
     });
-    
+
     $("#manageSocialMedia").on('click', '.deleteUrlRow', function() {
         $(this).closest('tr').remove();
     });
-    
+
     // search users for set permission
     $('#id_search_user_for_permission').keyup(function(){
         var query = $(this).val();
@@ -1252,6 +1280,18 @@ $( document ).ready(function() {
             $("#need_container_charges").css("display", "none");
         } else {
             $("#need_container_charges").css("display", "block");
+        }
+    })
+
+    $("input[name='fixed_service_charge']").change(function() {
+        if($(this).prop('checked')){
+            $("#fixed_service_charge_div").css("display", "block");
+            $("#service_fee_percentInput").css("display", "none");
+            $("input[name='service_fee_percent']").val(0.00);
+        } else {
+            $("#fixed_service_charge_div").css("display", "none");
+            $("input[name='service_charge_amount']").val(0.00);
+            $("#service_fee_percentInput").css("display", "block");
         }
     })
 </script>

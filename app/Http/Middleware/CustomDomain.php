@@ -98,7 +98,7 @@ class CustomDomain{
           App::setLocale($lang_detail->sort_code);
           Session::put('applocale', $lang_detail->sort_code);
 
-          // Set Currency
+          // Set Currency                   
           $primeCurcy = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.is_primary', 1)->first();
           Session::put('client_primary_currency', $primeCurcy->iso_code);
           if (!Session::has('customerCurrency') || empty(Session::get('customerCurrency'))){

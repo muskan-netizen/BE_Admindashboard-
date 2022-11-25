@@ -1,5 +1,9 @@
 <?php
-Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () {
+Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () { 
+
+    Route::post('dispatcher/check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromDispatcher');
+
+    Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
 
     Route::post('check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromInventory');
 
@@ -31,6 +35,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('user/registration/document', 'Api\v1\HomeController@UserRegistrationDocument');
 
         Route::post('cart/add', 'Api\v1\CartController@add');
+        Route::post('checkProductAvailibility', 'Api\v1\RentalProductController@checkProductAvailibility');
         Route::get('cart/list', 'Api\v1\CartController@index');
         Route::post('upload/prescriptions', 'Api\v1\CartController@uploadPrescriptions');
         Route::post('delete/prescriptions', 'Api\v1\CartController@deleteProductPrescription');

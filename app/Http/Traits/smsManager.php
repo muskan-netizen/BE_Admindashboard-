@@ -15,14 +15,16 @@ trait smsManager{
   }
 
 
-    public function mTalkz_sms($to,$message,$crendentials)
+    public function mTalkz_sms($to,$message,$crendentials,$templates_id = '')
     {
-        $api_url = "http://msg.mtalkz.com/V2/http-api.php";
-        $to_number = substr($to, 1);
-        $endpoint = $api_url.'?apikey='.$crendentials->api_key.'&senderid='.$crendentials->sender_id.'&number='.$to_number.'&message='.$message.'&format=json';
-        $response=$this->getGuzzle($endpoint);
-        return $response;
+            $api_url = "http://msg.mtalkz.com/V2/http-api.php";
+            $to_number = substr($to, 1);
+            $endpoint = $api_url.'?apikey='.$crendentials->api_key.'&senderid='.$crendentials->sender_id.'&number='.$to_number.'&message='.$message.'&format=json&template_id='.$templates_id;
+            $response=$this->getGuzzle($endpoint);
+            return $response;
     }
+
+
 
     public function mazinhost($to,$message,$crendentials)
     {

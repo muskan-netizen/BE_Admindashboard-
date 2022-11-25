@@ -33,8 +33,8 @@ $timezone = Auth::user()->timezone;
                 <div class="page-title-box d-flex justify-content-between ">
                     <h4 class="page-title">{{ __("Order Detail") }}</h4>
                     <div class="al_back_btn">
-                        <a class="al_print_btn_back mr-2" href="{{ url()->previous() }}">Back</a>
-                        <button class="al_print_btn badge badge-info" onclick='printDiv();'>Print <img src=""> </button>
+                        <a class="al_print_btn_back mr-2" href="{{ url()->previous() }}">{{ __("Back") }}</a>
+                        <button class="al_print_btn badge badge-info" onclick='printDiv();'>{{ __("Print") }} <img src=""> </button>
                     </div>
                 </div>
 
@@ -64,10 +64,10 @@ $timezone = Auth::user()->timezone;
                         <div class="card-body">
                             <h4 class="header-title mb-3">{{__('Cancel Order Request')}}</h4>
                             <button type="button" class="complete_request_btn btn btn-sm btn-info" title='Approve' data-status="1" data-id="{{$order->vendors->first()->cancel_request->id}}">
-                                <i class='fa fa-check mr-1'></i> Approve
+                                <i class='fa fa-check mr-1'></i> {{__('Approve')}}
                             </button>
                             <button type="button" class="complete_request_btn btn btn-sm btn-danger" title='Reject' data-status="2" data-id="{{$order->vendors->first()->cancel_request->id}}">
-                                <i class='fa fa-times mr-1'></i> Reject
+                                <i class='fa fa-times mr-1'></i> {{__('Reject')}}
                             </button>
                         </div>
                     </div>
@@ -269,7 +269,7 @@ $timezone = Auth::user()->timezone;
                         </h4>
                         @if($order->luxury_option_id == 2)
                             @foreach($order->vendors as $vendor)
-                                <p>{{ $vendor->dineInTableName }} | Category : {{ $vendor->dineInTableCategory }} | Capacity : {{ $vendor->dineInTableCapacity }}</p>
+                                <p>{{ $vendor->dineInTableName }} | {{ __("Category") }} : {{ $vendor->dineInTableCategory }} | {{ __("Capacity") }} : {{ $vendor->dineInTableCapacity }}</p>
                             @endforeach
                         @endif
                         @if($order->product_schedule_type == 'schedule')
@@ -281,7 +281,7 @@ $timezone = Auth::user()->timezone;
                             <table class="table table-bordered table-centered mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>{{ __("Product Name") }}</th>
+                                        <th>{{ __(getNomenclatureName("Product Name",true)) }}</th>
                                         <th>{{ __("Product") }}</th>
                                         <th>{{ __("Quantity") }}</th>
                                         <th>{{ __("Price") }}</th>
@@ -389,23 +389,53 @@ $timezone = Auth::user()->timezone;
                                     @endif
                                     @endif
                                     @endforeach
+                                    @if($container_charges > 0)
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Container Charges") }} :</th>
+                                        <td>{{$clientCurrency->currency->symbol}}@money($container_charges)</td>
+                                    </tr>
+                                @endif
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Sub Total") }} :</th>
+                                        <td>
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($sub_total)+decimal_format($container_charges)}}</div>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{__('Delivery Fee')}} :</th>
                                         <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->delivery_fee)}}</td>
                                     </tr>
+                                    @if($vendor_service_fee > 0)
                                     <tr>
-                                        <th scope="row" colspan="4" class="text-end">{{ __("Sub Total") }} :</th>
-                                        <td>
-                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($sub_total)}}</div>
-                                        </td>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Service Fee") }} :</th>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor_service_fee)}}</td>
                                     </tr>
+                                    @endif
+                                    
+                                    @if($order->fixed_fee_amount > 0)
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Fixed Fee") }} :</th>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($order->fixed_fee_amount)}}</td>
+                                    </tr>
+                                    @endif
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Estimated Tax") }} :</th>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($taxable_amount)}}</td>
+                                    </tr>
+                                    @if($vendor->additional_price > 0)
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Additional Price") }} :</th>
+                                        <td style="width:200px;">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->additional_price)}}</td>
+                                    </tr>
+                                    @endif
                                     <tr>
                                         <?php
                                         //    $checkOffer = \App\Models\Promocode::where('name', $vendor->coupon_code )->first();
                                             $vendorDiscount = 0;
                                             $adminDiscount = 0;
+                                            // dd($vendor);
                                             if($vendor->coupon_code){
-                                                if($vendor->paid_by_vendor_admin == 1){
+                                                if($vendor->coupon_id == 1){
                                                     $couponFrom = 'From Admin';
                                                     $adminDiscount = $vendor->discount_amount;
                                                 }else{
@@ -419,39 +449,35 @@ $timezone = Auth::user()->timezone;
                                             }
                                         ?>
                                         <th scope="row" colspan="4" class="text-end">{{__('Total Discount')}} {{$couponFrom}}:</th>
-                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->discount_amount)}}</td>
+                                        <td>-{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->discount_amount)}}</td>
                                     </tr>
-
+                                    @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
                                     <tr>
-                                        <th scope="row" colspan="4" class="text-end">{{ __("Estimated Tax") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($taxable_amount)}}</td>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Redeemed Loyality Points") }} :</th>
+                                        <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}{{decimal_format($vendor->orderDetail->loyalty_amount_saved??0.00)}})</td>
                                     </tr>
-                                    @if($vendor_service_fee > 0)
-                                        <tr>
-                                            <th scope="row" colspan="4" class="text-end">{{ __("Service Fee") }} :</th>
-                                            <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor_service_fee)}}</td>
-                                        </tr>
                                     @endif
-                                    @if($order->fixed_fee_amount > 0)
-                                    <tr>
-                                        <th scope="row" colspan="4" class="text-end">{{ __("Fixed Fee") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($order->fixed_fee_amount)}}</td>
-                                    </tr>
-                                @endif
+                                    @if($client_preference_detail->is_tax_price_inclusive)
+                                            
+                                        @php  //taxable_amount
+                                            $adminRevenue = ($revenue + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
 
-                                    @if($container_charges > 0)
-                                        <tr>
-                                            <th scope="row" colspan="4" class="text-end">{{ __("Container Charges") }} :</th>
-                                            <td>{{$clientCurrency->currency->symbol}}@money($container_charges)</td>
-                                        </tr>
+                                            //taxable_amount
+                                            $storeRevenue = ($sub_total + $order->fixed_fee_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+                                    
+                                        @endphp
+
+                                    @else
+
+                                        @php
+
+                                            $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
+
+                                            $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+
+                                        @endphp
                                     @endif
-                                    @php
 
-                                        $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
-
-                                        $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
-
-                                    @endphp
 
                                     {{-- @if(Auth::user()->is_superadmin) --}}
                                     <tr>
@@ -466,10 +492,10 @@ $timezone = Auth::user()->timezone;
                                         <td>{{$clientCurrency->currency->symbol}}{{decimal_format($storeRevenue)}}</td>
                                     </tr>
                                     {{-- @endif --}}
-                                    @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
+                                    @if($order->tip_amount > 0)
                                     <tr>
-                                        <th scope="row" colspan="4" class="text-end">{{ __("Redeemed Loyality Points") }} :</th>
-                                        <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}{{decimal_format($vendor->orderDetail->loyalty_amount_saved??0.00)}})</td>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Tip Amount") }} :</th>
+                                        <td style="width:200px;"> {{$clientCurrency->currency->symbol}}{{decimal_format($order->tip_amount??0.00)}}</td>
                                     </tr>
                                     @endif
                                     @if($vendor->reject_reason)
@@ -479,10 +505,6 @@ $timezone = Auth::user()->timezone;
                                     </tr>
                                     @endif
                                     @if($vendor->additional_price>0)
-                                    <tr>
-                                        <th scope="row" colspan="4" class="text-end">{{ __("Additional Price") }} :</th>
-                                        <td style="width:200px;">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->additional_price)}}</td>
-                                    </tr>
                                     @endif
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>

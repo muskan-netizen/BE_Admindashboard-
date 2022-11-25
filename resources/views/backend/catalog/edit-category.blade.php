@@ -94,34 +94,37 @@
                     </select>
                 </div>
                 <div class="row rowYK">
-                    @foreach($category->translationSetUnique as $trans)
-                    @if($trans->language_id == 1)
-                    <div class="col-md-6">
-                        <div class="form-group" id="nameInputEdit">
-                            <label for="title" class="control-label">Name</label>
-                                <input class="form-control" required="required" name="cat_lang[name]" id="cat-lang-name" type="text" value="{{$trans->name}}">
-                                <span class="invalid-feedback" role="alert"><strong></strong></span>
+                  
+                    {{-- @foreach($category->translationSetUnique as $trans) --}}
+                    {{-- @if($trans->language_id == 1) --}}
+                    @if(!empty($category->primary))
+                        <div class="col-md-6">
+                            <div class="form-group" id="nameInputEdit">
+                                <label for="title" class="control-label">Name</label>
+                                    <input class="form-control" required="required" name="cat_lang[name]" id="cat-lang-name" type="text" value="{{$category->primary->name}}">
+                                    <span class="invalid-feedback" role="alert"><strong></strong></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="title" class="control-label">Meta Description</label>
+                                <textarea class="form-control" rows="3" name="cat_lang[meta_description]" id="cat-lang-meta-description" cols="50">{{$category->primary->meta_description}}</textarea>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="title" class="control-label">Meta Description</label>
-                            <textarea class="form-control" rows="3" name="cat_lang[meta_description]" id="cat-lang-meta-description" cols="50">{{$trans->meta_description}}</textarea>
+                        <input type="hidden" id="category_id" value="{{$category->id}}">
+                        <input name="cat_lang[language_id]" id="cat-lang-language-id" type="hidden" value="{{$category->primary->langId}}">
+                        <input name="cat_lang[trans_id]" id="cat-lang-trans-id" type="hidden" value="{{$category->primary->id}}">
+                        <div class="col-md-6">
+                            <div class="form-group" id="meta_titleInput">
+                                <label for="title" class="control-label">Meta Title</label>
+                                <input class="form-control" name="cat_lang[meta_title]" id="cat-lang-meta-title" type="text" value="{{$category->primary->meta_title}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="title" class="control-label">Meta Keywords</label>
+                                <textarea class="form-control" rows="3" name="cat_lang[meta_keywords]" id="cat-lang-meta-keywords" cols="50">{{$category->primary->meta_keywords}}</textarea>
+                            </div>
                         </div>
-                    </div>
-                    <input type="hidden" id="category_id" value="{{$category->id}}">
-                    <input name="cat_lang[language_id]" id="cat-lang-language-id" type="hidden" value="{{$trans->langId}}">
-                    <input name="cat_lang[trans_id]" id="cat-lang-trans-id" type="hidden" value="{{$trans->id}}">
-                    <div class="col-md-6">
-                        <div class="form-group" id="meta_titleInput">
-                            <label for="title" class="control-label">Meta Title</label>
-                            <input class="form-control" name="cat_lang[meta_title]" id="cat-lang-meta-title" type="text" value="{{$trans->meta_title}}">
-                        </div>
-                        <div class="form-group">
-                            <label for="title" class="control-label">Meta Keywords</label>
-                            <textarea class="form-control" rows="3" name="cat_lang[meta_keywords]" id="cat-lang-meta-keywords" cols="50">{{$trans->meta_keywords}}</textarea>
-                        </div>
-                    </div>
                     @endif
-                    @endforeach
+                    {{-- @endif --}}
+                    {{-- @endforeach --}}
                 </div>
             </div>
         </div>
