@@ -938,6 +938,7 @@ class VendorController extends BaseController
 
     /**   show vendor page - payout tab      */
     public function vendorPayout($domain = '', $id){
+      
         $product_categories = [];
         $active = array();
         $type = Type::all();
@@ -2279,7 +2280,7 @@ class VendorController extends BaseController
 
             foreach($estimate_products as $k => $product)
             {
-                \Log::info($product->primary);
+                //\Log::info($product->primary);
                     //Product added
                     $productId = Product::updateOrCreate(
                     [
