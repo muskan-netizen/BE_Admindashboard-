@@ -284,6 +284,9 @@ $timezone = Auth::user()->timezone;
 
                                     @endIf
                             {{-- <a href="{{ route('order.edit.detail',[$order->id,$order->vendors->first()->vendor_id])}}">{{__('Edit Order')}}</a> --}}
+                        @if(@$order->order_exchange_request && $order->order_exchange_request->type == 2)
+                            <a href="javascript:;" data-id="{{ $order->order_exchange_request->id }}" class="show-return-product-modal" data-status="Pending">Reason to Exchange </a>
+                        @endif
                         </h4>
                         @if($order->luxury_option_id == 2)
                             @foreach($order->vendors as $vendor)
@@ -773,6 +776,26 @@ $timezone = Auth::user()->timezone;
         </div>
     </div>
 </div>
+
+<!-- product return modal -->
+<div class="modal fade return-order" id="return_order" tabindex="-1" aria-labelledby="return_orderLabel">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                    </button>
+                <div id="return-order-form-modal">
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end product return modal -->
+
 <div id="delivery_info_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -821,6 +844,7 @@ $timezone = Auth::user()->timezone;
     </div>
 </div>
 
+
 <!-- Order Invoice Code -->
 <div style="display: none;">
 @include('backend.order.print')
@@ -830,6 +854,21 @@ $timezone = Auth::user()->timezone;
 @section('script')
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
+
+$('body').on('click', '.show-return-product-modal', function (event) {
+        $(".vendor-name").click(function(e) { e.stopPropagation(); });
+        event.preventDefault();
+        var id = $(this).data('id');
+        var status = $(this).data('status');
+        var returnurl = "{{route('get-return-product-modal')}}";
+        $.get(returnurl+'?id=' + id +'&status=' + status, function(markup){
+            $('#return_order').modal('show');
+            $('#return-order-form-modal').html(markup);
+        });
+    });
+
+
+
     $("#order_statuses li").click(function() {
         var reload_page = `{{in_array($order->luxury_option_id,[6,8]) ? 1 : 0}}`;
 

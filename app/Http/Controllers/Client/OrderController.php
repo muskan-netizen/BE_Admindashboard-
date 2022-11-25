@@ -637,7 +637,7 @@ class OrderController extends BaseController
             'vendors.dineInTable.category',
             'vendors.cancel_request',
             'reports',
-            'vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail'
+            'vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request'
         ))->findOrFail($order_id);
         //    return $order;
         // set payment option dynamic name
@@ -1823,6 +1823,9 @@ class OrderController extends BaseController
                 $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
                 });
+            }
+            if(checkColumnExists('order_return_requests', 'type')){
+                $orders_list = $orders_list->where('type', 1); // 1 = return , 2 = exchange
             }
             if (!empty($request->search_keyword)) {
                 $orders_list->whereHas('order', function ($query)  use ($request) {

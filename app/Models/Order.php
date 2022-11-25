@@ -113,6 +113,11 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\OrderVendorReport', 'order_id', 'id');
     }
+
+    public function order_exchange_request()
+    {
+        return $this->hasOne('App\Models\OrderReturnRequest', 'order_id', 'id');
+    }
     
     public function getByNumber($order_number)
     {

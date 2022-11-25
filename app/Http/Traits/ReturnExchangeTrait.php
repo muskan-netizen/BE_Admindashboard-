@@ -3,7 +3,7 @@ namespace App\Http\Traits;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use App\Models\{ClientPreference, Order, OrderProduct, OrderVendor, PaymentOption, Product, ProductVariantSet, User, UserAddress, Vendor, VendorOrderStatus, VerificationOption};
+use App\Models\{ClientPreference, Order, OrderProduct, OrderReturnRequest, OrderReturnRequestFile, OrderVendor, PaymentOption, Product, ProductVariantSet, User, UserAddress, Vendor, VendorOrderStatus, VerificationOption};
 use Illuminate\Support\Facades\Auth;
 use App\Models\Client as CP;
 use GuzzleHttp\Client;
@@ -341,7 +341,7 @@ trait ReturnExchangeTrait{
 
     protected function markAsReturnPending($orderVendorProduct)
     {
-        $return_pending = 9;
+        
         $updateData = [ 'dispatcher_status_option_id' => null ];
         if(checkColumnExists('order_vendors','exchange_order_vendor_id')){
             $updateData['is_exchanged_or_returned'] = 2;
@@ -349,6 +349,44 @@ trait ReturnExchangeTrait{
         OrderVendor::where('id', $orderVendorProduct->order_vendor_id)
         ->update($updateData);
         return true;
+    }
+
+    protected function saveReturnExchangeRequest($request, $order_details, $type = 1)
+    {
+        $returns = 0;
+        if($order_details){
+            $order_deliver = VendorOrderStatus::where(['order_id' => $order_details->order_id,'vendor_id' => $order_details->vendor_id,'order_status_option_id' => 6])->count();
+        }
+        
+
+        if($order_deliver > 0){
+            $returns = OrderReturnRequest ::updateOrCreate(
+                ['order_vendor_product_id' => $request->order_vendor_product_id,
+                'order_id' => $order_details->order_id,
+                'return_by' => Auth::id()],
+                ['reason' => $request->reason??null,
+                'coments' => $request->coments??null,
+                'type' => $type
+                ]
+            );
+
+            if(isset($request->add_files) && is_array($request->add_files))    # send  array of insert images
+            {
+                foreach ($request->add_files as $storage) {
+                    $img = new OrderReturnRequestFile();
+                    $img->order_return_request_id = $returns->id;
+                    $img->file = $storage;
+                    $img->save();
+
+                }
+            }
+
+            if(isset($request->remove_files) && is_array($request->remove_files)){    # send index array of deleted images
+                $removefiles = OrderReturnRequestFile::where('order_return_request_id',$returns->id)->whereIn('id',$request->remove_files)->delete();
+            }
+        }
+
+        return $returns;
     }
 
    

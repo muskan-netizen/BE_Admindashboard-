@@ -270,47 +270,16 @@ $vendor_id = 0;
             $user = Auth::user();
             $order_deliver = 0;
             $order_details = OrderProduct::where('id',$request->order_vendor_product_id)->whereHas('order',function($q){$q->where('user_id',Auth::id());})->first();
-            if($order_details)
-            $order_deliver = VendorOrderStatus::where(['order_id' => $order_details->order_id,'vendor_id' => $order_details->vendor_id,'order_status_option_id' => 6])->count();
-
-            if($order_deliver > 0){
-                $returns = OrderReturnRequest::updateOrCreate(['order_vendor_product_id' => $request->order_vendor_product_id,
-                'order_id' => $order_details->order_id,
-                'return_by' => Auth::id()],['reason' => $request->reason??null,'coments' => $request->coments??null]);
-
-            //    if ($image = $request->file('images')) {
-            //         foreach ($image as $files) {
-            //         $file =  substr(md5(microtime()), 0, 15).'_'.$files->getClientOriginalName();
-            //         $storage = Storage::disk('s3')->put('/return', $files, 'public');
-            //         $img = new OrderReturnRequestFile();
-            //         $img->order_return_request_id = $returns->id;
-            //         $img->file = $storage;
-            //         $img->save();
-
-            //         }
-            //     }
-
-            if(isset($request->add_files) && is_array($request->add_files))    # send  array of insert images
-                {
-                    foreach ($request->add_files as $storage) {
-                        $img = new OrderReturnRequestFile();
-                        $img->order_return_request_id = $returns->id;
-                        $img->file = $storage;
-                        $img->save();
-
-                    }
-                }
-
-              if(isset($request->remove_files) && is_array($request->remove_files))    # send index array of deleted images
-                $removefiles = OrderReturnRequestFile::where('order_return_request_id',$returns->id)->whereIn('id',$request->remove_files)->delete();
-
-            }
-            if(isset($returns)) {
+            
+            $this->markAsReturnPending($order_details);
+            $type = 1; // 1 = return
+            $returns = $this->saveReturnExchangeRequest($request, $order_details, $type);
+            if(@$returns) {
                 $this->sendSuccessNotification($user->id, $order_details->vendor_id);
                 $this->sendSuccessEmail($request);
                 return $this->successResponse($returns,'Return Submitted.');
             }
-            $this->markAsReturnPending($order_details);
+            
             return $this->errorResponse('Invalid order', 200);
 
         } catch (Exception $e) {
@@ -331,6 +300,8 @@ $vendor_id = 0;
             if(round($orderVendorOld->subtotal_amount)  != round($request->product_a_price)){
                 return $this->errorResponse('Please select product with same price', 200);
             }
+            $type = 2; // type = exchange
+            $this->saveReturnExchangeRequest($request, $orderVendorProductOld, $type);
             /****** create new exchange order Start ******************/
             $order =  $this->saveOrder($request);
             $order_vender =  $this->saveOrderVendor($order, $orderVendorProductOld);

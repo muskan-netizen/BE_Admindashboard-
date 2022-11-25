@@ -808,7 +808,11 @@
                                                                                                     <img src="{{ asset('assets/images/driver_icon.svg') }}"
                                                                                                         alt="">
                                                                                                     <label
-                                                                                                        class="m-0 in-progress">{{ __(ucfirst($vendor->order_status)) }}</label>
+                                                                                                        class="m-0 in-progress">
+                                                                                                        @if(@$is_exchanged_order)
+                                                                                                            {{__('Exchange Order')}}
+                                                                                                        @endif
+                                                                                                        {{ __(ucfirst($vendor->order_status)) }}</label>
                                                                                                 </li>
                                                                                             @endif
 
@@ -978,17 +982,19 @@
                                                                                             
 
                                                                                             
-                                                                                            @if(@$vendor->is_exchanged_or_returned && $vendor->is_exchanged_or_returned == 1)
-                                                                                                @if($vendor->order_status_option_id == 6)
+                                                                                            @if(@$vendor->j && $vendor->is_exchanged_or_returned == 1)
+                                                                                                @if($vendor->exchanged_to_order->order_status_option_id == 6)
                                                                                                     <button class="btn btn-solid" >  {{__('Replaced')}}</button>
-                                                                                                @elseif($vendor->order_status_option_id == 9) 
+                                                                                                @else($vendor->order_status_option_id == 9) 
                                                                                                         <button class="btn btn-solid" > {{__('Replacement Pending')}} </button>
                                                                                                 @endif
-                                                                                           
+
+                                                                                            @elseif($vendor->is_exchanged_or_returned && $vendor->is_exchanged_or_returned == 2)
+                                                                                                    <button class="btn btn-solid" > {{__('Return Pending')}} </button>
                                                                                             @else
                                                                                            
                                                                                                 @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request)
-                                                                                                @if(@$returnable)
+                                                                                                @if(@$returnable &&  $order->vendors[0]->exchanged_of_order == null)
                                                                                                     <button
                                                                                                         class="return-order-product btn btn-solid"
                                                                                                         data-id="{{ $order->id ?? 0 }}"
@@ -1000,7 +1006,7 @@
                                                                                                 @endif
                                                                                                 @endif
 
-                                                                                                @if(@$replaceable)
+                                                                                                @if(@$replaceable &&  $order->vendors[0]->exchanged_of_order == null)
                                                                                                     <button class="replace-order-product btn btn-solid" data-id="{{ $order->id ?? 0 }}" data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
                                                                                                         
                                                                                                          {{ __('Replace') }}
@@ -1656,7 +1662,11 @@
                                                                                         <ul class="status_box mt-1 pl-0">
                                                                                             @if (!empty($vendor->order_status))
                                                                                                 <li>
-                                                                                                    <label class="m-0 in-progress">{{ __(ucfirst($vendor->order_status)) }} </label>
+                                                                                                    <label class="m-0 in-progress">
+                                                                                                    @if(@$is_exchanged_order)
+                                                                                                        {{__('Exchange Order')}}
+                                                                                                    @endif
+                                                                                                    {{ __(ucfirst($vendor->order_status)) }} </label>
                                                                                                     <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="{{$vendor->reject_reason}}" aria-hidden="true"></i>
                                                                                                 </li>
                                                                                             @endif
