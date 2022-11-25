@@ -485,13 +485,13 @@ class OrderController extends BaseController
                         }
                         //Start applying service fee on vendor products total
                         $vendor_service_fee_percentage_amount = 0;
-                        // if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                        //     $vendor_service_fee_percentage_amount = (($vendor_products_total_amount+$opt_quantity_price-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                        if ($vendor_cart_product->vendor->service_fee_percent > 0) {
+                            $vendor_service_fee_percentage_amount = ((($vendor_products_total_amount+$opt_quantity_price)-$price_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
 
                         
-                        //     $vendor_payable_amount += $vendor_service_fee_percentage_amount;
-                        //     $payable_amount += $vendor_service_fee_percentage_amount;
-                        // }
+                            $vendor_payable_amount += $vendor_service_fee_percentage_amount;
+                            $payable_amount += $vendor_service_fee_percentage_amount;
+                        }
                         //End applying service fee on vendor products total
                         $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                         $order_vendor->service_fee_percentage_amount = $vendor_service_fee_percentage_amount;
@@ -581,14 +581,15 @@ class OrderController extends BaseController
                             $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                         }
                     }
-                    $payable_amount = $payable_amount - $wallet_amount_used;
                     $tip_amount = 0;
                     if ((isset($request->tip)) && ($request->tip != '') && ($request->tip > 0)) {
                         $tip_amount = $request->tip;
                         $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                         $order->tip_amount = decimal_format($tip_amount);
                     }
+
                     $payable_amount = $payable_amount + $tip_amount ;
+                    $payable_amount = $payable_amount - $wallet_amount_used;
                     $order->total_service_fee = $total_service_fee;
                     $order->total_delivery_fee = $total_delivery_fee;
                     $order->loyalty_points_used = $loyalty_points_used;
@@ -1545,20 +1546,11 @@ class OrderController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-
                 $keyData = ['{user_name}'=>$user->name??'','{amount}'=>$currSymbol . $order->payable_amount,'{order_number}'=>$order->order_number??''];
                 $body = sendSmsTemplate('order-place-Successfully',$keyData);
 
-               // $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
-                // if(!empty($smsTemplates)){
-                //     $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
-                //     $smsTemplates = str_replace("{amount}", $currSymbol . decimal_format($order->payable_amount), $smsTemplates);
-                //     $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
-                // }else{
-                //     $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
-                // }
                 if (!empty($prefer->sms_provider)) {
-                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body,'order-place-Successfully');
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 }
             }
         } catch (\Exception $ex) {

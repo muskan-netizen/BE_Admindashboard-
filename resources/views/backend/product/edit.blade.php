@@ -833,6 +833,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                     @if($product->vendor->need_container_charges)
                     <div class="form-group w-100" id="container_charges_tax_id">
+                        <input type="hidden" value="on" name="container_charges_tax">
                      {!! Form::label('title',__('On Container Charges') .' '. __('Taxes Available'),['class' => 'control-label']) !!}
                         <select class="form-control" name="container_charges_tax_id">
                             <option value="">{{__('Select any')}}</option>
