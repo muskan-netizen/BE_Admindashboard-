@@ -81,7 +81,7 @@ span#cart_qty_span.bg-cart-header{position: absolute;background-color: var(--top
 top: 50%;-webkit-transform: translate(0, -50%);transform: translate(0, -50%);}
 button.alMenuClose{position: absolute;right: 0;top: 0;background-color: transparent;height: 50px;width: 50px;border-radius: 50px;font-size: 50px;line-height: 53px;color: #fff;padding: 0;border: 0;}
 .close.text-danger{color:#84571E !important; }
-.alSpaMenuCard.active{height: 100vh;width: 100%;}
+.alSpaMenuCard.active{height: 100vh;width: 100%;overflow-y:auto;}
 .alSpaMenuCard ul{text-align: center;}
 .alMobileLocations{margin-top: -120px;position: relative;}
 .alSpaMenuCard .onhover-dropdown .onhover-show-div{background-color: #000;padding: 8px 0 0;box-shadow: 0 1px 2px 0 var(--top-header-color);position: absolute;}

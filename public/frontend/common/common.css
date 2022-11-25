@@ -531,7 +531,10 @@ body.al_body_template_one .footer-theme .sub-title li {
     left: 300px;
     position: absolute !important;
 }
-
+.al_body_template_six .file .update_pic img {
+    height: 100%;
+    object-fit: cover;
+}
 /*----------laptop view----------*/
 @media(max-width:1440px){
     body.al_body_template_eight section.section-b-space.new-pages .custom-container {
@@ -604,6 +607,7 @@ body.al_body_template_one .footer-theme .sub-title li {
         margin-top: -100px;
         margin-left: 20px;
     }
+
     body.al_body_template_eight.homeHeader  .img-outer-box.position-relative {
         width: 100%;
     }
@@ -616,7 +620,7 @@ body.al_body_template_one .footer-theme .sub-title li {
     body.al_body_template_eight.homeHeader .collection-filter-block {
         border: none !important;
     }
-    .offer-slider.al .col-12.p-0{display: flex;}
+    .offer-slider.al .col-12.p-0{display: block;}
     .product-wrapper-grid .col-xl-3.col-md-3.col-6.mt-3 {
         width: 33%;
         max-width: 33%;
@@ -717,6 +721,45 @@ body.al_body_template_one .footer-theme .sub-title li {
 /*-------------------mobile view css----------*/
 @media(max-width:767px){
 /*---------------theme template six-----------------*/
+body.al_body_template_six.homeHeader .collection-product-wrapper .product-top-filter .filter-main-btn, .filter-main-btn span {
+    margin-top:0;
+    margin-left:0;
+}
+.al_body_template_six .file .update_pic img {
+    height: 100%;
+    object-fit: cover;
+}
+/* .al_body_template_six div#cart_template .row.border-bottom.product_title_add.py-1.no-gutters {
+    display: block;
+}
+.al_body_template_six div#cart_template .row.border-bottom.product_title_add.py-1.no-gutters .col-md-2 .text-center {
+    text-align: left !important;
+}
+.al_body_template_six div#cart_template .row.border-bottom.product_title_add.py-1.no-gutters .col-md-4.text-center{
+    text-align: left !important;
+} */
+.al_body_template_six .vender-peragraph {
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: left !important;
+    left: 0 !important;
+    position: relative !important;
+    margin-bottom:0 !important;
+}
+body.al_body_template_six.homeHeader .row.mb-3.homepageSix p.border-bottom.pb-1.mb-1 {
+    height: 48px;
+    overflow: hidden;
+}
+body.al_body_template_six .irs-to {
+    left: 90% !important;
+}
+body.al_body_template_six .irs {
+    width: 92%;
+}
+.offer-slider.al .col-12.p-0 {
+    display: block !important;
+}
 .al_body_template_six .outter-fillter-data .product-wrapper-grid .col-xl-3.col-md-3.col-6.mt-3 {
     width: 100%;
     max-width: 100%;
