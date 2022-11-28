@@ -325,7 +325,11 @@ body.dark.al_body_template_one table.table.wishlist-table.border{background-colo
     .col-md-3.alOrderStatus{display: flex;justify-content: space-between;align-items: center;}
     .al_body_template_one .common-banner{height:150px}
     .dark .al_body_template_one .top-banner-content.small-section h4{color: #fff;}
-    .al_body_template_one .top-banner-content.small-section h4{padding-top: 10px;padding-bottom: 0; }
+    .al_body_template_one .top-banner-content.small-section h4{padding-top: 10px;padding-bottom: 0;     text-align: left;
+        margin: 15px 0;}
+        .al_body_template_one span.filter-back.d-lg-none.d-inline-block {
+            float: right;
+        }
     .al_body_template_one .product-timing small{font-size: 10px;margin: 0 !important;}
     .dark.al_body_template_one .product-timing small{color: #fff;}
     .al_body_template_one  .timing-box_al li img{height: 20px;}
