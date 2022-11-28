@@ -1521,16 +1521,11 @@ class OrderController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
-                if(!empty($smsTemplates)){
-                    $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
-                    $smsTemplates = str_replace("{amount}", $currSymbol . decimal_format($order->payable_amount), $smsTemplates);
-                    $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
-                }else{
-                    $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
-                }
+                $keyData = ['{user_name}'=>$user->name??'','{amount}'=>$currSymbol . $order->payable_amount,'{order_number}'=>$order->order_number??''];
+                $body = sendSmsTemplate('order-place-Successfully',$keyData);
+
                 if (!empty($prefer->sms_provider)) {
-                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 }
             }
         } catch (\Exception $ex) {
