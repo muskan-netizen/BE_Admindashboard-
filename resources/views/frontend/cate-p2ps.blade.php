@@ -10,6 +10,7 @@
 .main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}.slick-track{margin-left: 0px;}.product-box .product-detail h4, .product-box .product-info h4{font-size: 16px;}
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
+<link href="{{asset('assets/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
 @if(!empty($category))
@@ -26,27 +27,7 @@
                         @endif
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>
-                            {{-- @if(!empty($category->childs) && count($category->childs) > 0)
-                                <div class="row">
-                                    <div class="col-12">
-
-                                        <div class="slide-6 no-arrow">
-                                            @foreach($category->childs->toArray() as $cate)
-                                            <div class="category-block">
-                                                <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                    <div class="category-image"><img alt="" class="blur-up lazyload" data-src="{{$cate['icon']['image_fit'] . '300/300' . $cate['icon']['image_path']}}" ></div>
-                                                </a>
-                                                <div class="category-details">
-                                                    <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                        <h5>{{$cate['translation_name']}}</h5>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif --}}
+                            
                         </div>
                     </div>
                 </div>
@@ -61,7 +42,7 @@
                     <aside class="side_fillter">
                        
                     <!-- side-bar colleps block stat -->
-                    @if( count($category->brands) > 0 || count($variantSets) > 0 )
+                    @if( (count($category->brands) > 0) || (count($variantSets) > 0) )
                     <div class="collection-filter-block bg-transparent p-0 m-0">
                         <!-- <div class="collection-mobile-back">
                             <span class="filter-back d-lg-none d-inline-block">
@@ -95,7 +76,8 @@
                                         @foreach($sets->options as $ok => $opt)
                                             <div class="chiller_cb small_label d-inline-block color-selector mt-2">
                                                 <?php $checkMark = ($key == 0) ? 'checked' : ''; ?>
-                                                <input class="custom-control-input productFilter" type="checkbox" {{$checkMark}} id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" used="variants" optid="{{$opt->id}}">
+                                                <input class=" productFilter" type="checkbox" {{$checkMark}} id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" used="variants" optid="{{$opt->id}}">
+                                                {{-- custom-control-input --}}
                                                 <label for="Opt{{$key.'-'.$opt->id}}"></label>
                                                 @if(strtoupper($opt->hexacode) == '#FFF' || strtoupper($opt->hexacode) == '#FFFFFF')
                                                     <span style="background: #FFFFFF; border-color:#000;" class="check_icon white_check"></span>
@@ -192,33 +174,6 @@
                                                 </div>
                                             </a>
                                         </div>
-
-                                        {{-- <div class="media">
-                                            <a href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" data-src="{{$imagePath}}" alt=""></a>
-                                            <div class="media-body align-self-center">
-                                                <div class="inner_spacing">
-                                                    <a href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                                        <h3 class="d-flex align-items-center justify-content-between">
-                                                            <label class="mb-0"><b>{{ $new['translation_title'] }}</b></label>
-                                                        </h3>
-                                                        <h6 class="mt-0"><b>{{$new['vendor']['name']}}</b></h6>
-                                                        @if($client_preference_detail)
-                                                            @if($client_preference_detail->rating_check == 1)
-                                                                @if($new['averageRating'] > 0)
-                                                                    <span class="rating">{{ $new['averageRating'] }} <i class="fa fa-star text-white p-0"></i></span>
-                                                                @endif
-                                                            @endif
-                                                        @endif
-                                                        @if($new['inquiry_only'] == 0)
-                                                            <h4 class="mt-1">
-                                                                <//?php $multiply = $new['variant_multiplier']; ?>
-                                                                {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
-                                                            </h4>
-                                                        @endif
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div> --}}
                                     @endforeach
                                     </div>
                                 @endforeach
@@ -242,7 +197,8 @@
                                         </div>
                                         <div class="col-sm-9">
                                             @if( !empty($var->type) && $var->type == 1 )
-                                            <select name="" id="" class="dropdown_select" data-key="{{$var->title}}" multiple>
+                                            {{-- <select class="form-control " name="free_delivery_roles[]" data-toggle="select2" multiple="multiple" placeholder="Select role..."> --}}
+                                            <select name="" class="dropdown_select select2-multiple" data-key="{{$var->title}}" multiple>
                                                 @foreach($var->option as $key => $opt)
                                                 <option value="{{$opt->id}}">{{$opt->title}}</option>
                                                 @endforeach
@@ -252,7 +208,7 @@
                                             
                                             @foreach($var->option as $key => $opt)
                                             
-                                            @if(isset($opt) && !empty($opt->title) && isset($var) && !empty($var->title) )
+                                            @if(isset($opt) && isset($var) && !empty($var->title) )
 
                                                 @if( !empty($var->type) && $var->type == 3 )
                                                     <div class="form-check-inline pr-3">
@@ -266,7 +222,7 @@
 
                                                 @elseif( !empty($var->type) && $var->type == 4 )
                                                     <div class="form-check-inline pr-3">
-                                                        <input type="textbox" name="attribute[{{$var->id}}][option][{{$counter}}][value]" value="">
+                                                        <input type="textbox" class="text_field" name="attribute[{{$var->id}}][option][{{$counter}}][value]" value="" data-key="{{$var->title}}">
                                                     </div>
                                                 @else
                                                     <div class="checkbox checkbox-success form-check-inline pr-3">
@@ -308,49 +264,14 @@
                                         <div class="row">
                                             <div class="col-12">
                                                 <div class="product-filter-content">
-                                                    <!-- <div class="collection-view">
-                                                        <ul>
-                                                            <li><i class="fa fa-th grid-layout-view"></i></li>
-                                                            <li><i class="fa fa-list-ul list-layout-view"></i></li>
-                                                        </ul>
-                                                    </div> -->
-                                                    {{-- <div class="collection-grid-view">
-                                                        <ul>
-                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/2.png')}}" alt="" class="product-2-layout-view"></li>
-                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/3.png')}}" alt="" class="product-3-layout-view"></li>
-                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/4.png')}}" alt="" class="product-4-layout-view"></li>
-                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/6.png')}}" alt="" class="product-6-layout-view"></li>
-                                                        </ul>
-                                                    </div> --}}
-                                                    {{-- <div class="product-page-per-view">
-                                                        <?php $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 8; ?>
-                                                        <select class="customerPaginate">
-                                                            <option value="8" @if($pagiNate == 8) selected @endif>Show 8
-                                                            </option>
-                                                            <option value="12" @if($pagiNate == 12) selected @endif>Show 12
-                                                            </option>
-                                                            <option value="24" @if($pagiNate == 24) selected @endif>Show 24
-                                                            </option>
-                                                            <option value="48" @if($pagiNate == 48) selected @endif>Show 48
-                                                            </option>
-                                                        </select>
-                                                    </div> --}}
+                                                   
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="displayProducts" id="category_products_filter">
                                         <div class="col-12 custom_filtter mt-2">
-                                        <!-- <select name="order_type" id='order_type' class="sortingFilter p-1">
-                                                <option value="">{{__('Sort By')}}</option>
-                                                <option value="featured">{{__('Featured')}}</option>
-                                                <option value="a_to_z">{{__('A to Z')}}</option>
-                                                <option value="z_to_a">{{__('Z to A')}}</option>
-                                                <option value="low_to_high">{{__('Cost : Low to High')}}</option>
-                                                <option value="high_to_low">{{__('Cost : High to Low')}}</option>
-                                                <option value="rating">{{__('Avg. Customer Review')}}</option>
-                                                <option value="newly_added">{{__('Newest Arrivals')}}</option>
-                                            </select> -->
+                                        
                                             <ul>
                                                 <li><span>{{__('Sort By:')}}</span></li>
                                                 <li><a href="javascript:void(0)" class="active">{{__('Featured')}}</a></li>
@@ -434,6 +355,7 @@
 @section('script')
 <script src="{{asset('front-assets/js/rangeSlider.min.js')}}"></script>
 <script src="{{asset('front-assets/js/my-sliders.js')}}"></script>
+<script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
 <script>
     @if(!empty($category->image) && $category->image['is_original'])
     $(document).ready(function() {
@@ -484,7 +406,7 @@
         filterProducts();
     });
 
-    $('.attr_radio, .dynamic_checkbox, .dropdown_select').change(function() {
+    $('.attr_radio, .dynamic_checkbox, .dropdown_select, .text_field').change(function() {
         filterProducts();
     });
 
@@ -497,8 +419,12 @@
         var dynamic_options = {};
         var radio_option = {};
         var checkbox_option_arr = {};
+        var text_field_search = {};
         $('.dropdown_select').each(function(i, obj) {
             dropdown_options[$(this).data('key')] = $(this).val();
+        });
+        $('.text_field').each(function(i, obj) {
+            text_field_search[$(this).data('key')] = $(this).val();
         });
 
         $('.attr_radio').each(function(i, obj){
@@ -521,7 +447,8 @@
         dynamic_options['dropdown_options'] = dropdown_options;
         dynamic_options['radio_option'] = radio_option;
         dynamic_options['checkbox_option_arr'] = checkbox_option_arr;
-        console.log(dynamic_options);
+        dynamic_options['text_field_search'] = text_field_search;
+        
         // return false;
         $('.productFilter').each(function () {
             var that = this;
@@ -577,5 +504,7 @@
             },
         });
     }
+
+    $('.select2-multiple').select2();
 </script>
 @endsection

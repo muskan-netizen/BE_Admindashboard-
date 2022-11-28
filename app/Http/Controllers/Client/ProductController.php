@@ -368,11 +368,12 @@ class ProductController extends BaseController
                 if( !empty($request->attribute) ) {
                     $insert_arr = [];
                     $insert_count = 0;
+
                     foreach($request->attribute as $key => $value) {
-                        if( is_array($value) ) {
+                        if( !empty($value) && !empty($value['option'] && is_array($value) )) {
                             
-                            if( !empty($value['type']) && $value['type'] == 1 ) { // dropdown
-                                $value_arr = $value['value'];
+                            if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
+                                $value_arr = @$value['value'];
                                 
                                 foreach( $value['option'] as $key1 => $val1 ) {
                                 
@@ -406,10 +407,12 @@ class ProductController extends BaseController
 
                        
                     }
-                    
+                    if( !empty($insert_arr) ) {
+                        ProductAttribute::where('product_id',$id)->delete();
+                        ProductAttribute::insert($insert_arr);
+                    }
                 }
-                ProductAttribute::where('product_id',$id)->delete();
-                ProductAttribute::insert($insert_arr);
+                
             }
             
             $product->sku = $request->sku;

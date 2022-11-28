@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
-use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist};
+use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist, ProductAttribute, Attribute};
 
 
 class StoreController extends BaseController{
@@ -1837,6 +1837,130 @@ class StoreController extends BaseController{
         }
     }
 
-	
+	/**
+	 * Add product Attribute
+	 */
+	public function addProductAttribute(Request $request) {
+		try {
+			if( clientPrefrenceModuleStatus('p2p_check') ) {
+				
+				$product = Product::findOrFail($request->product_id);
+				if(!$product)
+				{
+					return $this->errorResponse('Product not found', 422);
+				}
 
+				if( !empty($request->attribute) ) {
+					$insert_arr = [];
+					$insert_count = 0;
+					foreach($request->attribute as $key => $value) {
+						if( !empty($value) && !empty($value['option'] && is_array($value) )) {
+							
+							if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
+								$value_arr = @$value['value'];
+								
+								foreach( $value['option'] as $key1 => $val1 ) {
+								
+									if( in_array($val1['option_id'], $value_arr) ) {
+								
+										$insert_arr[$insert_count]['product_id'] = $request->product_id;
+										$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+										$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+										$insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
+										$insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+										$insert_arr[$insert_count]['is_active'] = 1;
+									}
+									$insert_count++;
+								}
+							}
+							else {
+								foreach($value['option'] as $option_key => $option) {
+									if(@$option['value']){
+										$insert_arr[$insert_count]['product_id'] = $request->product_id;
+										$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+										$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+										$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+										$insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
+										$insert_arr[$insert_count]['is_active'] = 1;
+
+									}
+									$insert_count++;
+								}
+							}
+						}
+
+					
+					}
+					if( !empty($insert_arr) ) {
+						ProductAttribute::where('product_id',$request->product_id)->delete();
+						ProductAttribute::insert($insert_arr);
+					}
+				}
+				
+
+				return $this->successResponse([], 'Attribute Added Successfully', 200);
+			}
+			else {
+				return $this->errorResponse('Attribute option is not enabled', 500);
+			}
+		} catch (\Exception $ex) {
+			return $this->errorResponse('Exception occured', 500);
+		}	
+	}
+
+	/**
+	 * Product Attribute list which is save on db of particular product
+	 */
+	public function getProductAttribute(Request $request) {
+
+		try	{
+			if( clientPrefrenceModuleStatus('p2p_check') ) {
+
+				$product = Product::findOrFail($request->product_id);
+				if(!$product) {
+					return $this->errorResponse('Product not found', 422);
+				}
+
+				// Fetch product attribute
+				$product_attr = ProductAttribute::where('product_id',$request->product_id)->get();
+				return $this->successResponse($product_attr, 'Product Attribute List', 200);
+			}
+			else {
+				return $this->errorResponse('Attribute option is not enabled', 500);
+			}
+		}
+		catch(\Exception $e) {
+			return $this->errorResponse('Exception occured', 500);
+		}
+		
+	}
+
+	/**
+	 * Attribute List
+	 */
+	public function availableListOfAttribute(Request $request) {
+		try{
+			if( clientPrefrenceModuleStatus('p2p_check') ) {
+				$product = Product::findOrFail($request->product_id);
+				if(!$product) {
+					return $this->errorResponse('Product not found', 422);
+				}
+
+				$productAttributes = Attribute::with('option', 'varcategory.cate.primary')
+				->select('attributes.*')
+				->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
+				->where('attribute_categories.category_id', $product->category_id)
+				->where('attributes.status', '!=', 2)
+				->orderBy('position', 'asc')->get();
+
+				return $this->successResponse($productAttributes, 'Product Attribute List', 200);
+			}
+			else {
+				return $this->errorResponse('Attribute option is not enabled', 500);
+			}
+		}
+		catch(\Exception $e) {
+			return $this->errorResponse('Exception occured', 500);
+		}
+	}
 }

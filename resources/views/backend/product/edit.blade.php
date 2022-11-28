@@ -572,22 +572,35 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                                 <label class="control-label">{{$var->title??null}}</label>
                                             </div>
                                             <div class="col-sm-9">
-                                                {{-- @dump($attribute_value) --}}
+                                                
                                                 @if( !empty($var->type) && $var->type == 1 )
-                                                @foreach($var->option as $key => $opt)
-                                                    <input type="hidden" name="attribute[{{$var->id}}][type]" value="{{$var->type}}">
-                                                    <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
-                                                    <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
-                                                     <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
-                                                    <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}"> 
-                                                    @php  $counter++; @endphp
+                                                    @foreach($var->option as $key => $opt)
+                                                        <input type="hidden" name="attribute[{{$var->id}}][type]" value="{{$var->type}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}"> 
+                                                        @php  $counter++; @endphp
                                                     @endforeach
-                                                    <select name="attribute[{{$var->id}}][value][]" id="" class="dropdown_select" multiple>
+                                                    <select name="attribute[{{$var->id}}][value][]" id=""  multiple>
                                                         @foreach($var->option as $key => $opt)
-                                                        <option value="{{$opt->id}}" @if(in_array($opt->id, $attribute_value)) selected @endif>{{$opt->title}} - {{$opt->id}}</option>
+                                                            <option value="{{$opt->id}}" @if(in_array($opt->id, $attribute_value)) selected @endif>{{$opt->title}}</option>
                                                         @endforeach
                                                     </select>
-
+                                                @elseif( !empty($var->type) && $var->type == 4 )
+                                                    <div class="form-check-inline ">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
+                                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
+                                                        <input class="form-control"type="textbox" name="attribute[{{$var->id}}][option][{{$counter}}][value]"  
+                                                        
+                                                        @if(in_array($opt->id, $attribute_value))  
+                                                        value="{{$attribute_key_value[$opt->id]}}"
+                                                        @else
+                                                        value=""
+                                                        @endif>
+                                                    </div>
                                                 @else
                                                 @foreach($var->option as $key => $opt)
                                                 
@@ -604,25 +617,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                                             value="{{$opt->id}}" @if(in_array($opt->id, $attribute_value)) checked @endif>
                                                             </div>
                                                             <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
-                                                        </div>
-
-
-                                                    @elseif( !empty($var->type) && $var->type == 4 )
-                                                        <div class="form-check-inline ">
-                                                            <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
-                                                            <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
-                                                            <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
-                                                            <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
-                                                            <input class="form-control"type="textbox" name="attribute[{{$var->id}}][option][{{$counter}}][value]"  
-                                                            
-                                                            @if(in_array($opt->id, $attribute_value))  
-                                                            value="{{$attribute_key_value[$opt->id]}}"
-                                                            @else
-                                                            value=""
-                                                            @endif>
-                                                            {{-- <input type="hidden" name="attribute[{{$var->id}}][]" value="{{$opt->attribute_id}}">
-                                                            <input type="hidden" name="attribute[{{$var->id}}][]" value="{{$opt->id}}"> --}}
-                                                            {{-- <label for="opt_vid_{{$opt->id}}"></label> --}}
                                                         </div>
                                                     @else
                                                         <div class="checkbox checkbox-success form-check-inline pr-3">
