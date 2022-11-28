@@ -800,6 +800,9 @@ body.al_body_template_six.dark.homeHeader .main-fillter .side_fillter{
 /*-------------------mobile view css----------*/
 @media(max-width:767px){
 /*---------------theme template six-----------------*/
+.al_body_template_one .collection-mobile-back{
+    padding: 25px !important;
+}
 .al_body_template_one .collection-filter.al .theme-card .title-border span.filter-back {
     font-size: 16px;
     float: right;
