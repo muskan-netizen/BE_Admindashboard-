@@ -232,6 +232,9 @@ body.al_body_template_two #page-container .small-slider .home-slider .home{heigh
     body.al_body_template_two #page-container .small-slider .home-slider .home{height: 350px;}body .product-m .slick-list{padding: 0 30px !important;}
 }
 @media(max-width: 767px){
+    body.al_body_template_one .menu-navigation {
+        overflow: unset !important;
+    }
     body.al_body_template_one .vender-peragraph {
         top: 0;
         width: 100%;
@@ -267,6 +270,7 @@ body .navigation-tab-item .nav-link {padding: 5px 10px;}
 .rota-cab-service img{max-height: inherit !important;height: auto !important;}
 .rota_top .col-md-4 {margin-top: 20px;}
 body.al_body_template_two #page-container .small-slider .home-slider .home{height: 200px;}body .product-m .slick-list{padding: 0 20px !important;}
+
 body[dir=rtl] .store-btn a {display: block;margin-left: 15px;}
 body[dir=rtl] .footer-title {text-align: right;}
 body[dir="rtl"] .footer-theme .sub-title .contact-list i {right: 0;position: absolute !important;}
@@ -278,6 +282,9 @@ body[dir="rtl"] .payment-card.mobile-border {padding-right: 68px !important;}
 /* mobile or desktop banner css start */
 .al_desktop_banner{display: block;}.al_mobile_banner{display: none;}
 @media (max-width: 767px){
+    body.al_body_template_one .product-m .slick-list {
+        padding: 0 0px !important;
+    }
 .al_desktop_banner{display: none;}.al_mobile_banner{display: block !important;}
 .al_custom_search button.btn {padding: 7px 6px 0 0;}
 .al_template_one_menu .sm .al_main_category{margin: 0 20px;}
@@ -791,6 +798,13 @@ body.al_body_template_one .vender-peragraph {
 .al_body_template_one .accordion .card-header button:after{display:none;}
 .al_body_template_one .page-main-content .col-grid-box {
     margin-bottom: 30px;
+    background-color: #fff;
+    padding: 0 0 10px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgb(0 0 0 / 10%);
+    overflow: hidden;
+    max-width: 23%;
+    margin-right: 20px;
 }
 .al_body_template_one .accordion>.card>.card-header h2 {
     margin: 0;
@@ -826,4 +840,11 @@ body.al_body_template_one .vender-peragraph {
     object-fit: cover;
     height: 200px !important;
     width: 100%;
+}
+body.al_body_template_one.homeHeader .outter-fillter-data div#category_products_filter a.product-box.scale-effect {
+    height: 370px;
+}
+body.al_body_template_one.homeHeader .outter-fillter-data .inner_spacing h4 {
+    position: absolute;
+    bottom: 10px;
 }
