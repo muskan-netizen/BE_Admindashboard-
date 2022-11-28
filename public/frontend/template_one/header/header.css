@@ -452,6 +452,11 @@ body.al_body_template_two {
         padding: 0;
     }
 
+    .al_count_tabs.my-1 ::-webkit-scrollbar {
+        width: 5px !important;
+    }
+
+
     .al_body_template_one .al_custom_brand .brand-ing {
         height: 100px;
         width: 100px;
@@ -640,6 +645,7 @@ body.al_body_template_two {
     body .menu-navigation.al .navigation-tab-item .nav-link.active {
         color: var(--theme-deafult);
     }
+
 
 }
 

@@ -16,6 +16,7 @@
 .al_body_template_six.homeHeader .vendor-stories{background: transparent;}
 .vendor-description .vendor-details-left .vendor-location a {position: inherit !important;}
 .al_body_template_six .vendor-description .vendor-info .vendor-location{margin-bottom:10px;}
+.line_diff_between_products{border-top: 1px dotted rgb(61, 60, 60)}
 
 </style>
 @endsection
@@ -73,7 +74,7 @@
 
                                                     <li class="d-block vendor-location">
                                                         <a href="javascript:void(0)" onclick="copyToClipboard('#p1')" >
-                                                            <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt=""> 
+                                                            <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
                                                             <span class="copied_txt" id="show_copy_msg_on_click_copy">{{ __('Copy') }}</span>
                                                             <span class="copied_txt" id="show_copy_msg_on_click_copied" style="display:none;">{{ __('Copied') }}</span>
                                                         </a>
@@ -200,7 +201,7 @@
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6 alScrollspyProduct">
-                                        
+
                                         <div class="col-12 d-sm-flex justify-content-start mb-2 p-0">
                                             @if (isset($tags) && !empty($tags))
                                                 @foreach ($tags as $key => $tag)
@@ -600,13 +601,12 @@
                         <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
                     </div>
                 </div>
-                <!-- <hr class="my-2"> -->
                 <% }); %>
             <% } %>
-
+            <hr class="my-2 mt-3 line_diff_between_products">
             <% }); %>
             <% if(cart_details.delivery_charges > 0) { %>
-                <hr class="my-2">
+                {{-- <hr class="my-2"> --}}
                 <div class="row justify-content-between">
                     <div class="col-md-6 col-sm-6 text-left">
                         <h6 class="m-0 font-14">{{ __('Delivery fee') }}</h6>

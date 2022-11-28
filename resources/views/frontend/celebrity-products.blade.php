@@ -23,13 +23,14 @@
                 </div>
             </div>
             <div class="row mb-5 homepageSix">
-                <div class="collection-filter col-lg-3">
+                <div class="collection-filter col-lg-3 main-fillter">
                     <div class="collection-filter-block bg-transparent p-0">
                         <!-- <div class="collection-mobile-back">
                             <span class="filter-back d-lg-none d-inline-block">
                                 <i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}
                             </span>
                         </div> -->
+                        <aside class="side_fillter">
                         <div class="collection-collapse-block open mb-2">
                             @if(!empty($category->brands) && count($category->brands) > 0)
                             <h3 class="collapse-block-title">{{__('Brand')}}</h3>
@@ -91,6 +92,7 @@
                                 </div>
                             </div>
                         </div>
+                        </aside>
                     </div>
                     @if(!empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card">
@@ -188,7 +190,7 @@
                     </div>
                     @endif
                 </div>
-                <div class="collection-content col-lg-9">
+                <div class="collection-content col-lg-9 outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">

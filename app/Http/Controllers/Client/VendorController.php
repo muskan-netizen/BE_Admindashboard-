@@ -938,6 +938,7 @@ class VendorController extends BaseController
 
     /**   show vendor page - payout tab      */
     public function vendorPayout($domain = '', $id){
+      
         $product_categories = [];
         $active = array();
         $type = Type::all();
@@ -1230,7 +1231,6 @@ class VendorController extends BaseController
             $vendor->service_fee_percent        = $request->service_fee_percent;
             $vendor->fixed_service_charge       = ($request->has('fixed_service_charge') && $request->fixed_service_charge == 'on') ? 1 : 0;
             $vendor->service_charge_amount      = $request->has('service_charge_amount') ? $request->service_charge_amount : 0.00;
-       
             //$vendor->add_category = ($request->has('add_category') && $request->add_category == 'on') ? 1 : 0;
             $msg = 'commission configuration';
 
@@ -2284,7 +2284,7 @@ class VendorController extends BaseController
 
             foreach($estimate_products as $k => $product)
             {
-                \Log::info($product->primary);
+                //\Log::info($product->primary);
                     //Product added
                     $productId = Product::updateOrCreate(
                     [

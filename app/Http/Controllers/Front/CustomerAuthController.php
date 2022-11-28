@@ -400,18 +400,20 @@ class CustomerAuthController extends FrontController
                         $to = '+' . $user->dial_code . $user->phone_number;
                     }
                     $provider = $prefer->sms_provider;
-                   // $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                  //  $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                    // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:''); 
                     $keyData = ['{user_name}'=>ucwords($user->name)];
-                    $body = sendSmsTemplate('user-signup-sms',$keyData);
-                    // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
+                    $body = sendSmsTemplate('user-signup-sms',$keyData);              
                     $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
 
                     if( $prefer->verify_phone == 1 ){
                         $response['send_otp'] = 1;
                         $to = '+'.$user->dial_code.$user->phone_number;
                         $provider = $prefer->sms_provider;
-                        $body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
-                        $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                        //$body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
+                        $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
+                        $body = sendSmsTemplate('verify-account',$keyData); 
+                        $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                     }
                 }
                 if(!empty($prefer->mail_driver) && !empty($prefer->mail_host) && !empty($prefer->mail_port) && !empty($prefer->mail_port) && !empty($prefer->mail_password) && !empty($prefer->mail_encryption)){
@@ -587,9 +589,11 @@ class CustomerAuthController extends FrontController
                     $to = '+'.$dialCode.$phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $body = "Please enter OTP ".$phoneCode." to verify your account.";
+                //$body = "Please enter OTP ".$phoneCode." to verify your account.";
+                $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
+                $body = sendSmsTemplate('verify-account',$keyData);
                 if(!empty($provider) ){
-                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
 
                     if($send ==1){
                         $request->request->add(['codeSent' => 1]);

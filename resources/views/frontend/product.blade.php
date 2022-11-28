@@ -20,7 +20,7 @@
         .exzoom .exzoom_zoom_outer{display:none}
         }
     */
-    .border-product.al_disc ol,.border-product.al_disc ul{padding-left:30px}.border-product.al_disc ol li,.border-product.al_disc ul li{display:list-item;padding-left:0;padding-top:8px;list-style-type:disc;font-size:14px}.border-product.al_disc ol li{list-style-type:decimal}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit} 
+    .border-product.al_disc ol,.border-product.al_disc ul{padding-left:30px}.border-product.al_disc ol li,.border-product.al_disc ul li{display:list-item;padding-left:0;padding-top:8px;list-style-type:disc;font-size:14px}.border-product.al_disc ol li{list-style-type:decimal}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}
 
     .img-zoom-lens {
       position: absolute;
@@ -31,7 +31,7 @@
       opacity: .2;
       display: block;
     }
-    
+
     .img-zoom-result {
         border: 1px solid #d4d4d4;
         width: 100%;
@@ -54,7 +54,7 @@
         z-index: 10;
         display: none;
     }
-     
+
     </style>
 
 @endsection
@@ -64,7 +64,7 @@
 @if(!empty($category))
 @include('frontend.included_files.products_breadcrumb')
 @endif
-@php 
+@php
   $img = '';
 @endphp
 <!-- <div class="toast">
@@ -1015,7 +1015,7 @@
                             $('.incremental-left-minus').click();
                             //$('#blocktime, #blocktime2').change();
                         }
-                        
+
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
@@ -1186,7 +1186,7 @@
             $('.img-zoom-result').show();
             imageZoom(imageId, "myresult");
         });
-    
+
         $('.myimage1').click(function(){
             var new_image = $(this).attr('src');
             $('#main_image').attr('src',new_image);

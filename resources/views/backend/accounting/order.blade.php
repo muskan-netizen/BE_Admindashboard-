@@ -152,7 +152,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
         function getPercentageAmount(percent,amount){
 
             // var totalPercent = (percent/amount * 100);
-            var totalPercent = (amount*percent) / 100; // Added by ovi
+            var totalPercent = (percent * 100) / amount; // Added by ovi
 
             return parseFloat(totalPercent).toFixed(2);
         }
@@ -258,7 +258,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 
                             {data: 'admin_commission', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
-                                return data;
+                                return data+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                                 // return numberWithCommas(data)+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                             }},
 

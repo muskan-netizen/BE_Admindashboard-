@@ -131,8 +131,9 @@
                             {{getNomenclatureName('Searching For Nearby Drivers',true)}}
                         <%}%>
                     </b></h6>
-                    <div class="new-loader">
-                    </div>
+                    <% if(result.scheduled_date_time == null){%>
+                        <div class="new-loader"></div>
+                    <%}%>
                 </div>
                 <div class="cab-location-details mt-2" id="driver_details_main_div" style="display:none;">
                    <div class="row align-items-center">

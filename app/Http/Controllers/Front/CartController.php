@@ -184,17 +184,17 @@ class CartController extends FrontController
                 "minimum_order_count" => $product->minimum_order_count,
                 "from_estimation" => true
             ]);
-    
-            $addon_price = 0; 
+
+            $addon_price = 0;
 
             // foreach($product->sets as $set){
             //     array_push($addon_id, strval($set->addon_id));
             //     $addon_price = $set->setoptions->sum('price');
-    
+
             //     foreach($set->setoptions as $key => $option){
             //         array_push($option_id, strval($option->id) );
             //     }
-            // } 
+            // }
 
             $request->merge([
                 "addonID" => $addonAr[$product->id]
@@ -205,12 +205,12 @@ class CartController extends FrontController
             ]);
             // \Log::info($request->addonID);
             // \Log::info($request->addonoptID);
-           
+
             $result = $this->postAddToCart($request);
             // echo $result;
         }
 
-    
+
         // Remove Estimation Cart
         if($user){
             $estimatedProductCart = EstimatedProductCart::where('user_id', $user->id)->first();
@@ -253,7 +253,7 @@ class CartController extends FrontController
         // dd($orderVendors);
         foreach($orderVendors as $orderVendor){
             // Get orders of current vendor where scheduled_slot and schedule_pickup_datetime is same as received from frontend.
-            $order = Order::where('id', $orderVendor->order_id)->where('scheduled_slot', $schedule_slot)->first(); 
+            $order = Order::where('id', $orderVendor->order_id)->where('scheduled_slot', $schedule_slot)->first();
             // dd($order);
             if($order){
                 $schedule_pickup = Carbon::parse($order->scheduled_date_time);
@@ -279,7 +279,7 @@ class CartController extends FrontController
     public function postAddToCart(Request $request, $domain = '')
     {
        // pr($request->all());
-      
+
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
@@ -340,7 +340,7 @@ class CartController extends FrontController
             if($request->has('addonID')){
                 $addon_ids = $request->addonID;
             }
-           
+
             if($request->has('addonoptID')){
                 $addon_options = $request->addonoptID;
             }
@@ -354,7 +354,7 @@ class CartController extends FrontController
             // \Log::info($addon_options);
             // \Log::info($addonSets);
             // die;
-            
+
             foreach($addonSets as $key => $value){
                 $addon = AddonSet::join('addon_set_translations as ast', 'ast.addon_id', 'addon_sets.id')
                             ->select('addon_sets.id', 'addon_sets.min_select', 'addon_sets.max_select', 'ast.title')
@@ -379,9 +379,9 @@ class CartController extends FrontController
                     ], 400);
                 }
             }
-            // total booking time for rental case 
+            // total booking time for rental case
             $total_booking_time = $request->has('total_booking_time') ? $request->total_booking_time : null;
-         
+
 
             // total booking time as single service duration time as per service for get totel service time multiply by quantity
             if(in_array($luxury_option->id,[6,8])){
@@ -470,7 +470,7 @@ class CartController extends FrontController
                 $cartProduct->save();
             }
             $quantityCart = CartProduct::where('cart_id',$cart_detail->id)->sum('quantity');
-           
+
             return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0]);
         } catch (Exception $e) {
             \Log::info($e->getMessage());
@@ -667,7 +667,7 @@ class CartController extends FrontController
             ]);
         }
 
-        
+
 
         return response()->json([
             'message' => "No product found in cart",
@@ -766,7 +766,7 @@ class CartController extends FrontController
                 // $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
         ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        
+
         //dd($cartData->toArray());
         /* Getting All Taxes available and making TaxRate array according to requirement */
         $taxes=TaxRate::all();
@@ -774,7 +774,7 @@ class CartController extends FrontController
         foreach($taxes as $tax){
             $taxRates[$tax->id]=['tax_rate'=>$tax->tax_rate,'tax_amount'=>$tax->tax_amount];
         }
-        
+
 
         $loyalty_amount_saved = 0;
         $redeem_points_per_primary_currency = '';
@@ -782,7 +782,7 @@ class CartController extends FrontController
         if ($loyalty_card) {
             $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
         }
-        
+
          /* Getting All User Subscription plans */
         $subscription_features = array();
         $user_subscription = null;
@@ -841,7 +841,7 @@ class CartController extends FrontController
            // $sub_total+=$opt_price_in_currency;
             /* Getting in vendor loop */
             foreach ($cartData as $ven_key => $vendorData) {
-               
+
                 $opt_quantity_price_new = 0.00;
                 $addon_price=0;
                 $is_promo_code_available = 0;
@@ -857,7 +857,7 @@ class CartController extends FrontController
                     $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user->timezone);
                     $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
                 }
-                
+
 
                 $slots = (object)showSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
                 if($cartData->count() > 1){
@@ -888,7 +888,7 @@ class CartController extends FrontController
                     }
                 }
                 else {
-                    
+
                     if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
                         if($address_id > 0){
 
@@ -942,7 +942,7 @@ class CartController extends FrontController
 
                  if($prod->pvariant)   {
 
-                    $cart_product_ids[] = $prod->product_id;    
+                    $cart_product_ids[] = $prod->product_id;
                     /* Setting Out of Stock if requied quanitity is not available */
                     if($prod->product->sell_when_out_of_stock == 0 && $prod->product->has_inventory == 1){
                         $quantity_check = productvariantQuantity($prod->variant_id);
@@ -978,7 +978,7 @@ class CartController extends FrontController
                     //dd($prod->pvariant->price);
                     $price_in_currency = $prod->pvariant->price??0;
                     $totalMarkup += $prod->pvariant->markup_price??0;
-                    $price_in_doller_compare = $prod->pvariant->price??0; 
+                    $price_in_doller_compare = $prod->pvariant->price??0;
                     $container_charges_in_currency = $prod->pvariant->container_charges??0;
                     $coupon_apply_price+=$price_in_currency;
                     $container_charges_in_doller_compare = $prod->pvariant->container_charges??0;
@@ -995,7 +995,7 @@ class CartController extends FrontController
                     $sub_total+=$quantity_price+$container_charges_in_currency;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
-                    $total_quantity += $prod->quantity; 
+                    $total_quantity += $prod->quantity;
                    // $prod->pvariant->price = decimal_format($price_in_currency);
                     //dd($prod->pvariant->price);
                     $prod->pvariant->container_charges = decimal_format($container_charges_in_currency);
@@ -1006,14 +1006,14 @@ class CartController extends FrontController
                     $prod->quantity_price = decimal_format($quantity_price);
                     $prod->quantity_container_charges = decimal_format($quantity_container_charges);
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
-                    
+
                     $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
                     if(
-                        ($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids)) 
+                        ($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids))
                         || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids))
-                        || ($in_or_not == 0 && in_array($vendorData->vendor_id, $coupon_vendor_ids)) 
+                        || ($in_or_not == 0 && in_array($vendorData->vendor_id, $coupon_vendor_ids))
                         || ($in_or_not == 1 && !in_array($vendorData->vendor_id, $coupon_vendor_ids))
                     ){
                         $coupon_product_discount = $coupon_product_discount + $quantity_price + $quantity_container_charges;
@@ -1030,7 +1030,7 @@ class CartController extends FrontController
                                 }
                                 $sub_total+=($opt_price_in_currency * $prod->quantity);
                                 $coupon_apply_price+=$opt_price_in_currency;
-                                
+
                                 $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $prod->quantity);
                                 $addons->option->price_in_cart = $addons->option->price;
                                 $addon_price=$addons->option->price;
@@ -1041,9 +1041,9 @@ class CartController extends FrontController
                                 $payable_amount = $payable_amount + $opt_quantity_price;
                                 $quantity_price = $quantity_price + $opt_quantity_price;
                                 if(
-                                    ($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids)) 
+                                    ($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids))
                                     || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids))
-                                    || ($in_or_not == 0 && in_array($vendorData->vendor_id, $coupon_vendor_ids)) 
+                                    || ($in_or_not == 0 && in_array($vendorData->vendor_id, $coupon_vendor_ids))
                                     || ($in_or_not == 1 && !in_array($vendorData->vendor_id, $coupon_vendor_ids))
                                 ){
                                     $coupon_product_discount = $coupon_product_discount + $opt_quantity_price;
@@ -1053,13 +1053,13 @@ class CartController extends FrontController
                     }
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
                     /* Getting taxes info */
-                   
+
                     $taxData = array();
                     if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                             $rate = $tax_value->tax_rate;
                             $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                            $product_tax = $quantity_price * $rate / 100; 
+                            $product_tax = $quantity_price * $rate / 100;
                             $taxData[$tckey]['identifier'] = $tax_value->identifier;
                             $taxData[$tckey]['rate'] = $rate;
                             $taxData[$tckey]['tax_amount'] = decimal_format($tax_amount);
@@ -1069,7 +1069,7 @@ class CartController extends FrontController
                         }
                         unset($prod->product->taxCategory);
                     }
-                   
+
                     $prod->taxdata = $taxData;
 
                     if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
@@ -1096,8 +1096,8 @@ class CartController extends FrontController
 
                     //if ($action == 'delivery' || $action =='appointment' ) {
                     if (in_array($action,['delivery','appointment','on_demand'])) {
-                        
-                   
+
+
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
                         $deliveryCharges = 0;
@@ -1148,7 +1148,7 @@ class CartController extends FrontController
                         }//End Check last time stone
                     }
                 }
-               
+
                     $product = Product::with([
                         'variant' => function ($sel) {
                             $sel->groupBy('product_id');
@@ -1171,9 +1171,9 @@ class CartController extends FrontController
                         $crossSell_products->push($cross_prods);
                     }
                 }
-                
+
                 // $couponGetAmount = $payable_amount ;
-               
+
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
                     if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
                         if($vendorData->coupon->promo->restriction_on == 0 || $vendorData->coupon->promo->restriction_on == 1)
@@ -1243,7 +1243,7 @@ class CartController extends FrontController
                         }
                     }
                 }
-                
+
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
                 $promoCodeRequest->setMethod('POST');
@@ -1269,7 +1269,7 @@ class CartController extends FrontController
                 }
 
                // pr($PromoFreeDeliver);
-                // add total delivery fee 
+                // add total delivery fee
                 if($vendorData->vendor->delivery_charges_tax_id)
                 $all_vendor_deliver_charges +=  $deliveryCharges;
 
@@ -1282,17 +1282,17 @@ class CartController extends FrontController
                 //}
                 //$payable_amount = $payable_amount + $deliver_charge;
                 //Start applying service fee on vendor products total
-              
+
                 $slotsDate = findSlot('',$vendorData->vendor->id,'');
                 $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
-                    
+
                 $vendor_service_fee_percentage_amount = 0;
                 if($vendorData->vendor->service_fee_percent > 0){
                      $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
                     $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                  }
-                
+
                 //end applying service fee on vendor products total
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
@@ -1303,7 +1303,7 @@ class CartController extends FrontController
                 $vendorData->payable_amount = decimal_format($payable_amount);
                 $vendorData->discount_amount = decimal_format($discount_amount);
                 $vendorData->discount_percent = decimal_format($discount_percent);
-                $vendorData->taxable_amount = decimal_format($taxable_amount);  
+                $vendorData->taxable_amount = decimal_format($taxable_amount);
                 //\Log::info($taxable_amount);
                 $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount);
                 $vendorData->product_sub_total_amount = decimal_format($subtotal_amount);
@@ -1335,7 +1335,7 @@ class CartController extends FrontController
                     $vendorData->is_vendor_closed = 1;
                     $delivery_status = 0;
                 }
-                
+
                 // if ($loyalty_amount_saved > 0) {
                 // dd($payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)); //36.81
                 // }
@@ -1346,8 +1346,8 @@ class CartController extends FrontController
 
 
 
-               
-                $total_payable_amount = $total_payable_amount + $payable_amount; 
+
+                $total_payable_amount = $total_payable_amount + $payable_amount;
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_discount_amount = $total_discount_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
@@ -1412,7 +1412,7 @@ class CartController extends FrontController
             }
             $cart->wallet_amount_used = decimal_format($wallet_amount_used);
 
-          
+
             $scheduled = (object)array(
                 'scheduled_date_time'=>(($cart->scheduled_slot)?date('Y-m-d',strtotime($cart->scheduled_date_time)):$cart->scheduled_date_time),'slot'=>$cart->scheduled_slot,
             );
@@ -1456,7 +1456,7 @@ class CartController extends FrontController
                         $myDate  = date('Y-m-d',strtotime('+2 day'));
                         $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
                     }
-    
+
                     if(count((array)$slots) == 0){
                         $myDate  = date('Y-m-d',strtotime('+3 day'));
                         $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
@@ -1468,7 +1468,7 @@ class CartController extends FrontController
                     $cart->vendor_id =  $vendorId;
                     $slots = [];
                 }
-                
+
                 $pickupSlots = [];
                 $dropoffSlots = [];
                 // get slots for laundry category
@@ -1519,7 +1519,7 @@ class CartController extends FrontController
                 $dropoffSlots = [];
             }
             $cart->without_category_kyc = 0;
-          
+
             if( $preferences->category_kyc_documents ==1 && $user ){
 
                 $category_query =  CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_array){
@@ -1574,7 +1574,7 @@ class CartController extends FrontController
             $cart->all_vendor_deliver_charges = decimal_format($all_vendor_deliver_charges);
             $cart->all_vendor_markup_charges = decimal_format($all_vendor_markup_charges);
             $cart->total_discount_amount = decimal_format($total_discount_amount);
-            $cart->total_taxable_amount = decimal_format($total_taxable_amount); 
+            $cart->total_taxable_amount = decimal_format($total_taxable_amount);
             $total_payable_amount_calc_tip = $total_payable_amount - $total_taxable_amount;
             $cart->tip_5_percent = decimal_format(0.05 * $total_payable_amount_calc_tip);
             $cart->tip_10_percent = decimal_format(0.10 * $total_payable_amount_calc_tip);
@@ -1617,11 +1617,11 @@ class CartController extends FrontController
 
             if($preferences->same_day_delivery_for_schedule == 0){
                 if($cart->my_dropoff_delay_date == date('Y-m-d') ){
-                    $cart->my_dropoff_delay_date = date('Y-m-d',strtotime('+1 day')); 
+                    $cart->my_dropoff_delay_date = date('Y-m-d',strtotime('+1 day'));
                 }
 
                 if($cart->delay_date == date('Y-m-d') ){
-                    $cart->delay_date = date('Y-m-d',strtotime('+1 day')); 
+                    $cart->delay_date = date('Y-m-d',strtotime('+1 day'));
                 }
 
             }
@@ -1926,9 +1926,9 @@ class CartController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function getCartData($domain = '', Request $request)
-    {   
+    {
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
-        
+
         $cart_details = null;
         $user = Auth::user();
         $curId = Session::get('customerCurrency');
@@ -1956,7 +1956,7 @@ class CartController extends FrontController
             $schedule_datetime_del = Carbon::now()->timezone($timezone)->format('Y-m-d H:i:s');
         }
 
-        
+
         if ($cart) {
             $cart_details = $this->getCartsNew($cart, $address_id,$request->code, $schedule_datetime_del);
         }
@@ -2187,7 +2187,7 @@ class CartController extends FrontController
     # get delivery fee from dispatcher
     public function getDeliveryFeeDispatcher($vendor_id, $schedule_datetime_del='', $dispatcher_tags='')
     {
-      
+
         try {
             $dispatch_domain = $this->checkIfLastMileOn();
             //pr($dispatch_domain);
@@ -2205,8 +2205,9 @@ class CartController extends FrontController
                         'latitude' => $cus_address->latitude ?? 30.717288800000,
                         'longitude' => $cus_address->longitude ?? 76.803508700000
                     );
+
                     $postdata =  ['locations' => $location, 'schedule_datetime_del' => $schedule_datetime_del, 'agent_tag' => (!empty($dispatcher_tags)?$dispatcher_tags:'')];
-                    
+
                     $vendorType =  (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
                     if($vendorType == 'appointment'){
                         $client = new GClient([
@@ -2216,7 +2217,7 @@ class CartController extends FrontController
                                 'content-type' => 'application/json'
                             ]
                         ]);
-                        
+
                         $url = $dispatch_domain->appointment_service_key_url;
                         $res = $client->post(
                             $url . '/api/get-delivery-fee',
@@ -2231,7 +2232,7 @@ class CartController extends FrontController
                                 'content-type' => 'application/json'
                             ]
                         ]);
-                        
+
                         $url = $dispatch_domain->dispacher_home_other_service_key_url;
                         $res = $client->post(
                             $url . '/api/get-delivery-fee',
@@ -2246,7 +2247,7 @@ class CartController extends FrontController
                                 'content-type' => 'application/json'
                             ]
                         ]);
-                        
+
                         $url = $dispatch_domain->delivery_service_key_url;
                         $res = $client->post(
                             $url . '/api/get-delivery-fee',
@@ -2254,7 +2255,7 @@ class CartController extends FrontController
                         );
                         $response = json_decode($res->getBody(), true);
                     }
-                    
+
                     if ($response && $response['message'] == 'success') {
                         $response_array[] = array('delivery_fee' => $response['total'], 'total_duration' => $response['total_duration']);
                         return $response_array;
@@ -2397,7 +2398,7 @@ class CartController extends FrontController
                 'schedule_dropoff' => $request->schedule_dropoff??null,
                 // 'scheduled_slot' => $request->schedule_time??null
                 ]);
-            
+
                 CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);
 
                 DB::commit();
@@ -2463,11 +2464,11 @@ class CartController extends FrontController
                     $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
                 CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time,'dispatch_agent_id' => $request->dispatch_agent_id]);
-                
+
 
                 // $cartProductDetails = CartProduct::where('id', $request->cart_product_id)->get()->first();
                 // CartProduct::where('cart_id', $cartProductDetails->cart_id )->where('vendor_id', $cartProductDetails->vendor_id  )->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time]);
-                
+
                 DB::commit();
                 return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);
             }
@@ -2489,9 +2490,9 @@ class CartController extends FrontController
          try{
              $user = Auth::user();
              if ($user) {
-                 
+
                  CartProduct::where('id', $request->cart_product_id)->update(['dispatch_agent_id' => $request->dispatch_agent_id]);
-                 
+
                  DB::commit();
                  return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);
              }
@@ -2504,7 +2505,7 @@ class CartController extends FrontController
              return response()->json(['status'=>'Error', 'message'=>$ex->getMessage()]);
          }
      }
- 
+
     // add ones add in cart for ondemand
 
     public function postAddToCartAddons(Request $request, $domain = '')
