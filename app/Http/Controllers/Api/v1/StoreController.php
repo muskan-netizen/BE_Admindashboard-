@@ -1861,7 +1861,7 @@ class StoreController extends BaseController{
 								
 								foreach( $value['option'] as $key1 => $val1 ) {
 								
-									if( in_array($val1['option_id'], $value_arr) ) {
+									if( @in_array($val1['option_id'], $value_arr) ) {
 								
 										$insert_arr[$insert_count]['product_id'] = $request->product_id;
 										$insert_arr[$insert_count]['attribute_id'] = $value['id'];

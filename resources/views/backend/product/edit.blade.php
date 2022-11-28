@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="{{ asset('assets/ck_editor/samples/toolbarconfigurator/lib/codemirror/neo.css') }}">
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .image-upload>input {
         display: none;
@@ -582,7 +583,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                                         <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}"> 
                                                         @php  $counter++; @endphp
                                                     @endforeach
-                                                    <select name="attribute[{{$var->id}}][value][]" id=""  multiple>
+                                                    <select name="attribute[{{$var->id}}][value][]" class="select2-multiple"  multiple>
                                                         @foreach($var->option as $key => $opt)
                                                             <option value="{{$opt->id}}" @if(in_array($opt->id, $attribute_value)) selected @endif>{{$opt->title}}</option>
                                                         @endforeach
@@ -1514,7 +1515,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 <!-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script> -->
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
-
+<script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
 <script>
     CKEDITOR.replace('body_html');
     CKEDITOR.config.height = 150;
@@ -2286,6 +2287,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     }
                 });
         });
+        $('.select2-multiple').select2();
     </script>
 {{-- Insert Value to Role Price Modal (End) --}}
 

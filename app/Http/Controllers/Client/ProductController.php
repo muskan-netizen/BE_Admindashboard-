@@ -376,9 +376,8 @@ class ProductController extends BaseController
                                 $value_arr = @$value['value'];
                                 
                                 foreach( $value['option'] as $key1 => $val1 ) {
-                                
-                                    if( in_array($val1['option_id'], $value_arr) ) {
-                                
+                                    if( @in_array($val1['option_id'], $value_arr) ) {
+
                                         $insert_arr[$insert_count]['product_id'] = $id;
                                         $insert_arr[$insert_count]['attribute_id'] = $value['id'];
                                         $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
