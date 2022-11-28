@@ -19,8 +19,10 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
+use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
-use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs};
+use App\Http\Controllers\Client\VendorController;
+use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, Permissions, UserPermissions, Type, Category, VendorCategory};
 use Log;
 
 class AuthController extends BaseController
@@ -550,6 +552,45 @@ class AuthController extends BaseController
                         'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
+            }
+
+            ####################################################
+            ## if p2p is enable then register user as a admin ##
+            ####################################################
+            if( getClientPreferenceDetail()->p2p_check ) {
+
+                $user->is_admin = 1;
+                $user->save();
+            
+                // Create vendor with default images
+                $vendor = new Vendor();
+                $vendor->logo = 'default/default_logo.png';
+                $vendor->banner = 'default/default_image.png';
+            
+                $vendor->status = 0;
+                $vendor->name = $user->name;
+                $vendor->email = $user->email ?? '';
+                $vendor->phone_no = $user->phone_number ?? '';
+                $vendor->slug = Str::slug($user->name, "-");
+                $vendor->save();
+            
+                $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
+            
+                UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
+            
+                foreach ($permission_details as $permission_detail) {
+                    UserPermissions::create(['user_id' => $user->id, 'permission_id' => $permission_detail->id]);
+                }
+                $p2p_type = Type::where('service_type', 'p2p')->first();
+                if( !empty($p2p_type) ) {
+                    $category_id = Category::where('type_id', $p2p_type->id)->first();
+                    
+                    $data[0] = $category_id->id ?? '';
+                    $signReq->request->add(['selectedCategories'=> $data ?? '']);
+                    
+                }
+
+                $this->addDataSaveVendor($signReq, $vendor->id);
             }
 
             if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
@@ -1609,5 +1650,41 @@ class AuthController extends BaseController
             
         }
 
+    }
+    /**
+     * Mark user as a vendor
+     */
+    public function addDataSaveVendor(Request $request, $vendor_id){
+
+        $vendor = Vendor::where('id', $vendor_id)->firstOrFail();
+        $VendorController = new VendorController();
+
+        $request->merge(["return_json"=>1]);
+        $VendorConfigrespons = $VendorController->updateConfig($request,'',$vendor_id)->getData();//$this->updateConfig($vendor_id);
+       
+        if($request->has('can_add_category')){
+            $vendor->add_category = $request->can_add_category == 'on' ? 1 : 0;
+        }
+        if ($request->has('assignTo')) {
+            $vendor->vendor_templete_id = $request->assignTo;
+        }
+
+        $vendor->save();
+        if($request->has('category_ids')){
+            foreach($request->category_ids as $category_id){
+                VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
+            }
+        }
+        if($request->has('selectedCategories')){
+            foreach($request->selectedCategories as $category_id){
+                VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
+            }
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Vendor created Successfully!',
+            'data' => $VendorConfigrespons
+        ]);
+        // pr($VendorConfigrespons);
     }
 }
