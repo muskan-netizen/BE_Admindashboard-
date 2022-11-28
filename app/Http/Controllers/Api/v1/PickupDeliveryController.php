@@ -743,7 +743,7 @@ class PickupDeliveryController extends BaseController{
 
                     $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->with(['vendor'])->first();
                     
-                    if($or_ids->vendor->auto_accept_order==1):
+                    //if($or_ids->vendor->auto_accept_order==1):
                         $update_vendor = VendorOrderStatus::updateOrCreate([
                             'order_id' =>  $order->id,
                             'order_status_option_id' => 2,
@@ -751,9 +751,9 @@ class PickupDeliveryController extends BaseController{
                             'order_vendor_id' =>  $or_ids->id]);
 
                         OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
-                    else:
-                        OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['dispatcher_status_option_id' => 1]);
-                    endif;
+                    // else:
+                    //     OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['dispatcher_status_option_id' => 1]);
+                    // endif;
 
                     $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
                     'order_id' =>  $order->id,
