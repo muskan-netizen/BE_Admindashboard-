@@ -543,15 +543,17 @@ class CategoryController extends FrontController{
                 if( !empty($request->dynamic_options) ) {
                     foreach($request->dynamic_options as $key => $val) {
                         foreach($val as $inn_key => $inn_val) {
-                            $products->whereHas('ProductAttribute', function($q) use($inn_key, $inn_val){
-                                $q->where('key_name', $inn_key);
-                                if( is_array($inn_val) ) {
-                                    $q->whereIn('key_value', $inn_val);
-                                }
-                                else {
-                                    $q->where('key_value', $inn_val);
-                                }
-                            });
+                            if( !empty($inn_key) && !empty($inn_val) ) {
+                                $products->whereHas('ProductAttribute', function($q) use($inn_key, $inn_val){
+                                    $q->where('key_name', $inn_key);
+                                    if( is_array($inn_val) ) {
+                                        $q->whereIn('key_value', $inn_val);
+                                    }
+                                    else {
+                                        $q->where('key_value', $inn_val);
+                                    }
+                                });
+                            }
                         }
                     }
                 }
