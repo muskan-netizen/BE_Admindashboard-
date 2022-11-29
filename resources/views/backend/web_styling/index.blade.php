@@ -155,7 +155,6 @@
 
                                                     </label>
                                                 </div>
-
                                             </div>
                                         </div>
                                         <span class="alTemplateName mt-3 w-100">{{$homepage_style->name}}</span>
