@@ -72,6 +72,7 @@
                                 <h3 class="collapse-block-title">{{$sets->title}}</h3>
                                 <div class="collection-collapse-block-content">
                                     <div class="collection-brand-filter">
+                                    <?php /*
                                     @if($sets->type == 2)
                                         @foreach($sets->options as $ok => $opt)
                                             <div class="chiller_cb small_label d-inline-block color-selector mt-2">
@@ -94,6 +95,7 @@
                                             </div>
                                         @endforeach
                                     @endif
+                                    */ ?>
                                     </div>
                                 </div>
                             </div>
