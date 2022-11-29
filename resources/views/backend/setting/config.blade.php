@@ -1576,7 +1576,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
               </div>
                 <div class="col-md-4">
                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Price By Role')}}<small class="d-block pr-5">{{__("Enable to show price by role on edit's vendor screen.")}}</small></label>
+                        <label for="is_price_by_role_switch" class="mr-2 mb-0">{{__('Price By Role')}}<small class="d-block pr-5">{{__("Enable to show price by role on edit's vendor screen.")}}</small></label>
                         <span>
                             <input type="checkbox" data-plugin="switchery" name="is_price_by_role_switch" id="is_price_by_role_switch" class="form-control checkbox_change" data-className="is_price_by_role" data-color="#43bee1" @if( $getAdditionalPreference['is_price_by_role'] == '1') checked='checked' @endif>
                             <input type="hidden" @if($getAdditionalPreference['is_price_by_role'] == 1) value="1" @else value="0" @endif name="is_price_by_role" id="is_price_by_role"/>
@@ -1597,8 +1597,16 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                <div class="col-md-4">
                   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                     <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Cab Pooling')}}<small class="d-block pr-5">{{__("Enable to allow customers to book Cab Pooling.")}}</small></label>
+                     <label for="is_cab_pooling" class="mr-2 mb-0">{{__('Cab Pooling')}}<small class="d-block pr-5">{{__("Enable to allow customers to book Cab Pooling.")}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="is_cab_pooling" id="is_cab_pooling" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_cab_pooling == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                     <label for="is_postpay_edit_dropoff" class="mr-2 mb-0">{{__('Enable Edit DropOff Location (Enable Post Pay)')}}<small class="d-block pr-5">{{__("Post Pay allows customers to pay after placing order. Edit DropOff Location to allow customers to Change DropOff Location even after placing order.")}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="is_postpay_edit_dropoff" id="is_postpay_edit_dropoff" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_postpay_edit_dropoff == '1')) checked='checked' @endif>
                      </span>
                   </div>
                </div>

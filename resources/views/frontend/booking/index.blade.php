@@ -430,12 +430,14 @@ body .alFullMapForm .scheduled-footer .btn {
     <span id="show_error_of_booking" class="error"></span>
 
     <div class="payment-promo-container p-2">
+        @if(isset($client_preference_detail) && $client_preference_detail->is_postpay_edit_dropoff == 0)
         <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
             <span id="payment_type">
                 <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
             </span>
             <i class="fa fa-angle-down" aria-hidden="true"></i>
         </h4>
+        @endif
         <div class="row">
             <div class="col-12">
             <%
@@ -443,7 +445,6 @@ body .alFullMapForm .scheduled-footer .btn {
             if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){
                 payableAmout = result.subscription_discount;
             }
-
             %>
                 <input type="hidden" id="stripe_token" name="stripe_token" value="">
                 <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>

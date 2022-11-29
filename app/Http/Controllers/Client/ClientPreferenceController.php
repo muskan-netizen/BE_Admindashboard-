@@ -457,6 +457,7 @@ class ClientPreferenceController extends BaseController{
 
             $preference->is_cab_pooling = ($request->has('is_cab_pooling') && $request->is_cab_pooling == 'on') ? 1 : 0;
             $preference->slots_with_service_area = ($request->has('slots_with_service_area') && $request->slots_with_service_area == 'on') ? 1 : 0;
+            $preference->is_postpay_edit_dropoff = ($request->has('is_postpay_edit_dropoff') && $request->is_postpay_edit_dropoff == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){

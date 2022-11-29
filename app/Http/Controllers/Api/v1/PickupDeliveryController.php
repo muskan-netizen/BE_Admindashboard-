@@ -615,7 +615,8 @@ class PickupDeliveryController extends BaseController{
         
         
     }
-     // place Request To Dispatch
+    
+    // place Request To Dispatch
     public function placeRequestToDispatch($request,$order,$vendor){
         try {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
@@ -1060,6 +1061,195 @@ class PickupDeliveryController extends BaseController{
         }
         $all_riders = $this->riderObj->getAllByUserId($data['user_id']);
         return response()->json(['riders' => $all_riders],200);
+    }
+
+    public function updatePickupDeliveryOrderByCustomer(Request $request){
+        try {
+            $order = Order::where('order_number', $request->order_number)->first();
+            $vendorId = OrderVendor::where('order_id',$order->id)->first();
+            $vendor_id = $vendorId->vendor_id;
+            $productId = OrderVendorProduct::where('order_vendor_id',$vendorId->id)->select('product_id')->first();
+            $tasks = OrderLocations::where('order_id',$order->id)->select('tasks')->first();
+            $request->request->add(['product_id', $productId->product_id]);
+            $request->request->add(['tasks', json_decode($tasks->tasks)]);
+            $request_to_dispatch = $this->editRequestToDispatch($request,$order,$vendor_id);
+            if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
+                $user = Auth::user();
+                $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
+                $order_place['data']['user_name'] = $user->email;
+                $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
+                return  $order_place;
+            }
+            /* if (!empty($request->transaction_id)) {
+                $order->payment_status = 1;
+            }
+            $order->save();
+            if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->transaction_id) && (!empty($request->transaction_id))) {
+                $payment = new Payment();
+                $payment->date = date('Y-m-d');
+                $payment->order_id = $order->id;
+                $payment->transaction_id = $request->transaction_id;
+                $payment->balance_transaction = $order->payable_amount;
+                $payment->type = 'pickup/delivery';
+                $payment->save();
+            }
+            $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$vendor_id);
+            if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
+                $user = Auth::user();
+                $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
+                $order_place['data']['user_name'] = $user->email;
+                $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
+                return  $order_place;
+            }else{
+                return $request_to_dispatch;
+            } */
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+
+    // place Request To Dispatch
+    public function editRequestToDispatch($request, $order, $vendor){
+        try {
+            $dispatch_domain = $this->checkIfPickupDeliveryOn();
+            $customer = Auth::user();
+            $wallet = $customer->wallet;
+            if ($dispatch_domain && $dispatch_domain != false) {
+
+                if(isset($request->task_type) && !empty($request->task_type))
+                {
+                    $request->task_type = $request->task_type;
+                    $schedule_datetime_del = null;                   
+                    $request->order_time = $schedule_datetime_del;
+                }else{
+                    $request->task_type = 'schedule';
+                    $request->scheduled_date_time = $schedule_datetime_del;
+                    $request->order_time = $schedule_datetime_del;
+                }
+                $dynamic = uniqid($order->id.$vendor);
+                $unique = Auth::user()->code;
+                $client_do = Client::where('code',$unique)->first();
+
+                if(!empty($client_do->custom_domain)){
+                    $domain = $client_do->custom_domain;
+                }else{
+                    $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
+                }
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
+                //$call_back_url = "https://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic;
+                $tasks = array();
+                $meta_data = '';
+                $team_tag = $unique."_".$vendor;
+                $product = Product::find($request->product_id);
+                $order_agent_tag = $product->tags??'';
+                $type = $request->bookingType ?? 0;
+                $friendName=$request->friendName?? null;
+                $friendPhoneNumber=$request->friendPhoneNumber?? null;
+                if(empty($friendPhoneNumber)){
+                    $type=0;
+                }
+
+                
+                if ($customer->dial_code == "971") {
+                    // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                    $customerno = "0" . $customer->phone_number;
+                } else {                
+                    // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                    $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
+                }
+                $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
+                $postdata =  [
+                            'order_number' =>  $order->order_number,
+                            'customer_name' => $customer->name ?? 'Dummy Customer',
+                            'customer_phone_number' => $customerno??rand(111111,11111),
+                            'customer_dial_code' => $customer->dial_code ?? null,
+                            'customer_email' => $customer->email ?? '',
+                            'recipient_phone' => $request->phone_number ?? $customerno,
+                            'recipient_email' => $request->email ?? $customer->email,
+                            'task_description' => $request->task_description??null,
+                            'allocation_type' => 'a',
+                            'task_type' => $request->task_type,
+                            'schedule_time' => $schedule_datetime_del ?? null,
+                            'cash_to_be_collected' => $payable_amount??0.00,
+                            'barcode' => '',
+                            'call_back_url' => $call_back_url??null,
+                            'order_team_tag' => $team_tag,
+                            'order_agent_tag' => $order_agent_tag,
+                            'task' => $request->tasks,
+                            'order_time_zone' => $request->order_time_zone??null,
+                            'images_array' => $request->images_array??null,
+                            'type'=>$type,
+                            'friend_name'=>$friendName,
+                            'friend_phone_number'=>$friendPhoneNumber,
+                            'vendor_id' => $vendor,
+                            'order_vendor_id' => $order_vendor->id,
+                            'dbname' => $client_do->database_name,
+                            'order_id' => $order->id,
+                            'customer_id' => $order->user_id,
+                            'user_icon' => $customer->image,
+                            'toll_passes' => 'IN_FASTAG',
+                            'VehicleEmissionType' => 'GASOLINE',
+                            'travelMode' => 'TAXI',
+                            'no_seats_for_pooling' =>(isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0,
+                            'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
+                            'available_seats' => $product->seats_for_booking,
+                        ];
+
+
+                $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                                                    'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                                                    'content-type' => 'application/json']
+                                                        ]);
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $res = $client->post(
+                    $url.'/api/task/create',
+                    ['form_params' => (
+                            $postdata
+                        )]
+                );
+                $response = json_decode($res->getBody(), true);
+                if ($response && isset($response['task_id']) && $response['task_id'] > 0) {
+                    $dispatch_traking_url = $response['dispatch_traking_url']??'';
+                    $up_web_hook_code = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])
+                                    ->update(['web_hook_code' => $dynamic,'dispatch_traking_url' => $dispatch_traking_url]);
+                    $response['dispatch_traking_url'] = $dispatch_traking_url;
+
+
+                    $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->with(['vendor'])->first();
+                    
+                    //if($or_ids->vendor->auto_accept_order==1):
+                        $update_vendor = VendorOrderStatus::updateOrCreate([
+                            'order_id' =>  $order->id,
+                            'order_status_option_id' => 2,
+                            'vendor_id' =>  $vendor,
+                            'order_vendor_id' =>  $or_ids->id]);
+
+                        OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
+                    // else:
+                    //     OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['dispatcher_status_option_id' => 1]);
+                    // endif;
+
+                    $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
+                    'order_id' =>  $order->id,
+                    'dispatcher_status_option_id' =>  1,
+                    'vendor_id' =>  $vendor]);
+
+                    if ($request->payment_option_id == 2){
+                        $wal =   $wallet->forceWithdrawFloat($order->payable_amount, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                    }
+                }
+                return $response;
+                }
+            }catch(\Exception $e)
+                    {
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  $e->getMessage();
+                        return $data;
+
+                    }
+
     }
 
 }
