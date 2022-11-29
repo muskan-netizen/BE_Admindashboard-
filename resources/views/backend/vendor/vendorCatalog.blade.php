@@ -544,7 +544,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
                 <form id="save_product_form" method="post" enctype="multipart/form-data"
-                    action="{{ route('product.store') }}">
+                    action="{{ route('product.store') }}" class="123456879">
                     @csrf
                     <div class="modal-body pb-0">
 

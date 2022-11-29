@@ -479,7 +479,7 @@ class UserhomeController extends FrontController
                 }
                 if( $da->slug == 'nav_categories'  ){
                     // dd($da->slug);
-                    $da['nav_categories'] = $navCategories;
+                    $da['nav_categories'] = $navCategories ?? '';
                    // dd($da[$da->slug]);
                 }
 

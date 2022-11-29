@@ -8,6 +8,120 @@
 @section('css')
 <style type="text/css">
 .main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}.slick-track{margin-left: 0px;}.product-box .product-detail h4, .product-box .product-info h4{font-size: 16px;}
+.main-fillter .side_fillter {
+    background: transparent !important;
+    border-top: 1px solid #D9D9D9;
+    margin-top: 18px !important;
+    overflow-y: auto !important;
+    border-right: 1px solid #D9D9D9;
+    height: auto;
+    overflow-x: hidden !important;
+}
+.p2p-sidebar {
+    padding: 20px;
+}
+.p2p-sidebar label.control-label {
+    margin: 10px 0 10px;
+    color: #000;
+    font-size: 18px;
+    font-weight: 500;
+}
+.p2p-sidebar .checkbox.checkbox-success {
+    align-items: center;
+    justify-content: flex-start;
+    display: inline-flex;
+    margin-bottom: 10px;
+    width: 48%;
+}
+.p2p-sidebar .checkbox.checkbox-success label {
+    margin-bottom: 0;
+    padding-left: 10px;
+}
+.p2p-sidebar .form-check-inline label {
+    margin: 0;
+    padding-left: 10px;
+}
+.p2p-sidebar .form-check-inline {
+    display: inline-flex;
+    align-items: center;
+    padding-left: 0;
+    margin-right: 0;
+    width: 49%;
+}
+.p2p-sidebar .form-check-inline.d-block {
+    width: 100%;
+}
+.p2p-sidebar .custom-search {
+    width: 100%;
+    margin-bottom: 14px;
+    background-color: white;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    cursor: text;
+    height: 40px;
+}
+.p2p-sidebar .select2-container{width:100% !important;}
+.select2-container--default .select2-results>.select2-results__options li {
+    display: block !important;
+}
+.custom_filtter {
+    border-bottom: 1px solid #D9D9D9;
+}
+.collection-product-wrapper .product-top-filter{border:none !important;}
+.custom_filtter ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.custom_filtter ul li span {
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 24px;
+    color: #0A0A0A;
+    position: relative;
+}
+.custom_filtter ul li span:after {
+    content: '';
+    background: #D9D9D9;
+    height: 1px;
+    position: absolute;
+    left: -49px;
+    width: 37px;
+    bottom: -13px;
+}
+.custom_filtter ul li {
+    flex-grow: 1;
+    min-width: 0;
+    max-width: 100%;
+    line-height: 50px;
+}
+.custom_filtter ul li a.active {
+    color: #E9248D;
+}
+ .custom_filtter ul li a.active:after {
+    content: '';
+    background: #E9248D;
+    width: 70px;
+    height: 2px;
+    position: absolute;
+    left: 0;
+    bottom: -13px;
+}
+.custom_filtter ul li a {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 22px;
+    color: #6F6F6F;
+    position: relative;
+}
+.main-fillter {
+    margin-top: 8px;
+}
+.product-image img{
+    height: 200px !important;
+    object-fit: cover;
+}
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 <link href="{{asset('assets/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
@@ -184,18 +298,18 @@
 
                     @php $getAdditionalPreference = getAdditionalPreference(['is_attribute']); @endphp
                     @if( $getAdditionalPreference['is_attribute'] )
-                        <div class="" >
+                        <div class="p2p-sidebar" >
                             
-                            <div class="row" style="width:100%; overflow-x: scroll;">
+                            <div class="row">
                                 <div id="variantAjaxDiv" class="col-12 mb-2">
                                     <div class="row mb-2">
                                         
                                         @foreach($productAttributes as $vk => $var)
                                         @php $counter = 0; @endphp
-                                        <div class="col-sm-3">
+                                        <div class="col-sm-12">
                                             <label class="control-label">{{$var->title??null}}</label>
                                         </div>
-                                        <div class="col-sm-9">
+                                        <div class="col-sm-12">
                                             @if( !empty($var->type) && $var->type == 1 )
                                             {{-- <select class="form-control " name="free_delivery_roles[]" data-toggle="select2" multiple="multiple" placeholder="Select role..."> --}}
                                             <select name="" class="dropdown_select select2-multiple" data-key="{{$var->title}}" multiple>
@@ -211,7 +325,7 @@
                                             @if(isset($opt) && isset($var) && !empty($var->title) )
 
                                                 @if( !empty($var->type) && $var->type == 3 )
-                                                    <div class="form-check-inline pr-3">
+                                                    <div class="form-check-inline">
                                                         <div class="attr_radio_{{$var->id}}">
                                                         <input type="radio" name="attribute[{{$var->id}}][option][{{$counter}}][value]" class="attr_radio"  
                                                         value="{{$opt->id}}" data-key="{{$var->title}}">
@@ -221,11 +335,11 @@
 
 
                                                 @elseif( !empty($var->type) && $var->type == 4 )
-                                                    <div class="form-check-inline pr-3">
-                                                        <input type="textbox" class="text_field" name="attribute[{{$var->id}}][option][{{$counter}}][value]" value="" data-key="{{$var->title}}">
+                                                    <div class="form-check-inline d-block">
+                                                        <input type="textbox" class="text_field custom-search" name="attribute[{{$var->id}}][option][{{$counter}}][value]" value="" data-key="{{$var->title}}">
                                                     </div>
                                                 @else
-                                                    <div class="checkbox checkbox-success form-check-inline pr-3">
+                                                    <div class="checkbox checkbox-success form-check-inline">
                                                         <input type="checkbox" name="" value="{{$opt->id}}" class="dynamic_checkbox" data-key="{{$var->title}}">
                                                         <option value=""></option>
                                                         <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
@@ -270,7 +384,7 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts" id="category_products_filter">
-                                        <div class="col-12 custom_filtter mt-2">
+                                        <div class="col-12 custom_filtter">
                                         
                                             <ul>
                                                 <li><span>{{__('Sort By:')}}</span></li>
