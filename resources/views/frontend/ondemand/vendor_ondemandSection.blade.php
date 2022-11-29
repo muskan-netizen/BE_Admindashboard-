@@ -172,7 +172,7 @@
 
                                         @if (!empty($vendor->banner))
                                             <div class="service-img mb-3">
-                                                <img class="img-fluid" src="{{$vendor->banner['proxy_url'] . '1000/200' . $vendor->banner['image_path']}}" alt="">
+                                                <img class="img-fluid" src="{{$vendor->banner['proxy_url'] . '1000/300' . $vendor->banner['image_path']}}" alt="">
                                             </div>
                                         @endif
 

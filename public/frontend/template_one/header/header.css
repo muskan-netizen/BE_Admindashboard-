@@ -31,6 +31,12 @@ display: inline-block;
 .shimmer_effect .loading.cardbanner{height: 160px;}
 }
  @media (max-width:767px){
+    .al_body_template_one .pixelstrap .al_main_category:hover ul.al_main_category_list {
+        width: 200px !important;
+    }
+    .al_body_template_one article#content-wrap {
+       overflow-x:hidden;
+    }
 .al_body_template_one .al_custom_brand a.brand-box.d-block.black-box{height: 100% !important;padding: 0;}
 .al_body_template_one .al_custom_brand .brand-ing{height: 100px;width: 100px;}
 .radius-bar{width: 100%;position: fixed;z-index: 11111;bottom: 74px;left: 0;right: 0;margin: auto;display: none;border-radius: 0!important;}
@@ -48,7 +54,7 @@ li.onhover-div.al_mobile-search div#search-overlay{display: none !important;}
 section.home-slider-wrapper.py-sm-3{padding: 24px 0!important;}
 .navbar-brand{padding:0;height:40px!important}
 .top-header.site-topbar.al_template_one{height:auto;background-color:transparent}
-.mobile-menu.main-menu{bottom:0;padding:10px;width:100%;background-color:transparent;box-shadow:none}
+.mobile-menu.main-menu{bottom:0;padding:10px;width:95%;background-color:transparent;box-shadow:none}
 .top-header .header-dropdown .mobile-account,.top-header .header-dropdown .mobile-wishlist{bottom:10px;top:auto}
 .site-topbar .map-icon .yl-text{display:none}
 .map-icon.mr-1 svg path{fill:var(--theme-deafult)}
