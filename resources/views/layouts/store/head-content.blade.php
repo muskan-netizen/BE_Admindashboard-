@@ -13,7 +13,8 @@
 <link defer type="text/css" href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
 <link defer type="text/css" rel="stylesheet" href="{{asset('front-assets/css/color1-style.css')}}">
 
-
+<!-- p2p css -->
+<link rel="stylesheet" href="{{asset('frontend/common/p2p.css')}}">
 
 @if(Route::currentRouteName() != "userHome")
 

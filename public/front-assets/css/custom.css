@@ -825,7 +825,7 @@ ul.social-links li:active a i {
 }
 
 .footer-theme .sub-title li {
-    padding-top: 0;
+    padding-top: 0 !important;
     margin-bottom: 10px
 }
 
@@ -7582,10 +7582,10 @@ body .theme-card h5.title-border {
     margin-bottom: 20px;
     margin-top: 10px
 }
-
+/* 
 .dark .name_location h4 {
     color: #000
-}
+} */
 
 body.dark .supplier-rating h6 {
     color: #fff

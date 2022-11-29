@@ -20,6 +20,7 @@
 .p2p-sidebar {
     padding: 20px;
 }
+
 .p2p-sidebar label.control-label {
     margin: 10px 0 10px;
     color: #000;
@@ -122,6 +123,7 @@
     height: 200px !important;
     object-fit: cover;
 }
+
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 <link href="{{asset('assets/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
