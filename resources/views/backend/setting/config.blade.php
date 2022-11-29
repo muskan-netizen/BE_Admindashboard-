@@ -1594,6 +1594,15 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                   </div>
                </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                     <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Cab Pooling')}}<small class="d-block pr-5">{{__("Enable to allow customers to book Cab Pooling.")}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="is_cab_pooling" id="is_cab_pooling" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_cab_pooling == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+
                </div>
             </div>
          </form>

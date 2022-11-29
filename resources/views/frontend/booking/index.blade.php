@@ -32,43 +32,55 @@ body .alFullMapForm .scheduled-footer .btn {
     <div class="alFullMapForm col-md-12 p-0 position-absolute">
         <div class="booking-experienceNew ds bc">
             <div class="address-form">
+                @if(isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
+                <div class="tip_radio_controls_book_friend text-center mt-2">
+                    <input type="radio" class="tip_radio is_for_friend" id="for_me" name="is_for_friend" value="0">
+                    <label class="tip_label mb-0  my-2 active " for="for_me" id="label_for_me">
+                        <h5 class="m-0" id="tip_5">{{__('For Me')}}</h5>
+                    </label>
+                    <input type="radio" class="tip_radio is_for_friend" id="for_friend" name="is_for_friend" value="1">
+                    <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
+                        <h5 class="m-0" id="tip_5">{{__('For Others')}}</h5>
+                    </label>
+                </div>
+                @endif
 
-                    @if(isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
-                    <div class="tip_radio_controls_book_friend text-center mt-2">
-                        <input type="radio" class="tip_radio is_for_friend" id="for_me" name="is_for_friend" value="0">
-                        <label class="tip_label mb-0  my-2 active " for="for_me" id="label_for_me">
-                            <h5 class="m-0" id="tip_5">{{__('For Me')}}</h5>
-                        </label>
-                        <input type="radio" class="tip_radio is_for_friend" id="for_friend" name="is_for_friend" value="1">
-                        <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
-                            <h5 class="m-0" id="tip_5">{{__('For Others')}}</h5>
-                        </label>
-                    </div>
-                    @endif
-                    <div class="location-box check-pick-first">
-                        <div class="where-to-go">
-                            <div class="title title-36">{{__('Where can we pick you up?')}}</div>
-                        </div>
-                    </div>
-                    <div class="location-box check-dropoff-secpond" style="display:none">
-                        <ul class="location-inputs position-relative pl-2" id="location_input_main_div">
-                            <li class="d-flex dots">
-                                <div class="title title-24 position-relative edit-pickup">  {{__('From')}} - <span id="pickup-where-from"></span><i class="fa fa-angle-down" aria-hidden="true"></i></div>
-                            </li>
-                            <li class="d-flex dots where-to-first">
-                                <div class="title title-36 pr-3 position-relative">{{__('Where To?')}}</div>
-                            </li>
-                            <li class="d-flex dots where-to-second" style="display:none !important;">
-                                <div class="title title-24 position-relative edit-dropoff">  {{__('To')}} - <span id="dropoff-where-to"></span><i class="fa fa-angle-down" aria-hidden="true"></i></div>
-                                <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel=""></i>
-                            </li>
-                        </ul>
-                        <a class="add-more-location position-relative pl-2" style="display:none" href="javascript:void(0)">{{__('Add Destination')}}</a>
-                    </div>
-                    <input type="hidden" name="pickup_location_latitude[]" value="" id="pickup_location_latitude">
-                    <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude">
-                    <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude"/>
-                    <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude"/>
+                @if(isset($client_preference_detail) && $client_preference_detail->is_cab_pooling == 1)
+                <div class="pool_radio_controls text-center">
+                    <input type="radio" class="pool_radio is_cab_pooling" id="cab_booking" name="is_cab_pooling" value="0" checked>
+                    <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
+                        <h5 class="m-0" id="pool_5">{{__('Booking')}}</h5>
+                    </label>
+                    <input type="radio" class="pool_radio is_cab_pooling" id="cab_pooling" name="is_cab_pooling" value="1">
+                    <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
+                        <h5 class="m-0" id="pool_5">{{__('Pooling')}}</h5>
+                    </label>
+                </div>
+                @endif
+            <div class="location-box check-pick-first">
+                <div class="where-to-go">
+                    <div class="title title-36">{{__('Where can we pick you up?')}}</div>
+                </div>
+            </div>
+            <div class="location-box check-dropoff-secpond" style="display:none">
+                <ul class="location-inputs position-relative pl-2" id="location_input_main_div">
+                    <li class="d-flex dots">
+                        <div class="title title-24 position-relative edit-pickup">  {{__('From')}} - <span id="pickup-where-from"></span><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+                    </li>
+                    <li class="d-flex dots where-to-first">
+                        <div class="title title-36 pr-3 position-relative">{{__('Where To?')}}</div>
+                    </li>
+                    <li class="d-flex dots where-to-second" style="display:none !important;">
+                        <div class="title title-24 position-relative edit-dropoff">  {{__('To')}} - <span id="dropoff-where-to"></span><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+                        <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel=""></i>
+                    </li>
+                </ul>
+                <a class="add-more-location position-relative pl-2" style="display:none" href="javascript:void(0)">{{__('Add Destination')}}</a>
+            </div>
+            <input type="hidden" name="pickup_location_latitude[]" value="" id="pickup_location_latitude">
+            <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude">
+            <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude"/>
+            <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude"/>
 
                     <input type="hidden" name="default_cab_vendor" value="" id="default_cab_vendor">
                     <input type="hidden" name="default_cab_vendor_id" value="" id="default_cab_vendor_id">
@@ -105,7 +117,7 @@ body .alFullMapForm .scheduled-footer .btn {
                             </div>
 
                         @endif
-                        <div class="loader cab-booking-main-loader"></div>
+                        <div class="cab-booking-loader"></div>
                         <div class="location-list style-4">
                                 <a class="select-location row align-items-center" id="get-current-location" href="javascript:void(0)">
                                     <div class="col-2 text-center pl-4">
@@ -200,189 +212,199 @@ body .alFullMapForm .scheduled-footer .btn {
                         </div>
 
 
-                    </div>
-            </div>
-            
-            <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
-
-            <div class="promo-box style-4 d-none">
-                <a class="d-block mt-2 close-promo-code-detail-box" href="javascript:void(0)">✕</a>
-                <div class="row" id="cab_booking_promo_code_list_main_div">
-
-                </div>
             </div>
         </div>
-    </div>
-
-
-</section>
-<script type="text/template" id="rider_template">
-    <div class="col-12 d-flex justify-content-between align-items-center">
-        <% if(riders.length > 0){%>
-            <p class="m-0">Riders : <%= riders.length %></p>
-        <% } %>
-        <button class="btn rounded <% if(riders.length > 0){'w-100'} %> add_rider_button" data-toggle="modal" data-target="#alAddRiderSecModal"><i class="fa fa-plus"></i> {{__('Add Rider')}}</button>
-    </div>
-    <div class="col-12 mt-2">
-        <div class="row alRiderImgBox">
-            <% _.each(riders, function(rider, key){%>
-                <%
-                var randomColor = "#" + ((1<<24)*Math.random() | 0).toString(16);
-                %>
-                <div class="col-3 text-center alHoverRiderBox">
-                    <input class="alCheckMark" type="radio" name="rider_id" id="option-<%= key %>" <% if(key == 0){'checked'} %> >
-                    <label for="option-<%= key %>" class="option option-<%= key %>">
-                        <div class="alRiderImg mb-1" style="background-color: <%=randomColor%> "> <%= (rider.first_name).charAt(0)%></div>
-                        <div class="dalRiderInfo">
-                            <p class="alRiderName mb-0"><%=rider.first_name%></p>
+        <script type="text/template" id="rider_template">
+            <div class="col-12 d-flex justify-content-between align-items-center">
+                <% if(riders.length > 0){%>
+                    <p class="m-0">Riders : <%= riders.length %></p>
+                <% } %>
+                <button class="btn rounded <% if(riders.length > 0){'w-100'} %> add_rider_button" data-toggle="modal" data-target="#alAddRiderSecModal"><i class="fa fa-plus"></i> {{__('Add Rider')}}</button>
+            </div>
+            <div class="col-12 mt-2">
+                <div class="row alRiderImgBox">
+                    <% _.each(riders, function(rider, key){%>
+                        <%
+                        var randomColor = "#" + ((1<<24)*Math.random() | 0).toString(16);
+                        %>
+                        <div class="col-3 text-center alHoverRiderBox">
+                            <input class="alCheckMark" type="radio" name="rider_id" id="option-<%= key %>" <% if(key == 0){'checked'} %> >
+                            <label for="option-<%= key %>" class="option option-<%= key %>">
+                                <div class="alRiderImg mb-1" style="background-color: <%=randomColor%> "> <%= (rider.first_name).charAt(0)%></div>
+                                <div class="dalRiderInfo">
+                                    <p class="alRiderName mb-0"><%=rider.first_name%></p>
+                                </div>
+                            </label>
+                            <span class="alCloseBtn deleteRider" data-id="<%=rider.id%>">X</span>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </script>
+        <script type="text/template" id="vendors_template">
+            <% _.each(results, function(result, key){%>
+                <a class="btn btn-solid ml-2 vendor-list" href="javascript:void(0);" data-vendor="<%= result.id %>"><%= result.name %></a>
+            <% }); %>
+        </script>
+        <script type="text/template" id="products_rider_template">
+            <% if(results != ''){ %>
+            <% _.each(results, function(result, key){%>
+                <div class="vehical-view-box-1 alRiderRadioBox" data-product_id="<%= result.id %>">
+                    <input type="radio" name="rider_product_id" value="<%= result.id %>" <% if(key == 0){'checked'} %>  id="alRiderRadio_<%= key %>" class="input-hidden" />
+                    <label for="alRiderRadio_<%= key %>" class="d-flex align-items-center no-gutters px-2">
+                        <div class="col-3 vehicle-icon">
+                            <img class='img-fluid' src='<%= result.image_url %>'>
+                        </div>
+                        <div class="col-9">
+                            <div class="row no-gutters">
+                                <div class="col vehicle-details">
+                                    <h4 class="m-0"><b><%= result.name %></b></h4>
+                                </div>
+                                <div class="col ride-price pl-2 text-right">
+                                    <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
+                                </div>
+                            </div>
                         </div>
                     </label>
-                    <span class="alCloseBtn deleteRider" data-id="<%=rider.id%>">X</span>
                 </div>
+                <hr class="m-0">
             <% }); %>
-        </div>
-    </div>
-</script>
-<script type="text/template" id="vendors_template">
-    <% _.each(results, function(result, key){%>
-        <a class="btn btn-solid ml-2 vendor-list" href="javascript:void(0);" data-vendor="<%= result.id %>"><%= result.name %></a>
-    <% }); %>
-</script>
-<script type="text/template" id="products_rider_template">
-    <% if(results != ''){ %>
-    <% _.each(results, function(result, key){%>
-        <div class="vehical-view-box-1 alRiderRadioBox" data-product_id="<%= result.id %>">
-            <input type="radio" name="rider_product_id" value="<%= result.id %>" <% if(key == 0){'checked'} %>  id="alRiderRadio_<%= key %>" class="input-hidden" />
-            <label for="alRiderRadio_<%= key %>" class="d-flex align-items-center no-gutters px-2">
-                <div class="col-3 vehicle-icon">
-                    <img class='img-fluid' src='<%= result.image_url %>'>
+            <% }else{ %>
+                <div class="col-12 vehicle-details  text-center">
+                    <img class="w-100" src="{{asset('assets/images/noproductfound.png')}}" alt="noproductfound">
+                    {{ __('No result found. Please try a new search') }}
                 </div>
-                <div class="col-9">
-                    <div class="row no-gutters">
-                        <div class="col vehicle-details">
-                            <h4 class="m-0"><b><%= result.name %></b></h4>
-                        </div>
-                        <div class="col ride-price pl-2 text-right">
+            <% } %>
+        </script>
+        <script type="text/template" id="products_template">
+            <% if(results != ''){ %>
+            <% _.each(results, function(result, key){%>
+                <a class="vehical-view-box d-flex align-items-center no-gutters px-2" href="javascript:void(0)" data-product_id="<%= result.id %>">
+                    <div class="col-2 vehicle-icon">
+                        <img class='img-fluid' src='<%= result.image_url %>'>
+                    </div>
+                    <div class="col-10">
+                    
+                        <div class="row no-gutters">
+                            <div class="col vehicle-details">
+                                <h4 class="m-0"><b><%= result.name %></b></h4>
+                            </div>
+                            <div class="col ride-price pl-2 text-right">
                             <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
+                            </div>
                         </div>
                     
                     </div>
+                </a>
+                <hr class="m-0">
+            <% }); %>
+            <% }else{ %>
+                <div class="col-12 vehicle-details text-center">
+                    <img class="w-100" src="{{asset('assets/images/noproductfound.png')}}" alt="noproductfound">
+                    {{ __('No result found. Please try a new search') }}
                 </div>
-            </label>
-        </div>
-        <hr class="m-0">
-    <% }); %>
-    <% }else{ %>
-        <div class="col-12 vehicle-details  text-center">
-            <img class="w-100" src="{{asset('assets/images/noproductfound.png')}}" alt="noproductfound">
-            {{ __('No result found. Please try a new search') }}
-        </div>
-    <% } %>
-</script>
-<script type="text/template" id="products_template">
-    <% if(results != ''){ %>
-    <% _.each(results, function(result, key){%>
-        <a class="vehical-view-box d-flex align-items-center no-gutters px-2" href="javascript:void(0)" data-product_id="<%= result.id %>">
-            <div class="col-2 vehicle-icon">
-                <img class='img-fluid' src='<%= result.image_url %>'>
-            </div>
-            <div class="col-10">
-                <div class="row no-gutters">
-                    <div class="col vehicle-details">
-                        <h4 class="m-0"><b><%= result.name %></b></h4>
-                    </div>
-                    <div class="col ride-price pl-2 text-right">
-                        <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
-                    </div>
-                </div>
-            </div>
-        </a>
-        <hr class="m-0">
-    <% }); %>
-    <% }else{ %>
-        <div class="col-12 vehicle-details text-center">
-            <img class="w-100" src="{{asset('assets/images/noproductfound.png')}}" alt="noproductfound">
-            {{ __('No result found. Please try a new search') }}
-        </div>
-    <% } %>
-</script>
-<script type="text/template" id="scheduleTime_template">
-    <div class="scheduleTime">
-        <select class="scheduleHour" onchange="checkScheduleDateTime(this)" ><option value="">HH</option><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>
-        <select class="scheduleMinute" onchange="checkScheduleDateTime(this)" ><option value="">MM</option><option value="0">00</option><option value="1">05</option><option value="2">10</option><option value="3">15</option><option value="4">20</option><option value="5">25</option><option value="6">30</option><option value="7">35</option><option value="8">40</option><option value="9">45</option><option value="10">50</option><option value="11">55</option></select>
-        <select class="scheduleAmPm" onchange="checkScheduleDateTime(this)" ><option value="">AM/PM</option><option value="am">AM</option><option value="pm">PM</option></select>
-    </div>
-</script>
-<script type="text/template" id="destination_location_template">
-    <i class="fa fa-search destination-icon" aria-hidden="true"></i>
-    <input class="form-control pickup-text" type="text" name="destination_location_name[]" placeholder="{{__('Add A Stop')}}" id="destination_location_<%= random_id %>" data-rel="<%= random_id %>"/>
-    <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude_<%= random_id %>" data-rel="<%= random_id %>"/>
-    <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude_<%= random_id %>" data-rel="<%= random_id %>"/>
-</script>
-<script type="text/template" id="destination_location_template_li">
-    <li class="d-flex dots" id="dots_<%= random_id %>">
-        <div class="title title-24 position-relative edit-other-stop" id="<%= random_id %>">  {{__('To')}} - <span id="dropoff-where-to-<%= random_id %>"></span><i class="fa fa-angle-down" aria-hidden="true"></i></div>
-        <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel="<%= random_id %>"></i>
-    </li>
-</script>
-<script type="text/template" id="cab_detail_box_template">
-    <div class="cab-outer style-4">
-        <div class="bg-white p-2">
-            <a class="close-cab-detail-box" href="javascript:void()"><i class="fa fa-angle-left"></i></a>
-            <div class="cab-image-box w-100 d-flex align-items-center justify-content-center">
-                <img src="<%= result.image_url %>">
-            </div>
-            <div class="cab-location-details">
-                <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
-                ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
-            <% if(result.toll_fee > 0){ %>
-                <span class="d-flex align-items-center justify-content-between mt-2"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
-                ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
             <% } %>
-            
-            <% if(result.service_charge_amount > 0){ %>
-                <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
-                ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
-            <% } %>
+        </script>
+        <script type="text/template" id="scheduleTime_template">
+            <div class="scheduleTime">
+                <select class="scheduleHour" onchange="checkScheduleDateTime(this)" ><option value="">HH</option><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>
+                <select class="scheduleMinute" onchange="checkScheduleDateTime(this)" ><option value="">MM</option><option value="0">00</option><option value="1">05</option><option value="2">10</option><option value="3">15</option><option value="4">20</option><option value="5">25</option><option value="6">30</option><option value="7">35</option><option value="8">40</option><option value="9">45</option><option value="10">50</option><option value="11">55</option></select>
+                <select class="scheduleAmPm" onchange="checkScheduleDateTime(this)" ><option value="">AM/PM</option><option value="am">AM</option><option value="pm">PM</option></select>
+            </div>
+        </script>
+        <script type="text/template" id="destination_location_template">
+            <i class="fa fa-search destination-icon" aria-hidden="true"></i>
+            <input class="form-control pickup-text" type="text" name="destination_location_name[]" placeholder="{{__('Add A Stop')}}" id="destination_location_<%= random_id %>" data-rel="<%= random_id %>"/>
+            <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude_<%= random_id %>" data-rel="<%= random_id %>"/>
+            <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude_<%= random_id %>" data-rel="<%= random_id %>"/>
+        </script>
+        <script type="text/template" id="destination_location_template_li">
+            <li class="d-flex dots" id="dots_<%= random_id %>">
+                <div class="title title-24 position-relative edit-other-stop" id="<%= random_id %>">  {{__('To')}} - <span id="dropoff-where-to-<%= random_id %>"></span><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+                <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel="<%= random_id %>"></i>
+            </li>
+        </script>
+        <script type="text/template" id="cab_detail_box_template">
+            <div class="cab-outer style-4">
+                <div class="bg-white p-2">
+                    <a class="close-cab-detail-box" href="javascript:void()">✕</a>
+                    <div class="cab-image-box w-100 d-flex align-items-center justify-content-center">
+                        <img src="<%= result.image_url %>">
+                    </div>
+                    <div class="cab-location-details">
+                    <div style="height:5px;"><div class="loader cab-detail-main-loader" style="display: none;"></div></div>
+                    @if(isset($client_preference_detail) && $client_preference_detail->is_cab_pooling == 1)
+                    <div class="show_no_of_seats_if_pooling" style="display:none;">
+                        <div class="row mt-2">
+                            <div class="col-md-7">
+                                <div class="number_seats">
+                                    <h5>Number Of Seats</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="input-get-value">
+                                    <div class="input-group">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-danger btn-number-up-down" data-type="minus">
+                                                <i class="fa fa-minus" aria-hidden="true"></i>
+                                            </button>
+                                        </span>
+                                        <input type="text" name="no_seats_for_pooling" id="no_seats_for_pooling" class="form-control seats-number-up-down text-center" value="<%= result.no_seats_for_pooling%>" min="1" max="<%= result.seats_for_booking%>">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-success btn-number-up-down" data-type="plus">
+                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
+                    <% if(result.toll_fee > 0){ %>
+                        <span class="d-flex align-items-center justify-content-between mt-2"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
+                    <% } %>
+                    
+                    <% if(result.service_charge_amount > 0){ %>
+                        <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
+                    <% } %>
 
-            <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>
-                <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
-                ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
-            <% } %>
-                <input type="hidden" id="hddn_amount_toll_fee" value="<%= (result.toll_fee)%>"/>
-                <input type="hidden" id="hddn_real_amount" value="<%= (result.tags_price)%>"/>
-                <input type="hidden" id="hddn_currency_symbol" value="{{Session::get('currencySymbol')}}"/>
-                <input type="hidden" id="hddn_service_charge_amount" value="<%= (result.service_charge_amount)%>"/>
-                <p><%= result.description %></p>
-            </div>
-        </div>
-        <div class="cab-amount-details px-2">
-            <div class="row">
-                <div class="col-6 mb-2">{{__('Distance')}}</div>
-                <div class="col-6 mb-2 text-right" id="distance"></div>
-                <div class="col-6 mb-2">{{__('Duration')}}</div>
-                <div class="col-6 mb-2 text-right" id="duration"></div>
-                <% if((schedule_datetime) && (schedule_datetime !='')  ){ %>
-                    <div class="col-6 mb-2">{{__('Schedule Date')}}</div>
-                    <div class="col-6 mb-2 text-right" ><%= schedule_datetime %></div>
-                <% } %>
-                <% if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ %>
-                <div class="col-6 mb-2">{{__('Subscription Discount')}}</div>
-                <div class="col-6 mb-2 text-right" id="subscription-percent"><%= result.subscription_percent_value+'%' %></div>
-                <input type="hidden" id="subscription-percent-h" value="<%= result.subscription_percent_value %>">
-                <div class="col-6 mb-2"><p class="total_amt m-0">{{__('Amount Payable')}}</p></div>
-                <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
-                <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
-                <% } %>
-                <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
-                    <div class="col-6 mb-2">Loyalty</div>
-                    <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
-                <% } %>
-            </div>
-        </div>
-        <div class="coupon_box d-flex w-100 py-2 align-items-center justify-content-between">
-            <label class="mb-0 ml-1">
-                <img src="{{asset('assets/images/discount_icon.svg')}}">
+                    <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>
+                        <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
+                    <% } %>
+                        <input type="hidden" id="hddn_amount_toll_fee" value="<%= (result.toll_fee)%>"/>
+                        <input type="hidden" id="hddn_real_amount" value="<%= (result.tags_price)%>"/>
+                        <input type="hidden" id="hddn_currency_symbol" value="{{Session::get('currencySymbol')}}"/>
+                        <input type="hidden" id="hddn_service_charge_amount" value="<%= (result.service_charge_amount)%>"/>
+                    </div>
+                </div>
+                <div class="cab-amount-details px-2">
+                    <div class="row">
+                        <div class="col-6 mb-2">{{__('Distance')}}</div>
+                        <div class="col-6 mb-2 text-right" id="distance"></div>
+                        <div class="col-6 mb-2">{{__('Duration')}}</div>
+                        <div class="col-6 mb-2 text-right" id="duration"></div>
+                        <% if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ %>
+                        <div class="col-6 mb-2">{{__('Subscription Discount')}}</div>
+                        <div class="col-6 mb-2 text-right" id="subscription-percent"><%= result.subscription_percent_value+'%' %></div>
+                        <input type="hidden" id="subscription-percent-h" value="<%= result.subscription_percent_value %>">
+                        <div class="col-6 mb-2"><p class="total_amt m-0">{{__('Amount Payable')}}</p></div>
+                        <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
+                        <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
+                        <% } %>
+                        <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
+                            <div class="col-6 mb-2">Loyalty</div>
+                            <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="coupon_box d-flex w-100 py-2 align-items-center justify-content-between">
+                    <label class="mb-0 ml-1">
                 <span class="code-text">{{__('Select a promo code')}}</span>
             </label>
 
@@ -544,6 +566,19 @@ body .alFullMapForm .scheduled-footer .btn {
         </div>
     </div>
 </script>
+
+        <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
+            <div class="promo-box style-4 d-none">
+                <a class="d-block mt-2 close-promo-code-detail-box" href="javascript:void(0)">✕</a>
+                <div class="row" id="cab_booking_promo_code_list_main_div">
+
+                </div>
+            </div>
+        </div>
+
+
+
+</section>
 
 <!-- Paymentoption Modal -->
 <div class="modal fade payment-modal payment-modal-width" id="payment_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="payment_modalLabel" aria-hidden="true">
