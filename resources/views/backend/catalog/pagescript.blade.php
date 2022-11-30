@@ -594,4 +594,11 @@
             $('.attr-text-box').removeAttr('required');
         }
     });
+    $(document).ready(function(){
+        if( $('.alert.alert-success').length ) {
+            setTimeout(function(){
+                $('.alert.alert-success').hide();
+            }, 5000);
+        }
+    });
 </script>
