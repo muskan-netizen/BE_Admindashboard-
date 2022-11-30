@@ -82,7 +82,7 @@ class SendCampaignNotification extends Command
                   foreach($notifications as $singlenotification)
                     {
                         //CampaignRoster::where('id',6290)->delete();
-                        //CampaignRoster::where(['campaign_id'=>$singlenotification->campaign_id])->delete();
+                        CampaignRoster::where(['campaign_id'=>$singlenotification->campaign_id])->delete();
                         $type = $singlenotification->notofication_type;
                         //	type => 1 sms, 2 email, 3 push notification
                         switch ($type) {
@@ -98,21 +98,21 @@ class SendCampaignNotification extends Command
                                     $provider = $client_preferences->sms_provider;
                                     $body = "Hi " . $singlenotification->user->name . ", " . $singlenotification->campaign->sms_text;
                                     if (!empty($client_preferences->sms_provider)) {
-                                        $send = $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
-                                        if($send)
-                                        {
-                                            if($send==2)
-                                            {
-                                                //change status if failed
-                                                CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
-                                            }else{
-                                                //remove notification if success
-                                                CampaignRoster::where('id',$singlenotification->id)->delete();
-                                            } 
-                                        }else{
-                                            //change status if failed
-                                            CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
-                                        }    
+                                        $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
+                                        // if($send)
+                                        // {
+                                        //     if($send==2)
+                                        //     {
+                                        //         //change status if failed
+                                        //         CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                        //     }else{
+                                        //         //remove notification if success
+                                        //         CampaignRoster::where('id',$singlenotification->id)->delete();
+                                        //     } 
+                                        // }else{
+                                        //     //change status if failed
+                                        //     CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                        // }    
                                     }
                                     
                                 } catch (\Exception $ex) {
@@ -133,15 +133,15 @@ class SendCampaignNotification extends Command
                                             'email_template_content' => $email_body,
                                             'send_to_cc' => 0
                                         ];
-                                        $sendemail = dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
-                                        if($sendemail)
-                                        {
-                                            //remove notification if success
-                                            CampaignRoster::where('id',$singlenotification->id)->delete();
-                                        }else{
-                                           //change status if failed
-                                            CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
-                                        }
+                                        dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                                        // if($sendemail)
+                                        // {
+                                        //     //remove notification if success
+                                        //     CampaignRoster::where('id',$singlenotification->id)->delete();
+                                        // }else{
+                                        //    //change status if failed
+                                        //     CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                        // }
                                         //$this->sendEmail($client_preferences,$useremail,$email_subject,$email_body);
                                     }
                                 } catch (\Exception $ex) {
@@ -168,15 +168,15 @@ class SendCampaignNotification extends Command
                                     ],
                                     "priority" => "high"
                                 ];
-                                $result=sendFcmCurlRequest($data);
-                                if($result)
-                                {
-                                    //remove notification if success
-                                    CampaignRoster::where('id',$singlenotification->id)->delete();
-                                }else{
-                                    //change status if failed
-                                    CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
-                                }                            
+                                sendFcmCurlRequest($data);
+                                // if($result)
+                                // {
+                                //     //remove notification if success
+                                //     CampaignRoster::where('id',$singlenotification->id)->delete();
+                                // }else{
+                                //     //change status if failed
+                                //     CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                // }                            
                             break;
                         }
                     }
