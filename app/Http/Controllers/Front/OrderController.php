@@ -1312,7 +1312,6 @@ class OrderController extends FrontController
             }//End cart product loop
             //echo "loop end";
             $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
-
             // calculate subscription discount
             if ($user_subscription) {
                 foreach ($user_subscription->features as $feature) {
