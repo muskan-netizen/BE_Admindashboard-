@@ -523,6 +523,9 @@ class CartController extends BaseController
     {
 
         try{
+        $container_charges_tax = 0;
+        $deliver_fee_charges_tax = 0;
+        $total_service_fee_tax = 0;
         $total_fixed_fee_tax = 0;
         $total_service_fee = 0;
         $deliver_fee_charges = 0;
@@ -660,7 +663,6 @@ class CartController extends BaseController
             foreach ($cartData as $ven_key => $vendorData) {
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;
-                $total_service_fee = 0;
                 $total_markup_fee_tax = 0;
                 $PromoFreeDeliver = 0;
                 $total_fixed_fee_amount =$total_fixed_fee_amount+ $vendorData->vendor->fixed_fee_amount;
@@ -857,7 +859,7 @@ class CartController extends BaseController
                             }
                             //dd($prod->product->toArray());
                             $prod->taxdata = $taxData;
-                            if ($action == 'delivery') {
+                            if ($action == 'delivery' || $action == 'on_demand') {
                                 if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
 
 
@@ -891,11 +893,12 @@ class CartController extends BaseController
                                  }
                                 
                                 if($prod->product->individual_delivery_fee == 1) {
-                                    $deliveryCharges_real = ($vendorTotalDeliveryFee + $previousdeliveryfee + $deliveryCharges);
-                                    $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $deliveryCharges;
+                                    $quantity_deliveryCharges = $deliveryCharges*$prod->quantity;
+                                    $deliveryCharges_real = ($vendorTotalDeliveryFee + $previousdeliveryfee + $quantity_deliveryCharges);
+                                    $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $quantity_deliveryCharges;
                                     $previousdeliveryfee = 0;
-                                    CartProduct::where('cart_id', $cart->id)->where('vendor_id', $vendorData->vendor->id)->where('product_id', $prod->product->id)->update(['product_delivery_fee'=>$deliveryCharges]);
-                                    $prod->product->product_delivery_fee = $deliveryCharges;
+                                    CartProduct::where('cart_id', $cart->id)->where('vendor_id', $vendorData->vendor->id)->where('product_id', $prod->product->id)->update(['product_delivery_fee'=>$quantity_deliveryCharges]);
+                                    $prod->product->product_delivery_fee = $quantity_deliveryCharges;
                                     
                                 }else{
                                     $deliveryCharges_real = ($vendorTotalDeliveryFee + $deliveryCharges);
@@ -1164,33 +1167,41 @@ class CartController extends BaseController
                     $markup_price_tax_rate=$taxRates[$vendorData->vendor->markup_price_tax_id]['tax_rate'];
             }
 
+            $container_charges_tax_rate = 0;
+            if($vendorData->vendor->container_charges_tax_id!=null){
+                    $container_charges_tax_rate=$taxRates[$vendorData->vendor->container_charges_tax_id]['tax_rate'];
+            }
+
 
             if(!$additionalPreferences->is_tax_price_inclusive)
             {
+                if($vendorData->vendor->container_charges_tax)
+                $container_charges_tax =  $total_container_charges * $container_charges_tax_rate/100;
+                
                 if($vendorData->vendor->delivery_charges_tax)
-                $deliver_fee_charges +=  $deliveryCharges * $delivery_charges_tax_rate/100;
+                $deliver_fee_charges_tax +=  $deliveryCharges * $delivery_charges_tax_rate/100;
                 
                 if($vendorData->vendor->service_charges_tax)
-                $total_service_fee +=  $vendor_service_fee_percentage_amount * $service_charges_tax_rate/100;
+                $total_service_fee_tax +=  $vendor_service_fee_percentage_amount * $service_charges_tax_rate/100;
     
                 if($vendorData->vendor->fixed_fee_tax)
                 $total_fixed_fee_tax +=  $total_fixed_fee_amount * $fixed_fee_tax_rate/100;
     
                 if($vendorData->vendor->add_markup_price)
                 $total_markup_fee_tax +=  $total_markup_charges * $markup_price_tax_rate/100;
-            if($vendorData->vendor->delivery_charges_tax)
-            $deliver_fee_charges +=  $deliveryCharges_real * $delivery_charges_tax_rate/100;
+            // if($vendorData->vendor->delivery_charges_tax)
+            // $deliver_fee_charges +=  $deliveryCharges_real * $delivery_charges_tax_rate/100;
             
-            if($vendorData->vendor->service_charges_tax)
-            $total_service_fee +=  $vendor_service_fee_percentage_amount * $service_charges_tax_rate/100;
+            // if($vendorData->vendor->service_charges_tax)
+            // $total_service_fee +=  $vendor_service_fee_percentage_amount * $service_charges_tax_rate/100;
 
             }else{
 
                 if($vendorData->vendor->delivery_charges_tax)
-                $deliver_fee_charges += ($deliveryCharges * $delivery_charges_tax_rate)/(100 + $delivery_charges_tax_rate);
+                $deliver_fee_charges_tax += ($deliveryCharges * $delivery_charges_tax_rate)/(100 + $delivery_charges_tax_rate);
                 
                 if($vendorData->vendor->service_charges_tax)
-                $total_service_fee +=   ($vendor_service_fee_percentage_amount * $service_charges_tax_rate)/(100 + $service_charges_tax_rate);
+                $total_service_fee_tax +=   ($vendor_service_fee_percentage_amount * $service_charges_tax_rate)/(100 + $service_charges_tax_rate);
 
                 if($vendorData->vendor->fixed_fee_tax)
                 $total_fixed_fee_tax =  ($total_fixed_fee_amount * $fixed_fee_tax_rate)/(100 + $fixed_fee_tax_rate);
@@ -1199,7 +1210,7 @@ class CartController extends BaseController
                 $total_markup_fee_tax +=  ($total_markup_charges * $markup_price_tax_rate)/(100 + $markup_price_tax_rate);
 
                 if($vendorData->vendor->delivery_charges_tax)
-                $deliver_fee_charges +=  $deliveryCharges_real * $delivery_charges_tax_rate/100;
+                $deliver_fee_charges_tax +=  $deliveryCharges_real * $delivery_charges_tax_rate/100;
 
             }
             
@@ -1300,19 +1311,25 @@ class CartController extends BaseController
         }else{
             $cart->without_category_kyc = 1; 
         }
-
-        $other_taxes_string='tax_fixed_fee:'.$total_fixed_fee_tax.',tax_service_charges:'.$total_service_fee.',tax_delivery_charges:'.$deliver_fee_charges.',tax_markup_fee:'.$total_markup_fee_tax.',product_tax_fee:'.$total_taxable_amount;
+        $other_taxes_string='tax_fixed_fee:'.$total_fixed_fee_tax.',tax_service_charges:'.$total_service_fee_tax.',tax_delivery_charges:'.$deliver_fee_charges_tax.',tax_markup_fee:'.$total_markup_fee_tax.',product_tax_fee:'.$total_taxable_amount.',container_charges_tax:'.$container_charges_tax;
 
         $userCart = Cart::find($cartID);
         $userCart->total_other_taxes  = $other_taxes_string;
         $userCart->save();
         // add delivery fee charges as other tax as per web code.
         $cart->other_taxes = $deliver_fee_charges;
-
+        $cart->specific_taxes = array(
+            ['label' => 'Fixed fee tax', 'value' => decimal_format($total_fixed_fee_tax)],
+            ['label' => 'Service fee tax', 'value' => decimal_format($total_service_fee_tax)],
+            ['label' => 'Deliver fee tax', 'value' => decimal_format($deliver_fee_charges_tax)],
+            ['label' => 'Markup fee tax', 'value' => decimal_format($total_markup_fee_tax)],
+            ['label' => 'Container fee tax', 'value' => decimal_format($container_charges_tax)],
+            ['label' => 'Total taxable amount', 'value' => decimal_format($total_taxable_amount)]
+        );
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
         $cart->total_markup_charges = decimal_format($total_markup_charges);
-        $cart->total_tax = decimal_format($total_taxable_amount + $total_fixed_fee_tax + $total_service_fee + $deliver_fee_charges + $total_markup_fee_tax);
+        $cart->total_tax = decimal_format($total_taxable_amount + $total_fixed_fee_tax + $total_service_fee_tax + $deliver_fee_charges_tax + $total_markup_fee_tax + $container_charges_tax);
         $cart->tax_details = $tax_details;
         $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;

@@ -1064,6 +1064,9 @@
    "Invalid schedule date time" :"Hora de fecha de programación no válida",
    "Credit/Debit Card (Stripe)"  :  "Tarjeta de crédito/débito (Stripe)",
    "Are you 18 or older?" : "¿Tienes 18 años o más?",
-   "Are you sure you want to continue?" : "¿Estás segura de que quieres continuar?"
-
+   "Are you sure you want to continue?" : "¿Estás segura de que quieres continuar?",
+   "ORDER NO":"N º de pedido",
+   "ITEMS ORDERED": "artículos ordenados",
+   "Taxes and fees":"Impuestos y honorarios",
+   "Customer Details":"Detalles del cliente"
 }

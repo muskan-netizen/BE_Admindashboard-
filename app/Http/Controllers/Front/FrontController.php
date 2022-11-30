@@ -132,6 +132,8 @@ class FrontController extends Controller
         }
         return '1';
 	}
+	
+    
     public function testsms(Request $request)
     {
         $prefer = ClientPreference::select('sms_credentials', 
