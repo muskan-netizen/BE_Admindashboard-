@@ -116,8 +116,6 @@ class PickupDeliveryController extends BaseController{
                         $product->tags_price = decimal_format($product->tags_price);
                         $product->toll_fee   = decimal_format($tags_price['toll_fee']);
                     }
-                    $product->tags_price = $tags_price['delivery_fee']??0 + $tags_price['toll_fee']??0;
-                    $product->toll_fee   = $tags_price['toll_fee']??0;
                     $product->total_tags_price = $product->tags_price + $product->toll_fee + $product->service_charge_amount;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->price = $product->tags_price;
