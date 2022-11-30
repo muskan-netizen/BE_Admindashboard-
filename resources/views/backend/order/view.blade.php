@@ -445,7 +445,11 @@ $timezone = Auth::user()->timezone;
                                             <td>{{$clientCurrency->currency->symbol}}@money($container_charges)</td>
                                         </tr>
                                     @endif
-                                    @if($client_preference_detail->is_tax_price_inclusive)
+
+                                    @php
+                                        $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
+                                    @endphp
+                                    @if($additionalPreferences->is_tax_price_inclusive)
                                             
                                         @php  //taxable_amount
                                             $adminRevenue = ($revenue + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;

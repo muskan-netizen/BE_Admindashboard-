@@ -529,6 +529,7 @@ class CartController extends BaseController
         $total_markup_fee_tax = 0;
         $total_taxable_amount = 0;
         $preferences = ClientPreference::first();
+        $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         if (!$cart) {
             return false;
@@ -835,7 +836,7 @@ class CartController extends BaseController
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                                     $rate = round($tax_value->tax_rate);
                                     $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                                    if(!$preferences->is_tax_price_inclusive){
+                                    if(!$additionalPreferences->is_tax_price_inclusive){
                                         $product_tax = ($quantity_price+$total_addon_price) * $rate / 100; 
                                     }else{
                                         $product_tax = (($quantity_price+$total_addon_price)  * $rate) / (100 + $rate); 
@@ -1164,7 +1165,7 @@ class CartController extends BaseController
             }
 
 
-            if(!$preferences->is_tax_price_inclusive)
+            if(!$additionalPreferences->is_tax_price_inclusive)
             {
                 if($vendorData->vendor->delivery_charges_tax)
                 $deliver_fee_charges +=  $deliveryCharges * $delivery_charges_tax_rate/100;

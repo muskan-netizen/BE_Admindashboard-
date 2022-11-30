@@ -150,6 +150,7 @@ class OrderController extends BaseController
                     $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
                 }
                 $client_preference = ClientPreference::first();
+                $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
                 // if ($client_preference->verify_email == 1) {
                 //     if ($user->is_email_verified == 0) {
                 //         return response()->json(['error' => 'Your account is not verified.'], 404);
@@ -601,7 +602,7 @@ class OrderController extends BaseController
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
 
-                    if (!$client_preference->is_tax_price_inclusive) {
+                    if (!$additionalPreferences->is_tax_price_inclusive) {
                         $order->payable_amount = $payable_amount;
                     }else{
                         $order->payable_amount = $payable_amount - $order->taxable_amount;

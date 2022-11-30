@@ -41,6 +41,7 @@ trait cartManager{
         $this->user_allAddresses = UserAddress::where('user_id', $this->user->id)->where('status',1)->orderBy('is_primary','Desc')->get();
     }
     $this->preferences = ClientPreference::with(['client_detail:id,code,country_id'])->first();
+    $this->additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
   }
 
 
@@ -230,7 +231,7 @@ trait cartManager{
             $total_markup_charges =  $taxChargeable['total_markup_charges'];
 
 
-            if(!$this->preferences->is_tax_price_inclusive)
+            if(!$this->additionalPreferences->is_tax_price_inclusive)
             {
                 if($vendorData->vendor->delivery_charges_tax)
                 $taxCharges['deliver_fee_charges'] =  $deliveryCharges * $delivery_charges_tax_rate/100;
@@ -636,7 +637,7 @@ trait cartManager{
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                             $rate = $tax_value->tax_rate;
                             $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                            if(!$preferences->is_tax_price_inclusive){
+                            if(!$this->additionalPreferences->is_tax_price_inclusive){
                                 $product_tax = $quantity_price * $rate / 100; 
                             }else{
                                 $product_tax = ($quantity_price * $rate) / (100 + $rate); 
@@ -1212,7 +1213,7 @@ trait cartManager{
             $cart->loyalty_amount = decimal_format($loyalty_amount_saved);
             $cart->gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
-            if(!$preferences->is_tax_price_inclusive){
+            if(!$this->additionalPreferences->is_tax_price_inclusive){
                 $cart->total_payable_amount = decimal_format($total_payable_amount);
             }else{
                 $cart->total_payable_amount = decimal_format($total_payable_amount - $total_taxable_amount - $other_taxes);

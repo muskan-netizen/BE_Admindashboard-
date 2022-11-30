@@ -587,12 +587,12 @@ class OrderController extends FrontController
                     $prod->pvariant->quantity_price = number_format($quantity_price, 2);
                     $payable_amount = $payable_amount + $quantity_price;
                     $taxData = array();
-                    $is_tax_price_inclusive = ClientPreference::value('is_tax_price_inclusive');
+                    $is_tax_price_inclusive = (object)getAdditionalPreference(['is_tax_price_inclusive']);
                     if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                             $rate = round($tax_value->tax_rate);
                             $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                            if(!$is_tax_price_inclusive){
+                            if(!$is_tax_price_inclusive->is_tax_price_inclusive){
                                 $product_tax = $quantity_price * $rate / 100; 
                             }else{
                                 $product_tax = ($quantity_price * $rate) / (100 + $rate); 
@@ -754,7 +754,8 @@ class OrderController extends FrontController
 
             $fixed_fee_amount=$request->total_fixed_fee_amount??0.00;
             DB::beginTransaction();
-            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area','stop_order_acceptance_for_users','is_tax_price_inclusive')->first();
+            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area','stop_order_acceptance_for_users')->first();
+            $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (!empty($request->user_id))) {
@@ -1253,7 +1254,7 @@ class OrderController extends FrontController
                 $OrderVendor->discount_amount = $vendor_discount_amount;
 
                 //check if is_tax_price_inclusive is on than no tax 
-                if (!$preferences->is_tax_price_inclusive) {
+                if (!$additionalPreferences->is_tax_price_inclusive) {
                     $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
                 }else{
                     $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / (100+$rate), 2);
@@ -1386,7 +1387,7 @@ class OrderController extends FrontController
             $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
             $order->luxury_option_id = $luxury_option->id;
 
-            if(!$preferences->is_tax_price_inclusive) {
+            if(!$additionalPreferences->is_tax_price_inclusive) {
                 $order->payable_amount = decimal_format($payable_amount);
             }else{
                 $order->payable_amount = decimal_format($payable_amount - $total_other_taxes);
