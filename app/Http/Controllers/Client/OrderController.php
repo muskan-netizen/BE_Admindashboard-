@@ -792,11 +792,24 @@ class OrderController extends BaseController
                 return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
             }
             if (!$vendor_order_status_check) {
-                if ($request->status_option_id == 2 || $request->status_option_id == 3) {
-                    $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
-                    AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
-                }
+                // if ($request->status_option_id == 2 || $request->status_option_id == 3) {
+                //     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
+                //     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
+                // }
+
                 $orderData = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
+                if(@$orderData->exchanged_of_order){
+                    $return = OrderReturnRequest::where('order_id', $orderData->exchanged_of_order->order_id)->first();
+                    if (@$return && $request->status_option_id == 2) { //accept exchange
+                        
+                        $returns = OrderReturnRequest::where('order_id', $orderData->exchanged_of_order->order_id)->update(['status' => 'Accepted', 'reason_by_vendor' => $request->reject_reason ?? null]);
+                    }
+
+                    if (@$return && $request->status_option_id == 3) { //reject exchange
+                        $returns = OrderReturnRequest::where('order_id', $orderData->exchanged_of_order->order_id)->update(['status' => 'Rejected', 'reason_by_vendor' => $request->reject_reason ?? null]);
+                    }
+
+                }
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type == 'D') {

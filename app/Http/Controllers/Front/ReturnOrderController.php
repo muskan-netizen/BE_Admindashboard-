@@ -294,10 +294,14 @@ $vendor_id = 0;
     public function updateProductReplace(Request $request){
         try {
             DB::beginTransaction();
-            
+           
             $orderVendorProductOld = OrderProduct::find($request->order_vendor_product_id); // get exchanged order product
-            $orderVendorOld = OrderVendor::find($orderVendorProductOld->order_vendor_id);
-            if(round($orderVendorOld->subtotal_amount)  != round($request->product_a_price)){
+            
+            $orderVendorOld = OrderVendor::with('products')->where('id',$orderVendorProductOld->order_vendor_id)
+                                        ->whereHas('products', function ($q) use($orderVendorProductOld){
+                                            $q->where('product_id', $orderVendorProductOld->product_id);
+                                        })->first();
+            if(round($orderVendorOld->subtotal_amount/$orderVendorOld->products[0]->quantity)  != round($request->product_a_price)){
                 return $this->errorResponse('Please select product with same price', 200);
             }
             $type = 2; // type = exchange

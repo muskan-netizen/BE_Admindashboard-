@@ -423,6 +423,91 @@
 @endsection
 
 @section('script')
+<script type="text/template" id="variant_quantity_template">
+    <% if(variant.product.inquiry_only == 0) { %>
+    <div class="product-description border-product pb-0">
+        <h6 class="product-title mt-0">{{__('Quantity')}}:
+            <% if(variant.product.has_inventory && !(variant.quantity > 0) && (variant.product.sell_when_out_of_stock != 1)){ %>
+                <span id="outofstock" style="color: red;">{{__('Out of Stock')}}</span>
+            <% }else{ %>
+                <input type="hidden" id="instock" value="<%= variant.quantity %>">
+            <% } %>
+        </h6>
+        <% if(!variant.product.has_inventory || (variant.quantity > 0) || (variant.product.sell_when_out_of_stock == 1)){ %>
+        <div class="qty-box mb-3">
+            <div class="input-group">
+                <span class="input-group-prepend">
+                    <button type="button" class="btn quantity-left-minus" data-type="minus" data-field="" data-batch_count="<%= variant.product.batch_count %>" data-minimum_order_count="<%= variant.product.minimum_order_count %>"><i class="ti-angle-left"></i>
+                    </button>
+                </span>
+                <input type="text" onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" name="quantity" id="quantity" class="form-control input-qty-number quantity_count" value="<%= variant.product.minimum_order_count %>" data-minimum_order_count="<%= variant.product.minimum_order_count %>">
+                <span class="input-group-prepend quant-plus">
+                    <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="" data-batch_count="<%= variant.product.batch_count %>" data-minimum_order_count="<%= variant.product.minimum_order_count %>">
+                        <i class="ti-angle-right"></i>
+                    </button>
+                </span>
+            </div>
+        </div>
+        <% } %>
+    </div>
+    <% } %>
+</script>
+<script type="text/template" id="variant_image_template">
+    <% if(variant.media != '') { %>
+        <div class="swiper-container gallery-top">
+            <div class="swiper-wrapper">
+                <% _.each(variant.media, function(img, key){ %>
+                    <div class="swiper-slide easyzoom easyzoom--overlay">
+                        <a href="<%= img.pimage.image.path['image_fit'] %>600/600<%= img.pimage.image.path['image_path'] %>">
+                        <img class="blur-up lazyload" data-src="<%= img.pimage.image.path['image_fit'] %>600/600<%= img.pimage.image.path['image_path'] %>" alt="">
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+            <!-- Add Arrows -->
+            <div class="swiper-button-next swiper-button-white"></div>
+            <div class="swiper-button-prev swiper-button-white"></div>
+        </div>
+        <div class="swiper-container gallery-thumbs">
+            <div class="swiper-wrapper">
+                <% _.each(variant.media, function(img, key){ %>
+                    <div class="swiper-slide">
+                        <img class="blur-up lazyload" data-src="<%= img.pimage.image.path['image_fit'] %>300/300<%= img.pimage.image.path['image_path'] %>" alt="">
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    <% }else{ %>
+        <div class="swiper-container gallery-top">
+            <div class="swiper-wrapper">
+                <% _.each(variant.product.media, function(img, key){ %>
+                    <% if(img.image != null) {%>
+                        <div class="swiper-slide easyzoom easyzoom--overlay">
+                            <a href="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>">
+                            <img class="blur-up lazyload" data-src="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>" alt="">
+                            </a>
+                        </div>
+                    <% }; %>
+                <% }); %>
+            </div>
+            <!-- Add Arrows -->
+            <div class="swiper-button-next swiper-button-white"></div>
+            <div class="swiper-button-prev swiper-button-white"></div>
+        </div>
+        <div class="swiper-container gallery-thumbs">
+            <div class="swiper-wrapper">
+                <% _.each(variant.product.media, function(img, key){ %>
+                    <% if(img.image != null) {%>
+                        <div class="swiper-slide">
+                            <img class="blur-up lazyload" data-src="<%= img.image.path['image_fit'] %>300/300<%= img.image.path['image_path'] %>" alt="">
+                        </div>
+                    <% }; %>
+                <% }); %>
+            </div>
+        </div>
+    <% } %>
+</script>
+
 <script type="text/template" id="variant_template">
     <input type="hidden" name="variant_id" id="prod_variant_id" value="<%= variant.id %>">
     <% if(variant.product.inquiry_only == 0) { %>
@@ -640,14 +725,17 @@
                     },
                     success: (data) => {
                         if (data.status == 'Success') {
-                            if (comments.length == 0) {
-                                $("#return_form_button").html('Request').prop('disabled', false);
-                            } else {
+                            console.log('dfasdf');
+                            // if (comments.length == 0) {
+                            //     console.log('dfasdf');
+                            //     $("#return_form_button").html('Request').prop('disabled', false);
+                            // } else {
+                                console.log('dfasdf');
                                 $("#return_form_button").html('Request');
                                 var url = "{{route('user.orders',['pageType' => 'returnOrders'])}}";
                                 $(location).prop('href', url);
-                            }
-                            
+                            // }
+                            $('#error-msg').text('');
                         } else {
                             $('#error-msg').text(data.message);
                             $("#return_form_button").html('Request').prop('disabled', false);

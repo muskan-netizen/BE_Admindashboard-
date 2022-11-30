@@ -693,12 +693,14 @@
                                                                     <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Order Number') }}</h4>
                                                                         <span>#{{ $order->order_number }}</span>
+                                                                        <?php  $is_exchanged_order = 0;  ?>
 
                                                                         @if(@$order->vendors[0]->exchanged_to_order)
                                                                         <h4>{{ __('Exchanged To') }}</h4>
                                                                         <span>#{{ $order->vendors[0]->exchanged_to_order->orderDetail->order_number }}</span>
                                                                         @endIf
                                                                         @if(@$order->vendors[0]->exchanged_of_order)
+                                                                        <?php  $is_exchanged_order = 1;  ?>
                                                                         <h4>{{ __('Exchange Of') }}</h4>
                                                                         <span># {{$order->vendors[0]->exchanged_of_order->orderDetail->order_number}}</span>
 
@@ -857,11 +859,11 @@
                                                                                                 @foreach ($vendor->products as $product)
                                                                                                     @php 
                                                                                                         
-                                                                                                        if($product->product->returnable == 1){
+                                                                                                        if(@$product->product->returnable && $product->product->returnable == 1){
                                                                                                             $returnable = 1;
                                                                                                         }
                                                                                                         
-                                                                                                        if($product->product->replaceable == 1){
+                                                                                                        if(@$product->product->replaceable && $product->product->replaceable == 1){
                                                                                                             $replaceable = 1;
                                                                                                         }
                                                                                                     @endphp  
@@ -982,7 +984,7 @@
                                                                                             
 
                                                                                             
-                                                                                            @if(@$vendor->j && $vendor->is_exchanged_or_returned == 1)
+                                                                                            @if(@$vendor->is_exchanged_or_returned  && $vendor->is_exchanged_or_returned == 1)
                                                                                                 @if($vendor->exchanged_to_order->order_status_option_id == 6)
                                                                                                     <button class="btn btn-solid" >  {{__('Replaced')}}</button>
                                                                                                 @else($vendor->order_status_option_id == 9) 

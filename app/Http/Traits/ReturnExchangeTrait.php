@@ -179,7 +179,7 @@ trait ReturnExchangeTrait{
         $language_id = Session::get('customerLanguage');
         $order_product = new OrderProduct;
         $order_product->order_id = $order->id;
-        $order_product->price = 0;
+        $order_product->price = $orderVendorProductOld->price;
         $order_product->markup_price = 0;
         $order_product->additional_increments_hrs_min = 0;
         $order_product->start_date_time = null;
@@ -269,10 +269,19 @@ trait ReturnExchangeTrait{
         $OrderVendor = new OrderVendor();
         $OrderVendor->status = 0;
         $OrderVendor->user_id = $user->id;
+        $OrderVendor->delivery_fee = 0.00;
+        $OrderVendor->subtotal_amount = $orderVendorProductOld->subtotal_amount ?? 0.00;
+        $OrderVendor->payable_amount = 0.00;
+        $OrderVendor->total_container_charges = 0.00;
+        $OrderVendor->service_fee_percentage_amount = 0.00;
+        $OrderVendor->additional_price = 0.00;
+        $OrderVendor->discount_amount = 0.00;
+        $OrderVendor->taxable_amount = 0.00;
         $OrderVendor->order_id = $order->id;
         $OrderVendor->vendor_id = $orderVendorProductOld->vendor_id;
         $OrderVendor->vendor_dinein_table_id = null;
         $OrderVendor->order_status_option_id = $orderStatusPlaced;
+       
         if(checkColumnExists('order_vendors','exchange_order_vendor_id')){
             $OrderVendor->exchange_order_vendor_id = $orderVendorProductOld->order_vendor_id;
         }
@@ -307,6 +316,7 @@ trait ReturnExchangeTrait{
         $order->schedule_pickup  =  null;
         $order->schedule_dropoff =  null;
         $order->fixed_fee_amount = 0.00;
+        $order->payable_amount = 0.00;
         $order->specific_instructions =  null;
         $order->is_gift =  0;
         $order->user_latitude = $latitude ? $latitude : null;
