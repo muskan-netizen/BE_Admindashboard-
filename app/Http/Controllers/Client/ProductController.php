@@ -241,8 +241,8 @@ class ProductController extends BaseController
         $configData->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
         $celebrities         = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
         $tollPassOrigin      = (checkColumnExists('toll_pass_origin','toll_pass')) ? TollPassOrigin::select('id', 'toll_pass', 'desc')->get() : [];
-        $travelMode          = TravelMode::select('id', 'travelmode', 'desc')->get();
-        $vehicleEmissionType = VehicleEmissionType::select('id', 'emission_type', 'desc')->get();
+        $travelMode          = (checkColumnExists('travel_mode','travelmode')) ?TravelMode::select('id', 'travelmode', 'desc')->get() : [];
+        $vehicleEmissionType = (checkColumnExists('vehicle_emission_type','id')) ?VehicleEmissionType::select('id', 'emission_type', 'desc')->get() : [];
 
         $agent_dispatcher_tags = [];
         $agent_dispatcher_on_demand_tags = [];
