@@ -12,7 +12,7 @@ use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
-use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional};
+use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional, UserVendor, VendorCategory};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
@@ -1286,4 +1286,46 @@ if( !function_exists('p2p_module_status') ) {
         }
         return false;
     }   
+}
+
+if( !function_exists('is_p2p_vendor') ) {
+    function is_p2p_vendor() {
+        
+        if( p2p_module_status() ) {
+            
+            if(auth()->user()) {
+
+                $auth_user = auth()->user();
+                $user_vendor = UserVendor::where('user_id', $auth_user->id)->first();
+                
+                
+                
+                if( !empty($user_vendor->vendor_id) ) {
+
+                    $vendor = Vendor::where('id', $user_vendor->vendor_id)->first();
+                    $client_preference = (object)session()->get('preferences');
+                    
+                    foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                        $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                        $clientVendorTypes = $vendor_typ_key.'_check';
+                        $NomenclitureName =  $vendor_typ_key == "dinein" ? 'Dine-In' : $vendor_typ_value;
+                        if($client_preference->$clientVendorTypes == 1 && $vendor->$VendorTypesName){
+                            $offers[]=  $vendor->$VendorTypesName == 1 ? getNomenclatureName($NomenclitureName) : $NomenclitureName;
+                        }
+                    }
+                    
+                    if( count($offers) > 1 ) {
+                        return false;
+                    }
+                    elseif( count($offers) == 1 && ($vendor->p2p == 1) ) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }

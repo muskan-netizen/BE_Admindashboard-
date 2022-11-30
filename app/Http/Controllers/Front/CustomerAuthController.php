@@ -363,6 +363,7 @@ class CustomerAuthController extends FrontController
 
                     $vendor->status = 0;
                     $vendor->name = $user->name;
+                    $vendor->p2p = 1;
                     $vendor->email = $user->email ?? '';
                     $vendor->phone_no = $user->phone_number ?? '';
                     $vendor->slug = Str::slug($user->name, "-");
