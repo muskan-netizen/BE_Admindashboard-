@@ -60,6 +60,7 @@ class AttributeController extends BaseController
         $v_pos = Attribute::select('id','position')->where('position', \DB::raw("(select max(`position`) from variants)"))->first();
         $variant = new Attribute();
         $variant->title = (!empty($request->title[0])) ? $request->title[0] : '';
+        $variant->user_id = Auth::id();
         $variant->type = $request->type;
         $variant->position = 1;
         if($v_pos){
@@ -160,6 +161,7 @@ class AttributeController extends BaseController
         $variant = Attribute::where('id', $id)->firstOrFail();
         $variant->title = $request->title[0];
         $variant->type = $request->type;
+        $variant->user_id = Auth::id();
         $variant->save();
 
         $VariantCategory = AttributeCategory::where('attribute_id', $variant->id)->first();
@@ -316,4 +318,17 @@ class AttributeController extends BaseController
         return response()->json(array('success' => true, 'resp'=>$makeHtml));
     }
 
+    function deleteAttribute(Request $request) {
+        try {
+            if( !empty($request->id) ) {
+                $attr_option_id = $request->id;
+                AttributeOption::where('id', $attr_option_id)->delete();
+                return response()->json(array('success' => true));
+            }
+            return response()->json(array('success' => false));
+        }
+        catch(\Exception $e) {
+            return response()->json(array('success' => false));
+        }
+    }
 }

@@ -76,6 +76,9 @@
     .product-box.editPage .product-action .btn {
         padding: 0px 2px;
     }
+    .saveVariantOrder {
+        display: none;
+    }
 </style>
 @endsection
 @php
@@ -92,7 +95,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 <div class="container-fluid">
 
     <div class="row">
-
+        <span class="delete_options d-none">Error while deleting options</span>
         <div class="col-8 d-flex align-items-center">
             <div class="page-title-box">
                 <h4 class="page-title">{{ __("Edit Product") }}</h4>
@@ -546,7 +549,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div>
                     @endif
-                    @if( clientPrefrenceModuleStatus('p2p_check') )
+                    @if( p2p_module_status() )
                         <div class="card-box" >
                             <div class="row mb-2 bg-light">
                                 <div class="col-8" style="">
@@ -740,6 +743,9 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 <div id="variantRowDiv" class="col-12"></div>
                             </div>
                         </div>
+
+                        {{-- Add attribute modal --}}
+                        @include('layouts.shared.attribute')
                     @endif
                 @endif
             </div>
@@ -1562,6 +1568,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
 
 </script>
+@include('backend.catalog.modals')
 @endsection
 
 @section('script')
@@ -2365,6 +2372,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
         $('.select2-multiple').select2();
     </script>
 {{-- Insert Value to Role Price Modal (End) --}}
-
+@include('backend.catalog.pagescript')
 <script src="{{ asset('assets/js/backend/product/edit_product.js')}}"></script>
 @endsection
