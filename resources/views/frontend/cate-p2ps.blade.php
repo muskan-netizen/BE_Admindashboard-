@@ -64,6 +64,11 @@
 .p2p-sidebar .select2-container{width:100% !important;}
 .select2-container--default .select2-results>.select2-results__options li {
     display: block !important;
+    color: #222;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__rendered li {
+    list-style: none;
+    color: #000;
 }
 .custom_filtter {
     border-bottom: 1px solid #D9D9D9;
@@ -232,7 +237,7 @@
                     </div>
                     @endif
                     @if(!empty($newProducts) && count($newProducts) > 0)
-                    <div class="theme-card">
+                    <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">

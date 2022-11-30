@@ -68,7 +68,6 @@
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
                             </span>
                         </div> -->
-                        <aside class="side_fillter">
                         @if(!empty($category->brands) && count($category->brands) > 0)
                         <div class="collection-collapse-block open mb-2">
                             <h3 class="collapse-block-title">{{__('Brand')}}</h3>
@@ -131,7 +130,7 @@
                     </div>
                     @endif
                     @if(!empty($newProducts) && count($newProducts) > 0)
-                    <div class="theme-card">
+                    <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
