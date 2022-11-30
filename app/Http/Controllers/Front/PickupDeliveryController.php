@@ -108,7 +108,8 @@ class PickupDeliveryController extends FrontController{
 
     public function postVendorListByCategoryId(Request $request, $domain = '',$category_id = 0){
         $vendor_type = Session::get('vendorType');
-        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area', 'is_cab_pooling')->where('id', '>', 0)->first();
+        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
+        $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
         $vendor_ids = [];
         $pickup_latitude = '';
         $pickup_longitude = '';
@@ -153,7 +154,8 @@ class PickupDeliveryController extends FrontController{
     public function postCabProductById(Request $request, $domain = '',$product_id = 0){
         $user = Auth::user();
         $language_id = Session::get('customerLanguage');
-        $preferences = ClientPreference::select('is_cab_pooling')->where('id', '>', 0)->first();
+        $preferences = ClientPreference::where('id', '>', 0)->first();
+        $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
 
         if(!empty($user)){
             $client_timezone = DB::table('clients')->first('timezone');
@@ -261,7 +263,8 @@ class PickupDeliveryController extends FrontController{
                 return response()->json(['error' => 'No record found.'], 404);
             }
 
-            $preferences = ClientPreference::select('is_cab_pooling')->where('id', '>', 0)->first();
+            $preferences = ClientPreference::where('id', '>', 0)->first();
+            $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
             $user = Auth::user();
             $userid = $user->id;
             if(!empty($user)){

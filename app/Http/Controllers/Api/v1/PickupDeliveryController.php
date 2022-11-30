@@ -35,7 +35,9 @@ class PickupDeliveryController extends BaseController{
                 return response()->json(['error' => __('No record found.')], 404);
             }
             
-            $preferences = ClientPreference::select('is_cab_pooling')->where('id', '>', 0)->first();
+            $preferences = ClientPreference::where('id', '>', 0)->first();
+            $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
+            
             $user = Auth::user();
             $userid = $user->id;
             
