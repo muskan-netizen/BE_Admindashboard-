@@ -11,11 +11,6 @@ use Illuminate\Support\Facades\Config;
 trait GlobalFunction{
 
 
-    public function __construct()
-   {
-       
-   }
-
     public function socketDropDown()
     {
         $chatSocket= ChatSocket::where('status', 1)->get();
