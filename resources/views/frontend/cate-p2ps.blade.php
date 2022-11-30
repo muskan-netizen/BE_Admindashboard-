@@ -20,6 +20,7 @@
 .p2p-sidebar {
     padding: 20px;
 }
+
 .p2p-sidebar label.control-label {
     margin: 10px 0 10px;
     color: #000;

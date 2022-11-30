@@ -103,7 +103,7 @@ if(isset($set_template))
 </script>
 @include('layouts.language')
 @yield('headerJs')
-<body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
+<body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}} {{p2p_module_status() ? 'p2p-module' : ''}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
 <article id="page-container">
   <article id="content-wrap">
   @if(isset($set_template)  && ($set_template->template_id == 3 || $set_template->template_id == 6 || $set_template->template_id == 1 ))
