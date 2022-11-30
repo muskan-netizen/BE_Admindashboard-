@@ -14,7 +14,7 @@
     margin-top: 18px !important;
     overflow-y: auto !important;
     border-right: 1px solid #D9D9D9;
-    height: auto;
+    height: 600px;
     overflow-x: hidden !important;
 }
 .p2p-sidebar {
@@ -31,7 +31,7 @@
     justify-content: flex-start;
     display: inline-flex;
     margin-bottom: 10px;
-    width: 48%;
+    width: 100%;
 }
 .p2p-sidebar .checkbox.checkbox-success label {
     margin-bottom: 0;
@@ -122,6 +122,9 @@
     height: 200px !important;
     object-fit: cover;
 }
+.irs-to {
+    left: 85% !important;
+}
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 <link href="{{asset('assets/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
@@ -182,7 +185,7 @@
                         @endif
                         @if(!empty($variantSets) && count($variantSets) > 0)
                           @foreach($variantSets as $key => $sets)
-                            <div class="collection-collapse-block border-0 mb-2 open">
+                            <div class="collection-collapse-block border-0 mb-2 open p-2">
                                 <h3 class="collapse-block-title">{{$sets->title}}</h3>
                                 <div class="collection-collapse-block-content">
                                     <div class="collection-brand-filter">
@@ -215,7 +218,7 @@
                             </div>
                           @endforeach
                         @endif
-                        <div class="collection-collapse-block border-0 mb-2 open">
+                        <div class="collection-collapse-block border-0 mb-2 open p-2">
                             <h3 class="collapse-block-title">{{__('Price')}}</h3>
                             <div class="collection-collapse-block-content">
                                 <div class="wrapper mt-3">
