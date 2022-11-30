@@ -130,7 +130,7 @@ class ProductController extends FrontController{
                 $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
                 $q2->where('apt.language_id', $langId);
             },
-            'category.categoryDetail.allParentsAccount', 'ProductAttribute', 'ProductAttribute.attributeOption', 'ProductAttribute.attribute'
+            'category.categoryDetail.allParentsAccount', 'ProductAttribute', 'ProductAttribute.attribute', 'ProductAttribute.attributeOption', 'ProductAttribute.attribute'
         ]);
         // 
         if($user){
@@ -307,34 +307,20 @@ class ProductController extends FrontController{
             $promoCodeController = new PromoCodeController();
             $coupon_list = $promoCodeController->coupon_code_list($product->id, $product->vendor_id);
 
-            // if( !empty($product->ProductAttribute) ) {
-            //     foreach($product->ProductAttribute as $key => $val) {
-            //         $attribute_value[] = $val->attribute_option_id;
-            //         $attribute_key_value[$val->attribute_option_id] = $val->key_value;
-            //     }
-            // }
-            // dd($product);
-            // $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
-            //             ->select('attributes.*')
-            //             ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
-            //             ->where('attribute_categories.category_id', $product->category_id)
-            //             ->where('attributes.status', '!=', 2)
-            //             ->orderBy('position', 'asc')->get();
-
-            // $product_attr = ProductAttribute::with('')->where('product_id', $product->id)->get();
-            // dd($product_attr);
+            // Product Attribute
             $product_attr = [];
             if( !empty($product->ProductAttribute) ) {
                 foreach( $product->ProductAttribute as $key => $value ) {
-                    
-                    $product_attr[$key]['title'] = optional($value->attribute)->title ?? '';
-                    $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
-                    
-                    if( !empty($value->attribute) && $value->attribute->type != 4) {
-                        $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
-                    }
-                    else {
-                        $product_attr[$key]['value'] = $value['key_value'] ?? '';
+                    if( !empty($value->attribute) && !empty($value->attribute->status) && $value->attribute->status == 1 ) {
+                        $product_attr[$key]['title'] = optional($value->attribute)->title ?? '';
+                        $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
+                        
+                        if( !empty($value->attribute) && $value->attribute->type != 4) {
+                            $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
+                        }
+                        else {
+                            $product_attr[$key]['value'] = $value['key_value'] ?? '';
+                        }
                     }
                 }
             }
