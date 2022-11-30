@@ -530,7 +530,36 @@
     });
 
     $("#editAttributemodal").on('click', '.deleteCurRow', function() {
-        $(this).closest('tr').remove();
+        var delete_attr_id = $(this).data('delete_attr_id');
+        var closet_tr = $(this).closest('tr');
+
+        if( delete_attr_id != 'undefined' && delete_attr_id != undefined ) {
+            $.ajax({
+                type: "POST",
+                url : "{{route('deleteAttribute')}}",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "id": delete_attr_id
+                },
+                beforeSend: function() {
+                    $(".editAttributeSubmit").attr("disabled", true);
+                },
+                success: function (response) {
+                    
+                    if(response.success) {
+                        closet_tr.remove();
+                    } else {
+                        $('.delete_options').removeClass('d-none');
+                    }
+                },
+                error: function(error) {
+                    $('.delete_options').removeClass('d-none');
+                },
+                complete: function() {
+                    $(".editAttributeSubmit").attr("disabled", false);
+                }
+            });
+        }
     });
 
     $(document).on('click', '.deleteAttribute', function() {
