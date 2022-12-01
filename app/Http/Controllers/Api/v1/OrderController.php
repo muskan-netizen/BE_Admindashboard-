@@ -2067,7 +2067,7 @@ class OrderController extends BaseController
                     $luxury_option = LuxuryOption::where('title', $action)->first();
                     $cart = TempCart::where('status', '0')->where('id', $cart_id)->where('order_vendor_id', $order_vendor_id)->where('is_submitted', 1)->where('is_approved', 0)->first();
                     if ($cart) {
-                        $loyalty_points_used;
+                        $loyalty_points_used = 0;
                         $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
                         if ($order_loyalty_points_earned_detail) {
                             $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
@@ -2294,7 +2294,7 @@ class OrderController extends BaseController
                             $vendor_payable_amount += $vendor_taxable_amount;
 
                             $order_vendor->coupon_id = $coupon_id;
-                            $OrderVendor->coupon_paid_by = $coupon_paid_by??1;
+                            $order_vendor->coupon_paid_by = $coupon_paid_by??1;
                             $order_vendor->coupon_code = $coupon_name;
                             $order_vendor->order_status_option_id = 1;
                             $order_vendor->delivery_fee = $delivery_fee;
