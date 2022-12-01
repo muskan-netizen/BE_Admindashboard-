@@ -648,6 +648,7 @@
     // when attribute update from product edit page
     $(document).on('click', '.save-dynamic-options', function(e){
         e.preventDefault();
+        $('.outter-loader').removeClass('d-none');
         $('.save-dynamic-options').attr("disabled", true);
 
         // get attribute id

@@ -168,6 +168,7 @@
                 <h4 class="modal-title">{{ __("Edit ".getNomenclatureName('Attribute')) }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
+            <div class="outter-loader d-none"><div class="css-loader"></div></div>
             <form id="editAttributeForm" method="post" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')

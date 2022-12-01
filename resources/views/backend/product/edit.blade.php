@@ -104,7 +104,43 @@ div#attribute_section .col-sm-9 .checkbox.checkbox-success.form-check-inline {
 div#attribute_section .col-sm-9 .form-check-inline.w-100 {
     width: 95% !important;
 }
+.css-loader {
+    border: 10px solid #ffffff;
+    border-radius: 50%;
+    border-top: 10px solid #3498db;
+    width: 80px;
+    height: 80px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    position: absolute;
+    z-index: 9999999999;
+    left: 40%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+}
+.outter-loader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    background: #0000004a;
+    z-index: 9;
+}
 
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
 @endsection
 @php
