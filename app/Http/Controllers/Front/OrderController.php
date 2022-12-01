@@ -961,13 +961,13 @@ class OrderController extends FrontController
                     // $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_markup_amount = $vendor_markup_amount + $variant->markup_price;
                     $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
-                    // $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
-                    $vendor_total_container_charges =  $quantity_container_charges;
+                    $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
+                    // $vendor_total_container_charges =  $quantity_container_charges;
                     //echo  "<br>payable_amount: ".$payable_amount."+ quantity_price: ".$quantity_price ;
-                    //dump("PA Start ================ ".$payable_amount); 
+// dump("PA Start ================ ".$payable_amount); 
                     $payable_amount = $payable_amount + $quantity_price ;
-                    //dump("Quantity_price ".$quantity_price."/- ------ ".$quantity_price); 
-                    //dump("Payable_amount ------ ".$payable_amount); 
+// dump("Quantity_price ".$quantity_price."/- ------ ".$quantity_price); 
+// dump("Payable_amount ------ ".$payable_amount); 
                     //$payable_amount = $payable_amount + $quantity_price;
                     //$vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     //$vendor_payable_amount = $vendor_payable_amount + $quantity_price;
@@ -1138,14 +1138,14 @@ class OrderController extends FrontController
                             // }
                         }
                     }
-                    //dump("VPA ".$quantity_price);
+// dump("VPA ".$quantity_price);
                 $vendor_service_fee_percentage_amount = 0;
                 if ($vendor_cart_product->vendor->service_fee_percent > 0) {
                     // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount
                     $vendor_service_fee_percentage_amount = ( $quantity_price * $vendor_cart_product->vendor->service_fee_percent) / 100;
                     $payable_amount += $vendor_service_fee_percentage_amount;
                 }
-                //dump("+Service fee ".$vendor_service_fee_percentage_amount."/- ---------".$payable_amount); 
+// dump("+Service fee ".$vendor_service_fee_percentage_amount."/- ---------".$payable_amount); 
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
                     if ($cart_addons) {
                         foreach ($cart_addons as $cart_addon) {
@@ -1179,7 +1179,7 @@ class OrderController extends FrontController
                 }
                 
                 $payable_amount+= $vendor_total_container_charges;
-                //dump("+Container_charges ".$vendor_total_container_charges."/- ---".$payable_amount); 
+// dump("+Container_charges ".$vendor_total_container_charges."/- ---".$payable_amount); 
             
                 //echo "vendor_total_container_charges: ".$vendor_total_container_charges."payable_amount: ".$payable_amount."<br>";
 
@@ -1234,7 +1234,7 @@ class OrderController extends FrontController
 
                 
                 $payable_amount+= $additionalPrice;
-                //dump("+AdditionalPrice ".$additionalPrice."/- ----".$payable_amount); 
+// dump("+AdditionalPrice ".$additionalPrice."/- ----".$payable_amount); 
                 $totalAdditionalPrice+= $additionalPrice;
 
 
@@ -1324,7 +1324,7 @@ class OrderController extends FrontController
             $order->taxable_amount = $total_taxable_amount;
             
             $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
-            //dump("+TotDelivery_fee ".$total_delivery_fee."/- -Total_disco ".$total_discount."/- --".$payable_amount);
+// dump("+TotDelivery_fee ".$total_delivery_fee."/- -Total_disco ".$total_discount."/- --".$payable_amount);
             if ($loyalty_amount_saved > 0) {
                 if ($loyalty_amount_saved > $payable_amount) {
                     $loyalty_amount_saved = $payable_amount;
@@ -1332,7 +1332,7 @@ class OrderController extends FrontController
                 }
             }
             $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
-            //dump("+Fixed_fee ".$fixed_fee_amount."/- -Loyalty_amount ".$loyalty_amount_saved. "/- ---".$payable_amount);
+// dump("+Fixed_fee ".$fixed_fee_amount."/- -Loyalty_amount ".$loyalty_amount_saved. "/- ---".$payable_amount);
             $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
 
             
@@ -1352,7 +1352,7 @@ class OrderController extends FrontController
             
             // $payable_amount = $payable_amount + $tip_amount + $total_taxable_amount+$total_other_taxes;
             $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
-            //dump("+Tip ".$tip_amount."/- &_other_taxes ".$total_other_taxes."/- ------- ".$payable_amount);
+// dump("+Tip ".$tip_amount."/- &_other_taxes ".$total_other_taxes."/- ------- ".$payable_amount);
             $wallet_amount_used = 0;
             if ($user) {
                 if ($user->balanceFloat > 0) {
@@ -1368,9 +1368,9 @@ class OrderController extends FrontController
                     }
                 }
             }
-            //dump("-Wallet_amount ---------- ".$payable_amount);
+// dump("-Wallet_amount ---------- ".$payable_amount);
             $payable_amount = $payable_amount - $wallet_amount_used;
-            //dd("Last -------------------- ".$payable_amount);
+// dd("Last -------------------- ".$payable_amount);
             //echo  " Total payable_amount2=".$payable_amount."; <br>";
             $order->total_service_fee = $total_service_fee;
             $order->total_delivery_fee = $total_delivery_fee;

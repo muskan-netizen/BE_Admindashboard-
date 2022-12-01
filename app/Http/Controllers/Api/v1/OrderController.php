@@ -310,7 +310,7 @@ class OrderController extends BaseController
                             $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
                             $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
                             $productAddon_price = 0;
-                            
+// dump($payable_amount);
                             if (!empty($vendor_cart_product->addon)) {
                                 foreach ($vendor_cart_product->addon as $ck => $addon) {
                                     $opt_quantity_price = 0;
@@ -321,6 +321,7 @@ class OrderController extends BaseController
                                     $productAddon_price = $productAddon_price + $opt_quantity_price;
                                     $payable_amount = $payable_amount + $opt_quantity_price;
                                     $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
+// dump($payable_amount);
                                 }
                             }
                          
@@ -336,6 +337,7 @@ class OrderController extends BaseController
                                     $taxable_amount = $taxable_amount + $product_tax;
                                     $product_taxable_amount += $product_tax;
                                     //$payable_amount = $payable_amount + $product_tax;
+// dump($payable_amount);
                                 }
                             }
                             if ($action == 'delivery') {
@@ -354,6 +356,7 @@ class OrderController extends BaseController
                                         $delivery_count = 1;
                                         $vendor_cart_product->delivery_fee = decimal_format($delivery_fee);
                                         // $payable_amount = $payable_amount + $delivery_fee;
+// dump($payable_amount);
                                         $delivery_fee_charges = $delivery_fee;
                                         $latitude = $request->header('latitude');
                                         $longitude = $request->header('longitude');
@@ -536,7 +539,7 @@ class OrderController extends BaseController
                     }
                     
                     $payable_amount = $payable_amount + $total_taxes + $additional_price;
-                
+// dump($payable_amount);
                     $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
 
                     // calculate subscription discount
@@ -560,6 +563,7 @@ class OrderController extends BaseController
                     $order->total_discount = $total_discount;
                     //$order->taxable_amount = $taxable_amount;
                     $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
+// dump($payable_amount);
                     if ($loyalty_amount_saved > 0) {
                         if ($loyalty_amount_saved > $payable_amount) {
                             $loyalty_amount_saved = $payable_amount;
@@ -567,6 +571,7 @@ class OrderController extends BaseController
                         }
                     }
                     $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved;
+// dump($payable_amount);
                     $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
                     $wallet_amount_used = 0;
                     if ($user->balanceFloat > 0) {
@@ -587,7 +592,7 @@ class OrderController extends BaseController
                         $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                         $order->tip_amount = decimal_format($tip_amount);
                     }
-
+// dd($payable_amount);
                     $payable_amount = $payable_amount + $tip_amount ;
                     $payable_amount = $payable_amount - $wallet_amount_used;
                     $order->total_service_fee = $total_service_fee;
