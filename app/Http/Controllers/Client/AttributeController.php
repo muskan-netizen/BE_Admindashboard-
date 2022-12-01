@@ -379,7 +379,6 @@ class AttributeController extends BaseController
                     $varOpt = AttributeOption::where('id', $value)->first();
 
                     if(!$varOpt){
-                        \Log::info('inside the if part');
                         $varOpt = new AttributeOption();
                         $varOpt->attribute_id = $variant->id;
 
@@ -399,7 +398,6 @@ class AttributeController extends BaseController
 
                     
                 }else{
-                    \Log::info('inside the else part');
                     $varOpt = new AttributeOption();
                     $varOpt->attribute_id = $variant->id;
                     $varOpt->title = $request->opt_title[$curLangId][$key];
