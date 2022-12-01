@@ -15,6 +15,7 @@ Route::group(['prefix' => 'v1/v2', 'middleware' => ['ApiLocalization']], functio
         Route::get('vendor-optimize/{id?}', 'Api\v1\v2\VendorController@productsByVendorOptimize');  
         Route::match(['get','post'],'vendor-optimize-category/{id}', 'Api\v1\v2\VendorController@productsByVendorCategoryOptimize');  
         Route::post('vendor/vendorProductsFilterOptimize', 'Api\v1\v2\VendorController@vendorProductsFilterOptimize');
+        Route::post('homepage', 'Api\v1\v2\HomeController@homepage');
 
     });
     Route::group(['middleware' => ['dbCheck','systemAuth']], function() {
