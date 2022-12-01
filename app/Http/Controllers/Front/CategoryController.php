@@ -159,7 +159,7 @@ class CategoryController extends FrontController{
                 $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
                 $riders = Rider::where('user_id',Auth::user()->id)->orderBy('id','DESC')->get();
 
-                return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders]);
+                return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']]);
             }
         }elseif($page == 'on demand service' || $page == 'appointment'){
 

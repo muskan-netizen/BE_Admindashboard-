@@ -45,7 +45,7 @@ body .alFullMapForm .scheduled-footer .btn {
                 </div>
                 @endif
 
-                @if(isset($client_preference_detail) && $client_preference_detail->is_cab_pooling == 1)
+                @if($is_cab_pooling == 1)
                 <div class="pool_radio_controls text-center">
                     <input type="radio" class="pool_radio is_cab_pooling" id="cab_booking" name="is_cab_pooling" value="0" checked>
                     <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
@@ -333,7 +333,7 @@ body .alFullMapForm .scheduled-footer .btn {
                     </div>
                     <div class="cab-location-details">
                     <div style="height:5px;"><div class="loader cab-detail-main-loader" style="display: none;"></div></div>
-                    @if(isset($client_preference_detail) && $client_preference_detail->is_cab_pooling == 1)
+                    @if($is_cab_pooling == 1)
                     <div class="show_no_of_seats_if_pooling" style="display:none;">
                         <div class="row mt-2">
                             <div class="col-md-7">

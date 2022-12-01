@@ -64,7 +64,7 @@
 
                                         </div>
                                         @if($vendor->desc)
-                                            <div class="col-md-8 text-left vender-peragraph mt-3 mt-5">
+                                            <div class="col-md-12 text-left vender-peragraph mt-3 mb-2">
                                                 <p>{{$vendor->desc}}</p>
                                                <p> {!! $vendor->short_desc !!}</p>
                                             </div>
@@ -88,23 +88,21 @@
                 </div>
             </div>
             @if(1)
-            <div class="row mb-3 homepageSix mt-0">
-                <div class="collection-filter col-lg-3 main-fillter">
-                    <aside class="side_fillter">
-                        <div class="collection-filter-block mb-3 bg-transparent p-0">
-                            <div class="collection-mobile-back pt-0 border-0"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
-                            @if(!empty($brands) && count($brands) > 0)
-                            <div class="collection-collapse-block open mb-2">
-                                <h3 class="collapse-block-title">brand</h3>
-                                <div class="collection-collapse-block-content pb-0">
-                                    <div class="collection-brand-filter">
-                                        @foreach($brands as $key => $val)
-                                        <div class="custom-control custom-checkbox collection-filter-checkbox">
-                                            <input type="checkbox" class="custom-control-input productFilter" fid="{{$val->brand_id}}" used="brands" id="brd{{$val->brand_id}}">
-                                            @foreach($val->brand->translation as $k => $v)
-                                            <label class="custom-control-label" for="brd{{$val->brand_id}}">{{$v->title}}</label>
-                                            @endforeach
-                                        </div>
+            <div class="row mb-3 homepageSix mt-4">
+                <div class="collection-filter col-md-3 main-fillter">
+                    <div class="collection-filter-block mb-3 bg-transparent p-0">
+                        <aside class="side_fillter">
+                        <div class="collection-mobile-back pt-0 border-0"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
+                        @if(!empty($brands) && count($brands) > 0)
+                        <div class="collection-collapse-block open mb-2">
+                            <h3 class="collapse-block-title">brand</h3>
+                            <div class="collection-collapse-block-content pb-0">
+                                <div class="collection-brand-filter">
+                                    @foreach($brands as $key => $val)
+                                    <div class="custom-control custom-checkbox collection-filter-checkbox">
+                                        <input type="checkbox" class="custom-control-input productFilter" fid="{{$val->brand_id}}" used="brands" id="brd{{$val->brand_id}}">
+                                        @foreach($val->brand->translation as $k => $v)
+                                        <label class="custom-control-label" for="brd{{$val->brand_id}}">{{$v->title}}</label>
                                         @endforeach
                                     </div>
                                 </div>
@@ -165,7 +163,22 @@
                             </div>
                             @endif
                         </div>
+                        @endforeach
+                        @endif
+                        @if($show_range == 1)
+                        <div class="collection-collapse-block border-0 mb-2 open">
+                            <h3 class="collapse-block-title">{{__('Price')}}</h3>
+                            <div class="collection-collapse-block-content">
+                                <div class="wrapper mt-3">
+                                    <div class="range-slider">
+                                        <input type="text" class="js-range-slider rangeSliderPrice" value="" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                     </aside>
+                    </div>
                     @if(!empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">

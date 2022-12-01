@@ -8,7 +8,7 @@
     <div class="background pt-3 pb-2 px-2" style="background:url({{$vendor->banner['proxy_url'] . '200/100' . $vendor->banner['image_path']}}) no-repeat center center;background-size:cover;">
         <div class="vendor_text">
             <img src="{{$vendor->logo['proxy_url'] . '90/90' . $vendor->logo['image_path']}}" class="rounded-circle avatar-lg img-thumbnail" alt="profile-image">
-            <h4 class="mb-0 text-white">{{ucfirst($vendor->name)}}</h4>
+            <h4 class="mb-0 text-white">{{ucfirst(@$vendor->name)}}</h4>
             <p class="text-white">{{$vendor->address}}</p>
             <button type="button" class="btn btn-success btn-sm waves-effect mb-2 waves-light openEditModal" data-toggle="modal" data-target="#exampleModal"> {{ __("Edit") }} </button>
             @if($vendor->status == 0 && Auth::user()->is_superadmin == 1)
@@ -274,7 +274,7 @@
                                     {!! Form::label('title', 'Vendor Tags',['class' => 'control-label']) !!}
                                     <select class="form-control select2-multiple" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." id="facilty_list" name="facilty_ids[]">
                                         @foreach ($facilties as $facilty)
-                                        <option value="{{ $facilty->id }}" {{ in_array($facilty->id, $vendor_facilty_ids) ? "selected" : '' }}>{{ $facilty->primary->name }}</option>
+                                        <option value="{{ $facilty->id }}" {{ in_array($facilty->id, $vendor_facilty_ids) ? "selected" : '' }}>{{ @$facilty->primary->name }}</option>
                                         @endforeach
 
                                     </select>
@@ -692,7 +692,7 @@
                     <div class="inbox-item-img">
                         <img src="{{$users->user ? $users->user->image['proxy_url'].'40/40'.$users->user->image['image_path'] : asset('assets/images/users/user-2.jpg')}}" class="rounded-circle" alt="">
                     </div>
-                    <p class="inbox-item-author">{{ $users->user->name??'' }}  </p>
+                    <p class="inbox-item-author">{{ @$users->user->name??'' }}  </p>
                     <p class="inbox-item-text"><label class="d-block"><i class="fa fa-envelope mr-1" aria-hidden="true"></i> {{ $users->user->email??'' }}
                         @if($users->user)
                         </label><label class="d-block"><i class="fa fa-phone mr-1" aria-hidden="true"></i> {{ $users->user->phone_number??'' }}</label> </p>
