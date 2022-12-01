@@ -430,7 +430,7 @@ body .alFullMapForm .scheduled-footer .btn {
     <span id="show_error_of_booking" class="error"></span>
 
     <div class="payment-promo-container p-2">
-        @if(isset($client_preference_detail) && $client_preference_detail->is_postpay_edit_dropoff == 0)
+        @if($is_postpay_edit_dropoff == 0)
         <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
             <span id="payment_type">
                 <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
