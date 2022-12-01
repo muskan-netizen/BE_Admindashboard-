@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Attribute, AttributeOption, AttributeTranslation, AttributeOptionTranslation, AttributeCategory, Category, ClientLanguage};
+use App\Models\{Attribute, AttributeOption, AttributeTranslation, AttributeOptionTranslation, AttributeCategory, Category, ClientLanguage, ProductAttribute, Product};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
@@ -328,6 +328,148 @@ class AttributeController extends BaseController
             return response()->json(array('success' => false));
         }
         catch(\Exception $e) {
+            return response()->json(array('success' => false));
+        }
+    }
+    
+    function updateAttributeOption(Request $request) {
+        
+        try {
+            if($request->cate_id =='' && $request->id ==''){
+                return redirect()->back()->with('error_delete',__('Please select Category!'));
+            }
+            $id = $request->id;
+            $variant = Attribute::where('id', $id)->firstOrFail();
+            $variant->title = $request->title[0];
+            $variant->type = $request->type;
+            $variant->user_id = Auth::id();
+            $variant->save();
+
+            $VariantCategory = AttributeCategory::where('attribute_id', $variant->id)->first();
+            if(!empty($VariantCategory)):
+                $affected = AttributeCategory::where('attribute_id', $variant->id)->update(['category_id' => $request->cate_id]);
+            else:
+                $affected = AttributeCategory::insert(['attribute_id' => $variant->id, 'category_id' => $request->cate_id]);
+            endif;
+
+            foreach ($request->language_id as $key => $value) {
+
+                $varTrans = AttributeTranslation::where('language_id', $value)->where('attribute_id', $variant->id)->first();
+                if(!$varTrans){
+                    $varTrans = new AttributeTranslation();
+                    $varTrans->attribute_id = $variant->id;
+                    $varTrans->language_id = $value;
+                }
+                $varTrans->title = $request->title[$key];
+                $varTrans->save();
+            }
+
+            $exist_options = $insert_arr = array();
+            
+            // Before insert data to product attribute first delete with same attribute
+            // ProductAttribute::where(['product_id' => $request->product_id, 'attribute_id' => $id])->delete();
+            $insert_count = 0;
+
+            foreach ($request->option_id as $key => $value) {
+
+                $curLangId = $request->language_id[0];
+
+                if(!empty($value)){
+
+                    $varOpt = AttributeOption::where('id', $value)->first();
+
+                    if(!$varOpt){
+                        \Log::info('inside the if part');
+                        $varOpt = new AttributeOption();
+                        $varOpt->attribute_id = $variant->id;
+
+                        // Create array to store in product attribute
+                        $insert_arr[$insert_count]['attribute_id'] = $id;
+                        $insert_arr[$insert_count]['product_id'] = $request->product_id;
+                        $insert_arr[$insert_count]['key_name'] = $variant->title;
+                        $insert_arr[$insert_count]['attribute_option_id'] = $varOpt->id;
+                        $insert_arr[$insert_count]['key_value'] = ($request->type == 1) ? $varOpt->id : $request->opt_title[$curLangId][$key];
+                        $insert_arr[$insert_count]['is_active'] = 1;
+                    }
+
+                    $varOpt->title = $request->opt_title[$curLangId][$key];
+                    $varOpt->hexacode = ($request->hexacode[$key] == '') ? '' : $request->hexacode[$key];
+                    $varOpt->save();
+                    $exist_options[$key] = $varOpt->id;
+
+                    
+                }else{
+                    \Log::info('inside the else part');
+                    $varOpt = new AttributeOption();
+                    $varOpt->attribute_id = $variant->id;
+                    $varOpt->title = $request->opt_title[$curLangId][$key];
+                    $varOpt->hexacode = ($request->hexacode[$key] == '') ? '' : $request->hexacode[$key];
+                    $varOpt->save();
+                    $exist_options[$key] = $varOpt->id;
+                    
+                    // Create array to store in product attribute
+                    $insert_arr[$insert_count]['attribute_id'] = $id;
+                    $insert_arr[$insert_count]['product_id'] = $request->product_id;
+                    $insert_arr[$insert_count]['key_name'] = $variant->title;
+                    $insert_arr[$insert_count]['attribute_option_id'] = $varOpt->id;
+                    $insert_arr[$insert_count]['key_value'] = ($request->type == 1) ? $varOpt->id : $request->opt_title[$curLangId][$key];
+                    $insert_arr[$insert_count]['is_active'] = 1;
+                }
+                $insert_count++;
+            }
+            
+            foreach($request->opt_id as $lid => $options) {
+
+                foreach($options as $key => $value) {
+
+                    if(!empty($value)){
+                        $varOptTrans = AttributeOptionTranslation::where('language_id', $lid)->where('attribute_option_id', $value)->first();
+                        if(!$varOptTrans){
+                            $varOptTrans = new AttributeOptionTranslation();
+                            $varOptTrans->attribute_option_id =$exist_options[$key];
+                            $varOptTrans->language_id = $lid;
+                        }
+                        $varOptTrans->title = $request->opt_title[$lid][$key];
+                        $varOptTrans->save();
+
+                    }else{
+                        $varOptTrans = new AttributeOptionTranslation();
+                        $varOptTrans->attribute_option_id =$exist_options[$key];
+                        $varOptTrans->language_id = $lid;
+                        $varOptTrans->title = $request->opt_title[$lid][$key];
+                        $varOptTrans->save();
+                    }
+                }
+            }
+
+            // Save attribute with related product
+            ProductAttribute::insert($insert_arr);
+
+            // create block and append to attribute section
+            $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
+                ->select('attributes.*')
+                ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
+                ->where('attribute_categories.category_id', $request->cate_id)
+                ->where('attributes.status', '!=', 2)
+                ->orderBy('position', 'asc')->get();
+
+            $product = Product::with('ProductAttribute')->where('id', $request->product_id)->firstOrFail();
+
+            $attribute_key_value = $attribute_value = array();
+            if( !empty($product->ProductAttribute) ) {
+                    foreach($product->ProductAttribute as $key => $val) {
+                    $attribute_value[] = $val->attribute_option_id;
+                    $attribute_key_value[$val->attribute_option_id] = $val->key_value;
+                }
+            }
+            $html = view('layouts.shared.product-attribute')->with(['productAttributes' => $productAttributes,  'attribute_key_value' => $attribute_key_value, 'attribute_value' => $attribute_value])->render();
+            return response()->json(array('success' => true, 'html' => $html));
+        }
+        catch(\Exception $e) {
+            \Log::info('######### Attribute Update Error #########');
+            \Log::info($e->getLine());
+            \Log::info($e->getMessage());
+            \Log::info('######### Attribute Update Error End #########');
             return response()->json(array('success' => false));
         }
     }

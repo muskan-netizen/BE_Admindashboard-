@@ -177,6 +177,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         // Attribute routes
         Route::resource('attribute', 'Client\AttributeController');
         Route::post('delete-attribute', 'Client\AttributeController@deleteAttribute')->name('deleteAttribute');
+        Route::any('updateAttributeOption', 'Client\AttributeController@updateAttributeOption')->name('updateAttributeOption');
 
         // user registreation document
         Route::resource('userregistrationdocument', 'Client\UserRegistrationDocumentController');

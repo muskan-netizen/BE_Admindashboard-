@@ -595,10 +595,93 @@
         }
     });
     $(document).ready(function(){
+        
+        // hide alert
         if( $('.alert.alert-success').length ) {
             setTimeout(function(){
                 $('.alert.alert-success').hide();
             }, 5000);
         }
+
+        // add attribute from product edit page
+        // Add option 
+        $(document).on('click', '.add_attr_options', function(e){
+
+            e.preventDefault();
+            
+            var attr_id = $(this).data('attribute_id');
+            if( attr_id != 'undefined' && attr_id != undefined ) {
+                // console.log('if paryt here');
+                $.ajax({
+                    type: "GET",
+                    url : "{{url('client/attribute')}}" + '/' + attr_id + '/edit',
+                    success: function(data) {
+                        $('#editAttributemodal').modal({
+                            backdrop: 'static',
+                            keyboard: false
+                        });
+                        $('#editAttributeForm #editAttributeBox').html(data.html);
+                        $('#editAttributeForm #editAttributeBox').append('<input type="hidden" name="id" value="'+attr_id+'" />');
+                        $('#editAttributeForm .editAttributeSubmit').addClass('save-dynamic-options');
+                        $('.dropify').dropify();
+                        $('.selectize-select').selectize();
+                        $("#editAttributeForm .hexa-colorpicker").each(function() {
+                            var ids = $(this).attr('id');
+                            try {
+                                var picker = new jscolor('#' + ids, options);
+                            } catch (err) {
+                                console.log(err.message);
+                            }
+                        });
+                    },
+                    error: function() {
+
+                    },
+                    complete: function() {
+
+                    }
+                });
+            }
+        });
+    });
+
+    // when attribute update from product edit page
+    $(document).on('click', '.save-dynamic-options', function(e){
+        e.preventDefault();
+        $('.save-dynamic-options').attr("disabled", true);
+
+        // get attribute id
+        var seariali_arr = $('#editAttributeForm').serializeArray();
+        var last_length = seariali_arr[seariali_arr.length - 1]
+        if(last_length['value'] != 'undefined' && last_length['value'] != undefined) {
+            
+            var product_id = $("input[name=product_id]").val();
+            // Serialize form data to save
+            var serailaize = $('#editAttributeForm').serializeArray();
+            serailaize.push({ name: "product_id", value: product_id });
+            
+            $.ajax({
+                url : "{{ route('updateAttributeOption') }}",
+                data: serailaize,
+                success: function(response) {
+                    
+                    if( response.success ) {
+                        var attr_value = $('.attribute_option_id_'+last_length['value']).val();
+                        var attr_html = response.html;
+                        $("#attribute_section").html(attr_html);
+                        $('.select2-multiple').select2();
+                        $('#editAttributemodal').modal('hide');
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                },
+                complete: function() {
+                    $('.save-dynamic-options').attr("disabled", false);
+                }
+            });
+        }
+
+        
     });
 </script>
