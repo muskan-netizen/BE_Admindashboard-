@@ -660,6 +660,7 @@ class HomeController extends BaseController{
         
         //get Most Selling Vendors
         $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
+        
         $on_sale_product_details = $this->vendorProducts_v2($vendor_ids, $language_id, 'USD', '', $request->type);
         $new_product_details = $this->vendorProducts_v2($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
         $feature_product_details = $this->vendorProducts_v2($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
