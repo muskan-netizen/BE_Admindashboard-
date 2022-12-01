@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use DB;
 class LoyaltyCard extends Model
 {
     use HasFactory;
@@ -21,7 +21,23 @@ class LoyaltyCard extends Model
     		$per_order_points = $result->per_order_points+$amount_per_loyalty_point;
             $loyalty_card_id = $result->id;
             }
-    		
+    	}
+        $data = ['per_order_points' => $per_order_points, 'loyalty_card_id' => $loyalty_card_id];
+    	return $data;
+    }
+
+
+    public static function canLoyaltyPointUse($payable_amount){
+        $order_loyalty_balance = Order::where('user_id', auth()->user()->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+    	$balanced_points = ($order_loyalty_balance->sum_of_loyalty_points_earned - $order_loyalty_balance->sum_of_loyalty_points_used);
+        $loyalty_card_id = 0;
+    	$result = LoyaltyCard::where('minimum_points','>=', $balanced_points)->first();
+    	if($result){
+            if($result->amount_per_loyalty_point > 0){
+                $amount_per_loyalty_point = ($payable_amount / $result->amount_per_loyalty_point);
+    		    $per_order_points = $result->per_order_points+$amount_per_loyalty_point;
+                $loyalty_card_id = $result->id;
+            }
     	}
         $data = ['per_order_points' => $per_order_points, 'loyalty_card_id' => $loyalty_card_id];
     	return $data;
