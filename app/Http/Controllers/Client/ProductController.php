@@ -237,11 +237,12 @@ class ProductController extends BaseController
             }
         }
         $otherProducts       = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
-        $configData          = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service', 'is_cab_pooling')->first();
+        $configData          = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
+        $configData->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
         $celebrities         = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
-        $tollPassOrigin      = TollPassOrigin::select('id', 'toll_pass', 'desc')->get();
-        $travelMode          = TravelMode::select('id', 'travelmode', 'desc')->get();
-        $vehicleEmissionType = VehicleEmissionType::select('id', 'emission_type', 'desc')->get();
+        $tollPassOrigin      = (checkColumnExists('toll_pass_origin','toll_pass')) ? TollPassOrigin::select('id', 'toll_pass', 'desc')->get() : [];
+        $travelMode          = (checkColumnExists('travel_mode','travelmode')) ?TravelMode::select('id', 'travelmode', 'desc')->get() : [];
+        $vehicleEmissionType = (checkColumnExists('vehicle_emission_type','id')) ?VehicleEmissionType::select('id', 'emission_type', 'desc')->get() : [];
 
         $agent_dispatcher_tags = [];
         $agent_dispatcher_on_demand_tags = [];
