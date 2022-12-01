@@ -848,3 +848,37 @@ body.al_body_template_one.homeHeader .outter-fillter-data .inner_spacing h4 {
     position: absolute;
     bottom: 10px;
 }
+/*--------------------dark theme css--------------*/
+.dark .product-4-on_sale .product-description p span {
+    padding: 0;
+    color: #fff;
+}
+.dark .alRentalSinglePageView .single_cart-temp_label label {
+    color: #fff;
+}
+.dark .tab-product .nav-material.nav-tabs .nav-link.active{
+    color: #fff !important;
+}
+.dark .items_price{
+    color: #fff !important;
+}
+.dark .tab-product .nav-material.nav-tabs .nav-link.active {
+    color: #fff;
+}
+.dark .product-full-tab .nav-material.nav-tabs .nav-item .material-border, .tab-product .nav-material.nav-tabs .nav-item .material-border {
+    border-bottom: 2px solid #ffffff;
+}
+.dark .status_box li img {
+    opacity: 1;
+    filter: invert(1);
+}
+body.dark.al_body_template_one .order_popop .modal-body textarea {
+    background: transparent;
+}
+body.dark.al_body_template_one article.al_new_wrapper_design section.section-b-space .row.my-md-3 {
+    padding-top: 50px;
+}
+body.dark.al_body_template_one .iti--separate-dial-code .iti__selected-flag {
+    background-color: transparent;
+    color: #fff !important;
+}
