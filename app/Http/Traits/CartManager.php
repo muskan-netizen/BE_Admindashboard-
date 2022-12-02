@@ -168,23 +168,27 @@ trait cartManager{
   }
 
 
-  public function getOrderLoyalityAmount($user)
+  public function getOrderLoyalityAmount($user,$customerCurrency = '')
   {
-    $customerCurrency = $this->customerCurrency;
+    $customerCurrency = $customerCurrency??$this->customerCurrency;
     $loyalty_amount_saved = 0;
+    $loyalty_points_used = 0;
     $redeem_points_per_primary_currency = '';
     $loyalty_card = LoyaltyCard::where('status', '0')->first();
     if ($loyalty_card) {
         $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
     }
-  
-    
+
+    $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+    	$balanced_points = ($order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used);
+
+    	$result = LoyaltyCard::where('minimum_points','<=', $balanced_points)->orderBy('minimum_points', 'desc')->value('minimum_points');
     /* Getting All User Subscription plans */
     $subscription_features = array();
     $user_subscription = null;
 
-        $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-        if ($order_loyalty_points_earned_detail) {
+      
+        if ($order_loyalty_points_earned_detail && $result) {
             $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
             if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
                 $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
@@ -194,7 +198,7 @@ trait cartManager{
             }
         }
 
-        return $loyalty_amount_saved??0;
+        return (object)array('loyalty_amount_saved'=>$loyalty_amount_saved??0,'loyalty_points_used'=>$loyalty_points_used??0);
 
   }
 
@@ -337,10 +341,9 @@ trait cartManager{
         $subscription_features = array();
         $user_subscription = null;
         if($user){
-           
           //Get earn and used loyalty amount 
-          $loyalty_amount_saved = $this->getOrderLoyalityAmount($user);
-
+          $loyaltyCheck = $this->getOrderLoyalityAmount($user);
+          $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
           //d Get user subscription
           $user_subscription = $this->userSubscription($user->id);
  

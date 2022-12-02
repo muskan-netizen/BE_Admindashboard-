@@ -14,7 +14,7 @@ class LoyaltyCard extends Model
     public static function getLoyaltyPoint($minimum_points, $payable_amount){
     	$per_order_points = 0;
         $loyalty_card_id = 0;
-    	$result = LoyaltyCard::where('amount_per_loyalty_point','<=', $payable_amount)->orderBy('minimum_points', 'DESC')->first();
+    	$result = LoyaltyCard::where('amount_per_loyalty_point','<=', $payable_amount)->orderBy('amount_per_loyalty_point', 'DESC')->first();
     	if($result){
             if($result->amount_per_loyalty_point > 0){
                 $amount_per_loyalty_point = ($payable_amount / $result->amount_per_loyalty_point);
@@ -28,10 +28,13 @@ class LoyaltyCard extends Model
 
 
     public static function canLoyaltyPointUse($payable_amount){
+        $balanced_points = 0;
         $order_loyalty_balance = Order::where('user_id', auth()->user()->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-    	$balanced_points = ($order_loyalty_balance->sum_of_loyalty_points_earned - $order_loyalty_balance->sum_of_loyalty_points_used);
+        if($order_loyalty_balance){
+    	    $balanced_points = ($order_loyalty_balance->sum_of_loyalty_points_earned - $order_loyalty_balance->sum_of_loyalty_points_used);
+        }
         $loyalty_card_id = 0;
-    	$result = LoyaltyCard::where('minimum_points','>=', $balanced_points)->first();
+    	$result = LoyaltyCard::where('minimum_points','>=', $balanced_points)->orderBy('minimum_points', 'DESC')->first();
     	if($result){
             if($result->amount_per_loyalty_point > 0){
                 $amount_per_loyalty_point = ($payable_amount / $result->amount_per_loyalty_point);

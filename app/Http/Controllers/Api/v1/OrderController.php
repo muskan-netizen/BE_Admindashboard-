@@ -6,7 +6,7 @@ use App\Http\Controllers\AhoyController;
 use DB;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,OrderTrait,cartManager};
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Client\ShippoController;
@@ -21,13 +21,11 @@ use Illuminate\Support\Facades\Validator;
 use Log;
 use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption};
 use App\Models\AutoRejectOrderCron;
-use App\Http\Traits\OrderTrait;
 
 use App\Models\{VendorOrderCancelReturnPayment};
 class OrderController extends BaseController
 {
-    use ApiResponser;
-    use OrderTrait;
+    use ApiResponser,cartManager,OrderTrait;
     /**
      * Display a listing of the resource.
      *
@@ -171,15 +169,19 @@ class OrderController extends BaseController
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->first();
                 if ($cart) {
-                    $loyalty_points_used=0;
-                    $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-                    if ($order_loyalty_points_earned_detail) {
-                        $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-                        if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                            $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
-                        }
-                    }
+                    // $loyalty_points_used=0;
+                    // $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+                    // if ($order_loyalty_points_earned_detail) {
+                    //     $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+                    //     if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                    //         $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+                    //     }
+                    // }
 
+
+                    $loyaltyCheck = $this->getOrderLoyalityAmount($user,'');
+                    $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
+                    $loyalty_points_used =  $loyaltyCheck->loyalty_points_used;
                             
 
                     $order = new Order;
