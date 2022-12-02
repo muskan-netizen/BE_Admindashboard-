@@ -26,7 +26,7 @@
                             <div class="col-12">
                                 <form action="">
                                     <div class="row">
-                                        <div class="col-sm-4 text-left position-relative vendor-page-copy">
+                                        <div class="col-sm-12 text-center position-relative vendor-page-copy">
                                             <div class="file file--upload">
                                                 <label>
                                                     <span class="update_pic border-0">
@@ -105,60 +105,47 @@
                                         <label class="custom-control-label" for="brd{{$val->brand_id}}">{{$v->title}}</label>
                                         @endforeach
                                     </div>
+                                    @endforeach
                                 </div>
                             </div>
-                            @endif
-                            @if(!empty($variantSets) && count($variantSets) > 0)
-                            @foreach($variantSets as $key => $sets)
+                        </div>
+                        @endif
+                        @if(!empty($variantSets) && count($variantSets) > 0)
+                        @foreach($variantSets as $key => $sets)
+                        
+                        <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
+                            @php
                             
-                            <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
-                                @php
-                                
-                                $slug = '';
-                                if(!empty($sets->variantDetail) && !empty($sets->variantDetail->varcategory) && !empty($sets->variantDetail->varcategory->cate) && !empty($sets->variantDetail->varcategory->cate->slug)) {
-                                    $slug = $sets->variantDetail->varcategory->cate->slug;
-                                }
-                                @endphp
-                                @if($slug)
-                                <h3 class="collapse-block-title"> {{$slug . $sets->title}}</h3>
-                                <div class="collection-collapse-block-content">
-                                    <div class="collection-brand-filter">
-                                        @if($sets->type == 2)
-                                            @foreach($sets->options as $ok => $opt)
-                                            <div class="chiller_cb small_label d-inline-block color-selector mt-2">
-                                                <?php $checkMark = ($key == 0) ? 'checked' : ''; ?>
-                                                <input class="custom-control-input productFilter" type="checkbox" {{$checkMark}} id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" used="variants" optid="{{$opt->id}}">
-                                                <label for="Opt{{$key.'-'.$opt->id}}"></label>
-                                                @if(strtoupper($opt->hexacode) == '#FFF' || strtoupper($opt->hexacode) == '#FFFFFF')
-                                                <span style="background: #FFFFFF; border-color:#000;" class="check_icon white_check"></span>
-                                                @else
-                                                <span class="check_icon" style="background:{{$opt->hexacode}}; border-color: {{$opt->hexacode}};"></span>
-                                                @endif
-                                            </div>
-                                            @endforeach
-                                        @else
-                                            @foreach($sets->options as $ok => $opt)
-                                            <div class="custom-control custom-checkbox collection-filter-checkbox">
-                                                <input type="checkbox" class="custom-control-input productFilter" id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" type="variants" optid="{{$opt->id}}">
-                                                <label class="custom-control-label" for="Opt{{$key.'-'.$opt->id}}">{{$opt->title}}</label>
-                                            </div>
-                                            @endforeach
-                                        @endif
-                                    </div>
-                                </div>
-                                @endif
-                            </div>
-                            @endforeach
-                            @endif
-                            @if($show_range == 1)
-                            <div class="collection-collapse-block border-0 mb-2 open">
-                                <h3 class="collapse-block-title">{{__('Price')}}</h3>
-                                <div class="collection-collapse-block-content">
-                                    <div class="wrapper mt-3">
-                                        <div class="range-slider">
-                                            <input type="text" class="js-range-slider rangeSliderPrice" value="" />
+                            $slug = '';
+                            if(!empty($sets->variantDetail) && !empty($sets->variantDetail->varcategory) && !empty($sets->variantDetail->varcategory->cate) && !empty($sets->variantDetail->varcategory->cate->slug)) {
+                                $slug = $sets->variantDetail->varcategory->cate->slug;
+                            }
+                            @endphp
+                            @if($slug)
+                            <h3 class="collapse-block-title"> {{$slug . $sets->title}}</h3>
+                            <div class="collection-collapse-block-content">
+                                <div class="collection-brand-filter">
+                                    @if($sets->type == 2)
+                                        @foreach($sets->options as $ok => $opt)
+                                        <div class="chiller_cb small_label d-inline-block color-selector mt-2">
+                                            <?php $checkMark = ($key == 0) ? 'checked' : ''; ?>
+                                            <input class="custom-control-input productFilter" type="checkbox" {{$checkMark}} id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" used="variants" optid="{{$opt->id}}">
+                                            <label for="Opt{{$key.'-'.$opt->id}}"></label>
+                                            @if(strtoupper($opt->hexacode) == '#FFF' || strtoupper($opt->hexacode) == '#FFFFFF')
+                                            <span style="background: #FFFFFF; border-color:#000;" class="check_icon white_check"></span>
+                                            @else
+                                            <span class="check_icon" style="background:{{$opt->hexacode}}; border-color: {{$opt->hexacode}};"></span>
+                                            @endif
                                         </div>
-                                    </div>
+                                        @endforeach
+                                    @else
+                                        @foreach($sets->options as $ok => $opt)
+                                        <div class="custom-control custom-checkbox collection-filter-checkbox">
+                                            <input type="checkbox" class="custom-control-input productFilter" id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" type="variants" optid="{{$opt->id}}">
+                                            <label class="custom-control-label" for="Opt{{$key.'-'.$opt->id}}">{{$opt->title}}</label>
+                                        </div>
+                                        @endforeach
+                                    @endif
                                 </div>
                             </div>
                             @endif
