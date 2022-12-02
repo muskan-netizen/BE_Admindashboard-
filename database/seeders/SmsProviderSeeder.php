@@ -46,8 +46,14 @@ class SmsProviderSeeder extends Seeder
                 'keyword' => 'arkesel',
                 'status' => '1'
             ),
+            array(
+                    'id' => 6,
+                    'provider' => 'Africa\'s Talking Service',
+                    'keyword' => 'afrTalk',
+                    'status' => '1'
+            ),
         );
-        if($sms_count == 0)
+        if($sms_count != 6)
         {
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
             DB::table('sms_providers')->truncate();
