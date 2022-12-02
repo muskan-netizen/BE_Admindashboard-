@@ -158,6 +158,7 @@
                                                 <div class="swiper-wrapper">
                                                 @if(!empty($product->media))
                                                     @foreach($product->media as $k => $image)
+
                                                     @php
                                                         if(isset($image->pimage)){
                                                             $img = $image->pimage->image;
@@ -1390,29 +1391,29 @@
             $('.img-zoom-result').hide();
             $('.img-zoom-lens').remove();
         });
-
-    $(".suggested-product").slick({
-        infinite: true,
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        responsive: [
-        { breakpoint: 1199, settings: { slidesToShow: 3, slidesToScroll: 1, infinite: true, dots: false, centerMode: true, } },
-        { breakpoint: 991, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, } },
-        { breakpoint: 767, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true, } },
-        { breakpoint: 576, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true, centerPadding: '0', } }
-    ]
-    });
-
-
-    
-
-    $(document).ready(function() {
-        $(".img_active").click(function(){
-            
-            $(".img_active").find('img').removeClass("active");
-            $(this).find('img').addClass("active");
+        
+        $(".suggested-product").slick({
+            infinite: true,
+            slidesToShow: 4,
+            slidesToScroll: 1,
+            responsive: [
+            { breakpoint: 1199, settings: { slidesToShow: 3, slidesToScroll: 1, infinite: true, dots: false, centerMode: true, } },
+            { breakpoint: 991, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, } },
+            { breakpoint: 767, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true, } },
+            { breakpoint: 576, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true, centerPadding: '0', } }
+        ]
         });
-    });
+
+
+      
+
+        $(document).ready(function() {
+            $(".img_active").click(function(){
+               
+                $(".img_active").find('img').removeClass("active");
+                $(this).find('img').addClass("active");
+            });
+        });
         </script>
 
 @endsection

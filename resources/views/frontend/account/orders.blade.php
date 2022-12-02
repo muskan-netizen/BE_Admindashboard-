@@ -365,7 +365,7 @@
                                                                                                     }
                                                                                                 ?>
 
-                                                                                                <h6 class="m-0">
+                                                                                                {{-- <h6 class="m-0">
                                                                                                 @if ($clientPreference->business_type == 'laundry')
                                                                                                         <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
                                                                                                             {{ __('Cancel Order') }}
@@ -375,8 +375,9 @@
                                                                                                             {{ __('Cancel Orders') }}
                                                                                                         </label>
                                                                                                     @endif
-                                                                                                </h6>
+                                                                                                </h6> --}}
                                                                                             @endif
+
                                                                                             @if ($vendor->dineInTable)
                                                                                                 <li>
                                                                                                     <h5 class="mb-1">
