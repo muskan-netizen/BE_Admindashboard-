@@ -1202,10 +1202,11 @@ if (!function_exists('sendSmsTemplate')) {
                 $smsBody = str_replace($tag,$value,$smsBody);
             }
         }
-        $sms = array(['body'=>$smsBody,'template_id'=>$smsTemp->template_id??'']);
+        $sms = array('body'=>$smsBody,'template_id'=>$smsTemp->template_id??'');
         return $sms;
     }
 }
+
 
 // Returns the values of the additional preferences.
 if (!function_exists('checkTableExists')) {
@@ -1222,29 +1223,31 @@ if (!function_exists('checkTableExists')) {
     }
 }
 
-function inventorySyncOnOff($vendor_id)
-{
-    if (!empty($vendor_id)) {
-        $client_preferences = ClientPreference::first();
+if (!function_exists('inventorySyncOnOff')) {
+    function inventorySyncOnOff($vendor_id)
+    {
+        if (!empty($vendor_id)) {
+            $client_preferences = ClientPreference::first();
 
-        $client = new \GuzzleHttp\Client([
-            'headers' => [
-                'shortcode' => $client_preferences->inventory_service_key_code,
-                'content-type' => 'application/json'
-            ]
-        ]);
-        $url = $client_preferences->inventory_service_key_url;
+            $client = new \GuzzleHttp\Client([
+                'headers' => [
+                    'shortcode' => $client_preferences->inventory_service_key_code,
+                    'content-type' => 'application/json'
+                ]
+            ]);
+            $url = $client_preferences->inventory_service_key_url;
 
-        $request = $client->get($url . '/api/v1/sync-status', [
-            'json' => ['royo_vendor_id' => $vendor_id]
-        ]);
+            $request = $client->get($url . '/api/v1/sync-status', [
+                'json' => ['royo_vendor_id' => $vendor_id]
+            ]);
 
-        $response = json_decode($request->getBody());
+            $response = json_decode($request->getBody());
 
-        if ($response->status) {
-            return $response->msg;
+            if ($response->status) {
+                return $response->msg;
+            }
+        } else {
+            return false;
         }
-    } else {
-        return false;
     }
 }

@@ -1637,6 +1637,12 @@ $sms_crendential = json_decode($preference->sms_credentials);
                           <input type="checkbox" data-plugin="switchery" name="is_seller_module_switch" id="is_seller_module_switch" class="form-control checkbox_change" data-className="is_seller_module" data-color="#43bee1" @if( $getAdditionalPreference['is_seller_module'] == '1') checked='checked' @endif>
                           <input type="hidden" @if($getAdditionalPreference['is_seller_module'] == 1) value="1" @else value="0" @endif name="is_seller_module" id="is_seller_module"/>
                       </span>
+
+                     <label for="is_cab_pooling_switch" class="mr-2 mb-0">{{__('Cab Pooling')}}<small class="d-block pr-5">{{__("Enable to allow customers to book Cab Pooling.")}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="is_cab_pooling_switch" id="is_cab_pooling_switch" class="form-control checkbox_change" data-className="is_cab_pooling" data-color="#43bee1" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'] == 1) checked='checked'  @endif>
+                     </span>
+                     <input type="hidden"  @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'] == 1) value="1" @else value="0" @endif  name="is_cab_pooling"  id="is_cab_pooling"/>
+
                   </div>
                </div>
 

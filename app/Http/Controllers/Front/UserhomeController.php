@@ -586,7 +586,7 @@ class UserhomeController extends FrontController
         $on_sale_products = [];
         $recently_viewed = [];
         $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-        $p_dim = '260/100';
+        $p_dim = '260/180';
         if (isset($set_template)  && $set_template->template_id == 3){
             $p_dim = '300/350';
         }elseif(isset($set_template)  && $set_template->template_id == 2){

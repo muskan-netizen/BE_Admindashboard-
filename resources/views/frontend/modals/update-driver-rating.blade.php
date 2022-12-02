@@ -127,7 +127,6 @@ let review = $('#exampleFormControlTextarea1').val();
 $.ajax({
 type:'POST',
 url: "{{ route('update.driver.rating')}}",
-<?php /*url: "{{ route('driver-agent-rating')}}", */?>
 data: formdata,
 cache:false,
 // contentType: false,

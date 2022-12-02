@@ -8,7 +8,7 @@
     <div class="background pt-3 pb-2 px-2" style="background:url({{$vendor->banner['proxy_url'] . '200/100' . $vendor->banner['image_path']}}) no-repeat center center;background-size:cover;">
         <div class="vendor_text">
             <img src="{{$vendor->logo['proxy_url'] . '90/90' . $vendor->logo['image_path']}}" class="rounded-circle avatar-lg img-thumbnail" alt="profile-image">
-            <h4 class="mb-0 text-white">{{ucfirst($vendor->name)}}</h4>
+            <h4 class="mb-0 text-white">{{ucfirst(@$vendor->name)}}</h4>
             <p class="text-white">{{$vendor->address}}</p>
             <button type="button" class="btn btn-success btn-sm waves-effect mb-2 waves-light openEditModal" data-toggle="modal" data-target="#exampleModal"> {{ __("Edit") }} </button>
             @if($vendor->status == 0 && Auth::user()->is_superadmin == 1)
@@ -189,6 +189,7 @@
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+                    
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Need Container Charges?'),['class' => 'control-label']) !!}
@@ -283,7 +284,7 @@
                                     {!! Form::label('title', 'Vendor Tags',['class' => 'control-label']) !!}
                                     <select class="form-control select2-multiple" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." id="facilty_list" name="facilty_ids[]">
                                         @foreach ($facilties as $facilty)
-                                        <option value="{{ $facilty->id }}" {{ in_array($facilty->id, $vendor_facilty_ids) ? "selected" : '' }}>{{ $facilty->primary->name }}</option>
+                                        <option value="{{ $facilty->id }}" {{ in_array($facilty->id, $vendor_facilty_ids) ? "selected" : '' }}>{{ @$facilty->primary->name }}</option>
                                         @endforeach
 
                                     </select>
@@ -529,8 +530,18 @@
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="commission_monthly" type="text" value="{{$vendor->commission_monthly}}">
                         </div>
                     </div> -->
-                    <div class="col-md-12">
-                        <div class="form-group" id="service_fee_percentInput">
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Fixed Service Fee'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="fixed_service_charge" class="form-control" data-color="#43bee1" @if($vendor->fixed_service_charge == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    <div class="col-md-12" id="fixed_service_charge_div" style="display:{{$vendor->fixed_service_charge == 1 ? 'block' : 'none'}}">
+                        <div class="form-group">
+                            {!! Form::label('title', __('Service Fee'),['class' => 'control-label']) !!}
+                            <input class="form-control" name="service_charge_amount" type="text" value="{{$vendor->service_charge_amount}}" min="0" {{$vendor->status == 1 ? '' : 'disabled'}} >
+                        </div>
+                    </div>
+                    <div class="col-md-12" id="service_fee_percentInput" style="display:{{$vendor->fixed_service_charge == 1 ? 'none' : 'block'}}">
+                        <div class="form-group">
                             {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
                             <input class="form-control" name="service_fee_percent" type="text" min="0" maxlength="5" value="{{$vendor->service_fee_percent}}" onkeypress="return isNumberKey(event)" onkeydown="if(this.value.length > 6) return false;">
                         </div>
@@ -691,7 +702,7 @@
                     <div class="inbox-item-img">
                         <img src="{{$users->user ? $users->user->image['proxy_url'].'40/40'.$users->user->image['image_path'] : asset('assets/images/users/user-2.jpg')}}" class="rounded-circle" alt="">
                     </div>
-                    <p class="inbox-item-author">{{ $users->user->name??'' }}  </p>
+                    <p class="inbox-item-author">{{ @$users->user->name??'' }}  </p>
                     <p class="inbox-item-text"><label class="d-block"><i class="fa fa-envelope mr-1" aria-hidden="true"></i> {{ $users->user->email??'' }}
                         @if($users->user)
                         </label><label class="d-block"><i class="fa fa-phone mr-1" aria-hidden="true"></i> {{ $users->user->phone_number??'' }}</label> </p>
@@ -1253,6 +1264,7 @@ $("input[name='service_charges_tax']").change(function() {
     }
 })
 
+<<<<<<< HEAD
 $("input[name='container_charges_tax']").change(function() {
     if($(this).prop('checked')){
         $("#container_charges_tax_id").css("display", "block");
@@ -1284,6 +1296,19 @@ $("input[name='need_container_charges']").change(function() {
         $("#need_container_charges").css("display", "block");
     }
 })
+
+$("input[name='fixed_service_charge']").change(function() {
+    if($(this).prop('checked')){
+        $("#fixed_service_charge_div").css("display", "block");
+        $("#service_fee_percentInput").css("display", "none");
+        $("input[name='service_fee_percent']").val(0.00);
+    } else {
+        $("#fixed_service_charge_div").css("display", "none");
+        $("input[name='service_charge_amount']").val(0.00);
+        $("#service_fee_percentInput").css("display", "block");
+    }
+})
+
 </script>
 {{-- <script>
     var dynamic_html = "";

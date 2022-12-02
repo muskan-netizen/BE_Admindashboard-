@@ -32,53 +32,9 @@
                 </div>
             </div>
             <div class="row mb-5 homepageSix">
-                {{-- @dd($category->childs) --}}
-                <div class="collection-filter col-lg-3 al custom-sidebar-card">
-                    <div class="theme-card">
-
-                    <div class="accordion" id="accordionExample">
-                            <div class="card">
-                                <div class="card-header p-0" id="headingOne">
-                                    <h2 class="mb-0">
-                                        <button class="btn btn-link btn-block text-left p-0" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                        <h5 class="title-border d-flex align-items-center justify-content-between p-0 mb-0">
-                                            <span>{{__('Sub Category')}} <i class="fa fa-angle-down" aria-hidden="true"></i></span>
-                                            <!-- <span class="filter-back d-lg-none d-inline-block">
-                                                <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
-                                            </span> -->
-                                        </h5>
-                                        </button>
-                                    </h2>
-                                </div>
-
-                                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-                                    <div class="card-body">
-                                        <div class="offer-slider al">
-                                            @if(!empty($category) && count($category->childs) > 0)
-                                                <div class="listing-categories">
-                                                    <ul>
-                                                        @foreach($category->childs as $child)
-                                                            <li><a href="{{route('categoryDetail', $child->slug)}}">{{ $child->slug }}</a></li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-
-
-
-
-
-
-                    </div>
+                <div class="collection-filter col-lg-3 main-fillter al">
                     @if(!empty($newProducts) && count($newProducts) > 0)
-                    <div class="theme-card">
+                    <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
@@ -152,7 +108,7 @@
                     </div>
                     @endif
                 </div>
-                <div class="collection-content col-lg-9">
+                <div class="collection-content col-lg-9 outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">

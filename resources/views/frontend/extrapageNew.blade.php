@@ -23,9 +23,9 @@
     $user = Auth::user();
 @endphp
 <section class="section-b-space new-pages mt-5 pt-5 custom-vender-outter">
-    <div class="container custom-container">
+    <div class="container custom-container mb-4">
         <div class="row">
-            <div class="col-12 py-2">
+            <div class="col-12 main-top-heading">
                 <h2 class="mb-3">{{$page_detail->translations->first() ? $page_detail->translations->first()->title : $page_detail->primary->title}}</h2>
                 <p>{!!$page_detail->translations->first() ? $page_detail->translations->first()->description : $page_detail->primary->description !!}</p>
             </div>
@@ -41,7 +41,7 @@
                 <!-- al_new_vendor_form -->
 
                 <!-- vendor_form other form-->
-                <div class="row justify-content-center ">
+                <div class="row">
                     <div class="col-lg-12">
                         <div class="alert alert-success" role="alert" id="success_msg" style="display: none;"></div>
                         <h2 class="mb-0">{{__('Personal Details')}}</h2>

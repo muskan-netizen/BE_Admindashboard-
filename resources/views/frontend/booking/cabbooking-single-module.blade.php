@@ -5,6 +5,11 @@
      } else {
          $img = asset('images/CabBANNER.jpg');
      }
+
+    $dropLocation = getNomenclatureName('Enter Drop Location', true);
+    $dropLocation = ($dropLocation=="Enter Drop Location")?__('Enter Drop Location'):__($dropLocation);
+
+                
  @endphp
 
  <section class="cab-banner-area alTaxiBannerStart"
@@ -30,7 +35,7 @@
                                      id="pickup_location_{{ $key }}_longitude_home"
                                      data-rel="{{ $key }}" /> </div>
                                     <div class="form-group mb-0"> <input class="form-control edit-other-stop" type="text"
-                                     name="destination_location" placeholder="{{ __('Enter Drop Location') }}"
+                                     name="destination_location" placeholder="{{$dropLocation}}"
                                      id="destination_location_{{ $key }}" data-rel="{{ $key }}">
                                     <input type="hidden" name="destination_location_latitude" value=""
                                      id="destination_location_{{ $key }}_latitude_home"

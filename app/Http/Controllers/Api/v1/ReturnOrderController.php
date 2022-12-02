@@ -232,6 +232,14 @@ class ReturnOrderController extends BaseController{
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
         try {
+
+            $vendor_id = $request->vendor_id;
+            $orderData = Order::with(array('luxury_option', 
+                'vendors' => function ($query) use ($vendor_id) {
+                    $query->where('vendor_id', $vendor_id);
+                }
+            ))->find($request->order_id);
+
             $timezone = Auth::user()->timezone;
             $request->status_option_id = 3;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
@@ -263,12 +271,12 @@ class ReturnOrderController extends BaseController{
                 //return response()->json(['status' => 'error', 'message' => __('Order is accepted, you can not reject this order !!!')]);
             }
 
-            $vendor_id = $request->vendor_id;
+            /* $vendor_id = $request->vendor_id;
             $orderData = Order::with(array(
                 'vendors' => function ($query) use ($vendor_id) {
                     $query->where('vendor_id', $vendor_id);
                 }
-            ))->find($request->order_id);
+            ))->find($request->order_id); */
             // get vendor return amount from order
             $return_response =  $this->GetVendorReturnAmount($request,$orderData);
            
@@ -292,6 +300,21 @@ class ReturnOrderController extends BaseController{
                 
 
                 if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
+                    if(isset($orderData->luxury_option->title) && $orderData->luxury_option->title == "pick_drop"){
+                        $new_dispatch_traking_url = str_replace('/order/', '/order-details/', $currentOrderStatus->dispatch_traking_url);
+                        $tracking_response = Http::get($new_dispatch_traking_url);
+                        if($tracking_response->status() == 200){
+                            if(!empty($tracking_response['tasks'])){
+                                foreach($tracking_response['tasks'] as $order_tasks)
+                                {
+                                    if($order_tasks['task_status'] > 0 && $order_tasks['task_status'] < 5)
+                                    {
+                                        return response()->json(['status' => '403', 'message' => __('Order initiated, you can not cancel this order !!!')]);
+                                    }
+                                }
+                            }
+                        }
+                    }
                     $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                     $response = Http::get($dispatch_traking_url);
                 }

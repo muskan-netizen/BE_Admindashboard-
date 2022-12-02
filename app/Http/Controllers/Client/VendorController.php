@@ -859,9 +859,12 @@ class VendorController extends BaseController
         ->orderBy('product_translations.title', $ordring)
         ->groupBy('products.id')
         ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
-
-        $need_sync_with_order = Vendor::where('id', $vendor_id)->value('need_sync_with_order');
-            // pr($product->get()->toArray());
+         $need_sync_with_order = 0;
+        if(checkColumnExists('vendors', 'need_sync_with_order')){
+            $need_sync_with_order = Vendor::where('id', $vendor_id)->value('need_sync_with_order');
+        }
+          
+        // pr($product->get()->toArray());
         $datatable = Datatables::of($product)
             ->addIndexColumn()
             ->addColumn('single_product_check', function ($product) use ($request) {
@@ -989,6 +992,7 @@ class VendorController extends BaseController
 
     /**   show vendor page - payout tab      */
     public function vendorPayout($domain = '', $id){
+      
         $product_categories = [];
         $active = array();
         $type = Type::all();
@@ -1282,7 +1286,8 @@ class VendorController extends BaseController
             $vendor->commission_fixed_per_order = $request->commission_fixed_per_order;
             $vendor->commission_monthly         = $request->commission_monthly;
             $vendor->service_fee_percent        = $request->service_fee_percent;
-       
+            $vendor->fixed_service_charge       = ($request->has('fixed_service_charge') && $request->fixed_service_charge == 'on') ? 1 : 0;
+            $vendor->service_charge_amount      = $request->has('service_charge_amount') ? $request->service_charge_amount : 0.00;
             //$vendor->add_category = ($request->has('add_category') && $request->add_category == 'on') ? 1 : 0;
             $msg = 'commission configuration';
 
@@ -2332,7 +2337,7 @@ class VendorController extends BaseController
 
             foreach($estimate_products as $k => $product)
             {
-                \Log::info($product->primary);
+                //\Log::info($product->primary);
                     //Product added
                     $productId = Product::updateOrCreate(
                     [

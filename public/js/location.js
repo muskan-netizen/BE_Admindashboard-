@@ -270,7 +270,8 @@ $(document).ready( async function () {
             dataType: 'json',
             url: `/setSessionIndex?type=${type}`,
             success: function (response) {
-               location.reload();
+               //location.reload();
+               window.location.href = home_page_url;
             }
         });
     }

@@ -1379,7 +1379,9 @@ class OrderController extends BaseController
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image,
-                'vendor_name' => $vendor_details->name ?? null
+                'vendor_name' => $vendor_details->name ?? null,
+                'tip_amount' => $order->tip_amount,
+                'payment_method' => $order->payment_method,
             ];
             //pr($postdata);
             if ($orderVendorDetails->is_restricted == 1) {
@@ -1845,7 +1847,7 @@ class OrderController extends BaseController
             return $this->successResponse(['pending_html' => $pending_html, 'accepted_html' => $accepted_html, 'rejected_html' => $rejected_html], '', 201);
         } catch (\Throwable $e) {
             return $this->errorResponse($e->getMessage(), 400);
-        }
+        } 
     }
 
     /**
