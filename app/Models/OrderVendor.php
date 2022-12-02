@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class OrderVendor extends Model{
     use HasFactory;
     
-	protected $fillable = ['web_hook_code','payment_option_id', 'is_restricted'];
+	protected $fillable = ['web_hook_code','payment_option_id', 'is_restricted','dispatch_traking_url'];
+
 	public function orderDetail(){
 	    return $this->hasOne('App\Models\Order' , 'id', 'order_id'); 
 	}
@@ -77,7 +78,7 @@ class OrderVendor extends Model{
 			switch ($dispatcher_status_option) {
 				case 1:
 					if ($type == '1') {
-						$title = __('Hold on! We are looking for drivers nearby!');
+						$title = __(getNomenclatureName('Hold on! We are looking for drivers nearby!',true));
 					}
 				break;
 				case 2:
@@ -107,7 +108,7 @@ class OrderVendor extends Model{
 					}
 				break;
 				default:
-					$title = __("Hold on! We are looking for drivers nearby!");
+					$title = __(getNomenclatureName('Hold on! We are looking for drivers nearby!'));
 			   }
 		}
         return ucfirst($title);
@@ -128,4 +129,5 @@ class OrderVendor extends Model{
 	public function cancel_request(){
         return $this->hasOne('App\Models\OrderCancelRequest', 'order_vendor_id', 'id')->select('*', 'status as status_id')->orderBy('updated_at', 'desc');
     }
+
 }

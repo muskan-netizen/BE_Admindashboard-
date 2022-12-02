@@ -40,7 +40,7 @@
     </div>
 
     @else
-    
+
     <div class="container mt-3 mb-5">
 
         <div class="row">
@@ -91,15 +91,15 @@
                         <span>{{ __('Price') }}</span>
                     </div>
                     @if($serviceType ==  'rental')
-                        <div class="col-md-2 text-center">
+                        <div class="col-md-2 col text-center">
                             <span>Duration By(min)</span>
                         </div>
                     @else
-                    <div class="col-md-2 text-center">
+                    <div class="col-md-2 col text-center">
                         <span>{{ __('Quantity') }}</span>
                     </div>
                     @endif
-                    <div class="col-md-4 text-center">
+                    <div class="col-md-4 col text-center">
                         <span>Total</span>
                     </div>
 
@@ -150,7 +150,8 @@
                     </div>
                @endif
 
-                @if( (($product->vendor->order_min_amount) > 0) &&  (($cart_details->total_payable_amount)+($total_wallet_amount_used) < ($product->vendor->order_min_amount)) )
+
+                @if( (($product->vendor->order_min_amount) > 0) &&  (($product->product_total_amount + $product->vendor->fixed_fee_amount) < ($product->vendor->order_min_amount)) )
                     <div class="col-12" id="MOV_Notification">
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders less then')}} {{Session::get('currencySymbol')}}{{decimal_format($product->vendor->order_min_amount)}}
@@ -192,7 +193,7 @@
                     </div>
                     <div class="col-9 col-md-10">
                         <div class="row align-items-md-center">
-                          
+
                             <div class="col-md-3 order-md-1">
                                 <h4 class="cart_product_name">{{@$vendor_product->product->category_name->name }}</h4>
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{@$vendor_product->product->translation_one ?@ $vendor_product->product->translation_one->title :  @$vendor_product->product->sku }}</strong></h4>
@@ -205,7 +206,7 @@
                                 @endforeach
                                 @endif
                             </div>
-                            
+
                             @if(isset($vendor_product->pvariant->actual_price))
                             <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
                                 <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
@@ -213,7 +214,7 @@
                             @endif
                             @if(!empty($vendor_product->quantity_price))
                             <div class="col-6 col-md-2 text-left order-md-4">
-                                @if($serviceType ==  'rental') 
+                                @if($serviceType ==  'rental')
                                 @php
                                 $additionalPrice = 0;
                                 if($vendor_product->pvariant->incremental_price_per_min > 0){
@@ -232,23 +233,23 @@
                                     <div style="display: none !important;" class="counter-container d-flex align-items-center">
                                         <input placeholder="1"  type="number" min="0"  data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
                                         data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
-                                        
+
                                     </div>
                                     <div class="qty-box alCartInput">
                                         <div class="input-group">
-                                            @php 
+                                            @php
                                                 $dura = getHoursMinutes($vendor_product->total_booking_time);
                                             @endphp
                                             <p>{{$dura}}</p>
-                                           
+
                                         </div>
                                     </div>
-                                
+
                                 </div>
                             </div>
                             @elseif( $serviceType ==  'appointment')
                             <div class="col-10 col-md-4 text-md-center order-md-3">
-                                
+
                             </div>
                             @else
                                 <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -286,7 +287,7 @@
                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                 </a>
                             </div>
-                        
+
                         </div>
                         @if($serviceType ==  'rental')
                          <hr class="my-2">
@@ -310,7 +311,7 @@
                                     <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                                 </div>
                             </div>
-                            
+
                             @foreach($vendor_product->addon as $ad=>$addon)
                             @if($addon->option)
                                 <div class="row">
@@ -338,15 +339,16 @@
 
 
                                     {{-- /* --- Vendor Tax Get Percentage ---- */ --}}
-                                    @foreach($cart_details->taxRates as $index=> $tax)
-                                        @if($vendor_product->product->container_charges_tax_id!=null)
-                                            @if($vendor_product->product->container_charges_tax_id==$index)
-                                               {{ $product_container_charges_tax_amount+=$vendor_product->pvariant->container_charges*$tax->tax_rate/100;}}
-                                               {{$incTax = 1;}}
-                                            @endif
-                                        @endif
-                                    @endforeach
-
+                                    @php
+                                    foreach($cart_details->taxRates as $index=> $tax){
+                                        if($vendor_product->product->container_charges_tax_id!=null){
+                                            if($vendor_product->product->container_charges_tax_id==$index){
+                                                $product_container_charges_tax_amount+=$vendor_product->quantity_container_charges*$tax->tax_rate/100;
+                                               $incTax = 1;
+                                            }                                           
+                                      }
+                                    }
+                                    @endphp
                                     </div>
                                 </div>
                                 <div class="col-md-7 col-sm-4 text-right">
@@ -354,14 +356,14 @@
                                 </div>
                             </div>
                         @endif
-                      
+
 
                         {{-- Home Service Schedual code Start at down --}}
                         {{-- @php
                        pr($cart_details->closed_store_order_scheduled);
                         @endphp --}}
                         @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ( in_array($serviceType ,['appointment','on_demand']) && $vendor_product->product->mode_of_service == "schedule" ))
-                        
+
                         <hr class="my-1">
                            @if($client_preference_detail->business_type != 'laundry')
                            @if(@$vendor_product->product->is_slot_from_dispatch !=1 || ($vendor_product->product->Requires_last_mile !=1) )
@@ -387,17 +389,17 @@
                                        @else
                                            <input type="datetime-local" id="vendor_schedule_slot_{{$product->vendor_id }}" data-schedule_type="ProductDateTime" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" class="form-control vendor_schedule_datetime" placeholder="Inline calendar" value="{{ (($vendor_product->manual_scheduled_date_time != '')?$vendor_product->manual_scheduled_date_time : $product->delay_date ) }} "
                                            min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}" data-cart_product_id="{{ $vendor_product->id }}">
-       
+
                                        @endif
-       
+
                                    @endif
-                                       
+
                                </div>
                            </div>
                            @else
                            {{-- Dispatch sloat shoty --}}
                            @include('frontend.cart.dispatchSlots')
-                          
+
                            @endif
                            @endif
                         @endif
@@ -433,13 +435,13 @@
                         </div>
                        @endif
                     @endif
-                    
+
 
                 </div>
                 <input type="hidden" name="cart_product_ids[]" value="{{$vendor_product->product_id }}">
                 <hr class="my-1">
-               
-            
+
+
             @endforeach
 
         {{-- End Product Detail Loop --}}
@@ -501,7 +503,7 @@
                                         {{__('Scheduled Slot')}} :</label>
                                     </div>
                                 <div class="col-7 vendor_slot_cart">
-                                   
+
                                     @if($product->slotsCnt != 0)
                                     <input type="hidden" class="custom-control-input check" id="tasknow" name="task_type" value='schedule' >
                                         <input type="date" class="form-control vendor_schedule_datetime" placeholder="Inline calendar" data-schedule_type="date" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" value="{{(($product->scheduled_date_time != '')?$product->scheduled_date_time : $product->delay_date ) }}"  min="{{(($product->delay_date != '0') ? $product->delay_date : '') }}" >
@@ -721,7 +723,7 @@
                 {{-- <div class="row">
                     <div class="col-6">{{__('Extended Duration')}}</div>
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
-                    </div>  
+                    </div>
                 </div> --}}
             @endif
 
@@ -842,14 +844,12 @@
                                 <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format($other_taxes)}}" >
 
                         @else
-                            @if(decimal_format($cart_details->wallet_amount_used) > 0)
+
                                 <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes))}}</p>
-                            @else
-                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes))}}</p>
-                            @endif
-                            <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
+
+                                    <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
                                     <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)}}" >
-                           @endif
+                        @endif
                         <div>
                         <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)}}">
                     </div>
@@ -862,6 +862,7 @@
                     </div>
 
                     {{-- Schedual code Start at down --}}
+        @if( !((($product->vendor->order_min_amount) > 0) &&  (($product->product_total_amount + $product->vendor->fixed_fee_amount) < ($product->vendor->order_min_amount))) )
             @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && $cart_details->vendorCnt==1 && (!in_array($serviceType ,['appointment','on_demand']) ) )
                 @if($client_preference_detail->business_type != 'laundry')
             <div class="row arabic-lng position-relative my-3" id="dateredio">
@@ -929,6 +930,7 @@
                         @endif
                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
                     </div>
+                @endif
 
         </div>
 
@@ -955,7 +957,7 @@
                     <div class="col-12 p-0">
                         <div class="product-4 product-m">
                             @foreach($cart_details->upSell_products as $product)
-    
+
                                 <a class="common-product-box scale-effect text-center" href="{{$product->vendor->slug.'/product/'.$product->url_slug}}">
                                     <div class="img-outer-box position-relative">
                                         <img class="blur-up lazyload" data-src="{{$product->image_url}}" alt="">
@@ -983,20 +985,20 @@
                                         </div>
                                     </div>
                                 </a>
-    
+
                             @endforeach
                         </div>
                     </div>
                 </div>
             @endif
-    
+
         @if(count($cart_details->crossSell_products)>0)
                 <h3 class="mb-2 mt-3">{{__('You might be interested in')}}</h3>
                 <div class="row">
                     <div class="col-12 p-0">
                         <div class="product-4 product-m">
                             @foreach($cart_details->crossSell_products as $product)
-    
+
                                 <a class="common-product-box scale-effect text-center" href="{{$product->vendor->slug .'/product/'. $product->url_slug}}">
                                     <div class="img-outer-box position-relative">
                                         <img class="blur-up lazyload" data-src="{{$product->image_url}}" alt="">
@@ -1022,7 +1024,7 @@
                                         </div>
                                     </div>
                                 </a>
-    
+
                             @endforeach
                         </div>
                     </div>

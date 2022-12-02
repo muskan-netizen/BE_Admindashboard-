@@ -286,10 +286,10 @@ class CampaignController extends BaseController
             {
                 $users = User::where(['status'=>1]);
                 if($request->type==1){
-                    $users->whereNotNull('phone_number');
+                    $users->whereNotNull('phone_number')->groupBy('phone_number');
                 }
                 if($request->type==2){
-                    $users->whereNotNull('email');
+                    $users->whereNotNull('email')->groupBy('email');
                 }                
                 $users = $users->get();
                 $getusercount = count($users);                
@@ -309,7 +309,7 @@ class CampaignController extends BaseController
                     {                             
                         if($request->type==3)
                         {
-                            $getdevicedetail = UserDevice::where('user_id',$users[$j]->id)->latest()->first();
+                            $getdevicedetail = UserDevice::where('user_id',$users[$j]->id)->orderBy('id','DESC')->first();
                             if($getdevicedetail)
                             {
                                 $roasterdata[] = array(
@@ -359,7 +359,7 @@ class CampaignController extends BaseController
                     {
                         if($request->type==3)
                         {
-                            $getdevicedetail = UserDevice::where('user_id',$vendors[$j]->user_id)->latest()->first();
+                            $getdevicedetail = UserDevice::where('user_id',$vendors[$j]->user_id)->orderBy('id','DESC')->first();
                             if($getdevicedetail)
                             {
                                 $roasterdata[] = array(

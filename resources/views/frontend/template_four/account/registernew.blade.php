@@ -8,7 +8,7 @@ $sign_image_url = $sign_image['image_fit'].'1920/1080'.$sign_image['image_path']
 @section('css-links')
 <link rel="stylesheet" href="{{ asset('assets/css/intlTelInput.css') }}">
 @endsection
-@section('css') 
+@section('css')
 <style type="text/css">
 .file>label,
 .file.upload-new>label {width: 100%;border: 1px solid #ddd;padding: 30px 0;height: 216px;}
@@ -72,7 +72,7 @@ $sign_image_url = $sign_image['image_fit'].'1920/1080'.$sign_image['image_path']
                                     </div>
                                     <div class="form-group mb-0">
                                         <div class="col-12 mb-1 p-0">
-                                            <label for="" class="m-0">{{ __('Email (Optional)') }}</label>
+                                            <label for="" class="m-0">{{ __('Email') }}</label>
                                             <input type="email" class="form-control @error('email') is-invalid @enderror"
                                                 placeholder="{{ __('Email') }}" name="email" value="{{ old('email') }}">
                                             @error('email')

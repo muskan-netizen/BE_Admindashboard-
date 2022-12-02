@@ -33,9 +33,9 @@
                 </div>
             </div>
             <div class="row mb-5 homepageSix">
-                <div class="collection-filter col-lg-3">
+            <div class="collection-filter col-lg-3 main-fillter">
                 @if(!empty($newProducts) && count($newProducts) > 0)
-                    <div class="theme-card">
+                <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
@@ -108,7 +108,7 @@
                     <!-- side-bar banner end here -->
                     @endif
                 </div>
-                <div class="collection-content col-lg-9">
+                <div class="collection-content col-lg-9 outter-fillter-data">
 
                     <div class="page-main-content">
                         <div class="row">

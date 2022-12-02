@@ -285,7 +285,7 @@ $timezone = Auth::user()->timezone;
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        setTimeout(function(){$('#awaiting_review-tab').trigger('click');}, 200);
+        // setTimeout(function(){$('#awaiting_review-tab').trigger('click');}, 200);
 
         $(document).on("click",".nav-link",function() {
             let rel= $(this).data('rel');

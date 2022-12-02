@@ -68,6 +68,7 @@
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
                             </span>
                         </div> -->
+                        <aside class="side_fillter">
                         @if(!empty($category->brands) && count($category->brands) > 0)
                         <div class="collection-collapse-block open mb-2">
                             <h3 class="collapse-block-title">{{__('Brand')}}</h3>
@@ -228,8 +229,7 @@
                     @endif
                     </aside>
                 </div>
-                
-                <div class="collection-content col-lg-9 outter-fillter-data">
+                <div class="collection-content col-lg-9  outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
@@ -281,8 +281,11 @@
                                     <div class="displayProducts" id="category_products_filter">
                                         <div class="col-12 custom_filtter mt-2">
                                         <!-- <select name="order_type" id='order_type' class="sortingFilter p-1">
+                                    <div class="displayProducts main_category" id="category_products_filter">
+                                        <div class="col-12 text-right mt-2">
+                                            <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Sort By')}}</option>
-<<<<<<< HEAD
+
                                                 <option value="featured">{{__('Featured')}}</option>
                                                 <option value="a_to_z">{{__('A to Z')}}</option>
                                                 <option value="z_to_a">{{__('Z to A')}}</option>
@@ -291,7 +294,7 @@
                                                 <option value="rating">{{__('Avg. Customer Review')}}</option>
                                                 <option value="newly_added">{{__('Newest Arrivals')}}</option>
                                             </select>
-=======
+
                                                 <option value="featured">{{_('Featured')}}</option>
                                                 <option value="a_to_z">{{_('A to Z')}}</option>
                                                 <option value="z_to_a">{{_('Z to A')}}</option>

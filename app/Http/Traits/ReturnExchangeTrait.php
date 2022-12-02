@@ -3,7 +3,7 @@ namespace App\Http\Traits;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use App\Models\{ClientPreference, Order, OrderProduct, OrderReturnRequest, OrderReturnRequestFile, OrderVendor, PaymentOption, Product, ProductVariantSet, User, UserAddress, Vendor, VendorOrderStatus, VerificationOption};
+use App\Models\{ClientCurrency, ClientPreference, Order, OrderProduct, OrderReturnRequest, OrderReturnRequestFile, OrderVendor, PaymentOption, Product, ProductVariant, ProductVariantSet, User, UserAddress, Vendor, VendorOrderStatus, VerificationOption};
 use Illuminate\Support\Facades\Auth;
 use App\Models\Client as CP;
 use GuzzleHttp\Client;
@@ -290,7 +290,7 @@ trait ReturnExchangeTrait{
         return $OrderVendor;
     }
 
-    protected function saveOrder($request)
+    protected function saveOrder($request, $orderVendorOld)
     {
         /* Generate order object */
 
@@ -301,8 +301,14 @@ trait ReturnExchangeTrait{
         $order->user_id = $user->id;
         $order->order_number = generateOrderNo();
 
-        $order->address_id = $request->address_id;
-        $cus_address = UserAddress::find($request->address_id);
+        if(@$request->address_id){
+            $order->address_id = $address_id = $request->address_id;
+        }else{
+            $orderOld = Order::select('address_id')->where('id',$orderVendorOld->order_id)->first();
+            $order->address_id = $address_id =  $orderOld->address_id;
+        }
+        
+        $cus_address = UserAddress::find($address_id);
         $latitude = $cus_address->latitude ?? Session::get('latitude');
         $longitude = $cus_address->longitude ?? Session::get('longitude');
 
@@ -397,6 +403,110 @@ trait ReturnExchangeTrait{
         }
 
         return $returns;
+    }
+
+    /**
+     * Display product variant data
+     *
+     * @return \Illuminate\Http\Response
+     */
+    private function getVariantData($request, $product_id){
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
+        $customerCurrency = Session::get('customerCurrency');
+        if(isset($customerCurrency) && !empty($customerCurrency)){
+        }
+        else{
+            $primaryCurrency = ClientCurrency::where('is_primary','=', 1)->first();
+            Session::put('customerCurrency', $primaryCurrency->currency_id);
+        }
+        $data = array();
+        $is_available = true;
+        $vendors = $this->getServiceAreaVendors();
+        $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
+        $product = Product::select('id', 'vendor_id')->where('id', $product_id)->firstOrFail();
+        if(!in_array($product->vendor_id, $vendors)){
+            $is_available = false;
+        }
+        $data['is_available'] = $is_available;
+
+        $pv_ids = array();
+        $product_variant = '';
+        if ($request->has('addon_options') && !empty($request->addon_options)) {
+            foreach ($request->addon_options as $key => $value) {
+                
+                 
+                
+                $product_variant = ProductVariantSet::where('variant_type_id', $request->variants[$key])
+                ->where('variant_option_id', $request->addon_options[$key])->where('product_variant_sets.product_id', $product->id)->get();
+                if($product_variant){
+                    foreach ($product_variant as $k => $variant) {
+                        if(!in_array($variant->product_variant_id, $pv_ids)){
+                            $pv_ids[] = $variant->product_variant_id;
+                        }
+                    }
+                }
+                
+                
+            }
+        }
+        $sets = array();
+        $clientCurrency = ClientCurrency ::where('currency_id', Session::get('customerCurrency'))->first();
+        $availableSets = Product::with(['variantSet.variantDetail','variantSet.option2'=>function($q)use($product, $pv_ids){
+            $q->where('product_variant_sets.product_id', $product->id); //->whereIn('product_variant_id', $pv_ids);
+        }])
+        //return $product;
+        ->select('id')
+        ->where('products.id', $product->id)->first();
+        $data['availableSets'] = $availableSets->variantSet;
+        if($pv_ids){
+            $variantData = ProductVariant::with(['product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart'])
+            ->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
+            ->whereIn('id', $pv_ids)->get();
+
+            if ($variantData) {
+                foreach($variantData as $variant){
+
+                    $variant->productPrice =  decimal_format(($variant->price * $clientCurrency->doller_compare));
+                    
+                }
+                if(count($variantData) <= 1){
+                    $image_fit = "";
+                    $image_path = "";
+                    $variantData = $variantData->first()->toArray();
+                    if(!empty($variantData['media'])){
+                        $image_fit = $variantData['media'][0]['pimage']['image']['path']['image_fit'];
+                        $image_path = $variantData['media'][0]['pimage']['image']['path']['image_path'];
+                    }else if(!is_null($variantData['product']['media']) && !empty($variantData['product']['media']) && !is_null($variantData['product']['media'][0]['image'])){
+                        $image_fit = $variantData['product']['media'][0]['image']['path']['image_fit'];
+                        $image_path = $variantData['product']['media'][0]['image']['path']['image_path'];
+                    }
+                    if(empty($image_path)){
+                        $image_fit = \Config::get('app.FIT_URl');
+                        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png').'@webp';
+                    }
+                    $variantData['image_fit'] = $image_fit;
+                    $variantData['image_path'] = $image_path;
+                    if(count($variantData['check_if_in_cart']) > 0){
+                        $variantData['check_if_in_cart'] = $variantData['check_if_in_cart'][0];
+                    }
+                    $variantData['isAddonExist'] = 0;
+                    if(count($variantData['product']['add_on']) > 0){
+                        $variantData['isAddonExist'] = 1;
+                    }
+
+                    $variantData['variant_multiplier'] = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                    // dd($variantData);
+                }else{
+                    $variantData = array();
+                }
+                $data['variant'] = $variantData;
+                
+                return response()->json(array('status' => 'Success', 'data' => $data));
+            }
+
+        }
+        return response()->json(array('status' => 'Error', 'message' => 'This option is currenty not available', 'data' => $data));
     }
 
    

@@ -338,7 +338,7 @@ class OrderController extends BaseController
                                     //$payable_amount = $payable_amount + $product_tax;
                                 }
                             }
-                            if ($action == 'delivery') {
+                            if ($action == 'delivery' || $action == 'on_demand') {
                                 $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                                 if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1) || isset($deliver_fee_data)) {
                                     $order_vendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type??'D';
@@ -485,13 +485,13 @@ class OrderController extends BaseController
                         }
                         //Start applying service fee on vendor products total
                         $vendor_service_fee_percentage_amount = 0;
-                        // if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                        //     $vendor_service_fee_percentage_amount = (($vendor_products_total_amount+$opt_quantity_price-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                        if ($vendor_cart_product->vendor->service_fee_percent > 0) {
+                            $vendor_service_fee_percentage_amount = ((($vendor_products_total_amount+$opt_quantity_price)-$price_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
 
                         
-                        //     $vendor_payable_amount += $vendor_service_fee_percentage_amount;
-                        //     $payable_amount += $vendor_service_fee_percentage_amount;
-                        // }
+                            $vendor_payable_amount += $vendor_service_fee_percentage_amount;
+                            $payable_amount += $vendor_service_fee_percentage_amount;
+                        }
                         //End applying service fee on vendor products total
                         $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                         $order_vendor->service_fee_percentage_amount = $vendor_service_fee_percentage_amount;
@@ -581,14 +581,15 @@ class OrderController extends BaseController
                             $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                         }
                     }
-                    $payable_amount = $payable_amount - $wallet_amount_used;
                     $tip_amount = 0;
                     if ((isset($request->tip)) && ($request->tip != '') && ($request->tip > 0)) {
                         $tip_amount = $request->tip;
                         $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                         $order->tip_amount = decimal_format($tip_amount);
                     }
+
                     $payable_amount = $payable_amount + $tip_amount ;
+                    $payable_amount = $payable_amount - $wallet_amount_used;
                     $order->total_service_fee = $total_service_fee;
                     $order->total_delivery_fee = $total_delivery_fee;
                     $order->loyalty_points_used = $loyalty_points_used;
@@ -618,7 +619,7 @@ class OrderController extends BaseController
                     // exit();
                     // $ex_gateways = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24,25,28]; // if Stripe, paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree,easebuzz,vnpay
                     // need to add weebhook for razorpay (10) and remove from ex_gateways
-                    $ex_gateways = [1,2,3,14,15,16,10,20,21,22,23,26,38,42];
+                    $ex_gateways = [1,2,3,14,15,16,10,20,21,22,23,26,38,42,30];
                     //Delete cart if payment is done from these gateways
                     if (in_array($request->payment_option_id, $ex_gateways)) {
 
@@ -1545,20 +1546,11 @@ class OrderController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-
                 $keyData = ['{user_name}'=>$user->name??'','{amount}'=>$currSymbol . $order->payable_amount,'{order_number}'=>$order->order_number??''];
                 $body = sendSmsTemplate('order-place-Successfully',$keyData);
 
-               // $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
-                // if(!empty($smsTemplates)){
-                //     $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
-                //     $smsTemplates = str_replace("{amount}", $currSymbol . decimal_format($order->payable_amount), $smsTemplates);
-                //     $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
-                // }else{
-                //     $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
-                // }
                 if (!empty($prefer->sms_provider)) {
-                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body,'order-place-Successfully');
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 }
             }
         } catch (\Exception $ex) {
@@ -1591,10 +1583,10 @@ class OrderController extends BaseController
         $orders = OrderVendor::where('user_id', $user->id)->orderBy('id', 'DESC');
         switch ($type) {
             case 'active':
-                $orders->whereNotIn('order_status_option_id', [6, 3]);
+                $orders->whereNotIn('order_status_option_id', [6, 3, 9]);
                 break;
             case 'past':
-                $orders->whereIn('order_status_option_id', [6, 3]);
+                $orders->whereIn('order_status_option_id', [6, 3, 9]);
                 break;
             case 'schedule':
                 $order_status_options = [10];
@@ -1603,7 +1595,9 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request'])
+        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request', 'products.productReturn',
+        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail'
+        ])
             ->whereHas('orderDetail', function ($q1) {
                 $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1,38]);
                 $q1->orWhere(function ($q2) {
@@ -1631,15 +1625,30 @@ class OrderController extends BaseController
             } else {
                 $order->current_status = null;
             }
+            $return_request_status = 0;
+            
             foreach ($order->products as $product) {
+                // dd($product->productReturn->status);
+                if(@$product->productReturn &&  $return_request_status== 0){
+                    if($product->productReturn->status == 'Accepted'){
+                        $return_request_status = 1;
+                    }
+                    if($product->productReturn->status == 'Rejected'){
+                        $return_request_status = 2;
+                    }
+                    if($product->productReturn->status == 'Pending'){
+                        $return_request_status = 3;
+                    }
+                }
                 $order_item_count += $product->quantity;
+
                 $product_details[] = array(
                     'image_path' => $product->media->first() ? $product->media->first()->image->path : $product->image,
                     'price' => $product->price,
                     'qty' => $product->quantity,
                     'category_type' => $product->product->category->categoryDetail->type->title ?? '',
                     'product_id' => $product->product_id,
-                    'title' => $product->product_name,
+                    'title' => $product->product_name
                 );
             }
             if ($order->delivery_fee > 0) {
@@ -1668,6 +1677,7 @@ class OrderController extends BaseController
             $order->luxury_option_name = $luxury_option_name;
             $order->product_details = $product_details;
             $order->item_count = $order_item_count;
+            $order->return_request_status = $return_request_status;
             unset($order->user);
             unset($order->products);
             unset($order->paymentOption);
@@ -2167,9 +2177,10 @@ class OrderController extends BaseController
                                     }
                                 }
 
-                                if ($action == 'delivery') {
+                                if ($action == 'delivery' || $action == 'on_demand') {
                                     if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) {
                                         $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
+                                        Log::info($delivery_fee);
                                         if (!empty($delivery_fee) && $delivery_count == 0) {
                                             $delivery_count = 1;
                                             $vendor_cart_product->delivery_fee = decimal_format($delivery_fee);
@@ -2410,7 +2421,7 @@ class OrderController extends BaseController
                         $res = $this->sendSuccessEmail($request, $order);
 
                         // $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
-                        $ex_gateways = [1,2,3,14,15,16,20,21,22,23,26,38];
+                        $ex_gateways = [1,2,3,14,15,16,20,21,22,23,26,38,30];
                         // if (!in_array($request->payment_option_id, $ex_gateways)) {
                         //     Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         //     CartCoupon::where('cart_id', $cart->id)->delete();
@@ -2753,7 +2764,7 @@ class OrderController extends BaseController
                         'body'  => $body_content,
                         'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                        'click_action' => $redirect_URL,
+                       // 'click_action' => $redirect_URL,
                         "android_channel_id" => "sound-channel-id"
                     ],
                     "data" => [

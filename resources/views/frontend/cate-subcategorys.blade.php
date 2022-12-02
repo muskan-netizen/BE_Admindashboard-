@@ -33,8 +33,8 @@
             </div>
             <div class="row mb-5 homepageSix">
                 {{-- @dd($category->childs) --}}
-                <div class="collection-filter col-lg-3 al custom-sidebar-card">
-                    <div class="theme-card">
+                <div class="collection-filter col-lg-3 main-fillter al">
+                    <div class="theme-card custom-inner-card">
 
                     <div class="accordion" id="accordionExample">
                             <div class="card">
@@ -79,6 +79,7 @@
                     </div>
                     @if(!empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card">
+
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
@@ -152,7 +153,7 @@
                     </div>
                     @endif
                 </div>
-                <div class="collection-content col-lg-9">
+                <div class="collection-content col-lg-9 outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">

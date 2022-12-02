@@ -102,6 +102,7 @@ class BaseController extends Controller{
         }
         return '1';
 	}
+    
 
     public function getParentCategories($child, $langId, $parentCategories=[]){
         $category = Category::with(['translation' => function($q) use($langId){

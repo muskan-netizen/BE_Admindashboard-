@@ -26,68 +26,63 @@
             </div>
             <div class="row mb-5 homepageSix">
                 <div class="collection-filter col-lg-3 main-fillter">
-                    <div class="collection-filter-block bg-transparent p-0">
-                        <!-- <div class="collection-mobile-back">
-                            <span class="filter-back d-lg-none d-inline-block">
-                                <i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}
-                            </span>
-                        </div> -->
-                        <ul class="breadcrumb p-0 mb-2">
-                            <li class="breadcrumb-item align-items-center"><a href="javascript:void(0)">Home <i class="fa fa-angle-right" aria-hidden="true"></i> <span>Pharmacy <i class="fa fa-angle-right" aria-hidden="true"></i>
-                                </span><span class="active">Healthcare Device</span></a>
-                            </li>
-                        </ul>
-                        <aside class="side_fillter">
-                        @if(!empty($variantSets) && count($variantSets) > 0)
-                          @foreach($variantSets as $key => $sets)
+                        <div class="collection-filter-block bg-transparent p-0">
+                            <!-- <div class="collection-mobile-back">
+                                <span class="filter-back d-lg-none d-inline-block">
+                                    <i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}
+                                </span>
+                            </div> -->
+                            <aside class="side_fillter">
+                            @if(!empty($variantSets) && count($variantSets) > 0)
+                            @foreach($variantSets as $key => $sets)
+                                <div class="collection-collapse-block border-0 mb-2 open">
+                                    <h3 class="collapse-block-title">{{$sets->title}}</h3>
+                                    <div class="collection-collapse-block-content">
+                                        <div class="collection-brand-filter">
+
+                                        @if($sets->type == 2)
+                                            @foreach($sets->options as $ok => $opt)
+                                                <div class="chiller_cb small_label d-inline-block color-selector mt-2">
+                                                    <?php $checkMark = ($key == 0) ? 'checked' : ''; ?>
+                                                    <input class="custom-control-input productFilter" type="checkbox" {{$checkMark}} id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" used="variants" optid="{{$opt->id}}">
+                                                    <label for="Opt{{$key.'-'.$opt->id}}"></label>
+                                                    @if(strtoupper($opt->hexacode) == '#FFF' || strtoupper($opt->hexacode) == '#FFFFFF')
+                                                        <span style="background: #FFFFFF; border-color:#000;" class="check_icon white_check"></span>
+                                                    @else
+                                                        <span class="check_icon" style="background:{{$opt->hexacode}}; border-color: {{$opt->hexacode}};"></span>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+
+                                        @else
+                                            @foreach($sets->options as $ok => $opt)
+                                                <div class="custom-control custom-checkbox collection-filter-checkbox">
+                                                    <input type="checkbox" class="custom-control-input productFilter" id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" type="variants" optid="{{$opt->id}}">
+                                                    <label class="custom-control-label" for="Opt{{$key.'-'.$opt->id}}">{{$opt->title}}</label>
+                                                </div>
+                                            @endforeach
+                                        @endif
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            @endforeach
+                            @endif
                             <div class="collection-collapse-block border-0 mb-2 open">
-                                <h3 class="collapse-block-title">{{$sets->title}}</h3>
+                                <h3 class="collapse-block-title">{{__('Price')}}</h3>
                                 <div class="collection-collapse-block-content">
-                                    <div class="collection-brand-filter">
-
-                                    @if($sets->type == 2)
-                                        @foreach($sets->options as $ok => $opt)
-                                            <div class="chiller_cb small_label d-inline-block color-selector mt-2">
-                                                <?php $checkMark = ($key == 0) ? 'checked' : ''; ?>
-                                                <input class="custom-control-input productFilter" type="checkbox" {{$checkMark}} id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" used="variants" optid="{{$opt->id}}">
-                                                <label for="Opt{{$key.'-'.$opt->id}}"></label>
-                                                @if(strtoupper($opt->hexacode) == '#FFF' || strtoupper($opt->hexacode) == '#FFFFFF')
-                                                    <span style="background: #FFFFFF; border-color:#000;" class="check_icon white_check"></span>
-                                                @else
-                                                    <span class="check_icon" style="background:{{$opt->hexacode}}; border-color: {{$opt->hexacode}};"></span>
-                                                @endif
-                                            </div>
-                                        @endforeach
-
-                                    @else
-                                        @foreach($sets->options as $ok => $opt)
-                                            <div class="custom-control custom-checkbox collection-filter-checkbox">
-                                                <input type="checkbox" class="custom-control-input productFilter" id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" type="variants" optid="{{$opt->id}}">
-                                                <label class="custom-control-label" for="Opt{{$key.'-'.$opt->id}}">{{$opt->title}}</label>
-                                            </div>
-                                        @endforeach
-                                    @endif
-
+                                    <div class="wrapper mt-3">
+                                        <div class="range-slider">
+                                            <input type="text" class="js-range-slider rangeSliderPrice" value="" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-                          @endforeach
-                        @endif
-                        <div class="collection-collapse-block border-0 mb-2 open">
-                            <h3 class="collapse-block-title">{{__('Price')}}</h3>
-                            <div class="collection-collapse-block-content">
-                                <div class="wrapper mt-3">
-                                    <div class="range-slider">
-                                        <input type="text" class="js-range-slider rangeSliderPrice" value="" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         </aside>
-                    </div>
+                        </div>
+                   
                     <!-- side-bar single product slider start -->
-                    @if(!empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
