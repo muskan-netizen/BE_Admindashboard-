@@ -493,6 +493,49 @@ span.registerLink{text-align: center;width: 100%;margin-top: 10px;display: block
         img#vendorStoriesImg {
             width: 60px;
         }
+        body.al_body_template_six .order-success-sec .row li.col-4 {
+            width: 100%;
+            max-width: 100%;
+            flex: 100%;
+            display: block !important;
+            margin-bottom: 10px;
+        }
+        body.al_body_template_six li.col-8{
+            width: 100%;
+            max-width: 100%;
+            flex: 100%;
+            display: block !important;
+        }
+        body.al_body_template_six .order-success-sec .row {
+            margin-bottom: 0;
+        }
+        body.al_body_template_six .alFourTemplateOrderSucces .order-success-sec  .order-detail li span {
+            font-weight: bold;
+            margin-left: 15px;
+            text-align: right;
+            float: right;
+            font-size: 14px;
+        }
+        body.al_body_template_six .alFourTemplateOrderSucces .order-success-sec  .order-detail li {
+            display: block !important;
+            margin-bottom: 10px !important;
+            font-size: 15px !important;
+        }
     }
 
 
+    body.al_body_template_six .outter-scroller.service-data-wrapper.al {
+        height: 100vh;
+        overflow-y: scroll;
+        padding-right: 20px;
+    }
+    body.al_body_template_six .side-card {
+        position: sticky;
+        top: 100px;
+    }
+    body.al_body_template_six .alFourTemplateOrderSucces .product-order {
+        height: 100vh;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+   

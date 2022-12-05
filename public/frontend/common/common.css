@@ -1287,3 +1287,14 @@ body.al_body_template_eight.homeHeader .product-wrapper-grid .product-image img 
     width: 100px !important;
 }
 }
+
+/*--------------dark theme css-----------*/
+.al_body_template_six .displayProducts .product-box .product-image {
+    padding-bottom: 0 !important;
+}
+.al_body_template_six .collection-product-wrapper .col-grid-box .media-body h3 {
+    text-align: left !important;
+}
+body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-body h6 b {
+    color: #fff !important;
+}

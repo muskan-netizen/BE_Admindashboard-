@@ -46,7 +46,7 @@ $serviceType =  Session::get('vendorType');
 
                 <div class="row">
                     <div class="col-lg-6">
-                        <div class="product-order py-3">
+                        <div class="product-order py-3 pro-scroller">
                             <h3>{{__('Your Order Details')}}</h3>
                          
                             @foreach($order->products as $product)
