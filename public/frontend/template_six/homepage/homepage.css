@@ -327,3 +327,21 @@ background-color: #232323;
 }
 .cab-banner-area .card-box{padding:48px;border-radius:20px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);background-color:rgba(255,255,255,.5)}.cab-input{margin:31px 0 13px;position:relative}.cab-footer{margin:19px 0 0}.input-line{width:1px;height:46px;background:#000;position:absolute;top:33px;left:22px}.cab-footer .btn.btn-solid:last-child{margin-right:0}.input-line:before{content:"";width:7px;height:7px;border:1px solid #000;border-radius:50%;position:absolute;top:-10px;left:-3px}.input-line:after{width:7px;height:7px;border:1px solid #000;content:"";position:absolute;bottom:-10px;left:-3px}.cab-input input.form-control{background-color:#f6f6f6;padding:11px 30px 11px 40px;height:auto;min-height:52px;border:0;border-radius:0!important;font-size:16px}
 /* car bar css end */
+
+
+/*-------------dark theme css---------------*/
+body.al_body_template_six.homeHeader.dark .product-description_list.border-bottom p.al_product_category {
+    color: #fff;
+}
+body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-body h3 {
+    padding: 10px 0;
+}
+body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-body h6{
+    color:#cbcbcb;
+}
+body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-body h4{
+    color:#cbcbcb;
+}
+body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-body p   {
+    color:#cbcbcb;
+}
