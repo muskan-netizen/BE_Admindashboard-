@@ -80,8 +80,8 @@ class SendCampaignNotification extends Command
                 // CampaignRoster::where('id',6287)->delete();
                 $notifications = CampaignRoster::where('notification_time', '<=',$intervalTime)->where('status',0)->with('campaign','user')->get();
                 // $notifications = CampaignRoster::whereBetween('notification_time', [$intervalTime, $add1Minute])->where('status',0)->with('campaign','user')->get();
-                Log::info("CampaignRoster time: {$intervalTime}!");
-                Log::info("CampaignRoster data: {$notifications}!");
+                // Log::info("CampaignRoster time: {$intervalTime}!");
+                // Log::info("CampaignRoster data: {$notifications}!");
                 if($notifications)
                 {
                     // //test sms
