@@ -2771,8 +2771,9 @@ class OrderController extends BaseController
 
         Log::info('vendorAppUserDevices');
         Log::info($vendorAppUserDevices);
+        Log::info('vendor_fcm_server_key');
+        Log::info($client_preferences->vendor_fcm_server_key);
         if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
-            Log::info('vendor_fcm_server_key');
             $from = $client_preferences->vendor_fcm_server_key;
             $data['registration_ids'] = $vendorAppUserDevices;
 
