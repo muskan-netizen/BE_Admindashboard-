@@ -9,6 +9,6 @@ class InfluencerReferAndEarnController extends Controller
 {
     function index(Request $request) {
         // dd($request->all());
-        
+        return view('frontend/account/referAndEarn');
     }
 }
