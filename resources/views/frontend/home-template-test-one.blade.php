@@ -488,7 +488,7 @@ $preference = $client_preference_detail;
                 </div>
             </section>
          @else
-            @if(count($homePageData[$homePageLabel->slug]) != 0)
+            @if(!empty($homePageData[$homePageLabel->slug]) && count($homePageData[$homePageLabel->slug]) != 0)
                <section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
                   <div class="row" >
                      <div class="col-12 top-heading d-flex align-items-center justify-content-between">

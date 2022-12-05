@@ -526,36 +526,36 @@
                                                                 <hr class="my-2">
                                                                 <div class="service_product">
                                                                     @php
-                                                                     $Service_product_url = isset($product->longTermSchedule->product) ?  route('product.edit', @$product->longTermSchedule->product->id) : '#';
+                                                                    $Service_product_url = isset($product->longTermSchedule->product) ?  route('product.edit', @$product->longTermSchedule->product->id) : '#';
                                                                     @endphp
                                                                     <h6>{{ __('Product Name') }}:  <a href="{{ $Service_product_url }}" target="_blank" > {{  $product->longTermSchedule->product->primary->title }}  </a></h6>
-
+                                                    
                                                                     <h6>{{ __('No. of Bookings') }}:  {{  $product->longTermSchedule->service_quentity }}  </h6>
                                                                     
                                                                     <h6>{{ __('Service Time:') }}:  {{  __(config('constants.Period.'.$product->longTermSchedule->service_period))}}  </h6>
                                                                     
                                                                     @if ($product->longTermSchedule->addon && count($product->longTermSchedule->addon))
-                                                                    <hr class="my-2">
-                                                                    <h6 class="m-0 pl-0"><b>{{ __('Add Ons') }}</b></h6>
-                                                                    @foreach ($product->longTermSchedule->addon as $addon)
-                                                                    <div class="longTermAddon d-flex">
-                                                                        <p class="p-0 mr-2 mb-0">{{ $addon->set->title }} :</p>
-                                                                        <b class="p-0 m-0">{{ $addon->option->translation_title }}</b>
-                                                                    </div>
-                                                                       
-                                                                    @endforeach
-                                                                @endif
+                                                                        <hr class="my-2">
+                                                                        <h6 class="m-0 pl-0"><b>{{ __('Add Ons') }}</b></h6>
+                                                                        @foreach ($product->longTermSchedule->addon as $addon)
+                                                                            <div class="longTermAddon d-flex">
+                                                                                <p class="p-0 mr-2 mb-0">{{ $addon->set->title }} :</p>
+                                                                                <b class="p-0 m-0">{{ $addon->option->translation_title }}</b>
+                                                                            </div>
+                                                                        
+                                                                        @endforeach
+                                                                    @endif
                                                                 </div>
                                                             </div>
                                                             <div class="outer_div p-2">
                                                                 <h6>{{ __('Long Term Service Schedule') }}</h6>
                                                                 <table class="wp-table w-100">
-                                                                @php
-                                                                $showRoute = !empty($product->longTermSchedule->product) ??($product->longTermSchedule->product->Requires_last_mile ==1 ? 1 : 0);
-                                                                if($vendor->delivery_fee <=0){
-                                                                    $showRoute = 0;
-                                                                }
-                                                                @endphp
+                                                                    @php
+                                                                    $showRoute = !empty($product->longTermSchedule->product) ??($product->longTermSchedule->product->Requires_last_mile ==1 ? 1 : 0);
+                                                                    if($vendor->delivery_fee <=0){
+                                                                        $showRoute = 0;
+                                                                    }
+                                                                    @endphp
                                                                     <tr>
                                                                         <th width="20%">#</th>
                                                                         <th width="40%">{{ __('Scheduled date time') }}</th>
@@ -568,7 +568,7 @@
                                                                         <tr>
                                                                             <td>{{ $key + 1 }}</td>
                                                                             <td><a href="javascript:void(0)"
-                                                                                   >{{ date('d M Y h:i A', strtotime(dateTimeInUserTimeZone($schedule->schedule_date, $timezone)))   }}</a>
+                                                                                >{{ date('d M Y h:i A', strtotime(dateTimeInUserTimeZone($schedule->schedule_date, $timezone)))   }}</a>
                                                                             </td>
                                                                             <td> <span class="badge {{  $schedule->status ==0 ? 'badge-info' : 'badge-success'}}  mr-2">{{  $schedule->status ==0 ? __('Pending') : __('Completed')}}</span>
                                                                                 @if($schedule->status ==0)
@@ -581,8 +581,8 @@
                                                                                     <a href="{{ $schedule->dispatch_traking_url }}"
                                                                                             target="_blank">{{ __('Track') }}</a>
                                                                                     @endif
-                                                                                  
-                                                                                     <span class="badge badge-info mr-2"> {{ $schedule->status ==0 ? ( $schedule->DispatchStatus->first() ? $schedule->DispatchStatus[0]->status_data['driver_status'] ?? '' : 'na') : __('Completed') }} </span>
+                                                                                
+                                                                                    <span class="badge badge-info mr-2"> {{ $schedule->status ==0 ? ( $schedule->DispatchStatus->first() ? $schedule->DispatchStatus[0]->status_data['driver_status'] ?? '' : 'na') : __('Completed') }} </span>
                                                                                 </td>
                                                                             @endif
                                                                         </tr>
@@ -595,28 +595,53 @@
                                                 @endif
                                             @endif
                                         @endforeach
-                                        <tr>
-                                            <th scope="row" colspan="4" class="text-end">
-                                                {{ __('Delivery Fee') }} :</th>
-                                            <td>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor->delivery_fee) }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row" colspan="4" class="text-end">{{ __('Sub Total') }}
-                                                :</th>
-                                            <td>
-                                                <div class="fw-bold">
-                                                    {{ $clientCurrency->currency->symbol }}{{ decimal_format($sub_total) }}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <?php
-                                            //    $checkOffer = \App\Models\Promocode::where('name', $vendor->coupon_code )->first();
+                                    @if($container_charges > 0)
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Container Charges") }} :</th>
+                                        <td>{{$clientCurrency->currency->symbol}}@money($container_charges)</td>
+                                    </tr>
+                                @endif
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Sub Total") }} :</th>
+                                        <td>
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($sub_total)+decimal_format($container_charges)}}</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{__('Delivery Fee')}} :</th>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->delivery_fee)}}</td>
+                                    </tr>
+                                    @if($vendor_service_fee > 0)
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Service Fee") }} :</th>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor_service_fee)}}</td>
+                                    </tr>
+                                    @endif
+                                    
+                                    @if($order->fixed_fee_amount > 0)
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Fixed Fee") }} :</th>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($order->fixed_fee_amount)}}</td>
+                                    </tr>
+                                    @endif
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Estimated Tax") }} :</th>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($taxable_amount)}}</td>
+                                    </tr>
+                                    @if($vendor->additional_price > 0)
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Additional Price") }} :</th>
+                                        <td style="width:200px;">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->additional_price)}}</td>
+                                    </tr>
+                                    @endif
+                                    <tr>
+                                        <?php
+                                        //    $checkOffer = \App\Models\Promocode::where('name', $vendor->coupon_code )->first();
                                             $vendorDiscount = 0;
                                             $adminDiscount = 0;
-                                            if ($vendor->coupon_code) {
-                                                if ($vendor->paid_by_vendor_admin == 1) {
+                                            // dd($vendor);
+                                            if($vendor->coupon_code){
+                                                if($vendor->coupon_id == 1){
                                                     $couponFrom = 'From Admin';
                                                     $adminDiscount = $vendor->discount_amount;
                                                 } else {
@@ -628,43 +653,16 @@
                                                 $adminDiscount = 0;
                                                 $vendorDiscount = 0;
                                             }
-                                            ?>
-                                            <th scope="row" colspan="4" class="text-end">
-                                                {{ __('Total Discount') }} {{ $couponFrom }}:</th>
-                                            <td>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor->discount_amount) }}
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <th scope="row" colspan="4" class="text-end">
-                                                {{ __('Estimated Tax') }} :</th>
-                                            <td>{{ $clientCurrency->currency->symbol }}{{ decimal_format($taxable_amount) }}
-                                            </td>
-                                        </tr>
-                                        @if ($vendor_service_fee > 0)
-                                            <tr>
-                                                <th scope="row" colspan="4" class="text-end">
-                                                    {{ __('Service Fee') }} :</th>
-                                                <td>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor_service_fee) }}
-                                                </td>
-                                            </tr>
-                                        @endif
-                                        @if ($order->fixed_fee_amount > 0)
-                                            <tr>
-                                                <th scope="row" colspan="4" class="text-end">
-                                                    {{ __('Fixed Fee') }} :</th>
-                                                <td>{{ $clientCurrency->currency->symbol }}{{ decimal_format($order->fixed_fee_amount) }}
-                                                </td>
-                                            </tr>
-                                        @endif
-
-                                        @if ($container_charges > 0)
-                                            <tr>
-                                                <th scope="row" colspan="4" class="text-end">
-                                                    {{ __('Container Charges') }} :</th>
-                                                <td>{{ $clientCurrency->currency->symbol }}@money($container_charges)</td>
-                                            </tr>
-                                        @endif
+                                        ?>
+                                        <th scope="row" colspan="4" class="text-end">{{__('Total Discount')}} {{$couponFrom}}:</th>
+                                        <td>-{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->discount_amount)}}</td>
+                                    </tr>
+                                    @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Redeemed Loyality Points") }} :</th>
+                                        <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}{{decimal_format($vendor->orderDetail->loyalty_amount_saved??0.00)}})</td>
+                                    </tr>
+                                    @endif
                                     @if($client_preference_detail->is_tax_price_inclusive)
                                             
                                         @php  //taxable_amount
@@ -696,51 +694,34 @@
                                             </td>
                                         </tr>
 
-                                        <tr>
-                                            <th scope="row" colspan="4" class="text-end">
-                                                {{ __('Store Earning') }} :</th>
-                                            {{-- <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->sub_total * $clientCurrency->doller_compare - $revenue - $vendorDiscount)}}</td> --}}
-                                            <td>{{ $clientCurrency->currency->symbol }}{{ decimal_format($storeRevenue) }}
-                                            </td>
-                                        </tr>
-                                        {{-- @endif --}}
-                                        @if (number_format($vendor->orderDetail->loyalty_points_used) > 0)
-                                            <tr>
-                                                <th scope="row" colspan="4" class="text-end">
-                                                    {{ __('Redeemed Loyality Points') }} :</th>
-                                                <td style="width:200px;">
-                                                    {{ $vendor->orderDetail->loyalty_points_used ?? 0.0 }}
-                                                    ({{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor->orderDetail->loyalty_amount_saved ?? 0.0) }})
-                                                </td>
-                                            </tr>
-                                        @endif
-                                        @if ($vendor->reject_reason)
-                                            <tr>
-                                                <th scope="row" colspan="4" class="text-end">
-                                                    {{ __('Reject Reason') }} :</th>
-                                                <td style="width:200px;">{{ $vendor->reject_reason }}</td>
-                                            </tr>
-                                        @endif
-                                        @if ($vendor->additional_price > 0)
-                                            <tr>
-                                                <th scope="row" colspan="4" class="text-end">
-                                                    {{ __('Additional Price') }} :</th>
-                                                <td style="width:200px;">
-                                                    {{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor->additional_price) }}
-                                                </td>
-                                            </tr>
-                                        @endif
-                                        <tr>
-                                            <th scope="row" colspan="4" class="text-end">{{ __('Total') }}
-                                                :</th>
-                                            <td>
-                                                {{-- <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}</div> --}}
-                                                <div class="fw-bold">
-                                                    {{ $clientCurrency->currency->symbol }}{{ decimal_format($order->payable_amount, 2) }}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
+                                        {{-- <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->sub_total * $clientCurrency->doller_compare - $revenue - $vendorDiscount)}}</td> --}}
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($storeRevenue)}}</td>
+                                    </tr>
+                                    {{-- @endif --}}
+                                    @if($order->tip_amount > 0)
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Tip Amount") }} :</th>
+                                        <td style="width:200px;"> {{$clientCurrency->currency->symbol}}{{decimal_format($order->tip_amount??0.00)}}</td>
+                                    </tr>
+                                    @endif
+                                    @if($vendor->reject_reason)
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Reject Reason") }} :</th>
+                                        <td style="width:200px;">{{$vendor->reject_reason}}</td>
+                                    </tr>
+                                    @endif
+                                    @if($vendor->additional_price>0)
+                                    @endif
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
+                                        <td>
+                                            {{-- <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}</div> --}}
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount,2)}}</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
                                 @endforeach
                             </table>
                         </div>

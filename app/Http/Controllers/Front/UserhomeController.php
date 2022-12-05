@@ -473,7 +473,7 @@ class UserhomeController extends FrontController
 
             $home_page_labels = $home_page_labels->map(function($da) use ($homePageData) {
                 if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' ){
-                    $da[$da->slug] = @$homePageData[$da->slug];
+                    $da[$da->slug] = $homePageData[$da->slug] ?? '';
                 }
                 return $da;
 
@@ -578,7 +578,7 @@ class UserhomeController extends FrontController
         $long_term_service_products = [];
         $recently_viewed = [];
         $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-        $p_dim = '260/100';
+        $p_dim = '260/180';
         if (isset($set_template)  && $set_template->template_id == 3){
             $p_dim = '300/350';
         }elseif(isset($set_template)  && $set_template->template_id == 2){

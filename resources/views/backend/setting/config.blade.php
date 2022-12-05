@@ -1583,18 +1583,28 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </span>
                     </div>
                 </div>
-            @if(checkColumnExists('products','is_long_term_service'))
-               <div class="col-md-4 ">
+               @if(checkColumnExists('products','is_long_term_service'))
+                  <div class="col-md-4 ">
+                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                        <label for="is_long_term_service" class="mr-2 mb-0">{{__('Long Term Service')}}<small class="d-block pr-5">{{__("Enable to add long term service.")}}</small></label>
+                     <span> <input type="checkbox" data-plugin="switchery" name="is_long_term_service_switch" id="is_long_term_service_switch" class="form-control checkbox_change" data-className="is_long_term_service"  data-color="#43bee1" @if( @getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == '1') checked='checked' @endif>
+                        </span>
+                        <input type="hidden"  @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1) value="1" @else value="0" @endif  name="is_long_term_service"  id="is_long_term_service"/>
+
+
+                     </div>
+                  </div>
+               @endif
+
+               <div class="col-md-4">
                   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                     <label for="is_long_term_service" class="mr-2 mb-0">{{__('Long Term Service')}}<small class="d-block pr-5">{{__("Enable to add long term service.")}}</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="is_long_term_service_switch" id="is_long_term_service_switch" class="form-control checkbox_change" data-className="is_long_term_service"  data-color="#43bee1" @if( @getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == '1') checked='checked' @endif>
+                     <label for="is_cab_pooling_switch" class="mr-2 mb-0">{{__('Cab Pooling')}}<small class="d-block pr-5">{{__("Enable to allow customers to book Cab Pooling.")}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="is_cab_pooling_switch" id="is_cab_pooling_switch" class="form-control checkbox_change" data-className="is_cab_pooling" data-color="#43bee1" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'] == 1) checked='checked'  @endif>
                      </span>
-                     <input type="hidden"  @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1) value="1" @else value="0" @endif  name="is_long_term_service"  id="is_long_term_service"/>
-
-
+                     <input type="hidden"  @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'] == 1) value="1" @else value="0" @endif  name="is_cab_pooling"  id="is_cab_pooling"/>
                   </div>
                </div>
-               @endif
+
                </div>
             </div>
          </form>

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq,TaxRate,ProductVariantByRole,ProductByRole,Role,LongTermServiceProductAddons,ProductDeliveryFeeByRole};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -236,9 +236,13 @@ class ProductController extends BaseController
                 $celeb_ids[] = $value->celebrity_id;
             }
         }
-        $otherProducts = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
-        $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
-        $celebrities = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
+        $otherProducts       = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
+        $configData          = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
+        $configData->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
+        $celebrities         = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
+        $tollPassOrigin      = (checkColumnExists('toll_pass_origin','toll_pass')) ? TollPassOrigin::select('id', 'toll_pass', 'desc')->get() : [];
+        $travelMode          = (checkColumnExists('travel_mode','travelmode')) ?TravelMode::select('id', 'travelmode', 'desc')->get() : [];
+        $vehicleEmissionType = (checkColumnExists('vehicle_emission_type','id')) ?VehicleEmissionType::select('id', 'emission_type', 'desc')->get() : [];
 
         $agent_dispatcher_tags = [];
         $agent_dispatcher_on_demand_tags = [];
@@ -300,7 +304,7 @@ class ProductController extends BaseController
         }
         
 
-        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles ]);
+        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType ]);
     }
 
     /**
@@ -415,6 +419,16 @@ class ProductController extends BaseController
             $product->additional_increments_min = str_pad($request->additional_increments_min, 2, '0', STR_PAD_LEFT)??null;
             $product->buffer_time_duration_min = str_pad($request->buffer_time_duration_min, 2, '0', STR_PAD_LEFT)??null;
             $product->is_fix_check_in_time = ($request->has('is_fix_check_in_time') && $request->is_fix_check_in_time == 'on') ? 1 : 0;
+
+            $product->available_for_pooling = ($request->has('available_for_pooling') && $request->available_for_pooling == 'on') ? 1 : 0;
+            $product->seats = ($request->has('seats')) ? $request->seats : 0;
+            $product->seats_for_booking = ($request->has('seats_for_booking')) ? $request->seats_for_booking : 0;
+
+            $product->is_toll_tax = ($request->has('is_toll_tax') && $request->is_toll_tax == 'on') ? 1 : 0;
+            $product->travel_mode_id = ($request->has('travel_mode')) ? $request->travel_mode : 0;
+            $product->toll_pass_id = ($request->has('toll_passes')) ? $request->toll_passes : 0;
+            $product->emission_type_id = ($request->has('emission_type')) ? $request->emission_type : 0;
+
             $product->save();
 
             if ($product->id > 0) {

@@ -109,6 +109,7 @@ class PickupDeliveryController extends FrontController{
     public function postVendorListByCategoryId(Request $request, $domain = '',$category_id = 0){
         $vendor_type = Session::get('vendorType');
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
+        $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
         $vendor_ids = [];
         $pickup_latitude = '';
         $pickup_longitude = '';
@@ -153,7 +154,9 @@ class PickupDeliveryController extends FrontController{
     public function postCabProductById(Request $request, $domain = '',$product_id = 0){
         $user = Auth::user();
         $language_id = Session::get('customerLanguage');
-        
+        $preferences = ClientPreference::where('id', '>', 0)->first();
+        $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
+
         if(!empty($user)){
             $client_timezone = DB::table('clients')->first('timezone');
             $user->timezone = $client_timezone->timezone ?? $user->timezone;
@@ -166,20 +169,31 @@ class PickupDeliveryController extends FrontController{
             $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
         }
 
-        $product = Product::with(['category.categoryDetail','media.image', 'vendor', 'translation' => function($q) use($language_id){
+        $product = Product::with(['category.categoryDetail','media.image', 'vendor', 'tollpass', 'travelmode', 'emissiontype', 'translation' => function($q) use($language_id){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
                         },'variant' => function($q) use($language_id){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
                             $q->groupBy('product_id');
-                        }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags')->where('products.id', $product_id)->where('products.is_live', 1)->first();
+                        }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')->where('products.id', $product_id)->where('products.is_live', 1)->first();
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
         $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
-        $product->original_tags_price = $tags_price['delivery_fee'];
+        $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
-        $product->total_tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee'] + $product->service_charge_amount);
+
+        //for cab pooling
+        $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
+        $no_seats_for_pooling = isset($request->no_seats_for_pooling)?$request->no_seats_for_pooling:1;
+        $product->no_seats_for_pooling = $no_seats_for_pooling;
+        if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
+        {
+            $product->original_tags_price = decimal_format(($product->original_tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
+            $product->tags_price = decimal_format(($product->tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
+            $product->toll_fee = decimal_format(($product->toll_fee/$product->seats_for_booking)*$no_seats_for_pooling);
+        }//------
+        $product->total_tags_price = decimal_format($product->tags_price + $product->toll_fee + $product->service_charge_amount);
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
         $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
@@ -249,6 +263,8 @@ class PickupDeliveryController extends FrontController{
                 return response()->json(['error' => 'No record found.'], 404);
             }
 
+            $preferences = ClientPreference::where('id', '>', 0)->first();
+            $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
             $user = Auth::user();
             $userid = $user->id;
             if(!empty($user)){
@@ -272,7 +288,7 @@ class PickupDeliveryController extends FrontController{
             if(!$vendor){
                 return response()->json(['error' => 'No record found.'], 200);
             }
-            $products = Product::with(['category.categoryDetail', 'inwishlist' => function($qry) use($userid){
+            $products = Product::with(['category.categoryDetail', 'tollpass', 'travelmode', 'emissiontype', 'inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },'media.image', 'translation' => function($q) use($language_id){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
@@ -288,10 +304,15 @@ class PickupDeliveryController extends FrontController{
                     ->whereHas('category.categoryDetail' ,function($qryd) {
                         $qryd->where('type_id', 7);   # check only products get of pickup
                     })
-                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags')
+                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags','products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')
                     ->where('products.vendor_id', $vid);
                     if($cid > 0){
                         $products = $products->where('products.category_id', $cid);
+                    }
+                    
+                    if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
+                    {
+                        $products = $products->where('products.available_for_pooling', 1);
                     }
                     $products = $products->where('products.is_live', 1)->distinct()->get();
 
@@ -303,8 +324,16 @@ class PickupDeliveryController extends FrontController{
                     $product->service_charge_amount  = ($vendor->fixed_service_charge == 1)?$vendor->service_charge_amount:0.00;
                     $product->name = $product->translation->first() ? $product->translation->first()->title :'';
                     $product->description = $product->translation->first() ? $product->translation->first()->meta_description :'';
-                    $product->original_tags_price = $tags_price['delivery_fee'] + $tags_price['toll_fee'] + $product->service_charge_amount;
-                    $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
+
+                    $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
+                    if(isset($request->is_cab_pooling) && $request->is_cab_pooling==1 && !empty($preferences) && $preferences->is_cab_pooling == 1){
+                        $product->tags_price = decimal_format(($tags_price['delivery_fee'] + $tags_price['toll_fee'])/$product->seats_for_booking);
+                    }else{
+                        $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
+                    }
+
+                    $product->original_tags_price = $product->tags_price + $product->service_charge_amount;
+                    
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->price = $product->tags_price;
@@ -381,11 +410,12 @@ class PickupDeliveryController extends FrontController{
 
     }
 
-    public function listData($langId, $category_id, $type = '', $userid,$request, $schedule_datetime_del=''){
+    public function listData($langId, $category_id, $type = '', $userid, $request, $schedule_datetime_del=''){
         if ($type == 'Pickup/Delivery') {
             $category_details = [];
             $deliver_charge = $this->getDeliveryFeeDispatcher($request, null, $schedule_datetime_del);
-            $deliver_charge = $deliver_charge??0.00;
+            $deliver_charge = $delivercharge['delivery_fee']??0.00;
+            $toll_charge = $delivercharge['toll_fee']??0.00;
             $category_list = Category::where('parent_id', $category_id)->get();
             foreach ($category_list as $category) {
                 $category_details[] = array(
@@ -393,7 +423,8 @@ class PickupDeliveryController extends FrontController{
                     'name' => $category->slug,
                     'icon' => $category->icon,
                     'image' => $category->image,
-                    'price' => $deliver_charge
+                    'price' => $deliver_charge + $toll_charge,
+                    'toll_price' => $toll_charge,
                 );
             }
             return $category_details;
@@ -410,7 +441,7 @@ class PickupDeliveryController extends FrontController{
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             if ($dispatch_domain && $dispatch_domain != false) {
                 $all_location = array();
-                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => 'IN_FASTAG', 'VehicleEmissionType' => 'GASOLINE', 'travelMode' => 'TAXI'];
+                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?$product->tollpass->toll_pass:'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?$product->emissiontype->emission_type:'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?$product->travelmode->travelmode:'TAXI')];
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/get-delivery-fee',
@@ -419,7 +450,7 @@ class PickupDeliveryController extends FrontController{
                 $response = json_decode($res->getBody(), true);
                 //pr($response);
                 if($response && $response['message'] == 'success'){
-                    return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?$response['toll_fee']:0.00);
+                    return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?((!empty($product) && $product->is_toll_tax == 1)?$response['toll_fee']:0.00):0.00);
                 }else{
                     return array('delivery_fee' => 0, 'toll_fee' => 0);
                 }
@@ -440,8 +471,6 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
-         //pr($request->all());
-       
         try {
             DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -455,9 +484,7 @@ class PickupDeliveryController extends FrontController{
           
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
-            // $orderrequest = new Request($order_place['data']->toArray());
-            // return $this->orderUpdateAfterPaymentPickupDelivery($orderrequest);
-            //pr($order_place);
+            
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
@@ -695,6 +722,8 @@ class PickupDeliveryController extends FrontController{
                 $order_product->created_by = null;
                 $order_product->variant_id = $variant->id;
                 $order_product->product_name = $product->sku;
+                $order_product->no_seats_for_pooling = (isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0;
+                $order_product->is_cab_pooling = isset($request->is_cab_pooling)?$request->is_cab_pooling:0;
 
                 if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
                 $user_product_order_form = json_encode($request->user_product_order_form);
@@ -919,7 +948,10 @@ class PickupDeliveryController extends FrontController{
                     'user_icon' => $customer->image,
                     'toll_passes' => 'IN_FASTAG',
                     'VehicleEmissionType' => 'GASOLINE',
-                    'travelMode' => 'TAXI'
+                    'travelMode' => 'TAXI',
+                    'no_seats_for_pooling' => (isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0,
+                    'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
+                    'available_seats' => $product->seats_for_booking,
                 ];
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
@@ -934,7 +966,7 @@ class PickupDeliveryController extends FrontController{
 
                     $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->with(['vendor'])->first();
                     
-                    //if($or_ids->vendor->auto_accept_order==1):
+                    // if($or_ids->vendor->auto_accept_order==1){
                         $update_vendor = VendorOrderStatus::updateOrCreate([
                             'order_id' =>  $order->id,
                             'order_status_option_id' => 2,
@@ -942,9 +974,10 @@ class PickupDeliveryController extends FrontController{
                             'order_vendor_id' =>  $or_ids->id]);
 
                         OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
-                    // else:
+                    // }
+                    // else {
                     //     OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['dispatcher_status_option_id' => 1]);
-                    // endif;
+                    // }
 
                     $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
                     'order_id' =>  $order->id,
