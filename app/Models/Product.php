@@ -316,12 +316,20 @@ class Product extends Model implements Auditable{
     // check product validate 
     public function scopeByProductWhereCheck($query)
     {   
-        return $query->where(['is_live'=>1,'is_long_term_service'=>0]);
+        $query = $query->where(['is_live'=>1]);
+        if(checkColumnExists('products','is_long_term_service')){
+          $query = $query->where('is_long_term_service',0);
+        }
+        return $query;
     }
     // check product validate 
     public function scopeByProductLongTerm($query)
     {   
-        return $query->where(['is_live'=>1,'is_long_term_service'=>1]);
+        $query = $query->where(['is_live'=>1]);
+        if(checkColumnExists('products','is_long_term_service')){
+          $query = $query->where('is_long_term_service',1);
+        }
+        return $query;
     }
 
     public function getActualPriceAttribute()
