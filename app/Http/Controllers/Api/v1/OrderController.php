@@ -2726,6 +2726,7 @@ class OrderController extends BaseController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData, $header_code='')
     {
+        Log::info('sendOrderPushNotificationVendors');
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
         $vendorAppDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
@@ -2768,9 +2769,10 @@ class OrderController extends BaseController
         // Individual Vendor App User Token
         $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
-
+        Log::info('vendorAppUserDevices');
+        Log::info($vendorAppUserDevices);
         if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
-
+            Log::info('vendor_fcm_server_key');
             $from = $client_preferences->vendor_fcm_server_key;
             $data['registration_ids'] = $vendorAppUserDevices;
 
