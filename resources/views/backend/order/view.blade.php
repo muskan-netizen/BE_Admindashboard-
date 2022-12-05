@@ -517,7 +517,7 @@
                                                         <td></td>
                                                     </tr>
                                                 @endif
-                                                @if ( isset($product->longTermSchedule) &&  count($product->longTermSchedule->schedule) > 0)
+                                                @if ( isset($product->longTermSchedule) &&  isset($product->longTermSchedule->schedule) && count($product->longTermSchedule->schedule) > 0)
                                                 
                                                     <tr class="route">
                                                         <th scope="row" colspan="4" class="text-end">
