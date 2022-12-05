@@ -6,7 +6,8 @@ $total_amount = $order->payable_amount;
 $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges;
 $additional_price=0;
 $serviceType =  Session::get('vendorType');
-    $timezone = Auth::user()->timezone;
+$timezone = Auth::user()->timezone;
+$order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_long_term : 0;
 @endphp
 @section('customcss')
 <style>
@@ -57,15 +58,17 @@ $serviceType =  Session::get('vendorType');
                                 @endphp
 
                                     <div class="row product-order-detail">
-                                        <div class="col-12"><h4>{{$product['vendor']->name}}</h4></div>
-                                            <div class="col-2">
+                                        <div class="col-12">
+                                            <h4>{{$product['vendor']->name}}</h4>
+                                        </div>
+                                        <div class="col-2">
                                             <img src="{{ $image }}" class="img-fluid blur-up lazyloaded">
                                         </div>
                                         <div class="col-10">
                                             <div class="row">
                                                 <div class="col-4 order_detail">
                                                     <div>
-                                                        <h4>{{__('Product Name')}}</h4>
+                                                        <h4> {{ ($order_is_long_term ==1)? __('Long term service Name') : __('Product Name')}}</h4>
                                                         <h5>{{ (!empty($product->pvariant->translation) && isset($product->pvariant->translation[0])) ? $product->pvariant->translation[0]->title : ''}}</h5>
                                                         @foreach($product->pvariant->vset as $vset)
                                                             <label><span>{{$vset->optionData->trans->title}}:</span>{{$vset->variantDetail->trans->title}}</label>
@@ -75,6 +78,7 @@ $serviceType =  Session::get('vendorType');
 
                                                 </div>
                                                 <div class="col-4 order_detail">
+                                                    @if($order_is_long_term ==0)
                                                     <div>
                                                         @if($serviceType=='rental')
                                                             <h4>{{__('Duration')}}</h4>
@@ -86,6 +90,7 @@ $serviceType =  Session::get('vendorType');
                                                             <h5>{{$product->quantity}}</h5>
                                                         @endif
                                                     </div>
+                                                    @endif
                                                 </div>
                                                 <div class="col-4 order_detail">
                                                     <div>
@@ -130,6 +135,7 @@ $serviceType =  Session::get('vendorType');
                                                 @endforeach
 
                                             @endif
+
                                             @if(isset($product->scheduled_date_time))
                                                 <hr class="my-2" style="width:100%;  display: block !important;">
                                                 <div class="spa_order_detail_slot">
@@ -143,8 +149,12 @@ $serviceType =  Session::get('vendorType');
                                                 </div>
                                         
                                             @endif
+                                            @if($order_is_long_term ==1)
+                                                @include('frontend.order.longTermDetails')
+                                            @endif
                                         </div>
                                     </div>
+                                    
                             @endforeach
                             <div class="total-sec row">
                                 <ul class="col-sm-6 offset-sm-6">

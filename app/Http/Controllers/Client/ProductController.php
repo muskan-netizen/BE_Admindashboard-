@@ -642,24 +642,26 @@ class ProductController extends BaseController
         try{
 
             DB::beginTransaction();
-            $product = Product::find($id);
-            $dynamic = time();
+            $productde = Product::productDelete($id);
+            // $product = Product::find($id);
+           
+            // $dynamic = time();
 
-            Product::where('id', $id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
+            // Product::where('id', $id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
 
-            $tot_var  = ProductVariant::where('product_id', $id)->get();
-            foreach($tot_var as $varr)
-            {
-                $dynamic = time().substr(md5(mt_rand()), 0, 7);
-                ProductVariant::where('id', $varr->id)->update(['sku' => $product->sku.$dynamic]);
-            }
+            // $tot_var  = ProductVariant::where('product_id', $id)->get();
+            // foreach($tot_var as $varr)
+            // {
+            //     $dynamic = time().substr(md5(mt_rand()), 0, 7);
+            //     ProductVariant::where('id', $varr->id)->update(['sku' => $product->sku.$dynamic]);
+            // }
 
-            Product::where('id', $id)->delete();
+            // Product::where('id', $id)->delete();
 
-            CartProduct::where('product_id', $id)->delete();
-            UserWishlist::where('product_id', $id)->delete();
+            // CartProduct::where('product_id', $id)->delete();
+            // UserWishlist::where('product_id', $id)->delete();
 
-             DB::commit();
+            DB::commit();
             return redirect()->back()->with('success', 'Product deleted successfully!');
         }
         catch(\Exception $ex){
@@ -915,6 +917,9 @@ class ProductController extends BaseController
                 $img->path = Storage::disk('s3')->put($this->folderName, $files, 'public');
                 $img->save();
                 $imageId = $img->id;
+            }
+            if($request->has('retunId') && $request->retunId  == 1){
+                return $imageId;
             }
             return response()->json(['imageId' => $imageId]);
         } else {
@@ -1208,22 +1213,23 @@ class ProductController extends BaseController
                     $products = Product::whereIn('id',$request->product_id)->get();
                     foreach($products as $product){
                         DB::beginTransaction();
-                        $dynamic = time();
+                        Product::productDelete($product->id);
+                        // $dynamic = time();
 
-                        Product::where('id', $product->id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
-
-                        $tot_var  = ProductVariant::where('product_id', $product->id)->get();
-                        foreach($tot_var as $varr)
-                        {
-                            $dynamic = time().substr(md5(mt_rand()), 0, 7);
-                            ProductVariant::where('id', $varr->id)->update(['sku' => $product->sku.$dynamic]);
-                        }
-
-                        Product::where('id', $product->id)->delete();
-
-                        CartProduct::where('product_id', $product->id)->delete();
-                        UserWishlist::where('product_id', $product->id)->delete();
-
+                        // Product::where('id', $product->id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
+    
+                        // $tot_var  = ProductVariant::where('product_id', $product->id)->get();
+                        // foreach($tot_var as $varr)
+                        // {
+                        //     $dynamic = time().substr(md5(mt_rand()), 0, 7);
+                        //     ProductVariant::where('id', $varr->id)->update(['sku' => $product->sku.$dynamic]);
+                        // }
+    
+                        // Product::where('id', $product->id)->delete();
+    
+                        // CartProduct::where('product_id', $product->id)->delete();
+                        // UserWishlist::where('product_id', $product->id)->delete();
+    
                         DB::commit();
                     }
                 break;
@@ -1242,12 +1248,54 @@ class ProductController extends BaseController
 
     # check if last mile delivery on
     public function getProductVariant(Request $request){
+       
+        // variant option
         $ProductVariants =   ProductVariant::where('product_id',$request->product_id)->get();
         $options = [];
         foreach($ProductVariants as $key => $variant){
             $options[] = "<option value=".$variant['id'].">".($variant['title'] ?? $variant['sku'])."</option>";
         }
-        return $this->successResponse($options, '');
+        
+        // addon selecter 
+        $selectedAddon =  LongTermServiceProductAddons::where('long_term_service_product_id',$request->service_product_id)->get();
+       
+        $ProductAddon  =  ProductAddon::with('addOnName','setoptions')->where('product_id',$request->product_id)->get();
+        $addOnHtml = '';
+        if(count( $ProductAddon)>0){
+            $addOnHtml .= '<div class="addon_ser bg-light p-3" style="border-radius:15px;">
+                                <h4 class="mt-0">'.__("Addons").'</h4>';
+            foreach($ProductAddon as $key => $addons){
+                $selected_option  = $selectedAddon->where('addon_id',$addons->addOnName->id)->values();
+                $selected_option_id = (count($selected_option) > 0 ) ? $selected_option[0]['option_id'] : '';
+                if($addons->setoptions->isNotEmpty()){
+                    $addOnHtml .='<div class="col-12 p-0">
+                                    <div class="form-group" id="service_product_variantInput">
+                    
+                                        <label class="control-label">'.$addons->addOnName->title.'</label>
+                                        <input name="add_on_id[]" type="hidden" value="'.$addons->addOnName->id.'">
+                                        <select class="form-control selectizeInput" id="service_product_variant" name="add_on_set[]">';
+                                        foreach($addons->setoptions as $setoptionskey => $setoptions){
+                                            $vr =  $selected_option_id == $setoptions["id"]  ? 'selected' : '' ;
+                                            $addOnHtml .='<option value="'.$setoptions["id"].'" '.$vr.' >'.($setoptions["title"]).'</option>';
+                                        }
+                                        $addOnHtml .='</select>
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                    </div>
+                                </div>';
+                }
+            }
+            $addOnHtml .=   '</div>';
+                                   
+
+        }
+      $respons = [
+        "variantOpt" => $options,
+        "addOnHtml"  => $addOnHtml
+      ];
+
+        return $this->successResponse($respons, '');
     }
 
     // update Role's variant Price (START)

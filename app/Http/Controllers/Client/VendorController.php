@@ -678,10 +678,12 @@ class VendorController extends BaseController
                         })->where('status', 1)->orderBy('position', 'asc')
                         ->orderBy('id', 'asc')
                         ->orderBy('parent_id', 'asc')->get();
-        $products = Product::with(['media.image', 'primary', 'category.cat', 'vendor', 'brand', 'variant' => function ($v) {
+        $products = Product::with(['media.image', 'primary', 'category.cat', 'category.categoryDetail', 'brand', 'variant' => function ($v) {
             $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
-        }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count', 'title')
-            ->where('vendor_id', $id)->get()->sortBy('primary.title', SORT_REGULAR, false);
+        }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count', 'title','category_id')
+            ->where(['vendor_id'=> $id])->whereHas('category.categoryDetail', function ($query) {
+                $query->where('type_id','!=','7');
+            })->get()->sortBy('primary.title', SORT_REGULAR, false);
         $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
             ->where('id', '>', '1')
             // ->where('is_core', 1)
@@ -798,11 +800,14 @@ class VendorController extends BaseController
             $ordring = $request->order[0]['dir'] ?? 'asc';
         }
         $client_preference_detail =ClientPreference::select('id','business_type')->first();
-        $product = Product::with(['media.image', 'primary', 'category.cat','vendor', 'brand', 'variant' => function ($v) {
-            $v->select('id', 'product_id', 'quantity', 'price', 'barcode', 'expiry_date')->groupBy('product_id');
-        }])->select('products.id', 'products.sku', 'products.vendor_id', 'products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title','products.global_product_id')
-        ->join('product_translations', 'product_translations.product_id', '=', 'products.id')
-        ->orderBy('product_translations.title', $ordring)
+        /**
+         * is_live and not a long term service check in byProductWhereCheck this scope
+         *  */ 
+        $product = Product::where('is_long_term_service',0)->with(['media.image', 'primary', 'category.cat', 'brand', 'variant' => function ($v) {
+            $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
+        }])->select('products.id', 'products.sku', 'products.vendor_id','products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title','products.global_product_id')
+        ->join('product_translations', 'product_translations.product_id', '=', 'products.id') 
+        ->orderBy('product_translations.title', $ordring)  
         ->groupBy('products.id')
         ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
          $need_sync_with_order = 0;

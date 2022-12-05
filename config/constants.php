@@ -61,4 +61,18 @@ return [
     'laundry'      => '7',            // Laundry related products are mentioned in this flow.
     'appointment'  => '8',  
   ],
+  'Period' =>[
+    'days'     => 'Daily',
+    'week'     => 'Weekly',
+    'months'   => 'Monthly',
+  ],
+  'weekDay' => [
+    '1' => "Sunday",
+    '2' => "Monday",
+    '3' => "Tuesday",
+    '4' => "Wednesday",
+    '5' => "Thursday",
+    '6' => "Friday",
+    '7' => "Saturday",
+  ]
 ];
