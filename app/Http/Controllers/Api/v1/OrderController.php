@@ -669,22 +669,26 @@ class OrderController extends BaseController
                                 }
                                 $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail, $code);
                             }
-                        }
-                        $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
-                        $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                        $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code);
-                        
-                        // $user_admins = User::where(function ($query) {
-                        //     $query->where(['is_superadmin' => 1]);
-                        // })->pluck('id')->toArray();
-                        // $user_vendors = [];
-                        // if (!empty($order->user_vendor) && count($order->user_vendor) > 0) {
-                        //     $user_vendors = $order->user_vendor->pluck('user_id')->toArray();
-                        // }
-                        // $order->admins = array_unique(array_merge($user_admins, $user_vendors));
-
-                        // // $this->sendOrderNotification($user->id);
-                        // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id], $code);
+                            $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
+                            $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                            $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code);
+                        }else{
+                            $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
+        
+                            $getAllVendorAdmin = Order::join('order_vendors as ov', 'ov.order_id', 'orders.id')
+                                                ->leftjoin('user_vendors as uv', 'uv.vendor_id', 'ov.vendor_id')
+                                                ->where('order_number', $order->order_number)
+                                                ->pluck('uv.user_id');
+        
+                            $super_admin = User::where('is_superadmin', 1)->pluck('id');
+        
+                            if(!empty($getAllVendorAdmin)){
+                                $admins = $super_admin->merge($getAllVendorAdmin);
+                                $super_admin = $admins->all();
+                            }
+        
+                            $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                        }    
                         $this->sendSuccessSMS($request, $order);
                     }
                     DB::commit();
