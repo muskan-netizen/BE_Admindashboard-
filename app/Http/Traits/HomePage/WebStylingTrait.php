@@ -65,7 +65,12 @@ trait WebStylingTrait
         $product_ids = [];
         if (checkColumnExists('home_products', 'slug')) {
             $single_category_products = HomeProduct::whereSlug('selected_products')->first();
-            $product_ids = json_decode($single_category_products->products);
+            if( !empty($single_category_products->products) ) {
+
+                $product_ids = json_decode($single_category_products->products);
+            }else {
+                $product_ids = [];
+            }
         }
         return $product_ids;
     }
