@@ -2765,6 +2765,18 @@ class OrderController extends BaseController
                 sendFcmCurlRequest($data);
             }
         }
+        // Individual Vendor App User Token
+        $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+
+
+        if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
+
+            $from = $client_preferences->vendor_fcm_server_key;
+            $data['registration_ids'] = $vendorAppUserDevices;
+
+            $result = sendFcmCurlRequest($data);
+            //Log::info($result);
+        }
     }
 
     public function sendStatusChangePushNotificationCustomer($user_ids, $orderData, $order_status_id, $header_code)
