@@ -358,6 +358,7 @@ body.dark.al_body_template_one table.table.wishlist-table.border{background-colo
     .al_body_template_one section.popular-brands.left-shape_.position-relative {
         padding-top: 0 !important;
     }
+    .al_body_template_one .ac-royo-btn a{width: 26%;}
 
 }
 
