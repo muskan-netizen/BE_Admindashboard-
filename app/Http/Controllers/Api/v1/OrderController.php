@@ -2731,7 +2731,7 @@ class OrderController extends BaseController
 
         $vendorAppDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
-        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon','vendor_fcm_server_key')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             
             $notification_content = NotificationTemplate::where('id', 4)->first();
