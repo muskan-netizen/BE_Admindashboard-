@@ -1058,9 +1058,14 @@ class UserhomeController extends FrontController
                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
                 $q->groupBy('product_id');
             },
-        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','is_long_term_service');
+        ]);
         if ($where !== '') {
             $products = $products->where($where, 1);
+        }
+        if(checkColumnExists('products','is_long_term_service')){
+            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','is_long_term_service');
+        }else{
+            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
         }
         $pndCategories = Category::where('type_id', 7)->pluck('id');
         // if (is_array($venderIds)) {
