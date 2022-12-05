@@ -36,3 +36,7 @@
 @media (max-width:767px){
     .al_searchType {width: 100%;  }
 }
+
+.onhover-show-div li.active a{
+    color: #DB1919;
+}
