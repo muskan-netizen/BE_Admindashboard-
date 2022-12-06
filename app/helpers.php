@@ -82,12 +82,13 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
 }
 
 if (!function_exists('sendFcmCurlRequest')) {
-    function sendFcmCurlRequest($data)
+    function sendFcmCurlRequest($data ,$fcm_server_key = '')
     {
         $client_preferences = ClientPreference::first();
-         if (!empty($client_preferences->fcm_server_key)) {
+        $fcm_server_key = ($fcm_server_key =='') ? $client_preferences->fcm_server_key :  $fcm_server_key ;
+         if (!empty($fcm_server_key )) {
             $headers = [
-                'Authorization: key='.$client_preferences->fcm_server_key,
+                'Authorization: key='.$fcm_server_key ,
                 'Content-Type: application/json',
             ];
             $ch = curl_init();

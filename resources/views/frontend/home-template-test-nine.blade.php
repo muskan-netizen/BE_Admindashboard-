@@ -325,6 +325,7 @@
 @endif
 
 <!-----------------categores------------>
+@if(!empty($navCategories) && count($navCategories))
 <section class="p2p-categories">
 	<div class="container">
 		<div class="row">
@@ -333,81 +334,31 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-2">
-				<div class="cate-item text-center">
-					<img class="img-fluid" src="{{asset('images/p2p-images/item-1.png')}}" alt="" title=""> 
-					<h3>Motors</h3>
-				</div>
-			</div>
-			<div class="col-md-2">
-				<div class="cate-item text-center">
-					<img class="img-fluid" src="{{asset('images/p2p-images/item-2.png')}}" alt="" title=""> 
-					<h3>Motor Bikes</h3>
-				</div>
-			</div>
-			<div class="col-md-2">
-				<div class="cate-item text-center">
-					<img class="img-fluid" src="{{asset('images/p2p-images/item-3.png')}}" alt="" title=""> 
-					<h3>Parts & accessories</h3>
-				</div>
-			</div>
-			<div class="col-md-2">
-				<div class="cate-item text-center">
-					<img class="img-fluid" src="{{asset('images/p2p-images/item-4.png')}}" alt="" title=""> 
-					<h3>Plates </h3>
-				</div>
-			</div>
-			<div class="col-md-2">
-				<div class="cate-item text-center">
-					<img class="img-fluid" src="{{asset('images/p2p-images/item-5.png')}}" alt="" title=""> 
-					<h3>Boats</h3>
-				</div>
-			</div>
-			<div class="col-md-2">
-				<div class="cate-item text-center">
-					<img class="img-fluid" src="{{asset('images/p2p-images/item-6.png')}}" alt="" title=""> 
-					<h3>Car Towing</h3>
-				</div>
-			</div>
-			<div class="col-md-2">
-				<div class="cate-item text-center">
-					<img class="img-fluid" src="{{asset('images/p2p-images/item-7.png')}}" alt="" title=""> 
-					<h3>Car Towing</h3>
-				</div>
-			</div>
-			<div class="col-md-2">
-				<div class="cate-item text-center">
-					<img class="img-fluid" src="{{asset('images/p2p-images/item-8.png')}}" alt="" title=""> 
-					<h3>Car servicing</h3>
-				</div>
-			</div>
-			<div class="col-md-2">
-				<div class="cate-item text-center">
-					<img class="img-fluid" src="{{asset('images/p2p-images/item-1.png')}}" alt="" title=""> 
-					<h3>Car Wash & Detailing</h3>
-				</div>
-			</div>
-			<div class="col-md-2">
-				<div class="cate-item text-center">
-					<img class="img-fluid" src="{{asset('images/p2p-images/item-3.png')}}" alt="" title=""> 
-					<h3>Showrooms</h3>
-				</div>
-			</div>
-			<div class="col-md-2">
-				<div class="cate-item text-center">
-					<img class="img-fluid" src="{{asset('images/p2p-images/item-1.png')}}" alt="" title=""> 
-					<h3>Motors</h3>
-				</div>
-			</div>
-			<div class="col-md-2">
-				<div class="cate-item text-center">
-					<img class="img-fluid" src="{{asset('images/p2p-images/item-2.png')}}" alt="" title=""> 
-					<h3>Motor Bikes</h3>
-				</div>
-			</div>
+			{{-- @dump($navCategories) --}}
+			@foreach($navCategories as $cate)
+				@if($cate['name'])
+					<div class="col-md-2">
+						<div class="cate-item text-center">
+							<a href="{{route('categoryDetail', $cate['slug'])}}">
+								<img 
+									class="blur-up lazyload" 
+									data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" 
+									data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" 
+									data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" 
+									alt="" 
+									onmouseover='changeImage(this,1)' 
+									onmouseout='changeImage(this,0)'
+								>
+								<h3>{{$cate['name']}}</h3>
+							</a>
+						</div>
+					</div>
+				@endif
+			@endforeach
 		</div>
 	</div>
 </section>
+@endif
 <!-- no-store-wrapper start -->
 <section class="no-store-wrapper mb-3 mt-3" style="display: none;">
 	<div class="container">

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddSoftdeleteToLongTermServicesTable extends Migration
+class AddIsLongTermToOrdersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddSoftdeleteToLongTermServicesTable extends Migration
      */
     public function up()
     {
-        Schema::table('long_term_services', function (Blueprint $table) {
-            $table->softDeletes();
+        Schema::table('orders', function (Blueprint $table) {
+            $table->tinyInteger('is_long_term')->nullable()->default(0);
         });
     }
 
@@ -25,8 +25,8 @@ class AddSoftdeleteToLongTermServicesTable extends Migration
      */
     public function down()
     {
-        Schema::table('long_term_services', function (Blueprint $table) {
-            //
+        Schema::table('orders', function (Blueprint $table) {
+            
         });
     }
 }

@@ -130,6 +130,14 @@ class HomePageLabelSeeder extends Seeder
             'slug' => 'cities',
             'order_by' => 11,
         ]);
+        
+        $already = HomePageLabel::where('slug', 'long_term_service')->count();
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Long Term Service',
+            'slug' => 'long_term_service',
+            'order_by' => 12,
+        ]);
 
         $already = HomePageLabel::where('slug', 'recently_viewed')->count();
 

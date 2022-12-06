@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLongTermServiceTranslationsTable extends Migration
+class CreateLongTermServicePeriodsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateLongTermServiceTranslationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('long_term_service_translations', function (Blueprint $table) {
+        Schema::create('long_term_service_periods', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('long_term_service_id')->unsigned()->nullable();
-            $table->string('name');
-            $table->unsignedBigInteger('language_id');
+            $table->bigInteger('product_id')->unsigned()->nullable();
+            $table->string('service_period',150)->nullable()->comment('day,week,month');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ class CreateLongTermServiceTranslationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('long_term_service_translations');
+        Schema::dropIfExists('long_term_service_periods');
     }
 }
