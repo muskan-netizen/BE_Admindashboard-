@@ -251,9 +251,10 @@ body.al_body_template_eight #al_new_design .pixelstrap ul {
     object-fit: cover;
 }
 .top-header .header-dropdown li.onhover-dropdown {
-    padding: 0 15px;
+    padding: 0 !important;
     border-right: 1px solid #ccc;
 }
+.top-header .header-dropdown li.onhover-dropdown svg{display: none !important;}
 body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect {
     padding-left: 15px !important;
 }

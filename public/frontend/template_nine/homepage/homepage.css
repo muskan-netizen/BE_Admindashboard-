@@ -602,6 +602,7 @@ body.dark.al_body_template_nine.p2p-module section.product-2 {
 /*---------------p2p homepage css----------*/
 body.al_body_template_nine.p2p-module section.home-slider-wrapper .carousel-indicators {
     bottom: -50px !important;
+    z-index:1;
 }
 body.al_body_template_nine.p2p-module section.home-slider-wrapper .carousel-indicators li {
     background-color: #FC4636;
@@ -629,13 +630,14 @@ body.al_body_template_nine.p2p-module section.p2p-categories h2 {
     margin: 0;
     text-transform: capitalize;
 }
-body.al_body_template_nine.p2p-module section.p2p-categories .cate-item {
+body.al_body_template_nine.p2p-module section.p2p-categories .cate-item a{
     background: linear-gradient(180deg, #e1dfdf 0%, #efe7e7 100%);
     border-radius: 9px;
     padding: 15px;
     margin-bottom: 25px;
     min-height: 180px;
     cursor: pointer;
+    display: block;
 }
 body.al_body_template_nine.p2p-module section.p2p-categories .cate-item h3 {
     font-style: normal;
