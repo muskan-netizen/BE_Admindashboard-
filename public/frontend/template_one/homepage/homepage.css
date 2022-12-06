@@ -3239,6 +3239,21 @@ body.al_body_template_one .top-banner-wrapper {
 .grid-row.grid-4-4 .cards:nth-child(4){display: none;}
 }
 @media(max-width:767px){
+    .al_body_template_one .home-slider-wrapper .banner-img-outer img {
+        max-height: 407px;
+        height: 150px;
+    }
+    .al_body_template_one .step-indicator {
+        margin-top: 0;
+    }
+    .al_body_template_one .classes_wrapper .class_img img {
+        width: 100%;
+        height: 150px;
+    }
+    .al_body_template_one .service-data-wrapper .ac-royo-btn a {
+        width: 30% !important;
+    }
+
     body.al_body_template_one section.cab-banner-area.alTaxiBannerStart .container.p-64 {
         padding: 30px !important;
     }
@@ -3685,6 +3700,7 @@ body.dark.al_body_template_one table.table.wishlist-table.border {
     .al_body_template_one section.popular-brands.left-shape_.position-relative {
         padding-top: 0 !important;
     }
+    .al_body_template_one .ac-royo-btn a{width: 26%;}
 
 }
 
@@ -3804,5 +3820,41 @@ body[dir="rtl"] .al_template_one.site-topbar .location-bar h2 {
 }
 
 
-
-
+/*----------------dark theme issues--------------*/
+.dark .product-4-new_products .product-description p span {
+    color: #fff;
+    padding: 0;
+}
+.dark .al_body_template_one a.navbar-brand img {
+    height: 40px;
+    filter: invert(1);
+}
+.dark .render_full_featured_products .product-description p span {
+    color: #fff;
+}
+.dark .vendors .slick-next:before, .vendors .slick-prev:before {
+    filter: invert(1);
+}
+.dark .product-4-on_sale .product-description p span {
+    padding: 0;
+    color: #fff;
+}
+.dark .alRentalSinglePageView .single_cart-temp_label label {
+    color: #fff;
+}
+.dark .tab-product .nav-material.nav-tabs .nav-link.active{
+    color: #fff !important;
+}
+.dark .items_price{
+    color: #fff !important;
+}
+.dark .tab-product .nav-material.nav-tabs .nav-link.active {
+    color: #fff;
+}
+.dark .product-full-tab .nav-material.nav-tabs .nav-item .material-border, .tab-product .nav-material.nav-tabs .nav-item .material-border {
+    border-bottom: 2px solid #ffffff;
+}
+.dark .status_box li img {
+    opacity: 1;
+    filter: invert(1);
+}

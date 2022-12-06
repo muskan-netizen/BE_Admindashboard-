@@ -47,7 +47,7 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
 
                 <div class="row">
                     <div class="col-lg-6">
-                        <div class="product-order py-3">
+                        <div class="product-order py-3 pro-scroller">
                             <h3>{{__('Your Order Details')}}</h3>
                          
                             @foreach($order->products as $product)

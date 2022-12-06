@@ -10,7 +10,7 @@ use App\Models\Country;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,ProductTrait};
+use App\Http\Traits\{ApiResponser,ProductTrait,CartManager};
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +31,7 @@ use Log;
 
 class CartController extends BaseController
 {
-    use ApiResponser,ProductTrait;
+    use ApiResponser,ProductTrait,CartManager;
 
     private $field_status = 2;
 
@@ -897,8 +897,7 @@ class CartController extends BaseController
                             }
                             //dd($prod->product->toArray());
                             $prod->taxdata = $taxData;
-<<<<<<< HEAD
-                            if ($action == 'delivery') {
+                            if ($action == 'delivery' || $action == 'on_demand') {
                                 $checkLastMile = 0;
                                 $product_tags = '';
                                 $NumberOfroutes= 1;
@@ -911,55 +910,6 @@ class CartController extends BaseController
                                     $checkLastMile = 1;
                                     $product_tags = $prod->product->LongTermProduct->first()->tags;
                                     $NumberOfroutes = $prod->LongTermProducts ? $prod->LongTermProducts->quantity : 1;
-=======
-                            if ($action == 'delivery' || $action == 'on_demand') {
-                                if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
-
-
-                            $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address, $prod->product->tags);
-                            $deliveryDuration = 0;
-                            if(isset($deliveries[0]))
-                            {
-                                
-                                 if($code){
-                                     $new = array_filter($deliveries, function ($var) use ($code) {
-                                         return ($var['code'] == $code);
-                                     });
-                                     foreach($new as $rate){
-                                         $deliveryCharges = $rate['rate'];
-                                         $deliveryDuration = $rate['duration'];
-                                     }
-                                     if($deliveryCharges)
-                                     {
-                                         $deliveryCharges = $rate['rate'];
-                                         $deliveryDuration = $rate['duration'];
-                                     }else{
-                                         $deliveryCharges = $deliveries[0]['rate'];
-                                         $deliveryDuration = $deliveries[0]['duration'];
-                                         $code = $deliveries[0]['code'];
-                                     }
- 
-                                 }else{
-                                     $deliveryCharges = $deliveries[0]['rate'];
-                                     $deliveryDuration = $deliveries[0]['duration'];
-                                     $code = $deliveries[0]['code'];
-                                 }
-                                
-                                if($prod->product->individual_delivery_fee == 1) {
-                                    $quantity_deliveryCharges = $deliveryCharges*$prod->quantity;
-                                    $deliveryCharges_real = ($vendorTotalDeliveryFee + $previousdeliveryfee + $quantity_deliveryCharges);
-                                    $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $quantity_deliveryCharges;
-                                    $previousdeliveryfee = 0;
-                                    CartProduct::where('cart_id', $cart->id)->where('vendor_id', $vendorData->vendor->id)->where('product_id', $prod->product->id)->update(['product_delivery_fee'=>$quantity_deliveryCharges]);
-                                    $prod->product->product_delivery_fee = $quantity_deliveryCharges;
-                                    
-                                }else{
-                                    $deliveryCharges_real = ($vendorTotalDeliveryFee + $deliveryCharges);
-                                    $previousdeliveryfee = $deliveryCharges;
-                                }
-                                if(isset($deliveries[0]['rate'])){
-                                    $deliveries[0]['rate'] = $deliveryCharges_real;
->>>>>>> pre_dev
                                 }
                                 if ($checkLastMile ) {
 
@@ -1441,7 +1391,17 @@ class CartController extends BaseController
         $cart->is_long_term_added = $is_long_term;
         $temp_total_paying = $total_paying  + $total_tax - $total_disc_amount;
         if ($cart->user_id > 0) {
+<<<<<<< HEAD
             $loyalty_amount_saved = $this->getLoyaltyPoints($cart->user_id, $clientCurrency->doller_compare);
+=======
+            //$loyalty_amount_saved = $this->getLoyaltyPoints($cart->user_id, $clientCurrency->doller_compare);
+            $loyaltyCheck = $this->getOrderLoyalityAmount($user,$clientCurrency);
+            $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
+            // if($total_paying > $cart->loyalty_amount){
+            //    $cart->loyalty_amount = 0.00;
+            // }
+            // $cart->wallet = $this->getWallet($cart->user_id, $clientCurrency->doller_compare, $currency);
+>>>>>>> pre_stage
         }
         if ($loyalty_amount_saved  >= $temp_total_paying) { 
             $loyalty_amount_saved = $temp_total_paying;

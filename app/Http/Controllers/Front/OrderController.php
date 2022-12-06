@@ -49,7 +49,7 @@ use App\Models\LuxuryOption;
 use App\Models\PaymentOption;
 use App\Models\CartDeliveryFee;
 use App\Models\ClientPreference;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,CartManager};
 use App\Models\AddonOption;
 use App\Models\{OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule};
 use App\Models\ProductVariantSet;
@@ -62,9 +62,10 @@ use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\LalaMovesController;
 
 
+
 class OrderController extends FrontController
 {
-    use ApiResponser;
+    use ApiResponser,CartManager;
     use \App\Http\Traits\OrderTrait;
     /**
      * Display a listing of the resource.
@@ -562,16 +563,9 @@ class OrderController extends FrontController
         }
         $subscription_features = array();
         if ($user) {
-            $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-            if ($order_loyalty_points_earned_detail) {
-                $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-                if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                    $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
-                    if ($customerCurrency->is_primary != 1) {
-                        $loyalty_amount_saved = $loyalty_amount_saved * $customerCurrency->doller_compare;
-                    }
-                }
-            }
+            //Get earn and used loyalty amount 
+            $loyalty_amount_saved = $this->getOrderLoyalityAmount($user);
+
             $now = Carbon::now()->toDateTimeString();
             $user_subscription = SubscriptionInvoicesUser::with('features')
                 ->select('id', 'user_id', 'subscription_id')
@@ -804,19 +798,14 @@ class OrderController extends FrontController
             $language_id = Session::get('customerLanguage');
             $cart = Cart::where('user_id', $user->id)->first();
 
-            /* Count loyalty points */
-            $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-            if ($order_loyalty_points_earned_detail) {
-                $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-                if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                    $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
-                }
-            }
-
             /* Get Currencies of client and customer */
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-
+             //Get earn and used loyalty amount 
+            $loyaltyCheck = $this->getOrderLoyalityAmount($user,$customerCurrency);
+            $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
+            $loyalty_points_used = $loyaltyCheck->loyalty_points_used??0;
+            
             /* Generate order object */
             $order = new Order;
             $order->user_id = $user->id;
@@ -1454,7 +1443,7 @@ class OrderController extends FrontController
 
             }//End cart product loop
             //echo "loop end";
-            $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
+            $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint('',$payable_amount);
 
             // calculate subscription discount
             if ($user_subscription) {
