@@ -26,7 +26,7 @@
 .p2p-module #page-container section, body .vendors section {
     padding-bottom: 60px;
 }
-.p2p-module .category-related-product.suggested-product.slick-initialized.slick-slider .flag-discount::before, .flag-discount::after{left:100% !important;}
+.p2p-module .category-related-product.suggested-product.slick-initialized.slick-slider .flag-discount::before, .flag-discount::after{left:100% !important;display:none !important;}
 body.dark.al_body_template_one.p2p-module .breadcrumb-section.bg-transparent {
     padding: 0px 0 0 !important;
 }
@@ -249,7 +249,31 @@ body.dark.al_body_template_one.p2p-module .custom_filtter {
 body.dark.al_body_template_one.p2p-module .collection-product-wrapper .product-top-filter {
     border: none;
 }
-
+.p2p-module section.section-b-space.alSingleProducts.product_ddetails_page .product-card-box.position-relative.al_box_third_template.al {
+    width: 90% !important;
+    padding: 0px !important;
+    border-radius: 10px !important;
+    background-color: #ffff !important;
+    border: 1px solid #00000029 !important;
+}
+/*----------------p2p design css------------*/
+body.al_body_template_nine.p2p-module .img-outer-box.position-relative {
+    border-radius: 12px 12px 0px 0px;
+    overflow: hidden;
+}
+body.al_body_template_nine.p2p-module .category-related-product .slick-slide img {
+    display: block;
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+body.al_body_template_nine.p2p-module .product-card-box.position-relative.al_box_third_template.al:hover {
+    transform: translateY(-10px);
+    transition: .3s ease-in-out;
+}
+body.al_body_template_nine.p2p-module .category-related-product p.exzoom_btn {
+    display: none;
+}
 /*----------media css--------------*/
 @media(max-width:767px){
     .p2p-module .col-md-8.text-left.vender-peragraph.mt-3.mt-5 {

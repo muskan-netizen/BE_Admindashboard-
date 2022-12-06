@@ -498,7 +498,7 @@ class UserhomeController extends FrontController
             $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
             $enable_layout = CabBookingLayout::where('is_active',1)->orderBy('order_by','asc')->pluck('slug')->toArray();
             $categories = [];
-            if(isset($set_template)  && $set_template->template_id == 8){
+            if(isset($set_template)  && ($set_template->template_id == 8 || $set_template->template_id == 9)){
                 $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
                 ->where('id', '>', '1')
                 // ->where('is_core', 1)
