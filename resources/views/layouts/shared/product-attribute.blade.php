@@ -71,6 +71,7 @@
                                         <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
                                     </div>
                                     {{-- <button class="btn btn-sm add_attr_options" data-attribute_id="{{ $var->id }}" ><i class="fas fa-plus"></i></button> --}}
+                                    @php  $counter++; @endphp
                                 @endif
                             @endforeach
                         @else
@@ -83,46 +84,10 @@
                                     <input type="checkbox" name="attribute[{{$var->id}}][option][{{$counter}}][value]" value="{{$opt->id}}" @if(in_array($opt->id, $attribute_value)) checked @endif>
                                     <label for="attr_opt_vid_{{$opt->id}}">{{$opt->title}}</label>
                                 </div>
-                                
+                                @php  $counter++; @endphp
                             @endforeach
                             <button class="btn btn-sm add_attr_options" data-attribute_id="{{ $var->id }}" ><i class="fas fa-plus"></i></button>
                         @endif
-                        <?php /*
-                        @else
-
-                        @foreach($var->option as $key => $opt)
-                        
-                        @if(isset($opt) && !empty($opt->title) && isset($var) && !empty($var->title) )
-
-                            @if( !empty($var->type) && $var->type == 3 )
-                                <div class="form-check-inline ">
-                                    <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
-                                    <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
-                                    <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
-                                    <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
-                                    <div class="attr_radio_{{$var->id}}">
-                                    <input type="radio" name="attribute[{{$var->id}}][option][{{$counter}}][value]" class="attr_radio mr-1"  
-                                    value="{{$opt->id}}" @if(in_array($opt->id, $attribute_value)) checked @endif>
-                                    </div>
-                                    <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
-                                </div>
-                                <button>Add option</button>
-                            @else
-                                <div class="checkbox checkbox-success form-check-inline pr-3">
-                                    <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
-                                    <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
-                                    <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
-                                    <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
-                                    <input type="checkbox" name="attribute[{{$var->id}}][option][{{$counter}}][value]" value="{{$opt->id}}" @if(in_array($opt->id, $attribute_value)) checked @endif>
-                                    <label for="attr_opt_vid_{{$opt->id}}">{{$opt->title}}</label>
-                                </div>
-                                <button>Add option</button>
-                            @endif
-                            @php $counter++; @endphp
-                        @endif
-                        @endforeach
-                        @endif
-                        */ ?>
                     </div>
                 </div>
                 @endforeach
