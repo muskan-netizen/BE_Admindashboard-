@@ -750,7 +750,32 @@ class StoreController extends BaseController{
 			$user = Auth::user();	
 			$productid = $request->product_id;
 
-			$data = $this->preProductDetail($productid);			
+			$data = $this->preProductDetail($productid);		
+			
+			
+			// product attributes
+			if( clientPrefrenceModuleStatus('p2p_check') ) {
+				
+				$product = Product::findOrFail($request->product_id);
+
+				// All attribute list
+				$productAttributes = Attribute::with('option', 'varcategory.cate.primary', 'productAttribute')
+				->select('attributes.*')
+				->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
+				->where('attribute_categories.category_id', $product->category_id)
+				->where('attributes.status', '!=', 2)
+				->orderBy('position', 'asc')->get();
+				
+				$data['attributes'] = $productAttributes;
+				$data['p2p_active'] = true;
+				
+			}
+			else {
+				$data['attributes'] = [];
+				$data['p2p_active'] = false;
+				
+			}
+
 			return $this->successResponse($data, 'Product detail!', 200);
 
 		} catch (Exception $e) {
@@ -897,6 +922,59 @@ class StoreController extends BaseController{
 			if ($validator->fails()) {			
 				return $this->errorResponse($validator->errors()->first(), 422);
 			}
+
+			// Save Product Attribute
+			if( !empty($request->attribute) ) {
+				$attribute = json_decode($request->attribute, true);
+				
+				if( !empty($attribute) ) {
+					$insert_arr = [];
+					$insert_count = 0;
+					foreach($attribute as $key => $value) {
+						if( !empty($value) && !empty($value['option'] && is_array($value) )) {
+							
+							if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
+								$value_arr = @$value['value'];
+								
+								foreach( $value['option'] as $key1 => $val1 ) {
+								
+									if( @in_array($val1['option_id'], $value_arr) ) {
+								
+										$insert_arr[$insert_count]['product_id'] = $request->product_id;
+										$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+										$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+										$insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
+										$insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+										$insert_arr[$insert_count]['is_active'] = 1;
+									}
+									$insert_count++;
+								}
+							}
+							else {
+								foreach($value['option'] as $option_key => $option) {
+									if(@$option['value']){
+										$insert_arr[$insert_count]['product_id'] = $request->product_id;
+										$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+										$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+										$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+										$insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
+										$insert_arr[$insert_count]['is_active'] = 1;
+
+									}
+									$insert_count++;
+								}
+							}
+						}
+
+					
+					}
+					if( !empty($insert_arr) ) {
+						ProductAttribute::where('product_id',$request->product_id)->delete();
+						ProductAttribute::insert($insert_arr);
+					}
+				}
+			}
+
 			$user = Auth::user();	
 			$productid = $product->id;
 
@@ -1504,6 +1582,9 @@ class StoreController extends BaseController{
 			$product_categories_hierarchy = $this->getCategoryOptionsHeirarchy($product_categories_build, $langId);
 			foreach($product_categories_hierarchy as $k => $cat){
                 $myArr = array(1,3,7,8,9);
+				if( getClientPreferenceDetail()->p2p_check ) {
+                    $myArr[] = 13;
+                }
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
                     unset($product_categories_hierarchy[$k]);
                 }
