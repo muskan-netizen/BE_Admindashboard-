@@ -1,5 +1,7 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => getNomenclatureName('vendors', true)])
-
+{{-- @php
+pr($products->toArray());
+@endphp --}}
 @section('css')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
     <link href="{{ asset('assets/libs/fullcalendar-list/fullcalendar-list.min.css') }}" rel="stylesheet" type="text/css" />
@@ -282,73 +284,7 @@
                                                         <th>{{ __('Action') }}</th>
                                                     </tr>
                                                 </thead>
-                                                <!-- <tbody id="post_list">
-                                                    @foreach ($products as $product)
-                                                        <tr data-row-id="{{ $product->id }}">
-
-                                                            <td><input type="checkbox" class="single_product_check"
-                                                                    name="product_id[]" id="single_product"
-                                                                    value="{{ $product->id }}"></td>
-                                                            <td>
-                                                                @if (isset($product->media[0]) && isset($product->media[0]->image))
-                                                                    <img alt="{{ $product->id }}" class="rounded-circle"
-                                                                        src="{{ $product->media[0]->image->path['proxy_url'] . '30/30' . $product->media[0]->image->path['image_path'] }}">
-                                                                @else
-                                                                    {{-- {{ $product->sku }} --}}
-                                                                @endif
-                                                            </td>
-                                                            <td> <a href="{{ route('product.edit', $product->id) }}"
-                                                                    target="_blank">{{ Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30) }}</a>
-                                                            </td>
-                                                            <td> {{-- $product->category ? $product->category->cat->name : 'N/A' --}}
-                                                                {{ ($product->category && $product->category->cat && $product->category->cat->name) ? $product->category->cat->name : 'N/A' }}
-                                                            </td>
-                                                            @if ($client_preference_detail->business_type != 'taxi')
-                                                                <td> {{ !empty($product->brand) ? $product->brand->title : 'N/A' }}
-                                                                </td>
-                                                                <td> {{ $product->variant->first() ? $product->variant->first()->quantity : 0 }}
-                                                                </td>
-                                                                <td> {{ $product->variant->first() ? decimal_format($product->variant->first()->price) : 0 }}
-                                                                </td>
-                                                            @endif
-                                                            <td>
-                                                                {{ $live_status[$product->is_live]  }}
-
-                                                            </td>
-                                                            @if ($client_preference_detail->business_type != 'taxi')
-                                                                <td> {{ $product->is_new == 0 ? __('No') : __('Yes') }}</td>
-                                                                <td> {{ $product->is_featured == 0 ? __('No')  : __('Yes') }}
-                                                                </td>
-                                                                <td> {{ $product->Requires_last_mile == 0 ? __('No')  : __('Yes') }}
-                                                                </td>
-                                                            @endif
-                                                            <td>
-                                                                <div class="form-ul" style="width: 60px;">
-                                                                    <div class="inner-div" style="float: left;">
-                                                                        <a class="action-icon"
-                                                                            href="{{ route('product.edit', $product->id) }}"
-                                                                            userId="{{ $product->id }}"><i
-                                                                                class="mdi mdi-square-edit-outline"></i></a>
-                                                                    </div>
-                                                                    <div class="inner-div">
-                                                                        <form id="deleteproduct_{{$product->id}}" method="POST"
-                                                                            action="{{ route('product.destroy', $product->id) }}">
-                                                                            @csrf
-                                                                            @method('DELETE')
-                                                                            <div class="form-group">
-                                                                                <button type="button" class="btn btn-primary-outline action-icon delete-product" data-destroy_url="{{ route('product.destroy', $product->id) }}" data-rel="{{$product->id}}"><i class="mdi mdi-delete"></i></button>
-                                                                                {{-- <button type="submit"
-                                                                                    onclick="return confirm('Are you sure? You want to delete the product.')"
-                                                                                    class="btn btn-primary-outline action-icon"><i
-                                                                                        class="mdi mdi-delete"></i></button> --}}
-                                                                            </div>
-                                                                        </form>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody> -->
+                                                
                                             </table>
                                         </div>
                                     </div>
@@ -374,7 +310,7 @@
                                                         <th>#</th>
                                                         <th>{{ __('Name') }}</th>
                                                         <th>{{ __('Product Name') }}</th>
-                                                        <th>{{ __('Quantity') }}</th>
+                                                        <th>{{ __('No. of Bookings') }}</th>
                                                         <th>{{ __('Period') }}</th>
                                                         <th>{{ __('Price') }}</th>
                                                         <th>{{ __('Action') }}</th>
@@ -414,9 +350,8 @@
                             <label>{{ __('Upload Service Image') }}</label>
                         
                             <div class="service_image">
-                                <input type="file" data-plugins="dropify" name="image" id="service_image" class="dropify" />
+                                <input type="file" data-plugins="dropify" name="file" id="service_image" class="dropify" />
                              </div>
-                             <label class="logo-size text-right w-100">{{ __("City image") }} 1000X1000</label>
                         </div>
                         <div class="col-md-12 selector-option-al ">
                             {!! Form::label('title', __('Service Name'), ['class' => 'control-label']) !!}
@@ -448,10 +383,10 @@
                         </div>
                         <div class="row mt-2">
                             <div class="col-6">
-                                <div class="form-group" id="serviceSkuInput">
+                                <div class="form-group" id="skuInput">
                                     {!! Form::label('title', __('SKU'), ['class' => 'control-label']) !!}
                                     <span class="text-danger">*</span>
-                                    {!! Form::text('serviceSku', null, ['class' => 'form-control', 'id' => 'srviceSku', 'onkeyup' => 'return alplaNumeric(event)', 'placeholder' =>  __('SKU')]) !!}
+                                    {!! Form::text('sku', null, ['class' => 'form-control', 'id' => 'srviceSku', 'onkeyup' => 'return alplaNumeric(event)', 'placeholder' =>  __('SKU')]) !!}
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
                                     </span>
@@ -473,7 +408,7 @@
                         <div class="row">
                             <div class="col-6">
                                 <div class="form-group" id="product_quantityInput">
-                                    {!! Form::label('title', __('Quantity of Product'), ['class' => 'control-label']) !!}
+                                    {!! Form::label('title', __('No. of Bookings'), ['class' => 'control-label']) !!}
                                     {!! Form::text('product_quantity',null ,['class'=>'form-control', 'id' => 'quantity', 'placeholder' => '10', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
@@ -483,7 +418,7 @@
                             <div class="col-6">
                                 <div class="form-group" id="service_periodInput">
                                     {!! Form::label('title', __('Select Time Period'),['class' => 'control-label']) !!}
-                                        <select class="form-control selectizeInput" id="service_period" name="service_period">
+                                        <select class="form-control select2-multiple" id="service_period" data-toggle="select2" multiple="multiple" name="service_period[]">
                                             <option value="days">{{ __('Day') }}</option>
                                             <option value="week">{{ __('Weekly') }}</option>
                                             <option value="months">{{ __('Monthly') }}</option>
@@ -494,12 +429,28 @@
                                 </div>
                             </div>
                             <div class="col-12">
+                                <div class="form-group" id="service_durationInput">
+                                    {!! Form::label('title', __('Select Time Duration (Months)'),['class' => 'control-label']) !!}
+                                    <input type="number" class="form-control" min='1' name="service_duration" placeholder="{{ __('No. of Months') }}">
+                                        {{-- <select class="form-control selectizeInput" id="service_duration" name="service_duration">
+                                            <option value="1">1 {{ __('Month') }}</option>
+                                            <option value="3">3 {{ __('Months') }}</option>
+                                            <option value="6">6 {{ __('Months') }}</option>
+                                            <option value="12">1 {{ __('Year') }}</option>
+                                        </select> --}}
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                </div>
+                            </div>
+                            <div class="col-6">
                                 <div class="form-group" id="service_product_idInput">
                                     {!! Form::label('title', __('Select Product'),['class' => 'control-label']) !!}
                                 <select class="form-control selectizeInput" id="service_product_list" name="service_product_id">
                                     <option value="">{{ __("Select Product") }}...</option>
-                                    @foreach($products as $product)
-                                        <option value="{{$product['id']}}" data-product_title="{{ $product->primary->title ?? '' }}">{{ Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30) }}</option>
+                                  
+                                    @foreach($products->where('category_id','!=','7') as $product)
+                                        <option value="{{$product['id']}}" data-category_id="{{ $product->category_id ?? '' }} data-product_title="{{ $product->primary->title ?? '' }}">{{ Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30) }}</option>
                                     @endforeach
                                     </select>
                                     <span class="invalid-feedback" role="alert">
@@ -507,7 +458,8 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-12">
+                            
+                            <div class="col-6">
                                 <div class="form-group" id="service_product_variantInput">
                                     {!! Form::label('title', __('Product variant'),['class' => 'control-label']) !!}
                                      <select class="form-control selectizeInput" id="service_product_variant" name="service_product_variant_id">
@@ -518,6 +470,7 @@
                                     </span>
                                 </div>
                             </div>
+                            <div class="col-12" id="addonSection"></div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -1226,7 +1179,7 @@
             if (regexp.test(n1)) {
                 var n1 = $('#product_name').val();
                 $('#url_slug').val(n1);
-                slugify();
+                slugify();setSkuFromName
             } else {
             $('#sku').val(total_sku.split(' ').join(''));
             }

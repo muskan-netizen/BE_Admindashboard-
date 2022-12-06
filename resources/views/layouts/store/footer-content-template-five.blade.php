@@ -246,7 +246,7 @@ $applocale = session()->get('applocale');
                 </button>
             </div>
             <div class="modal-body">
-                <h6 class="m-0">{{__('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?')}}</h6>
+                <h6 class="m-0" id="single_vendor_order_modal_text">{{__('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
