@@ -52,7 +52,7 @@ header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#t
 .al_count_tabs_new_design li a.nav-link.al_delivery:hover .al_tabsIcons{background-color:#fef4a5}
 .al_count_tabs_new_design li a.nav-link.active.al_dinein .al_tabsIcons,
 .al_count_tabs_new_design li a.nav-link.al_dinein:hover .al_tabsIcons{background-color:#f5f5ff}
-#al_new_design .pixelstrap a,#al_new_design .pixelstrap a:active,#al_new_design .pixelstrap a:hover,#al_new_design .pixelstrap li a{padding:0;font-size:14px}
+#al_new_design .pixelstrap a,#al_new_design .pixelstrap a:active,#al_new_design .pixelstrap a:hover,#al_new_design .pixelstrap li a{padding:10px 15px;font-size:14px}
 .pixelstrap ul.al_main_category_list li a span.new-tag{font-size: 14px;}
 .menu-navigation.al li.al_main_category a .nav-cate-img{border-radius:50%;height:100px;width:100px;margin:2px auto}.al_new_wrapper_design .site-header .nav-cate-img{-webkit-transition:.5s;transition:.5s}
 .menu-navigation.al li.al_main_category a .nav-cate-img img{margin:0 auto;border-radius:50%}.onhover-dropdown{position:relative}li{display:inline-block}.onhover-dropdown:before{content:"\f107";font-family:FontAwesome;position:absolute;right:8px}.onhover-dropdown:hover .onhover-show-div{display:block;opacity:1;-webkit-transform:translateY(10px);transform:translateY(10px);visibility:visible}.category-list li.active a,.category-list li:hover a,.top-header .header-dropdown .onhover-dropdown .onhover-show-div li:hover a{border-color:var(--theme-deafult);background:linear-gradient(90deg,#f7ebec 0,rgba(251,246,247,0) 92.47%)}.al_mobile_menu{display:none;position:absolute;top:0;right:0}
