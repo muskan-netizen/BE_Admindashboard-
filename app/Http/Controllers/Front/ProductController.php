@@ -16,8 +16,6 @@ class ProductController extends FrontController{
     private $field_status = 2;
     use ProductActionTrait,ProductTrait;
 
-    private $field_status = 2;
-
     public function __construct()
     {
 

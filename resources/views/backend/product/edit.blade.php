@@ -2030,9 +2030,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
     $(document).on("change",".attr_radio", function() {
         
     var parentClass = $(this).parent().prop('className');
-    console.log("dfgdfg");
     var attr_radio_class = $(this).data('class');
-    console.log(attr_radio_class);
     $("."+parentClass+" .attr_radio").prop('checked', false);
     $(this).prop('checked', true);
     // $('.'+attr_radio_class).not(this).prop('checked', false);
