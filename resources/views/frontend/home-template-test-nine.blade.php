@@ -669,7 +669,7 @@
 				</div>
 			</div>
 		</section>
-		@elseif($homePageLabel->slug == 'top_rated' && (count($homePageData['top_rated']) != 0))
+		@elseif(!empty($homePageData['top_rated']) && $homePageLabel->slug == 'top_rated' && (count($homePageData['top_rated']) != 0))
 		<section class="main-pro-slider suppliers-section  mb-4" id="homepage_top_rated">
 			<div class="container">
 				<div class="row">

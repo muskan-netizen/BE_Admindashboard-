@@ -126,6 +126,8 @@ if(isset($set_template))
       @include('layouts.store/left-sidebar-template-six')
       @elseif(isset($set_template)  && $set_template->template_id == 8)
       @include('layouts.store/left-sidebar-template-eight')
+      @elseif(isset($set_template)  && $set_template->template_id == 9)
+      @include('layouts.store/left-sidebar-template-nine')
       @else
       @include('layouts.store/left-sidebar-template-one')
       @endif
@@ -150,6 +152,8 @@ if(isset($set_template))
     @include('layouts.store/footer-content-template-six')
     @elseif(isset($set_template)  && $set_template->template_id == 8)
     @include('layouts.store/footer-content-template-eight')
+    @elseif(isset($set_template)  && $set_template->template_id == 9)
+    @include('layouts.store/footer-content-template-nine')
     @else
     @include('layouts.store/footer-content-template-one')
     @endif
