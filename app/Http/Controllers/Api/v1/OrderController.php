@@ -1751,7 +1751,13 @@ class OrderController extends BaseController
             if ($vendor_order_status) {
                 $order_sts = OrderStatusOption::where('id',$order->order_status_option_id)->first();
                // $order->order_status =  ['current_status' => ['id' => $vendor_order_status->OrderStatusOption->id, 'title' => __($vendor_order_status->OrderStatusOption->title)]];
-                $order->order_status =  ['current_status' => ['id' => $order_sts->id, 'title' => __($order_sts->title)]];
+               if(@$order->exchanged_to_order->order_status_option_id && $order->exchanged_to_order->order_status_option_id== 6){
+                $order->order_status =  ['current_status' => ['id' => 6, 'title' => __("Replaced")]];
+                // $order->order_status->current_status->title = "Replaced";
+                }else{
+                    $order->order_status =  ['current_status' => ['id' => $order_sts->id, 'title' => __($order_sts->title)]];
+                }
+               
             } else {
                 $order->current_status = null;
             }
@@ -1826,6 +1832,7 @@ class OrderController extends BaseController
             $order->product_details = $product_details;
             $order->item_count = $order_item_count;
             $order->return_request_status = $return_request_status;
+            
 
             //product returnable and replaceble
 
