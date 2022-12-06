@@ -54,6 +54,13 @@ class WebStylingSeeder extends Seeder{
             'is_selected' => '0',
             'template_id' => '4',
         ]);
+        $app_styling_option = WebStylingOption::insert([
+            'web_styling_id' => $app_styling,
+            'name' => 'p2p',
+            'image' => 'template-nine.png',
+            'is_selected' => '0',
+            'template_id' => '9',
+        ]);
 
 
      
