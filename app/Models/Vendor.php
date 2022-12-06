@@ -18,6 +18,9 @@ class Vendor extends Model implements Auditable{
     }
 
     public function products(){
+      if(checkColumnExists('products','is_long_term_service')){
+        return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_long_term_service',0);
+      }
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id');
     }
 

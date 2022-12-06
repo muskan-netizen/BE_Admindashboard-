@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('title', __('Select Category'),['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Select '. getNomenclatureName('Variant')),['class' => 'control-label']) !!}
                     <select class="selectize-select form-control" required id="cateSelectBox" name="cate_id">
                         <option value="">{{ __("Select Category") }}...</option>
                         @foreach($categories as $cate)
@@ -34,7 +34,7 @@
 
         <div class="row rowYK ">
             <div class="col-md-12">
-                <h5>{{ __("Variant Title") }}</h5>
+                <h5>{{ __(getNomenclatureName('Variant') ." Title") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
 
@@ -65,7 +65,7 @@
 
         <div class="row rowYK">
             <div class="col-md-12">
-                <h5>{{ __("Variant Options") }}</h5>
+                <h5>{{ __(getNomenclatureName('Variant') ." Options") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
                 <table class="table table-borderless table-responsive al_table_responsive_data optionTableAdd" id="banner-datatable">

@@ -14,6 +14,7 @@
 	
 Route::group(['middleware' => ['domain']], function () {
 	//easypay test
+	Route::get('test_notification', 'Front\FrontController@test_notification');
 	Route::get('testpayment', 'Front\EasypaisaControllertest@testpayment')->name('testpayment');
 	Route::get('response', 'Front\EasypaisaControllertest@response')->name('response_payment');
     Route::get('responseConf', 'Front\EasypaisaControllertest@responseConformation')->name('responseConformation');
@@ -23,12 +24,14 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('webhook/dunzo','DunzoController@dunzoWebhook')->name('dunzoWebhook');
 	Route::any('webhook/ahoy','AhoyController@ahoyWebhook')->name('ahoyWebhook');
 
+	// order dispatcher order web hooks 
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
 	Route::get('dispatch-order-status-update-details/{id?}', 'Front\DispatcherController@dispatchOrderDetails')->name('dispatch-order-update-details'); // Order Status update Dispatch details
 	Route::get('dispatch-order-cancel-request/{id?}', 'Front\DispatcherController@dispatchOrderCancelRequest')->name('dispatch-order-cancel-request'); // Order Status update Dispatch details
 	Route::post('dispatch/customer/distance/notification/{id?}', 'Front\DispatcherController@dispatchCustomerDetails')->name('dispatch-customer-details'); // send distance & co2 emission push notification from dispatch to customer
     Route::get('dispatch-order-product-status-update/{id?}', 'Front\DispatcherController@dispatchOrderSingleProductStatusUpdate')->name('dispatch-order-product-status-update'); // Order Status update Dispatch
+	Route::get('dispatch-order-service-status-update/{id?}', 'Front\DispatcherController@dispatchOrderServiceProductStatusUpdate')->name('dispatch-order-service-status-update'); // Order Status update Dispatch
 	Route::get('testsms', 'Front\FrontController@testsms');
 
     Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');

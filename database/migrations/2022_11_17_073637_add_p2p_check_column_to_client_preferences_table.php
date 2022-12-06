@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddSoftdeleteToLongTermServicesTable extends Migration
+class AddP2pCheckColumnToClientPreferencesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddSoftdeleteToLongTermServicesTable extends Migration
      */
     public function up()
     {
-        Schema::table('long_term_services', function (Blueprint $table) {
-            $table->softDeletes();
+        Schema::table('client_preferences', function (Blueprint $table) {
+            $table->tinyInteger('p2p_check')->default(0);
         });
     }
 
@@ -25,8 +25,8 @@ class AddSoftdeleteToLongTermServicesTable extends Migration
      */
     public function down()
     {
-        Schema::table('long_term_services', function (Blueprint $table) {
-            //
+        Schema::table('client_preferences', function (Blueprint $table) {
+            $table->dropColumn('p2p_check');
         });
     }
 }

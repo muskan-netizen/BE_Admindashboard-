@@ -79,7 +79,6 @@
                     </div>
                     @if(!empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card">
-
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
@@ -208,7 +207,7 @@
                                                         <a href="{{route('categoryDetail', $cate['slug'])}}"  class="product-box scale-effect m-0" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
                                                             <div class="product-image"><img width="100%" alt="" class="blur-up lazyload" data-icon_two="{{isset($cate['icon_two']) && !is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'500/500'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'500/500'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}500/500{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['proxy_url'] . '500/500' . $cate['icon']['image_path']}}" ></div>
                                                             <div class="media-body align-self-center">
-                                                                <div class="inner_spacing w-100">
+                                                                <div class="inner_spacing w-100 text-center">
                                                                     <h3 class="d-flex align-items-center justify-content-between">
                                                                         <label class="mb-0">{{$cate['translation_name']}}</label>
                                                                     </h3>

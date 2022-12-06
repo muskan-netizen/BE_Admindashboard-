@@ -342,6 +342,21 @@
 					</div>
 				</div>
 			</section>
+			@elseif($homePageLabel->slug == 'long_term_service'  && count($homePageData['long_term_service']) != 0)
+			<section class="suppliers-section render_full_{{$homePageLabel->slug}}">
+				<div class="container mb-0"  >
+					<div class=" top-heading d-flex justify-content-between align-self-center">
+						<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Long Term Service'}}</h2>
+					</div>
+					<div class="col-12 p-0">
+						<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+							@foreach ($homePageData[$homePageLabel->slug] as $value )
+							@include('frontend.home_page_4.long_term_service')
+							@endforeach
+						</div>
+					</div>
+				</div>
+			</section>
 		@else
 			@if(count($homePageData[$homePageLabel->slug]) != 0)
 			<section class="container-fliud mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">

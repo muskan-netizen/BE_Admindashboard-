@@ -693,7 +693,7 @@
 			</div>
 		</section>
 		{{--  && (count($homePageData['nav_categories']) != 0) --}}
-		@elseif($homePageLabel->slug == 'nav_categories' && (count($homePageLabel->nav_categories) != 0))
+		@elseif(!empty($homePageLabel->nav_categories) && $homePageLabel->slug == 'nav_categories' && (count($homePageLabel->nav_categories) != 0))
 		<section class="popular-brands left-shape_ position-relative bg-light-gray">
 			<div class="container">
 				<div class="al_top_heading text-center d-flex align-items-center">
@@ -816,7 +816,7 @@
 			</div>
 		</section>
 		@else
-		@if(count($homePageData[$homePageLabel->slug]) != 0)
+		@if(!empty($homePageData[$homePageLabel->slug]) && count($homePageData[$homePageLabel->slug]) != 0)
 		<!-- <section class="home-headings">
 			<div class="container">
 				<div class="row">

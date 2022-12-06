@@ -68,7 +68,6 @@
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
                             </span>
                         </div> -->
-                        <aside class="side_fillter">
                         @if(!empty($category->brands) && count($category->brands) > 0)
                         <div class="collection-collapse-block open mb-2">
                             <h3 class="collapse-block-title">{{__('Brand')}}</h3>
@@ -131,7 +130,7 @@
                     </div>
                     @endif
                     @if(!empty($newProducts) && count($newProducts) > 0)
-                    <div class="theme-card">
+                    <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
@@ -229,7 +228,8 @@
                     @endif
                     </aside>
                 </div>
-                <div class="collection-content col-lg-9  outter-fillter-data">
+                
+                <div class="collection-content col-lg-9 outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
@@ -285,7 +285,6 @@
                                         <div class="col-12 text-right mt-2">
                                             <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Sort By')}}</option>
-
                                                 <option value="featured">{{__('Featured')}}</option>
                                                 <option value="a_to_z">{{__('A to Z')}}</option>
                                                 <option value="z_to_a">{{__('Z to A')}}</option>
@@ -293,27 +292,17 @@
                                                 <option value="high_to_low">{{__('Cost : High to Low')}}</option>
                                                 <option value="rating">{{__('Avg. Customer Review')}}</option>
                                                 <option value="newly_added">{{__('Newest Arrivals')}}</option>
-                                            </select>
-
-                                                <option value="featured">{{_('Featured')}}</option>
-                                                <option value="a_to_z">{{_('A to Z')}}</option>
-                                                <option value="z_to_a">{{_('Z to A')}}</option>
-                                                <option value="low_to_high">{{_('Cost : Low to High')}}</option>
-                                                <option value="high_to_low">{{_('Cost : High to Low')}}</option>
-                                                <option value="rating">{{_('Avg. Customer Review')}}</option>
-                                                <option value="newly_added">{{_('Newest Arrivals')}}</option>
                                             </select> -->
                                             <ul>
                                                 <li><span>{{__('Sort By:')}}</span></li>
-                                                <li><a href="javascript:void(0)" class="active">{{_('Featured')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{_('A to Z')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{_('Z to A')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{_('Cost : Low to High')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{_('Cost : High to Low')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{_('Avg. Customer Review')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{_('Newest Arrivals')}}</a></li>
+                                                <li><a href="javascript:void(0)" class="active">{{__('Featured')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{__('A to Z')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{__('Z to A')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{__('Cost : Low to High')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{__('Cost : High to Low')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{__('Avg. Customer Review')}}</a></li>
+                                                <li><a href="javascript:void(0)">{{__('Newest Arrivals')}}</a></li>
                                             </ul>
-
                                         </div>
                                         <div class="product-wrapper-grid">
                                             <div class="row margin-res">

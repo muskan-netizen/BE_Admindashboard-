@@ -23,7 +23,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption, VendorAdditionalInfo};
+use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption,Type, VendorAdditionalInfo};
+
 use Kutia\Larafirebase\Facades\Larafirebase;
 use App\Http\Controllers\Client\VendorController;
 use Math;
@@ -346,6 +347,48 @@ class CustomerAuthController extends FrontController
                 } else {
                     Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $user->id, 'created_by' => $user->id, 'unique_identifier' => '']);
                 }
+
+                ####################################################
+                ## if p2p is enable then register user as a admin ##
+                ####################################################
+
+                if( getClientPreferenceDetail()->p2p_check ) {
+
+                    $user->is_admin = 1;
+                    $user->save();
+
+                    // Create vendor with default images
+                    $vendor = new Vendor();
+                    $vendor->logo = 'default/default_logo.png';
+                    $vendor->banner = 'default/default_image.png';
+
+                    $vendor->status = 0;
+                    $vendor->name = $user->name;
+                    $vendor->p2p = 1;
+                    $vendor->email = $user->email ?? '';
+                    $vendor->phone_no = $user->phone_number ?? '';
+                    $vendor->slug = Str::slug($user->name, "-");
+                    $vendor->save();
+
+                    $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
+
+                    UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
+
+                    foreach ($permission_details as $permission_detail) {
+                        UserPermissions::create(['user_id' => $user->id, 'permission_id' => $permission_detail->id]);
+                    }
+                    $p2p_type = Type::where('service_type', 'p2p')->first();
+                    if( !empty($p2p_type) ) {
+                        $category_id = Category::where('type_id', $p2p_type->id)->first();
+                        
+                        $data[0] = $category_id->id ?? '';
+                        $req->request->add(['selectedCategories'=> $data ?? '']);
+                        
+                    }
+                    
+                    $this->addDataSaveVendor($req, $vendor->id);
+                }
+
                 Session::forget('referrer');
                 $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
                         'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from',
@@ -898,6 +941,10 @@ class CustomerAuthController extends FrontController
             }else{
                 $user = User::where('id', $request->user_id)->first();
                 $user->title = $request->title;
+                // if user is already exists then mark as a admin
+                // if( getClientPreferenceDetail()->p2p_check ) {
+                //     $user->is_admin = 1;
+                // }
                 $user->save();
             }
             $vendor = new Vendor();
@@ -917,26 +964,15 @@ class CustomerAuthController extends FrontController
                 }
             }
 
-            // if($client_preference){
-            //     if($client_preference->dinein_check == 1){$count++;}
-            //     if($client_preference->takeaway_check == 1){$count++;}
-            //     if($client_preference->delivery_check == 1){$count++;}
-            // }
             if($count > 1){
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
                     $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
                     $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
                     
                 }
-                // $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
-                // $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
-                // $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
             }
             else{
                 $vendor->$single_vendor_type = 1;
-                // $vendor->dine_in = $client_preference->dinein_check == 1 ? 1 : 0;
-                // $vendor->takeaway = $client_preference->takeaway_check == 1 ? 1 : 0;
-                // $vendor->delivery = $client_preference->delivery_check == 1 ? 1 : 0;
             }
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';

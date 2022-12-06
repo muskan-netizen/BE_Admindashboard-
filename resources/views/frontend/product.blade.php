@@ -132,7 +132,7 @@
                                                 @endif
                                             </div>
                                 </div>
-                                <div class="col-lg-6 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                                <div class="col-lg-5 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                     {{-- <div class="product__carousel">
                                         <div class="gallery-parent">
                                             @php
@@ -198,11 +198,29 @@
                                         </div>
                                     </div> --}}
 
-                                <div class="exzoom hidden w-100">
-                                    <div class="exzoom_img_box mb-2">
-                                        <ul class='exzoom_img_ul'>
-                                        @if(!empty($product->media))
-
+                                    <div class="exzoom hidden w-100">
+                                        <div class="exzoom_img_box mb-2">
+                                            <ul class='exzoom_img_ul img-sidebar'>
+                                            @if(!empty($product->media))
+                                            
+                                                @foreach($product->media as $k => $image)
+                                                        @php
+                                                            if(isset($image->pimage)){
+                                                                $img = $image->pimage->image;
+                                                            }else{
+                                                                $img = $image->image;
+                                                            }
+                                                        @endphp
+                                                @endforeach
+                                                @if(!is_null($img))
+                                                <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
+                                                @endif
+                                            @endif
+                                            </ul>
+                                        </div>
+                                        @if(count($product->media) > 1)
+                                        <!-- <div class="exzoom_nav">
+                                            @if(!empty($product->media))
                                             @foreach($product->media as $k => $image)
                                             @php
                                                             if(isset($image->pimage)){
@@ -232,7 +250,7 @@
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
 
-                                <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-5'; } else { echo 'offset-lg-5 col-lg-5'; } @endphp rtl-text p-0">
+                                <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-6'; } else { echo 'col-lg-6'; } @endphp rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0">
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
@@ -1223,7 +1241,6 @@
                 $(this).find('img').addClass("active");
             });
         });
-            
 
         </script>
 

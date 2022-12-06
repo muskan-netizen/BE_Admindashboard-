@@ -8,6 +8,7 @@
          <?php $hidereturn = 0; ?>
 @endswitch
 @php
+$show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] ==1)?1:0;
     $clientData = \App\Models\Client::select('socket_url')->first();
 @endphp
 @extends('layouts.store', ['title' => __('My '.getNomenclatureName($ordertitle, true))])
@@ -126,6 +127,15 @@
                                                         class="icofont icofont-man-in-glasses"></i>{{ __('Rejected/Cancel ' . getNomenclatureName($ordertitle, true)) }}</a>
                                                 <div class="material-border"></div>
                                             </li>
+                                            @if($show_long_term ==1)
+                                                <li class="nav-item">
+                                                    <a class="nav-link {{ Request::query('pageType') == 'LongTermOrders' ? 'active show' : '' }}"
+                                                        id="long_term_order-tab" data-toggle="tab" href="#long_term_order" role="tab"
+                                                        aria-selected="false"><i
+                                                            class="icofont icofont-man-in-glasses"></i>{{ __('Long Term Serivces') }}</a>
+                                                    <div class="material-border"></div>
+                                                </li>
+                                            @endif
                                         </ul>
                                         <div class="tab-content nav-material al" id="top-tabContent">
                                             <div class="tab-pane fade {{ Request::query('pageType') === null || Request::query('pageType') == 'activeOrders' ? 'active show' : '' }}"
@@ -1901,6 +1911,10 @@
                                                 </div>
                                                 {{ $pastOrders->appends(['pageType' => 'rejectedOrders'])->links() }}
                                             </div>
+                                            @if($show_long_term ==1)
+                                            @include('frontend.account.longTermOrderTab')
+                                            @endif
+                                            
                                         </div>
                                     </div>
                                 </div>

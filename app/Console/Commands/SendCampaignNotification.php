@@ -74,8 +74,13 @@ class SendCampaignNotification extends Command
                 ];
                 Config::set("database.connections.$database_name", $default);
                 DB::setDefaultConnection($database_name);
-                $client_preferences = ClientPreference::first();  
-                $notifications = CampaignRoster::where('notification_time', '<=', $intervalTime)->where('status',0)->with('campaign','user')->get();
+                $client_preferences = ClientPreference::first();   
+                 
+                // CampaignRoster::where('id',6287)->delete();
+                $notifications = CampaignRoster::where('notification_time', '<=',$intervalTime)->where('status',0)->with('campaign','user')->get();
+                // $notifications = CampaignRoster::whereBetween('notification_time', [$intervalTime, $add1Minute])->where('status',0)->with('campaign','user')->get();
+                // Log::info("CampaignRoster time: {$intervalTime}!");
+                // Log::info("CampaignRoster data: {$notifications}!");
                 if($notifications)
                 {
                 

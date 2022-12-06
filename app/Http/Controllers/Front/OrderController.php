@@ -9,7 +9,7 @@ use Log;
 use Auth;
 use Crypt;
 use Redirect;
-use Carbon\Carbon;
+use Carbon\{Carbon,CarbonPeriod};
 use Omnipay\Omnipay;
 use App\Models\Cart;
 use App\Models\User;
@@ -49,8 +49,9 @@ use App\Models\LuxuryOption;
 use App\Models\PaymentOption;
 use App\Models\CartDeliveryFee;
 use App\Models\ClientPreference;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,CartManager};
 use App\Models\AddonOption;
+use App\Models\{OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule};
 use App\Models\ProductVariantSet;
 use GuzzleHttp\Client as GCLIENT;
 use App\Models\AutoRejectOrderCron;
@@ -61,9 +62,10 @@ use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\LalaMovesController;
 
 
+
 class OrderController extends FrontController
 {
-    use ApiResponser;
+    use ApiResponser,CartManager;
     use \App\Http\Traits\OrderTrait;
     /**
      * Display a listing of the resource.
@@ -72,6 +74,7 @@ class OrderController extends FrontController
      */
     public function orders(Request $request, $domain = '')
     {
+
         $user = Auth::user();
         if(empty($user->timezone))
         {
@@ -82,6 +85,7 @@ class OrderController extends FrontController
 
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
+        $checkLongTerm = checkColumnExists('orders','is_long_term');
         $pastOrders = Order::with([
             'vendors' => function ($q) {
                 $q->whereIn('order_status_option_id', [6,9]);
@@ -100,9 +104,12 @@ class OrderController extends FrontController
                     $q2->where('payment_option_id', 1);
                 });
             })
-            ->where('orders.user_id', $user->id)
-            ->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
-            // dd($pastOrders[1]->vendors[0]);
+            ->where('orders.user_id', $user->id);
+            if($checkLongTerm){
+                $pastOrders->where('orders.is_long_term', 0);
+            }    
+                
+            $pastOrders     =  $pastOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
         $activeOrders = Order::with([
             'vendors' => function ($q) {
                 $q->where('order_status_option_id', '!=', 6);
@@ -126,9 +133,12 @@ class OrderController extends FrontController
                     $q2->where('payment_option_id', 1);
                 });
             })
-            ->where('orders.user_id', $user->id)
-            ->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
-            // dd($activeOrders[0]->vendors[0]);
+            ->where('orders.user_id', $user->id);
+            if($checkLongTerm){
+                $activeOrders->where('orders.is_long_term', 0);
+            }    
+        $activeOrders = $activeOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+        
         foreach ($activeOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
@@ -171,7 +181,7 @@ class OrderController extends FrontController
             }
         }
       //  pr($activeOrders->toArray());exit();
-       // return $pastOrders;
+
         foreach ($pastOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
@@ -204,7 +214,11 @@ class OrderController extends FrontController
                 $q->whereHas('products.productReturn');
             }
         ])->whereHas('vendors.products.productReturn')
-            ->where('orders.user_id', $user->id)->orderBy('orders.id', 'DESC')->paginate(20);
+            ->where('orders.user_id', $user->id);
+            if($checkLongTerm){
+                $returnOrders->where('orders.is_long_term', 0);
+            }  
+        $returnOrders  =   $returnOrders->orderBy('orders.id', 'DESC')->paginate(20);
         foreach ($returnOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 foreach ($vendor->products as $product) {
@@ -241,8 +255,11 @@ class OrderController extends FrontController
                     $q2->where('payment_option_id', 1);
                 });
             })
-            ->where('orders.user_id', $user->id)
-            ->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+            ->where('orders.user_id', $user->id);
+            if($checkLongTerm){
+                $rejectedOrders->where('orders.is_long_term', 0);
+            }  
+        $rejectedOrders = $rejectedOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
 
         foreach ($rejectedOrders as $order) {
             foreach ($order->vendors as $vendor) {
@@ -281,10 +298,15 @@ class OrderController extends FrontController
         $cancellation_reason = ReturnReason::where(['status' => 'Active', 'type' => 3])->get();
 
         //   dd($activeOrders->toArray());
+       
+        $longTermOrder = [];
+        /** get user long term orders */
+        if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1 && checkColumnExists('products','is_long_term_service'))
+        $longTermOrder = $this->getUserLongTermService($user, $langId , $currency_id);
+         // dd($longTermOrder->toArray());
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-        
-        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee, 'cancellation_reason' => $cancellation_reason]);
+        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories,'cancellation_reason' => $cancellation_reason, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee,'longTermOrder'=>$longTermOrder]);
     }
 
     public function getOrderSuccessPage(Request $request)
@@ -292,10 +314,19 @@ class OrderController extends FrontController
         $currency_id = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
-        $order = Order::with(['products.vendor','products.pvariant.vset', 'products.pvariant.translation' => function ($q) use ($langId) {
-            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
-            $q->where('language_id', $langId);}, 'address'])->findOrfail($request->order_id);
-
+        $order = Order::with(['products.vendor','products.pvariant.vset', 
+                                'products.pvariant.translation' => function ($q) use ($langId) {
+                                    $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+                                    $q->where('language_id', $langId);
+                                }, 'address']);
+        if( checkColumnExists('orders','is_long_term') ){
+            $order =    $order->with(['products.LongTermService.product','products.LongTermService.product.translation_one' => function ($q) use ($langId) {
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+                            $q->where('language_id', $langId);
+                        }]);
+        }
+        $order =    $order->findOrfail($request->order_id);
+        
 
         $fixedFeeNomenclatures = $this->fixedFee($langId);
         $order_vendors =  OrderVendor::where('order_id', $request->order_id)->whereNotNull('dispatch_traking_url')->get();
@@ -310,7 +341,7 @@ class OrderController extends FrontController
             $total_other_taxes+=(float)$row;
         }
         $order->total_other_taxes_amount=$total_other_taxes;
-        // dd($order);
+        //pr($order->toArray());
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFeeNomenclatures'));
     }
@@ -544,16 +575,9 @@ class OrderController extends FrontController
         }
         $subscription_features = array();
         if ($user) {
-            $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-            if ($order_loyalty_points_earned_detail) {
-                $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-                if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                    $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
-                    if ($customerCurrency->is_primary != 1) {
-                        $loyalty_amount_saved = $loyalty_amount_saved * $customerCurrency->doller_compare;
-                    }
-                }
-            }
+            //Get earn and used loyalty amount 
+            $loyalty_amount_saved = $this->getOrderLoyalityAmount($user);
+
             $now = Carbon::now()->toDateTimeString();
             $user_subscription = SubscriptionInvoicesUser::with('features')
                 ->select('id', 'user_id', 'subscription_id')
@@ -786,19 +810,14 @@ class OrderController extends FrontController
             $language_id = Session::get('customerLanguage');
             $cart = Cart::where('user_id', $user->id)->first();
 
-            /* Count loyalty points */
-            $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-            if ($order_loyalty_points_earned_detail) {
-                $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-                if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                    $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
-                }
-            }
-
             /* Get Currencies of client and customer */
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-
+             //Get earn and used loyalty amount 
+            $loyaltyCheck = $this->getOrderLoyalityAmount($user,$customerCurrency);
+            $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
+            $loyalty_points_used = $loyaltyCheck->loyalty_points_used??0;
+            
             /* Generate order object */
             $order = new Order;
             $order->user_id = $user->id;
@@ -868,8 +887,9 @@ class OrderController extends FrontController
             /* Get all products blongs to cart */
             $cart_products = CartProduct::select('*')->with(['vendor', 'vendor.slot.geos.serviceArea', 'vendor.slotDate.geos.serviceArea',  'product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
                 $query->where('cart_id', $cart->id);
-            }, 'coupon.promo', 'product.addon'])->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
-
+            }, 'coupon.promo', 'product.addon','LongTermProducts.addons'])->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+           
+            
             /* Initialize empty data */
             $total_amount = 0;
             $total_discount = 0;
@@ -891,7 +911,8 @@ class OrderController extends FrontController
             $total_other_taxes=0.00;
             $additionalPrice=0.00;
             $totalAdditionalPrice = 0.00;
-
+            $is_long_term_order = 0;
+            $checkLongTermInDB =checkColumnExists('products','is_long_term_service');
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if(!empty($request->other_taxes_string)){
                 foreach(explode(":",$request->other_taxes_string) as $row){
@@ -929,10 +950,10 @@ class OrderController extends FrontController
                 $OrderVendor->save();
                 //
 
-
                 $vendorProductIds = array();
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
+                    //pr($vendor_cart_product->toArray());
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                         if (!empty($latitude) && !empty($longitude)) {
                             if(($preferences->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)){
@@ -1102,7 +1123,12 @@ class OrderController extends FrontController
 
                     $order_product->product_name = $vendor_cart_product->product->title ?? $vendor_cart_product->product->sku;
 
+                    $product_dispatcher_tag = $vendor_cart_product->product->tags;
+                    if(($checkLongTermInDB ==1)){
+
+                    }
                     $order_product->product_dispatcher_tag = $vendor_cart_product->product->tags;
+
                     $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
                     $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
                     $order_product->schedule_slot = !empty($vendor_cart_product->schedule_slot)? $vendor_cart_product->schedule_slot : '';
@@ -1118,7 +1144,127 @@ class OrderController extends FrontController
                     $order_product->additional_increments_hrs_min = $vendor_cart_product->additional_increments_hrs_min;
 
                     $order_product->save();
-                    // book for rental
+               
+                    /** for long Term Service */
+                    if( ($checkLongTermInDB ==1) && $vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts){
+                        $is_long_term_order = 1;
+                        $service_start_date =  $vendor_cart_product->service_start_date ??   Carbon::now()->format('Y-m-d H:i:s');
+                        $service_end_date = Carbon::parse( $service_start_date )->addMonths($vendor_cart_product->product->service_duration)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                        $LongTermSericeData=[
+                            'order_product_id'  => $order_product->id,
+                            'user_id'           => $user->id,
+                            'service_quentity'  => $vendor_cart_product->LongTermProducts->quantity ?? 1,
+                            'service_day'       => $vendor_cart_product->service_day,
+                            'service_date'      => $vendor_cart_product->service_date,
+                            'service_start_date'=> $service_start_date,
+                            'service_period'    => $vendor_cart_product->service_period,
+                            'service_end_date'  => $service_end_date,
+                            'service_product_id'         => $vendor_cart_product->LongTermProducts->product_id,
+                            'service_product_variant_id' => $vendor_cart_product->LongTermProducts->product_variant,
+                            'status'                => 0,
+                        ];
+                        $OrderLongTermServices  = OrderLongTermServices::create($LongTermSericeData);
+                        if($vendor_cart_product->LongTermProducts->addons->isNotEmpty()){
+                            foreach($vendor_cart_product->LongTermProducts->addons as $SAddon){
+                                $LongTermSericeAddonData= [
+                                    'order_long_term_services_id' => $OrderLongTermServices->id , 
+                                    'addon_id'                    => $SAddon->addon_id, 
+                                    'option_id'                   => $SAddon->option_id
+                                ];
+                                OrderLongTermServicesAddon::create($LongTermSericeAddonData);
+                            }
+                        }
+                        /** save long term service schedule */
+                        $OrderLongTermServiceSchedule = array();;
+                        $Service_quantity = $vendor_cart_product->LongTermProducts->quantity;
+                        $start_service_date = Carbon::parse($vendor_cart_product->service_start_date)->format('Y-m-d'); 
+                        $end_service_date   = Carbon::parse($vendor_cart_product->service_start_date)->addMonths($vendor_cart_product->product->service_duration);
+                     
+                        if($vendor_cart_product->service_period=='days'){
+                          
+                            $end_service_date = Carbon::parse($vendor_cart_product->service_start_date)->addDays(($vendor_cart_product->LongTermProducts->quantity +1) );
+                            $period   = CarbonPeriod::create($start_service_date, $end_service_date);
+                            $entery = 1;
+                            foreach ($period as $key => $date) {
+                                if($entery <= $Service_quantity ){
+                                    $OrderLongTermServiceSchedule [] = [
+                                        'order_long_term_services_id' => $OrderLongTermServices->id,
+                                        'schedule_date'               => $date->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
+                                    ];
+                                    $entery++;
+                                }
+                            }
+                        }elseif($vendor_cart_product->service_period=='week')
+                        {
+                            $end_service_date = Carbon::parse($vendor_cart_product->service_start_date)->addWeeks(($vendor_cart_product->LongTermProducts->quantity +1) );
+                            $period   = CarbonPeriod::create($start_service_date, $end_service_date);
+                            $entery = 1;
+                            foreach ($period as $key => $date) {
+                                $dayNumber = $date->dayOfWeek+1; // get day number 
+                                    if($vendor_cart_product->service_day == $dayNumber){
+                                        if($entery <= $Service_quantity ){
+                                            $OrderLongTermServiceSchedule [] = [
+                                                'order_long_term_services_id' => $OrderLongTermServices->id,
+                                                'schedule_date'               => $date->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
+                                            ];
+                                            $entery++;
+                                        }
+                                    }
+                               
+                            }
+                        }elseif($vendor_cart_product->service_period=='months'){
+
+                            $end_service_date = Carbon::parse($vendor_cart_product->service_start_date)->addMonths(($vendor_cart_product->LongTermProducts->quantity +1) );
+
+                            if($vendor_cart_product->service_date == 0){
+
+                                $startdate =  Carbon::now()->endOfMonth()->format('Y-m-d');
+                                echo $startdate . ' '; 
+                                if(strtotime($startdate) < strtotime($start_service_date))
+                                $startdate = Carbon::now()->addMonths(1);
+
+                                $arrayDate = explode("-",$startdate);
+                                $newDate =  $arrayDate[0].'-'.$arrayDate[1].'-01';
+
+                                for($i=0;$i<$Service_quantity;$i++){
+                                    
+                                    $OrderLongTermServiceSchedule [] = [
+                                        'order_long_term_services_id' => $OrderLongTermServices->id,
+                                        'schedule_date'               => Carbon::parse($newDate)->addMonths($i)->endOfMonth()->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
+                                    ];
+                                }
+
+                            }else{
+                                
+                                $todayDate =  Carbon::now()->format('Y-m-d');
+                                $arrayDate = explode("-",$todayDate);
+                                $newDate =  $arrayDate[0].'-'.$arrayDate[1].'-'.$vendor_cart_product->service_date;
+                                $startdate = Carbon::parse($newDate)->format('Y-m-d');
+                                if(strtotime($startdate) < strtotime($start_service_date))
+                                $startdate = Carbon::parse($startdate)->addMonth();
+
+                              
+                               // $selected_date = $startdate->subMonth(); 
+
+                                for($i=0;$i<$Service_quantity;$i++){
+                                    
+                                    $OrderLongTermServiceSchedule [] = [
+                                        'order_long_term_services_id' => $OrderLongTermServices->id,
+                                        'schedule_date'               => Carbon::parse($startdate)->addMonths($i)->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
+                                    ];
+                                }
+
+                              
+                            }
+                        }
+                        
+                        if (!empty($OrderLongTermServiceSchedule)) {
+                            OrderLongTermServiceSchedule::insert($OrderLongTermServiceSchedule);
+                        }
+                      
+                    }
+                    
+                    // book for rental 
                     if($luxury_option->id==4){
 
                         $data   =   [
@@ -1134,7 +1280,7 @@ class OrderController extends FrontController
                         $res =   $this->bookingSlot($data);
                        //pr($res);
                     }
-                   // pr($order_product);
+                    // pr($order_product);
                     if (!empty($vendor_cart_product->addon)) {
 
                         foreach ($vendor_cart_product->addon as $ck => $addon) {
@@ -1187,7 +1333,7 @@ class OrderController extends FrontController
                     }
 
                 }
-        //        $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
+                //  $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
                 //echo  "    payable_amount==".$payable_amount;
                 }
                 
@@ -1309,7 +1455,7 @@ class OrderController extends FrontController
 
             }//End cart product loop
             //echo "loop end";
-            $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
+            $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint('',$payable_amount);
 
             // calculate subscription discount
             if ($user_subscription) {
@@ -1411,6 +1557,7 @@ class OrderController extends FrontController
             $order->fixed_fee_amount = $fixed_fee_amount;
             $order->additional_price = $totalAdditionalPrice;
             $order->total_container_charges = $total_container_charges;
+            $order->is_long_term            = $is_long_term_order;
             if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                 $order->payment_status = 1;
             }

@@ -83,6 +83,7 @@
                         </div>
                    
                     <!-- side-bar single product slider start -->
+                    @if(!empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
