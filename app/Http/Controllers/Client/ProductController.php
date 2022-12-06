@@ -182,7 +182,14 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        $product = Product::with('brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles', 'ProductAttribute')->where('id', $id)->firstOrFail();
+        
+
+        $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
+        if( checkTableExists('product_attributes') ) {
+            $with_array[] = 'ProductAttribute';
+        }
+
+        $product = Product::with($with_array)->where('id', $id)->firstOrFail();
 
         $type = Type::all();
         $countries = Country::all();
@@ -207,12 +214,6 @@ class ProductController extends BaseController
             ->where('variants.status', '!=', 2)
             ->orderBy('position', 'asc')->get();
 
-        $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
-            ->select('attributes.*')
-            ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
-            ->where('attribute_categories.category_id', $product->category_id)
-            ->where('attributes.status', '!=', 2)
-            ->orderBy('position', 'asc')->get();
 
         $taxCate = TaxCategory::all();
 
@@ -244,14 +245,23 @@ class ProductController extends BaseController
                 $celeb_ids[] = $value->celebrity_id;
             }
         }
-
-        if( !empty($product->ProductAttribute) ) {
-            foreach($product->ProductAttribute as $key => $val) {
-                $attribute_value[] = $val->attribute_option_id;
-                $attribute_key_value[$val->attribute_option_id] = $val->key_value;
+        $productAttributes = [];
+        if( checkTableExists('attributes') ) {
+            $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
+                ->select('attributes.*')
+                ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
+                ->where('attribute_categories.category_id', $product->category_id)
+                ->where('attributes.status', '!=', 2)
+                ->orderBy('position', 'asc')->get();
+            
+            if( !empty($product->ProductAttribute) ) {
+                foreach($product->ProductAttribute as $key => $val) {
+                    $attribute_value[] = $val->attribute_option_id;
+                    $attribute_key_value[$val->attribute_option_id] = $val->key_value;
+                }
             }
         }
-        
+
         $otherProducts = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
         $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
         $celebrities = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
@@ -373,49 +383,51 @@ class ProductController extends BaseController
 
             if( clientPrefrenceModuleStatus('p2p_check') ) {
                 if( !empty($request->attribute) ) {
-                    $insert_arr = [];
-                    $insert_count = 0;
+                    if( checkTableExists('product_attributes') ) {
+                        $insert_arr = [];
+                        $insert_count = 0;
 
-                    foreach($request->attribute as $key => $value) {
-                        if( !empty($value) && !empty($value['option'] && is_array($value) )) {
-                            
-                            if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
-                                $value_arr = @$value['value'];
+                        foreach($request->attribute as $key => $value) {
+                            if( !empty($value) && !empty($value['option'] && is_array($value) )) {
                                 
-                                foreach( $value['option'] as $key1 => $val1 ) {
-                                    if( @in_array($val1['option_id'], $value_arr) ) {
+                                if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
+                                    $value_arr = @$value['value'];
+                                    
+                                    foreach( $value['option'] as $key1 => $val1 ) {
+                                        if( @in_array($val1['option_id'], $value_arr) ) {
 
-                                        $insert_arr[$insert_count]['product_id'] = $id;
-                                        $insert_arr[$insert_count]['attribute_id'] = $value['id'];
-                                        $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
-                                        $insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
-                                        $insert_arr[$insert_count]['key_value'] = $val1['option_id'];
-                                        $insert_arr[$insert_count]['is_active'] = 1;
+                                            $insert_arr[$insert_count]['product_id'] = $id;
+                                            $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                            $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                            $insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
+                                            $insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+                                            $insert_arr[$insert_count]['is_active'] = 1;
+                                        }
+                                        $insert_count++;
                                     }
-                                    $insert_count++;
+                                }
+                                else {
+                                    foreach($value['option'] as $option_key => $option) {
+                                        if(@$option['value']){
+                                            $insert_arr[$insert_count]['product_id'] = $id;
+                                            $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                            $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                            $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+                                            $insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
+                                            $insert_arr[$insert_count]['is_active'] = 1;
+
+                                        }
+                                        $insert_count++;
+                                    }
                                 }
                             }
-                            else {
-                                foreach($value['option'] as $option_key => $option) {
-                                    if(@$option['value']){
-                                        $insert_arr[$insert_count]['product_id'] = $id;
-                                        $insert_arr[$insert_count]['attribute_id'] = $value['id'];
-                                        $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
-                                        $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
-                                        $insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
-                                        $insert_arr[$insert_count]['is_active'] = 1;
 
-                                    }
-                                    $insert_count++;
-                                }
-                            }
+                        
                         }
-
-                       
-                    }
-                    if( !empty($insert_arr) ) {
-                        ProductAttribute::where('product_id',$id)->delete();
-                        ProductAttribute::insert($insert_arr);
+                        if( !empty($insert_arr) ) {
+                            ProductAttribute::where('product_id',$id)->delete();
+                            ProductAttribute::insert($insert_arr);
+                        }
                     }
                 }
                 

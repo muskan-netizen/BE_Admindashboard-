@@ -265,38 +265,40 @@ class ProductController extends FrontController{
             $coupon_list = $promoCodeController->coupon_code_list($product->id, $product->vendor_id);
 
             // Product Attribute
-            $product_attr = [];
-            if( !empty($product->ProductAttribute) ) {
-                foreach( $product->ProductAttribute as $key => $value ) {
-                    if( !empty($value->attribute) && !empty($value->attribute->status) && $value->attribute->status == 1 ) {
-                        $product_attr[$key]['title'] = optional($value->attribute)->title ?? '';
-                        $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
-                        
-                        if( !empty($value->attribute) && $value->attribute->type != 4) {
-                            $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
-                        }
-                        else {
-                            $product_attr[$key]['value'] = $value['key_value'] ?? '';
+            $product_attr = $attr_array = [];
+            if( checkTableExists('product_attributes') ) {
+                if( !empty($product->ProductAttribute) ) {
+                    foreach( $product->ProductAttribute as $key => $value ) {
+                        if( !empty($value->attribute) && !empty($value->attribute->status) && $value->attribute->status == 1 ) {
+                            $product_attr[$key]['title'] = optional($value->attribute)->title ?? '';
+                            $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
+                            
+                            if( !empty($value->attribute) && $value->attribute->type != 4) {
+                                $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
+                            }
+                            else {
+                                $product_attr[$key]['value'] = $value['key_value'] ?? '';
+                            }
                         }
                     }
                 }
-            }
-            
-            $attr_id = '';
-            $attr_array = [];
-            foreach($product_attr as $pro_att_key => $pro_att_val) {
                 
-                if( empty($attr_id) || ($pro_att_val['attribute_id'] != $attr_id) ) {
-                    $attr_id = $pro_att_val['attribute_id'];
-                    $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
-                    $attr_array[$pro_att_val['title']][$pro_att_key]['attribute_id'] = $pro_att_val['attribute_id'];
-                    $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
-                }
-                else {
-                    $attr_id = $pro_att_val['attribute_id'];
-                    $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
-                    $attr_array[$pro_att_val['title']][$pro_att_key]['attribute_id'] = $pro_att_val['attribute_id'];
-                    $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
+                $attr_id = '';
+                $attr_array = [];
+                foreach($product_attr as $pro_att_key => $pro_att_val) {
+                    
+                    if( empty($attr_id) || ($pro_att_val['attribute_id'] != $attr_id) ) {
+                        $attr_id = $pro_att_val['attribute_id'];
+                        $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
+                        $attr_array[$pro_att_val['title']][$pro_att_key]['attribute_id'] = $pro_att_val['attribute_id'];
+                        $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
+                    }
+                    else {
+                        $attr_id = $pro_att_val['attribute_id'];
+                        $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
+                        $attr_array[$pro_att_val['title']][$pro_att_key]['attribute_id'] = $pro_att_val['attribute_id'];
+                        $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
+                    }
                 }
             }
             
