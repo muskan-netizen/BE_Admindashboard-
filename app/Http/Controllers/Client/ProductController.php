@@ -385,6 +385,7 @@ class ProductController extends BaseController
             $product->dropoff_delay_order_min        = $request->dropoff_delay_order_min??0;
             $product->minimum_order_count        = $request->minimum_order_count??0;
             $product->batch_count        = $request->batch_count??1;
+            $product->return_days        = $request->return_days??0;
 
 
 

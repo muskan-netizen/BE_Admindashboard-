@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product};
 use App\Http\Traits\{ValidatorTrait};
+use Carbon\Carbon;
 
 trait OrderTrait{
     use ValidatorTrait;
@@ -432,6 +433,22 @@ trait OrderTrait{
 
         }
 
+
+    }
+
+    /**
+     * check order days of return / replace
+     */
+    public function checkOrderDaysForReturn($order, $days){
+        if($days == 0){
+            return false;
+        }
+        $date = Carbon::parse($order->created_at)->addDays($days);// enddate for return
+       
+        if($date >= $order->created_at){
+            return true;
+        }
+        return false;
 
     }
 

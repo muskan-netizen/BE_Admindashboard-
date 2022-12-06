@@ -1626,10 +1626,23 @@ class OrderController extends BaseController
                 $order->current_status = null;
             }
             $return_request_status = 0;
+            $returnable = 0;
+            $replaceable = 0;
             
             foreach ($order->products as $product) {
+                if($this->checkOrderDaysForReturn($order, $product->product->return_days) && $order->is_exchanged_or_returned==0){
+
+                
+                    if(@$product->product->replaceable && $product->product->replaceable == 1){
+                        $replaceable = $product->product->replaceable;
+                    }
+
+                    if(@$product->product->returnable && $order->vendor->return_request == 1 && $product->product->returnable == 1){
+                        $returnable = $product->product->returnable;
+                    }
+                }
                 // dd($product->productReturn->status);
-                if(@$product->productReturn &&  $return_request_status== 0){
+                if(@$product->productReturn &&  $return_request_status== 0 && $order->is_exchanged_or_returned!=1){
                     if($product->productReturn->status == 'Accepted'){
                         $return_request_status = 1;
                     }
@@ -1678,6 +1691,12 @@ class OrderController extends BaseController
             $order->product_details = $product_details;
             $order->item_count = $order_item_count;
             $order->return_request_status = $return_request_status;
+
+            //product returnable and replaceble
+
+            $order->returnable = $returnable;
+            $order->replaceable = $replaceable;
+
             unset($order->user);
             unset($order->products);
             unset($order->paymentOption);

@@ -761,6 +761,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Return/Replace Days'),['class' => 'control-label']) !!}
+                            {!! Form::number('return_days', $product->return_days, ['class'=>'form-control', 'id' => 'return_days', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        </div>
+                    </div>
+                    <div class="row">
                         @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')
                             @if (isset($roles))
                                 @foreach ($roles as $key => $role)

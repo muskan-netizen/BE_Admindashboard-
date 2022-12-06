@@ -320,7 +320,7 @@ class ReturnOrderController extends BaseController{
             $this->markAsExchangePending($orderVendorProductOld);
 
             DB::commit();
-            $this->sendSuccessSMS($request, $order);
+            // $this->sendSuccessSMS($request, $order);
 
             return $this->successResponse($order);
         } catch (Exception $e) {
