@@ -181,6 +181,9 @@
         <div id="tbody_{{$product->vendor->id}}">
 
             @foreach($product->vendor_products as $vendor_product)
+            {{-- @php
+            pr($vendor_product);
+            @endphp --}}
                 <div class="row align-items-md-center vendor_products_tr alFourTemplateCartPage" id="tr_vendor_products_{{$vendor_product->id}}">
                     <div class="product-img col-3 col-md-2">
                         @if(!empty($vendor_product->pvariant->media_one))
@@ -249,7 +252,11 @@
                             </div>
                             @elseif( $serviceType ==  'appointment')
                             <div class="col-10 col-md-4 text-md-center order-md-3">
-
+                                1
+                            </div>
+                            @elseif( $vendor_product->product->is_long_term_service ==  1)
+                            <div class="col-10 col-md-4 text-md-center order-md-3">
+                                <span class="">1</span>
                             </div>
                             @else
                                 <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -403,6 +410,10 @@
                            @endif
                            @endif
                         @endif
+                        @if( $vendor_product->product->is_long_term_service ==  1)
+                        @include('frontend.cart.longTermTimeSelection')
+                        @endif
+                    
                     </div>
 
                     @if( ($vendor_product->product->delay_order_time->delay_order_hrs != '' && $vendor_product->product->delay_order_time->delay_order_min != '' ) &&  (($vendor_product->product->delay_order_time->delay_order_hrs != 0) || ($vendor_product->product->delay_order_time->delay_order_hrs != 0)))
