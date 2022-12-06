@@ -623,6 +623,19 @@
                                     </div>
                                 </div>
                             @endif
+
+                            @if((@$product->returnable && @$product->vendor->return_request) || $product->replaceable && ($product->return_days > 0))
+                                <div class="col-md-4">
+                                    <div class="aside_bar">
+                                       
+                                            <div class="discriptions">
+                                                <p>  <span>{{ $product->return_days }} days return policy is applicable on this product </span> </p>
+                                                <hr>
+                                            </div>
+
+                                    </div>
+                                </div>
+                            @endif
                             </div>
                     </div>
 

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute};
 use Carbon\Carbon;
-use App\Http\Traits\{ProductActionTrait,ProductTrait};
+use App\Http\Traits\{ProductActionTrait, ProductTrait};
 class ProductController extends FrontController{
     private $field_status = 2;
     use ProductActionTrait,ProductTrait;
