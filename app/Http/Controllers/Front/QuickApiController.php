@@ -22,71 +22,95 @@ class QuickApiController extends Controller
 {
     use KwikApi,ApiResponser;
 
-
-      public function __construct()
-        {
-            $simp_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code', 'kwikapi')->where('status', 1)->first();
-            if($simp_creds){
-                $this->status = $simp_creds->status??'0';
-                $creds_arr = json_decode($simp_creds->credentials);
-                $this->api_email = $creds_arr->api_email??'';
-                $this->api_pass = $creds_arr->api_pass??'';
-                $this->app_url = (($simp_creds->test_mode=='1')?'https://staging-api-test.kwik.delivery':'https://staging-api-test.kwik.delivery'); //Live url - 
-                $this->test = $simp_creds->test_mode; 
-                $this->base_price = $creds_arr->base_price ?? ''; 
-                $this->distance = $creds_arr->distance ?? ''; 
-                $this->amount_per_km = $creds_arr->amount_per_km ?? '';
-            }else{
-                return 0;
-            }
-        }
-
-
-
     public function getDeliveryFeeKwikApi($vendor_id)
     {
-    try{    
+         try{    
             $customer = User::find(Auth::id());
             $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
-            if ($cus_address && $this->lalamove_status==1){
-
+            if ($cus_address){
                 $vendor_details = Vendor::find($vendor_id);
-                $data = (object) array(
-                    'pick_lat' => $vendor_details->latitude,
-                    'pick_lng' => $vendor_details->longitude,
-                    'pick_address' => $vendor_details->address,
-                    'vendor_name' => $vendor_details->name,
-                    // 'vendor_contact' => $vendor_details->phone_no,
-                    'vendor_contact' => '3768865552',
-                    'drop_lat' => $cus_address->latitude,
-                    'drop_lng' => $cus_address->longitude,
-                    'drop_address' => $cus_address->address,
-                    'user_name' => $customer->name,
-                    'user_phone' => $customer->phone_number,
-                    'remarks' => 'Delivery vendor message remarks'
-                );
-        
+                $data = (object)[      
+                        "address"=> $cus_address->address,
+                        "name"=> $customer->name,
+                        "latitude"=> $cus_address->latitude,
+                        "longitude"=> $cus_address->longitude,
+                        "phone"=> $customer->phone_number,
+                        "p_address"=> $vendor_details->address,
+                        "p_name"=> $vendor_details->name,
+                        "p_latitude"=> $vendor_details->latitude,
+                        "p_longitude"=> $vendor_details->longitude,
+                        "p_phone"=> $vendor_details->phone_no,
+                        "p_email"=> $vendor_details->email
+                  ];
                 $quotation = $this->getPriceEstimation($data);
                 $actualAmount=0;
-                if($quotation['code']!='409')
+                if($quotation->status=='200')
                 { 
-                    $json = json_decode($quotation['response']);
-                    $distance =  round($json->distance->value/1000);
-                    if($this->base_price > 0)
-                    {
-                        $actualAmount = getBaseprice($distance);
-                    }else{
-                        $actualAmount = $json->totalFee;
-                    }
+                    return $quotation->data->per_task_cost;
                 }
-                //dd($actualAmount);
                 return $actualAmount;
             }
         
         }catch(\Exception $e)
         {
+            \Log::info($e->getMessage());
             return 0;
         }
+    }
+
+
+
+    public function placeOrderToKwikApi($vendor_id,$order_id)
+    {
+        $scheduledAt = null;
+        $order = Order::find($order_id);
+        $customer = User::find(auth()->id());
+        // if(isset($order->scheduled_date_time) && $order->scheduled_date_time){
+        //     $schTime = convertDateTimeInClientTimeZone($order->scheduled_date_time);
+        //     $date = date('Y-m-d',strtotime($schTime));
+        //     $time = date('H:i:s',strtotime($schTime));
+        //     $scheduledAt = $date.'T'.$time.'Z';
+        // }
+        $cus_address = UserAddress::find($order->address_id);
+                if ($cus_address){
+                    $vendor_details = Vendor::find($vendor_id);
+                    $data = (object)[      
+                        "address"=> $cus_address->address,
+                        "name"=> $customer->name,
+                        "latitude"=> $cus_address->latitude,
+                        "longitude"=> $cus_address->longitude,
+                        "phone"=> $customer->phone_number,
+                        "p_address"=> $vendor_details->address,
+                        "p_name"=> $vendor_details->name,
+                        "p_latitude"=> $vendor_details->latitude,
+                        "p_longitude"=> $vendor_details->longitude,
+                        "p_phone"=> $vendor_details->phone_no,
+                        "p_email"=> $vendor_details->email,
+                        "amount" => $order->ordervendor->where('id',$vendor_id)->first()->payable_amount,
+                  ];
+                   
+                $quotation = $this->getPriceEstimation($data);
+                if($quotation->status=='200')
+                {
+                    $data->delivery_charge = $quotation->data->per_task_cost;
+                    $response = $this->createKwikOrder($data);
+                        if($response->status=='200'){
+                            $response = $response->data;
+                        }
+                }else{
+                    $response = false;
+                }
+            }
+
+        return $response;
+    	
+    }
+
+    public function cancelOrderRequestKwikApi($order_id,$vendor_id)
+    {
+        $order = Order::find($order_id);
+        $reffId = $order->ordervendor->where('id',$vendor_id)->first()->delivery_response;
+        return $this->cancelOrder($reffId);
     }
 
 

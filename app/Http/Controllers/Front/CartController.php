@@ -2065,6 +2065,29 @@ class CartController extends FrontController
                     }
 
 
+                //Kwik Delivery changes code
+                $kwick = new QuickApiController();
+                $deliver_fee = $kwick->getDeliveryFeeKwikApi($vendorData->vendor_id);
+                if($deliver_fee>0)
+                {
+                    $deliver_fee = decimal_format($deliver_fee);
+
+                    $optionKwikApi[] = array(
+                        'type'=>'K',
+                        'courier_name'=>__('KwikApi'),
+                        'rate' => $deliver_fee,
+                        'courier_company_id' => 0,
+                        'etd' => 0,
+                        'etd_hours' => 0,
+                        'duration' => 0,
+                        'estimated_delivery_days' => 0,
+                        'code' => 'K_0'
+                    );
+                    $option = array_merge($option,$optionKwikApi);
+                }
+                //End Kwik Delivery changes code
+
+
                 //Lalamove Delivery changes code
                 $lalamove = new LalaMovesController();
                 $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);

@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
+use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
 use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart};
 use DB;
@@ -791,6 +792,10 @@ class OrderController extends BaseController
                         //Create Shipping place order request for Lalamove
                         //$orderPlaced = $this->placeOrderRequestlalamove($request);
 
+                    } elseif ($orderData->shipping_delivery_type == 'K') {
+                        //Create Shipping place order request for Kwik
+                        $orderPlaced = $this->placeOrderRequestKwikApi($request);
+
                     } elseif ($orderData->shipping_delivery_type == 'SR') {
                         //Create Shipping place order request for Shiprocket
                         $orderPlaced = $this->placeOrderRequestShiprocket($request);
@@ -828,56 +833,6 @@ class OrderController extends BaseController
                     $vendor_order_status->save();
 
 
-
-
-
-                    // //Refund to wallet
-                    // if( (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) && $request->status_option_id == 3){
-
-                    //     $orderRefund=new OrderRefund();
-                    //     $orderRefund->user_id=$order->user_id;
-                    //     $orderRefund->order_id=$order->id;
-                    //     $payment_id=Order::select('payments.id')
-                    //         ->leftJoin('payments','payments.order_id','=','orders.id')
-                    //         ->where('orders.id',$order->id)->first()->id;
-
-                    //     if(!empty($payment_id)){
-                    //         $orderRefund->payment_id=$payment_id;
-                    //     }else{
-                    //         $orderRefund->payment_id=0;
-                    //     }
-                    //     $orderRefund->payment_option_id=$order->payment_option_id;
-                    //     $orderRefund->amount=$order->wallet_amount_used+$order->payable_amount;
-                    //     $orderRefund->paid_to_wallet=1;
-                    //     $orderRefund->save();
-
-
-                    //     $refund_amount = $order->wallet_amount_used + $order->payable_amount;
-                    //     if($refund_amount > 0){
-                    //         $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                    //         if(!$transaction){
-                    //             $user = User::find($order->user_id);
-                    //             if($user){
-                    //                 $wallet = $user->wallet;
-                    //                 $wallet->depositFloat($refund_amount, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
-                    //             }
-                    //         }
-                    //     }
-
-                    //     $wallet = User::find($order->user_id)->wallet;
-                    //     if(!empty($refund_amount) && $refund_amount>0){
-                    //         $wallet->depositFloat($refund_amount, ['Wallet has been <b>refunded</b> for cancellation of order #'. $refund_amount]);
-                    //     }
-
-                    //     $order->payment_status=2;
-                    //     $order->save();
-
-                    // }
-
-
-
-
-
                     if ($request->status_option_id == 3) {
                         if ($orderData->shipping_delivery_type == 'D' && !empty($currentOrderStatus->dispatch_traking_url)) {
                             $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
@@ -886,7 +841,11 @@ class OrderController extends BaseController
                             //Cancel Shipping place order request for Lalamove
                             $lala = new LalaMovesController();
                             $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
-                        } elseif ($orderData->shipping_delivery_type == 'SR') {
+                        }elseif ($orderData->shipping_delivery_type == 'K') {
+                            //Cancel Shipping place order request for Lalamove
+                            $lala = new QuickApiController();
+                            $order_lalamove = $lala->cancelOrderRequestKwikApi($request->order_id,$request->vendor_id);
+                        }elseif ($orderData->shipping_delivery_type == 'SR') {
                             //Cancel Shipping place order request for Shiprocket
                             $ship = new ShiprocketController();
                             $order_ship = $ship->cancelOrderRequestShiprocket($currentOrderStatus->ship_order_id);
@@ -1029,6 +988,27 @@ class OrderController extends BaseController
         }
 
         return 2;
+    }
+
+    public function placeOrderRequestKwikApi($request)
+    {
+        $kwik = new QuickApiController();
+        //Create Shipping place order request for KwikApi
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+            $order_ship = $kwik->placeOrderToKwikApi($request->vendor_id, $request->order_id);
+        }
+        if ($order_ship) {
+            $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'delivery_response' => json_encode($order_ship),
+                    'dispatch_traking_url'=>$order_ship->pickups[0]->result_tracking_link
+                ]);
+            return 1;
+        }
+
+        return false;
     }
 
     public function placeOrderRequestShiprocket($request)
