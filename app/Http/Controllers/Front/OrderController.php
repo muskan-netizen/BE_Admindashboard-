@@ -294,7 +294,7 @@ class OrderController extends FrontController
          // dd($longTermOrder->toArray());
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee,'longTermOrder'=>$longTermOrder]);
+        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee,'longTermOrder'=>$longTermOrder, 'is_postpay_edit_dropoff' => getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff']]);
     }
 
     public function getOrderSuccessPage(Request $request)

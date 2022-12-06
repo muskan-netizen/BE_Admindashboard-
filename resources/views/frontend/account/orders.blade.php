@@ -674,12 +674,19 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+                                                                                <li class="grand_total d-flex align-items-center justify-content-between">
+                                                                                    <label
+                                                                                        class="m-0">{{ __('Total Payable') }}</label>
+                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount+$order->fixed_fee_amount)}}</span>
+                                                                                </li>
+                                                                                @if ($order->payment_option_id == 1 && $is_postpay_edit_dropoff == 1 && $order->luxury_option_id == 3)
                                                                                 <li
                                                                                     class="grand_total d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Total Payable') }}</label>
                                                                                     <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount+$order->fixed_fee_amount)}}</span>
                                                                                 </li>
+                                                                                @endif
                                                                             </ul>
                                                                         </div>
                                                                     </div>

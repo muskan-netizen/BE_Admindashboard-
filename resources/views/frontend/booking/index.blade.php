@@ -430,14 +430,12 @@ body .alFullMapForm .scheduled-footer .btn {
     <span id="show_error_of_booking" class="error"></span>
 
     <div class="payment-promo-container p-2">
-        @if($is_postpay_edit_dropoff == 0)
         <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
             <span id="payment_type">
                 <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
             </span>
             <i class="fa fa-angle-down" aria-hidden="true"></i>
         </h4>
-        @endif
         <div class="row">
             <div class="col-12">
             <%
@@ -447,7 +445,7 @@ body .alFullMapForm .scheduled-footer .btn {
             }
             %>
                 <input type="hidden" id="stripe_token" name="stripe_token" value="">
-                <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now" data-postpay="{{$client_preference_detail->is_postpay_edit_dropoff}}">{{__('Book Now')}}</button>
+                <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
             </div>
             <!--<div class="col-6">
                 <button class="btn btn-solid w-100" id="pickup_later" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_later">Pickup Later</button>
@@ -768,15 +766,15 @@ body .alFullMapForm .scheduled-footer .btn {
     });
 </script>
 
-@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options) || in_array('stripe_ideal',$client_payment_options))
+@if(in_array('stripe', $client_payment_options) || in_array('stripe_fpx', $client_payment_options) || in_array('stripe_oxxo', $client_payment_options) || in_array('stripe_ideal', $client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
 @endif
-@if(in_array('stripe_oxxo',$client_payment_options))
+@if(in_array('stripe_oxxo', $client_payment_options))
 <script>
 var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
 </script>
 @endif
-@if(in_array('stripe_ideal',$client_payment_options))
+@if(in_array('stripe_ideal', $client_payment_options))
 <script>
 var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 </script>

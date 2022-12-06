@@ -214,7 +214,6 @@ jQuery(function () {
         let coupon_id                   = $(this).attr('data-coupon_id');
         let product_id                  = $(this).attr('data-product_id');
         let payment_option_id           = $(this).attr('data-payment_method');
-        let postpay_enable              = $(this).attr('data-postpay');
         let type                        = parseFloat($('input[name=is_for_friend]:checked').val());
         // alert(type);
         // return false;
@@ -227,7 +226,7 @@ jQuery(function () {
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling, postpay_enable:postpay_enable},
+            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
