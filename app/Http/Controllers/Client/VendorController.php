@@ -1168,14 +1168,20 @@ class VendorController extends BaseController
             });
         }
 
-        $vendor_payouts = $vendor_payouts->get();
-        foreach ($vendor_payouts as $payout) {
-            $payout->date = dateTimeInUserTimeZone($payout->created_at, $user->timezone);
-            $payout->amount = $payout->amount;
-            $payout->type = $payout->payoutOption->title;
-        }
+        // $vendor_payouts = $vendor_payouts->get();
+        // foreach ($vendor_payouts as $payout) {
+        //     $payout->date = dateTimeInUserTimeZone($payout->created_at, $user->timezone);
+        //     $payout->amount = $payout->amount;
+        //     $payout->type = $payout->payoutOption->title;
+        // }
         return Datatables::of($vendor_payouts)
             ->addIndexColumn()
+            ->addColumn('type', function($vendor_payouts) {
+                return $vendor_payouts->payoutOption->title ?? 'NA';
+            })
+            ->addColumn('date', function($vendor_payouts) use ($user) {
+                return dateTimeInUserTimeZone($vendor_payouts->created_at, $user->timezone);
+            })
             ->filter(function ($instance) use ($request) {
                 // if (!empty($request->get('search'))) {
                 //     $instance->collection = $instance->collection->filter(function ($row) use ($request){
