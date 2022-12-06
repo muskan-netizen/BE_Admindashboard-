@@ -225,9 +225,9 @@ body.dark.al_body_template_one.p2p-module section.section-b-space.new-pages .cus
 body.dark.al_body_template_one.p2p-module section.section-b-space.order-page .nav-tabs .nav-item {
     margin: 0 10px;
 }
-body.dark.al_body_template_one.p2p-module .vendors .slick-next:before, .vendors .slick-prev:before {
+/* body.dark.al_body_template_one.p2p-module .vendors .slick-next:before, .vendors .slick-prev:before {
     filter: invert(1);
-}
+} */
 body.dark.al_body_template_one.p2p-module .col-grid-box.mt-3 .product-image img {
     border-radius: 12px 12px 0 0;
     height: 200px !important;
