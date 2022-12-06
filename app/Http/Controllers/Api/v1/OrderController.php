@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\AhoyController;
 use DB;
-use Carbon\Carbon;
+use Carbon\{Carbon,CarbonPeriod};
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption};
+use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule};
 use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\OrderTrait;
 
@@ -225,6 +225,8 @@ class OrderController extends BaseController
                     $order->taxable_amount = $total_taxes;
                     $order->save();
 
+                    $is_long_term_order = 0;
+                    $checkLongTermInDB =checkColumnExists('products','is_long_term_service');
                     /* Updating order prescription if any */
                     $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
                     foreach ($cart_prescriptions as $cart_prescription) {
@@ -382,9 +384,9 @@ class OrderController extends BaseController
                             $order_product->order_id = $order->id;
                             $order_product->price = $variant->price;
                             $order_product->additional_increments_hrs_min = @$vendor_cart_product->additional_increments_hrs_min;
-                    $order_product->start_date_time = $vendor_cart_product->start_date_time;
-                    $order_product->end_date_time = $vendor_cart_product->end_date_time;
-                    $order_product->total_booking_time = @$vendor_cart_product->total_booking_time; 
+                            $order_product->start_date_time = $vendor_cart_product->start_date_time;
+                            $order_product->end_date_time = $vendor_cart_product->end_date_time;
+                            $order_product->total_booking_time = @$vendor_cart_product->total_booking_time; 
                             $order_product->markup_price = $variant->markup_price;
                             $order_product->container_charges = $variant->container_charges;
                             $order_product->taxable_amount = $product_taxable_amount;
@@ -430,6 +432,124 @@ class OrderController extends BaseController
                                 $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                             }
                             $order_product->save();
+
+                            if( ($checkLongTermInDB ==1) && $vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts){
+                                $is_long_term_order = 1;
+                                $service_start_date =  $vendor_cart_product->service_start_date ??   Carbon::now()->format('Y-m-d H:i:s');
+                                $service_end_date = Carbon::parse( $service_start_date )->addMonths($vendor_cart_product->product->service_duration)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                                $LongTermSericeData=[
+                                    'order_product_id'  => $order_product->id,
+                                    'user_id'           => $user->id,
+                                    'service_quentity'  => $vendor_cart_product->LongTermProducts->quantity ?? 1,
+                                    'service_day'       => $vendor_cart_product->service_day,
+                                    'service_date'      => $vendor_cart_product->service_date,
+                                    'service_start_date'=> $service_start_date,
+                                    'service_period'    => $vendor_cart_product->service_period,
+                                    'service_end_date'  => $service_end_date,
+                                    'service_product_id'         => $vendor_cart_product->LongTermProducts->product_id,
+                                    'service_product_variant_id' => $vendor_cart_product->LongTermProducts->product_variant,
+                                    'status'                => 0,
+                                ];
+                                $OrderLongTermServices  = OrderLongTermServices::create($LongTermSericeData);
+                                if($vendor_cart_product->LongTermProducts->addons->isNotEmpty()){
+                                    foreach($vendor_cart_product->LongTermProducts->addons as $SAddon){
+                                        $LongTermSericeAddonData= [
+                                            'order_long_term_services_id' => $OrderLongTermServices->id , 
+                                            'addon_id'                    => $SAddon->addon_id, 
+                                            'option_id'                   => $SAddon->option_id
+                                        ];
+                                        OrderLongTermServicesAddon::create($LongTermSericeAddonData);
+                                    }
+                                }
+                                /** save long term service schedule */
+                                $OrderLongTermServiceSchedule = array();;
+                                $Service_quantity = $vendor_cart_product->LongTermProducts->quantity;
+                                $start_service_date = Carbon::parse($vendor_cart_product->service_start_date)->format('Y-m-d'); 
+                                $end_service_date   = Carbon::parse($vendor_cart_product->service_start_date)->addMonths($vendor_cart_product->product->service_duration);
+                             
+                                if($vendor_cart_product->service_period=='days'){
+                                  
+                                    $end_service_date = Carbon::parse($vendor_cart_product->service_start_date)->addDays(($vendor_cart_product->LongTermProducts->quantity +1) );
+                                    $period   = CarbonPeriod::create($start_service_date, $end_service_date);
+                                    $entery = 1;
+                                    foreach ($period as $key => $date) {
+                                        if($entery <= $Service_quantity ){
+                                            $OrderLongTermServiceSchedule [] = [
+                                                'order_long_term_services_id' => $OrderLongTermServices->id,
+                                                'schedule_date'               => $date->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
+                                            ];
+                                            $entery++;
+                                        }
+                                    }
+                                }elseif($vendor_cart_product->service_period=='week')
+                                {
+                                    $end_service_date = Carbon::parse($vendor_cart_product->service_start_date)->addWeeks(($vendor_cart_product->LongTermProducts->quantity +1) );
+                                    $period   = CarbonPeriod::create($start_service_date, $end_service_date);
+                                    $entery = 1;
+                                    foreach ($period as $key => $date) {
+                                        $dayNumber = $date->dayOfWeek+1; // get day number 
+                                            if($vendor_cart_product->service_day == $dayNumber){
+                                                if($entery <= $Service_quantity ){
+                                                    $OrderLongTermServiceSchedule [] = [
+                                                        'order_long_term_services_id' => $OrderLongTermServices->id,
+                                                        'schedule_date'               => $date->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
+                                                    ];
+                                                    $entery++;
+                                                }
+                                            }
+                                       
+                                    }
+                                }elseif($vendor_cart_product->service_period=='months'){
+        
+                                    $end_service_date = Carbon::parse($vendor_cart_product->service_start_date)->addMonths(($vendor_cart_product->LongTermProducts->quantity +1) );
+        
+                                    if($vendor_cart_product->service_date == 0){
+        
+                                        $startdate =  Carbon::now()->endOfMonth()->format('Y-m-d');
+                                        echo $startdate . ' '; 
+                                        if(strtotime($startdate) < strtotime($start_service_date))
+                                        $startdate = Carbon::now()->addMonths(1);
+        
+                                        $arrayDate = explode("-",$startdate);
+                                        $newDate =  $arrayDate[0].'-'.$arrayDate[1].'-01';
+        
+                                        for($i=0;$i<$Service_quantity;$i++){
+                                            
+                                            $OrderLongTermServiceSchedule [] = [
+                                                'order_long_term_services_id' => $OrderLongTermServices->id,
+                                                'schedule_date'               => Carbon::parse($newDate)->addMonths($i)->endOfMonth()->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
+                                            ];
+                                        }
+        
+                                    }else{
+                                        
+                                        $todayDate =  Carbon::now()->format('Y-m-d');
+                                        $arrayDate = explode("-",$todayDate);
+                                        $newDate =  $arrayDate[0].'-'.$arrayDate[1].'-'.$vendor_cart_product->service_date;
+                                        $startdate = Carbon::parse($newDate)->format('Y-m-d');
+                                        if(strtotime($startdate) < strtotime($start_service_date))
+                                        $startdate = Carbon::parse($startdate)->addMonth();
+        
+                                      
+                                       // $selected_date = $startdate->subMonth(); 
+        
+                                        for($i=0;$i<$Service_quantity;$i++){
+                                            
+                                            $OrderLongTermServiceSchedule [] = [
+                                                'order_long_term_services_id' => $OrderLongTermServices->id,
+                                                'schedule_date'               => Carbon::parse($startdate)->addMonths($i)->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
+                                            ];
+                                        }
+        
+                                      
+                                    }
+                                }
+                                
+                                if (!empty($OrderLongTermServiceSchedule)) {
+                                    OrderLongTermServiceSchedule::insert($OrderLongTermServiceSchedule);
+                                }
+                              
+                            }
                             
                             $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
                             if ($cart_addons) {
@@ -612,6 +732,9 @@ class OrderController extends BaseController
                     $order->total_container_charges = $total_container_charges;
                     if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                         $order->payment_status = 1;
+                    }
+                    if(checkColumnExists('orders','is_long_term')){
+                        $order->is_long_term            = $is_long_term_order;
                     }
                     $order->save();
                     
@@ -1657,6 +1780,11 @@ class OrderController extends BaseController
                     $luxury_option_name = getNomenclatureName($luxury_option->title);
                 }
             }
+            $order->is_long_term  =0;
+            if(checkColumnExists('orders','is_long_term')){
+                $order->is_long_term  = $order->orderDetail->is_long_term;
+            }
+            $order->luxury_option_name = $luxury_option_name;
             $order->luxury_option_name = $luxury_option_name;
             $order->product_details = $product_details;
             $order->item_count = $order_item_count;
@@ -1759,6 +1887,7 @@ class OrderController extends BaseController
                     $order = $order->where('id', $order_id)->select('*', 'id as total_discount_calculate')
                     ->first();
             }
+            
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
             if ($order) {
                  // set payment option dynamic name
@@ -1804,6 +1933,30 @@ class OrderController extends BaseController
                     $product_addons = [];
                     $vendor->vendor_name = $vendor->vendor->name;
                     foreach ($vendor->products as  $product) {
+                        
+                        $product->longTermSchedule = array();
+                        if($product->product->is_long_term_service ==1){
+                            $product->longTermSchedule =  OrderLongTermServices::with(['schedule','product.primary','addon.set','addon.option','addon.option.translation' => function ($q) use ($language_id) {
+                                            $q->select('addon_option_translations.id', 'addon_option_translations.addon_opt_id', 'addon_option_translations.title', 'addon_option_translations.language_id');
+                                            $q->where('addon_option_translations.language_id', $language_id);
+                                            $q->groupBy('addon_option_translations.addon_opt_id', 'addon_option_translations.language_id');
+                                        }])->where('order_product_id',$product->id)->first();
+                            foreach ($product->longTermSchedule->addon as $ck => $addons) {
+                                $opt_price_in_currency = $addons->option->price??0;
+                                $opt_price_in_doller_compare = $addons->option->price??0;
+                                if ($clientCurrency) {
+                                    $opt_price_in_currency = $addons->option->price??0 / $divider;
+                                    $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                                }
+                                $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $product->quantity);
+                                $addons->option->translation_title = ($addons->option->translation->isNotEmpty()) ? $addons->option->translation->first()->title : '';
+                                $addons->option->price_in_cart = $addons->option->price;
+                                $addons->option->price = decimal_format($opt_price_in_currency);
+                                $addons->option->multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
+                                
+                            }
+                        }
+                      
                         $product_addons = [];
                         $variant_options = [];
                         $vendor_total_container_charges = 0;

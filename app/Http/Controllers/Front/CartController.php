@@ -316,23 +316,30 @@ class CartController extends FrontController
                     $sel->groupBy('product_id');
                 }
             ])->find($request->product_id);
-            # if product type is not equal to on demand and appointment
-            if( ( !in_array($productDetail->category->categoryDetail->type_id,[8,12])) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)){
-                if(!empty($already_added_product_in_cart)){
-                    if($productDetail->variant[0]->quantity <= $already_added_product_in_cart->quantity){
-                        return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart s')]);
+           
+             /** if product is not lonf term */ 
+            if(checkColumnExists('products','is_long_term_service') && $productDetail->is_long_term_service !=1){
+                /** if product type is not equal to on demand and appointment
+                 **/ 
+                        
+                if( ( !in_array($productDetail->category->categoryDetail->type_id,[8,12])) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)){
+                    if(!empty($already_added_product_in_cart)){
+                        if($productDetail->variant[0]->quantity <= $already_added_product_in_cart->quantity){
+                            return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart s')]);
+                        }
+                        if($productDetail->variant[0]->quantity <= ($already_added_product_in_cart->quantity + $request->quantity)){
+                            $request->quantity = $productDetail->variant[0]->quantity - $already_added_product_in_cart->quantity;
+                        }
                     }
-                    if($productDetail->variant[0]->quantity <= ($already_added_product_in_cart->quantity + $request->quantity)){
-                        $request->quantity = $productDetail->variant[0]->quantity - $already_added_product_in_cart->quantity;
+                    if($productDetail->variant[0]->quantity < $request->quantity){
+                        if($productDetail->variant[0]->quantity == 0){
+                            $productDetail->variant[0]->quantity = 1;
+                        }
+                        $request->quantity = $productDetail->variant[0]->quantity;
                     }
-                }
-                if($productDetail->variant[0]->quantity < $request->quantity){
-                    if($productDetail->variant[0]->quantity == 0){
-                        $productDetail->variant[0]->quantity = 1;
-                    }
-                     $request->quantity = $productDetail->variant[0]->quantity;
                 }
             }
+          
             //\Log::info($request->addon_id);
 
             $addonSets = $addon_ids = $addon_options = array();
@@ -388,25 +395,49 @@ class CartController extends FrontController
                 $total_booking_time = $productDetail->minimum_duration_min;
             }
             $oldquantity = $isnew = 0;
+            $service_start_date   = '';
+            $start_date  = $request->has('start_date') ? $request->start_date : null;
+            $isLongTermProduct =0;
+            if( $request->has('service_start_time')){
+                $isLongTermProduct  =1;
+                $client_timezone = DB::table('clients')->first('timezone');
+                $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
+                $time = '2022-10-27 '.$request->service_start_time; /**only need time */
+                $service_start_time = Carbon::parse($time, $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                $start_date = $service_start_time ; /** we user start_date_time for long term order timing */
+                $service_start_date = carbon::now()->setTimezone('UTC')->format('Y-m-d H:i:s');
+            }
+            
             $cart_product_detail = [
-                'status'  => '0',
-                'is_tax_applied'  => '1',
-                'created_by'  => $user_id,
-                'cart_id'  => $cart_detail->id,
-                'quantity'  => $request->quantity,
-                'vendor_id'  => $request->vendor_id,
-                'product_id' => $request->product_id,
-                'variant_id'  => $request->variant_id,
-                'currency_id' => $client_currency->currency_id,
-                'luxury_option_id' => ($luxury_option) ? $luxury_option->id : 0,
-                'start_date_time'  => $request->has('start_date') ? $request->start_date : null,
-                'end_date_time' => $request->has('end_date') ? $request->end_date : null,
+                'status'            => '0',
+                'is_tax_applied'    => '1',
+                'created_by'        => $user_id,
+                'cart_id'           => $cart_detail->id,
+                'quantity'          => $request->quantity ?? 1,
+                'vendor_id'         => $request->vendor_id,
+                'product_id'          => $request->product_id,
+                'variant_id'          => $request->variant_id,
+                'currency_id'         => $client_currency->currency_id,
+                'luxury_option_id'    => ($luxury_option) ? $luxury_option->id : 0,
+                'start_date_time'     => $start_date,
+                'end_date_time'       => $request->has('end_date') ? $request->end_date : null,
                 'additional_increments_hrs_min' => $request->has('incremental_hrs') ? $request->incremental_hrs : null,
-                'total_booking_time' =>  $total_booking_time,
+                'total_booking_time'  => $total_booking_time,
+                'service_day'         => $request->has('service_day') ? $request->service_day : null,
+                'service_date'        => $request->has('service_date') ? $request->service_date : null,
+                'service_period'      => $request->has('service_period') ? $request->service_period : null,
+                'service_start_date'  => @$service_start_date,
             ];
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
-
+            /** check is long term is added to cart */
+            $checkLongTermService = CartProduct::where('cart_id', $cart_detail->id)->with('product')->first();
+            $isLongTermService  = 0;
+           
+            if(checkColumnExists('products','is_long_term_service') && !empty($checkLongTermService->product)){
+                $isLongTermService = $checkLongTermService->product->is_long_term_service ;
+            }
+           
             if ($luxury_option) {
                 $checkCartLuxuryOption = CartProduct::where('luxury_option_id', '!=', $luxury_option->id)->where('cart_id', $cart_detail->id)->first();
                 if ($checkCartLuxuryOption) {
@@ -426,6 +457,11 @@ class CartController extends FrontController
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
             }
+            /** delete is long term is added from cart */
+            if($isLongTermService || ($isLongTermProduct ==1) ){
+                CartProduct::where('cart_id', $cart_detail->id)->delete();
+            }
+
 
             $cartProduct = CartProduct::where('product_id', $request->product_id)->where('variant_id', $request->variant_id)->where('cart_id', $cart_detail->id)->first();
             if(!$cartProduct){
@@ -2016,20 +2052,25 @@ class CartController extends FrontController
             return $all_vendors;
     }
 
+    /***
+     * Fetch all delivery fee option
+     * totalRoute = number to total route witch we have send to dispatcher
+     */
 
-
-        //Fetch all delivery fee option
-    public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del='', $dispatcher_tags='')
+     
+    public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del='', $dispatcher_tags='',$totalRoute = '1')
     {
         $option = array();
         $delivery_count = 0;
         try {
             if($vendorData->vendor_id)
             {
+                
                 Session()->put('vid',$vendorData->vendor_id);
 
                 $getAdditionalPreference = getAdditionalPreference(['is_free_delivery_by_roles']);
                 $skip_delivery_fees = false;
+                
                 if($getAdditionalPreference['is_free_delivery_by_roles'] == 1 ){
                     $product_id = $vendorData->vendorProducts[0]['product_id'];
                     $result = ProductDeliveryFeeByRole::where('product_id', $product_id)->where('role_id', Auth::user()->role_id)
@@ -2043,11 +2084,11 @@ class CartController extends FrontController
                 }
                 else if($preferences->static_delivey_fee != 1)
                 {
-
+                    //pr( $getAdditionalPreference);
                     //Dispatcher Delivery changes and estimated delivery duration code
                     $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del, $dispatcher_tags);
                     if (!empty($deliver_response_array[0])){
-                        $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format($deliver_response_array[0]['delivery_fee'], 2, '.', ''):'0.00';
+                        $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format(($deliver_response_array[0]['delivery_fee']*$totalRoute), 2, '.', ''):'0.00';
                         $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
                         $option[] = array(
                             'type'=>'D',
