@@ -221,6 +221,20 @@ body.dark.al_body_template_one.p2p-module .breadcrumb-section .breadcrumb {
     min-height: 550px;
     object-fit: cover;
 }
+section.cab-banner-area.alTaxiBannerStart{display: none;}
+body.al_body_template_nine.p2p-module .home-slider-wrapper .banner-img-outer img{max-height:initial !important;}
+body.al_body_template_nine.p2p-module .top-banner-wrapper {
+    background-color: transparent;
+    box-shadow: none;
+    border-radius: 0;
+}
+body.al_body_template_nine.p2p-module  .common-banner {
+    height: auto;
+    margin-bottom: 0;
+}
+body.al_body_template_nine.p2p-module .ratio_asos .top-banner-wrapper .top-banner-content h4 {
+    padding: 0;
+}
 /*-----------------------p2p module dark theme css -----------------*/
 body.dark.al_body_template_one.p2p-module .breadcrumb-section {
     background-color: #2b2b2b !important;
