@@ -1289,7 +1289,10 @@ if (!function_exists('inventorySyncOnOff')) {
 
 if( !function_exists('clientPrefrenceModuleStatus') ) {
     function clientPrefrenceModuleStatus($module_name) {
-        return ClientPreference::first()->value($module_name);
+        if( checkColumnExists('client_preferences', $module_name) ) {
+            return ClientPreference::first()->value($module_name);
+        }
+        
     }
 }
 

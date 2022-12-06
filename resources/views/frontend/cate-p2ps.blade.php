@@ -308,7 +308,7 @@
                     @endif
 
                     @php $getAdditionalPreference = getAdditionalPreference(['is_attribute']); @endphp
-                    @if( $getAdditionalPreference['is_attribute'] )
+                    @if( isset($getAdditionalPreference['is_attribute']) && !empty($productAttributes))
                         <div class="p2p-sidebar" >
                             
                             <div class="row">

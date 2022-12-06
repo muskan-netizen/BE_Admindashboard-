@@ -3,11 +3,6 @@
         <div class="col-8" style="">
             <h5 class="text-uppercase bg-light p-2">{{ __(getNomenclatureName('Attribute')." Information") }}</h5>
         </div>
-        @if(!empty($productAttributes))
-        {{-- <div class="col-4 p-2 mt-0 text-right" style="margin:auto; ">
-            <button type="button" class="btn btn-info makeVariantRow"> {{ __("Make ".getNomenclatureName('Attribute')." Sets") }}</button>
-        </div> --}}
-        @endif
     </div>
 
     <p>{{ __("Select or change category to get ".getNomenclatureName('Attribute')) }}</p>

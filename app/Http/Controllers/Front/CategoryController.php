@@ -136,17 +136,19 @@ class CategoryController extends FrontController{
       //  pr($listData);
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
         // $newProducts =  $this->getNewProducts($vendorIds, $langId, $curId);
+        $productAttributes = '';        
+        if( checkTableExists('product_attributes') ) {
+            $getAdditionalPreference = getAdditionalPreference(['is_attribute']);
+            
+            if( $category->type_id == 13 && $getAdditionalPreference['is_attribute'] ) {
 
-        $getAdditionalPreference = getAdditionalPreference(['is_attribute']);
-        $productAttributes = '';
-        if( $category->type_id == 13 && $getAdditionalPreference['is_attribute'] ) {
-
-            $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
-                ->select('attributes.*')
-                ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
-                ->where('attribute_categories.category_id', $category->id)
-                ->where('attributes.status', '!=', 2)
-                ->orderBy('position', 'asc')->get();
+                $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
+                    ->select('attributes.*')
+                    ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
+                    ->where('attribute_categories.category_id', $category->id)
+                    ->where('attributes.status', '!=', 2)
+                    ->orderBy('position', 'asc')->get();
+            }
         }
         
         $newProducts = [];
