@@ -38,6 +38,11 @@ class Attribute extends Model
   public function option(){
     return $this->hasMany('App\Models\AttributeOption'); 
   }
+
+  public function productAttribute(){
+    return $this->hasMany('App\Models\ProductAttribute', 'attribute_id', 'id'); 
+  }
+
   public function trans(){
        return $this->hasOne('App\Models\AttributeTranslation')->select('title', 'attribute_id'); 
   }
