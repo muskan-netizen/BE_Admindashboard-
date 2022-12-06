@@ -6,7 +6,7 @@ use App\Http\Controllers\AhoyController;
 use DB;
 use Carbon\{Carbon,CarbonPeriod};
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,OrderTrait,cartManager};
+use App\Http\Traits\{ApiResponser,OrderTrait,CartManager};
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Client\ShippoController;
@@ -25,7 +25,7 @@ use App\Models\AutoRejectOrderCron;
 use App\Models\{VendorOrderCancelReturnPayment};
 class OrderController extends BaseController
 {
-    use ApiResponser,cartManager,OrderTrait;
+    use ApiResponser,CartManager,OrderTrait;
     /**
      * Display a listing of the resource.
      *
