@@ -10,7 +10,7 @@ use App\Models\Country;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,ProductTrait};
+use App\Http\Traits\{ApiResponser,ProductTrait,CartManager};
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +31,7 @@ use Log;
 
 class CartController extends BaseController
 {
-    use ApiResponser,ProductTrait;
+    use ApiResponser,ProductTrait,CartManager;
 
     private $field_status = 2;
 
@@ -1391,7 +1391,17 @@ class CartController extends BaseController
         $cart->is_long_term_added = $is_long_term;
         $temp_total_paying = $total_paying  + $total_tax - $total_disc_amount;
         if ($cart->user_id > 0) {
+<<<<<<< HEAD
             $loyalty_amount_saved = $this->getLoyaltyPoints($cart->user_id, $clientCurrency->doller_compare);
+=======
+            //$loyalty_amount_saved = $this->getLoyaltyPoints($cart->user_id, $clientCurrency->doller_compare);
+            $loyaltyCheck = $this->getOrderLoyalityAmount($user,$clientCurrency);
+            $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
+            // if($total_paying > $cart->loyalty_amount){
+            //    $cart->loyalty_amount = 0.00;
+            // }
+            // $cart->wallet = $this->getWallet($cart->user_id, $clientCurrency->doller_compare, $currency);
+>>>>>>> pre_stage
         }
         if ($loyalty_amount_saved  >= $temp_total_paying) { 
             $loyalty_amount_saved = $temp_total_paying;

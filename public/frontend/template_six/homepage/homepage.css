@@ -905,3 +905,19 @@ a.brand-box.d-block.black-box {
         margin-top: 10px;
     }
 }
+/*-------------dark theme css---------------*/
+body.al_body_template_six.homeHeader.dark .product-description_list.border-bottom p.al_product_category {
+    color: #fff;
+}
+body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-body h3 {
+    padding: 10px 0;
+}
+body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-body h6{
+    color:#cbcbcb;
+}
+body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-body h4{
+    color:#cbcbcb;
+}
+body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-body p   {
+    color:#cbcbcb;
+}

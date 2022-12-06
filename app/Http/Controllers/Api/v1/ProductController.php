@@ -7,7 +7,7 @@ use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductFaqSelectOption, TagTranslation,Tag};
+use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag};
 use Validation;
 use DB;
 use App\Http\Traits\{ApiResponser,ProductTrait};
@@ -285,6 +285,38 @@ class ProductController extends BaseController
 
     }
 
+    public function checkProductAvailibility(Request $request)
+    {
+      try {
+          $block_time = explode('-', $request->blocktime);
+          $start_time = date("Y-m-d H:i:s",strtotime($request->selectedStartDate));
+          $end_time = date("Y-m-d H:i:s",strtotime($request->selectEndDate));
+          $product_variant_data = array();
+          $product_variant_id =  ProductVariantSet::where(['variant_option_id'=>$request->variant_option_id,'product_id'=>$request->product_id])->pluck('product_variant_id');
+          $product_variant_id = $product_variant_id->toArray();
+          $ProductBooking  = ProductBooking::whereIn('variant_id',$product_variant_id)->where('product_id',$request->product_id)
+                              ->where(function ($query) use ($start_time , $end_time ){
+                                  $query->where('start_date_time', '<=', $end_time)
+                                        ->where('end_date_time', '>=', $start_time);
+                              })->pluck('variant_id')->toArray();
+          $available_product_variant = array_values(array_diff($product_variant_id, $ProductBooking));
+          if(isset($available_product_variant[0])){
+            $product_variant_data =  ProductVariant::where('id',$available_product_variant[0])->with(['product','checkIfInCart'])->first();
+          }
+          $returnarr =  array();
+          $returnarr['available_product_variant'] =  @$available_product_variant[0];
+          $returnarr['product_variant_data'] = $product_variant_data;
+          $returnarr['product_id'] =  $request->product_id;
+          $returnarr['start_time'] =  $start_time;
+          $returnarr['end_time'] =  $end_time;
+          $returnarr['variant_option_id'] = $request->variant_option_id;
+          return response()->json(array('success' => true, 'variant_data'=>$returnarr ,'message'=>'Available product data.'));
+        } catch (\Exception $e) {
+          return response()->json(array('error' => false, 'message'=>'Something went wrong.'));
+        }
+     
+    }
+
     public function metaProduct($langId, $multiplier, $for = 'relate', $productArray = [])
     {
         if(empty($productArray)){
@@ -378,7 +410,7 @@ class ProductController extends BaseController
          
 
             $variantData = ProductVariant::join('products as pro', 'product_variants.product_id', 'pro.id')
-                        ->with(['wishlist', 'product.media.image', 'media.pimage.image','set', 'translation' => function($q) use($langId){
+                        ->with(['set','wishlist', 'product.media.image', 'media.pimage.image', 'translation' => function($q) use($langId){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $langId);
                         },'wishlist' =>  function($q) use($userid){
