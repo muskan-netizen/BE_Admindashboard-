@@ -174,7 +174,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendorregistrationdocument/create', [VendorRegistrationDocumentController::class, 'store'])->name('vendor.registration.document.create');
         Route::post('vendorregistrationdocument/update', [VendorRegistrationDocumentController::class, 'update'])->name('vendor.registration.document.update');
         Route::post('vendor/registration/document/delete', [VendorRegistrationDocumentController::class, 'destroy'])->name('vendor.registration.document.delete');
-
+        // Attribute routes
+        Route::resource('attribute', 'Client\AttributeController');
+        Route::post('delete-attribute', 'Client\AttributeController@deleteAttribute')->name('deleteAttribute');
+        Route::any('updateAttributeOption', 'Client\AttributeController@updateAttributeOption')->name('updateAttributeOption');
 
         // user registreation document
         Route::resource('userregistrationdocument', 'Client\UserRegistrationDocumentController');

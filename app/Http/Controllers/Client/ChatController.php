@@ -222,41 +222,64 @@ class ChatController extends BaseController
         //try {
             $data = $request->all();
             $vendor_id = $data['vendor_id'];
-            $vendor_order_id = $data['order_vendor_id'];
-            $order_id = $data['order_id'];
+            $vendor_order_id = $data['order_vendor_id'] ?? null;
+            $order_id = $data['order_id'] ?? null;
             $server_name = $_SERVER['SERVER_NAME'];
-            $order = $this->OrderVendorDetail($request);
-            if($order){
-                $socket_url = $this->client_data->socket_url;
-                $room_id = $order->order_number;
-                $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
-                $order_vendor_id = $vendor_order_id;
-                $order_id = $order->id;
-                $vendor_id = $vendor_id;
-                $orderby_user_id = $order->user_id;
-                //$response = $client->request('Post', 'https://chat.royoorders.com/api/room', ['body' => [
-                $response =   Http::post($socket_url.'/api/room/createRoom', [
-                    'room_id' => $room_id,
-                    'room_name' => $room_name,
-                    'order_vendor_id'=>$order_vendor_id,
-                    'order_id'=>$order_id,
+            $product_id = $data['product_id'] ?? null;
+            $socket_url = $this->client_data->socket_url;
+            // dd(is_null($order_id));
+            // check order_vendor_id and order_id is empty then it is called for p2p chat
+            if( is_null($vendor_order_id) && is_null($order_id) && !empty($product_id) ) {
+                $p2p_chat = 'p2p-productId-'.$product_id.'-vendorId-'.$vendor_id.'-currentUser-'.Auth::id();
+                $response =   Http::withoutVerifying()->post($socket_url.'/api/room/createRoom', [
+                    'room_id' => $p2p_chat,
+                    'room_name' => $p2p_chat,
                     'vendor_id'=>$vendor_id,
                     'sub_domain' =>$server_name,
                     'vendor_user_id' =>$data['user_id'],
-                    'order_user_id' =>$orderby_user_id,
                     'type'=>$data['type'],
                     'db_name'=>$this->client_data->database_name,
                     'client_id'=>$this->client_data->id
                 ]);
-                $statusCode = $response->getStatusCode();
-                if($statusCode == 200) {
-                    $roomData = $response['roomData'];
-                    return response()->json(['status' => true, 'roomData' => $roomData , 'message' => __('Room created successfully !!!')]);
-                } else {
-    
-                    return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
+            }
+            else {
+
+                $order = $this->OrderVendorDetail($request);
+                if($order){
+                    
+                    $room_id = $order->order_number;
+                    $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
+                    $order_vendor_id = $vendor_order_id;
+                    $order_id = $order->id;
+                    $vendor_id = $vendor_id;
+                    $orderby_user_id = $order->user_id;
+                    //$response = $client->request('Post', 'https://chat.royoorders.com/api/room', ['body' => [
+                    $response =   Http::withoutVerifying()->post($socket_url.'/api/room/createRoom', [
+                        'room_id' => $room_id,
+                        'room_name' => $room_name,
+                        'order_vendor_id'=>$order_vendor_id,
+                        'order_id'=>$order_id,
+                        'vendor_id'=>$vendor_id,
+                        'sub_domain' =>$server_name,
+                        'vendor_user_id' =>$data['user_id'],
+                        'order_user_id' =>$orderby_user_id,
+                        'type'=>$data['type'],
+                        'db_name'=>$this->client_data->database_name,
+                        'client_id'=>$this->client_data->id
+                    ]);
+                    
+        
                 }
-    
+            }
+
+            $statusCode = $response->getStatusCode();
+            if($statusCode == 200) {
+                $roomData = $response['roomData'];
+                // dd($roomData);
+                return response()->json(['status' => true, 'roomData' => $roomData , 'message' => __('Room created successfully !!!')]);
+            } else {
+
+                return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
             }
         // } catch (\Throwable $th) {
         //     return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);

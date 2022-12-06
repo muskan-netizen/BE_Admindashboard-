@@ -135,6 +135,7 @@ pr($products->toArray());
                                 {{ __('Catalog') }}
                             </a>
                         </li>
+                        @if( !is_p2p_vendor() )
                         @if(($client_preference_detail->business_type != 'taxi') || (($client_preference_detail->business_type == 'taxi') && ($client_preference_detail->pickup_delivery_service_area == 1)))
                         <li class="nav-item">
                             <a href="{{ route('vendor.show', $vendor->id) }}" aria-expanded="false"
@@ -158,6 +159,7 @@ pr($products->toArray());
                                     {{ __('Payout') }}
                                 </a>
                             </li>
+                        @endif
                         @endif
                     </ul>
                     <div class="row mt-4">
@@ -245,6 +247,7 @@ pr($products->toArray());
                                                 {{ __('Action') }}
                                             </a>
                                             @endif
+                                            @if( !is_p2p_vendor() )
                                             <a class="btn btn-info waves-effect waves-light ml-1 text-sm-right @if($vendor->status == 1) importProductBtn @endif  {{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"
                                                 {{ $vendor->status == 1 ? '' : 'disabled' }}><i
@@ -254,7 +257,7 @@ pr($products->toArray());
                                             <a class="btn btn-info waves-effect waves-light text-sm-right mx-1" dataid="0" href="{{ route('vendor.product.export', $vendor->id) }}"><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Export') }}
                                             </a>
-                                            
+                                            @endif
                                             @if(isset($vendor['need_sync_with_order']) && $vendor['need_sync_with_order'] != 1)
                                             <a class="btn btn-info waves-effect waves-light text-sm-right alAddProductBtn  @if($vendor->status == 1) addProductBtn @endif {{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"><i
@@ -497,7 +500,7 @@ pr($products->toArray());
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
                 <form id="save_product_form" method="post" enctype="multipart/form-data"
-                    action="{{ route('product.store') }}">
+                    action="{{ route('product.store') }}" class="123456879">
                     @csrf
                     <div class="modal-body pb-0">
 

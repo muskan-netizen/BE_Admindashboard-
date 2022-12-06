@@ -236,7 +236,7 @@ if(session()->has('applocale')){
                     </div>
                     @endif
                 </div>
-                <a class="al_toggle-menu" href="#">
+                <a class="al_toggle-menu" href="javascript:void(0)">
                     <i></i>
                     <i></i>
                     <i></i>

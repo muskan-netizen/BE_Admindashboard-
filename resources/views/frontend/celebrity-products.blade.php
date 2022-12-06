@@ -94,7 +94,8 @@
                         </div>
                         </aside>
                     </div>
-                    <div class="theme-card custom-inner-cardcollection-filter-block bg-transparent p-0 m-0">
+                    @if(!empty($newProducts) && count($newProducts) > 0)
+                    <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
@@ -102,7 +103,7 @@
                             </span>
                         </h5>
                         <div class="offer-slider al">
-                            @if(!empty($newProducts) && count($newProducts) > 0)
+                            
                                 @foreach($newProducts as $newProds)
                                     <div  class="col-12 p-0">
                                     @foreach($newProds as $new)
@@ -184,9 +185,10 @@
                                     @endforeach
                                     </div>
                                 @endforeach
-                            @endif
+                            
                         </div>
                     </div>
+                    @endif
                 </div>
                 <div class="collection-content col-lg-9 outter-fillter-data">
                     <div class="page-main-content">
