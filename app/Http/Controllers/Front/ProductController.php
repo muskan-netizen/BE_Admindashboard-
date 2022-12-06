@@ -9,7 +9,7 @@ use Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute};
 use Carbon\Carbon;
 use App\Http\Traits\{ProductActionTrait,ProductTrait};
 class ProductController extends FrontController{
@@ -248,8 +248,59 @@ class ProductController extends FrontController{
             }else{
                 $product_page = "product";
             }
-          
-            return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference]);
+            
+            $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = '';
+            $suggested_product = Product::with(['media.image', 'vendor', 'translation']);
+            
+            if( !empty($product->category_id) ) 
+                $suggested_category_products = $suggested_product->where('category_id', $product->category_id)->orderby('id', 'desc')->limit(20)->get();
+
+            if( !empty($product->brand_id) ) 
+                $suggested_brand_products = $suggested_product->where('brand_id', $product->brand_id)->orderby('id', 'desc')->limit(20)->get();
+            
+            if( !empty($product->vendor_id) ) 
+                $suggested_vendor_products = $suggested_product->where('vendor_id', $product->vendor_id)->orderby('id', 'desc')->limit(20)->get();
+
+            $promoCodeController = new PromoCodeController();
+            $coupon_list = $promoCodeController->coupon_code_list($product->id, $product->vendor_id);
+
+            // Product Attribute
+            $product_attr = [];
+            if( !empty($product->ProductAttribute) ) {
+                foreach( $product->ProductAttribute as $key => $value ) {
+                    if( !empty($value->attribute) && !empty($value->attribute->status) && $value->attribute->status == 1 ) {
+                        $product_attr[$key]['title'] = optional($value->attribute)->title ?? '';
+                        $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
+                        
+                        if( !empty($value->attribute) && $value->attribute->type != 4) {
+                            $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
+                        }
+                        else {
+                            $product_attr[$key]['value'] = $value['key_value'] ?? '';
+                        }
+                    }
+                }
+            }
+            
+            $attr_id = '';
+            $attr_array = [];
+            foreach($product_attr as $pro_att_key => $pro_att_val) {
+                
+                if( empty($attr_id) || ($pro_att_val['attribute_id'] != $attr_id) ) {
+                    $attr_id = $pro_att_val['attribute_id'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['attribute_id'] = $pro_att_val['attribute_id'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
+                }
+                else {
+                    $attr_id = $pro_att_val['attribute_id'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['attribute_id'] = $pro_att_val['attribute_id'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
+                }
+            }
+            
+            return view('frontend.'.$product_page)->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array]);
 
         }
    }

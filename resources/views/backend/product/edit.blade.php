@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="{{ asset('assets/ck_editor/samples/toolbarconfigurator/lib/codemirror/neo.css') }}">
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .image-upload>input {
         display: none;
@@ -39,7 +40,7 @@
         top: 0;
         opacity: 0;
     }
-
+.form-label label{font-weight: bold;}
     .product-img-box input[type="checkbox"] {
         position: absolute;
         top: 0;
@@ -75,6 +76,71 @@
     .product-box.editPage .product-action .btn {
         padding: 0px 2px;
     }
+    .saveVariantOrder {
+        display: none;
+    }
+    button.btn.btn-sm.add_attr_options {
+    background: #ccc;
+    height: 30px;
+    width: 30px;
+    color: #fff;
+}
+div#attribute_section button.btn.btn-sm.add_attr_options {
+    background: #a42c7f;
+    height: 30px;
+    width: 30px;
+    color: #fff;
+    padding: 0;
+    position: absolute;
+    right: 0;
+}
+div#attribute_section .select2-container {
+    width: 95% !important;
+}
+div#attribute_section .col-sm-9 .checkbox.checkbox-success.form-check-inline {
+    width: 20%;
+    margin-bottom: 12px;
+}
+div#attribute_section .col-sm-9 .form-check-inline.w-100 {
+    width: 95% !important;
+}
+.css-loader {
+    border: 10px solid #ffffff;
+    border-radius: 50%;
+    border-top: 10px solid #3498db;
+    width: 80px;
+    height: 80px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    position: absolute;
+    z-index: 9999999999;
+    left: 40%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+}
+.outter-loader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    background: #0000004a;
+    z-index: 9;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
 @endsection
 @php
@@ -91,7 +157,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 <div class="container-fluid">
 
     <div class="row">
-
+        <span class="delete_options d-none">Error while deleting options</span>
         <div class="col-8 d-flex align-items-center">
             <div class="page-title-box">
                 <h4 class="page-title">{{ __("Edit Product") }}</h4>
@@ -404,23 +470,26 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     {{-- @include('backend.product.popup.addBlockTimeTablePopup') --}}
                     @include('backend.product.variant')
                 @else
+                
+                    
                     @if($productVariants->count() > 0)
                     <div class="card-box" >
                         <div class="row mb-2 bg-light">
                             <div class="col-8" style="margin:auto;">
-                                <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
+                                <h5 class="text-uppercase mt-0 bg-light p-2">{{ __(getNomenclatureName('Variant')." Information") }}</h5>
                             </div>
                             @if(!empty($productVariants))
                             <div class="col-4 p-2 mt-0 text-right" style="margin:auto; ">
-                                <button type="button" class="btn btn-info makeVariantRow"> {{ __("Make Variant Sets") }}</button>
+                                <button type="button" class="btn btn-info makeVariantRow"> {{ __("Make ".getNomenclatureName('Variant')." Sets") }}</button>
                             </div>
                             @endif
                         </div>
-                        <p>{{ __("Select or change category to get variants") }}</p>
+
+                        <p>{{ __("Select or change category to get ".getNomenclatureName('Variant')) }}</p>
 
                         <div class="row" style="width:100%; overflow-x: scroll;">
                             <div id="variantAjaxDiv" class="col-12 mb-2">
-                                <h5 class="">{{__('Variant List')}}</h5>
+                                <h5 class="">{{__(getNomenclatureName('Variant').' List')}}</h5>
                                 <div class="row mb-2">
                                     @foreach($productVariants as $vk => $var)
                                     <div class="col-sm-3">
@@ -541,6 +610,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <div id="variantRowDiv" class="col-12"></div>
                         </div>
                     </div>
+                    @endif
+                    @if( p2p_module_status() )
+                        <div id="attribute_section">
+                            @include('layouts.shared.product-attribute')
+                        </div>
                     @endif
                 @endif
             </div>
@@ -1363,6 +1437,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
 
 </script>
+@include('backend.catalog.modals')
 @endsection
 
 @section('script')
@@ -1372,7 +1447,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 <!-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script> -->
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
-
+<script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
 <script>
     CKEDITOR.replace('body_html');
     CKEDITOR.config.height = 150;
@@ -1553,7 +1628,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
     var uploadedDocumentMap = {};
     Dropzone.autoDiscover = false;
+       
+
+
     $(document).ready(function() {
+
         var val = $('#has_inventory').prop('checked');
 
         if (val == true) {
@@ -1948,6 +2027,14 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
 <!-- start product faq -->
 <script>
+    $(document).on("change",".attr_radio", function() {
+        
+    var parentClass = $(this).parent().prop('className');
+    var attr_radio_class = $(this).data('class');
+    $("."+parentClass+" .attr_radio").prop('checked', false);
+    $(this).prop('checked', true);
+    // $('.'+attr_radio_class).not(this).prop('checked', false);
+});
  $('#add_product_faq_modal_btn').click(function(e) {
          document.getElementById("productFaqForm").reset();
          $('#add_product_faq_modal input[name=product_faq_id]').val("");
@@ -2149,8 +2236,9 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     }
                 });
         });
+        $('.select2-multiple').select2();
     </script>
 {{-- Insert Value to Role Price Modal (End) --}}
-
+@include('backend.catalog.pagescript')
 <script src="{{ asset('assets/js/backend/product/edit_product.js')}}"></script>
 @endsection

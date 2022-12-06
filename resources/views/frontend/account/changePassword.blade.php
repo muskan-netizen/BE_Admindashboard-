@@ -91,7 +91,7 @@
                 </div>
             </div>
         </div>
-        <div class="row my-md-3">
+        <div class="row my-md-3 mt-5 pt-4">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
                 <div class="dashboard-left mb-3">
@@ -103,7 +103,7 @@
                     @include('layouts.store/profile-sidebar')
                 </div>
             </div>
-            <div class="col-lg-5 offset-lg-2">
+            <div class="col-lg-9">
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">

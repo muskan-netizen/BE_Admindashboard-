@@ -1167,7 +1167,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
    </div>
 
    @php
-   $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable','is_price_by_role', 'is_free_delivery_by_roles']);
+   $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable','is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute']);
    @endphp
    <div class="row">
       {{-- hubspot form --}}
@@ -1323,7 +1323,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                      <div class="col-md-4">
                         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                           <label for="enquire_mode" class="mr-2 mb-0">{{ __("Inquiry Mod") }}<small class="d-block pr-5">{{ _('Set products to be only available for Inquiry and hide the price.') }}</small></label>
+                           <label for="enquire_mode" class="mr-2 mb-0">{{ __("Inquiry Mod") }}<small class="d-block pr-5">{{ __('Set products to be only available for Inquiry and hide the price.') }}</small></label>
                            <span><input type="checkbox" data-plugin="switchery" name="enquire_mode" id="	enquire_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->enquire_mode == '1')) checked='checked' @endif></span>
                         </div>
                      </div>
@@ -1583,6 +1583,17 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </span>
                     </div>
                 </div>
+
+                <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                      <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Attribute')}}<small class="d-block pr-5">{{__("Enable to show attribute on catalog screen.")}}</small></label>
+                      <span>
+                          <input type="checkbox" data-plugin="switchery" name="is_attribute_switch" id="is_attribute_switch" class="form-control checkbox_change" data-className="is_attribute" data-color="#43bee1" @if( $getAdditionalPreference['is_attribute'] == '1') checked='checked' @endif>
+                          <input type="hidden" @if($getAdditionalPreference['is_attribute'] == 1) value="1" @else value="0" @endif name="is_attribute" id="is_attribute"/>
+                      </span>
+                  </div>
+                </div>
+                
                @if(checkColumnExists('products','is_long_term_service'))
                   <div class="col-md-4 ">
                      <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">

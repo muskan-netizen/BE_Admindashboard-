@@ -272,6 +272,10 @@ class Product extends Model implements Auditable{
       return $this->hasOne('App\Models\ProductVariant')->select('*','price as variant_price')->first();
     }
 
+    public function variantSingle(){
+      return $this->hasOne('App\Models\ProductVariant');
+    }
+
 
 
     public function OrderProduct(){
@@ -443,6 +447,9 @@ class Product extends Model implements Auditable{
     return $this->hasMany('App\Models\LongTermServicePeriod');
   }
 
+    public function ProductAttribute() {
+      return $this->hasMany('App\Models\ProductAttribute', 'product_id', 'id');
+    }
 
     public function tollpass()
     {

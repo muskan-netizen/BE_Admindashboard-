@@ -105,6 +105,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('mystore/product/delete', 'Api\v1\StoreController@deleteProduct');
         Route::post('mystore/product/deletevariant', 'Api\v1\StoreController@deleteProductVariant');
         Route::post('mystore/product/addProductImage', 'Api\v1\StoreController@productImages');
+        # Attribute related api
+        Route::post('mystore/product/addProductAttribute', 'Api\v1\StoreController@addProductAttribute');
+        Route::get('mystore/product/getProductAttribute', 'Api\v1\StoreController@getProductAttribute');
+        Route::get('mystore/product/availableListOfAttribute', 'Api\v1\StoreController@availableListOfAttribute');
+        
         Route::post('mystore/product/getProductImages', 'Api\v1\StoreController@getProductImages');
         Route::post('mystore/product/deleteimage', 'Api\v1\StoreController@deleteProductImage');
         Route::post('mystore/vendor/product/list', 'Api\v1\StoreController@getVendorProductList');
