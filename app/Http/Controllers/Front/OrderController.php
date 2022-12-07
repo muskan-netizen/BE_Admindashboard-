@@ -107,8 +107,7 @@ class OrderController extends FrontController
             ->where('orders.user_id', $user->id);
             if($checkLongTerm){
                 $pastOrders->where('orders.is_long_term', 0);
-            }    
-                
+            }                    
             $pastOrders     =  $pastOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
         $activeOrders = Order::with([
             'vendors' => function ($q) {

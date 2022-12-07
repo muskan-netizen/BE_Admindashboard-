@@ -32,6 +32,12 @@
                                     <i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}
                                 </span>
                             </div> -->
+                            <ul class="breadcrumb p-0 mb-2">
+                                <li class="breadcrumb-item align-items-center"><a href="javascript:void(0)">Home <i class="fa fa-angle-right" aria-hidden="true"></i> <span>Pharmacy <i class="fa fa-angle-right" aria-hidden="true"></i>
+                                    </span><span class="active">Healthcare Device</span></a>
+                                </li>
+                            </ul>
+                            
                             <aside class="side_fillter">
                             @if(!empty($variantSets) && count($variantSets) > 0)
                             @foreach($variantSets as $key => $sets)
@@ -69,6 +75,7 @@
 
                             @endforeach
                             @endif
+
                             <div class="collection-collapse-block border-0 mb-2 open">
                                 <h3 class="collapse-block-title">{{__('Price')}}</h3>
                                 <div class="collection-collapse-block-content">

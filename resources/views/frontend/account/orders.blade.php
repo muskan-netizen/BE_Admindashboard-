@@ -14,31 +14,40 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
 @extends('layouts.store', ['title' => __('My '.getNomenclatureName($ordertitle, true))])
 @section('css')
 
-    <style type="text/css">
-        .main-menu .brand-logo {
-            display: inline-block;
-            padding-top: 20px;
-            padding-bottom: 20px;
-        }
-
-        input:invalid,
+<style type="text/css">
+    .main-menu .brand-logo {
+        display: inline-block;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+    input:invalid,
         input:out-of-range {
             border-color: hsl(0, 50%, 50%);
             background: hsl(0, 50%, 90%);
         }
-        .error{
-            font-size:10px;
-            color:red;
-        }
-.btn.btn-solid{
-    padding: 6px 19px;
-    margin: 2px;
-}
-        
-        li.bg-txt i {
-            font-size: 15px;
-        }
-    </style>
+    .error{
+        font-size:10px;
+        color:red;
+    }
+    .btn.btn-solid{
+        padding: 6px 19px;
+        margin: 2px;
+    }
+    li.bg-txt i {
+        font-size: 15px;
+    }
+    label.rating-star.cancel_order, .rating-star.request_cancel_order {
+        position: relative;
+        left: 70px;
+        top: 4px;
+        background: #a22c7f;
+        color: #fff;
+        font-weight: 600;
+        font-size: 10px;
+        padding: 5px 10px 4px 10px;
+        text-transform: uppercase;
+    }
+</style>
 @endsection
 @section('content')
     @php
@@ -342,7 +351,11 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     @if(@$is_exchanged_order)
                                                                                                         {{__('Exchange Order')}}
                                                                                                     @endif
-                                                                                                    {{__( ucfirst( $vendor->order_status)) }}</label>
+                                                                                                    @if(@$order->reqCancelOrder->status == 'Pending')
+                                                                                                        {{__('Cancel Order Pending')}}
+                                                                                                    @else
+                                                                                                        {{__( ucfirst( $vendor->order_status)) }}</label>
+                                                                                                    @endif
                                                                                                 </li>
                                                                                             @endif
 
@@ -354,35 +367,27 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     target="_blank">{{ __('Details') }}</a>
                                                                                                 </li>
                                                                                             @endif
-    
+
                                                                                             @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
-                                                                                            <?php
-                                                                                            if($clientPreference->business_type == 'laundry'){
-                                                                                                $pickup_cancelling_charges = $clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges;
-                                                                                            }
-                                                                                        ?>
-                                                                                            <h6 class="m-0">
-                                                                                               @if ($clientPreference->business_type == 'laundry')
-                                                                                                    <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
-                                                                                                        {{ __('Cancel Order') }}
-                                                                                                    </label>
-                                                                                                @else
-                                                                                                    <label class="rating-star cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
-                                                                                                        {{ __('Cancel Order') }}
-                                                                                                    </label>
-                                                                                                @endif
-                                                                                            </h6>
-                                                                                            @elseif($vendor->order_status_option_id==2 && $client_preference_detail->is_cancel_order_user == 1 && $vendor->vendor->cancel_order_in_processing == 1)
-                                                                                                @if(empty($order->reqCancelOrder))
-                                                                                                    <label class="rating-star request_cancel_order" data-order_vendor_id="{{$vendor->order_id??0}}" data-id="{{$vendor->id??0}}" data-vendor_id="{{$vendor->vendor_id??0}}" style="width: auto;display: inline-block;">
-                                                                                                        {{ __('Cancel Order') }}
-                                                                                                    </label>
-                                                                                                @elseif($order->reqCancelOrder->status == 'Pending')
-                                                                                                    <li class="bg-txt"><span class="badge badge-info" style="font-size:12px">{{ __('Cancel Order Pending') }}</span></li>
-                                                                                                @elseif($order->reqCancelOrder->status == 'Rejected')
-                                                                                                    <li class="bg-txt"><span class="badge badge-danger mr-2" style="font-size:12px">{{ __('Cancel Order Rejected') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$order->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
-                                                                                                @endif
+                                                                                                <?php
+                                                                                                    if($clientPreference->business_type == 'laundry'){
+                                                                                                        $pickup_cancelling_charges = $clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges;
+                                                                                                    }
+                                                                                                ?>
+
+                                                                                                {{-- <h6 class="m-0">
+                                                                                                @if ($clientPreference->business_type == 'laundry')
+                                                                                                        <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                                            {{ __('Cancel Order') }}
+                                                                                                        </label>
+                                                                                                    @else
+                                                                                                        <label class="rating-star cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                                            {{ __('Cancel Orders') }}
+                                                                                                        </label>
+                                                                                                    @endif
+                                                                                                </h6> --}}
                                                                                             @endif
+
                                                                                             @if ($vendor->dineInTable)
                                                                                                 <li>
                                                                                                     <h5 class="mb-1">
@@ -501,6 +506,32 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
+                                                                                            @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
+                                                                                            <?php
+                                                                                            if($clientPreference->business_type == 'laundry'){
+                                                                                                $pickup_cancelling_charges = $clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges;
+                                                                                            }
+                                                                                        ?>
+                                                                                            <li>
+                                                                                               @if ($clientPreference->business_type == 'laundry')
+                                                                                                    <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                                        {{ __('Cancel Order') }}
+                                                                                                    </label>
+                                                                                                @else
+                                                                                                    <label class="rating-star cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                                        {{ __('Cancel Order') }}
+                                                                                                    </label>
+                                                                                                @endif
+                                                                                            </li>
+                                                                                            @elseif($vendor->order_status_option_id==2 && $client_preference_detail->is_cancel_order_user == 1 && $vendor->vendor->cancel_order_in_processing == 1)
+                                                                                                @if(empty($order->reqCancelOrder))
+                                                                                                    <label class="rating-star request_cancel_order" data-order_vendor_id="{{$vendor->order_id??0}}" data-id="{{$vendor->id??0}}" data-vendor_id="{{$vendor->vendor_id??0}}" style="width: auto;display: inline-block;">
+                                                                                                        {{ __('Cancel Order') }}
+                                                                                                    </label>
+                                                                                                @elseif($order->reqCancelOrder->status == 'Rejected')
+                                                                                                    <li class="bg-txt" style="margin-top: 10px;"><span class="badge badge-danger mr-2" style="font-size:12px">{{ __('Cancel Order Rejected') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$order->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
+                                                                                                @endif
+                                                                                            @endif
                                                                                             {{-- Check if order is created only --}}
                                                                                             @if ($vendor->status == 0)
                                                                                                 @if ($vendor->order_status == 'placed')
@@ -1708,12 +1739,18 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         <h5 class="m-0">
                                                                                             {{ __('Order Status') }} </h5>
                                                                                         <ul class="status_box mt-1 pl-0">
-                                                                                            @if (!empty($vendor->order_status))
+                                                                                            @if (!empty($vendor->order_status) && $vendor->order_status == "accepted")
                                                                                                 <li>
+                                                                                                    
+                                                                                                    <label class="m-0 in-progress">{{ __(ucfirst('cancelled')) }} </label>
+                                                                                                    <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="{{$vendor->reject_reason}}" aria-hidden="true"></i>
+                                                                                                </li>
+                                                                                            @else
+                                                                                                <li>                                             
                                                                                                     <label class="m-0 in-progress">
                                                                                                     @if(@$is_exchanged_order)
                                                                                                         {{__('Exchange Order')}}
-                                                                                                    @endif
+                                                                                                    @endif    
                                                                                                     {{ __(ucfirst($vendor->order_status)) }} </label>
                                                                                                     <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="{{$vendor->reject_reason}}" aria-hidden="true"></i>
                                                                                                 </li>
