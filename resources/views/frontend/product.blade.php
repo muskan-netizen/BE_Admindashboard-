@@ -111,7 +111,9 @@
                             <div class="row">
                                 <div class="col-md-1 pl-0">
                                     <div class="exzoom_nav side_nav_img">
-                                                @if(!empty($product->media))
+                                       
+                                                @if(!empty($product->media) && count($product->media) > 0)
+                                                
                                                 @foreach($product->media as $k => $image)
                                                 @php
                                                                 if(isset($image->pimage)){
@@ -129,10 +131,17 @@
                                                     </span>
                                                     @endif
                                                 @endforeach
+                                                @else
+                                                <span class="img_active">
+                                                        <img class="blur-up lazyloaded pro_imgs myimage1"
+                                                            data-src="{{loadDefaultImage()}}"
+                                                            width="60" height="60"
+                                                            src="{{loadDefaultImage()}}">
+                                                    </span>
                                                 @endif
                                             </div>
                                 </div>
-                                <div class="col-lg-4 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                                <div class="col-lg-4 p-0 @php if(count($product->media) == 0){  echo 'dd-none'; } @endphp ">
                                     {{-- <div class="product__carousel">
                                         <div class="gallery-parent">
                                             @php
@@ -156,7 +165,9 @@
 
                                             <div class="swiper-container gallery-top">
                                                 <div class="swiper-wrapper">
-                                                @if(!empty($product->media))
+                                               
+                                                @if(!empty($product->media) && count($product->media) > 0)
+                                                
                                                     @foreach($product->media as $k => $image)
                                                         @php
                                                             if(isset($image->pimage)){
@@ -171,6 +182,14 @@
                                                             </a>
                                                         </div>
                                                     @endforeach
+                                                @else
+                                                
+                                                    <div class="swiper-slide easyzoom easyzoom--overlay">
+                                                            <a href="{{loadDefaultImage()}}">
+                                                            <img class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
+                                                            </a>
+                                                        </div>
+
                                                 @endif
                                                 </div>
 
@@ -179,7 +198,7 @@
                                             </div>
                                             <div class="swiper-container gallery-thumbs">
                                                 <div class="swiper-wrapper">
-                                                    @if(!empty($product->media))
+                                                    @if(!empty($product->media) && count($product->media) > 0)
                                                         @foreach($product->media as $k => $image)
                                                         @php
                                                             if(isset($image->pimage)){
@@ -188,10 +207,12 @@
                                                                 $img = $image->image;
                                                             }
                                                         @endphp
-                                                        <div class="swiper-slide">
-                                                            <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" alt="">
-                                                        </div>
+                                                        
                                                         @endforeach
+                                                    @else
+                                                        <div class="swiper-slide">
+                                                            <img class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
+                                                        </div>
                                                     @endif
                                                 </div>
                                             </div>
@@ -201,7 +222,7 @@
                                     <div class="exzoom hidden w-100">
                                         <div class="exzoom_img_box mb-2">
                                             <ul class='exzoom_img_ul img-sidebar'>
-                                            @if(!empty($product->media))
+                                            @if(!empty($product->media) && count($product->media) > 0)
                                             
                                                 @foreach($product->media as $k => $image)
                                                         @php
@@ -215,6 +236,10 @@
                                                 @if(!is_null($img))
                                                 <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
                                                 @endif
+                                                @else
+                                                        
+                                                    <img id="main_image" class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
+                                                        
                                             @endif
                                             </ul>
                                         </div>
