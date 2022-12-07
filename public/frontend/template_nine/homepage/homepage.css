@@ -696,7 +696,7 @@ body.al_body_template_nine .product-card-box.position-relative.al_box_third_temp
         flex: 33%;
     }
     section.home-slider-wrapper .cardbanner, .al_desktop_banner {
-        height: 310px !important;
+        height: 210px !important;
     }
     .al_custom_brand .col-md-3 {
         width: 50%;
