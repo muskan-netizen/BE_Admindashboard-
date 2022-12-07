@@ -69,7 +69,7 @@
                 <input  type="hidden" min="0" name="total_hrs" id="total_hrs" value="{{getMinutes($product->minimum_duration,$product->minimum_duration_min)}}" >
 
                 <input style="width: 135px" readonly type="text"  id="incremental_hrs_hidden" class="form-control input-qty-number"  value="{{$product->minimum_duration.' hour '.$product->minimum_duration_min. ' min'}}">
-
+                <input  type="hidden"  name="first_variant" id="first_variant" value="{{@$product->variant[0]->id}}" >
                 <span class="input-group-prepend quant-plus">
                     <button type="button" class="btn incremental-right-plus" data-type="plus" data-field="">
                         <i class="ti-angle-right"></i>
@@ -195,9 +195,9 @@
               var checkInPicker = $checkinInput.data('daterangepicker');
               
               checkInPicker.setEndDate(moment().add(min_dur_hrs,'hours').add(min_dur_min,'minutes').format("M/DD/YY hh:mm A"));
-             
+          
               var formData = {
-                variant_option_id:$('.changeVariant:checked').val(),
+                variant_option_id: $('.changeVariant:checked').val(),
                 product_id:$("input[name='product_id']").val(),
                 selectedStartDate:start_current_time,
                 selectedEndDate:end_current_time
@@ -312,7 +312,11 @@
         });
 
         async function check_product_availibility(formData){
-            //console.log(formData);
+        
+          if(formData.variant_option_id == undefined){
+            formData.variant_option_id = '';
+          }
+          formData.variant_id = $('#first_variant').val()
             axios.post(`/booking/checkProductAvailibility`, formData)
             .then(async response => {
             console.log(response);
