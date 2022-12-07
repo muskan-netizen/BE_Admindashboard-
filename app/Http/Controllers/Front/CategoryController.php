@@ -306,6 +306,8 @@ class CategoryController extends FrontController{
                         ->where('products.category_id', $category_id);
                         Log::info('category product count 307');
                         Log::info($products->count());
+                        Log::info('category product  vendors count 307');
+                        Log::info(count($vendors) );
             if(count($vendors) > 0){
                 $products = $products->whereIn('products.vendor_id', $vendors);
             }
