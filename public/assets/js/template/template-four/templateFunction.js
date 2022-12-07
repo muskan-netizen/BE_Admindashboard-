@@ -13,7 +13,7 @@ $(function () {
             {breakpoint: 360,settings: {slidesToShow: 3,slidesToScroll: 1}}
         ]
     });
-    $(".suppliers-slider-long_term_service").slick({
+    $(".render_long_term_service").slick({
         arrows: true,
         dots: false,
         infinite: true,
@@ -27,4 +27,5 @@ $(function () {
             {breakpoint: 360,settings: {slidesToShow: 3,slidesToScroll: 1}}
         ]
     });
+    
 })
