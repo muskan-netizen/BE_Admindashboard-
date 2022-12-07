@@ -242,7 +242,7 @@
                     @endif
                     <!-- side-bar banner end here -->
                 </div>
-                <div class="collection-content col-lg-9">
+                <div class="collection-content col-lg-9 outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
@@ -287,8 +287,8 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts px-0">
-                                        <div class="col-12 text-right">
-                                            <select name="order_type" id='order_type' class="sortingFilter p-1">
+                                        <div class="col-12 custom_filtter mt-2">
+                                            <!-- <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Sort By')}}</option>
                                                 <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
                                                 <option value="a_to_z" {{isset($input['order_type']) && $input['order_type'] == "a_to_z" ? 'selected' : ''}}>{{__('A to Z')}}</option>
@@ -298,7 +298,17 @@
                                                 <option value="rating" {{isset($input['order_type']) && $input['order_type'] == "rating" ? 'selected' : ''}}>{{__('Avg. Customer Review')}}</option>
                                                 <option value="newly_added" {{isset($input['order_type']) && $input['order_type'] == "newly_added" ? 'selected' : ''}}>{{__('Newest Arrivals')}}</option>
 
-                                            </select>
+                                            </select> -->
+                                            <ul>
+                                                <li><span>Sort By:</span></li>
+                                                <li><a href="javascript:void(0)" class="active">Featured</a></li>
+                                                <li><a href="javascript:void(0)">A to Z</a></li>
+                                                <li><a href="javascript:void(0)">Z to A</a></li>
+                                                <li><a href="javascript:void(0)">Cost : Low to High</a></li>
+                                                <li><a href="javascript:void(0)">Cost : High to Low</a></li>
+                                                <li><a href="javascript:void(0)">Avg. Customer Review</a></li>
+                                                <li><a href="javascript:void(0)">Newest Arrivals</a></li>
+                                            </ul>
                                         </div>
                                         <div class="product-wrapper-grid alVender">
                                             <div class="row margin-res">

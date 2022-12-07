@@ -6298,3 +6298,6 @@ body.al_body_template_eight section.buy_details .discriptions h3 {
     margin: 0;
 }
 body.al_body_template_eight section.buy_details .product-right .product-title{margin-top:0;}
+body.al_body_template_eight .theme-card.custom-inner-card {
+    display: none;
+}
