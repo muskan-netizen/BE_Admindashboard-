@@ -128,6 +128,8 @@ if(Auth::check()){
 	<link defer type="text/css" rel="stylesheet" href="{{asset('assets/css/thiredtemplate.css')}}">
 	@endif
 @elseif(isset($set_template)  && $set_template->template_id == 9)
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/common.css')}}">
+<link defer type="text/css" rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_nine/header/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_nine/footer/footer.css')}}">
 	@if(Route::currentRouteName() == "userHome" || Route::currentRouteName() == "homeTest")
