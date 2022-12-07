@@ -145,7 +145,7 @@
                 @elseif( $product->is_vendor_closed == 1 && $product->closed_store_order_scheduled == 1 )
                     <div class="col-12">
                         <div class="text-danger">
-                            <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders right now. You can schedule this for ')}}{{$product->delaySlot}}
+                            <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders right now. You can schedule this for ')}}{{@$product->delaySlot}}
                         </div>
                     </div>
                @endif
