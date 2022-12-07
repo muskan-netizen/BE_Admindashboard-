@@ -134,6 +134,8 @@ class CategoryController extends FrontController{
         $redirect_to = $category->type->redirect_to;
         
         $listData = $this->listData($langId, $category->id, $redirect_to);
+        Log::info('category product');
+        Log::info($listData);
       //  pr($listData);
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
         $np = $this->productList($vendorIds, $langId, $curId, 'is_new');
