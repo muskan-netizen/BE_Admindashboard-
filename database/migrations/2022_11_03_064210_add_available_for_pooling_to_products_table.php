@@ -26,7 +26,7 @@ class AddAvailableForPoolingToProductsTable extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            //
+            $table->dropColumn('available_for_pooling');
         });
     }
 }

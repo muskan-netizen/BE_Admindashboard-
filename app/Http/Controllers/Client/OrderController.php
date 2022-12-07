@@ -670,7 +670,7 @@ class OrderController extends BaseController
             foreach ($vendor->products as $key => $product) {
              
                 $product->longTermSchedule = array();
-                if($product->product->is_long_term_service ==1){
+                if(@$product->product->is_long_term_service && $product->product->is_long_term_service ==1){
                     $product->longTermSchedule =  OrderLongTermServices::with(['schedule','product.primary','addon.set','addon.option','addon.option.translation' => function ($q) use ($langId) {
                                     $q->select('addon_option_translations.id', 'addon_option_translations.addon_opt_id', 'addon_option_translations.title', 'addon_option_translations.language_id');
                                     $q->where('addon_option_translations.language_id', $langId);

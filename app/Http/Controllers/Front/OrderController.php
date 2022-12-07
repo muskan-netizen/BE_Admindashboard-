@@ -319,7 +319,7 @@ class OrderController extends FrontController
                                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                                     $q->where('language_id', $langId);
                                 }, 'address']);
-        if( checkColumnExists('orders','is_long_term') ){
+        if(checkTableExists('order_long_term_services') &&  checkColumnExists('orders','is_long_term') ){
             $order =    $order->with(['products.LongTermService.product','products.LongTermService.product.translation_one' => function ($q) use ($langId) {
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $langId);

@@ -27,7 +27,8 @@ class AddNoSeatsForPoolingAndIsCabPoolingToOrderVendorProductsTable extends Migr
     public function down()
     {
         Schema::table('order_vendor_products', function (Blueprint $table) {
-            //
+            $table->dropColumn('no_seats_for_pooling');
+            $table->dropColumn('is_cab_pooling');
         });
     }
 }

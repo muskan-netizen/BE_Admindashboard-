@@ -28,7 +28,8 @@ class AddServiceColumnToProductsTable extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            //
+            $table->dropColumn('is_long_term_service');
+            $table->dropColumn('service_duration');
         });
     }
 }

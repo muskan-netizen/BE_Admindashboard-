@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class AddReturnReasonIdToOrderVendorsTable extends Migration
@@ -28,6 +29,7 @@ class AddReturnReasonIdToOrderVendorsTable extends Migration
     public function down()
     {
         Schema::table('order_vendors', function (Blueprint $table) {
+            DB::statement('ALTER TABLE order_vendors DROP FOREIGN KEY order_vendors_return_reason_id_foreign');
             $table->dropColumn('return_reason_id');
         });
     }
