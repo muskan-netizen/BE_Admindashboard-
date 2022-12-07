@@ -21,7 +21,7 @@
   </div>
 </div>
 <script>
- var preference = <?php echo App\Services\InventoryService::checkIfInventoryOn(); ?>;
+ var preference = '<?php echo App\Services\InventoryService::checkIfInventoryOn(); ?>';
   $(document).on('click', '#inventoryModalShow', function() {
     $.ajaxSetup({
         headers: {

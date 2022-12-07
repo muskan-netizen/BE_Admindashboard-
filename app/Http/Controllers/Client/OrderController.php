@@ -227,49 +227,13 @@ class OrderController extends BaseController
         $active_orders = clone $order_count;
         $orders_history = clone $order_count;
 
-        /* luxury option orders (only active orders) */
-        // $luxury_order_status_options = [6, 3];
-        // $filter_orders = clone $orders;
-        // $filter_orders = $filter_orders->with(['vendors' => function ($query) use ($luxury_order_status_options, $user) {
-        //     $query->whereNotIn('order_status_option_id', $luxury_order_status_options);
-        //     if ($user->is_superadmin == 0) {
-        //         $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
-        //             $query1->where('user_id', $user->id);
-        //         });
-        //     }
-        // }])
-        // ->whereHas('vendors', function ($query) use ($luxury_order_status_options, $request) {
-        //     $query->whereNotIn('order_status_option_id', $luxury_order_status_options)
-        //     ->where(function ($q1) {
-        //         // 1 for cod ,38 for offline manual by harbans
-        //         $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
-        //         $q1->orWhere(function ($q2) {
-        //             $q2->whereIn('payment_option_id', [1,38]);
-        //         });
-        //     });
-        //     if (!empty($request->get('vendor_id'))) {
-        //         $query->where('vendor_id', $request->get('vendor_id'));
-        //     }
-        // });
+        
 
         $lux_id = 0;
         if (isset($request->order_type)) {
             $lux_id = LuxuryOption::where('title', $request->order_type)->value('id');
         }
-        // if($lux_id > 0){
-        //     $filter_orders = $filter_orders->where('luxury_option_id', $lux_id);
-        // }
-
-        // foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
-        //     $clientVendorTypes = $vendor_typ_key.'_check';
-        //     $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-
-        //     if($preferences->$clientVendorTypes == 1){
-        //         $vendorTypeOrders = $VendorTypesName.'_orders';
-        //         $$vendorTypeOrders = clone $filter_orders;
-        //     }
-        // }
-        /* luxury option orders */
+        
 
         if ($filter_order_status) {
             switch ($filter_order_status) {
@@ -826,54 +790,6 @@ class OrderController extends BaseController
                     $vendor_order_status->order_vendor_id = $vendorOrderStatus->order_vendor_id;
                     $vendor_order_status->order_status_option_id = $request->status_option_id;
                     $vendor_order_status->save();
-
-
-
-
-
-                    // //Refund to wallet
-                    // if( (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) && $request->status_option_id == 3){
-
-                    //     $orderRefund=new OrderRefund();
-                    //     $orderRefund->user_id=$order->user_id;
-                    //     $orderRefund->order_id=$order->id;
-                    //     $payment_id=Order::select('payments.id')
-                    //         ->leftJoin('payments','payments.order_id','=','orders.id')
-                    //         ->where('orders.id',$order->id)->first()->id;
-
-                    //     if(!empty($payment_id)){
-                    //         $orderRefund->payment_id=$payment_id;
-                    //     }else{
-                    //         $orderRefund->payment_id=0;
-                    //     }
-                    //     $orderRefund->payment_option_id=$order->payment_option_id;
-                    //     $orderRefund->amount=$order->wallet_amount_used+$order->payable_amount;
-                    //     $orderRefund->paid_to_wallet=1;
-                    //     $orderRefund->save();
-
-
-                    //     $refund_amount = $order->wallet_amount_used + $order->payable_amount;
-                    //     if($refund_amount > 0){
-                    //         $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                    //         if(!$transaction){
-                    //             $user = User::find($order->user_id);
-                    //             if($user){
-                    //                 $wallet = $user->wallet;
-                    //                 $wallet->depositFloat($refund_amount, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
-                    //             }
-                    //         }
-                    //     }
-
-                    //     $wallet = User::find($order->user_id)->wallet;
-                    //     if(!empty($refund_amount) && $refund_amount>0){
-                    //         $wallet->depositFloat($refund_amount, ['Wallet has been <b>refunded</b> for cancellation of order #'. $refund_amount]);
-                    //     }
-
-                    //     $order->payment_status=2;
-                    //     $order->save();
-
-                    // }
-
 
 
 
