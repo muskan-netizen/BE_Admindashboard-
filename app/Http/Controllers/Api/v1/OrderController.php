@@ -2772,17 +2772,17 @@ class OrderController extends BaseController
         // Individual Vendor App User Token
         $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
-        Log::info('vendorAppUserDevices');
-        Log::info($vendorAppUserDevices);
-        Log::info('vendor_fcm_server_key');
-        Log::info($client_preferences->vendor_fcm_server_key);
+        // Log::info('vendorAppUserDevices');
+        // Log::info($vendorAppUserDevices);
+        // Log::info('vendor_fcm_server_key');
+        // Log::info($client_preferences->vendor_fcm_server_key);
         if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
             $from = $client_preferences->vendor_fcm_server_key;
             $data['registration_ids'] = $vendorAppUserDevices;
 
             $result = sendFcmCurlRequest($data,$from );
-            Log::info('Vendor order notification');
-            Log::info($result);
+            // Log::info('Vendor order notification');
+            // Log::info($result);
         }
     }
 
