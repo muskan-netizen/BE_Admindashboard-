@@ -2044,12 +2044,6 @@ body #page-container .vendors {
         top: 166px;
     }
 
-    body.al_body_template_eight ul#header_cart_main_ul {
-        min-height: 300px;
-        height: 300px;
-        overflow-y: auto;
-    }
-
     body.al_body_template_eight .custom-vender-categories .cart-main-box,
     .scrollspy-menu {
         width: 100%;
@@ -4668,7 +4662,7 @@ body.al_body_template_eight section.section-b-space.new-pages .custom-container 
     max-width: 20%;
 }
 body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .collection-filter.col-lg-3 h2 button h5 span {
-    padding: 0 0 10px;
+    padding: 0 10px 10px;
 }
 body.al_body_template_eight.homeHeader .onhover-dropdown:before {
     right: 25px;
@@ -4821,11 +4815,6 @@ body.al_body_template_eight .dashboard-left {
     min-height: 500px;
     position: sticky;
     top: 166px;
-}
-body.al_body_template_eight ul#header_cart_main_ul {
-    min-height: 300px;
-    height: 300px;
-    overflow-y: auto;
 }
 body.al_body_template_eight .custom-vender-categories .cart-main-box, .scrollspy-menu {
     width: 100%;
@@ -6272,4 +6261,35 @@ body.al_body_template_eight .aside_bar .discriptions p small {
     text-align: left;
     color: #000;
     font-weight: 500;
+}
+body.al_body_template_eight .product-wrapper-grid.card-product img {
+    object-fit: contain !important;
+    padding-top: 15px;
+}
+body.al_body_template_eight .product-wrapper-grid.card-product .col-md-3.col-6.col-grid-box h3.d-flex.align-items-center.justify-content-between {
+    margin: 0 0 10px!important;
+}
+body.al_body_template_eight ul#header_cart_main_ul li .total {
+    text-align: left;
+    border-top: 1px solid #f1f5f4;
+    border-bottom: 1px solid #f1f5f4;
+    padding: 10px 0;
+}
+body.al_body_template_eight ul#header_cart_main_ul li .total h5 {
+    text-transform: capitalize;
+    margin: 0;
+    color: #999;
+    text-align: left;
+}
+body.al_body_template_eight ul#header_cart_main_ul span#totalCart {
+    float: right;
+}
+body.al_body_template_eight ul#header_cart_main_ul {
+    min-height: auto;
+    height: auto;
+    overflow-y: auto;
+    padding: 0 !important;
+}
+body.al_body_template_eight ul#header_cart_main_ul li {
+    padding: 10px !important;
 }
