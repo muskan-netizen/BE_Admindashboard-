@@ -6294,3 +6294,6 @@ body.al_body_template_eight ul#header_cart_main_ul {
 body.al_body_template_eight ul#header_cart_main_ul li {
     padding: 10px !important;
 }
+body.al_body_template_eight .theme-card.custom-inner-card {
+    display: none;
+}

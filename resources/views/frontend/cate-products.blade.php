@@ -128,7 +128,7 @@
                         </div>
                     </div>
                 </aside>
-            </div>
+            
             @endif
                     @if(!empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card custom-inner-card">
