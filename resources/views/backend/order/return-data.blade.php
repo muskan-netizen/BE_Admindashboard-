@@ -38,7 +38,11 @@
                         <td class="">
                             <b class="text-black">{{$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                         </td>
-                        <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
+                        <td>
+                        @if(@$order->order->created_at)
+                        {{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}
+                        @endif
+                    </td>
                         <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
                     </tr>
                     @endforeach

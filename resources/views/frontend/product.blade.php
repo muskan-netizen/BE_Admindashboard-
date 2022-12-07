@@ -132,7 +132,7 @@
                                                 @endif
                                             </div>
                                 </div>
-                                <div class="col-lg-5 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                                <div class="col-lg-4 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                     {{-- <div class="product__carousel">
                                         <div class="gallery-parent">
                                             @php
@@ -250,7 +250,7 @@
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
 
-                                <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-6'; } else { echo 'col-lg-6'; } @endphp rtl-text p-0">
+                                <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-5'; } else { echo 'col-lg-5'; } @endphp rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0">
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
@@ -290,6 +290,13 @@
                                             {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                                 $product->translation[0]->body_html : ''!!}
                                         </div>
+                                        @if(((@$product->returnable && @$product->vendor->return_request) || $product->replaceable) && ($product->return_days > 0))
+                                            <div class="discriptions">
+                                                <h3>Return Policy</h3>
+                                                <p>  <span>{{ $product->return_days }} days return policy is applicable on this product </span> </p>
+                                            
+                                            </div>
+                                            @endif
                                         <div id="product_variant_options_wrapper">
                                             @if(!empty($product->variantSet))
                                                 @php
@@ -519,10 +526,42 @@
                                     </div>
 
                                 </div>
+                                @if( !empty($coupon_list) )
+                                <div class="col-md-2">
+                                    <div class="aside_bar">
+                                        <h5>Available offers</h5>
+                                            <div class="discriptions">
+                                                @foreach($coupon_list as $m_key => $m_val)
+                                                   <p> <small> Description :</small> <span>{{ $m_val['short_desc'] ?? '' }} </span> </p>
+                                                   <p> <small> Coupon Code :  </small><span>{{ $m_val['name'] ?? '' }} </span> </p>
+                                                   <p>  <small>Coupon Type :  </small><span>{{ $m_val['promo_type_title'] ?? '' }} </span> </p>
+                                                   <p> 
+                                                    <small>
+                                                    @if($m_val['promo_type_id'] == 1)
+                                                         Amount : 
+                                                    @else
+                                                        Percentage : 
+                                                    @endif
+                                                    </small>
+                                                    <span>{{decimal_format($m_val['amount'])}}</span>
+                                                    </p>
+                                                    <hr>
+                                                @endforeach
+                                            </div>
+                                        
+                                        <!-- <form>
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Promo Code">
+                                                <button type="submit" class="btn btn-primary">Apply</button>
+                                            </div>
+                                        </form> -->
+                                    </div>
+                                </div>
+                            @endif
                             </div>
                         </section>
                         <div class="row mt-1">
-                            <div class="col-md-8">
+                            <div class="col-md-12">
                                 @if($client_preference_detail && $client_preference_detail->rating_check == 1)
                                 <section class="tab-product custom-tabs">
                                     <div class="row">
@@ -591,60 +630,18 @@
                                 </section>
                                 @endif
                             </div>
-                            @if( !empty($coupon_list) )
-                                <div class="col-md-4">
-                                    <div class="aside_bar">
-                                        <h5>Available offers</h5>
-                                            <div class="discriptions">
-                                                @foreach($coupon_list as $m_key => $m_val)
-                                                   <p> <small> Description :</small> <span>{{ $m_val['short_desc'] ?? '' }} </span> </p>
-                                                   <p> <small> Coupon Code :  </small><span>{{ $m_val['name'] ?? '' }} </span> </p>
-                                                   <p>  <small>Coupon Type :  </small><span>{{ $m_val['promo_type_title'] ?? '' }} </span> </p>
-                                                   <p> 
-                                                    <small>
-                                                    @if($m_val['promo_type_id'] == 1)
-                                                         Amount : 
-                                                    @else
-                                                        Percentage : 
-                                                    @endif
-                                                    </small>
-                                                    <span>{{decimal_format($m_val['amount'])}}</span>
-                                                    </p>
-                                                    <hr>
-                                                @endforeach
-                                            </div>
-                                        
-                                        <!-- <form>
-                                            <div class="form-group">
-                                                <input type="text" class="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Promo Code">
-                                                <button type="submit" class="btn btn-primary">Apply</button>
-                                            </div>
-                                        </form> -->
-                                    </div>
-                                </div>
-                            @endif
+                            
 
-                            @if((@$product->returnable && @$product->vendor->return_request) || $product->replaceable && ($product->return_days > 0))
-                                <div class="col-md-4">
-                                    <div class="aside_bar">
-                                       
-                                            <div class="discriptions">
-                                                <p>  <span>{{ $product->return_days }} days return policy is applicable on this product </span> </p>
-                                                <hr>
-                                            </div>
-
-                                    </div>
-                                </div>
-                            @endif
+                       
                             </div>
                     </div>
 
                     {{-- Related Products --}}
                     <div class="row">
                         <div class="col-md-12">
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => 'Category Realted Product'])
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_brand_products, 'title' => 'Brand Realted Product'])
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => 'Vendor Realted Product'])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => 'Category Related Product'])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_brand_products, 'title' => 'Brand Related Product'])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => 'Vendor Related Product'])
                         </div>
                     </div>
                     {{-- End of Related Products --}}

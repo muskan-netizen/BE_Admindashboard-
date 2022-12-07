@@ -82,7 +82,6 @@
         <div class="container homepageSix">
             <div class="row mb-sm-5 mb-2 mt-5">
                 <div class="collection-filter col-lg-3">
-                @if(!empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
@@ -91,7 +90,8 @@
                             </span>
                         </h5>
                         <div class="offer-slider al">
-                            
+                        @php $show_new_Products = 0; @endphp
+                            @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
                                     @foreach($newProds as $new)
                                     <div class="col-md-12 p-0">
@@ -150,10 +150,9 @@
                                 </div>
                                     @endforeach
                                 @endforeach
-                            
+                            @endif
                         </div>
                     </div>
-                    @endif
                 </div>
                 <div class="collection-content col-lg-9">
                     <div class="page-main-content">

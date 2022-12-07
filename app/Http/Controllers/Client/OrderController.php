@@ -1793,7 +1793,7 @@ class OrderController extends BaseController
     {
         try {
             $user = Auth::user();
-            $orders_list = OrderReturnRequest::where('status', $status)->with('product')->orderBy('updated_at', 'DESC');
+            $orders_list = OrderReturnRequest::where('status', $status)->where('type', 1)->with('product', 'order')->orderBy('updated_at', 'DESC');
             if ($user->is_superadmin == 0) {
                 $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
@@ -1809,6 +1809,7 @@ class OrderController extends BaseController
                 });
             }
             $vendors = $vendors->get();
+            // dd( $orders[$status]);
             return view(
                 'backend.order.return',
                 [
@@ -1828,7 +1829,7 @@ class OrderController extends BaseController
             $user = Auth::user();
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
             $timezone = Auth::user()->timezone;
-            $orders_list = OrderReturnRequest::with('product')->orderBy('updated_at', 'DESC');
+            $orders_list = OrderReturnRequest::with('product', 'order')->orderBy('updated_at', 'DESC');
             if ($user->is_superadmin == 0) {
                 $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
@@ -1902,7 +1903,7 @@ class OrderController extends BaseController
     public function getReturnProductModal(Request $request, $domain = '')
     {
         try {
-            $return_details = OrderReturnRequest::where('id', $request->id)->with('returnFiles')->first();
+            $return_details = OrderReturnRequest::where('id', $request->id)->where('type', 1)->with('returnFiles')->first();
             if (isset($return_details)) {
 
                 if ($request->ajax()) {
