@@ -1725,8 +1725,8 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request', 'products.productReturn',
-        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail'
+        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
+        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request'
         ])
             ->whereHas('orderDetail', function ($q1) {
                 $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1,38]);
