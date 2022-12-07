@@ -45,3 +45,10 @@ body, html {
 .onhover-show-div li.active a{
     color: #DB1919;
 }
+
+body[dir="rtl"] #login-section::after {
+    
+    right: 0;
+    left: auto;
+    
+}
