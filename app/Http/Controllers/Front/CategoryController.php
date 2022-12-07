@@ -284,13 +284,16 @@ class CategoryController extends FrontController{
             }
 
             $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
+            Log::info('category product  vendors count 287');
+            Log::info($vendorIds );
             $vendors =  $vendorIds;
             if(count($vendorIds)==0){
                 if(Session::has('vendors')){
                     $vendors = Session::get('vendors');
                 }
             }
-           
+            Log::info('category product  vendors count 295');
+            Log::info($vendors );
             // pr($vendors);
             $products = Product::with(['vendor', 'media.image', 'category',
                         'translation' => function($q) use($langId){
@@ -306,8 +309,7 @@ class CategoryController extends FrontController{
                         ->where('products.category_id', $category_id);
                         Log::info('category product count 307');
                         Log::info($products->count());
-                        Log::info('category product  vendors count 307');
-                        Log::info(count($vendors) );
+                      
             if(count($vendors) > 0){
                 $products = $products->whereIn('products.vendor_id', $vendors);
             }
