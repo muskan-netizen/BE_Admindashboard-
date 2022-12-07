@@ -13,7 +13,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices};
+use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -933,6 +933,8 @@ class OrderController extends BaseController
                 $orderData = Order::find($request->order_id);
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
                 $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
+                $customer = User::find($orderData->user_id);
+                $this->sendTrackingUrlSMS($customer,$orderData);
                 return response()->json([
                     'status' => 'success',
                     'created_date' => convertDateTimeInTimeZone($vendor_order_status->created_at, $timezone, 'l, F d, Y, H:i A'),
@@ -2223,5 +2225,31 @@ class OrderController extends BaseController
         $order_vendor->order_status_option_id = rand();
         $order_vendor->save();
         dd($order_vendor);
+    }
+
+
+    public function sendTrackingUrlSMS($user, $order, $vendor_id = '')
+    {
+        $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','currency_id')->first();
+        if ($user['dial_code'] == "971") {
+            $to = '+' . $user['dial_code'] . "0" . $user['phone_number'];
+        } else {
+            $to = '+' . $user['dial_code'] . $user['phone_number'];
+        }
+        $provider = $prefer['sms_provider'];
+      
+
+        $tracking_url = url('/order/tracking/'.$user['id'].'/'.$order['order_number'].'');
+        $keyData = ['{user_name}'=>$user['name']??'','{order_number}'=>$order['order_number']??'','{track_url}'=>$tracking_url??''];
+        \Log::info($keyData);
+        
+        $body = sendSmsTemplate('order-tracking-url',$keyData);
+
+        if (!empty($prefer['sms_provider'])) {
+
+            $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+            //\Log::info($send);
+        }
+        
     }
 }
