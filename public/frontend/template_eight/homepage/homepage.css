@@ -171,6 +171,9 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
     height:200px;
     padding:0;
 }
+.al_body_template_eight .slick-track {
+    margin-left: 0 !important;
+}
 .al_body_template_eight .suppliers-box .suppliers-img-outer img {
     margin: 0;
     width: 100%;
@@ -612,7 +615,7 @@ body.al_body_template_eight .category-block {
     border-radius: 15px;
     box-shadow: 0px 4px 10px rgb(0 0 0 / 25%);
 }
-body.al_body_template_eight .product-4-best_sellers{padding: 0 50px;}
+/* body.al_body_template_eight .product-4-best_sellers{padding: 0 50px;} */
 body.al_body_template_eight .product-m .slick-next:before, .product-m .slick-prev:before {
     line-height: 29px;
     border: 1px solid#ccc;
