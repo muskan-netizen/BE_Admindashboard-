@@ -36,7 +36,7 @@
                 <div class="collection-filter col-lg-3 main-fillter al">
                     <div class="theme-card custom-inner-card">
 
-                    <div class="accordion" id="accordionExample">
+                    <div class="accordion mt-4" id="accordionExample">
                             <div class="card">
                                 <div class="card-header p-0" id="headingOne">
                                     <h2 class="mb-0">

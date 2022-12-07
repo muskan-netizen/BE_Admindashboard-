@@ -1970,7 +1970,7 @@ class CartController extends FrontController
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         $client_timezone = DB::table('clients')->first('timezone');
-        $timezone = $client_timezone->timezone ?? $user->timezone;
+        $timezone = $client_timezone->timezone ?? ($user ?  ($user->timezone ?? 'Asia/Kolkata'): 'Asia/Kolkata');
         $address_id = 0;
         $schedule_datetime_del = '';
         if ($user) {
