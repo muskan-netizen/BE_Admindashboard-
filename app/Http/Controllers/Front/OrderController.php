@@ -961,8 +961,8 @@ class OrderController extends FrontController
                     // $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_markup_amount = $vendor_markup_amount + $variant->markup_price;
                     $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
-                    $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
-                    // $vendor_total_container_charges =  $quantity_container_charges;
+                    // $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
+                    $vendor_total_container_charges =  $quantity_container_charges;
                     //echo  "<br>payable_amount: ".$payable_amount."+ quantity_price: ".$quantity_price ;
 // dump("PA Start ================ ".$payable_amount); 
                     $payable_amount = $payable_amount + $quantity_price ;
@@ -1144,8 +1144,9 @@ class OrderController extends FrontController
                     // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount
                     $vendor_service_fee_percentage_amount = ( $quantity_price * $vendor_cart_product->vendor->service_fee_percent) / 100;
                     $payable_amount += $vendor_service_fee_percentage_amount;
+                    $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                 }
-// dump("+Service fee ".$vendor_service_fee_percentage_amount."/- ---------".$payable_amount); 
+// dump("+vendor_service_fee_percentage_amount fee ".$vendor_service_fee_percentage_amount."/- ---------".$payable_amount); 
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
                     if ($cart_addons) {
                         foreach ($cart_addons as $cart_addon) {
@@ -1223,10 +1224,9 @@ class OrderController extends FrontController
 
 
                 //End applying service fee on vendor products total
-                $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
+                // $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                 $OrderVendor->service_fee_percentage_amount = $vendor_service_fee_percentage_amount;
-                //echo  "total_service_fee: ".$total_service_fee." | ";
-
+// dump("+total_service_fee ".$total_service_fee."/- ----".$payable_amount); 
                 //$total_delivery_fee += $delivery_fee;
                 $vendor_payable_amount += $additionalPrice;
                 $vendor_payable_amount += $delivery_fee;
@@ -1269,7 +1269,7 @@ class OrderController extends FrontController
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->payable_amount = $vendor_payable_amount;
                 $OrderVendor->total_markup_price = $vendor_markup_amount;
-                $OrderVendor->total_container_charges = $vendor_total_container_charges;
+                $OrderVendor->total_container_charges = $total_container_charges;
                 $OrderVendor->is_restricted = $is_restricted;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
