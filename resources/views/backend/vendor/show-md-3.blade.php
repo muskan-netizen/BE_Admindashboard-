@@ -1265,6 +1265,7 @@ $("input[name='service_charges_tax']").change(function() {
     }
 })
 
+
 $("input[name='container_charges_tax']").change(function() {
     if($(this).prop('checked')){
         $("#container_charges_tax_id").css("display", "block");

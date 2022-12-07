@@ -39,7 +39,6 @@ class NomenclatureController extends BaseController
         NomenClature::updateOrCreate(['label' => 'Product Order Form'], ['label' => 'Product Order Form']);
         NomenClature::updateOrCreate(['label' => 'Appointment'], ['label' => 'Appointment']);
 
-
         NomenClature::updateOrCreate(['label' => 'Enter Drop Location'], ['label' => 'Enter Drop Location']);
         NomenClature::updateOrCreate(['label' => 'Vendor Name'], ['label' => 'Vendor Name']);
         NomenClature::updateOrCreate(['label' => 'Ride Accepted'], ['label' => 'Ride Accepted']);

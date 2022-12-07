@@ -1189,6 +1189,7 @@ class VendorController extends BaseController
 
             $payout = new VendorPayout();
             $payout->vendor_id = $id;
+            
             $payout->payout_option_id = $request->payout_option_id;
             $payout->transaction_id = ($pay_option != 1) ? $request->transaction_id : '';
             $payout->amount = $request->amount;

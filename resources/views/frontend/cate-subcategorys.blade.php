@@ -78,7 +78,7 @@
 
                     </div>
                     @if(!empty($newProducts) && count($newProducts) > 0)
-                    <div class="theme-card">
+                    <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">

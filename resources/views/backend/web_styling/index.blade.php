@@ -155,7 +155,6 @@
 
                                                     </label>
                                                 </div>
-
                                             </div>
                                         </div>
                                         <span class="alTemplateName mt-3 w-100">{{$homepage_style->name}}</span>
@@ -165,6 +164,7 @@
                             </div>
                         </div>
                     </div>
+                    
 
                     <div class="col-md-4 h-100">
                         <div class="card card-box h-100">
