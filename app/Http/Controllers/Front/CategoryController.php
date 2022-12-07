@@ -304,11 +304,11 @@ class CategoryController extends FrontController{
                         ->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only','products.minimum_order_count','products.batch_count')
                         ->where('products.is_live', 1)
                         ->where('products.category_id', $category_id);
+                        Log::info('category product count 307');
+                        Log::info($products->count());
             if(count($vendors) > 0){
                 $products = $products->whereIn('products.vendor_id', $vendors);
             }
-            Log::info('category product count');
-            Log::info($products->count());
             $products = $products->paginate($pagiNate);
               //pr($products);
             if(!empty($products)){
