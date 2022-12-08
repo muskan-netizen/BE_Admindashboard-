@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLongTermServiceTranslationsTable extends Migration
+class CreateExchangeReasonsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateLongTermServiceTranslationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('long_term_service_translations', function (Blueprint $table) {
+        Schema::create('exchange_reasons', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('long_term_service_id')->unsigned()->nullable();
-            $table->string('name');
-            $table->unsignedBigInteger('language_id');
+            $table->string('title', 500)->nullable();
+            $table->enum('status',['Active','Block'])->default('Active');
+            $table->tinyInteger('order');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateLongTermServiceTranslationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('long_term_service_translations');
+        Schema::dropIfExists('exchange_reasons');
     }
 }

@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AppStyling, AppStylingOption, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate};
+use App\Models\{AppStyling, AppStylingOption, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, WebStylingOption};
 
 class ForgotPasswordController extends FrontController{
     use ApiResponser;
@@ -30,7 +30,13 @@ class ForgotPasswordController extends FrontController{
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $navCategories = $this->categoryNav($langId);
-        return view('frontend/account/resetPassword')->with(['navCategories' => $navCategories, 'token' => $token]);
+        $set_template = WebStylingOption::where('web_styling_id',1)->where('is_selected',1)->first();
+        $reset_password_page = "account.resetPassword";
+        if($set_template->template_id == 8)
+        {
+            $reset_password_page = "template_eight.account.resetPassword";
+        }
+        return view('frontend.'. $reset_password_page)->with(['navCategories' => $navCategories, 'token' => $token]);
     }
 
     public function resetSuccess($domain = ''){

@@ -45,9 +45,15 @@
 
         <div class="row">
             <div class="col-12">
-                <div class="page-title-box">
-                    <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
+            <div class="row mb-md-1 alFourTemplateCartButtons mt-2 pt-2">
+                <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
+                    <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
+                        {{__('Continue Shopping')}}</a>
                 </div>
+            </div>
+                <!-- <div class="page-title-box">
+                    <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
+                </div> -->
                 <div class="cart_response mt-3 mb-3 d-none">
                     <div class="alert p-0" role="alert"></div>
                 </div>
@@ -75,6 +81,7 @@
                             </div>
                         </div>
             </div>
+            
             <div class="row border-bottom product_title_add py-1 no-gutters">
                     <div class="col-md-4 col">
                         <span>{{ __('Product Details') }}</span>
@@ -138,7 +145,7 @@
                 @elseif( $product->is_vendor_closed == 1 && $product->closed_store_order_scheduled == 1 )
                     <div class="col-12">
                         <div class="text-danger">
-                            <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders right now. You can schedule this for ')}}{{$product->delaySlot}}
+                            <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders right now. You can schedule this for ')}}{{@$product->delaySlot}}
                         </div>
                     </div>
                @endif
@@ -174,6 +181,9 @@
         <div id="tbody_{{$product->vendor->id}}">
 
             @foreach($product->vendor_products as $vendor_product)
+            {{-- @php
+            pr($vendor_product);
+            @endphp --}}
                 <div class="row align-items-md-center vendor_products_tr alFourTemplateCartPage" id="tr_vendor_products_{{$vendor_product->id}}">
                     <div class="product-img col-3 col-md-2">
                         @if(!empty($vendor_product->pvariant->media_one))
@@ -242,7 +252,11 @@
                             </div>
                             @elseif( $serviceType ==  'appointment')
                             <div class="col-10 col-md-4 text-md-center order-md-3">
-
+                                1
+                            </div>
+                            @elseif( $vendor_product->product->is_long_term_service ==  1)
+                            <div class="col-10 col-md-4 text-md-center order-md-3">
+                                <span class="">1</span>
                             </div>
                             @else
                                 <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -396,6 +410,10 @@
                            @endif
                            @endif
                         @endif
+                        @if( $vendor_product->product->is_long_term_service ==  1)
+                        @include('frontend.cart.longTermTimeSelection')
+                        @endif
+                    
                     </div>
 
                     @if( ($vendor_product->product->delay_order_time->delay_order_hrs != '' && $vendor_product->product->delay_order_time->delay_order_min != '' ) &&  (($vendor_product->product->delay_order_time->delay_order_hrs != 0) || ($vendor_product->product->delay_order_time->delay_order_hrs != 0)))
@@ -444,7 +462,7 @@
                 --}}
         <div class="row my-2">
             @if(!$cart_details->guest_user)
-                <div class="col-lg-6 ">
+                <div class="col-lg-6">
                 @if($product->is_promo_code_available > 0)
                         <div class="coupon_box w-100 d-flex align-content-center">
                             <img class="blur-up lazyload" data-src="{{ asset('assets/images/discount_icon.svg') }}">
@@ -462,7 +480,7 @@
                 @endif
             </div>
         @endif
-                    <div class="col-lg-6">
+                <div class="col-lg-6">
                         @if($product->delOptions)
                             <div class="row mb-1 d-flex align-items-center   @if($product->promo_free_deliver == 1  ) {{$product->promo_free_deliver }} org_price @endif ">
                                 <div class="col-5 text-lg-right">
@@ -545,18 +563,11 @@
 
             @endforeach
 
-            <div class="row mb-md-1 alFourTemplateCartButtons mt-2 pt-2 border-top">
-                <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
-                    <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
-                        {{__('Continue Shopping')}}</a>
-                </div>
-            </div>
+
         </div>
 
 
-            <div class="col-lg-12 left_box new_cart mt-4 p-3" id="left_address">
-                {!!$cart_details->left_section!!}
-            </div>
+           
 
 
 
@@ -571,7 +582,12 @@
     {{-- Start Right Section --}}
     <div class="col-lg-4">
         <div class="row m-0">
-         <div class="cart-summary p-2 pb-4">
+            <div class="col-lg-12 cart-summary  p-2 pb-4 mr-3" id="left_address">
+                {!!$cart_details->left_section!!}
+            </div>
+        </div>
+        <div class="row m-0">
+         <div class="cart-summary mt-4 p-2 pb-4">
             <div class="col-12 mb-2">
                 <h5 class="order_text">{{ __('Order Summary') }}</h5>
             </div>
