@@ -399,7 +399,7 @@ class UserhomeController extends FrontController
             $_REQUEST['request_from'] = 1;
 
             $navCategories = $this->categoryNav($langId);
-            dd($navCategories);
+
             Session::put('navCategories', $navCategories);
             $clientPreferences = ClientPreference::first();
             $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
