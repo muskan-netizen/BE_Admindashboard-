@@ -1273,7 +1273,7 @@ if (!function_exists('inventorySyncOnOff')) {
         if (!empty($vendor_id) && checkColumnExists('client_preferences', 'inventory_service_key_url')) {
             
             $client_preferences = ClientPreference::first();
-            if(isset($$client_preferences) && ($client_preferences->inventory_service_key_url !='')){
+            if(isset($client_preferences) && ($client_preferences->inventory_service_key_url !='')){
 
                 $client = new \GuzzleHttp\Client([
                     'headers' => [

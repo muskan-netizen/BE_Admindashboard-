@@ -95,7 +95,7 @@ class ReturnOrderController extends BaseController{
     */
     public function getReturnProducts(Request $request, $domain = ''){
         try {
-            $reasons = ReturnReason::where('status','Active')->orderBy('order','asc')->get();
+            $reasons = ReturnReason::where('status','Active')->where('type', 1)->orderBy('order','asc')->get();
             foreach($reasons as $reason){
                 $reason->title = __($reason->title);
             }
