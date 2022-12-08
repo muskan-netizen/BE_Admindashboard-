@@ -294,28 +294,44 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 pr($product->toArray()); @endphp --}}
                 @if($product->category->categoryDetail->type_id != 7)
                 <div class="card-box">
-
+                    {{-- @dd($product->vendor) --}}
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Pricing Information") }}</h5>
                     @if($product->has_variant == 0)
                     <div class="row mb-2">
-                        <div class="col-4 mb-2">
-                            {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
-                            @include('backend.primary_currency')
-                            @if (isset($getAdditionalPreference['is_price_by_role']))
-                                @if($getAdditionalPreference['is_price_by_role'] == '1')
-                                    {!! Form::text('price', decimal_format($product->variant[0]->getRawOriginal('price')), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
-                                @else
-                                    {!! Form::text('price', decimal_format($product->variant[0]->actual_price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        @if(@$product->vendor->is_seller == 1 && Auth::user()->is_superadmin == 1)
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Cost price'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                {!! Form::text('cost_price', decimal_format($product->variant[0]->cost_price), ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        @elseif (@$product->vendor->is_seller == 1)
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Cost price'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                {!! Form::text('cost_price', decimal_format($product->variant[0]->cost_price), ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        @endif
+
+                        @if(@$product->vendor->is_seller == 0 || Auth::user()->is_superadmin == 1 )
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                @if (isset($getAdditionalPreference['is_price_by_role']))
+                                    @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                        {!! Form::text('price', decimal_format($product->variant[0]->getRawOriginal('price')), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                    @else
+                                        {!! Form::text('price', decimal_format($product->variant[0]->actual_price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                    @endif
                                 @endif
-                            @endif
 
-                        </div>
+                            </div>
 
-                        <div class="col-4 mb-2">
-                            {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
-                            @include('backend.primary_currency')
-                            {!! Form::text('compare_at_price', decimal_format($product->variant[0]->compare_at_price), ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
-                        </div>
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                {!! Form::text('compare_at_price', decimal_format($product->variant[0]->compare_at_price), ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        @endif
 
                         @if($product->vendor->need_container_charges == 1)
                         <div class="col-4 mb-2">
@@ -672,6 +688,16 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <input type="checkbox" bid="" id="inquiry_only" data-plugin="switchery" name="inquiry_only" class="chk_box" data-color="#43bee1" @if($product->inquiry_only == 1) checked @endif>
                         </div>
                         @endif
+
+                        <div class="col-md-6 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Returnable'),['class' => 'control-label']) !!}
+                            <input type="checkbox" bid="" id="returnable" data-plugin="switchery" name="returnable" class="chk_box" data-color="#43bee1" @if($product->returnable == 1) checked @endif>
+                        </div>
+
+                        <div class="col-md-6 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Replaceable'),['class' => 'control-label']) !!}
+                            <input type="checkbox" bid="" id="replaceable" data-plugin="switchery" name="replaceable" class="chk_box" data-color="#43bee1" @if($product->replaceable == 1) checked @endif>
+                        </div>
                        
                         @if($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
@@ -762,7 +788,9 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Live'),['class' => 'control-label']) !!}
                             <select class="selectizeInput form-control" id="is_live" name="is_live">
                                 <option value="0" @if($product->is_live == 0) selected @endif>{{ __('Draft')}}</option>
-                                <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
+                                @if(Auth::user()->is_superadmin == 1)
+                                    <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
+                                @endif
                             </select>
                         </div>
 
@@ -806,6 +834,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Minimum Increment'),['class' => 'control-label']) !!}
                             {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Return/Replace Days'),['class' => 'control-label']) !!}
+                            {!! Form::number('return_days', $product->return_days, ['class'=>'form-control', 'id' => 'return_days', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                     </div>
                     <div class="row">

@@ -1,3 +1,6 @@
+@php
+    $getAdditionalPreference = getAdditionalPreference(['is_seller_module']);
+@endphp
 <div class="left-side-menu">
     <div class="logo-box m-hide d-lg-block">
         @php
@@ -129,6 +132,22 @@
                                     </a>
                                 </li>
                             @endif
+
+                            @if(@$getAdditionalPreference['is_seller_module'] == '1')
+                                <li>
+                                    <a href="{{route('seller.index')}}">
+                                    <span class="icon-vendor"></span>
+                                    @php
+                                        $vendormenu = getNomenclatureName('Sellers', true);
+                                        $vendormenulabel = ($vendormenu=="Sellers")?__('Sellers'):__($vendormenu);
+
+                                    @endphp
+                                        {{-- <span>{{getNomenclatureName('Vendors', true)}}</span> --}}
+                                        <span>{{ __($vendormenulabel) }}</span>
+                                    </a>
+                                </li>
+                            @endif
+
                             @if(count(array_intersect($accounting_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="#sidebaraccounting" data-toggle="collapse">
@@ -338,9 +357,15 @@
                                             <a href="{{route('cms.sms')}}">{{ __('SMS') }}</a>
                                         </li>
                                     @endif
+                                    @if(in_array('reasons',$allowed) || Auth::user()->is_superadmin == 1)
+                                        <li>
+                                            <a href="{{route('reason.index')}}">{{ __('Reasons') }}</a>
+                                        </li>
+                                    @endif
                                 </ul>
                             </div>
                         </li>
+
                         @if(in_array('catalog',$allowed) || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('category.index')}}">

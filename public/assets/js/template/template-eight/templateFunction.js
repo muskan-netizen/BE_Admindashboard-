@@ -2,7 +2,7 @@ $(function () {
     $('.suppliers-slider-vendors').slick({
         infinite: true,
         speed: 300,
-        slidesToShow:3,
+        slidesToShow:4,
         slidesToScroll: 1,
         centerMode: true,
         centerPadding: 'false',
@@ -50,7 +50,7 @@ $(function () {
         dots: false,
         infinite: true,
         speed: 300,
-        slidesToShow: 3,
+        slidesToShow: 4,
         slidesToScroll: 3,
         responsive: [
             {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},

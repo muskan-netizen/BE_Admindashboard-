@@ -166,7 +166,11 @@ class OrderController extends BaseController
         $filter_order_status = $request->filter_order_status;
         $orders = Order::with(['vendors.products' => function ($q) {
             $q->withoutAppends();
-        }, 'vendors.status', 'orderStatusVendor', 'address', 'user']);
+        }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
+        if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
+            $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
+        }
+        
         if ($user->is_superadmin == 0) {
             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -274,7 +278,7 @@ class OrderController extends BaseController
 
 
                 case 'orders_history':
-                    $order_status_options = [6, 3];
+                    $order_status_options = [6, 3, 9];
                     $orders = $orders->with(['vendors' => function ($query) use ($order_status_options, $user) {
                         $query->whereIn('order_status_option_id', $order_status_options);
                         if ($user->is_superadmin == 0) {
@@ -472,6 +476,14 @@ class OrderController extends BaseController
                     $vendor->vendor_detail_url = route('order.show.detail', [$order->id, @$vendor->vendor_id]);
                 else
                     $vendor->vendor_detail_url = '#';
+
+                if(isset($vendor) && !empty($vendor->vendor_id) && @$vendor->exchanged_to_order){
+                    $vendor->exchanged_to_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_to_order->order_id, @$vendor->exchanged_to_order->vendor_id]);
+                }
+               
+                if(isset($vendor) && !empty($vendor->vendor_id && @$vendor->exchanged_of_order)){
+                    $vendor->exchanged_of_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_of_order->order_id, @$vendor->exchanged_of_order->vendor_id]);
+                }
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? __($vendor_order_status->OrderStatusOption->title) : '';
                 $vendor->order_vendor_id = $vendor_order_status ? $vendor_order_status->order_vendor_id : '';
@@ -593,29 +605,44 @@ class OrderController extends BaseController
             },
             'vendors.dineInTable.category',
             'vendors.cancel_request',
-            'reports'
-        ))->findOrFail($order_id);
+            'reports',
+            
+        ));
+        if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
+            $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
+        }
+        $order = $order->findOrFail($order_id);
         //    return $order;
         // set payment option dynamic name
-        if ($order->paymentOption->code == 'stripe') {
-            $order->paymentOption->title = __('Credit/Debit Card (Stripe)');
-        } elseif ($order->paymentOption->code == 'kongapay') {
-            $order->paymentOption->title = 'Pay Now';
-        } elseif ($order->paymentOption->code == 'mvodafone') {
-            $order->paymentOption->title = 'Vodafone M-PAiSA';
-        } elseif ($order->paymentOption->code == 'mobbex') {
-            $order->paymentOption->title = __('Mobbex');
-        } elseif ($order->paymentOption->code == 'offline_manual') {
-            $json = json_decode($order->paymentOption->credentials);
-            $order->paymentOption->title = $json->manule_payment_title;
+        if (@$order->paymentOption->code) {
+            if ($order->paymentOption->code == 'stripe') {
+                $order->paymentOption->title = __('Credit/Debit Card (Stripe)');
+            } elseif ($order->paymentOption->code == 'kongapay') {
+                $order->paymentOption->title = 'Pay Now';
+            } elseif ($order->paymentOption->code == 'mvodafone') {
+                $order->paymentOption->title = 'Vodafone M-PAiSA';
+            } elseif ($order->paymentOption->code == 'mobbex') {
+                $order->paymentOption->title = __('Mobbex');
+            } elseif ($order->paymentOption->code == 'offline_manual') {
+                $json = json_decode($order->paymentOption->credentials);
+                $order->paymentOption->title = $json->manule_payment_title;
+            }
+            $order->paymentOption->title = __($order->paymentOption->title);
         }
-        $order->paymentOption->title = __($order->paymentOption->title);
         $product_schedule_type = '';
         foreach ($order->vendors as $key => $vendor) {
+
+            if(isset($vendor) && !empty($vendor->vendor_id) && @$vendor->exchanged_to_order){
+                $vendor->exchanged_to_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_to_order->order_id, @$vendor->exchanged_to_order->vendor_id]);
+            }
+           
+            if(isset($vendor) && !empty($vendor->vendor_id && @$vendor->exchanged_of_order)){
+                $vendor->exchanged_of_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_of_order->order_id, @$vendor->exchanged_of_order->vendor_id]);
+            }
             foreach ($vendor->products as $key => $product) {
              
                 $product->longTermSchedule = array();
-                if($product->product->is_long_term_service ==1){
+                if(@$product->product->is_long_term_service && $product->product->is_long_term_service ==1){
                     $product->longTermSchedule =  OrderLongTermServices::with(['schedule','product.primary','addon.set','addon.option','addon.option.translation' => function ($q) use ($langId) {
                                     $q->select('addon_option_translations.id', 'addon_option_translations.addon_opt_id', 'addon_option_translations.title', 'addon_option_translations.language_id');
                                     $q->where('addon_option_translations.language_id', $langId);
@@ -747,6 +774,7 @@ class OrderController extends BaseController
         $orderPlaced = true;
         $orderPlacedNo = '';
         DB::beginTransaction();
+        \Log::info('11');
         $client_preferences = ClientPreference::first();
          try {
 
@@ -766,8 +794,21 @@ class OrderController extends BaseController
                     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
                 }
-                $orderData = OrderVendor::with('orderDetail')->where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 
+
+                $orderData = OrderVendor::with('orderDetail')->where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
+                if(@$orderData->exchanged_of_order){
+                    $return = OrderReturnRequest::where('order_id', $orderData->exchanged_of_order->order_id)->first();
+                    if (@$return && $request->status_option_id == 2) { //accept exchange
+                        
+                        $returns = OrderReturnRequest::where('order_id', $orderData->exchanged_of_order->order_id)->update(['status' => 'Accepted', 'reason_by_vendor' => $request->reject_reason ?? null]);
+                    }
+
+                    if (@$return && $request->status_option_id == 3) { //reject exchange
+                        $returns = OrderReturnRequest::where('order_id', $orderData->exchanged_of_order->order_id)->update(['status' => 'Rejected', 'reason_by_vendor' => $request->reject_reason ?? null]);
+                    }
+
+                }
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type == 'D') {
@@ -888,6 +929,10 @@ class OrderController extends BaseController
 
                 if ($request->status_option_id == 2) {
                     $this->ProductVariantStock($request->order_id);
+                }
+
+                if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 3) {
+                    $this->ProductVariantStockIncrease($request->order_id);
                 }
 
 
@@ -1149,9 +1194,11 @@ class OrderController extends BaseController
                 }
             }
         }
+        \Log::info("asdf");
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
             if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+                \Log::info("asdf inner");
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
             }
 
@@ -1234,7 +1281,7 @@ class OrderController extends BaseController
     public function placeRequestToDispatch($order, $vendor, $dispatch_domain)
     {
         try {
-
+            \Log::info("asdf innerrrrrr");
             $order = Order::find($order);
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
@@ -1358,7 +1405,9 @@ class OrderController extends BaseController
                 $url . '/api/task/create',
                 ['form_params' => ($postdata)]
             );
+            
             $response = json_decode($res->getBody(), true);
+           \Log::info("dafsdffffffff". json_encode($response));
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
@@ -1719,7 +1768,7 @@ class OrderController extends BaseController
     {
         try {
             $user = Auth::user();
-            $orders_list = OrderReturnRequest::where('status', $status)->with('product')->orderBy('updated_at', 'DESC');
+            $orders_list = OrderReturnRequest::where('status', $status)->where('type', 1)->with('product', 'order')->orderBy('updated_at', 'DESC');
             if ($user->is_superadmin == 0) {
                 $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
@@ -1735,6 +1784,7 @@ class OrderController extends BaseController
                 });
             }
             $vendors = $vendors->get();
+            // dd( $orders[$status]);
             return view(
                 'backend.order.return',
                 [
@@ -1752,11 +1802,16 @@ class OrderController extends BaseController
     {
         try {
             $user = Auth::user();
-            $orders_list = OrderReturnRequest::with('product')->orderBy('updated_at', 'DESC');
+            $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+            $timezone = Auth::user()->timezone;
+            $orders_list = OrderReturnRequest::with('product', 'order')->orderBy('updated_at', 'DESC');
             if ($user->is_superadmin == 0) {
                 $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
                 });
+            }
+            if(checkColumnExists('order_return_requests', 'type')){
+                $orders_list = $orders_list->where('type', 1); // 1 = return , 2 = exchange
             }
             if (!empty($request->search_keyword)) {
                 $orders_list->whereHas('order', function ($query)  use ($request) {
@@ -1792,12 +1847,12 @@ class OrderController extends BaseController
             $pending_orders = $pending_orders->where('status', 'Pending')->paginate(20);
             $accepted_orders = $accepted_orders->where('status', 'Accepted')->paginate(20);
             $rejected_orders = $rejected_orders->where('status', 'Rejected')->paginate(20);
-            $pending_html = view('backend.order.return-data')->with(['orders' => $pending_orders, 'status' => 'Pending'])->render();
-            $accepted_html = view('backend.order.return-data')->with(['orders' => $accepted_orders, 'status' => 'Accepted'])->render();
-            $rejected_html = view('backend.order.return-data')->with(['orders' => $rejected_orders, 'status' => 'Rejected'])->render();
+            $pending_html = view('backend.order.return-data')->with(['orders' => $pending_orders, 'status' => 'Pending', 'clientCurrency' => $clientCurrency,'timezone' => $timezone])->render();
+            $accepted_html = view('backend.order.return-data')->with(['orders' => $accepted_orders, 'status' => 'Accepted', 'clientCurrency' => $clientCurrency,'timezone' => $timezone])->render();
+            $rejected_html = view('backend.order.return-data')->with(['orders' => $rejected_orders, 'status' => 'Rejected', 'clientCurrency' => $clientCurrency,'timezone' => $timezone])->render();
             return $this->successResponse(['pending_html' => $pending_html, 'accepted_html' => $accepted_html, 'rejected_html' => $rejected_html], '', 201);
-        } catch (\Throwable $th) {
-            return $this->errorResponse($th->getMessage(), 400);
+        } catch (\Throwable $e) {
+            return $this->errorResponse($e->getMessage(), 400);
         }
     }
 
@@ -1823,7 +1878,7 @@ class OrderController extends BaseController
     public function getReturnProductModal(Request $request, $domain = '')
     {
         try {
-            $return_details = OrderReturnRequest::where('id', $request->id)->with('returnFiles')->first();
+            $return_details = OrderReturnRequest::where('id', $request->id)->where('type', 1)->with('returnFiles')->first();
             if (isset($return_details)) {
 
                 if ($request->ajax()) {
@@ -1852,6 +1907,9 @@ class OrderController extends BaseController
                     $order_product = OrderProduct::find($return->order_vendor_product_id);
                     $credit_amount = $order_product->price + $order_product->taxable_amount;
                     $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return ' . $order_product->product_name]);
+                    $dispatch_domain = $this->getDispatchDomain();
+                    $order_details = OrderProduct::where('id',$return->order_vendor_product_id)->whereHas('order',function($q) use ($user){$q->where('user_id',$user->id);})->first();
+                    $this->placeReturnRequestToDispatch($order_details->order_id, $order_details->vendor_id, $dispatch_domain);
                 }
                 DB::commit();
                 return $this->successResponse($returns, 'Updated.');
@@ -1860,6 +1918,158 @@ class OrderController extends BaseController
         } catch (Exception $e) {
             DB::rollback();
             return $this->errorResponse($e->getMessage(), 400);
+        }
+    }
+
+    // place Request To Dispatch
+    public function placeReturnRequestToDispatch($order, $vendor, $dispatch_domain)
+    {
+        try {
+
+            $order = Order::find($order);
+            $customer = User::find($order->user_id);
+            $cus_address = UserAddress::find($order->address_id);
+            $tasks = array();
+            if ($order->payment_option_id == 1) {
+                $cash_to_be_collected = 'Yes';
+                $payable_amount = $order->payable_amount;
+            } else {
+                $cash_to_be_collected = 'No';
+                $payable_amount = 0.00;
+            }
+            $dynamic = uniqid($order->id . $vendor);
+            $call_back_url = route('dispatch-order-update', $dynamic);
+            $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
+            $tasks = array();
+            $meta_data = '';
+
+            $unique = Auth::user()->code;
+            $team_tag = $unique . "_" . $vendor;
+
+            if (isset($order->scheduled_date_time) && !empty($order->scheduled_date_time)) {
+                $task_type = 'schedule';
+                $schedule_time = $order->scheduled_date_time ?? null;
+            } else {
+                $task_type = 'now';
+            }
+
+            $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
+            if (!empty($orderVendorDetails->scheduled_date_time) && $orderVendorDetails->scheduled_date_time > 0) {
+                $task_type = 'schedule';
+                $user = Auth::user();
+                $selectedDate = dateTimeInUserTimeZone($orderVendorDetails->scheduled_date_time, $user->timezone);
+                $slot = trim(explode("-", $orderVendorDetails->schedule_slot)[0]);
+
+                $slotTime = date('H:i:s', strtotime("$slot"));
+                $selectedDate = date('Y-m-d', strtotime($selectedDate));
+                $scheduleDateTime = $selectedDate . ' ' . $slotTime;
+                $schedule_time =  $scheduleDateTime ?? null;
+            }
+           
+            $tasks[] = array(
+                'task_type_id' => 1,
+                'latitude' => $cus_address->latitude ?? '',
+                'longitude' => $cus_address->longitude ?? '',
+                'short_name' => '',
+                'address' => $cus_address->address ?? '',
+                'post_code' => $cus_address->pincode ?? '',
+                'barcode' => '',
+                'flat_no'     => $cus_address->house_number ?? null,
+                'email'       => $customer->email ?? null,
+                'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
+            );
+            $tasks[] = array(
+                'task_type_id' => 2,
+                'latitude' => $vendor_details->latitude ?? '',
+                'longitude' => $vendor_details->longitude ?? '',
+                'short_name' => '',
+                'address' => $vendor_details->address ?? '',
+                'post_code' => '',
+                'barcode' => '',
+                'flat_no'     => null,
+                'email'       => $vendor_details->email ?? null,
+                'phone_number' => $vendor_details->phone_no ?? null,
+            );
+
+            if ($customer->dial_code == "971") {
+                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                $customerno = "0" . $customer->phone_number;
+            } else {
+                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
+            }
+            $client = CP::orderBy('id', 'asc')->first();
+            $postdata =  [
+                'order_number' =>  $order->order_number,
+                'customer_name' => $customer->name ?? 'Dummy Customer',
+                'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                'customer_dial_code' => $customer->dial_code ?? null,
+                'customer_email' => $customer->email ?? null,
+                'recipient_phone' => $customerno ?? rand(111111, 11111),
+                'recipient_email' => $customer->email ?? null,
+                'task_description' => "Order From :" . $vendor_details->name,
+                'allocation_type' => 'a',
+                'task_type' => $task_type,
+                'schedule_time' => $schedule_time ?? null,
+                'cash_to_be_collected' => $payable_amount ?? 0.00,
+                'royo_order_number' => $order->order_number,
+                'barcode' => '',
+                'order_team_tag' => $team_tag,
+                'call_back_url' => $call_back_url ?? null,
+                'task' => $tasks,
+                'is_restricted' => $orderVendorDetails->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $orderVendorDetails->id,
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
+            ];
+            //pr($postdata);
+            if ($orderVendorDetails->is_restricted == 1) {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
+
+            $client = new Client([
+                'headers' => [
+                    'personaltoken' => $dispatch_domain->delivery_service_key,
+                    'shortcode' => $dispatch_domain->delivery_service_key_code,
+                    'content-type' => 'application/json'
+                ]
+            ]);
+
+            \Log::info("header", [
+                'personaltoken' => $dispatch_domain->delivery_service_key,
+                'shortcode' => $dispatch_domain->delivery_service_key_code,
+                'content-type' => 'application/json'
+            ]);
+
+            \Log::info("header", $postdata);
+
+            $url = $dispatch_domain->delivery_service_key_url;
+
+            $res = $client->post(
+                $url . '/api/return-to-warehouse-task',
+                ['form_params' => ($postdata)]
+            );
+            $response = json_decode($res->getBody(), true);
+            \Log::info("asdfasdfasd". $res->getBody());
+            if ($response && $response['task_id'] > 0) {
+                $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
+                $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
+                    ->update(['web_hook_code' => $dynamic, 'dispatch_traking_url' => $dispatch_traking_url]);
+
+                return 1;
+            }
+            return 2;
+        } catch (\Exception $e) {
+            Log::info($e->getMessage());
+            return 2;
+            // return response()->json([
+            //     'status' => 'error',
+            //     'message' => $e->getMessage()
+            // ]);
         }
     }
 

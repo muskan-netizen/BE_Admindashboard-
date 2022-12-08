@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute};
 use Carbon\Carbon;
-use App\Http\Traits\{ProductActionTrait,ProductTrait};
+use App\Http\Traits\{ProductActionTrait, ProductTrait};
 class ProductController extends FrontController{
     private $field_status = 2;
     use ProductActionTrait,ProductTrait;
@@ -29,7 +29,7 @@ class ProductController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request, $domain = '',$vendor,$url_slug){
-
+        
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
 
@@ -248,18 +248,50 @@ class ProductController extends FrontController{
             }else{
                 $product_page = "product";
             }
-            
-            $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = '';
-            $suggested_product = Product::with(['media.image', 'vendor', 'translation']);
-            
-            if( !empty($product->category_id) ) 
-                $suggested_category_products = $suggested_product->where('category_id', $product->category_id)->orderby('id', 'desc')->limit(20)->get();
+            $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
+            $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
+            if( !empty($product->category->category_id) ) {
+                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
+                $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->orderby('id', 'desc')->limit(20)->get();
+            }
+               
 
-            if( !empty($product->brand_id) ) 
+            foreach($suggested_category_products as $r_product){
+                foreach ($r_product->variant as $key => $value) {
+                    if(isset($r_product->variant[$key])){
+                        $r_product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
+                    }
+                }
+            }
+                
+
+            if( !empty($product->brand_id) ) {
+                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
                 $suggested_brand_products = $suggested_product->where('brand_id', $product->brand_id)->orderby('id', 'desc')->limit(20)->get();
+            }
+                
+
+                foreach($suggested_brand_products as $r_product){
+                foreach ($r_product->variant as $key => $value) {
+                    if(isset($r_product->variant[$key])){
+                    $r_product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
+                    }
+                }
+            }
             
-            if( !empty($product->vendor_id) ) 
+            if( !empty($product->vendor_id) ) {
+                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
                 $suggested_vendor_products = $suggested_product->where('vendor_id', $product->vendor_id)->orderby('id', 'desc')->limit(20)->get();
+            }
+                
+
+                foreach($suggested_vendor_products as $r_product){
+                foreach ($r_product->variant as $key => $value) {
+                    if(isset($r_product->variant[$key])){
+                    $r_product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
+                    }
+                }
+            }
 
             $promoCodeController = new PromoCodeController();
             $coupon_list = $promoCodeController->coupon_code_list($product->id, $product->vendor_id);

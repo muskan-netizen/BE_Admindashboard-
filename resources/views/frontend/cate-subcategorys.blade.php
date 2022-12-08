@@ -33,10 +33,10 @@
             </div>
             <div class="row mb-5 homepageSix">
                 {{-- @dd($category->childs) --}}
-                <div class="collection-filter col-lg-3 al custom-sidebar-card">
-                    <div class="theme-card">
+                <div class="collection-filter col-lg-3 main-fillter al">
+                    <div class="theme-card custom-inner-card">
 
-                    <div class="accordion mt-4" id="accordionExample">
+                    <div class="accordion" id="accordionExample">
                             <div class="card">
                                 <div class="card-header p-0" id="headingOne">
                                     <h2 class="mb-0">
@@ -77,8 +77,9 @@
 
 
                     </div>
-                    @if(!empty($newProducts) && count($newProducts) > 0)
-                    <div class="theme-card">
+                    @php $show_new_Products = 0; @endphp
+                    @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
+                    <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
@@ -199,8 +200,8 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts">
-                                        <div class="product-wrapper-grid">
-                                            <div class="row margin-res mt-4">
+                                        <div class="product-wrapper-grid card-product">
+                                            <div class="row margin-res mt-3">
                                                 @if(!empty($category->childs) && count($category->childs) > 0)
                                                     @foreach($category->childs->toArray() as $cate)
                                                     <div class="col-md-3 col-6 col-grid-box">

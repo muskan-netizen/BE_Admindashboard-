@@ -431,6 +431,15 @@ if (!function_exists('getDefaultImagePath')) {
         return $values;
     }
 }
+if (!function_exists('loadDefaultImage')) {
+    function loadDefaultImage(){
+        $proxy_url = \Config::get('app.IMG_URL1');
+        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
+        $image_fit = \Config::get('app.FIT_URl');
+        $default_url = $image_fit .'300/300'. $image_path.'@webp';
+        return $default_url;
+    }
+}
 
 
 if (!function_exists('getImageUrl')) {
@@ -1244,6 +1253,20 @@ if (!function_exists('sendSmsTemplate')) {
     }
 }
 
+// Returns the values of the additional preferences.
+if (!function_exists('checkTableExists')) {
+    /** check if column exits in table
+    * @param string $tableName
+    * @return boolean true or false
+    */
+    function checkTableExists($tableName){
+        if (Schema::hasTable($tableName)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+}
 if (!function_exists('inventorySyncOnOff')) {
     function inventorySyncOnOff($vendor_id)
     {

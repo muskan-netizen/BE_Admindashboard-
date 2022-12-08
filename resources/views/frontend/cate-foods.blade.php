@@ -47,7 +47,8 @@ a.banner-img-outer{height:300px;overflow:hidden;display: block;}
             </div>
             <div class="row mb-5">
                 <div class="collection-filter col-lg-3 al">
-                @if(!empty($newProducts) && count($newProducts) > 0)
+                @php $show_new_Products = 0; @endphp
+                @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>

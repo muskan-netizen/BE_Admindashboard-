@@ -27,7 +27,7 @@ class AddUserIdColumnToAttributesTable extends Migration
     public function down()
     {
         Schema::table('attributes', function (Blueprint $table) {
-            //
+            $table->dropColumn('user_id');
         });
     }
 }

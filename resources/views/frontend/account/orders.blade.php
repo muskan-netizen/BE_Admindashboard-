@@ -14,23 +14,40 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
 @extends('layouts.store', ['title' => __('My '.getNomenclatureName($ordertitle, true))])
 @section('css')
 
-    <style type="text/css">
-        .main-menu .brand-logo {
-            display: inline-block;
-            padding-top: 20px;
-            padding-bottom: 20px;
-        }
-
-        input:invalid,
+<style type="text/css">
+    .main-menu .brand-logo {
+        display: inline-block;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+    input:invalid,
         input:out-of-range {
             border-color: hsl(0, 50%, 50%);
             background: hsl(0, 50%, 90%);
         }
-        .error{
-            font-size:10px;
-            color:red;
-        }
-    </style>
+    .error{
+        font-size:10px;
+        color:red;
+    }
+    .btn.btn-solid{
+        padding: 6px 19px;
+        margin: 2px;
+    }
+    li.bg-txt i {
+        font-size: 15px;
+    }
+    label.rating-star.cancel_order, .rating-star.request_cancel_order {
+        position: relative;
+        left: 70px;
+        top: 4px;
+        background: #a22c7f;
+        color: #fff;
+        font-weight: 600;
+        font-size: 10px;
+        padding: 5px 10px 4px 10px;
+        text-transform: uppercase;
+    }
+</style>
 @endsection
 @section('content')
     @php
@@ -148,6 +165,15 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                     <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Order Number') }}</h4>
                                                                         <span>#{{ $order->order_number }}</span>
+                                                                    
+                                                                        <?php  $is_exchanged_order = 0;  ?>
+                                                                    @if(@$order->vendors[0]->exchanged_of_order)
+                                                                    <?php  $is_exchanged_order = 1;  ?>
+                                                                        <h4>{{ __('Exchanged Order Number') }}</h4>
+                                                                        <span>#{{ $order->vendors[0]->exchanged_of_order->orderDetail->order_number }}</span>
+                                                                       
+                                                                    
+                                                                    @endif
                                                                     </div>
                                                                     <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Date & Time') }}</h4>
@@ -299,7 +325,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                 @endif
                                                                                 <span class="left_arrow pulse"></span>
                                                                                 <div class="row">
-                                                                                    <div class="col-5 col-sm-3">
+                                                                                    <div class="col-6 col-sm-4">
                                                                                         <h5 class="m-0">
                                                                                             {{ __('Order Status') }}</h5>
                                                                                         <ul class="status_box mt-1 pl-0">
@@ -321,7 +347,15 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                         <img src="{{ asset('assets/images/driver_icon.svg') }}"
                                                                                                             alt="">
                                                                                                     @endif
-                                                                                                    <label class="m-0 in-progress">{{__( ucfirst( $vendor->order_status)) }}</label>
+                                                                                                    <label class="m-0 in-progress">
+                                                                                                    @if(@$is_exchanged_order)
+                                                                                                        {{__('Exchange Order')}}
+                                                                                                    @endif
+                                                                                                    @if(@$order->reqCancelOrder->status == 'Pending')
+                                                                                                        {{__('Cancel Order Pending')}}
+                                                                                                    @else
+                                                                                                        {{__( ucfirst( $vendor->order_status)) }}</label>
+                                                                                                    @endif
                                                                                                 </li>
                                                                                             @endif
 
@@ -333,6 +367,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     target="_blank">{{ __('Details') }}</a>
                                                                                                 </li>
                                                                                             @endif
+
                                                                                             @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
                                                                                                 <?php
                                                                                                     if($clientPreference->business_type == 'laundry'){
@@ -340,7 +375,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     }
                                                                                                 ?>
 
-                                                                                                <h6 class="m-0">
+                                                                                                {{-- <h6 class="m-0">
                                                                                                 @if ($clientPreference->business_type == 'laundry')
                                                                                                         <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
                                                                                                             {{ __('Cancel Order') }}
@@ -350,8 +385,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                             {{ __('Cancel Orders') }}
                                                                                                         </label>
                                                                                                     @endif
-                                                                                                </h6>
+                                                                                                </h6> --}}
                                                                                             @endif
+
                                                                                             @if ($vendor->dineInTable)
                                                                                                 <li>
                                                                                                     <h5 class="mb-1">
@@ -373,7 +409,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
 
                                                                                         </ul>
                                                                                     </div>
-                                                                                    <div class="col-7 col-sm-4">
+                                                                                    <div class="col-6 col-sm-3">
                                                                                         <ul
                                                                                             class="product_list p-0 m-0 text-center">
                                                                                             @foreach ($vendor->products as $product)
@@ -470,6 +506,32 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
+                                                                                            @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
+                                                                                            <?php
+                                                                                            if($clientPreference->business_type == 'laundry'){
+                                                                                                $pickup_cancelling_charges = $clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges;
+                                                                                            }
+                                                                                        ?>
+                                                                                            <li>
+                                                                                               @if ($clientPreference->business_type == 'laundry')
+                                                                                                    <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                                        {{ __('Cancel Order') }}
+                                                                                                    </label>
+                                                                                                @else
+                                                                                                    <label class="rating-star cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                                        {{ __('Cancel Order') }}
+                                                                                                    </label>
+                                                                                                @endif
+                                                                                            </li>
+                                                                                            @elseif($vendor->order_status_option_id==2 && $client_preference_detail->is_cancel_order_user == 1 && $vendor->vendor->cancel_order_in_processing == 1)
+                                                                                                @if(empty($order->reqCancelOrder))
+                                                                                                    <label class="rating-star request_cancel_order" data-order_vendor_id="{{$vendor->order_id??0}}" data-id="{{$vendor->id??0}}" data-vendor_id="{{$vendor->vendor_id??0}}" style="width: auto;display: inline-block;">
+                                                                                                        {{ __('Cancel Order') }}
+                                                                                                    </label>
+                                                                                                @elseif($order->reqCancelOrder->status == 'Rejected')
+                                                                                                    <li class="bg-txt" style="margin-top: 10px;"><span class="badge badge-danger mr-2" style="font-size:12px">{{ __('Cancel Order Rejected') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$order->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
+                                                                                                @endif
+                                                                                            @endif
                                                                                             {{-- Check if order is created only --}}
                                                                                             @if ($vendor->status == 0)
                                                                                                 @if ($vendor->order_status == 'placed')
@@ -708,6 +770,18 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                     <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Order Number') }}</h4>
                                                                         <span>#{{ $order->order_number }}</span>
+                                                                        <?php  $is_exchanged_order = 0;  ?>
+
+                                                                        @if(@$order->vendors[0]->exchanged_to_order)
+                                                                        <h4>{{ __('Exchanged To') }}</h4>
+                                                                        <span>#{{ $order->vendors[0]->exchanged_to_order->orderDetail->order_number }}</span>
+                                                                        @endIf
+                                                                        @if(@$order->vendors[0]->exchanged_of_order)
+                                                                        <?php  $is_exchanged_order = 1;  ?>
+                                                                        <h4>{{ __('Exchange Of') }}</h4>
+                                                                        <span># {{$order->vendors[0]->exchanged_of_order->orderDetail->order_number}}</span>
+
+                                                                        @endIf
                                                                     </div>
                                                                     <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Date & Time') }}</h4>
@@ -813,7 +887,11 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     <img src="{{ asset('assets/images/driver_icon.svg') }}"
                                                                                                         alt="">
                                                                                                     <label
-                                                                                                        class="m-0 in-progress">{{ __(ucfirst($vendor->order_status)) }}</label>
+                                                                                                        class="m-0 in-progress">
+                                                                                                        @if(@$is_exchanged_order)
+                                                                                                            {{__('Exchange Order')}}
+                                                                                                        @endif
+                                                                                                        {{ __(ucfirst($vendor->order_status)) }}</label>
                                                                                                 </li>
                                                                                             @endif
 
@@ -851,7 +929,24 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                     <div class="col-7 col-sm-4 row">
                                                                                         <div class="col-6 col-sm-6">
                                                                                             <ul class="product_list p-0 m-0 text-center">
+                                                                                            @php 
+                                                                                            $returnable = 0;
+                                                                                            $replaceable = 0;
+                                                                                            @endphp
                                                                                                 @foreach ($vendor->products as $product)
+                                                                                                    @php 
+                                                                                                        
+                                                                                                        if(@$product->product->returnable && $product->product->returnable == 1){
+                                                                                                            $returnable = 1;
+                                                                                                        }
+                                                                                                        
+                                                                                                        if(@$product->product->replaceable && $product->product->replaceable == 1){
+                                                                                                            $replaceable = 1;
+                                                                                                        }
+                                                                                                    @endphp  
+                                                                                                    
+
+                                                                                                    
                                                                                                     @if ($vendor->vendor_id == $product->vendor_id)
                                                                                                         @php
                                                                                                             $pro_rating = $product->productRating->rating ?? 0;
@@ -963,24 +1058,47 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
+                                                                                            
 
-                                                                                            @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request)
-                                                                                                <button
-                                                                                                    class="return-order-product btn btn-solid"
-                                                                                                    data-id="{{ $order->id ?? 0 }}"
-                                                                                                    data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
-                                                                                                    <td class="text-center"
-                                                                                                        colspan="3">
-                                                                                                        {{ __('Return') }}
-                                                                                                </button>
+                                                                                            
+                                                                                            @if(@$vendor->is_exchanged_or_returned  && $vendor->is_exchanged_or_returned == 1)
+                                                                                                @if($vendor->exchanged_to_order->order_status_option_id == 6)
+                                                                                                    <button class="btn btn-solid" >  {{__('Replaced')}}</button>
+                                                                                                @else($vendor->order_status_option_id == 9) 
+                                                                                                        <button class="btn btn-solid" > {{__('Replacement Pending')}} </button>
+                                                                                                @endif
+
+                                                                                            @elseif($vendor->is_exchanged_or_returned && $vendor->is_exchanged_or_returned == 2)
+                                                                                                    <button class="btn btn-solid" > {{__('Return Pending')}} </button>
+                                                                                            @else
+                                                                                           
+                                                                                                @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request)
+                                                                                                @if(@$returnable &&  $order->vendors[0]->exchanged_of_order == null)
+                                                                                                    <button
+                                                                                                        class="return-order-product btn btn-solid"
+                                                                                                        data-id="{{ $order->id ?? 0 }}"
+                                                                                                        data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
+                                                                                                        <td class="text-center"
+                                                                                                            colspan="3">
+                                                                                                            {{ __('Return') }}
+                                                                                                    </button>
+                                                                                                @endif
+                                                                                                @endif
+
+                                                                                                @if(@$replaceable &&  $order->vendors[0]->exchanged_of_order == null)
+                                                                                                    <button class="replace-order-product btn btn-solid" data-id="{{ $order->id ?? 0 }}" data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
+                                                                                                        
+                                                                                                         {{ __('Replace') }}
+                                                                                                    </button>
+                                                                                                @endif
+
+                                                                                                <button class="repeat-order-product btn btn-solid mr-2"
+                                                                                                        data-id="{{ $order->id ?? 0 }}"
+                                                                                                        data-order_vendor_id="{{ $vendor->id ?? 0 }}"
+                                                                                                        data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
+                                                                                                        <td class="text-center"
+                                                                                                            colspan="3">{{ __('Repeat Order') }}</button>
                                                                                             @endif
-
-                                                                                            <button class="repeat-order-product btn btn-solid mr-2"
-                                                                                                    data-id="{{ $order->id ?? 0 }}"
-                                                                                                    data-order_vendor_id="{{ $vendor->id ?? 0 }}"
-                                                                                                    data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
-                                                                                                    <td class="text-center"
-                                                                                                        colspan="3">{{ __('Repeat Order') }}</button>
                                                                                         </ul>
                                                                                     </div>
                                                                                 </div>
@@ -1252,6 +1370,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                             </div>
                                                                         @endif
                                                                     </div>
+                                                                   
                                                                     <div class="row mt-2">
                                                                         <div class="col-md-9 mb-3">
                                                                             @php
@@ -1620,12 +1739,23 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         <h5 class="m-0">
                                                                                             {{ __('Order Status') }} </h5>
                                                                                         <ul class="status_box mt-1 pl-0">
-                                                                                            @if (!empty($vendor->order_status))
+                                                                                            @if (!empty($vendor->order_status) && $vendor->order_status == "accepted")
                                                                                                 <li>
-                                                                                                    <label class="m-0 in-progress">{{ __(ucfirst($vendor->order_status)) }} </label>
+                                                                                                    
+                                                                                                    <label class="m-0 in-progress">{{ __(ucfirst('cancelled')) }} </label>
+                                                                                                    <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="{{$vendor->reject_reason}}" aria-hidden="true"></i>
+                                                                                                </li>
+                                                                                            @else
+                                                                                                <li>                                             
+                                                                                                    <label class="m-0 in-progress">
+                                                                                                    @if(@$is_exchanged_order)
+                                                                                                        {{__('Exchange Order')}}
+                                                                                                    @endif    
+                                                                                                    {{ __(ucfirst($vendor->order_status)) }} </label>
                                                                                                     <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="{{$vendor->reject_reason}}" aria-hidden="true"></i>
                                                                                                 </li>
                                                                                             @endif
+                                                                                           
                                                                                         </ul>
 
                                                                                     </div>
@@ -1695,10 +1825,10 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
+                                                                                           
                                                                                         </ul>
                                                                                     </div>
                                                                                 </div>
-                                                                                sdf
                                                                             </div>
                                                                         @endforeach
                                                                     </div>
@@ -1878,6 +2008,20 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
         </div>
     </div>
 
+    <div class="modal fade replace-order" id="replace_order_model" tabindex="-1" aria-labelledby="return_orderLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <div id="replace-order-form-modal"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <!-- start cancel order -->
 <div class="modal fade vendor-order-cancel order_popop" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -1893,6 +2037,40 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
     </div>
   </div>
 <!-- end cancel order -->
+
+<!-- start request cancel order -->
+<div class="modal fade vendor-order-cancel order_popop" id="cancel_request_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <div id="cancel-order-form-modal">
+            <form id="addRejectReqForm" method="post" class="text-center" enctype="multipart/form-data">
+                @csrf
+                <div class="form-group">
+                    <label for="reason">Select Reason</label>
+                    <select class="form-control" id="return_reason_id" name="return_reason_id">
+                        @foreach ($cancellation_reason as $reason)
+                            <option value="{{$reason->id}}">{{$reason->title}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <input_type="hidden" name="order_id" id="req_order_id">
+                <input_type="hidden" name="order_vendor_id" id="req_order_vendor_id">
+                <input_type="hidden" name="req_vendor_id" id="req_vendor_id">
+                <p id="error-case" style="color:red;"></p>
+                <label style="font-size:medium;">Enter reason for cancel the order. <small>(Optional)</small> </label>
+                <textarea class="reject_reason w-100" data-name="reject_reason" name="reject_reason" id="reject_reason" cols="50" rows="5"></textarea>
+                <button type="button" class="btn btn-info waves-effect waves-light addrejectReqSubmit">{{ __("Submit") }}</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- end request cancel order -->
 
     <!-- tip after order complete -->
     @include('frontend.modals.tip_after_order')
@@ -2151,6 +2329,16 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
             });
         });
 
+        $('body').on('click', '.replace-order-product', function(event) {
+            event.preventDefault();
+            var id = $(this).data('id');
+            var vendor_id = $(this).data('vendor_id');
+            $.get('/return-order/get-replace-order-data-in-model?id=' + id + '&vendor_id=' + vendor_id, function(markup) {
+                $('#replace_order_model').modal('show');
+                $('#replace-order-form-modal').html(markup);
+            });
+        });
+
         $(document).delegate(".repeat-order-product", "click", function () {
             var order_vendor_id = $(this).data('order_vendor_id');
             $.ajax({
@@ -2255,6 +2443,18 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
     });
     ////////// cancel order end
 
+    $('body').on('click', '.request_cancel_order', function (event) {
+        event.preventDefault();
+        var order_vendor_id = $(this).data('id');
+        var id = $(this).data('order_vendor_id');
+        var vendor_id = $(this).data('vendor_id');
+        $('#cancel_request_order').modal('show');
+        $('#req_order_id').attr('value', id);
+        $('#req_order_vendor_id').attr('value',order_vendor_id);
+        $('#req_vendor_id').attr('value',vendor_id);
+        /* $('#cancel-order-form-modal').html(markup); */
+    });
+
     // Added by Ovi
     // Check Slot Availability
     $(document).on("change", ".schedule_pickup_slot_select", function()
@@ -2294,6 +2494,51 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
         });
     });
 
+    $('.addrejectReqSubmit').on('click', function(e) {
+        e.preventDefault();
+        var return_reason_id = $('#return_reason_id').val();
+        var reject_reason = $('#reject_reason').val();
+        var order_id = $('#req_order_id').attr("value");
+        var vendor_id = $('#req_vendor_id').attr("value");
+        var order_vendor_id = $('#req_order_vendor_id').attr("value");
+        $.ajax({
+            url: "{{ route('order.cancel.req.customer') }}",
+            type: "POST",
+            data: {
+                vendor_id: vendor_id,
+                order_id: order_id,
+                reject_reason: reject_reason,
+                "_token": "{{ csrf_token() }}",
+                order_vendor_id: order_vendor_id,
+                return_reason_id: return_reason_id
+            },
+            success: function(response) {
+                if(response.status == 'success'){
+                    $("#cancel_request_order #reject_reason").val('');
+                    $("#cancel_request_order .close").click();
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message,
+                        confirmButtonText: 'Ok',
+                    });
+                }else if (response.status == 'error') {
+                    $("#cancel_request_order #reject_reason").val('');
+                    $("#cancel_request_order .close").click();
+                    Swal.fire({
+                        icon: 'warning',
+                        text: response.message,
+                        confirmButtonText: 'Ok',
+                    });
+                }
+            },
+            error: function(response) {
+                if (response.status == 'error') {
+                    $('#error-case').empty();
+                    $('#error-case').append(response.message);
+                }
+            }
+        });
+    });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
