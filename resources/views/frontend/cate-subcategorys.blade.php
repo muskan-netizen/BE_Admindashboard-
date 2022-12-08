@@ -36,7 +36,7 @@
                 <div class="collection-filter col-lg-3 al custom-sidebar-card">
                     <div class="theme-card">
 
-                    <div class="accordion" id="accordionExample">
+                    <div class="accordion mt-4" id="accordionExample">
                             <div class="card">
                                 <div class="card-header p-0" id="headingOne">
                                     <h2 class="mb-0">
