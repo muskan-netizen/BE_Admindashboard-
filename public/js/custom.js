@@ -1707,7 +1707,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount , other_taxes_string:other_taxes_string, schedule_dropoff_slot:schedule_dropoff_slot },
+            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount , other_taxes_string:other_taxes_string, schedule_dropoff_slot:schedule_dropoff_slot, is_postpay:post_pay_edit_order },
 
             success: function (response) {
                 if (response.status == "Success") {
@@ -1827,8 +1827,8 @@ $(document).ready(function () {
         let total_amount = $("input[name='cart_total_payable_amount']").val();
         // alert(total_amount);
         // return false;
-        if (payment_option_id == 1 || payment_option_id == 38) {
-            placeOrder(address_id, payment_option_id, '', tip, delivery_type,other_taxes_string);
+        if (payment_option_id == 1 || payment_option_id == 38 || post_pay_edit_order == 1) {
+            placeOrder(address_id, payment_option_id, '', tip, delivery_type, other_taxes_string);
         } else{
             cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
         }

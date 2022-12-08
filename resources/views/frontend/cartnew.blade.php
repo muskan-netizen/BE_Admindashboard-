@@ -1091,6 +1091,12 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var error_Slot_is_required = "{{__('Slot is required')}}";
     var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
     var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
+    
+    @if(!empty($client_preference_detail->is_postpay_edit_dropoff))
+        var post_pay_edit_order = "{{$client_preference_detail->is_postpay_edit_dropoff}}";
+    @else
+        var post_pay_edit_order = 0;
+    @endif
 
     if(!latitude){
         @if(!empty($client_preference_detail->Default_latitude))
@@ -1319,14 +1325,14 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         var method = $(this).attr('id');
         var code = method.replace('radio-', '');
 
-        if (code != '') {
+        if (code != '' && post_pay_edit_order == 0) {
             $("#cart_payment_form .option-wrapper").addClass('d-none');
             $("#cart_payment_form ."+code+"_element_wrapper").removeClass('d-none');
         } else {
             $("#cart_payment_form .option-wrapper").addClass('d-none');
         }
 
-        if (code == 'yoco') {
+        if (code == 'yoco' && post_pay_edit_order == 0) {
             // $("#cart_payment_form .yoco_element_wrapper").removeClass('d-none');
             // Create a new dropin form instance
 
@@ -1343,7 +1349,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         //     $("#cart_payment_form .yoco_element_wrapper").addClass('d-none');
         // }
 
-        if (code == 'checkout') {
+        if (code == 'checkout' && post_pay_edit_order == 0) {
             // $("#cart_payment_form .checkout_element_wrapper").removeClass('d-none');
             Frames.init(checkout_public_key);
         }

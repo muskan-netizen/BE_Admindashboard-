@@ -116,6 +116,10 @@ class CartController extends FrontController
             'fixedFee'=>$fixedFee
         );
         $client_preference_detail = ClientPreference::first();
+        if(!empty($client_preference_detail)){
+            $client_preference_detail->is_postpay_edit_dropoff = getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'];
+        }
+        
         $client_detail = Client::first();
         // dd($client_detail);
         $public_key_yoco=PaymentOption::where('code','yoco')->first();
@@ -149,7 +153,7 @@ class CartController extends FrontController
             }
         }
 
-        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
+        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
        // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }

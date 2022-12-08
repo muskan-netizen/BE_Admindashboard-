@@ -91,7 +91,11 @@ class OrderController extends BaseController
         $pending_order_count = $pending_order_count->where(function ($q1) {
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]); // 1 for cod ,38 for offline manual by harbans
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]); // 1 for cod ,38 for offline manual by harbans
+                $q2->whereIn('payment_option_id', [1, 38]) // 1 for cod ,38 for offline manual by harbans
+                    ->orWhere(function($q3) {
+                        $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                            ->whereNotIn('payment_option_id', [1, 38]);
+                    });
             });
         })->count();
 
@@ -112,7 +116,11 @@ class OrderController extends BaseController
         $past_order_count = $past_order_count->where(function ($q1) {
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]); // 1 for cod ,38 for offline manual by harbans
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]);
+                $q2->whereIn('payment_option_id', [1, 38])
+                ->orWhere(function($q3) {
+                    $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                        ->whereNotIn('payment_option_id', [1, 38]);
+                });
             });
         })->count();
 
@@ -134,7 +142,11 @@ class OrderController extends BaseController
             // 1 for cod ,38 for offline manual by harbans
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]);
+                $q2->whereIn('payment_option_id', [1, 38])
+                ->orWhere(function($q3) {
+                    $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                        ->whereNotIn('payment_option_id', [1, 38]);
+                });
             });
         })->count();
 
@@ -177,7 +189,11 @@ class OrderController extends BaseController
             // 1 for cod ,38 for offline manual by harbans
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]);
+                $q2->whereIn('payment_option_id', [1, 38])
+                ->orWhere(function($q3) {
+                    $q3->where('is_postpay', 1) // 1 for order is post pay
+                        ->whereNotIn('payment_option_id', [1, 38]);
+                });
             });
         })->orderBy('id', 'asc');
         if ($user->is_superadmin == 0) {
@@ -326,7 +342,11 @@ class OrderController extends BaseController
             // 1 for cod ,38 for offline manual by harbans
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]);
+                $q2->whereIn('payment_option_id', [1, 38])
+                    ->orWhere(function($q3) {
+                        $q3->where('is_postpay', 1)
+                            ->whereNotIn('payment_option_id', [1, 38]);
+                    });
             });
         });
 
@@ -1243,8 +1263,14 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if($order->is_postpay==1 && $order->payment_status == 0)
+                {
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
