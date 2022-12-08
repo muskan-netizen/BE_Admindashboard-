@@ -213,6 +213,7 @@ class OrderCancelRequestsController extends BaseController
                     $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                     $response = Http::get($dispatch_traking_url . '?reject_reason='.$cancel_req->reject_reason);
                     $response = json_decode($response->getBody(), true);
+                    
                     if($response['status'] != 'Success'){
                         return $this->errorResponse($response['message'], 400);
                     }
