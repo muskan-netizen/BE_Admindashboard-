@@ -1167,7 +1167,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 </div>
 
 @php
-$getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable','is_price_by_role', 'is_free_delivery_by_roles','is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module']);
+$getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable','is_price_by_role', 'is_free_delivery_by_roles','is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment']);
 @endphp
 <div class="row">
    {{-- hubspot form --}}
@@ -1656,6 +1656,7 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
       <input type="hidden" @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service']==1) value="1" @else value="0" @endif name="is_long_term_service" id="is_long_term_service" />
       </div>
 </div>
+@endif
       <div class="col-md-4">
          <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
             <label for="is_gst_required_for_vendor_registration_switch" class="mr-2 mb-0">{{__('GST Details for vendor')}}<small class="d-block pr-5">{{__("Enable to show GST details for vendor registration")}}</small></label>
@@ -1702,7 +1703,6 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
             </span>
          </div>
       </div>
-      @endif
 
       <div class="col-md-4">
          <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
@@ -1710,6 +1710,66 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
             <span> <input type="checkbox" data-plugin="switchery" name="is_cab_pooling_switch" id="is_cab_pooling_switch" class="form-control checkbox_change" data-className="is_cab_pooling" data-color="#43bee1" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']==1) checked='checked' @endif>
             </span>
             <input type="hidden" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']==1) value="1" @else value="0" @endif name="is_cab_pooling" id="is_cab_pooling" />
+         </div>
+      </div>
+
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+            <label for="is_same_day_delivery_switch" class="mr-2 mb-0">{{__('Same Day Delivery')}}<small class="d-block pr-5">{{__("Enable to show Same Day Delivery")}}</small></label>
+            <span>
+               <input type="checkbox" data-plugin="switchery" name="is_same_day_delivery_switch" id="is_same_day_delivery_switch" class="form-control checkbox_change" data-className="is_same_day_delivery" data-color="#43bee1" @if( $getAdditionalPreference['is_same_day_delivery']=='1' ) checked='checked' @endif>
+               <input type="hidden" @if($getAdditionalPreference['is_same_day_delivery']==1) value="1" @else value="0" @endif name="is_same_day_delivery" id="is_same_day_delivery" />
+            </span>
+         </div>
+      </div>
+
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+            <label for="is_next_day_delivery_switch" class="mr-2 mb-0">{{__('Next Day Delivery')}}<small class="d-block pr-5">{{__("Enable to show Next Day Delivery")}}</small></label>
+            <span>
+               <input type="checkbox" data-plugin="switchery" name="is_next_day_delivery_switch" id="is_next_day_delivery_switch" class="form-control checkbox_change" data-className="is_next_day_delivery" data-color="#43bee1" @if( $getAdditionalPreference['is_next_day_delivery']=='1' ) checked='checked' @endif>
+               <input type="hidden" @if($getAdditionalPreference['is_next_day_delivery']==1) value="1" @else value="0" @endif name="is_next_day_delivery" id="is_next_day_delivery" />
+            </span>
+         </div>
+      </div>
+
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+            <label for="is_hyper_local_delivery_switch" class="mr-2 mb-0">{{__('Hyper Local Delivery')}}<small class="d-block pr-5">{{__("Enable to show Hyper Local Delivery")}}</small></label>
+            <span>
+               <input type="checkbox" data-plugin="switchery" name="is_hyper_local_delivery_switch" id="is_hyper_local_delivery_switch" class="form-control checkbox_change" data-className="is_hyper_local_delivery" data-color="#43bee1" @if( $getAdditionalPreference['is_hyper_local_delivery']=='1' ) checked='checked' @endif>
+               <input type="hidden" @if($getAdditionalPreference['is_hyper_local_delivery']==1) value="1" @else value="0" @endif name="is_hyper_local_delivery" id="is_hyper_local_delivery" />
+            </span>
+         </div>
+      </div>
+
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+            <label for="is_cod_payment_switch" class="mr-2 mb-0">{{__('COD Payment')}}<small class="d-block pr-5">{{__("Enable to show COD Payment")}}</small></label>
+            <span>
+               <input type="checkbox" data-plugin="switchery" name="is_cod_payment_switch" id="is_cod_payment_switch" class="form-control checkbox_change" data-className="is_cod_payment" data-color="#43bee1" @if( $getAdditionalPreference['is_cod_payment']=='1' ) checked='checked' @endif>
+               <input type="hidden" @if($getAdditionalPreference['is_cod_payment']==1) value="1" @else value="0" @endif name="is_cod_payment" id="is_cod_payment" />
+            </span>
+         </div>
+      </div>
+
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+            <label for="is_prepaid_payment_switch" class="mr-2 mb-0">{{__('Prepaid Payment')}}<small class="d-block pr-5">{{__("Enable to show Prepaid Payment")}}</small></label>
+            <span>
+               <input type="checkbox" data-plugin="switchery" name="is_prepaid_payment_switch" id="is_prepaid_payment_switch" class="form-control checkbox_change" data-className="is_prepaid_payment" data-color="#43bee1" @if( $getAdditionalPreference['is_prepaid_payment']=='1' ) checked='checked' @endif>
+               <input type="hidden" @if($getAdditionalPreference['is_prepaid_payment']==1) value="1" @else value="0" @endif name="is_prepaid_payment" id="is_prepaid_payment" />
+            </span>
+         </div>
+      </div>
+
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+            <label for="is_partial_payment_switch" class="mr-2 mb-0">{{__('Partial Payment')}}<small class="d-block pr-5">{{__("Enable to show Partial Payment")}}</small></label>
+            <span>
+               <input type="checkbox" data-plugin="switchery" name="is_partial_payment_switch" id="is_partial_payment_switch" class="form-control checkbox_change" data-className="is_partial_payment" data-color="#43bee1" @if( $getAdditionalPreference['is_partial_payment']=='1' ) checked='checked' @endif>
+               <input type="hidden" @if($getAdditionalPreference['is_partial_payment']==1) value="1" @else value="0" @endif name="is_partial_payment" id="is_partial_payment" />
+            </span>
          </div>
       </div>
 

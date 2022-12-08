@@ -20,9 +20,6 @@ class ClientPreferenceController extends BaseController{
 
     // client_preference_fillable_key this variables define in ClientPreferenceManager
 
-
-
-
     public function index(){
         $client = Auth::user();
         $mapTypes = MapProvider::where('status', '1')->get();
