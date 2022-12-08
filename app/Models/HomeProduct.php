@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class LongTermServiceTranslation extends Model
+class HomeProduct extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['slug','title','category_id','products'];
 }

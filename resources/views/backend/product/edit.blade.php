@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="{{ asset('assets/ck_editor/samples/toolbarconfigurator/lib/codemirror/neo.css') }}">
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .image-upload>input {
         display: none;
@@ -39,7 +40,7 @@
         top: 0;
         opacity: 0;
     }
-
+.form-label label{font-weight: bold;}
     .product-img-box input[type="checkbox"] {
         position: absolute;
         top: 0;
@@ -75,6 +76,71 @@
     .product-box.editPage .product-action .btn {
         padding: 0px 2px;
     }
+    .saveVariantOrder {
+        display: none;
+    }
+    button.btn.btn-sm.add_attr_options {
+    background: #ccc;
+    height: 30px;
+    width: 30px;
+    color: #fff;
+}
+div#attribute_section button.btn.btn-sm.add_attr_options {
+    background: #a42c7f;
+    height: 30px;
+    width: 30px;
+    color: #fff;
+    padding: 0;
+    position: absolute;
+    right: 0;
+}
+div#attribute_section .select2-container {
+    width: 95% !important;
+}
+div#attribute_section .col-sm-9 .checkbox.checkbox-success.form-check-inline {
+    width: 20%;
+    margin-bottom: 12px;
+}
+div#attribute_section .col-sm-9 .form-check-inline.w-100 {
+    width: 95% !important;
+}
+.css-loader {
+    border: 10px solid #ffffff;
+    border-radius: 50%;
+    border-top: 10px solid #3498db;
+    width: 80px;
+    height: 80px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    position: absolute;
+    z-index: 9999999999;
+    left: 40%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+}
+.outter-loader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    background: #0000004a;
+    z-index: 9;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
 @endsection
 @php
@@ -91,7 +157,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 <div class="container-fluid">
 
     <div class="row">
-
+        <span class="delete_options d-none">Error while deleting options</span>
         <div class="col-8 d-flex align-items-center">
             <div class="page-title-box">
                 <h4 class="page-title">{{ __("Edit Product") }}</h4>
@@ -228,28 +294,44 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 pr($product->toArray()); @endphp --}}
                 @if($product->category->categoryDetail->type_id != 7)
                 <div class="card-box">
-
+                    {{-- @dd($product->vendor) --}}
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Pricing Information") }}</h5>
                     @if($product->has_variant == 0)
                     <div class="row mb-2">
-                        <div class="col-4 mb-2">
-                            {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
-                            @include('backend.primary_currency')
-                            @if (isset($getAdditionalPreference['is_price_by_role']))
-                                @if($getAdditionalPreference['is_price_by_role'] == '1')
-                                    {!! Form::text('price', decimal_format($product->variant[0]->getRawOriginal('price')), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
-                                @else
-                                    {!! Form::text('price', decimal_format($product->variant[0]->actual_price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        @if(@$product->vendor->is_seller == 1 && Auth::user()->is_superadmin == 1)
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Cost price'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                {!! Form::text('cost_price', decimal_format($product->variant[0]->cost_price), ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        @elseif (@$product->vendor->is_seller == 1)
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Cost price'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                {!! Form::text('cost_price', decimal_format($product->variant[0]->cost_price), ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        @endif
+
+                        @if(@$product->vendor->is_seller == 0 || Auth::user()->is_superadmin == 1 )
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                @if (isset($getAdditionalPreference['is_price_by_role']))
+                                    @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                        {!! Form::text('price', decimal_format($product->variant[0]->getRawOriginal('price')), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                    @else
+                                        {!! Form::text('price', decimal_format($product->variant[0]->actual_price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                    @endif
                                 @endif
-                            @endif
 
-                        </div>
+                            </div>
 
-                        <div class="col-4 mb-2">
-                            {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
-                            @include('backend.primary_currency')
-                            {!! Form::text('compare_at_price', decimal_format($product->variant[0]->compare_at_price), ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
-                        </div>
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                {!! Form::text('compare_at_price', decimal_format($product->variant[0]->compare_at_price), ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        @endif
 
                         @if($product->vendor->need_container_charges == 1)
                         <div class="col-4 mb-2">
@@ -404,23 +486,26 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     {{-- @include('backend.product.popup.addBlockTimeTablePopup') --}}
                     @include('backend.product.variant')
                 @else
+                
+                    
                     @if($productVariants->count() > 0)
                     <div class="card-box" >
                         <div class="row mb-2 bg-light">
                             <div class="col-8" style="margin:auto;">
-                                <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
+                                <h5 class="text-uppercase mt-0 bg-light p-2">{{ __(getNomenclatureName('Variant')." Information") }}</h5>
                             </div>
                             @if(!empty($productVariants))
                             <div class="col-4 p-2 mt-0 text-right" style="margin:auto; ">
-                                <button type="button" class="btn btn-info makeVariantRow"> {{ __("Make Variant Sets") }}</button>
+                                <button type="button" class="btn btn-info makeVariantRow"> {{ __("Make ".getNomenclatureName('Variant')." Sets") }}</button>
                             </div>
                             @endif
                         </div>
-                        <p>{{ __("Select or change category to get variants") }}</p>
+
+                        <p>{{ __("Select or change category to get ".getNomenclatureName('Variant')) }}</p>
 
                         <div class="row" style="width:100%; overflow-x: scroll;">
                             <div id="variantAjaxDiv" class="col-12 mb-2">
-                                <h5 class="">{{__('Variant List')}}</h5>
+                                <h5 class="">{{__(getNomenclatureName('Variant').' List')}}</h5>
                                 <div class="row mb-2">
                                     @foreach($productVariants as $vk => $var)
                                     <div class="col-sm-3">
@@ -542,6 +627,13 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div>
                     @endif
+                    @if( p2p_module_status() )
+                        @if(!empty($productAttributes))
+                        <div id="attribute_section">
+                            @include('layouts.shared.product-attribute')
+                        </div>
+                        @endif
+                    @endif
                 @endif
             </div>
             <div class="col-lg-5">
@@ -596,6 +688,16 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <input type="checkbox" bid="" id="inquiry_only" data-plugin="switchery" name="inquiry_only" class="chk_box" data-color="#43bee1" @if($product->inquiry_only == 1) checked @endif>
                         </div>
                         @endif
+
+                        <div class="col-md-6 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Returnable'),['class' => 'control-label']) !!}
+                            <input type="checkbox" bid="" id="returnable" data-plugin="switchery" name="returnable" class="chk_box" data-color="#43bee1" @if($product->returnable == 1) checked @endif>
+                        </div>
+
+                        <div class="col-md-6 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Replaceable'),['class' => 'control-label']) !!}
+                            <input type="checkbox" bid="" id="replaceable" data-plugin="switchery" name="replaceable" class="chk_box" data-color="#43bee1" @if($product->replaceable == 1) checked @endif>
+                        </div>
                        
                         @if($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
@@ -686,7 +788,9 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Live'),['class' => 'control-label']) !!}
                             <select class="selectizeInput form-control" id="is_live" name="is_live">
                                 <option value="0" @if($product->is_live == 0) selected @endif>{{ __('Draft')}}</option>
-                                <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
+                                @if(Auth::user()->is_superadmin == 1)
+                                    <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
+                                @endif
                             </select>
                         </div>
 
@@ -730,6 +834,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Minimum Increment'),['class' => 'control-label']) !!}
                             {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Return/Replace Days'),['class' => 'control-label']) !!}
+                            {!! Form::number('return_days', $product->return_days, ['class'=>'form-control', 'id' => 'return_days', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                     </div>
                     <div class="row">
@@ -1363,6 +1473,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
 
 </script>
+@include('backend.catalog.modals')
 @endsection
 
 @section('script')
@@ -1372,7 +1483,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 <!-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script> -->
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
-
+<script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
 <script>
     CKEDITOR.replace('body_html');
     CKEDITOR.config.height = 150;
@@ -1553,7 +1664,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
     var uploadedDocumentMap = {};
     Dropzone.autoDiscover = false;
+       
+
+
     $(document).ready(function() {
+
         var val = $('#has_inventory').prop('checked');
 
         if (val == true) {
@@ -1948,6 +2063,14 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
 <!-- start product faq -->
 <script>
+    $(document).on("change",".attr_radio", function() {
+        
+    var parentClass = $(this).parent().prop('className');
+    var attr_radio_class = $(this).data('class');
+    $("."+parentClass+" .attr_radio").prop('checked', false);
+    $(this).prop('checked', true);
+    // $('.'+attr_radio_class).not(this).prop('checked', false);
+});
  $('#add_product_faq_modal_btn').click(function(e) {
          document.getElementById("productFaqForm").reset();
          $('#add_product_faq_modal input[name=product_faq_id]').val("");
@@ -2149,8 +2272,9 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     }
                 });
         });
+        $('.select2-multiple').select2();
     </script>
 {{-- Insert Value to Role Price Modal (End) --}}
-
+@include('backend.catalog.pagescript')
 <script src="{{ asset('assets/js/backend/product/edit_product.js')}}"></script>
 @endsection

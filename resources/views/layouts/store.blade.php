@@ -65,7 +65,8 @@ if(isset($set_template))
   }
   elseif($set_template->template_id == 8)
     $body_class = "al_body_template_eight";
-    
+  elseif($set_template->template_id == 9)
+    $body_class = "al_body_template_nine";
 }
 
 
@@ -102,7 +103,7 @@ if(isset($set_template))
 </script>
 @include('layouts.language')
 @yield('headerJs')
-<body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
+<body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}} {{p2p_module_status() ? 'p2p-module' : ''}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
 <article id="page-container">
   <article id="content-wrap">
   @if(isset($set_template)  && ($set_template->template_id == 3 || $set_template->template_id == 6 || $set_template->template_id == 1 ))
@@ -125,6 +126,8 @@ if(isset($set_template))
       @include('layouts.store/left-sidebar-template-six')
       @elseif(isset($set_template)  && $set_template->template_id == 8)
       @include('layouts.store/left-sidebar-template-eight')
+      @elseif(isset($set_template)  && $set_template->template_id == 9)
+      @include('layouts.store/left-sidebar-template-nine')
       @else
       @include('layouts.store/left-sidebar-template-one')
       @endif
@@ -149,6 +152,8 @@ if(isset($set_template))
     @include('layouts.store/footer-content-template-six')
     @elseif(isset($set_template)  && $set_template->template_id == 8)
     @include('layouts.store/footer-content-template-eight')
+    @elseif(isset($set_template)  && $set_template->template_id == 9)
+    @include('layouts.store/footer-content-template-nine')
     @else
     @include('layouts.store/footer-content-template-one')
     @endif

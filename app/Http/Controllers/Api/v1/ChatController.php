@@ -103,8 +103,6 @@ class ChatController extends BaseController
         } catch (\Throwable $th) {
             return ['status' => false, 'message' => __('Something went wrong!!!')];
         }
-  
-
     }    
     /**
      * vendorUserChatRoom
@@ -130,9 +128,6 @@ class ChatController extends BaseController
         } catch (\Throwable $th) {
             return response()->json([ 'chatrooms'=>[] , 'status' => true, 'message' => __('list fetched!!!')]);
         }
-
-        
-
     }
 
     
@@ -153,8 +148,6 @@ class ChatController extends BaseController
             } else {
                 $chatroom = [];
             }
-
-        
             return response()->json([ 'chatrooms'=>$chatroom , 'status' => true, 'message' => __('list fetched!!!')]);
         } catch (\Throwable $th) {
             return response()->json([ 'chatrooms'=>[] , 'status' => true, 'message' => __('list fetched!!!')]);
@@ -169,9 +162,7 @@ class ChatController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function startChat(Request $request)
-    {
-
+    public function startChat(Request $request){
         try {
             $data = $request->all();
 
@@ -192,7 +183,7 @@ class ChatController extends BaseController
                 $order_id = $order->id;
                 $vendor_id = $vendor_id;
                 $orderby_user_id = $order->user_id;
-                //$response = $client->request('Post', 'https://chat.royoorders.com/api/room', ['body' => [
+             
                 $response =   Http::post($socket_url.'/api/room/createRoom', [
                     'room_id' => $room_id, 
                     'room_name' => $room_name,
@@ -216,15 +207,13 @@ class ChatController extends BaseController
 
                     return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
                 }
-        
-        } else {
-            return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
-        }
+            } else {
+                return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
+            }
 
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
         }
-        
     }
     
     /**
@@ -286,7 +275,6 @@ class ChatController extends BaseController
         }
 
     }
-
 
 }
 

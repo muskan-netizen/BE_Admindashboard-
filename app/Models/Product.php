@@ -4,8 +4,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
-use Auth;
+use Auth,DB;
 use OwenIt\Auditing\Contracts\Auditable;
+use App\Models\{ProductVariant,CartProduct,UserWishlist};
 
 class Product extends Model implements Auditable{
       use SoftDeletes;
@@ -27,11 +28,11 @@ class Product extends Model implements Auditable{
     }
 
     public function vendor(){
-      if(checkColumnExists('vendors', 'need_sync_with_order')){
-
-        return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude','need_sync_with_order', 'fixed_service_charge', 'service_charge_amount', 'pick_drop');
+      if(checkColumnExists('vendors', 'need_sync_with_order') && checkColumnExists('vendors', 'is_seller')){
+        return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude','need_sync_with_order', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request');
       }
-      return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude', 'fixed_service_charge', 'service_charge_amount', 'pick_drop');
+      
+      return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude',  'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request');
     }
 
     public function related(){
@@ -271,13 +272,16 @@ class Product extends Model implements Auditable{
       return $this->hasOne('App\Models\ProductVariant')->select('*','price as variant_price')->first();
     }
 
+    public function variantSingle(){
+      return $this->hasOne('App\Models\ProductVariant');
+    }
+
 
 
     public function OrderProduct(){
         return $this->hasMany('App\Models\OrderProduct')->where(function($q){
             $q->groupBy('order_id ');
         });
-
     }
 
     public function UserWishlist(){
@@ -305,6 +309,31 @@ class Product extends Model implements Auditable{
         return $query->whereHas('productcategory',function($q) use ($categoryTypesArray){
           $q->whereIn('type_id',$categoryTypesArray);
         });
+    }
+    public function scopeByLongTermProductCategoryServiceType($query,$type)
+    {  
+        $categoryTypesArray = getServiceTypesCategory($type);
+        return $query->whereHas('LongTermProducts.product.productcategory',function($q) use ($categoryTypesArray){ 
+          $q->whereIn('type_id',$categoryTypesArray);
+        });
+    }
+    // check product validate 
+    public function scopeByProductWhereCheck($query)
+    {   
+        $query = $query->where(['is_live'=>1]);
+        if(checkColumnExists('products','is_long_term_service')){
+          $query = $query->where('is_long_term_service',0);
+        }
+        return $query;
+    }
+    // check product validate 
+    public function scopeByProductLongTerm($query)
+    {   
+        $query = $query->where(['is_live'=>1]);
+        if(checkColumnExists('products','is_long_term_service')){
+          $query = $query->where('is_long_term_service',1);
+        }
+        return $query;
     }
 
     public function getActualPriceAttribute()
@@ -373,7 +402,56 @@ class Product extends Model implements Auditable{
       }
       return $value;
     }
+    // in long term service 
+    public function LongTermProducts(){
+        $langData = $this->hasOne('App\Models\LongTermServiceProducts','long_term_service_id','id');
+        return $langData;
+    }
 
+  public static function productDelete($id){
+    try{
+          DB::beginTransaction();
+          $product = Product::find($id);
+          $dynamic = time();
+
+          Product::where('id', $id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
+
+          $tot_var  = ProductVariant::where('product_id', $id)->get();
+          foreach($tot_var as $varr)
+          {
+              $dynamic = time().substr(md5(mt_rand()), 0, 7);
+              ProductVariant::where('id', $varr->id)->update(['sku' => $product->sku.$dynamic]);
+          }
+
+          Product::where('id', $id)->delete();
+
+          CartProduct::where('product_id', $id)->delete();
+          UserWishlist::where('product_id', $id)->delete();
+          DB::commit();
+          return 1;
+      }
+      catch(\Exception $ex){
+          DB::rollback();
+          pr($ex->getMessage());
+          return 2;
+      }
+  }
+  public function LongTermProduct()
+  {
+    return $this->belongsToMany(\App\Models\Product::class,"long_term_service_products","long_term_service_id","product_id");
+    //$langData = $this->morphMany('App\Models\LongTermServiceProducts','long_term_service_id','id');
+    
+  }
+
+  public function ServicePeriod(){
+    return $this->hasMany('App\Models\LongTermServicePeriod');
+  }
+
+    public function ProductAttribute() {
+      if( checkTableExists('product_attributes') ) {
+        return $this->hasMany('App\Models\ProductAttribute', 'product_id', 'id');
+      }
+    }
 
     public function tollpass()
     {
