@@ -93,9 +93,12 @@ class OrderController extends FrontController
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address','driver_rating','reports',
-            'vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail'
-            ])
-            ->whereHas('vendors', function ($q) {
+            
+        ]);
+            if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
+                $pastOrders = $pastOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
+            }
+            $pastOrders->whereHas('vendors', function ($q) {
                 $q->whereIn('order_status_option_id', [6,9]);
             })
             ->where(function ($q1) {
@@ -117,11 +120,14 @@ class OrderController extends FrontController
             },
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
-            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address','reqCancelOrder',
-            'vendors.exchanged_of_order.orderDetail'
+            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address','reqCancelOrder'
+            
 
-        ])
-            ->whereHas('vendors', function ($q) {
+        ]);
+        if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
+            $activeOrders = $activeOrders->with('vendors.exchanged_of_order.orderDetail');
+        }
+        $activeOrders->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', '!=', 6);
                 $q->where('order_status_option_id', '!=', 3);
                 $q->where('order_status_option_id', '!=', 9);
