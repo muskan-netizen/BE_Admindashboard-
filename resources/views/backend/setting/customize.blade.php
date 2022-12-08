@@ -43,7 +43,7 @@
 
 <!-- New Customize Page -->
 @php
-$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role','seller_sold_title','saller_platform_logo']);
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role']); //,'seller_sold_title','saller_platform_logo'
 @endphp
    <!--Localization start -->
     <div class="row">
@@ -269,11 +269,10 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
             {{-- @endif --}}
         </div>
 
-        <div class="col-xl-3 col-lg-3 mb-3">
+        {{-- <div class="col-xl-3 col-lg-3 mb-3">
             <div class="page-title-box">
                 <h4 class="page-title text-uppercase">{{ __("Seller Platform") }}</h4>
             </div>
-            {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' ) --}}
             @php
                 $typeArray = getCategoryTypes();
             @endphp
@@ -298,8 +297,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                     </div>
                 </div>
             </form>
-            {{-- @endif --}}
-        </div>
+        </div> --}}
         <!--Vendor Type &  Distance to Time Calculator end -->
 
         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry' && $client_preference_detail->on_demand_check == 1)
