@@ -2,10 +2,10 @@
 namespace App\Http\Traits;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use App\Models\{ClientPreference,ClientPreferenceAdditional,Client, ProductDeliveryFeeByRole, Product};
 use GuzzleHttp\Client as GCLIENT;
 use Log;
-use Storage;
 
 trait ClientPreferenceManager{
 
@@ -90,6 +90,6 @@ trait ClientPreferenceManager{
     return 1;
   }
   public function uploadFile($file){
-      return Storage::disk('s3')->put('/vendor', $file, 'public');
+    return Storage::disk('s3')->put('/vendor', $file, 'public');
   }
 }
