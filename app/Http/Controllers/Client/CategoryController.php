@@ -38,13 +38,17 @@ class CategoryController extends BaseController
         }])->where('status', 1)->orderBy('position', 'asc')->get();
 
         $variants = Variant::with('option', 'varcategory.cate.primary','translation_one')->where('status', '!=', 2)->orderBy('position', 'asc')->get();
-        $attributes = Attribute::with('option', 'varcategory.cate.primary','translation_one')->where('status', '!=', 2)->orderBy('position', 'asc');
-        if(Auth::user()->is_superadmin) {
-            $attributes = $attributes->get();
+        $attributes = [];
+        if( checkTableExists('product_attributes') ) {
+            $attributes = Attribute::with('option', 'varcategory.cate.primary','translation_one')->where('status', '!=', 2)->orderBy('position', 'asc');
+            if(Auth::user()->is_superadmin) {
+                $attributes = $attributes->get();
+            }
+            else {
+                $attributes = $attributes->where('user_id', Auth::id())->get();
+            }
         }
-        else {
-            $attributes = $attributes->where('user_id', Auth::id())->get();
-        }
+
         $categories = Category::with('translation_one','type')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
 
         if ($celebrity_check == 0)

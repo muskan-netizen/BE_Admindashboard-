@@ -42,7 +42,7 @@ use App\Models\OrderProductPrescription;
 use App\Models\SubscriptionInvoicesUser;
 use App\Models\UserRegistrationDocuments;
 use App\Models\DriverRegistrationDocument;
-use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption};
+use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption, ReturnReason};
 
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -88,14 +88,15 @@ class OrderController extends FrontController
         $checkLongTerm = checkColumnExists('orders','is_long_term');
         $pastOrders = Order::with([
             'vendors' => function ($q) {
-                $q->where('order_status_option_id', 6);
+                $q->whereIn('order_status_option_id', [6,9]);
             },'vendors.vendor',
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
-            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address','driver_rating','reports'
-        ])
+            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address','driver_rating','reports',
+            'vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail'
+            ])
             ->whereHas('vendors', function ($q) {
-                $q->where('order_status_option_id', 6);
+                $q->whereIn('order_status_option_id', [6,9]);
             })
             ->where(function ($q1) {
                 $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
@@ -106,21 +107,24 @@ class OrderController extends FrontController
             ->where('orders.user_id', $user->id);
             if($checkLongTerm){
                 $pastOrders->where('orders.is_long_term', 0);
-            }    
-                
+            }                    
             $pastOrders     =  $pastOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
         $activeOrders = Order::with([
             'vendors' => function ($q) {
                 $q->where('order_status_option_id', '!=', 6);
                 $q->where('order_status_option_id', '!=', 3);
+                $q->where('order_status_option_id', '!=', 9);
             },
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
-            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address'
+            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address','reqCancelOrder',
+            'vendors.exchanged_of_order.orderDetail'
+
         ])
             ->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', '!=', 6);
                 $q->where('order_status_option_id', '!=', 3);
+                $q->where('order_status_option_id', '!=', 9);
             })
             ->where(function ($q1) {
                 $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
@@ -285,8 +289,15 @@ class OrderController extends FrontController
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         }
 
+
+
         $client_preferences = ClientPreference::select('*')->where('id', '>', 0)->first();
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
+
+        $cancellation_reason = ReturnReason::where(['status' => 'Active', 'type' => 3])->get();
+
+        //   dd($activeOrders->toArray());
+       
         $longTermOrder = [];
         /** get user long term orders */
         if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1 && checkColumnExists('products','is_long_term_service'))
@@ -294,7 +305,7 @@ class OrderController extends FrontController
          // dd($longTermOrder->toArray());
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee,'longTermOrder'=>$longTermOrder]);
+        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories,'cancellation_reason' => $cancellation_reason, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee,'longTermOrder'=>$longTermOrder]);
     }
 
     public function getOrderSuccessPage(Request $request)
@@ -307,7 +318,7 @@ class OrderController extends FrontController
                                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                                     $q->where('language_id', $langId);
                                 }, 'address']);
-        if( checkColumnExists('orders','is_long_term') ){
+        if(checkTableExists('order_long_term_services') &&  checkColumnExists('orders','is_long_term') ){
             $order =    $order->with(['products.LongTermService.product','products.LongTermService.product.translation_one' => function ($q) use ($langId) {
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $langId);

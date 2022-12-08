@@ -27,7 +27,8 @@ class AddSeatsSeatsForBookingToProductsTable extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            //
+            $table->dropColumn('seats');
+            $table->dropColumn('seats_for_booking');
         });
     }
 }

@@ -29,7 +29,10 @@ class AddTollTaxRelatedFieldsToProductsTable extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            //
+            $table->dropColumn('is_toll_tax');
+            $table->dropColumn('travel_mode_id');
+            $table->dropColumn('toll_pass_id');
+            $table->dropColumn('emission_type_id');
         });
     }
 }

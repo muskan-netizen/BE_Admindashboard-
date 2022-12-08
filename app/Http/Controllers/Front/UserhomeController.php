@@ -472,7 +472,7 @@ class UserhomeController extends FrontController
             $request->request->add(['type'=>Session::get('vendorType')??'delivery','noTinJson'=>1] );
             $homePageData = $this->postHomePageData($request);
 
-            $home_page_labels = $home_page_labels->map(function($da) use ($homePageData) {
+            $home_page_labels = $home_page_labels->map(function($da) use ($homePageData, $navCategories) {
                 if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' ){
                     $da[$da->slug] = $homePageData[$da->slug] ?? '';
                 }
@@ -867,16 +867,17 @@ class UserhomeController extends FrontController
                 'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                 'vendor' => $on_sale_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
-                'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
+                'category' => (!empty($on_sale_product_detail->category) && !empty($on_sale_product_detail->category->categoryDetail) 
+                && !empty($on_sale_product_detail->category->categoryDetail->translation)) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
         }
+        $top_rated_products = '';
+
          //get long term service 
         $long_term_service_products =[];
         if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
             $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $language_id, $currency_id,'', $request->type,$p_dim);
         }
-       
-       
           
         if($this->checkTemplateForAction(8)){
             $recently_viewed = $this->productvendorProducts($vendor_ids, $language_id, $currency_id, '', $request->type,$p_dim);
