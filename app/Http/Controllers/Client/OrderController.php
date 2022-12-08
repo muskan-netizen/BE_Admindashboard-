@@ -166,7 +166,11 @@ class OrderController extends BaseController
         $filter_order_status = $request->filter_order_status;
         $orders = Order::with(['vendors.products' => function ($q) {
             $q->withoutAppends();
-        }, 'vendors.status', 'orderStatusVendor', 'address', 'user', 'vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
+        }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
+        if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
+            $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
+        }
+        
         if ($user->is_superadmin == 0) {
             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -602,8 +606,12 @@ class OrderController extends BaseController
             'vendors.dineInTable.category',
             'vendors.cancel_request',
             'reports',
-            'vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request'
-        ))->findOrFail($order_id);
+            
+        ));
+        if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
+            $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
+        }
+        $order = $order->findOrFail($order_id);
         //    return $order;
         // set payment option dynamic name
         if (@$order->paymentOption->code) {
