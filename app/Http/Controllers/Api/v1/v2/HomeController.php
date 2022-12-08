@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference,Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorOrderStatus, WebStylingOption};
+use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference,Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption};
 use DateTime;
 use Illuminate\Support\Str;
 use DateTimeZone;
@@ -21,7 +21,7 @@ use App\Http\Traits\{OrderTrait,ProductActionTrait};
  */
 class HomeController extends BaseController{
     use ApiResponser, HomePageTrait, OrderTrait, ProductActionTrait;
-
+    public $cities = [];
     private $curLang = 0;
     private $field_status = 2;    
     /**
@@ -845,6 +845,28 @@ class HomeController extends BaseController{
 
     }
 
+     /**
+     * getCities
+     *
+     * @param  mixed $language_id
+     * @return $cities
+     */
+    public function getCities_v2($language_id){
+        $this->cities =  VendorCities::with(['translations'=> function ($q) use($language_id) {
+                            $q->where('language_id', $language_id);
+                        }])->where(function ($q)  {
+                            $q->where('latitude','!=', null);
+                            $q->where('longitude','!=', null);
+                        })->get();
+
+        $this->cities = $this->cities->map(function($da) {
+            $da->title = $da->translations->first() ? $da->translations->first()->name : $da->slug ;
+            unset($da->translations);
+            return $da;
+         });
+         return $this->cities;
+    }
+
     public function globalSearch(Request $request, $for = 'all', $dataId = 0)
     {
        // return 1;
@@ -882,7 +904,7 @@ class HomeController extends BaseController{
                             ->orWhere('cts.trans-slug', 'LIKE', '%' . $keyword . '%');
                     })->orderBy('categories.parent_id', 'asc')
                     ->orderBy('categories.position', 'asc')
-                    ->groupBy('cts.category_id')->get();
+                    ->groupBy('cts.category_id')->limit(5)->get();
                     // ->paginate($limit, $page);
                     $category_results = [];
                 foreach ($categories as $category) {
@@ -890,7 +912,7 @@ class HomeController extends BaseController{
                     $category->image_url = $category->image['proxy_url'] . '80/80' . $category->image['image_path'];
                     $category_results[] = $category;
                 }
-                if (@$category_results) {
+                if (@$category_results && $page==1) {
                     $response[] = ['id' => 1, 'title' => __('Category'), 'result' => $category_results] ;
                 }
 
@@ -899,7 +921,7 @@ class HomeController extends BaseController{
                     ->where('bt.title', 'LIKE', '%' . $keyword . '%')
                     ->where('brands.status', '!=', '2')
                     ->where('bt.language_id', $langId)
-                    ->orderBy('brands.position', 'asc')->get();
+                    ->orderBy('brands.position', 'asc')->limit(5)->get();
                     // ->paginate($limit, $page);
                     $brand_results = [];
                 foreach ($brands as $brand) {
@@ -908,7 +930,7 @@ class HomeController extends BaseController{
                     $brand_results[] = $brand;
                 }
 
-                if (@$brand_results) {
+                if (@$brand_results && $page==1) {
                     $response[] = ['id' => 2,'title' => __('brand'), 'result' => $brand_results];;
                 }
 
@@ -946,7 +968,7 @@ class HomeController extends BaseController{
 
                 $vendors = $vendors->where(function ($q) use ($keyword) {
                     $q->where('name', 'LIKE', '%'. $keyword .'%')->orWhere('address', 'LIKE', '%' . $keyword . '%');
-                })->where('status', 1)->get();
+                })->where('status', 1)->limit(5)->get();
                 // ->paginate($limit, $page);
 
                 $vendor_results = [];
@@ -956,7 +978,7 @@ class HomeController extends BaseController{
                     $vendor_results[] = $vendor;
                 }
 
-                if (@$vendor_results) {
+                if (@$vendor_results && $page==1) {
                     $response[] = [ 'id' => 3, 'title' => __('Vendor'), 'result' => $vendor_results];
                 }
                 // $vendors  = Vendor::select('id', 'name  as dataname', 'address')->where(function ($q) use ($keyword) {
