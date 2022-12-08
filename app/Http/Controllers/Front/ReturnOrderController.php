@@ -97,7 +97,7 @@ class ReturnOrderController extends FrontController{
 
             $langId = Session::get('customerLanguage');
             $navCategories = $this->categoryNav($langId);
-            $reasons = ReturnReason::where('status','Active')->orderBy('order','asc')->get();
+            $reasons = ReturnReason::where('status','Active')->where('type', 1)->orderBy('order','asc')->get();
             $order_details = Order::with(['vendors.products' => function ($q1)use($request){
                 $q1->where('id', $request->return_ids);
             }, 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image',
@@ -137,7 +137,7 @@ class ReturnOrderController extends FrontController{
 
             $langId = Session::get('customerLanguage');
             $navCategories = $this->categoryNav($langId);
-            $reasons = ExchangeReason::where('status','Active')->orderBy('order','asc')->get();
+            $reasons = ReturnReason::where('status','Active')->where('type', 2)->orderBy('order','asc')->get();
             $order_details = Order::with(['vendors.products' => function ($q1)use($request){
                 $q1->where('id', $request->replace_id);
             }, 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image',
