@@ -128,9 +128,10 @@
                         </div>
                     </div>
                 </aside>
-            </div>
+           
             @endif
-                    @if(!empty($newProducts) && count($newProducts) > 0)
+            @php $show_new_Products = 0; @endphp
+                    @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>

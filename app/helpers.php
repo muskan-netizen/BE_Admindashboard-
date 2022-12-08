@@ -455,6 +455,15 @@ if (!function_exists('getDefaultImagePath')) {
         return $values;
     }
 }
+if (!function_exists('loadDefaultImage')) {
+    function loadDefaultImage(){
+        $proxy_url = \Config::get('app.IMG_URL1');
+        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
+        $image_fit = \Config::get('app.FIT_URl');
+        $default_url = $image_fit .'300/300'. $image_path.'@webp';
+        return $default_url;
+    }
+}
 
 
 if (!function_exists('getImageUrl')) {
@@ -1288,7 +1297,7 @@ if (!function_exists('inventorySyncOnOff')) {
         if (!empty($vendor_id) && checkColumnExists('client_preferences', 'inventory_service_key_url')) {
             
             $client_preferences = ClientPreference::first();
-            if(isset($$client_preferences) && ($client_preferences->inventory_service_key_url !='')){
+            if(isset($client_preferences) && ($client_preferences->inventory_service_key_url !='')){
 
                 $client = new \GuzzleHttp\Client([
                     'headers' => [

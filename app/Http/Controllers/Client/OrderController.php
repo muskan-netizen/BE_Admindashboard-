@@ -166,7 +166,11 @@ class OrderController extends BaseController
         $filter_order_status = $request->filter_order_status;
         $orders = Order::with(['vendors.products' => function ($q) {
             $q->withoutAppends();
-        }, 'vendors.status', 'orderStatusVendor', 'address', 'user', 'vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
+        }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
+        if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
+            $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
+        }
+        
         if ($user->is_superadmin == 0) {
             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -602,8 +606,12 @@ class OrderController extends BaseController
             'vendors.dineInTable.category',
             'vendors.cancel_request',
             'reports',
-            'vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request'
-        ))->findOrFail($order_id);
+            
+        ));
+        if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
+            $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
+        }
+        $order = $order->findOrFail($order_id);
         //    return $order;
         // set payment option dynamic name
         if (@$order->paymentOption->code) {
@@ -1760,7 +1768,7 @@ class OrderController extends BaseController
     {
         try {
             $user = Auth::user();
-            $orders_list = OrderReturnRequest::where('status', $status)->with('product')->orderBy('updated_at', 'DESC');
+            $orders_list = OrderReturnRequest::where('status', $status)->where('type', 1)->with('product', 'order')->orderBy('updated_at', 'DESC');
             if ($user->is_superadmin == 0) {
                 $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
@@ -1776,6 +1784,7 @@ class OrderController extends BaseController
                 });
             }
             $vendors = $vendors->get();
+            // dd( $orders[$status]);
             return view(
                 'backend.order.return',
                 [
@@ -1795,7 +1804,7 @@ class OrderController extends BaseController
             $user = Auth::user();
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
             $timezone = Auth::user()->timezone;
-            $orders_list = OrderReturnRequest::with('product')->orderBy('updated_at', 'DESC');
+            $orders_list = OrderReturnRequest::with('product', 'order')->orderBy('updated_at', 'DESC');
             if ($user->is_superadmin == 0) {
                 $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
@@ -1869,7 +1878,7 @@ class OrderController extends BaseController
     public function getReturnProductModal(Request $request, $domain = '')
     {
         try {
-            $return_details = OrderReturnRequest::where('id', $request->id)->with('returnFiles')->first();
+            $return_details = OrderReturnRequest::where('id', $request->id)->where('type', 1)->with('returnFiles')->first();
             if (isset($return_details)) {
 
                 if ($request->ajax()) {

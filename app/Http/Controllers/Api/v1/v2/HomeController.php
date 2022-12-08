@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference,Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, MobileBanner, OnboardSetting, Order, SubscriptionInvoicesVendor, UserVendor, VendorOrderStatus, WebStylingOption};
+use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference,Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption};
 use DateTime;
 use Illuminate\Support\Str;
 use DateTimeZone;
@@ -21,7 +21,7 @@ use App\Http\Traits\{OrderTrait,ProductActionTrait};
  */
 class HomeController extends BaseController{
     use ApiResponser, HomePageTrait, OrderTrait, ProductActionTrait;
-
+    public $cities = [];
     private $curLang = 0;
     private $field_status = 2;    
     /**
@@ -843,5 +843,224 @@ class HomeController extends BaseController{
 
         return $this->successResponse($data);
 
+    }
+
+     /**
+     * getCities
+     *
+     * @param  mixed $language_id
+     * @return $cities
+     */
+    public function getCities_v2($language_id){
+        $this->cities =  VendorCities::with(['translations'=> function ($q) use($language_id) {
+                            $q->where('language_id', $language_id);
+                        }])->where(function ($q)  {
+                            $q->where('latitude','!=', null);
+                            $q->where('longitude','!=', null);
+                        })->get();
+
+        $this->cities = $this->cities->map(function($da) {
+            $da->title = $da->translations->first() ? $da->translations->first()->name : $da->slug ;
+            unset($da->translations);
+            return $da;
+         });
+         return $this->cities;
+    }
+
+    public function globalSearch(Request $request, $for = 'all', $dataId = 0)
+    {
+       // return 1;
+        try {
+            $keyword = $request->keyword;
+            $langId = Auth::user()->language;
+            $curId = Auth::user()->language;
+            $limit = $request->has('limit') ? $request->limit : 10;
+            $page = $request->has('page') ? $request->page : 1;
+            $action = $request->has('type') && $request->type ? $request->type : null;
+           // $types = ['delivery', "dine_in", "takeaway"];
+            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'slots_with_service_area')->first();
+            $latitude = $request->latitude;
+            $longitude = $request->longitude;
+
+
+            // if (!in_array($action, $types)) {
+            //     return response()->json(['error' => 'Type is incorrect.'], 404);
+            // }
+            $allowed_vendors = $this->getServiceAreaVendors($latitude, $longitude, $action);
+
+            $response = array();
+            if ($for == 'all') {
+                $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
+                    ->leftjoin('types', 'types.id', 'categories.type_id')
+                    ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')
+                    ->where('categories.id', '>', '1')
+                    ->where('categories.is_visible', 1)
+                    ->where('categories.status', '!=', 2)
+                    ->where('categories.is_core', 1)
+                    ->where('cts.language_id', $langId)
+                    ->where(function ($q) use ($keyword) {
+                        $q->where('cts.name', 'LIKE', '%' . $keyword . '%')
+                            ->orWhere('categories.slug', 'LIKE', '%' . $keyword . '%')
+                            ->orWhere('cts.trans-slug', 'LIKE', '%' . $keyword . '%');
+                    })->orderBy('categories.parent_id', 'asc')
+                    ->orderBy('categories.position', 'asc')
+                    ->groupBy('cts.category_id')->limit(5)->get();
+                    // ->paginate($limit, $page);
+                    $category_results = [];
+                foreach ($categories as $category) {
+                    $category->response_type = 'category';
+                    $category->image_url = $category->image['proxy_url'] . '80/80' . $category->image['image_path'];
+                    $category_results[] = $category;
+                }
+                if (@$category_results && $page==1) {
+                    $response[] = ['id' => 1, 'title' => __('Category'), 'result' => $category_results] ;
+                }
+
+                $brands = Brand::join('brand_translations as bt', 'bt.brand_id', 'brands.id')
+                    ->select('brands.id', 'bt.title  as dataname', 'image')
+                    ->where('bt.title', 'LIKE', '%' . $keyword . '%')
+                    ->where('brands.status', '!=', '2')
+                    ->where('bt.language_id', $langId)
+                    ->orderBy('brands.position', 'asc')->limit(5)->get();
+                    // ->paginate($limit, $page);
+                    $brand_results = [];
+                foreach ($brands as $brand) {
+                    $brand->response_type = 'brand';
+                    $brand->image_url = $brand->image['proxy_url'] . '80/80' . $brand->image['image_path'];
+                    $brand_results[] = $brand;
+                }
+
+                if (@$brand_results && $page==1) {
+                    $response[] = ['id' => 2,'title' => __('brand'), 'result' => $brand_results];;
+                }
+
+                $categoryTypes = getServiceTypesCategory($action);
+                $vendors = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                    $q->whereIn('type_id',$categoryTypes);
+                })->select('id', 'name  as dataname', 'logo', 'slug', 'address', 'show_slot')->where($action, 1);
+                if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+
+                    if (!empty($latitude) && !empty($longitude)) {
+                        $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                            $query->select('vendor_id')
+                        ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+                        });
+
+                        if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
+                            $slot_vendors = clone $vendors;
+                            $data = $slot_vendors->get();
+                            foreach ($data as $key => $value) {
+                                $vendors = $vendors->when(($value->show_slot == 0), function($query) use ($latitude, $longitude) {
+                                    return $query->where(function($query1) use ($latitude, $longitude) {
+                                        $query1->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                        })
+                                        ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                        });
+                                    });
+                                });
+                            }
+                        }
+                    }
+                }
+
+
+                $vendors = $vendors->where(function ($q) use ($keyword) {
+                    $q->where('name', 'LIKE', '%'. $keyword .'%')->orWhere('address', 'LIKE', '%' . $keyword . '%');
+                })->where('status', 1)->limit(5)->get();
+                // ->paginate($limit, $page);
+
+                $vendor_results = [];
+                foreach ($vendors as $vendor) {
+                    $vendor->response_type = 'vendor';
+                    $vendor->image_url = $vendor->logo['proxy_url'] . '80/80' . $vendor->logo['image_path'];
+                    $vendor_results[] = $vendor;
+                }
+
+                if (@$vendor_results && $page==1) {
+                    $response[] = [ 'id' => 3, 'title' => __('Vendor'), 'result' => $vendor_results];
+                }
+                // $vendors  = Vendor::select('id', 'name  as dataname', 'address')->where(function ($q) use ($keyword) {
+                //         $q->where('name', ' LIKE', '%' . $keyword . '%')->orWhere('address', 'LIKE', '%' . $keyword . '%');
+                //     })->where('vendors.status', '!=', '2')->get();
+                // foreach ($vendors as $vendor) {
+                //     $vendor->response_type = 'vendor';
+                //     // $response[] = $vendor;
+                // }
+               // pr($vendorids);
+                $products = Product::byProductCategoryServiceType($action)->with(['category.categoryDetail.translation' => function ($q) use ($langId) {
+                    $q->where('category_translations.language_id', $langId);
+                }, 'media'])->join('product_translations as pt', 'pt.product_id', 'products.id')
+                    ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
+                    ->where('pt.language_id', $langId)
+                    ->whereHas('vendor', function ($query) use ($action) {
+                        $query->where($action, 1);
+                    })
+
+                    ->where(function ($q) use ($keyword) {
+                        $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
+                    })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')
+                    ->whereIn('vendor_id', $allowed_vendors)
+                    ->paginate($limit, $page);
+                    $product_results = [];
+                foreach ($products as $product) {
+                    $product->response_type = 'product';
+                    $product->image_url = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+                    $product_results[] = $product;
+                }
+                if (@$product_results) {
+                    $response[] = ['id' => 4, 'title' => __('Product'), 'result' => $product_results];
+                }
+                return $this->successResponse($response);
+            } else {
+                $products = Product::byProductCategoryServiceType($action)->join('product_translations as pt', 'pt.product_id', 'products.id')
+                    ->select('products.id', 'products.sku', 'pt.title', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
+                    ->where('pt.language_id', $langId)
+                    ->whereHas('vendor', function ($query) use ($action) {
+                        $query->where($action, 1);
+                    })
+                    ->where(function ($q) use ($keyword) {
+                        $q->where('products.sku', ' LIKE', '%' . $keyword . '%')
+                            ->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')
+                            ->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
+                            // ->orWhere('pt.body_html', 'LIKE', '%' . $keyword . '%')
+                            // ->orWhere('pt.meta_title', 'LIKE', '%' . $keyword . '%')
+                            // ->orWhere('pt.meta_keyword', 'LIKE', '%' . $keyword . '%')
+                            // ->orWhere('pt.meta_description', 'LIKE', '%' . $keyword . '%');
+                    });
+                if ($for == 'category') {
+                    $prodIds = array();
+                    $productCategory = ProductCategory::select('product_id')->where('category_id', $dataId)->distinct()->get();
+                    if ($productCategory) {
+                        foreach ($productCategory as $key => $value) {
+                            $prodIds[] = $value->product_id;
+                        }
+                    }
+                    $products = $products->whereIn('products.id', $prodIds);
+                }
+                if ($for == 'vendor') {
+                    $products = $products->where('products.vendor_id', $dataId);
+                }
+                if ($for == 'brand') {
+                    $products = $products->where('products.brand_id', $dataId);
+                }
+                $products = $products->where('products.is_live', 1)
+                            ->whereIn('vendor_id', $allowed_vendors)
+                            ->whereNull('deleted_at')->groupBy('products.id')
+                            ->paginate($limit, $page);
+                $product_results = [];
+                foreach ($products as $product) {
+                    $product->response_type = 'product';
+                    $product_results[] = $product;
+                }
+                if (@$product_results) {
+                    $response[] = ['id' => 4, 'title' => __('Product'), 'result' => $product_results];
+                }
+            }
+            return $this->successResponse($response);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
     }
 }

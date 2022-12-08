@@ -294,25 +294,5 @@ trait HomePageTrait
          //pr( $products->toArray());
      }
 
-     /**
-     * getCities
-     *
-     * @param  mixed $language_id
-     * @return $cities
-     */
-    public function getCities_v2($language_id){
-        $this->cities =  VendorCities::with(['translations'=> function ($q) use($language_id) {
-                            $q->where('language_id', $language_id);
-                        }])->where(function ($q)  {
-                            $q->where('latitude','!=', null);
-                            $q->where('longitude','!=', null);
-                        })->get();
-
-        $this->cities = $this->cities->map(function($da) {
-            $da->title = $da->translations->first() ? $da->translations->first()->name : $da->slug ;
-            unset($da->translations);
-            return $da;
-         });
-         return $this->cities;
-    }
+    
 }

@@ -1259,11 +1259,3 @@ $(document).delegate("#edit-address #address-input", "focus", function(){
 
     });
   }
-
-
-
-
-
-
-
-P

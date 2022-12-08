@@ -46,7 +46,7 @@
             </div>
             @endif
 
-            @if(isset($return_details->type) && $return_details->type == 1)
+            
             <div class="row form-group">
                 <div class="col-md-12">
                     <label>{{__('Update Status')}}</label>
@@ -69,7 +69,7 @@
             <span class="text-danger" id="error-msg"></span>
             <span class="text-success" id="success-msg"></span>
             <button class="btn btn-primary w-100 mt-3" id="return_form_button">{{__('Update')}}</button>
-            @endif
+            
         </form>
 
 

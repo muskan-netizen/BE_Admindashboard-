@@ -2,10 +2,11 @@
 .p2p-module .main-fillter .side_fillter {
     background: transparent !important;
     border-top: 1px solid #D9D9D9;
-    margin-top: 14px !important;
+    margin-top: 18px !important;
     overflow-y: auto !important;
     border-right: 1px solid #D9D9D9;
     height: auto;
+    max-height: 800px;
     overflow-x: hidden !important;
 }
 .p2p-module .main-fillter .side_fillter .collection-collapse-block {
@@ -503,10 +504,14 @@ body.dark.al_body_template_nine.p2p-module section.section-b-space.alSingleProdu
     body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head{background-color:#fff;}
     body.al_body_template_nine.p2p-module .al_custom_head .al_z_index {
         z-index: 999;
-        text-align: left !important;
+        text-align: center !important;
     }
     body.al_body_template_nine.p2p-module .top-header .header-dropdown li.onhover-dropdown {
         color: #000 !important;
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
     }
     body.al_body_template_nine.p2p-module .onhover-dropdown:hover .onhover-show-div {
         left: 8px;

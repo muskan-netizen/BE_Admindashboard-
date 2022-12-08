@@ -36,7 +36,7 @@
                 <div class="collection-filter col-lg-3 main-fillter al">
                     <div class="theme-card custom-inner-card">
 
-                    <div class="accordion mt-4" id="accordionExample">
+                    <div class="accordion" id="accordionExample">
                             <div class="card">
                                 <div class="card-header p-0" id="headingOne">
                                     <h2 class="mb-0">
@@ -77,7 +77,8 @@
 
 
                     </div>
-                    @if(!empty($newProducts) && count($newProducts) > 0)
+                    @php $show_new_Products = 0; @endphp
+                    @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>

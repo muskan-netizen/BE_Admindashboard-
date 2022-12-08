@@ -1,5 +1,27 @@
 
 <style>
+    .alInfoIocn .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+.alInfoIocn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+}
+.alInfoIocn:hover .tooltiptext {
+    visibility: visible;
+}
     .cross-sell .img-outer-box.position-relative img,
     .upsell-sell .img-outer-box.position-relative img {
         position: absolute;
@@ -839,8 +861,15 @@
                 <hr class="my-2">
             @endif
             <div class="row">
-                <div class="col-6">
-                    <p class="total_amt m-0">{{__('Amount Payable')}} @if($other_taxes)<small>({{__('incl. tax')}})</small>@endif </p>
+                <div class="col-6 d-flex">
+                    <p class="total_amt m-0">{{__('Amount Payable')}} 
+                        @if($other_taxes)<small>({{__('incl. tax')}})</small>@endif </p>
+                        @if($cart_details->conversion_rate>0 && $cart_details->currency_code=="MXN")
+                        <div class="ml-2 alInfoIocn position-relative">
+                            <i class="fa fa-info-circle"></i>
+                        <span class="tooltiptext">Equivalent to {{ (decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)) * $cart_details->conversion_rate}} USD</span>
+                        </div>
+                        @endif
                 </div>
 
 
