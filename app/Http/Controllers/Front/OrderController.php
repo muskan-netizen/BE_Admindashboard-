@@ -92,7 +92,7 @@ class OrderController extends FrontController
             },'vendors.vendor',
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
-            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address','driver_rating','reports',
+            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.product', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address','driver_rating','reports',
             
         ]);
             if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
@@ -188,10 +188,20 @@ class OrderController extends FrontController
       //  pr($activeOrders->toArray());exit();
 
         foreach ($pastOrders as $order) {
+            
+            $is_order_days_for_return = 0;
+            $replaceable = 0;
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
                 foreach ($vendor->products as $product) {
+// dd($product->product->return_days);
+// $vendor->is_order_days_for_return = 1;
+                    if((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0){
+                        $this->checkOrderDaysForReturn($vendor, $product->product->return_days);
+                        $vendor->is_order_days_for_return = 1;
+                    }
+
                     if (  isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
                         $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
                     } elseif ($product->media->isNotEmpty()) {
