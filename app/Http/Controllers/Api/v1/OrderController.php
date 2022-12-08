@@ -180,6 +180,19 @@ class OrderController extends BaseController
                     // }
 
 
+                    $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+                    $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+                    $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+                    $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
+                    $total_subscription_discount = 0;
+               
+                    if($cart_products[0]->luxury_option_id=="4"){
+                        $additional_price=($cart_products[0]->additional_increments_hrs_min/$cart_products[0]['product']['variants'][0]->incremental_price_per_min);
+                    }
+                 
+                    /* calculate total fixed fee amount */
+                    // pr($cart_products[0]->additional_increments_hrs_min);
+                //    pr($additional_price);   
                     $loyaltyCheck = $this->getOrderLoyalityAmount($user,'');
                     $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
                     $loyalty_points_used =  $loyaltyCheck->loyalty_points_used;
@@ -2309,7 +2322,7 @@ class OrderController extends BaseController
                                 if ($action == 'delivery' || $action == 'on_demand') {
                                     if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) {
                                         $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
-                                        Log::info($delivery_fee);
+                                        //Log::info($delivery_fee);
                                         if (!empty($delivery_fee) && $delivery_count == 0) {
                                             $delivery_count = 1;
                                             $vendor_cart_product->delivery_fee = decimal_format($delivery_fee);
@@ -2869,7 +2882,7 @@ class OrderController extends BaseController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData, $header_code='')
     {
-        Log::info('sendOrderPushNotificationVendors');
+       
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
         $vendorAppDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
@@ -2912,17 +2925,17 @@ class OrderController extends BaseController
         // Individual Vendor App User Token
         $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
-        Log::info('vendorAppUserDevices');
-        Log::info($vendorAppUserDevices);
-        Log::info('vendor_fcm_server_key');
-        Log::info($client_preferences->vendor_fcm_server_key);
+        // Log::info('vendorAppUserDevices');
+        // Log::info($vendorAppUserDevices);
+        // Log::info('vendor_fcm_server_key');
+        // Log::info($client_preferences->vendor_fcm_server_key);
         if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
             $from = $client_preferences->vendor_fcm_server_key;
             $data['registration_ids'] = $vendorAppUserDevices;
 
             $result = sendFcmCurlRequest($data,$from );
-            Log::info('Vendor order notification');
-            Log::info($result);
+            // Log::info('Vendor order notification');
+            // Log::info($result);
         }
     }
 

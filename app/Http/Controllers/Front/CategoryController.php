@@ -132,7 +132,8 @@ class CategoryController extends FrontController{
                  //   pr($variantSets);
         $redirect_to = $category->type->redirect_to;
         
-        $listData = $this->listData($langId, $category->id, $redirect_to);
+        $listData = $this->listData($langId, $category->id, $redirect_to,$vendorIds);
+     
       //  pr($listData);
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
         // $newProducts =  $this->getNewProducts($vendorIds, $langId, $curId);
@@ -207,19 +208,7 @@ class CategoryController extends FrontController{
         }
     }
 
-    public function getNewProducts($vendorIds, $langId, $curId)
-    {
-        $np = $this->productList($vendorIds, $langId, $curId, 'is_new');
-
-        foreach($np as $new){
-            $new->translation_title = (!empty($new->translation->first())) ? $new->translation->first()->title : $new->sku;
-            $new->variant_multiplier = (!empty($new->variant->first())) ? $new->variant->first()->multiplier : 1;
-            $new->variant_price = (!empty($new->variant->first())) ? $new->variant->first()->price : 0;
-        }
-        return $newProducts = ($np->count() > 0) ? array_chunk($np->toArray(), ceil(count($np) / 2)) : $np;
-    }
-
-    public function listData($langId, $category_id, $type = ''){
+    public function listData($langId, $category_id, $type = '',$vendorIds = array()){
         //pr($category_id);
 
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
@@ -299,13 +288,14 @@ class CategoryController extends FrontController{
             }
 
             $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
-            $vendors = array();
-            if(Session::has('vendors')){
-
-                $vendors = Session::get('vendors');
-             //   $vendors = $vendors->toArray();
-
+           
+            $vendors =  $vendorIds;
+            if(count($vendorIds)==0){
+                if(Session::has('vendors')){
+                    $vendors = Session::get('vendors');
+                }
             }
+            
             // pr($vendors);
             $products = Product::with(['vendor', 'media.image', 'category',
                         'translation' => function($q) use($langId){

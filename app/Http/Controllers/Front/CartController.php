@@ -1970,7 +1970,7 @@ class CartController extends FrontController
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         $client_timezone = DB::table('clients')->first('timezone');
-        $timezone = $client_timezone->timezone ?? $user->timezone;
+        $timezone = $client_timezone->timezone ?? ($user ?  ($user->timezone ?? 'Asia/Kolkata'): 'Asia/Kolkata');
         $address_id = 0;
         $schedule_datetime_del = '';
         if ($user) {
@@ -2018,6 +2018,19 @@ class CartController extends FrontController
                     $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
                 }
             }
+
+            $currency_code="USD";
+            $conversion_rate=0;
+            if(!empty(ClientCurrency::where('currency_id',147)->first()->doller_compare)){
+                $conversion_rate=(double)ClientCurrency::where('currency_id',147)->first()->doller_compare;
+            }
+            $cart_details->conversion_rate=$conversion_rate;
+            
+            $currency=ClientCurrency::with('currency')->where('is_primary',1)->first();
+            if(!empty($currency->currency->iso_code)){
+                $currency_code=$currency->currency->iso_code;
+            }
+            $cart_details->currency_code=$currency_code;
 
             $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference])->render();
         }

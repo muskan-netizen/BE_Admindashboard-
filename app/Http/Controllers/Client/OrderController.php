@@ -227,49 +227,13 @@ class OrderController extends BaseController
         $active_orders = clone $order_count;
         $orders_history = clone $order_count;
 
-        /* luxury option orders (only active orders) */
-        // $luxury_order_status_options = [6, 3];
-        // $filter_orders = clone $orders;
-        // $filter_orders = $filter_orders->with(['vendors' => function ($query) use ($luxury_order_status_options, $user) {
-        //     $query->whereNotIn('order_status_option_id', $luxury_order_status_options);
-        //     if ($user->is_superadmin == 0) {
-        //         $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
-        //             $query1->where('user_id', $user->id);
-        //         });
-        //     }
-        // }])
-        // ->whereHas('vendors', function ($query) use ($luxury_order_status_options, $request) {
-        //     $query->whereNotIn('order_status_option_id', $luxury_order_status_options)
-        //     ->where(function ($q1) {
-        //         // 1 for cod ,38 for offline manual by harbans
-        //         $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
-        //         $q1->orWhere(function ($q2) {
-        //             $q2->whereIn('payment_option_id', [1,38]);
-        //         });
-        //     });
-        //     if (!empty($request->get('vendor_id'))) {
-        //         $query->where('vendor_id', $request->get('vendor_id'));
-        //     }
-        // });
+        
 
         $lux_id = 0;
         if (isset($request->order_type)) {
             $lux_id = LuxuryOption::where('title', $request->order_type)->value('id');
         }
-        // if($lux_id > 0){
-        //     $filter_orders = $filter_orders->where('luxury_option_id', $lux_id);
-        // }
-
-        // foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
-        //     $clientVendorTypes = $vendor_typ_key.'_check';
-        //     $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-
-        //     if($preferences->$clientVendorTypes == 1){
-        //         $vendorTypeOrders = $VendorTypesName.'_orders';
-        //         $$vendorTypeOrders = clone $filter_orders;
-        //     }
-        // }
-        /* luxury option orders */
+        
 
         if ($filter_order_status) {
             switch ($filter_order_status) {
