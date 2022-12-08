@@ -504,10 +504,14 @@ body.dark.al_body_template_nine.p2p-module section.section-b-space.alSingleProdu
     body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head{background-color:#fff;}
     body.al_body_template_nine.p2p-module .al_custom_head .al_z_index {
         z-index: 999;
-        text-align: left !important;
+        text-align: center !important;
     }
     body.al_body_template_nine.p2p-module .top-header .header-dropdown li.onhover-dropdown {
         color: #000 !important;
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
     }
     body.al_body_template_nine.p2p-module .onhover-dropdown:hover .onhover-show-div {
         left: 8px;
