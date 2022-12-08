@@ -128,7 +128,7 @@ class ReturnOrderController extends BaseController{
 
             $user = Auth::user();
             $langId = $user->language;
-            $reasons = ExchangeReason::where('status','Active')->orderBy('order','asc')->get();
+            $reasons = ReturnReason::where('status','Active')->where('type', 2)->orderBy('order','asc')->get();
             foreach($reasons as $reason){
                 $reason->title = __($reason->title);
             }

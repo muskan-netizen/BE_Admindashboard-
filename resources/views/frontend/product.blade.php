@@ -275,7 +275,7 @@
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
 
-                                <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-5'; } else { echo 'col-lg-5'; } @endphp rtl-text p-0">
+                                <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0">
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
@@ -552,13 +552,14 @@
 
                                 </div>
                                 @if( !empty($coupon_list) )
-                                <div class="col-md-2">
+                                <div class="col-md-3">
                                     <div class="aside_bar">
                                         <h5>Available offers</h5>
                                             <div class="discriptions">
                                                 @foreach($coupon_list as $m_key => $m_val)
+                                                <p> <small> Coupon Code :  </small><span>{{ $m_val['name'] ?? '' }} </span> </p>
                                                    <p> <small> Description :</small> <span>{{ $m_val['short_desc'] ?? '' }} </span> </p>
-                                                   <p> <small> Coupon Code :  </small><span>{{ $m_val['name'] ?? '' }} </span> </p>
+                                                   
                                                    <p>  <small>Coupon Type :  </small><span>{{ $m_val['promo_type_title'] ?? '' }} </span> </p>
                                                    <p> 
                                                     <small>

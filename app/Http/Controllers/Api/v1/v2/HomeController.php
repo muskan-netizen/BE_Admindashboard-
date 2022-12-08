@@ -882,7 +882,8 @@ class HomeController extends BaseController{
                             ->orWhere('cts.trans-slug', 'LIKE', '%' . $keyword . '%');
                     })->orderBy('categories.parent_id', 'asc')
                     ->orderBy('categories.position', 'asc')
-                    ->groupBy('cts.category_id')->paginate($limit, $page);
+                    ->groupBy('cts.category_id')->get();
+                    // ->paginate($limit, $page);
                     $category_results = [];
                 foreach ($categories as $category) {
                     $category->response_type = 'category';
@@ -890,7 +891,7 @@ class HomeController extends BaseController{
                     $category_results[] = $category;
                 }
                 if (@$category_results) {
-                    $response[] = ['title' => __('Category'), 'result' => $category_results] ;
+                    $response[] = ['id' => 1, 'title' => __('Category'), 'result' => $category_results] ;
                 }
 
                 $brands = Brand::join('brand_translations as bt', 'bt.brand_id', 'brands.id')
@@ -898,7 +899,8 @@ class HomeController extends BaseController{
                     ->where('bt.title', 'LIKE', '%' . $keyword . '%')
                     ->where('brands.status', '!=', '2')
                     ->where('bt.language_id', $langId)
-                    ->orderBy('brands.position', 'asc')->paginate($limit, $page);
+                    ->orderBy('brands.position', 'asc')->get();
+                    // ->paginate($limit, $page);
                     $brand_results = [];
                 foreach ($brands as $brand) {
                     $brand->response_type = 'brand';
@@ -907,7 +909,7 @@ class HomeController extends BaseController{
                 }
 
                 if (@$brand_results) {
-                    $response[] = ['title' => __('brand'), 'result' => $brand_results];;
+                    $response[] = ['id' => 2,'title' => __('brand'), 'result' => $brand_results];;
                 }
 
                 $categoryTypes = getServiceTypesCategory($action);
@@ -944,7 +946,8 @@ class HomeController extends BaseController{
 
                 $vendors = $vendors->where(function ($q) use ($keyword) {
                     $q->where('name', 'LIKE', '%'. $keyword .'%')->orWhere('address', 'LIKE', '%' . $keyword . '%');
-                })->where('status', 1)->paginate($limit, $page);
+                })->where('status', 1)->get();
+                // ->paginate($limit, $page);
 
                 $vendor_results = [];
                 foreach ($vendors as $vendor) {
@@ -954,7 +957,7 @@ class HomeController extends BaseController{
                 }
 
                 if (@$vendor_results) {
-                    $response[] = ['title' => __('Vendor'), 'result' => $vendor_results];
+                    $response[] = [ 'id' => 3, 'title' => __('Vendor'), 'result' => $vendor_results];
                 }
                 // $vendors  = Vendor::select('id', 'name  as dataname', 'address')->where(function ($q) use ($keyword) {
                 //         $q->where('name', ' LIKE', '%' . $keyword . '%')->orWhere('address', 'LIKE', '%' . $keyword . '%');
@@ -985,7 +988,7 @@ class HomeController extends BaseController{
                     $product_results[] = $product;
                 }
                 if (@$product_results) {
-                    $response[] = ['title' => __('Product'), 'result' => $product_results];
+                    $response[] = ['id' => 4, 'title' => __('Product'), 'result' => $product_results];
                 }
                 return $this->successResponse($response);
             } else {
@@ -1030,7 +1033,7 @@ class HomeController extends BaseController{
                     $product_results[] = $product;
                 }
                 if (@$product_results) {
-                    $response[] = ['title' => __('Product'), 'result' => $product_results];
+                    $response[] = ['id' => 4, 'title' => __('Product'), 'result' => $product_results];
                 }
             }
             return $this->successResponse($response);
