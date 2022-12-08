@@ -3135,10 +3135,10 @@ class OrderController extends FrontController
        $order_id = $request->order_id;
        $user_id  = $request->id;
 
-        $order               = Order::where(['user_id'=>$user_id,'order_number'=>$order_id])->with('orderStatusVendor')->first();
+        $order               = Order::where(['user_id'=>$user_id,'order_number'=>$order_id])->with('orderStatusVendor','ordervendor')->first();
         $language_id         = Session::get('customerLanguage');
         $navCategories      = $this->categoryNav($language_id);
-        //return $order;
+        
        return view('frontend.order.trackOrderDeatil')->with(['order' => $order,'navCategories'=>$navCategories]);
     }
 }

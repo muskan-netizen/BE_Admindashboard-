@@ -2239,7 +2239,7 @@ class OrderController extends BaseController
         $provider = $prefer['sms_provider'];
       
 
-        $tracking_url = url('/order/tracking/'.$user['id'].'/'.$order['order_number'].'');
+        $tracking_url = url('/order/track/'.$user['id'].'/'.$order['order_number'].'');
         $keyData = ['{user_name}'=>$user['name']??'','{order_number}'=>$order['order_number']??'','{track_url}'=>$tracking_url??''];
         \Log::info($keyData);
         
