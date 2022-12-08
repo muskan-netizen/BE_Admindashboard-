@@ -299,8 +299,11 @@ class OrderController extends FrontController
 
         $client_preferences = ClientPreference::select('*')->where('id', '>', 0)->first();
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
-
-        $cancellation_reason = ReturnReason::where(['status' => 'Active', 'type' => 3])->get();
+        if(checkColumnExists('return_reasons', 'type')){
+            $cancellation_reason = ReturnReason::where(['status' => 'Active', 'type' => 3])->get();
+        }else{
+            $cancellation_reason = ReturnReason::where(['status' => 'Active'])->get();
+        }
 
         //   dd($activeOrders->toArray());
        
