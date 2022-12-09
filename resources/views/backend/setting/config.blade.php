@@ -1267,75 +1267,13 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
                      <input type="checkbox" data-plugin="switchery" id="is_free_delivery_by_roles" class="form-control checkbox_change" name="apply_free_del[{{$allRole->id}}]" data-className="is_free_delivery_by_roles_hidden" data-color="#43bee1" value="{{$allRole->id}}">
                   </div>
                   @endforeach
-
-               <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
-                  <label for="is_same_day_delivery_switch" class="mr-2 mb-0">{{__('Same Day Delivery')}}<small class="d-block pr-5">{{__("Enable to allow customers to same day delivery.")}}</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="is_same_day_delivery_switch" id="is_same_day_delivery_switch" class="form-control checkbox_change" data-className="is_same_day_delivery" data-color="#43bee1" @if(@getAdditionalPreference(['is_same_day_delivery'])['is_same_day_delivery'] == 1) checked='checked'  @endif>
-                     </span>
-                     <input type="hidden"  @if(@getAdditionalPreference(['is_same_day_delivery'])['is_same_day_delivery'] == 1) value="1" @else value="0" @endif  name="is_same_day_delivery"  id="is_same_day_delivery"/>
-                  </div>
-               </div>
-
-               <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
-                  <label for="is_next_day_delivery_switch" class="mr-2 mb-0">{{__('Next Day Delivery')}}<small class="d-block pr-5">{{__("Enable to allow customers to next day delivery.")}}</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="is_next_day_delivery_switch" id="is_next_day_delivery_switch" class="form-control checkbox_change" data-className="is_next_day_delivery" data-color="#43bee1" @if(@getAdditionalPreference(['is_next_day_delivery'])['is_next_day_delivery'] == 1) checked='checked'  @endif>
-                     </span>
-                     <input type="hidden"  @if(@getAdditionalPreference(['is_next_day_delivery'])['is_next_day_delivery'] == 1) value="1" @else value="0" @endif  name="is_next_day_delivery"  id="is_next_day_delivery"/>
-                  </div>
-               </div>
-
-               <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
-                  <label for="is_hyper_local_delivery_switch" class="mr-2 mb-0">{{__('Hyper Local Delivery')}}<small class="d-block pr-5">{{__("Enable to allow customers to hyper local delivery.")}}</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="is_hyper_local_delivery_switch" id="is_hyper_local_delivery_switch" class="form-control checkbox_change" data-className="is_hyper_local_delivery" data-color="#43bee1" @if(@getAdditionalPreference(['is_hyper_local_delivery'])['is_hyper_local_delivery'] == 1) checked='checked'  @endif>
-                     </span>
-                     <input type="hidden"  @if(@getAdditionalPreference(['is_hyper_local_delivery'])['is_hyper_local_delivery'] == 1) value="1" @else value="0" @endif  name="is_hyper_local_delivery"  id="is_hyper_local_delivery"/>
-                  </div>
-               </div>
-
-               <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
-                  <label for="is_cod_payment_switch" class="mr-2 mb-0">{{__('COD Payment')}}<small class="d-block pr-5">{{__("Enable to allow customers to cod payment.")}}</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="is_cod_payment_switch" id="is_cod_payment_switch" class="form-control checkbox_change" data-className="is_cod_payment" data-color="#43bee1" @if(@getAdditionalPreference(['is_cod_payment'])['is_cod_payment'] == 1) checked='checked'  @endif>
-                     </span>
-                     <input type="hidden"  @if(@getAdditionalPreference(['is_cod_payment'])['is_cod_payment'] == 1) value="1" @else value="0" @endif  name="is_cod_payment"  id="is_cod_payment"/>
-                  </div>
-               </div>
-
-               <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
-                  <label for="is_prepaid_payment_switch" class="mr-2 mb-0">{{__('Prepaid Payment')}}<small class="d-block pr-5">{{__("Enable to allow customers to prepaid payment.")}}</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="is_prepaid_payment_switch" id="is_prepaid_payment_switch" class="form-control checkbox_change" data-className="is_prepaid_payment" data-color="#43bee1" @if(@getAdditionalPreference(['is_prepaid_payment'])['is_prepaid_payment'] == 1) checked='checked'  @endif>
-                     </span>
-                     <input type="hidden"  @if(@getAdditionalPreference(['is_prepaid_payment'])['is_prepaid_payment'] == 1) value="1" @else value="0" @endif  name="is_prepaid_payment"  id="is_prepaid_payment"/>
-                  </div>
-               </div>
-
-               <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
-                  <label for="is_partial_payment_switch" class="mr-2 mb-0">{{__('Partial Payment')}}<small class="d-block pr-5">{{__("Enable to allow customers to partial payment.")}}</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="is_partial_payment_switch" id="is_partial_payment_switch" class="form-control checkbox_change" data-className="is_partial_payment" data-color="#43bee1" @if(@getAdditionalPreference(['is_partial_payment'])['is_partial_payment'] == 1) checked='checked'  @endif>
-                     </span>
-                     <input type="hidden"  @if(@getAdditionalPreference(['is_partial_payment'])['is_partial_payment'] == 1) value="1" @else value="0" @endif  name="is_partial_payment"  id="is_partial_payment"/>
-                  </div>
-               </div>
-
                </div>
             </div>
          </div><!-- HubSpot card end -->
       </form>
    </div>
    {{-- end Free Delivery By Roles form --}}
-
-
 </div>
-
-
-
-
-
 
 <div class="row">
    {{-- <div class="col-md-12 show-custom-mods">
@@ -1710,6 +1648,60 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
             <span> <input type="checkbox" data-plugin="switchery" name="is_cab_pooling_switch" id="is_cab_pooling_switch" class="form-control checkbox_change" data-className="is_cab_pooling" data-color="#43bee1" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']==1) checked='checked' @endif>
             </span>
             <input type="hidden" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']==1) value="1" @else value="0" @endif name="is_cab_pooling" id="is_cab_pooling" />
+         </div>
+      </div>
+
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
+         <label for="is_same_day_delivery_switch" class="mr-2 mb-0">{{__('Same Day Delivery')}}<small class="d-block pr-5">{{__("Enable to allow customers to same day delivery.")}}</small></label>
+           <span> <input type="checkbox" data-plugin="switchery" name="is_same_day_delivery_switch" id="is_same_day_delivery_switch" class="form-control checkbox_change" data-className="is_same_day_delivery" data-color="#43bee1" @if(@getAdditionalPreference(['is_same_day_delivery'])['is_same_day_delivery'] == 1) checked='checked'  @endif>
+            </span>
+            <input type="hidden"  @if(@getAdditionalPreference(['is_same_day_delivery'])['is_same_day_delivery'] == 1) value="1" @else value="0" @endif  name="is_same_day_delivery"  id="is_same_day_delivery"/>
+         </div>
+      </div>
+
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
+         <label for="is_next_day_delivery_switch" class="mr-2 mb-0">{{__('Next Day Delivery')}}<small class="d-block pr-5">{{__("Enable to allow customers to next day delivery.")}}</small></label>
+           <span> <input type="checkbox" data-plugin="switchery" name="is_next_day_delivery_switch" id="is_next_day_delivery_switch" class="form-control checkbox_change" data-className="is_next_day_delivery" data-color="#43bee1" @if(@getAdditionalPreference(['is_next_day_delivery'])['is_next_day_delivery'] == 1) checked='checked'  @endif>
+            </span>
+            <input type="hidden"  @if(@getAdditionalPreference(['is_next_day_delivery'])['is_next_day_delivery'] == 1) value="1" @else value="0" @endif  name="is_next_day_delivery"  id="is_next_day_delivery"/>
+         </div>
+      </div>
+
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
+         <label for="is_hyper_local_delivery_switch" class="mr-2 mb-0">{{__('Hyper Local Delivery')}}<small class="d-block pr-5">{{__("Enable to allow customers to hyper local delivery.")}}</small></label>
+           <span> <input type="checkbox" data-plugin="switchery" name="is_hyper_local_delivery_switch" id="is_hyper_local_delivery_switch" class="form-control checkbox_change" data-className="is_hyper_local_delivery" data-color="#43bee1" @if(@getAdditionalPreference(['is_hyper_local_delivery'])['is_hyper_local_delivery'] == 1) checked='checked'  @endif>
+            </span>
+            <input type="hidden"  @if(@getAdditionalPreference(['is_hyper_local_delivery'])['is_hyper_local_delivery'] == 1) value="1" @else value="0" @endif  name="is_hyper_local_delivery"  id="is_hyper_local_delivery"/>
+         </div>
+      </div>
+
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
+         <label for="is_cod_payment_switch" class="mr-2 mb-0">{{__('COD Payment')}}<small class="d-block pr-5">{{__("Enable to allow customers to cod payment.")}}</small></label>
+           <span> <input type="checkbox" data-plugin="switchery" name="is_cod_payment_switch" id="is_cod_payment_switch" class="form-control checkbox_change" data-className="is_cod_payment" data-color="#43bee1" @if(@getAdditionalPreference(['is_cod_payment'])['is_cod_payment'] == 1) checked='checked'  @endif>
+            </span>
+            <input type="hidden"  @if(@getAdditionalPreference(['is_cod_payment'])['is_cod_payment'] == 1) value="1" @else value="0" @endif  name="is_cod_payment"  id="is_cod_payment"/>
+         </div>
+      </div>
+
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
+         <label for="is_prepaid_payment_switch" class="mr-2 mb-0">{{__('Prepaid Payment')}}<small class="d-block pr-5">{{__("Enable to allow customers to prepaid payment.")}}</small></label>
+           <span> <input type="checkbox" data-plugin="switchery" name="is_prepaid_payment_switch" id="is_prepaid_payment_switch" class="form-control checkbox_change" data-className="is_prepaid_payment" data-color="#43bee1" @if(@getAdditionalPreference(['is_prepaid_payment'])['is_prepaid_payment'] == 1) checked='checked'  @endif>
+            </span>
+            <input type="hidden"  @if(@getAdditionalPreference(['is_prepaid_payment'])['is_prepaid_payment'] == 1) value="1" @else value="0" @endif  name="is_prepaid_payment"  id="is_prepaid_payment"/>
+         </div>
+      </div>
+
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
+         <label for="is_partial_payment_switch" class="mr-2 mb-0">{{__('Partial Payment')}}<small class="d-block pr-5">{{__("Enable to allow customers to partial payment.")}}</small></label>
+           <span> <input type="checkbox" data-plugin="switchery" name="is_partial_payment_switch" id="is_partial_payment_switch" class="form-control checkbox_change" data-className="is_partial_payment" data-color="#43bee1" @if(@getAdditionalPreference(['is_partial_payment'])['is_partial_payment'] == 1) checked='checked'  @endif>
+            </span>
+            <input type="hidden"  @if(@getAdditionalPreference(['is_partial_payment'])['is_partial_payment'] == 1) value="1" @else value="0" @endif  name="is_partial_payment"  id="is_partial_payment"/>
          </div>
       </div>
    </div>
