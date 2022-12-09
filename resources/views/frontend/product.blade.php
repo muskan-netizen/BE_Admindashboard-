@@ -75,7 +75,9 @@
       Some text inside the toast body
     </div>
   </div> -->
-
+@php
+  $getAdditionalPreference = getAdditionalPreference(['seller_sold_title','seller_platform_logo']);
+@endphp
 <section class="section-b-space alSingleProducts product_ddetails_page">
     <div class="collection-wrapper al">
         <div class="container">
@@ -281,9 +283,15 @@
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                         </h2>
                                         <span class="rating main-rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
-                                        <h6 class="sold-by">
-                                            <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
-                                        </h6>
+                                        @if($product->vendor->is_seller == 0)
+                                            <h6 class="sold-by">
+                                                <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
+                                            </h6>
+                                        @else
+                                            <h6 class="sold-by">
+                                                <b> <img class="blur-up lazyload" data-src="{{$getAdditionalPreference['seller_platform_logo']['proxy_url'] . '90/90' . $getAdditionalPreference['seller_platform_logo']['image_path']}}" alt="{{$getAdditionalPreference['seller_sold_title']??''}}"></b><b> {{$getAdditionalPreference['seller_sold_title']??''}} </b>
+                                            </h6>
+                                        @endif
                                         @if($client_preference_detail)
                                             @if($client_preference_detail->rating_check == 1)
                                                 @if($product->averageRating > 0)
