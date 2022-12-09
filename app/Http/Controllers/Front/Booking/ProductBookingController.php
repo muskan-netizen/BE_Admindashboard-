@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
 use App\Http\Requests\{AddManualTimeRequest};
-use Exception,Log;
+use Exception;
 class ProductBookingController extends FrontController
 {
     use ApiResponser;
@@ -28,19 +28,18 @@ class ProductBookingController extends FrontController
      */
     public function checkProductAvailibility(Request $request)
     {
-     // try {
+      try {
           $block_time = explode('-', $request->blocktime);
           $start_time = date("Y-m-d H:i:s",strtotime($request->selectedStartDate));
           $end_time = date("Y-m-d H:i:s",strtotime($request->selectedEndDate));
           $product_variant_data = array();
-          Log::info('checkProductAvailibility 36');
           if($request->has('variant_option_id') && ($request->variant_option_id !='')){
             $product_variant_id =  ProductVariantSet::where(['variant_option_id'=>$request->variant_option_id,'product_id'=>$request->product_id])->pluck('product_variant_id');
             $product_variant_id = $product_variant_id->toArray();
           }else{
             $product_variant_id[]=$request->variant_id;
           }
-          Log::info('checkProductAvailibility 43');
+        
           $ProductBooking  = ProductBooking::whereIn('variant_id',$product_variant_id)->where('product_id',$request->product_id)
                               ->where(function ($query) use ($start_time , $end_time ){
                                   $query->where('start_date_time', '<=', $end_time)
@@ -50,7 +49,6 @@ class ProductBookingController extends FrontController
           if(isset($available_product_variant[0])){
             $product_variant_data =  ProductVariant::where('id',$available_product_variant[0])->with(['product','checkIfInCart'])->first();
           }
-          Log::info('checkProductAvailibility 53');
           $returnarr =  array();
           $returnarr['available_product_variant'] =  @$available_product_variant[0];
           $returnarr['product_variant_data'] = $product_variant_data;
@@ -58,11 +56,10 @@ class ProductBookingController extends FrontController
           $returnarr['start_time'] =  $start_time;
           $returnarr['end_time'] =  $end_time;
           $returnarr['variant_option_id'] = $request->variant_option_id;
-          Log::info('checkProductAvailibility 61');
           return response()->json(array('success' => true, 'variant_data'=>$returnarr ,'message'=>'Available product data.'));
-        // } catch (Exception $e) {
-        //   return response()->json(array('error' => false, 'message'=>'Something went wrong.'));
-        // }
+        } catch (Exception $e) {
+          return response()->json(array('error' => false, 'message'=>'Something went wrong.'));
+        }
      
     }
     
