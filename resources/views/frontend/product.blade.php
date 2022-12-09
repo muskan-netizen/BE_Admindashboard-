@@ -4,7 +4,9 @@
 'meta_keyword'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_keyword:'',
 'meta_description'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description:'',
 ])
-
+@php
+$clientData = \App\Models\Client::select('socket_url')->first();
+@endphp
 @section('css')
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
     <link rel="stylesheet" href="{{ asset('front-assets/css/swiper.min.css') }}" />
@@ -315,6 +317,37 @@
                                             {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                                 $product->translation[0]->body_html : ''!!}
                                         </div>
+
+
+                                        @if( p2p_module_status() )
+                                            @if( !empty($attr_array) )
+                                                @foreach($attr_array as $attr_key => $attr_val)
+                                                    <div class="container-badge">
+                                                        <div class="value-badge">{{ $attr_key }} : </div>
+                                                        @if( !empty($attr_val) )
+                                                            <div class="container-badge-value">
+                                                                @foreach($attr_val as $inn_key => $inn_val)
+                                                                    <span>{{$inn_val['value']}}</span>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                        
+                                                    </div>
+                                                @endforeach
+                                            @endif
+
+                                            {{-- Chat Button --}}
+                                            @if($clientData->socket_url !='' )
+                                                <hr>
+                                                <h6 class="sold-by">
+                                                    <span>Sold by : </span>
+                                                    <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
+                                                    <a class="start_p2p_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
+                                                </h6>
+                                            @endif
+                                    @endif
+
+
                                         @if(((@$product->returnable && @$product->vendor->return_request) || $product->replaceable) && ($product->return_days > 0))
                                             <div class="discriptions">
                                                 <h3>Return Policy</h3>
@@ -1256,5 +1289,5 @@
         });
             
         </script>
-
+<script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
 @endsection
