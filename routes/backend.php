@@ -506,6 +506,16 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor_banner/store', 'Client\VendorMultiBannerController@store')->name("vendor_banner.store");
         Route::get('vendor_banner/destroy/{id}', 'Client\VendorMultiBannerController@destroy')->name("vendor_banner.destroy");
 
+        /** Refer and earn  */
+        Route::prefix('influencer-refer-earn')->group(function () {
+            Route::name('influencer-refer-earn.')->group(function () {
+                Route::get('index', 'Client\InfluencerReferAndEarnController@index')->name('index');
+                Route::get('create', 'Client\InfluencerReferAndEarnController@create')->name('create');
+                Route::get('edit/{id}', 'Client\InfluencerReferAndEarnController@edit')->name('edit');
+                Route::post('store', 'Client\InfluencerReferAndEarnController@store')->name('store');
+                Route::post('update', 'Client\InfluencerReferAndEarnController@update')->name('update');
+            });
+        });
 
         /**  Hubspot Create a contact.
          *

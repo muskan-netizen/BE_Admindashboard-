@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class InfluencerCategory extends Model
 {
-    use HasFactory;
-    // protect
+    protected $table = 'influencer_categories';
+    protected $guarded = [];
 }

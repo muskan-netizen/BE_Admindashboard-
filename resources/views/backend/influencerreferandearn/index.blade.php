@@ -40,7 +40,7 @@
                         </div>
                         <div class="col-sm-4 text-right">
                             <a class="btn btn-info waves-effect waves-light text-sm-right"
-                                href="{{route('map.create')}}"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                                href="{{route('influencer-refer-earn.create')}}"><i class="mdi mdi-plus-circle mr-1"></i> Add
                             </a>
                         </div>
                     </div>
@@ -59,6 +59,7 @@
                                     <td> first </td>
                                     <td> 
                                         {{-- <a class="btn btn-sm btn-danger" onclick="return confirm('Are you sure? You want to delete the map provider.')" href="#"><i class="fa fa-trash"></i></a> --}}
+                                        <a href="{{ route('influencer-refer-earn.edit', ['id' => $value->id]) }}"><i class="fas fa-edit"></i></a>
                                     </td>
                                 </tr>
                                @endforeach
