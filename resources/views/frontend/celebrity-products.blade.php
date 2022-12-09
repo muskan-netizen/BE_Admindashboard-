@@ -94,8 +94,9 @@
                         </div>
                         </aside>
                     </div>
-                    @if(!empty($newProducts) && count($newProducts) > 0)
-                    <div class="theme-card custom-inner-card">
+                    @php $show_new_Products = 0; @endphp
+                    @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
+                    <div class="theme-card custom-inner-cardcollection-filter-block bg-transparent p-0 m-0">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">

@@ -1,5 +1,5 @@
 {{-- Related Product  --}}
-@if( !empty($realted_produuct) )
+@if( !empty($realted_produuct) && $realted_produuct->count() > 0)
 <h2>{{ __($title ?? '') }}</h2>
 <div class="category-related-product suggested-product">
     @foreach($realted_produuct as $scp)
@@ -25,6 +25,13 @@
                                         src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
                                 </span>
                                 @endif
+                            @else
+                            <span class="">
+                                <img class="blur-up lazyloaded pro_imgs myimage1"
+                                    data-src="{{loadDefaultImage()}}"
+                                    width="60" height="60"
+                                    src="{{loadDefaultImage()}}">
+                            </span>
                             
                         @endif
                         </div>
@@ -56,7 +63,11 @@
                                 </p>
                             </div>
                             <div class="d-flex align-items-center justify-content-between al_clock pt-2">
-                                <b>{{Session::get('currencySymbol')}} {{decimal_format($scp->variant[0]->compare_at_price * $scp->variant[0]->multiplier)}} </b>
+                                @php
+                                $price = $scp->variant[0]->price ?? 0;
+                                $multiplier = $scp->variant[0]->multiplier  ?? 0;
+                                @endphp
+                                <b>{{Session::get('currencySymbol')}} {{decimal_format($price * $multiplier)}} </b>
                             </div>
                         </div>
                     </div>

@@ -128,8 +128,11 @@
                             </div>
                         </div>
                     </div>
-                    @endif
-                    @if(!empty($newProducts) && count($newProducts) > 0)
+                </aside>
+           
+            @endif
+            @php $show_new_Products = 0; @endphp
+                    @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
@@ -278,17 +281,17 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="displayProducts" id="category_products_filter">
+                                    <div class="displayProducts main_category" id="category_products_filter">
                                         <div class="col-12 custom_filtter mt-2">
                                         <!-- <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Sort By')}}</option>
-                                                <option value="featured">{{__('Featured')}}</option>
-                                                <option value="a_to_z">{{__('A to Z')}}</option>
-                                                <option value="z_to_a">{{__('Z to A')}}</option>
-                                                <option value="low_to_high">{{__('Cost : Low to High')}}</option>
-                                                <option value="high_to_low">{{__('Cost : High to Low')}}</option>
-                                                <option value="rating">{{__('Avg. Customer Review')}}</option>
-                                                <option value="newly_added">{{__('Newest Arrivals')}}</option>
+                                                <option value="featured">{{_('Featured')}}</option>
+                                                <option value="a_to_z">{{_('A to Z')}}</option>
+                                                <option value="z_to_a">{{_('Z to A')}}</option>
+                                                <option value="low_to_high">{{_('Cost : Low to High')}}</option>
+                                                <option value="high_to_low">{{_('Cost : High to Low')}}</option>
+                                                <option value="rating">{{_('Avg. Customer Review')}}</option>
+                                                <option value="newly_added">{{_('Newest Arrivals')}}</option>
                                             </select> -->
                                             <ul>
                                                 <li><span>{{__('Sort By:')}}</span></li>
@@ -333,6 +336,11 @@
                                                                 <div class="product-description_list border-bottom">
                                                                     <span class="flag-discount">30% Off</span>
                                                                     <h6 class="mt-0 mb-1"><b>{{$data->vendor->name}}</b></h6>
+                                                                    @if(@$data->vendor->is_seller == 1)
+                                                                        <h6 class="sold-by d-flex">
+                                                                            <b> <img class="blur-up lazyload" data-src="{{$favicon}}" alt="{{$data->vendor->Name}}" style="width: 25px !important; height: 25px;"></b> <b> Order by clickokart </b>
+                                                                        </h6>
+                                                                    @endif
                                                                     @if (strlen($data->translation_description) >= 65)
                                                                         <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>
                                                                     @else

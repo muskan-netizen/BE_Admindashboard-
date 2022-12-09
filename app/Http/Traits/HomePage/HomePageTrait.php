@@ -2,7 +2,7 @@
 
 namespace App\Http\Traits\HomePage;
 
-use App\Models\{HomeProduct, OrderProductRating, OrderVendorProduct, Product, ProductCategory, ProductRecentlyViewed, Vendor, VendorCategory};
+use App\Models\{Category, HomeProduct, OrderProductRating, OrderVendorProduct, Product, ProductCategory, ProductRecentlyViewed, Vendor, VendorCategory, VendorCities};
 use Carbon\Carbon;
 use Session, DB;
 use Illuminate\Support\Str;
@@ -32,7 +32,7 @@ trait HomePageTrait
 
         if ((!empty($mostSellingVendors) && count($mostSellingVendors) > 0)) {
             foreach ($mostSellingVendors as $key => $value) {
-                $value->vendorRating = $this->vendorRating($value->products);
+                $value->vendorRating = $this->vendorRatings($value->products);
                 // $value->name = Str::limit($value->name, 15, '..');
                 if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                     $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
@@ -107,8 +107,11 @@ trait HomePageTrait
                 $title = $product->translation->first() ? $product->translation->first()->title : $product->sku;
                 $image_url = $product->media->first() && !is_null($product->media->first()->image) ? $product->media->first()->image->path['image_fit'] . $p_dim . $product->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 $spotlight_products[] = array(
+                    'id' => $product->id,
                     'tag_title' => $spotlight_products_title ?? '0',
                     'image_url' => $image_url,
+                    'media' => $product->media ,
+                    'variant' => $product->variant ,
                     'sku' => $product->sku,
                     'title' => Str::limit($title, 18, '..'),
                     'url_slug' => $product->url_slug,
@@ -173,8 +176,11 @@ trait HomePageTrait
                     $title = $product->translation->first() ? $product->translation->first()->title : $product->sku;
                     $image_url = $product->media->first() && !is_null($product->media->first()->image) ? $product->media->first()->image->path['image_fit'] . $p_dim . $product->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                     $productFiltered[] = array(
+                        'id' => $product->id,
                         'tag_title' => $spotlight_products_title ?? 'Single Category Products',
                         'image_url' => $image_url,
+                        'media' => $product->media ,
+                        'variant' => $product->variant ,
                         'sku' => $product->sku,
                         'title' => Str::limit($title, 18, '..'),
                         'url_slug' => $product->url_slug,
@@ -223,4 +229,70 @@ trait HomePageTrait
         $product_ids = OrderProductRating::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id');
         return $product_ids;
     }
+
+     /* Get vendor rating from its products rating */
+     public function vendorRatings($vendorProducts)
+     {
+         $vendor_rating = 0;
+         if($vendorProducts->isNotEmpty()){
+             $product_rating = 0;
+             $product_count = 0;
+             foreach($vendorProducts as $product){
+                 if($product->averageRating > 0){
+                     $product_rating = $product_rating + $product->averageRating;
+                     $product_count++;
+                 }
+             }
+             if($product_count > 0){
+                 $vendor_rating = $product_rating / $product_count;
+             }
+         }
+         return number_format($vendor_rating, 1, '.', '');
+     }
+
+     public function vendorProducts_v2($venderIds, $langId, $currency = 'USD', $where = '', $type)
+     {
+         $products = Product::byProductCategoryServiceType($type)->with([
+             'category.categoryDetail.translation' => function ($q) use ($langId) {
+                 $q->where('category_translations.language_id', $langId);
+             },
+             'vendor',
+             'media' => function ($q) {
+                 $q->groupBy('product_id');
+             }, 'media.image',
+             'translation' => function ($q) use ($langId) {
+                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+             },
+             'variant' => function ($q) use ($langId) {
+                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                 $q->groupBy('product_id');
+             },
+         ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
+         if ($where !== '') {
+             $products = $products->where($where, 1);
+         }
+         $pndCategories = Category::where('type_id', 7)->pluck('id');
+         // if (is_array($venderIds)) {
+         //     $products = $products->whereIn('vendor_id', $venderIds);
+         // }
+         if ($pndCategories) {
+             $products = $products->whereNotIn('category_id', $pndCategories);
+         }
+         $products = $products->whereHas('vendor', function($q) use ($type,$venderIds){
+                     $q->where('status',1);
+                     $q->whereIn('id',$venderIds);
+                    //  $q->where($type, 1);
+                 })->where('is_live', 1)->take(10)->inRandomOrder()->get();
+         if (!empty($products)) {
+             foreach ($products as $key => $value) {
+                 foreach ($value->variant as $k => $v) {
+                     $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
+                 }
+             }
+         }
+        return $products;
+         //pr( $products->toArray());
+     }
+
+    
 }

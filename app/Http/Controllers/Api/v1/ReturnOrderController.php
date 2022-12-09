@@ -13,24 +13,55 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\Web\OrderProductRatingRequest;
 use App\Http\Requests\Web\OrderProductReturnRequest;
-use App\Models\{Client, ClientPreference, EmailTemplate, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, User, UserDevice, UserVendor, VendorOrderDispatcherStatus};
+use App\Models\{Client, ClientPreference, EmailTemplate, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, User, UserAddress, UserDevice, UserVendor, VendorOrderDispatcherStatus};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
 use App\Models\Client as CP;
 use App\Models\Transaction;
 use App\Models\AutoRejectOrderCron;
 
-use App\Http\Traits\OrderTrait;
-use App\Models\{LoyaltyCard,ClientCurrency,VendorOrderCancelReturnPayment};
+use App\Http\Traits\{OrderTrait, ReturnExchangeTrait};
+use App\Models\{LoyaltyCard,ClientCurrency, ExchangeReason, Product, VendorOrderCancelReturnPayment};
 
 class ReturnOrderController extends BaseController{
 
     use ApiResponser;
-    use OrderTrait;
+    use OrderTrait, ReturnExchangeTrait;
     /**
      * order details in modal
     */
     public function getOrderDatainModel(Request $request){
+        try {
+            $user = Auth::user();
+            $lang_id = $user->language;
+            $order_details = Order::with(['vendors.products.productReturn','products.productRating', 'user', 'address',
+            'vendors'=>function($qw)use($request){
+                $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
+            },'vendors.products'=>function($qw)use($request){
+                $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
+            },'vendors.products.translation'=>function($qw)use($lang_id){
+                $qw->where('language_id', $lang_id);
+            },'products'=>function($qw)use($request){
+                $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
+            }])->whereHas('vendors',function($q)use($request){
+                $q->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
+            })
+            ->where('orders.user_id', Auth::user()->id)->where('orders.id', $request->id)->orderBy('orders.id', 'DESC')->first();
+
+            if(isset($order_details)){
+                return $this->successResponse($order_details,'Return Data.');
+           }
+           return $this->errorResponse('Invalid order', 404);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * order details in modal
+    */
+    public function getReplaceOrderDataInModel(Request $request){
         try {
             $user = Auth::user();
             $lang_id = $user->language;
@@ -64,7 +95,7 @@ class ReturnOrderController extends BaseController{
     */
     public function getReturnProducts(Request $request, $domain = ''){
         try {
-            $reasons = ReturnReason::where('status','Active')->orderBy('order','asc')->get();
+            $reasons = ReturnReason::where('status','Active')->where('type', 1)->orderBy('order','asc')->get();
             foreach($reasons as $reason){
                 $reason->title = __($reason->title);
             }
@@ -89,6 +120,143 @@ class ReturnOrderController extends BaseController{
         }
     }
 
+    /**
+     * order details in for return order
+    */
+    public function getReplaceProducts(Request $request, $domain = ''){
+        try {
+
+            $user = Auth::user();
+            $langId = $user->language;
+            $reasons = ReturnReason::where('status','Active')->where('type', 2)->orderBy('order','asc')->get();
+            foreach($reasons as $reason){
+                $reason->title = __($reason->title);
+            }
+
+            $order_details = Order::with(['vendors.products' => function ($q1)use($request){
+                $q1->where('id', $request->return_ids);
+            }, 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image',
+            'products' => function ($q1)use($request){
+                $q1->where('id', $request->return_ids);
+            },'products.productRating', 'user', 'address'])
+            ->whereHas('vendors.products',function($q)use($request){
+                $q->where('id', $request->return_ids);
+            })->where('orders.user_id', Auth::user()->id)->where('id', $request->order_id)->orderBy('orders.id', 'DESC')->first();
+
+
+            $vendor_id = 0;
+            if(isset($order_details)){
+                foreach($order_details->vendors as $key => $vendor){
+                   
+                    // dd($vendor_id);
+                    foreach($vendor->products as $product){
+                        if($product->product_id == $request->product_id){
+                            $vendor_id = $vendor->vendor_id;
+                        }
+                        if(@$product->pvariant->media && $product->pvariant->media->isNotEmpty()){
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'];
+                        }elseif($product->media->isNotEmpty()){
+                            $product->image_url = $product->media->first()->image->path['image_fit'].'74/100'.$product->media->first()->image->path['image_path'];
+                        }else{
+                            $product->image_url = ($product->image) ? $product->image['image_fit'].'74/100'.$product->image['image_path'] : '';
+                        }
+                    }
+                }
+
+
+
+
+
+                $user = Auth::user();
+                $p_id = $request->product_id;
+                // dd($p_id);
+                $product = Product::with([
+                    'variant' => function ($sel) {
+                        $sel->groupBy('product_id');
+                    },
+                    'variant.set' => function ($sel) {
+                        $sel->select('product_variant_id', 'variant_option_id');
+                    },
+                    'variant.media.pimage.image', 'related', 'upSell', 'crossSell', 'vendor', 'media.image', 'translation' => function ($q) use ($langId) {
+                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+                        $q->where('language_id', $langId);
+                    },
+                    'addOn' => function ($q1) use ($langId) {
+                        $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
+                        $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
+                        $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
+                        $q1->where('set.status', 1)->where('ast.language_id', $langId);
+                    },
+                    'variantSet' => function ($z) use ($langId, $p_id) {
+                        $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+                        $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
+                        $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                        $z->where('vt.language_id', $langId);
+                        $z->where('product_variant_sets.product_id', $p_id);
+                        $z->where('vr.status', 1);
+                    },
+                    'variantSet.option2' => function ($zx) use ($langId, $p_id) {
+                        $zx->where('vt.language_id', $langId)
+                            ->where('product_variant_sets.product_id', $p_id);
+                    },
+                    'addOn.setoptions' => function ($q2) use ($langId) {
+                        $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                        $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
+                        $q2->where('apt.language_id', $langId);
+                    },
+                    'category.categoryDetail.allParentsAccount'
+                ])->where('id', $p_id);
+                
+                $product = $product->whereHas('vendor',function($q) use($vendor_id){
+                        $q->where('id',$vendor_id);
+                    })
+                    ->where('is_live', 1)
+                    ->firstOrFail();
+                    $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
+                    if($clientCurrency){
+                        $doller_compare = $clientCurrency->doller_compare;
+                    }else{
+                        $clientCurrency = ClientCurrency::where('is_primary','=', 1)->first();
+                        $doller_compare = $clientCurrency->doller_compare ?? 1;
+                    }
+                    foreach ($product->variant as $key => $value) {
+                        if(isset($product->variant[$key])){
+                        $product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
+                        }
+                    }
+                    foreach ($product->addOn as $key => $value) {
+                        foreach ($value->setoptions as $k => $v) {
+                            $v->multiplier = $clientCurrency->doller_compare;
+                        }
+                    }
+                    // dd($product);
+                    $preferences = Session::get('preferences');
+                    $is_available = true;
+                    if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+                        if($product){
+                            $productVendorId = $product->vendor_id;
+                            $vendors = $this->getServiceAreaVendors();
+                            if(!in_array($productVendorId, $vendors)){
+                                $is_available = false;
+                            }
+                        }
+                    }
+                }
+
+
+            $addresses = UserAddress::where('user_id', Auth::user()->id)->where('status',1)->orderBy('is_primary','Desc')->get();
+
+            if(isset($order_details)){
+                $data = ['reasons' => $reasons, 'addresses' => $addresses];
+                return $this->successResponse($data,'Return Product.');
+            }
+            return $this->errorResponse('Invalid order', 404);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
 
     /**
      * return  order product
@@ -98,31 +266,14 @@ class ReturnOrderController extends BaseController{
             $user = Auth::user();
             $order_deliver = 0;
             $order_details = OrderProduct::where('id',$request->order_vendor_product_id)->whereHas('order',function($q){$q->where('user_id',Auth::id());})->first();
-            if($order_details)
-            $order_deliver = VendorOrderStatus::where(['order_id' => $order_details->order_id,'vendor_id' => $order_details->vendor_id,'order_status_option_id' => 5])->count();
+            
+            $this->markAsReturnPending($order_details);
 
-            if($order_deliver > 0){
-                $returns = OrderReturnRequest::updateOrCreate(['order_vendor_product_id' => $request->order_vendor_product_id,
-                'order_id' => $order_details->order_id,
-                'return_by' => Auth::id()],['reason' => $request->reason??null,'coments' => $request->coments??null]);
-
-
-            if(isset($request->add_files) && is_array($request->add_files))    # send  array of insert images
-                {
-                    foreach ($request->add_files as $storage) {
-                        $img = new OrderReturnRequestFile();
-                        $img->order_return_request_id = $returns->id;
-                        $img->file = $storage;
-                        $img->save();
-
-                    }
-                }
-
-              if(isset($request->remove_files) && is_array($request->remove_files))    # send index array of deleted images
-                $removefiles = OrderReturnRequestFile::where('order_return_request_id',$returns->id)->whereIn('id',$request->remove_files)->delete();
-
-            }
+            $type = 1; // 1 = return
+            $returns = $this->saveReturnExchangeRequest($request, $order_details, $type);
+            
             if(isset($returns)) {
+
                 $this->sendSuccessNotification($user->id, $order_details->vendor_id);
                 $this->sendSuccessEmail($request);
                 return $this->successResponse($returns,'Return Submitted.');
@@ -132,6 +283,60 @@ class ReturnOrderController extends BaseController{
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
+    }
+
+    /**
+     * return  order product
+    */
+    public function updateProductReplace(OrderProductReturnRequest $request){
+        try {
+            $user = Auth::user();
+            DB::beginTransaction();
+            \Log::info("asdfasd", $request->all());
+           
+            $orderVendorProductOld = OrderProduct::find($request->order_vendor_product_id); // get exchanged order product
+            
+            $orderVendorOld = OrderVendor::with('products')->where('id',$orderVendorProductOld->order_vendor_id)
+                                        ->whereHas('products', function ($q) use($orderVendorProductOld){
+                                            $q->where('product_id', $orderVendorProductOld->product_id);
+                                        })->first();
+            if(round($orderVendorOld->subtotal_amount/$orderVendorOld->products[0]->quantity)  != round($request->product_a_price)){
+                return $this->errorResponse('Please select product with same price', 400);
+            }
+            $type = 2; // type = exchange
+            $this->saveReturnExchangeRequest($request, $orderVendorProductOld, $type);
+            /****** create new exchange order Start ******************/
+            $order =  $this->saveOrder($request, $orderVendorOld);
+            $order_vender =  $this->saveOrderVendor($order, $orderVendorProductOld);
+            
+            $this->saveOrderVendorProduct($request, $order, $orderVendorProductOld, $order_vender);
+            $this->saveVendorOrderStatus($order, $orderVendorProductOld, $order_vender);
+
+            /****** start Task in dispatcher to return exchange product ********/
+            $dispatch_domain = $this->getDispatchDomain();
+            $this->placeReturnRequestToDispatch($order->id, $orderVendorProductOld->vendor_id, $dispatch_domain);
+
+            /**** mark previous product as exchanged/replace pending **********/
+            $this->markAsExchangePending($orderVendorProductOld);
+
+            DB::commit();
+            // $this->sendSuccessSMS($request, $order);
+
+            return $this->successResponse($order);
+        } catch (Exception $e) {
+            DB::rollback();
+            return $this->errorResponse($e->getMessage(), 400);
+        }
+    }
+
+    # get prefereance if last mile on or off and all details updated in config
+    public function getDispatchDomain()
+    {
+        $preference = ClientPreference::first();
+        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+            return $preference;
+        else
+            return false;
     }
 
     public function sendSuccessNotification($id, $vendorId){
@@ -346,4 +551,7 @@ class ReturnOrderController extends BaseController{
             ]);
         }
     }
+
+
+    
 }

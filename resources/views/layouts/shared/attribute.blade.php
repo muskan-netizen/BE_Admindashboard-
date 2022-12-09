@@ -1,3 +1,4 @@
+@if(!empty($attributes))
 <div class="">
     <div class="card-box h-100">
         <div class="row mb-2">
@@ -29,7 +30,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if(!empty($attributes))
+                            
                             @foreach($attributes as $key => $variant)
                                 @if(!empty($variant->translation_one))
                                     <tr class="variantList" data-row-id="{{$variant->id}}">
@@ -62,7 +63,7 @@
                                     </tr>
                                 @endif
                             @endforeach
-                            @endif
+                            
                         </tbody>
                     </table>
                 </div>
@@ -73,3 +74,4 @@
         </div>
     </div>
 </div>
+@endif

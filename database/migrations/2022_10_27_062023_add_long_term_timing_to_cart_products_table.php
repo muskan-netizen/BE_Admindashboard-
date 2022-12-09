@@ -29,7 +29,10 @@ class AddLongTermTimingToCartProductsTable extends Migration
     public function down()
     {
         Schema::table('cart_products', function (Blueprint $table) {
-            //
+            $table->dropColumn('service_start_date');
+            $table->dropColumn('service_day');
+            $table->dropColumn('service_date');
+            $table->dropColumn('service_period');
         });
     }
 }

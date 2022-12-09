@@ -23,7 +23,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption, Type};
+use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption,Type, VendorAdditionalInfo};
+
 use Kutia\Larafirebase\Facades\Larafirebase;
 use App\Http\Controllers\Client\VendorController;
 use Math;
@@ -827,13 +828,14 @@ class CustomerAuthController extends FrontController
 
     public function postVendorregister(Request $request, $domain = ''){
         try {
-            //pr($request->all());
+
+            $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration']);
+            // dd($getAdditionalPreference);
             DB::beginTransaction();
             $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
             if (empty($request->input('user_id'))) {
                 if ($vendor_registration_documents->count() > 0) {
                     $rules_array = [
-
                         'address' => 'required',
                         'full_name' => 'required',
                         'email' => 'required|email|unique:users',
@@ -996,8 +998,14 @@ class CustomerAuthController extends FrontController
             $vendor->longitude = $request->longitude;
             $vendor->desc = $request->vendor_description;
             $vendor->slug = Str::slug($request->name, "-");
+            $vendor->is_seller = $request->vendor_type;
             $vendor->save();
-            $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
+            if($request->vendor_type == 0){
+                $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21]);    
+            }else{
+                $permission_details = Permissions::whereIn('id', [1,2,12,17,18,19,20,21,28]);
+            }
+            $permission_details = $permission_details->get();   
             if ($vendor_registration_documents->count() > 0) {
                 foreach ($vendor_registration_documents as $vendor_registration_document) {
                     $doc_name = str_replace(" ", "_", $vendor_registration_document->primary->slug);
@@ -1033,6 +1041,29 @@ class CustomerAuthController extends FrontController
                 $this->LoginActionRecentView($user->id);
             }
             
+            // Add vendor additional data
+            $additionalData = [];
+            if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1){
+                $additionalData = [
+                    // 'vendor_id' => $vendor->id,
+                    'company_name' => $request->company_name,
+                    'gst_number' => $request->gst_num_Input,
+                ];
+            }
+
+            if(@$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == 1){
+                $additionalData['account_name'] = $request->account_name;
+                $additionalData['bank_name'] = $request->bank_name;
+                $additionalData['account_number'] = $request->account_number;
+                $additionalData['ifsc_code'] = $request->ifsc_code;
+            }
+            // dd($additionalData);
+            if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1 || @$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == 1){
+                $saveVendorAdditionalInfo = VendorAdditionalInfo::updateOrCreate(
+                    ['vendor_id'=> $vendor->id], 
+                    $additionalData
+                );
+            }
 
             $content = '';
             $email_template = EmailTemplate::where('id', 1)->first();
@@ -1089,9 +1120,11 @@ class CustomerAuthController extends FrontController
 
             }
             DB::commit();
+            $is_seller = $request->vendor_type;
+            $msg_text = isset($is_seller) && $is_seller == 0 ? 'Vendor' : 'Seller';
             return response()->json([
                 'status' => 'success',
-                'message' => 'Vendor Registration Created Successfully!',
+                'message' => $msg_text.' Registration Created Successfully!',
             ]);
         } catch (Exception $e) {
             DB::rollback();
@@ -1149,25 +1182,18 @@ class CustomerAuthController extends FrontController
 
     public function zillowGetData()
     {
-
-
-
-
         $params = (array('address' => '7356 CARTER AVE', 'citystatezip' => 'NEWARK'));
 
         $params['zws-id'] = 'X1-ZWz16b0yk0045n_8mfo0';
-			$url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);
-			$result = new SimpleXMLElement($url, 0, true);dd($params);
+        $url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);
+        $result = new SimpleXMLElement($url, 0, true);dd($params);
 
-			// save this in object so that we could reuse it
-			if ( isset($result->response->results->result->zpid) ) {
-				$this->zpid = (string)$result->response->results->result->zpid;
-			}
-
-			return $result->response;
-
+        // save this in object so that we could reuse it
+        if ( isset($result->response->results->result->zpid) ) {
+            $this->zpid = (string)$result->response->results->result->zpid;
+        }
+        return $result->response;
     }
-
 
     // public function getDatazillo($params);
     // {
@@ -1182,7 +1208,5 @@ class CustomerAuthController extends FrontController
 
 	// 		return $result;
     // }
-
-
 }
 
