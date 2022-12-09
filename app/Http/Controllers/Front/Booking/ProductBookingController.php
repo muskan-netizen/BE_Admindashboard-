@@ -28,7 +28,7 @@ class ProductBookingController extends FrontController
      */
     public function checkProductAvailibility(Request $request)
     {
-      try {
+     // try {
           $block_time = explode('-', $request->blocktime);
           $start_time = date("Y-m-d H:i:s",strtotime($request->selectedStartDate));
           $end_time = date("Y-m-d H:i:s",strtotime($request->selectedEndDate));
@@ -57,9 +57,9 @@ class ProductBookingController extends FrontController
           $returnarr['end_time'] =  $end_time;
           $returnarr['variant_option_id'] = $request->variant_option_id;
           return response()->json(array('success' => true, 'variant_data'=>$returnarr ,'message'=>'Available product data.'));
-        } catch (Exception $e) {
-          return response()->json(array('error' => false, 'message'=>'Something went wrong.'));
-        }
+        // } catch (Exception $e) {
+        //   return response()->json(array('error' => false, 'message'=>'Something went wrong.'));
+        // }
      
     }
     
