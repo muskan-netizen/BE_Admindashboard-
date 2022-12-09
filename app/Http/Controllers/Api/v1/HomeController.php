@@ -230,7 +230,7 @@ class HomeController extends BaseController
             else
                 $domain_link = "https://" . $homeData['profile']->sub_domain . env('SUBMAINDOMAIN');
             $homeData['domain_link'] = $domain_link;
-
+            $homeData['profile']->preferences->is_postpay_enable = (int) @getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'];
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

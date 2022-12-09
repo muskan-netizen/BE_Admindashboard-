@@ -273,10 +273,10 @@ class PickupDeliveryController extends BaseController{
         try {
             $order_place = $this->orderPlaceForPickupDelivery($request);
             if($order_place && $order_place['status'] == 200){
-                if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
+                if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) || (( $request->has('is_postpay')) && ($request->is_postpay==1))){
                     $data = [];
                     $order = $order_place['data'];
-                    $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
+                    $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
                     if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
 
@@ -376,6 +376,11 @@ class PickupDeliveryController extends BaseController{
                 $order->friend_name = $request->friendName;
                 $order->friend_phone_number = $request->friendPhoneNumber;
                 $order->luxury_option_id = $luxury_option->id;
+                if(checkColumnExists('orders', 'is_postpay')){
+                    $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
+                }
+                
+                
 
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
@@ -628,8 +633,14 @@ class PickupDeliveryController extends BaseController{
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order->payable_amount;
                 } else {
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
+                    if($order->is_postpay==1)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
                 }
 
                 // if(isset($request->task_type) && !empty($request->task_type))

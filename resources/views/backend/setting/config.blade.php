@@ -1330,6 +1330,45 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
    {{-- end Free Delivery By Roles form --}}
 
 
+   <div class="col-xl-4 col-lg-4 mb-3">
+      <!-- Social Logins title start -->
+      <div class="page-title-box">
+         <h4 class="page-title text-uppercase">Post Pay</h4>
+      </div><!-- Social Logins title end -->
+
+      <form method="POST" action="{{route('additional.update')}}">
+         <input type="hidden" name="crm" id="crm" value="1">
+         <input type="hidden" name="send_to" id="send_to" value="configure">
+         @csrf
+         <!-- HubSpot card start -->
+         <div class="card-box h-100">
+            <div class="row">
+               <div class="col-12">
+                  <div class="form-group mb-0 switchery-demo">
+                     <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h4 class="header-title text-uppercase mb-0">{{ __("Post Pay") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                     </div>
+                     <p class="sub-header">{{ __("Post Pay allows customers to pay after placing order and order edit facility till payment not done and timelimit does not exceeded.") }}</p>
+                     <label for="" class="mr-3">{{ __("Enable") }}</label>
+                     <input type="checkbox" data-plugin="switchery" name="is_postpay_edit_dropoff_switch" id="is_postpay_edit_dropoff_switch" class="form-control checkbox_change" data-className="is_postpay_edit_dropoff" data-color="#43bee1" @if(@getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'] == 1) checked='checked'  @endif>
+                     <input type="hidden"  @if(@getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'] == 1) value="1" @else value="0" @endif  name="is_postpay_edit_dropoff"  id="is_postpay_edit_dropoff"/>
+                  </div>
+                  <div class="row mt-2" id="edit_order_time_limit_div" style="display:@if(@getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'] == 1) @else none @endif;">
+                     <div class="col-8">
+                        <label for="" class="mr-3">{{ __("Disable Order Edit before (Hours)") }}</label>
+                     </div>
+                     <div class="col-4">
+                        <input type="number" name="order_edit_before_hours" id="order_edit_before_hours" placeholder="" class="form-control" value="{{ old('order_edit_before_hours', @getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'] ?? '')}}">
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div><!-- Post Pay Card end -->
+      </form>
+   </div>
+   {{-- end Post Pay form --}}
+
 </div>
 
 
@@ -1710,15 +1749,6 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
             <span> <input type="checkbox" data-plugin="switchery" name="is_cab_pooling_switch" id="is_cab_pooling_switch" class="form-control checkbox_change" data-className="is_cab_pooling" data-color="#43bee1" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']==1) checked='checked' @endif>
             </span>
             <input type="hidden" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']==1) value="1" @else value="0" @endif name="is_cab_pooling" id="is_cab_pooling" />
-         </div>
-      </div>
-
-      <div class="col-md-4">
-         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-            <label for="is_postpay_edit_dropoff_switch" class="mr-2 mb-0">{{__('Enable Edit DropOff Location (Enable Post Pay)')}}<small class="d-block pr-5">{{__("Post Pay allows customers to pay after placing order. Edit DropOff Location to allow customers to Change DropOff Location even after placing order.")}}</small></label>
-            <span> <input type="checkbox" data-plugin="switchery" name="is_postpay_edit_dropoff_switch" id="is_postpay_edit_dropoff_switch" class="form-control checkbox_change" data-className="is_postpay_edit_dropoff" data-color="#43bee1" @if(@getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'] == 1) checked='checked'  @endif>
-            </span>
-            <input type="hidden"  @if(@getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'] == 1) value="1" @else value="0" @endif  name="is_postpay_edit_dropoff"  id="is_postpay_edit_dropoff"/>
          </div>
       </div>
 
@@ -2469,7 +2499,7 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
    var dispatcherDiv = $('#need_dispacher_ride');
    var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
    var laundry_service = $('#need_laundry_service');
-
+   var need_inventory_service = $('#need_inventory_service');
    var laundry_service = $('#need_laundry_service');
 
    var is_hubspot_enable = $('#is_hubspot_enable');
@@ -2579,6 +2609,17 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
          $('.sos_row').hide();
       } else {
          $('.sos_row').show();
+      }
+   }
+
+   var is_postpay_edit = $('#is_postpay_edit_dropoff_switch');
+
+   is_postpay_edit[0].onchange = function() {
+      if ($('#is_postpay_edit_dropoff_switch:checked').length != 1) {
+         $('#edit_order_time_limit_div').hide();
+         $('#order_edit_before_hours').val(0);
+      } else {
+         $('#edit_order_time_limit_div').show();
       }
    }
 

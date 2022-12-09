@@ -133,12 +133,12 @@ class OrderController extends FrontController
                 $q->where('order_status_option_id', '!=', 9);
             })
             ->where(function ($q1) {
-                $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+                $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
                 $q1->orWhere(function ($q2) {
-                    $q2->where('payment_option_id', 1)
+                    $q2->whereIn('payment_option_id', [1, 38])
                         ->orWhere(function($q3) {
                             $q3->where('is_postpay', 1) //1 for order is post paid
-                                ->whereNotIn('payment_option_id', [1]);
+                                ->whereNotIn('payment_option_id', [1, 38]);
                         });
                 });
             })
@@ -866,7 +866,9 @@ class OrderController extends FrontController
             $order->is_gift = $request->is_gift ?? 0;
             $order->user_latitude = $latitude ? $latitude : null;
             $order->user_longitude = $longitude ? $longitude : null;
-            $order->is_postpay = $request->is_postpay;
+            if(checkColumnExists('orders', 'is_postpay')){
+                $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
+            }
             /* Save initial details of order */
             $order->save();
 
@@ -1580,7 +1582,7 @@ class OrderController extends FrontController
 
             $ex_gateways = [4,5,7,8,9,10,12,13,15,17,18,19,20,21,23,24,25,26,28,29,30,31,32,34,35,36,37,39,40,41,42,43,44,45,47]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash,Stipre_oxxo,stripe_ideal
 
-            if (!in_array($request->payment_option_id, $ex_gateways) || $request->is_postpay==1) {
+            if (!in_array($request->payment_option_id, $ex_gateways) || (isset($request->is_postpay) && $request->is_postpay==1)) {
 
                 //Send Email to customer
                 $this->sendSuccessEmail($request, $order);
@@ -1612,7 +1614,7 @@ class OrderController extends FrontController
                     $order_tax->save();
                 }
             }
-            if (($request->payment_option_id != 1 && $request->is_postpay==0) && ($request->payment_option_id != 2 && $request->is_postpay==0) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
+            if (($request->payment_option_id != 1 && (!isset($request->is_postpay) || $request->is_postpay==0)) && ($request->payment_option_id != 2 && (!isset($request->is_postpay) || $request->is_postpay==0)) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
                 Payment::insert([
                     'date' => date('Y-m-d'),
                     'order_id' => $order->id,
@@ -1622,7 +1624,7 @@ class OrderController extends FrontController
                 ]);
             }
             $order = $order->with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id', 'vendors.vendor', 'products'])->where('order_number', $order->order_number)->first();
-            if (!in_array($request->payment_option_id, $ex_gateways) && $request->is_postpay==1) {
+            if (!in_array($request->payment_option_id, $ex_gateways) && (isset($request->is_postpay) && $request->is_postpay==1)) {
                 if (!empty($order->vendors)) {
                     foreach ($order->vendors as $vendor_value) {
                         $vendorDetail = $vendor_value->vendor;
@@ -2250,7 +2252,7 @@ class OrderController extends FrontController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if($request->is_postpay==1)
+                if(isset($request->is_postpay) && $request->is_postpay==1)
                 {
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order->payable_amount;
@@ -2379,7 +2381,7 @@ class OrderController extends FrontController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if($request->is_postpay==1)
+                if(isset($request->is_postpay) && $request->is_postpay==1)
                 {
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order->payable_amount;

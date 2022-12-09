@@ -740,6 +740,11 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                     <label
                                                                                         class="m-0">{{ __('Total Payable') }}</label>
                                                                                     <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount+$order->fixed_fee_amount)}}
+
+                                                                                    @if(!checkColumnExists('orders', 'is_postpay'))
+                                                                                        $order->is_postpay = 0;
+                                                                                    @endif
+                                                                                    
                                                                                     @if ($order->payment_option_id != 1 && $order->is_postpay == 1 && $order->payment_status == 0)
                                                                                         <br/><span style="color:var(--theme-deafult);">Unpaid</span>
                                                                                     @endif

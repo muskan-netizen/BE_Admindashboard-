@@ -1731,7 +1731,12 @@ class OrderController extends BaseController
             ->whereHas('orderDetail', function ($q1) {
                 $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1,38]);
                 $q1->orWhere(function ($q2) {
-                    $q2->whereIn('orders.payment_option_id', [1,38]);
+                    $q2->whereIn('orders.payment_option_id', [1,38])
+                    ->orWhere(function($q3) {
+                        $q3->where('orders.is_postpay', 1) //1 for order is post paid
+                            ->whereNotIn('orders.payment_option_id', [1, 38]);
+                    });
+                    
                 });
             })
             ->paginate($paginate);
@@ -1746,6 +1751,7 @@ class OrderController extends BaseController
             $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
             $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
             $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
+            $order->is_postpay  = $order->orderDetail->is_postpay;
             $product_details = [];
             $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->orderDetail->id)->where('vendor_id', $order->vendor_id)->orderBy('id', 'DESC')->first();
             if ($vendor_order_status) {
