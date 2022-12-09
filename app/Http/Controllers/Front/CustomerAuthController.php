@@ -362,7 +362,7 @@ class CustomerAuthController extends FrontController
                     $vendor->logo = 'default/default_logo.png';
                     $vendor->banner = 'default/default_image.png';
 
-                    $vendor->status = 0;
+                    $vendor->status = 1;
                     $vendor->name = $user->name;
                     $vendor->p2p = 1;
                     $vendor->email = $user->email ?? '';
