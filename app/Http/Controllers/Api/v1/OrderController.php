@@ -255,6 +255,7 @@ class OrderController extends BaseController
                         $product_taxable_amount = 0;
                         $vendor_products_total_amount = 0;
                         $vendor_payable_amount = 0;
+                        $only_products_amount = 0;
                         $vendor_markup_amount = 0;
                         $vendor_discount_amount = 0;
                         $is_restricted = 0;
@@ -307,10 +308,11 @@ class OrderController extends BaseController
                             $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $price_container_charges;
                             $vendor_markup_amount = $vendor_markup_amount + $variant->markup_price;
                             $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
+                            $only_products_amount += $quantity_price;
                             $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
-                            $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
+
+                            $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
                             $productAddon_price = 0;
-// dump($payable_amount);
                             if (!empty($vendor_cart_product->addon)) {
                                 foreach ($vendor_cart_product->addon as $ck => $addon) {
                                     $opt_quantity_price = 0;
@@ -321,7 +323,7 @@ class OrderController extends BaseController
                                     $productAddon_price = $productAddon_price + $opt_quantity_price;
                                     $payable_amount = $payable_amount + $opt_quantity_price;
                                     $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
-// dump($payable_amount);
+
                                 }
                             }
                          
@@ -337,7 +339,7 @@ class OrderController extends BaseController
                                     $taxable_amount = $taxable_amount + $product_tax;
                                     $product_taxable_amount += $product_tax;
                                     //$payable_amount = $payable_amount + $product_tax;
-// dump($payable_amount);
+
                                 }
                             }
                             if ($action == 'delivery') {
@@ -356,7 +358,7 @@ class OrderController extends BaseController
                                         $delivery_count = 1;
                                         $vendor_cart_product->delivery_fee = decimal_format($delivery_fee);
                                         // $payable_amount = $payable_amount + $delivery_fee;
-// dump($payable_amount);
+
                                         $delivery_fee_charges = $delivery_fee;
                                         $latitude = $request->header('latitude');
                                         $longitude = $request->header('longitude');
@@ -465,14 +467,13 @@ class OrderController extends BaseController
                                 $vendor_payable_amount -= $delivery_fee;
                                 $vendor_discount_amount += $delivery_fee;
                             }
-                            
                             if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
                                 $coupon_discount_amount = $vendor_cart_product->coupon->promo->amount;
                                 $total_discount += $coupon_discount_amount;
                                 $vendor_payable_amount -= $coupon_discount_amount;
                                 $vendor_discount_amount += $coupon_discount_amount;
                             } else {
-                                $coupon_discount_amount = ($vendor_payable_amount * $vendor_cart_product->coupon->promo->amount / 100);
+                                $coupon_discount_amount = ($only_products_amount * $vendor_cart_product->coupon->promo->amount / 100);                           
                                 $final_coupon_discount_amount = $coupon_discount_amount * $clientCurrency->doller_compare;
                                 $total_discount += $final_coupon_discount_amount;
                                 $vendor_payable_amount -= $final_coupon_discount_amount;
@@ -488,10 +489,9 @@ class OrderController extends BaseController
                         }
                         //Start applying service fee on vendor products total
                         $vendor_service_fee_percentage_amount = 0;
-                        if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                            $vendor_service_fee_percentage_amount = ((($vendor_products_total_amount+$opt_quantity_price)-$price_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                        if ($vendor_cart_product->vendor->service_fee_percent > 0) {          
+                            $vendor_service_fee_percentage_amount = ((($vendor_products_total_amount+$opt_quantity_price)-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
 
-                        
                             $vendor_payable_amount += $vendor_service_fee_percentage_amount;
                             $payable_amount += $vendor_service_fee_percentage_amount;
                         }
@@ -539,7 +539,7 @@ class OrderController extends BaseController
                     }
                     
                     $payable_amount = $payable_amount + $total_taxes + $additional_price;
-// dump($payable_amount);
+// dump("point - ".$payable_amount);
                     $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
 
                     // calculate subscription discount
@@ -592,7 +592,7 @@ class OrderController extends BaseController
                         $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                         $order->tip_amount = decimal_format($tip_amount);
                     }
-// dd($payable_amount);
+// dd( "last- ".$total_service_fee, $payable_amount);
                     $payable_amount = $payable_amount + $tip_amount ;
                     $payable_amount = $payable_amount - $wallet_amount_used;
                     $order->total_service_fee = $total_service_fee;

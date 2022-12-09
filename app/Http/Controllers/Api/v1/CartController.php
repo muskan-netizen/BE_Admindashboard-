@@ -708,7 +708,7 @@ class CartController extends BaseController
                     }
                 }
 
-                $ttAddon = $payable_amount = $is_coupon_applied = $coupon_removed = 0;
+                $ttAddon = $payable_amount = $is_coupon_applied = $coupon_removed = $only_products_amount= 0;
                 $coupon_removed_msg = '';
                 $deliver_charge = 0;
                 $deliveryCharges = 0;
@@ -832,6 +832,7 @@ class CartController extends BaseController
                             $variantsData['coupon_applied'] = $codeApplied;
                             $variantsData['quantity_price'] = $quantity_price;
                             $variantsData['quantity_container_charges'] = $quantity_container_charges;
+                            $only_products_amount += $quantity_price;
                             $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges; 
                             if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
@@ -1005,7 +1006,6 @@ class CartController extends BaseController
                             if (isset($vendorData->coupon->promo->maximum_spend)) {
                                 $maximum_spend = $vendorData->coupon->promo->maximum_spend * $clientCurrency->doller_compare;
                             }
-
                             if( ($minimum_spend <= $payable_amount ) && ($maximum_spend >= $payable_amount)    )
                             {
                                 $dis_amt =0;
@@ -1015,8 +1015,8 @@ class CartController extends BaseController
                                    // $payable_amount -= $total_discount_percent;
                                     $discount_amount = $total_discount_percent;
                                 } else {
-                                    $dis_amt = $percentage_amount = ($payable_amount * $vendorData->coupon->promo->amount / 100);
-                                   // $payable_amount -= $percentage_amount;
+                                    $dis_amt = $percentage_amount = ($only_products_amount * $vendorData->coupon->promo->amount / 100);
+                                    // $payable_amount -= $percentage_amount;
                                     $discount_amount = $percentage_amount;
                                 }
 
@@ -1328,8 +1328,9 @@ class CartController extends BaseController
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
         $cart->total_markup_charges = decimal_format($total_markup_charges);
-        $cart->total_tax = decimal_format($total_taxable_amount + $total_fixed_fee_tax + $total_service_fee_tax + $deliver_fee_charges_tax + $total_markup_fee_tax + $container_charges_tax);
+        $cart->total_tax = decimal_format($total_fixed_fee_tax + $total_service_fee_tax + $deliver_fee_charges_tax + $total_markup_fee_tax + $container_charges_tax);
         $cart->tax_details = $tax_details;
+        $cart->total_taxable_amount = decimal_format($total_taxable_amount);
         $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
         $cart->gross_paybale_amount = $order_sub_total;
@@ -1349,7 +1350,7 @@ class CartController extends BaseController
             $loyalty_amount_saved = $temp_total_paying;
             $cart->total_payable_amount = 0.00;
         } else {
-            $cart->total_payable_amount = ($total_paying  + $total_tax) - ($total_disc_amount + $loyalty_amount_saved); 
+            $cart->total_payable_amount = ($total_paying  + $cart->total_tax) - ($total_disc_amount + $loyalty_amount_saved); 
         }
         if($total_taxable_amount>0){
             $cart->total_payable_amount = $cart->total_payable_amount +$total_taxable_amount;
@@ -1385,7 +1386,7 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
-        $cal_tip_value_total = ($cart->total_payable_amount - $cart->total_tax);  
+        $cal_tip_value_total =  $cart->total_tax;  
         $cart->tip = array(
             ['label' => '5%', 'value' => decimal_format(0.05 * $cal_tip_value_total)],
             ['label' => '10%', 'value' => decimal_format(0.1 * $cal_tip_value_total)],
