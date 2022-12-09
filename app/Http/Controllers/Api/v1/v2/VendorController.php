@@ -2114,8 +2114,8 @@ class VendorController extends BaseController{
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 //3961 for miles and 6371 for kilometers
                 Log::info('in productsByVendorOptimize api' );
-                Log::info('latitude undefined', $latitude );
-                Log::info('longitude undefined', $longitude );
+                Log::info('latitude undefined'. $latitude );
+                Log::info('longitude undefined'. $longitude );
                 $latitude = $latitude == 'undefined' ?  $preferences->Default_latitude : $latitude ;
                 $longitude = $longitude == 'undefined' ?  $preferences->Default_longitude : $longitude ;
                 $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
