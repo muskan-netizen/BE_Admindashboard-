@@ -59,7 +59,6 @@
                             </li>
                         </ul>
                     <aside class="side_fillter mt-2">
-                       
                     <!-- side-bar colleps block stat -->
                     @if( count($category->brands) > 0 || count($variantSets) > 0 )
                     <div class="collection-filter-block bg-transparent p-0 m-0">
