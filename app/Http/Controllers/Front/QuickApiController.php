@@ -134,5 +134,73 @@ class QuickApiController extends Controller
 
     }
 
+    public function webhookss(Request $request)
+    {
+        try{
+           $trackingId = '';
+           $json = json_decode($request->getContent());
+    
+           $driverId = $json->data->order->driverId??'';
+           if(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'ASSIGNING_DRIVER')
+           {
+            $trackingId = $json->data->order->id;
+
+            // ASSIGNING_DRIVER means Order is placed and assigning drivers
+            OrderVendor::where('web_hook_code',$trackingId)
+            ->update(['lalamove_tracking_url'=>$json->data->order->shareLink,'driver_id'=>$driverId]);
+            $details = OrderVendor::where('web_hook_code',$trackingId)  ->first();
+
+            VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'1']);
+            }elseif(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'ON_GOING')
+            {
+            $trackingId = $json->data->order->id;
+            // ON_GOING means driver assigned and start drive
+            OrderVendor::where('web_hook_code',$trackingId)
+            ->update(['lalamove_tracking_url'=>$json->data->order->shareLink,'driver_id'=>$driverId]);
+            $details = OrderVendor::where('web_hook_code',$trackingId)->first();
+
+            VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'4']);
+
+            VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'2']);
+            VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'3']);
+            }elseif(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'PICKED_UP')
+            {
+            $trackingId = $json->data->order->id;
+            // PICKED_UP means driver picked order and out for delivery
+            OrderVendor::where('web_hook_code',$trackingId)
+            ->update(['lalamove_tracking_url'=>$json->data->order->shareLink,'driver_id'=>$driverId]);
+            $details = OrderVendor::where('web_hook_code',$trackingId)->first();
+
+            VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'5']);
+
+            VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'4']);
+            }elseif(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'COMPLETED')
+            {
+            $trackingId = $json->data->order->id;
+            // COMPLETED means driver complete the delivery
+            OrderVendor::where('web_hook_code',$trackingId)
+            ->update(['lalamove_tracking_url'=>$json->data->order->shareLink,'driver_id'=>$driverId,'order_status_option_id'=>'6']);
+            $details = OrderVendor::where('web_hook_code',$trackingId)->first();
+
+
+            VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'6']);
+
+            VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
+            }
+
+
+        if($request && isset($json->data)){
+         Webhook::create(['tracking_order_id'=>(($trackingId)?$trackingId:''),'response'=>$request->getContent()]);
+        }
+        
+        }catch(\Exception $e){
+            \Log::info($e->getMessage());
+            return response([],200);
+        }
+
+        return response([],200);
+
+    }
+
     
 }

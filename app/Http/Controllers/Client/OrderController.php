@@ -842,7 +842,7 @@ class OrderController extends BaseController
                             $lala = new LalaMovesController();
                             $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
                         }elseif ($orderData->shipping_delivery_type == 'K') {
-                            //Cancel Shipping place order request for Lalamove
+                            //Cancel Shipping place order request for KwikApi
                             $lala = new QuickApiController();
                             $order_lalamove = $lala->cancelOrderRequestKwikApi($request->order_id,$request->vendor_id);
                         }elseif ($orderData->shipping_delivery_type == 'SR') {

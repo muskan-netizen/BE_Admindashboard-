@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\DunzoController;
 use App\Http\Controllers\Front\LalaMovesController;
+use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\Front\TempCartController;
 use App\Http\Controllers\ShiprocketController;
 use Illuminate\Support\Facades\Auth;
@@ -879,6 +880,27 @@ class OrderController extends BaseController
                 ->update(['web_hook_code' => $order_lalamove->orderRef]);
             }
         return 1;
+    }
+
+    public function placeOrderRequestKwikApi($request)
+    {
+        $kwik = new QuickApiController();
+        //Create Shipping place order request for KwikApi
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+            $order_ship = $kwik->placeOrderToKwikApi($request->vendor_id, $request->order_id);
+        }
+        if ($order_ship) {
+            $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'delivery_response' => json_encode($order_ship),
+                    'dispatch_traking_url'=>$order_ship->pickups[0]->result_tracking_link
+                ]);
+            return 1;
+        }
+
+        return false;
     }
 
     public function checkIfanyProductLastMileon($request)
@@ -2598,6 +2620,10 @@ class OrderController extends BaseController
                     }elseif($orderData->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
                         //$orderPlaced = $this->placeOrderRequestlalamove($request);
+                    }elseif ($orderData->shipping_delivery_type == 'K') {
+                        //Create Shipping place order request for Kwik
+                        $orderPlaced = $this->placeOrderRequestKwikApi($request);
+
                     }elseif($orderData->shipping_delivery_type=='SR'){
                         //Create Shipping place order request for Shiprocket
                         $orderPlaced = $this->placeOrderRequestShiprocket($request);
@@ -2638,6 +2664,10 @@ class OrderController extends BaseController
                             //Cancel Shipping place order request for Lalamove
                             $lala = new LalaMovesController();
                             $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
+                        }elseif ($orderData->shipping_delivery_type == 'K') {
+                            //Cancel Shipping place order request for KwikApi
+                            $lala = new QuickApiController();
+                            $order_lalamove = $lala->cancelOrderRequestKwikApi($request->order_id,$request->vendor_id);
                         }elseif($orderData->shipping_delivery_type=='SR'){
                             //Cancel Shipping place order request for Shiprocket
                             $ship = new ShiprocketController();

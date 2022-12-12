@@ -21,6 +21,7 @@ use App\Http\Controllers\AhoyController;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\PromoCodeController;
 use App\Http\Controllers\Front\LalaMovesController;
+use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\ShiprocketController;
 use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption, TaxRate}; 
 
@@ -862,12 +863,10 @@ class CartController extends BaseController
                             if ($action == 'delivery' || $action == 'on_demand') {
                                 if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
 
-
                             $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address, $prod->product->tags);
                             $deliveryDuration = 0;
                             if(isset($deliveries[0]))
                             {
-                                
                                  if($code){
                                      $new = array_filter($deliveries, function ($var) use ($code) {
                                          return ($var['code'] == $code);
@@ -911,6 +910,8 @@ class CartController extends BaseController
                                 $selType = CartDeliveryFee::where(['cart_id'=>$cartID,'vendor_id'=>$vendorData->vendor_id])->first();
                                 $vendorData->delivery_types = $deliveries;
                                 $vendorData->sel_types = (($selType)?$selType->shipping_delivery_type.'_'.$selType->courier_id:$code);
+
+
                             }
                         
                         if(isset($deliveryCharges_real) && !empty($deliveryCharges_real)){
@@ -1148,28 +1149,38 @@ class CartController extends BaseController
          if(!empty($taxRates)){
             $delivery_charges_tax_rate = 0;
             if($vendorData->vendor->delivery_charges_tax_id!=null){
+                if(isset($taxRates[$vendorData->vendor->delivery_charges_tax_id])){
                     $delivery_charges_tax_rate=$taxRates[$vendorData->vendor->delivery_charges_tax_id]['tax_rate'];
+                }
             }
 
             $fixed_fee_tax_rate = 0;
             if($vendorData->vendor->fixed_fee_tax_id!=null){
-                    $fixed_fee_tax_rate=$taxRates[$vendorData->vendor->fixed_fee_tax_id]['tax_rate'];
+                if(isset($taxRates[$vendorData->vendor->fixed_fee_tax_id])){
+                     $fixed_fee_tax_rate=$taxRates[$vendorData->vendor->fixed_fee_tax_id]['tax_rate'];
+                }
             }
 
 
             $service_charges_tax_rate = 0;
             if($vendorData->vendor->service_charges_tax_id!=null){
+                if(isset($taxRates[$vendorData->vendor->service_charges_tax_id])){
                     $service_charges_tax_rate=$taxRates[$vendorData->vendor->service_charges_tax_id]['tax_rate'];
+                }
             }
 
             $markup_price_tax_rate = 0;
             if($vendorData->vendor->markup_price_tax_id!=null){
+                if(isset($taxRates[$vendorData->vendor->markup_price_tax_id])){
                     $markup_price_tax_rate=$taxRates[$vendorData->vendor->markup_price_tax_id]['tax_rate'];
+                }
             }
 
             $container_charges_tax_rate = 0;
             if($vendorData->vendor->container_charges_tax_id!=null){
+                if(isset($taxRates[$vendorData->vendor->container_charges_tax_id])){
                     $container_charges_tax_rate=$taxRates[$vendorData->vendor->container_charges_tax_id]['tax_rate'];
+                }
             }
 
 
@@ -1775,6 +1786,28 @@ class CartController extends BaseController
             $option = array_merge($option,$optionLala);
         }
         //End Lalamove Delivery changes code
+
+        //Kwik Delivery changes code
+        $kwick = new QuickApiController();
+        $deliver_fee = $kwick->getDeliveryFeeKwikApi($vendorData->vendor_id);
+        if($deliver_fee>0)
+        {
+            $deliver_fee = decimal_format($deliver_fee);
+
+            $optionKwikApi[] = array(
+                'type'=>'K',
+                'courier_name'=>__('KwikApi'),
+                'rate' => $deliver_fee,
+                'courier_company_id' => 0,
+                'etd' => 0,
+                'etd_hours' => 0,
+                'duration' => 0,
+                'estimated_delivery_days' => 0,
+                'code' => 'K_0'
+            );
+            $option = array_merge($option,$optionKwikApi);
+        }
+        //End Kwik Delivery changes code
 
 
         if($vendorData->vendor->shiprocket_pickup_name){
