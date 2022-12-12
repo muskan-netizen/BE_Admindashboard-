@@ -21,12 +21,6 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-2">
-                <h4 class="page-title">{{ getNomenclatureName(__('Pincode'), true) }}</h4>
-            </div>
-            <div class="col-md-10 d-md-flex align-items-center justify-content-end mb-3">
-                <button type="button" class="btn btn-info waves-effect waves-light text-sm-right addPincodeBtn" data-pincode=""><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Pincode') }}</button>
-            </div>
             <div class="col-12">
                 @if(session()->has('success'))
                     <div class="alert alert-success">
@@ -38,6 +32,20 @@
                         {{ session()->get('error') }}
                     </div>
                 @endif
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h3 class="page-title">{{ getNomenclatureName(__('Pincode'), true) }}</h3>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="al_new_export_table royo_customber_btn table_customber_add">
+                            <div class="position-absolute mb-2">
+                                <button class="btn btn-info waves-effect waves-light text-sm-right importPincodeModal"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import CSV') }}</button>
+                                <button type="button" class="btn btn-info waves-effect waves-light text-sm-right addPincodeBtn" data-pincode=""><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Pincode') }}</button>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="card">
                     <div class="card-body position-relative">
                         <div class="table-responsive">
@@ -84,6 +92,79 @@
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-info waves-effect waves-light submitPincode">{{ __('Submit') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="import-form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <h4 class="modal-title">{{ __('Import Pincode') }} </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <form method="post" enctype="multipart/form-data" id="save_imported_pincode">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <a href="{{url('/sample_customer.csv')}}">{{ __("Download Sample file here!") }}</a>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row mb-2">
+                                    <div class="col-md-12">
+                                        <input type="file" accept=".csv" onchange="submitImportPincodeForm()" data-plugins="dropify" name="pincode_csv" class="dropify" data-default-file="" required/>
+                                        <p class="text-muted text-center mt-2 mb-0">{{ __("Upload") }} CSV</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- <div class="col-md-12">
+                                <div class="table-responsive">
+                                <table class="table table-centered table-nowrap table-striped" id="">
+                                <p id="p-message" style="color:red;"></p>
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>{{ __('File Name') }}</th>
+                                            <th colspan="2">{{ __('Status') }}</th>
+                                            <th>{{ __('Link') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="post_list">
+                                        @foreach($csvCustomers ?? '' as $csv)
+                                        <tr data-row-id="{{$csv->id}}">
+                                            <td> {{ $loop->iteration }} </td>
+                                            <td> {{ $csv->name }} </td>
+                                            @if($csv->status == 1)
+                                            <td>{{ __('Pending') }}</td>
+                                            <td></td>
+                                            @elseif($csv->status == 2)
+                                            <td>{{ __('Success') }}</td>
+                                            <td></td>
+                                            @else
+                                            <td>{{ __('Errors') }}</td>
+                                            <td class="position-relative text-center alTooltipHover">
+                                                <i class="mdi mdi-exclamation-thick"></i>
+                                                <ul class="tooltip_error">
+                                                    <?php $error_csv = json_decode($csv->error); ?>
+                                                    @foreach($error_csv as $err)
+                                                    <li>
+                                                       {{$err}}
+                                                    </li>
+                                                    @endforeach
+                                                </ul>
+                                            </td>
+                                            @endif
+                                            <td> <a href="{{ $csv->path }}">{{ __('Download') }}</a> </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                </div>
+                            </div> --}}
+                        </div>
                     </div>
                 </form>
             </div>
@@ -162,6 +243,11 @@
                     $('#add-edit-pincode .modal-title').text("Edit Pincode");
                 }
                 $('#add-edit-pincode').modal();
+            });
+
+            $('.importPincodeModal').click(function(){
+                $('#import-form').modal('show');
+                $('.dropify').dropify();
             });
         });
     </script>
