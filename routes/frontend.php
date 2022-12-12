@@ -473,7 +473,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('getSlotFromDispatchDemand', 'Front\FrontController@getSlotFromDispatchDemand')->name('getSlotFromDispatchDemand');
 	//chatNotification to all users from dispacther
 	Route::any('sendNotificationToUserByDispatcher', 'Front\ChatDispatcherNotificationController@sendNotificationToUserByDispatcher')->name('sendNotificationToUserByDispatcher'); // Order Status update Dispatch
-	Route::get('recentViewProduct/all', 'Front\RecentViewProductController@viewAll')->name('recent.view.product.all');
+	/**
+	 * booking routes
+	 */
+	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
 
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
@@ -585,11 +588,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
 
 
-	/**
-	 * booking routes
-	 */
-	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
-
+	
 });
 Route::get('js/translations.js', function (Request $request) {
     $lang = config('app.locale');
