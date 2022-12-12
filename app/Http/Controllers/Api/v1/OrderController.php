@@ -1740,6 +1740,11 @@ class OrderController extends BaseController
                 });
             })
             ->paginate($paginate);
+
+        $is_postpay_edit_dropoff = getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'];
+        $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+        $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
+
         foreach ($orders as $order) {
             $order_item_count = 0;
             $order->user_name = $user->name;
@@ -1752,6 +1757,17 @@ class OrderController extends BaseController
             $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
             $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
             $order->is_postpay  = $order->orderDetail->is_postpay;
+Log::info(json_encode($order->orderDetail));
+            if(!empty($order->orderDetail->scheduled_date_time) && $is_postpay_edit_dropoff == 1 && $order_edit_before_hours > 0){
+                if((strtotime($order->orderDetail->scheduled_date_time) - strtotime($editlimit_datetime)) > 0){
+                    $order->is_editable  = 1;
+                }else{
+                    $order->is_editable  = 0;
+                }
+            }else{
+                $order->is_editable  = 0;
+            }
+
             $product_details = [];
             $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->orderDetail->id)->where('vendor_id', $order->vendor_id)->orderBy('id', 'DESC')->first();
             if ($vendor_order_status) {

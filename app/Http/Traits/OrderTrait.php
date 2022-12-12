@@ -873,4 +873,25 @@ trait OrderTrait{
 
     }
 
+    public function editOrderInCart($orderid)
+    {
+        $order = Order::where('id', $orderid)->with(['vendors.products.addon'])->first();
+        $user = Auth::user();
+        $cart = NULL;
+        if ($user):
+            $cart = Cart::where('user_id', $user->id)->first();
+        else:
+            $cart = Cart::where('unique_identifier', session()->get('_token'))->first();
+        endif;
+
+        if(!empty($cart)):
+            CartProduct::where('cart_id', $cart->id)->delete();
+            Cart::where('id', $cart->id)->delete();
+        endif;
+
+        if(!empty($order)):
+        
+        endif;
+    }
+
 }

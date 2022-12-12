@@ -280,8 +280,14 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
 
                                                                                                 }
                                                                                             @endphp
-                                                                                            <span
-                                                                                                class="badge badge-info ml-2 my-1">{{ __($luxury_option_name) }}</span>
+                                                                                            <span>
+                                                                                                @if(!empty($order->scheduled_date_time) && $clientPreference->is_postpay_edit_dropoff == 1 && $clientPreference->order_edit_before_hours > 0)
+                                                                                                    @if((strtotime($order->scheduled_date_time) - strtotime($clientPreference->editlimit_datetime)) > 0)
+                                                                                                    <span class="badge ml-2" style="cursor:pointer;color:var(--theme-deafult);"><strong><a class="order_edit_button" data-order_id='{{$order->id}}'><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{__('Edit')}}</a></strong></span>
+                                                                                                    @endif
+                                                                                                @endif
+                                                                                            <span class="badge badge-info ml-2 my-1">{{ __($luxury_option_name) }} </span>
+                                                                                            </span>
                                                                                         @endif
                                                                                         @if (!empty($order->scheduled_date_time))
                                                                                             <span
@@ -2242,6 +2248,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
         var payment_method_required_error_msg = "{{ __('Please select payment method.') }}";
         var check_pickup_schedule_slots = "{{route('cart.check_pickup_schedule_slots')}}";
         var check_dropoff_schedule_slots = "{{route('cart.check_dropoff_schedule_slots')}}";
+        var edit_order_by_user_url = "{{route('user.editorder')}}";
+        var confirm_edit_order_title = "{{__('Are you sure?')}}";
+        var confirm_edit_order_desc = "{{__('You want to edit this Order.')}}";
     </script>
 
     <script type="text/javascript">
@@ -2556,6 +2565,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
 <script src="{{asset('front-assets/js/reschedule_order.js')}}"></script>
+<script src="{{asset('front-assets/js/user_edit_order.js')}}"></script>
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>

@@ -312,6 +312,11 @@ class OrderController extends FrontController
 
 
         $client_preferences = ClientPreference::select('*')->where('id', '>', 0)->first();
+        if(!empty($client_preferences)){
+            $client_preferences->is_postpay_edit_dropoff = getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'];
+            $client_preferences->order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+            $client_preferences->editlimit_datetime = Carbon::now()->addHours($client_preferences->order_edit_before_hours)->toDateTimeString();
+        }
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
         if(checkColumnExists('return_reasons', 'type')){
             $cancellation_reason = ReturnReason::where(['status' => 'Active', 'type' => 3])->get();
@@ -3181,6 +3186,26 @@ class OrderController extends FrontController
             }else{
                 return false;
             }
+        }
+    }
+
+
+    public function editOrderByUser(Request $request)
+    {
+        try
+        {
+            $orderid = $request->orderid;
+            $response = $this->editOrderInCart($orderid);
+            if($response){
+                return $this->successResponse($order, __('Order placed successfully.'), 200);
+            }else{
+                return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+            }
+            
+        }
+        catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
 }
