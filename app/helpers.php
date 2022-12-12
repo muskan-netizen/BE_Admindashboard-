@@ -12,7 +12,7 @@ use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
-use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional, UserVendor, VendorCategory};
+use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional, UserVendor, VendorCategory, Product};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
@@ -1324,7 +1324,7 @@ if( !function_exists('is_p2p_vendor') ) {
         
         if( p2p_module_status() ) {
             
-            if(auth()->user()) {
+            if(auth()->user() && (auth()->user()->is_superadmin != 1)) {
 
                 $auth_user = auth()->user();
                 $user_vendor = UserVendor::where('user_id', $auth_user->id)->first();
@@ -1360,3 +1360,16 @@ if( !function_exists('is_p2p_vendor') ) {
         return false;
     }
 }
+function generateSlug($name)
+{
+    if (Product::whereSku($slug = $name)->exists()) {
+        $max = Product::whereSku($name)->latest('id')->value('sku');
+        if (isset($max[-1]) && is_numeric($max[-1])) {
+            return preg_replace_callback('/(\d+)$/', function($mathces) {
+                return $mathces[1] + 1;
+            }, $max);
+        }
+        return $slug.'-'.rand();
+    }
+    return $slug.'-'.rand();
+}    
