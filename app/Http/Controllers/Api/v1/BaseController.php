@@ -17,6 +17,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Twilio\Rest\Client as TwilioClient;
 use App\Models\{Client, Category, Product,UserSavedPaymentMethods, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature, ProductVariant, Vendor, VendorCategory};
+use Illuminate\Support\Facades\Crypt;
 use JWT\Token;
 
 class BaseController extends Controller{
@@ -929,8 +930,38 @@ class BaseController extends Controller{
         return $random_string;
     }
 
-    public function getPanelDetail()
+    public function getPanelDetail(Request $request)
     {
+        try{
+            if($request->inventory_code){
+                $inventory_url = $request->inventory_url;
+                $inventory_code = $request->inventory_code;
+
+
+                $client = Client::select('database_name')->where('id', '>', 0)->first();
+                if($client){
+                    $client_prefrence = ClientPreference::where('id', '>', 0)->first();
+                    $client_prefrence->inventory_service_key_url =  $inventory_url;
+                    $client_prefrence->inventory_service_key_code =  $inventory_code;
+                    $client_prefrence->update();
+
+                    $data = ['key' => $client->database_name];
+                    return response()->json([
+                        'status' => 200,
+                        'data' => $data,
+                        'message' => 'success']);
+                }
+        
+                return response()->json([
+                        'status' => 400,
+                        'message' => 'Order Panel Not found']);
+            }
+            return response()->json([
+                'status' => 400,
+                'message' => 'Invalid Code']);
+        }catch(\Exception $e){
+            return response()->json(['data' => $e->getMessage()]);
+        }
         
     }
 
