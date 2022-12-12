@@ -5,6 +5,8 @@ use Illuminate\Support\Collection;
 use App\Models\{ClientPreference,ClientPreferenceAdditional,Client, ProductDeliveryFeeByRole, Product};
 use GuzzleHttp\Client as GCLIENT;
 use Log;
+use Storage;
+
 trait ClientPreferenceManager{
 
 
@@ -55,6 +57,12 @@ trait ClientPreferenceManager{
     $validated_keys = $request->only($this->client_preference_fillable_key);
     $client = Client::first();
     foreach($validated_keys as $key => $value){
+      if ($key == 'saller_platform_logo') {
+        if ($request->hasFile('saller_platform_logo')) { /* upload logo file */
+          $file = $request->file('saller_platform_logo');
+          $value = $this->uploadFile($file);
+        }
+      }
         ClientPreferenceAdditional::updateOrCreate(
             ['key_name' => $key, 'client_code' => $client->code],
             ['key_name' => $key, 'key_value' => $value,'client_code' => $client->code,'client_id'=> $client->id]);
@@ -82,5 +90,8 @@ trait ClientPreferenceManager{
     }
     
     return 1;
+  }
+  public function uploadFile($file){
+      return Storage::disk('s3')->put('/vendor', $file, 'public');
   }
 }

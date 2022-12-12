@@ -20,9 +20,6 @@ class ClientPreferenceController extends BaseController{
 
     // client_preference_fillable_key this variables define in ClientPreferenceManager
 
-
-
-
     public function index(){
         $client = Auth::user();
         $mapTypes = MapProvider::where('status', '1')->get();
@@ -258,7 +255,6 @@ class ClientPreferenceController extends BaseController{
         return true;
     }
     public function update(Request $request, $code){
-        // dd($request->all());
 
         $cp = new ClientPreference();
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
@@ -283,6 +279,12 @@ class ClientPreferenceController extends BaseController{
         {
             $preference->is_tax_price_inclusive = $request->is_tax_price_inclusive;
         }
+
+        // if($request->has('logo')){
+        //     $file = $request->file('logo');
+        //     $preference->seller_platform_logo = Storage::disk('s3')->put('/vendor', $file, 'public');
+        //     $preference->seller_platform_title = $request->seller_sold_title??'';
+        // }
 
         if($request->has('sms_provider'))
         {
@@ -450,6 +452,7 @@ class ClientPreferenceController extends BaseController{
             $preference->distance_unit_for_time = (($request->has('distance_unit_for_time')) && ($request->distance_unit_for_time != '')) ? $request->distance_unit_for_time : 'kilometer';
             $preference->distance_to_time_multiplier = (($request->has('distance_to_time_multiplier')) && ($request->distance_to_time_multiplier != '')) ? $request->distance_to_time_multiplier : 2;
         }
+
         if($request->has('primary_language')){
             $deactivate_language = ClientLanguage::where('client_code',Auth::user()->code)->where('is_primary', 1)->first();
             if($deactivate_language){

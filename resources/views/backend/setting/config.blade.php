@@ -1167,7 +1167,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 </div>
 
 @php
-$getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable','is_price_by_role', 'is_free_delivery_by_roles','is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module']);
+$getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable','is_price_by_role', 'is_free_delivery_by_roles','is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment']);
 @endphp
 <div class="row">
    {{-- hubspot form --}}
@@ -1695,6 +1695,7 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
       <input type="hidden" @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service']==1) value="1" @else value="0" @endif name="is_long_term_service" id="is_long_term_service" />
       </div>
 </div>
+@endif
       <div class="col-md-4">
          <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
             <label for="is_gst_required_for_vendor_registration_switch" class="mr-2 mb-0">{{__('GST Details for vendor')}}<small class="d-block pr-5">{{__("Enable to show GST details for vendor registration")}}</small></label>
@@ -1741,7 +1742,6 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
             </span>
          </div>
       </div>
-      @endif
 
       <div class="col-md-4">
          <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
@@ -1751,7 +1751,6 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
             <input type="hidden" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']==1) value="1" @else value="0" @endif name="is_cab_pooling" id="is_cab_pooling" />
          </div>
       </div>
-
    </div>
 </div>
 </form>
