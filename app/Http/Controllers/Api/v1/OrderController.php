@@ -3106,4 +3106,35 @@ class OrderController extends BaseController
         }
     }
 
+    /**
+     * get tracking order detail
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function OrderTracking(Request $request){
+        try {
+            $order = Order::with('ordervendor','orderStatusVendor','address','orderLocation')->where('order_number',$request->order_number)->first();
+            if (isset($order->ordervendor->dispatch_traking_url) && !empty($order->ordervendor->dispatch_traking_url)) {
+                try {
+                    $response = Http::get($order->ordervendor->dispatch_traking_url);
+                } catch (\Exception $ex) {
+                    \Log::info('Error:');
+                    \Log::info(json_encode($ex->getMessage()));
+                }
+               
+                if (isset($response) && $response->status() == 200) {
+                    $response               = $response->json();
+                    $order['order_data']    = $response;
+                }
+
+                
+            }
+
+            return $this->successResponse($order, null, 201);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+        
+    }
+
 }

@@ -11,6 +11,9 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Http\Traits\{ValidatorTrait};
+use Carbon\Carbon;
+
+
 
 use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus,OrderLongTermServiceSchedule,UserDevice};
 
@@ -833,6 +836,68 @@ trait OrderTrait{
                 sendFcmCurlRequest($data);
             }
         }
+    }
+
+    public function sendTrackingUrlSMS($user, $order, $vendor_id = '')
+    {
+        $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','currency_id')->first();
+        if ($user['dial_code'] == "971") {
+            $to = '+' . $user['dial_code'] . "0" . $user['phone_number'];
+        } else {
+            $to = '+' . $user['dial_code'] . $user['phone_number'];
+        }
+        $provider = $prefer['sms_provider'];
+      
+
+        $tracking_url = url('/order/track/'.$user['id'].'/'.$order['order_number'].'');
+        $tracking_url = get_tiny_url($tracking_url);
+       
+        $keyData = ['{user_name}'=>$user['name']??'','{order_number}'=>$order['order_number']??'','{track_url}'=>$tracking_url??''];
+        \Log::info($keyData);
+        
+        $body = sendSmsTemplate('order-tracking-url',$keyData);
+
+        if (!empty($prefer['sms_provider'])) {
+
+            $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+            //\Log::info($send);
+        }
+        
+    }
+
+    public function sendAccessTrackingUrlSMS($user, $order,$vendor_id = '')
+    {
+        $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','currency_id')->first();
+        if ($user['dial_code'] == "971") {
+            $to = '+' . $user['dial_code'] . "0" . $user['phone_number'];
+        } else {
+            $to = '+' . $user['dial_code'] . $user['phone_number'];
+        }
+        $provider = $prefer['sms_provider'];
+      
+        $phoneCode = mt_rand(100000, 999999);
+        $sendTime  = Carbon::now()->addMinutes(10)->toDateTimeString();
+
+        $user                                       = User::find($user['id']);
+        $user->track_order_phone_token              = $phoneCode;
+        $user->track_order_phone_token_valid_till   = $sendTime;
+        $user->save();
+
+        
+
+        $keyData = ['{otp_code}'=>$phoneCode??''];
+        \Log::info($keyData);
+        
+        $body = sendSmsTemplate('otp-sms-tracking-url',$keyData);
+        // $prefer->sms_key = 'ACded37dbfc183033ddc79efbfd498cd63';
+        // $prefer->sms_secret = 'e7ac71c0d92ebb392c651ffeed5f0eed';
+        // $prefer->sms_from = '+12346351110';
+        if (!empty($prefer['sms_provider'])) {
+
+            $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+            //\Log::info($send);
+        }
+        
     }
 
 }

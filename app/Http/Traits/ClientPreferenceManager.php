@@ -7,7 +7,7 @@ use GuzzleHttp\Client as GCLIENT;
 use Log;
 trait ClientPreferenceManager{
 
-  public $client_preference_fillable_key = ['is_price_by_role','is_phone_signup', 'token_currency', 'is_token_currency_enable', 'hubspot_access_token', 'is_hubspot_enable', 'gtag_id', 'fpixel_id','is_long_term_service', 'is_free_delivery_by_roles', 'is_cab_pooling', 'is_attribute'];
+  public $client_preference_fillable_key = ['is_price_by_role','is_phone_signup', 'token_currency', 'is_token_currency_enable', 'hubspot_access_token', 'is_hubspot_enable', 'gtag_id', 'fpixel_id','is_long_term_service', 'is_free_delivery_by_roles', 'is_cab_pooling', 'is_attribute','is_tracking_url'];
   # get last mile teams
   public function getLastMileTeams(){
     try {
