@@ -106,7 +106,7 @@ $timezone = Auth::user()->timezone;
                                                 </b>
                                             </td>
                                             <td class="">
-                                                <b class="text-black">{{$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
+                                                <b class="text-black">{{@$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                                             </td>
                                             <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
                                             <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
@@ -161,7 +161,7 @@ $timezone = Auth::user()->timezone;
                                                     </b>
                                                 </td>
                                                 <td class="">
-                                                    <b class="text-black">{{$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
+                                                    <b class="text-black">{{@$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                                                 </td>
                                                 <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
                                                 <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
@@ -216,7 +216,7 @@ $timezone = Auth::user()->timezone;
                                                     </b>
                                                 </td>
                                                 <td class="">
-                                                    <b class="text-black">{{$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
+                                                    <b class="text-black">{{@$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                                                 </td>
                                                 <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
                                                 <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
@@ -285,7 +285,7 @@ $timezone = Auth::user()->timezone;
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        setTimeout(function(){$('#awaiting_review-tab').trigger('click');}, 200);
+        //setTimeout(function(){$('#awaiting_review-tab').trigger('click');}, 200);
 
         $(document).on("click",".nav-link",function() {
             let rel= $(this).data('rel');

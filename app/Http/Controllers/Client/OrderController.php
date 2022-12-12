@@ -1795,7 +1795,9 @@ class OrderController extends BaseController
     public function returnOrderFilter(Request $request)
     {
         try {
+            $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
             $user = Auth::user();
+            $timezone = $user->timezone;
             $orders_list = OrderReturnRequest::with('product')->orderBy('updated_at', 'DESC');
             if ($user->is_superadmin == 0) {
                 $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
@@ -1829,6 +1831,9 @@ class OrderController extends BaseController
 
                 $orders_list->whereBetween('created_at',[$from_date . " 00:00:00", $to_date . " 23:59:59"]);
             }
+            $Accepted = [];
+            $Pending = [];
+            $Rejected = [];
             $pending_orders = clone $orders_list;
             $accepted_orders = clone $orders_list;
             $rejected_orders = clone $orders_list;
@@ -1836,9 +1841,14 @@ class OrderController extends BaseController
             $pending_orders = $pending_orders->where('status','Pending')->paginate(20);
             $accepted_orders = $accepted_orders->where('status','Accepted')->paginate(20);
             $rejected_orders = $rejected_orders->where('status','Rejected')->paginate(20);
-            $pending_html = view('backend.order.return-data')->with(['orders'=>$pending_orders,'status'=>'Pending'])->render();
-            $accepted_html = view('backend.order.return-data')->with(['orders'=>$accepted_orders,'status'=>'Accepted'])->render();
-            $rejected_html = view('backend.order.return-data')->with(['orders'=>$rejected_orders,'status'=>'Rejected'])->render();
+
+            $Pending['Pending'] = $pending_orders;
+            $Accepted['Accepted'] = $accepted_orders;
+            $Rejected['Rejected'] = $rejected_orders;
+            $pending_html = view('backend.order.return-data')->with(['orders'=>$Pending,'status'=>'Pending','clientCurrency'=>$clientCurrency,'timezone'=>$timezone])->render();
+            $accepted_html = view('backend.order.return-data')->with(['orders'=>$Accepted,'status'=>'Accepted','clientCurrency'=>$clientCurrency,'timezone'=>$timezone])->render();
+            $rejected_html = view('backend.order.return-data')->with(['orders'=>$Rejected,'status'=>'Rejected','clientCurrency'=>$clientCurrency,'timezone'=>$timezone])->render();
+
             return $this->successResponse(['pending_html' => $pending_html, 'accepted_html' => $accepted_html, 'rejected_html' => $rejected_html], '', 201);
 
         } catch (\Throwable $th) {
