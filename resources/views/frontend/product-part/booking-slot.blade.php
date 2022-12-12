@@ -312,7 +312,6 @@
         });
 
         async function check_product_availibility(formData){
-        
           if(formData.variant_option_id == undefined){
             formData.variant_option_id = '';
           }

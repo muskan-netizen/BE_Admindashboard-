@@ -3132,6 +3132,11 @@ body.al_body_template_four .categories-product-list .search_form {
   overflow: hidden;
 }
 
+body.al_body_template_four .alCartInput .input-group:after{background-color: transparent;}
+
+body.al_body_template_four .categories-product-list .search_form input {background-color: #eee;overflow: hidden;}
+body.al_body_template_four .categories-product-list .search_form {border-radius: 30px !important;overflow: hidden;}
+
 
 /* Dark theme  */
 .dark .tip_label,

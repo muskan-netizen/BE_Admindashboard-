@@ -43,9 +43,8 @@
 
 <!-- New Customize Page -->
 @php
-$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role']);
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role']); //,'seller_sold_title','saller_platform_logo'
 @endphp
-
    <!--Localization start -->
     <div class="row">
       <div class="col-12">
@@ -230,16 +229,12 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
     </div>
     <!--Localization end -->
 {{-- vendoe typs section aline by harbans singh :) --}}
-    <div class="row">
-        <div class="col-12">
-        <div class="page-title-box">
-            <h4 class="page-title text-uppercase">{{ __("Vendor Type") }}</h4>
-        </div>
-        </div>
-    </div>
     <div class="row col-spacing">
         <!--Vendor Type &  Distance to Time Calculator start -->
         <div class="col-xl-3 col-lg-3 mb-3">
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">{{ __("Vendor Type") }}</h4>
+            </div>
             {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' ) --}}
             @php
                 $typeArray = getCategoryTypes();
@@ -273,6 +268,36 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
             </form>
             {{-- @endif --}}
         </div>
+
+        {{-- <div class="col-xl-3 col-lg-3 mb-3">
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">{{ __("Seller Platform") }}</h4>
+            </div>
+            @php
+                $typeArray = getCategoryTypes();
+            @endphp
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box mb-2 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="header-title mb-0">{{ __("Seller Platform") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="col-md-6">
+                        <label>{{ __('Upload Logo') }} </label>
+                        <input type="file" accept="image/*" data-plugins="dropify" name="saller_platform_logo" class="dropify" data-default-file="" />
+                        <label class="logo-size text-right w-100">{{ __('Logo Size') }} 170x96</label>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="seller_sold_title">Sold Title</label>
+                            <input type="text" name="seller_sold_title" id="seller_sold_title" value=" @if( @$getAdditionalPreference['seller_sold_title'] != '') {{$getAdditionalPreference['seller_sold_title']??''}} @endif" class="form-control" placeholder="Sold Title" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div> --}}
         <!--Vendor Type &  Distance to Time Calculator end -->
 
         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry' && $client_preference_detail->on_demand_check == 1)
