@@ -1794,7 +1794,7 @@ class OrderController extends BaseController
     }
     public function returnOrderFilter(Request $request)
     {
-        //try {
+        try {
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
             $user = Auth::user();
             $timezone = $user->timezone;
@@ -1851,9 +1851,9 @@ class OrderController extends BaseController
 
             return $this->successResponse(['pending_html' => $pending_html, 'accepted_html' => $accepted_html, 'rejected_html' => $rejected_html], '', 201);
 
-        // } catch (\Throwable $th) {
-        //     return $this->errorResponse($e->getMessage(), 400);
-        // }
+        } catch (\Throwable $th) {
+            return $this->errorResponse($e->getMessage(), 400);
+        }
     }
 
     /**
