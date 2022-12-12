@@ -16,7 +16,8 @@ use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product,UserSavedPaymentMethods, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature, Vendor, VendorCategory};
+use App\Models\{Client, Category, Product,UserSavedPaymentMethods, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature, ProductVariant, Vendor, VendorCategory};
+use JWT\Token;
 
 class BaseController extends Controller{
 
@@ -888,9 +889,36 @@ class BaseController extends Controller{
 
     /******************    ---- check Keys from order Panel keys -----   ******************/
     public function checkOrderPanelKeys(Request $request){
+
+        if(checkColumnExists('users', 'is_panel_auth_user')){
+            $user =  User::where('is_panel_auth_user', 1)->first();
+            $token1 = new Token;
+            $token = $token1->make([
+                'key' => 'royoorders-jwt',
+                'issuer' => 'royoorders.com',
+                'expiry' => strtotime('+2 hour'),
+                'issuedAt' => time(),
+                'algorithm' => 'HS256',
+            ])->get();
+            $token1->setClaim('user_id', $user->id);
+
+            $device = UserDevice::updateOrCreate(
+                ['device_token' => 'dispather-login'],
+                [
+                    'user_id' => $user->id,
+                    'device_type' => 'web',
+                    'access_token' => $token,
+                    'is_vendor_app' => 0
+                ]
+            );
+            return response()->json([
+            'status' => 200,
+            'token' => $token,
+            'message' => 'Valid Order Panel API keys']);
+        }
         return response()->json([
-        'status' => 200,
-        'message' => 'Valid Order Panel API keys']);
+            'status' => 401,
+            'message' => 'Authentication failed']);
     }
     public function generateBarcodeNumber()
     {
@@ -899,6 +927,11 @@ class BaseController extends Controller{
             $random_string = substr(md5(microtime()), 0, 14);
         }
         return $random_string;
+    }
+
+    public function getPanelDetail()
+    {
+        
     }
 
 
