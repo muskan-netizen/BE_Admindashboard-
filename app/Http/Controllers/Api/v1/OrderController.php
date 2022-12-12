@@ -3113,7 +3113,9 @@ class OrderController extends BaseController
      */
     public function OrderTracking(Request $request){
         try {
-            $order = Order::with('ordervendor','orderStatusVendor','address','orderLocation')->where('order_number',$request->order_number)->first();
+           
+            $order      = Order::with('ordervendor','orderStatusVendor','address','orderLocation')->where('order_number',$request->order_number)->first();
+            $customer   = User::find($order->user_id);
             if (isset($order->ordervendor->dispatch_traking_url) && !empty($order->ordervendor->dispatch_traking_url)) {
                 try {
                     $response = Http::get($order->ordervendor->dispatch_traking_url);
@@ -3127,9 +3129,21 @@ class OrderController extends BaseController
                     $order['order_data']    = $response;
                 }
 
+                $order['dispatch_traking_url'] = str_replace("/order/","/order-details/",$order->ordervendor->dispatch_traking_url);
+                $response = Http::get($order['dispatch_traking_url']);
+                $tasks = array();
+                $agent_location = '';
+                if($response->status() == 200){
+                   $response = $response->json();
+                   $order['dispatch_order'] = $response;
+                   $tasks = $response['tasks'];
+                   $agent_location = $response['agent_location'];
+                   $order['agent_location']  = $agent_location;
+                }
                 
             }
 
+            $order['user']  = $customer;
             return $this->successResponse($order, null, 201);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
