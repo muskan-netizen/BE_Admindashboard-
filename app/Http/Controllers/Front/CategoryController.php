@@ -137,17 +137,19 @@ class CategoryController extends FrontController{
       //  pr($listData);
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
         // $newProducts =  $this->getNewProducts($vendorIds, $langId, $curId);
+        $productAttributes = '';        
+        if( checkTableExists('product_attributes') ) {
+            $getAdditionalPreference = getAdditionalPreference(['is_attribute']);
+            
+            if( $category->type_id == 13 && $getAdditionalPreference['is_attribute'] ) {
 
-        $getAdditionalPreference = getAdditionalPreference(['is_attribute']);
-        $productAttributes = '';
-        if( $category->type_id == 13 && $getAdditionalPreference['is_attribute'] ) {
-
-            $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
-                ->select('attributes.*')
-                ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
-                ->where('attribute_categories.category_id', $category->id)
-                ->where('attributes.status', '!=', 2)
-                ->orderBy('position', 'asc')->get();
+                $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
+                    ->select('attributes.*')
+                    ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
+                    ->where('attribute_categories.category_id', $category->id)
+                    ->where('attributes.status', '!=', 2)
+                    ->orderBy('position', 'asc')->get();
+            }
         }
         
         $newProducts = [];
@@ -208,6 +210,19 @@ class CategoryController extends FrontController{
         }
     }
 
+    public function getNewProducts($vendorIds, $langId, $curId)
+    {
+        $np = $this->productList($vendorIds, $langId, $curId, 'is_new');
+
+        foreach($np as $new){
+            $new->translation_title = (!empty($new->translation->first())) ? $new->translation->first()->title : $new->sku;
+            $new->variant_multiplier = (!empty($new->variant->first())) ? $new->variant->first()->multiplier : 1;
+            $new->variant_price = (!empty($new->variant->first())) ? $new->variant->first()->price : 0;
+        }
+        return $newProducts = ($np->count() > 0) ? array_chunk($np->toArray(), ceil(count($np) / 2)) : $np;
+    }
+
+   
     public function listData($langId, $category_id, $type = '',$vendorIds = array()){
         //pr($category_id);
 

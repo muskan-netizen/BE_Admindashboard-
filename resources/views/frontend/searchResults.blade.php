@@ -176,8 +176,8 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
 <script>
     vendorAllOnMap();
     function vendorAllOnMap() {
-        var latitude = "{{ $vendorLatLong[0][0] }}";
-        var longitude = "{{ $vendorLatLong[0][1] }}";
+        var latitude = "{{ $vendorLatLong[0][0] ?? 0 }}";
+        var longitude = "{{ $vendorLatLong[0][1] ?? 0 }}";
         var latlng = new google.maps.LatLng(latitude, longitude);
         var prev_infowindow =false; 
 

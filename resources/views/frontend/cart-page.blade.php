@@ -167,7 +167,7 @@
                 @elseif( $product->is_vendor_closed == 1 && $product->closed_store_order_scheduled == 1 )
                     <div class="col-12">
                         <div class="text-danger">
-                            <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders right now. You can schedule this for ')}}{{$product->delaySlot}}
+                            <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders right now. You can schedule this for ')}}{{@$product->delaySlot}}
                         </div>
                     </div>
                @endif
@@ -254,7 +254,7 @@
                             @endif
                             @if($serviceType ==  'rental')
                             <div class="col-10 col-md-4 text-md-center order-md-3">
-                                <div class="number d-flex justify-content-md-center">
+                                <div class="number d-flex justify-content-md-center border-0">
                                     <div style="display: none !important;" class="counter-container d-flex align-items-center">
                                         <input placeholder="1"  type="number" min="0"  data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
                                         data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
@@ -265,8 +265,8 @@
                                             @php
                                                 $dura = getHoursMinutes($vendor_product->total_booking_time);
                                             @endphp
-                                            <p>{{$dura}}</p>
-
+                                            <p class="mb-0">{{$dura}}</p>
+                                           
                                         </div>
                                     </div>
 

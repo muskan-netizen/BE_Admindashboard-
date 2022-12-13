@@ -203,6 +203,17 @@
                             <input type="checkbox" data-plugin="switchery" name="return_request" class="form-control" data-color="#43bee1" @if($vendor->return_request == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     @endif
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Cancel Order In Processing'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="cancel_order_in_processing" class="form-control" data-color="#43bee1" @if($vendor->cancel_order_in_processing == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Return Auto Approve'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="return_auto_approve" class="form-control" data-color="#43bee1" @if($vendor->return_auto_approve == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
                     <div class="col-md-12" id="auto_reject_timeInput" style="display:{{$vendor->auto_accept_order == 1 ? 'none' : 'block'}}">
                         <div class="form-group">
                             {!! Form::label('title', __('Auto Reject Time(In minutes, 0 for no rejection)'),['class' => 'control-label']) !!}
@@ -700,11 +711,10 @@
                     </p>
                     @if($users->user && $users->user->id != Auth::id())
                     <form class="delete-user position-absolute" method="POST" action="{{route('user.vendor.permission.destroy', $users->id)}}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-primary-outline" onclick="return confirm('Are you sure ?');"> <i class="mdi mdi-delete"></i></button>
-
-                            </form>
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-primary-outline" onclick="return confirm('Are you sure ?');"> <i class="mdi mdi-delete"></i></button>
+                    </form>
                     @endif
                 </div>
             @endif
@@ -796,7 +806,7 @@
                                     <td>
                                         <div>
                                             <div class="inner-div">
-                                                <button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
+                                                <button type="button" class="btn btn-primary-outline action-icon delete_vendor_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
                                                     <i class="mdi mdi-delete"></i>
                                                 </button>
                                             </div>
@@ -973,21 +983,26 @@ $( document ).ready(function() {
             },
             success: (res) => {
                 if(res.status == 'Success'){
-                    var icon = "success";
-                    var addedIcon = 'social-media-' + res.message.icon;
+                    $.NotificationApp.send("Success", res.message, "top-right", "#5ba035", "success");
+                    $('#manageSocialMedia').modal('hide');
+                    setTimeout(function() {
+                        location.reload()
+                    }, 2000);
+                     var icon = "success";
+                    // var addedIcon = 'social-media-' + res.message.icon;
 
-                    console.log('addedIcon', addedIcon);
-                    if ( $('.'+addedIcon).length ) {
-                        var addedurl = 'social-media-url-'+ res.message.icon;
-                        $("."+addedurl).text(res.message.url);
-                        $("."+addedurl).attr('href', res.message.url);
-                    }else{
-                        $('#social-media-datatable tr:last').after('<tr><td><i class="fab fa-'+res.message.icon+'  social-media-'+res.message.icon+'" aria-hidden="true"></i></td>'+
-                                '<td><a href="'+res.message.url+'" class="social-media-url-'+res.message.icon+'" target="_blank">'+res.message.url+'</a></td>'+
-                                '<td><div><div class="inner-div"><button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="'+res.message.media+'"><i class="mdi mdi-delete"></i></button></div></div></td></tr>');
-                    }
+                    // console.log('addedIcon', addedIcon);
+                    // if ( $('.'+addedIcon).length ) {
+                    //     var addedurl = 'social-media-url-'+ res.message.icon;
+                    //     $("."+addedurl).text(res.message.url);
+                    //     $("."+addedurl).attr('href', res.message.url);
+                    // }else{
+                    //     $('#social-media-datatable tr:last').after('<tr><td><i class="fab fa-'+res.message.icon+'  social-media-'+res.message.icon+'" aria-hidden="true"></i></td>'+
+                    //             '<td><a href="'+res.message.url+'" class="social-media-url-'+res.message.icon+'" target="_blank">'+res.message.url+'</a></td>'+
+                    //             '<td><div><div class="inner-div"><button type="button" class="btn btn-primary-outline action-icon delete_vendor_social_media_option_btn" data-social_media_detail_id="'+res.message.media+'"><i class="mdi mdi-delete"></i></button></div></div></td></tr>');
+                    // }
 
-                    $('#social_url').val('');
+                    // $('#social_url').val('');
 
 
                 }else{
@@ -1008,6 +1023,37 @@ $( document ).ready(function() {
             }
         });
     });
+
+    $(document).on("click", ".delete_vendor_social_media_option_btn", function() {
+            var social_media_detail_id = $(this).data('social_media_detail_id');
+            Swal.fire({
+                title: "{{__('Are you Sure?')}}",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ok',
+            }).then((result) => {
+                if(result.value)
+                {
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: "{{ route('vendor.social.media.delete') }}",
+                        data: {
+                            social_media_detail_id: social_media_detail_id
+                        },
+                        success: function(response) {
+                            if (response.status == "Success") {
+                                $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                                $('#manageSocialMedia').modal('hide');
+                                setTimeout(function() {
+                                    location.reload()
+                                }, 2000);
+                            }
+                        }
+                    });
+                }
+            });
+        });
 
     // $(".addUrlSubmit").click(function(e) {
     //     e.preventDefault();
@@ -1215,75 +1261,78 @@ $( document ).ready(function() {
     });
 });
 
-    $("input[name='auto_accept_order']").change(function() {
-        if($(this).prop('checked')){
-            $("#auto_reject_timeInput").css("display", "none");
-        } else {
-            $("#auto_reject_timeInput").css("display", "block");
-        }
-    })
+$("input[name='auto_accept_order']").change(function() {
+    if($(this).prop('checked')){
+        $("#auto_reject_timeInput").css("display", "none");
+    } else {
+        $("#auto_reject_timeInput").css("display", "block");
+    }
+});
 
-    $("input[name='show_slot']").change(function() {
-        if($(this).prop('checked')){
-            $("#sch_vendor_close").css("display", "none");
-        } else {
-            $("#sch_vendor_close").css("display", "block");
-        }
-    })
+$("input[name='show_slot']").change(function() {
+    if($(this).prop('checked')){
+        $("#sch_vendor_close").css("display", "none");
+    } else {
+        $("#sch_vendor_close").css("display", "block");
+    }
+})
 
-    $("input[name='fixed_fee']").change(function() {
-        if($(this).prop('checked')){
-            $("#fixed_fee_amount").css("display", "block");
-        } else {
-            $("#fixed_fee_amount").css("display", "none");
-        }
-    })
+$("input[name='fixed_fee']").change(function() {
+    if($(this).prop('checked')){
+        $("#fixed_fee_amount").css("display", "block");
+    } else {
+        $("#fixed_fee_amount").css("display", "none");
+    }
+})
 
-    $("input[name='delivery_charges_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#delivery_charges_tax_id").css("display", "block");
-        } else {
-            $("#delivery_charges_tax_id").css("display", "none");
-        }
-    })
-    $("input[name='service_charges_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#service_charges_tax_id").css("display", "block");
-        } else {
-            $("#service_charges_tax_id").css("display", "none");
-        }
-    })
-    $("input[name='container_charges_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#container_charges_tax_id").css("display", "block");
-        } else {
-            $("#container_charges_tax_id").css("display", "none");
-        }
-    })
-    $("input[name='fixed_fee_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#fixed_fee_tax_id").css("display", "block");
-        } else {
-            $("#fixed_fee_tax_id").css("display", "none");
-        }
-    })
+$("input[name='delivery_charges_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#delivery_charges_tax_id").css("display", "block");
+    } else {
+        $("#delivery_charges_tax_id").css("display", "none");
+    }
+})
 
-    $("input[name='markup_fee_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#markup_fee_tax_id").css("display", "block");
-        } else {
-            $("#markup_fee_tax_id").css("display", "none");
-        }
-    })
+$("input[name='service_charges_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#service_charges_tax_id").css("display", "block");
+    } else {
+        $("#service_charges_tax_id").css("display", "none");
+    }
+})
 
-    $("input[name='need_container_charges']").change(function() {
-        if($(this).prop('checked')){
-            $("#need_container_charges").css("display", "none");
-        } else {
-            $("#need_container_charges").css("display", "block");
-        }
-    })
 
+$("input[name='container_charges_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#container_charges_tax_id").css("display", "block");
+    } else {
+        $("#container_charges_tax_id").css("display", "none");
+    }
+})
+
+$("input[name='fixed_fee_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#fixed_fee_tax_id").css("display", "block");
+    } else {
+        $("#fixed_fee_tax_id").css("display", "none");
+    }
+})
+
+$("input[name='markup_fee_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#markup_fee_tax_id").css("display", "block");
+    } else {
+        $("#markup_fee_tax_id").css("display", "none");
+    }
+})
+
+$("input[name='need_container_charges']").change(function() {
+    if($(this).prop('checked')){
+        $("#need_container_charges").css("display", "none");
+    } else {
+        $("#need_container_charges").css("display", "block");
+    }
+})
     $("input[name='fixed_service_charge']").change(function() {
         if($(this).prop('checked')){
             $("#fixed_service_charge_div").css("display", "block");

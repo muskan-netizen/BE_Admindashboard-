@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use Auth,DB;
 use OwenIt\Auditing\Contracts\Auditable;
-use App\Models\{Product,ProductVariant,CartProduct,UserWishlist};
+use App\Models\{ProductVariant,CartProduct,UserWishlist};
 
 class Product extends Model implements Auditable{
       use SoftDeletes;
@@ -28,11 +28,11 @@ class Product extends Model implements Auditable{
     }
 
     public function vendor(){
-      if(checkColumnExists('vendors', 'need_sync_with_order')){
-
-        return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude','need_sync_with_order', 'fixed_service_charge', 'service_charge_amount', 'pick_drop');
+      if(checkColumnExists('vendors', 'need_sync_with_order') && checkColumnExists('vendors', 'is_seller')){
+        return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude','need_sync_with_order', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request');
       }
-      return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude', 'fixed_service_charge', 'service_charge_amount', 'pick_drop');
+      
+      return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude',  'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request');
     }
 
     public function related(){
@@ -448,7 +448,9 @@ class Product extends Model implements Auditable{
   }
 
     public function ProductAttribute() {
-      return $this->hasMany('App\Models\ProductAttribute', 'product_id', 'id');
+      if( checkTableExists('product_attributes') ) {
+        return $this->hasMany('App\Models\ProductAttribute', 'product_id', 'id');
+      }
     }
 
     public function tollpass()

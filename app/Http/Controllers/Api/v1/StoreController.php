@@ -924,53 +924,67 @@ class StoreController extends BaseController{
 			}
 
 			// Save Product Attribute
-			if( !empty($request->attribute) ) {
-				$attribute = json_decode($request->attribute, true);
-				
-				if( !empty($attribute) ) {
-					$insert_arr = [];
-					$insert_count = 0;
-					foreach($attribute as $key => $value) {
-						if( !empty($value) && !empty($value['option'] && is_array($value) )) {
-							
-							if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
-								$value_arr = @$value['value'];
-								
-								foreach( $value['option'] as $key1 => $val1 ) {
-								
-									if( @in_array($val1['option_id'], $value_arr) ) {
-								
-										$insert_arr[$insert_count]['product_id'] = $request->product_id;
-										$insert_arr[$insert_count]['attribute_id'] = $value['id'];
-										$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
-										$insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
-										$insert_arr[$insert_count]['key_value'] = $val1['option_id'];
-										$insert_arr[$insert_count]['is_active'] = 1;
-									}
-									$insert_count++;
-								}
-							}
-							else {
-								foreach($value['option'] as $option_key => $option) {
-									if(@$option['value']){
-										$insert_arr[$insert_count]['product_id'] = $request->product_id;
-										$insert_arr[$insert_count]['attribute_id'] = $value['id'];
-										$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
-										$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
-										$insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
-										$insert_arr[$insert_count]['is_active'] = 1;
-
-									}
-									$insert_count++;
-								}
-							}
-						}
-
+			if( checkTableExists('product_attributes') ) {
+				if( !empty($request->attribute) ) {
+					$attribute = json_decode($request->attribute, true);
 					
-					}
-					if( !empty($insert_arr) ) {
-						ProductAttribute::where('product_id',$request->product_id)->delete();
-						ProductAttribute::insert($insert_arr);
+					if( !empty($attribute) ) {
+						$insert_arr = [];
+                        $insert_count = 0;
+
+                        foreach($attribute as $key => $value) {
+                            if( !empty($value) && !empty($value['option'] && is_array($value) )) {
+                                
+                                if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
+                                    $value_arr = @$value['value'];
+                                    
+                                    foreach( $value['option'] as $key1 => $val1 ) {
+                                        if( @in_array($val1['option_id'], $value_arr) ) {
+
+                                            $insert_arr[$insert_count]['product_id'] = $request->product_id;
+                                            $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                            $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                            $insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
+                                            $insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+                                            $insert_arr[$insert_count]['is_active'] = 1;
+                                        }
+                                        $insert_count++;
+                                    }
+                                }
+                                else {
+									$value_arr = @$value['value'];
+									
+									// \Log::info($option['option_id']);
+                                    foreach($value['option'] as $option_key => $option) {
+                                        if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
+											$insert_arr[$insert_count]['product_id'] = $request->product_id;
+											$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+											$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+											$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+											$insert_arr[$insert_count]['key_value'] = (!empty($value['value']) && !empty($value['value'][0]) ? $value['value'][0] : '');
+											$insert_arr[$insert_count]['is_active'] = 1;
+										}
+										elseif( @in_array($option['option_id'], $value_arr) ) {
+											
+											$insert_arr[$insert_count]['product_id'] = $request->product_id;
+											$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+											$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+											$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+											$insert_arr[$insert_count]['key_value'] = $option['option_id'];
+											$insert_arr[$insert_count]['is_active'] = 1;
+										}
+										
+                                        $insert_count++;
+                                    }
+                                }
+                            }
+
+                        
+                        }
+                        if( !empty($insert_arr) ) {
+                            ProductAttribute::where('product_id',$request->product_id)->delete();
+                            ProductAttribute::insert($insert_arr);
+                        }
 					}
 				}
 			}
@@ -1666,7 +1680,7 @@ class StoreController extends BaseController{
 	private function preProductDetail($productid)
 	{		
 		$user = Auth::user();
-		$product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $productid)->firstOrFail();
+		$product = Product::with('brand', 'variant.set', 'vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $productid)->firstOrFail();
 		$productVariants = Variant::with('option', 'varcategory.cate.primary')
 		->select('variants.*')
 		->join('variant_categories', 'variant_categories.variant_id', 'variants.id')
@@ -1698,7 +1712,7 @@ class StoreController extends BaseController{
 		return $data;
 	}
 
-	private function generateBarcodeNumber()
+	public function generateBarcodeNumber()
     {
         $random_string = substr(md5(microtime()), 0, 14);
         while (ProductVariant::where('barcode', $random_string)->exists()) {

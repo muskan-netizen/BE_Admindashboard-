@@ -472,6 +472,10 @@ Route::group(['middleware' => ['domain']], function () {
 	//chatNotification to all users from dispacther
 	Route::any('sendNotificationToUserByDispatcher', 'Front\ChatDispatcherNotificationController@sendNotificationToUserByDispatcher')->name('sendNotificationToUserByDispatcher'); // Order Status update Dispatch
 	Route::get('recentViewProduct/all', 'Front\RecentViewProductController@viewAll')->name('recent.view.product.all');
+	/**
+	 * booking routes
+	 */
+	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
 
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
@@ -545,12 +549,16 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	// Return product
 	Route::group(['prefix' => 'return-order'], function () {
 		Route::get('get-order-data-in-model', 'Front\ReturnOrderController@getOrderDatainModel')->name('getOrderDatainModel');
+		Route::get('get-replace-order-data-in-model', 'Front\ReturnOrderController@getReplaceOrderDatailModel')->name('getReplaceOrderDatailModel');
 		Route::get('get-return-products', 'Front\ReturnOrderController@getReturnProducts')->name('get-return-products');
+		Route::get('get-replace-products', 'Front\ReturnOrderController@getReplaceProducts')->name('get-replace-products');
 		Route::post('update-product-return', 'Front\ReturnOrderController@updateProductReturn')->name('update.order.return');
+		Route::post('update-product-replace', 'Front\ReturnOrderController@updateProductReplace')->name('update.order.replace');
 
 		Route::get('get-vendor-order-for-cancel', 'Front\ReturnOrderController@getVendorOrderForCancel')->name('get-vendor-order-for-cancel');
 		Route::post('vendor-order-for-cancel', 'Front\ReturnOrderController@vendorOrderForCancel')->name('order.cancel.customer');
 
+		Route::post('vendor-order-for-cancel-req', 'Front\ReturnOrderController@vendorOrderForCancelReq')->name('order.cancel.req.customer');
 	});
 	// Return product
 	Route::group(['prefix' => 'looking'], function () {
@@ -583,11 +591,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
 
 
-	/**
-	 * booking routes
-	 */
-	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
-
+	
 });
 Route::get('js/translations.js', function (Request $request) {
     $lang = config('app.locale');

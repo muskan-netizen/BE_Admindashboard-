@@ -1,5 +1,5 @@
 
-<div class="col-md-4">
+<div class="col-md-3">
     <div class="product-card-box position-relative al_box_third_template al"  >
         {{-- {{ dd($product)}} --}}
         {{--<div class="add-to-fav 12">
@@ -14,10 +14,10 @@
                 <div class="inner_spacing">
                     <div class="product-description">
                         <div class="d-flex align-items-center justify-content-between">
-                            <h6 class="card_title ellips">{{ $product["title"] }}</h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
+                            <h6 class="card_title ellips" style="width:50%;">{{ $product["title"] }}</h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
                             @if($product["averageRating"] >0)
                             <!-- <span class="rating-number">{{ $product["averageRating"] }}</span> -->
-                            <span><strong>AED</strong><h3>{{$product["price"] ?? ''}} </h3></span>
+                            <span class="d-flex"><strong>AED</strong><h3>{{$product["price"] ?? ''}} </h3></span>
                             @endif @endif @endif </div>
                         <div class="product-description_list">
                             <!-- <span class="flag-discount">30% Off</span> -->

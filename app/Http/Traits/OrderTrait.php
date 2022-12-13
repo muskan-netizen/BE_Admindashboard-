@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Http\Traits\{ValidatorTrait};
+use Carbon\Carbon;
 
 use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus,OrderLongTermServiceSchedule,UserDevice};
 
@@ -37,6 +38,26 @@ trait OrderTrait{
                         
                     }
                     
+                }
+            }
+        }
+        return 1;
+    }
+
+    public function ProductVariantStockIncrease($order_id)
+    {
+        $order = Order::with(['vendors.products.pvariant'])->find($order_id);
+        if( isset($order->vendors )){
+            foreach ($order->vendors as $vendor) {
+                foreach ($vendor->products as $product) {
+                    $ProductVariant = ProductVariant::find($product->variant_id);
+                    if ($ProductVariant) {
+                        $update_quantity  = $ProductVariant->quantity + $product->quantity;
+                        if($update_quantity < 0)
+                        $update_quantity  = 0;
+                        $ProductVariant->quantity  = $update_quantity;
+                        $ProductVariant->save();
+                    }
                 }
             }
         }
@@ -833,6 +854,23 @@ trait OrderTrait{
                 sendFcmCurlRequest($data);
             }
         }
+    }
+
+    /**
+     * check order days of return / replace
+     */
+    public function checkOrderDaysForReturn($order, $days){
+        if($days == 0){
+            return false;
+        }
+        $date = Carbon::parse($order->created_at)->addDays($days);// enddate for return
+        $today = $dt = Carbon::now();
+       
+        if($date >= $today){
+            return true;
+        }
+        return false;
+
     }
 
 }
