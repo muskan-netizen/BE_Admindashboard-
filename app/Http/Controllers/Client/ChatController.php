@@ -239,7 +239,11 @@ class ChatController extends BaseController
                     'vendor_user_id' =>$data['user_id'],
                     'type'=>$data['type'],
                     'db_name'=>$this->client_data->database_name,
-                    'client_id'=>$this->client_data->id
+                    'client_id'=>$this->client_data->id,
+                    'order_vendor_id'=>'',
+                    'order_id'=>'',
+                    'order_user_id' =>Auth::id(),
+                    
                 ]);
             }
             else {

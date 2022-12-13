@@ -1713,6 +1713,33 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
          </div>
       </div>
 
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+            <label for="add_to_cart_btn_switch" class="mr-2 mb-0">{{__('Add to Cart')}}<small class="d-block pr-5">{{__("Enable to allow customers to add to cart.")}}</small></label>
+            <span> <input type="checkbox" data-plugin="switchery" name="add_to_cart_btn_switch" id="add_to_cart_btn_switch" class="form-control checkbox_change" data-className="add_to_cart_btn" data-color="#43bee1" @if(@getAdditionalPreference(['add_to_cart_btn'])['add_to_cart_btn']==1) checked='checked' @endif>
+            </span>
+            <input type="hidden" @if(@getAdditionalPreference(['add_to_cart_btn'])['add_to_cart_btn']==1) value="1" @else value="0" @endif name="add_to_cart_btn" id="add_to_cart_btn" />
+         </div>
+      </div>
+
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+            <label for="chat_button_switch" class="mr-2 mb-0">{{__('Chat Button')}}<small class="d-block pr-5">{{__("Enable to allow customers to chat button.")}}</small></label>
+            <span> <input type="checkbox" data-plugin="switchery" name="chat_button_switch" id="chat_button_switch" class="form-control checkbox_change" data-className="chat_button" data-color="#43bee1" @if(@getAdditionalPreference(['chat_button'])['chat_button']==1) checked='checked' @endif>
+            </span>
+            <input type="hidden" @if(@getAdditionalPreference(['chat_button'])['chat_button']==1) value="1" @else value="0" @endif name="chat_button" id="chat_button" />
+         </div>
+      </div>
+
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+            <label for="call_button_switch" class="mr-2 mb-0">{{__('Call Button')}}<small class="d-block pr-5">{{__("Enable to allow customers to chat button.")}}</small></label>
+            <span> <input type="checkbox" data-plugin="switchery" name="call_button_switch" id="call_button_switch" class="form-control checkbox_change" data-className="call_button" data-color="#43bee1" @if(@getAdditionalPreference(['call_button'])['call_button']==1) checked='checked' @endif>
+            </span>
+            <input type="hidden" @if(@getAdditionalPreference(['call_button'])['call_button']==1) value="1" @else value="0" @endif name="call_button" id="call_button" />
+         </div>
+      </div>
+
    </div>
 </div>
 </form>
