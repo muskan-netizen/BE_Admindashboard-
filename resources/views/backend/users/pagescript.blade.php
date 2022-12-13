@@ -15,6 +15,11 @@
          $('.dropify').dropify();
     });
 
+    $('.exportUserModal').click(function(){
+       var url = $(this).attr('data-url');
+       window.location.href = url;
+    });
+   
 
     function submitImportUserForm() {
         var form = document.getElementById('save_imported_customer');
