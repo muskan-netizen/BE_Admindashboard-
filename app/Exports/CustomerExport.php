@@ -24,9 +24,7 @@ class CustomerExport implements FromCollection, WithHeadings, WithMapping
     public function collection(){
 
        
-        $current_user = Auth::user();
-        $timezone = $current_user->timezone ? $current_user->timezone : 'Asia/Kolkata';
-        $users = User::withCount(['orders', 'currentlyWorkingOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc')->get();
+       
         if(!empty($this->start_date) && !empty($this->end_date)){
             $e_day      = date('Y-m-d', strtotime($this->end_date. ' + 1 day'));
             $start_date = Carbon::parse($this->start_date)->format('Y-m-d');
@@ -40,6 +38,10 @@ class CustomerExport implements FromCollection, WithHeadings, WithMapping
                 ->orderBy('id', 'desc');
 
         }
+
+        $current_user = Auth::user();
+        $timezone = $current_user->timezone ? $current_user->timezone : 'Asia/Kolkata';
+        $users = User::withCount(['orders', 'currentlyWorkingOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc')->get();
         foreach ($users as  $user) {
             $user->image_url = $user->image['proxy_url'].'40/40'.$user->image['image_path'];
             $user->login_type = 'Email';
