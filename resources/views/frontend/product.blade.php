@@ -455,7 +455,7 @@
                                             else
                                                 $checkSlot = 0;
                                         @endphp
-                                        <div class="btn-wrapper d-flex align-items-center">
+                                        <div class="btn-wrapper">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
                                                 @if($product->inquiry_only == 0)
                                                 <div class="product-description border-product pb-0">
