@@ -22,10 +22,16 @@ class AppAuth{
     public function handle($request, Closure $next){
         $header = $request->header();
         $token = $header['authorization'][0]??null;
-        if (!Token::check($token, 'royoorders-jwt')){
+        if($token != null) {
+            if (!Token::check($token, 'royoorders-jwt')){
+                return response()->json(['error' => 'Invalid Token', 'message' => 'Session Expired'], 401);
+                abort(404);
+            }
+        } else{
             return response()->json(['error' => 'Invalid Token', 'message' => 'Session Expired'], 401);
             abort(404);
         }
+      
         $tokenBlock = BlockedToken::where('token', $token)->first();
         if($tokenBlock){
             return response()->json(['error' => 'Invalid Session', 'message' => 'Session Expired'], 401);

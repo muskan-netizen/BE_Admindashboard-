@@ -24,4 +24,9 @@ class OrderVendorProduct extends Model
     public function product(){
 	    return $this->belongsTo('App\Models\Product', 'product_id', 'id');
 	}
+  public function statusDelievered(){
+    $delievered = 6;
+    return $this->hasOne('App\Models\VendorOrderStatus','order_id','order_id')->where('order_status_option_id', $delievered); 
+  }
+  
 }

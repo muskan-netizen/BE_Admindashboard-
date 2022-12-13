@@ -5,6 +5,7 @@ use App\Http\Controllers\Client\CMS\PageController;
 use App\Http\Controllers\Client\CMS\EmailController;
 use App\Http\Controllers\Client\CMS\NotificationController;
 use App\Http\Controllers\Client\CMS\SmsController;
+use App\Http\Controllers\Client\CMS\ReasonController;
 use App\Http\Controllers\Client\SocialMediaController;
 use App\Http\Controllers\Client\VendorPayoutController;
 use App\Http\Controllers\Client\DownloadFileController;
@@ -66,6 +67,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('cms/sms', [SmsController::class, 'index'])->name('cms.sms');
         Route::get('cms/sms/{id}', [SmsController::class, 'show'])->name('cms.sms.show');
         Route::post('cms/sms/update', [SmsController::class, 'update'])->name('cms.sms.update');
+
+        // Route::get('cms/reasons', [ReasonController::class, 'index'])->name('cms.reasons');
+        Route::resource('reason', 'Client\CMS\ReasonController');
 
         Route::get('account/orders', [OrderController::class, 'index'])->name('account.orders');
         Route::get('account/promo-code', [PromoCodeController::class, 'index'])->name('account.promo.code');
@@ -175,7 +179,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendorregistrationdocument/create', [VendorRegistrationDocumentController::class, 'store'])->name('vendor.registration.document.create');
         Route::post('vendorregistrationdocument/update', [VendorRegistrationDocumentController::class, 'update'])->name('vendor.registration.document.update');
         Route::post('vendor/registration/document/delete', [VendorRegistrationDocumentController::class, 'destroy'])->name('vendor.registration.document.delete');
-
+        // Attribute routes
+        Route::resource('attribute', 'Client\AttributeController');
+        Route::post('delete-attribute', 'Client\AttributeController@deleteAttribute')->name('deleteAttribute');
+        Route::any('updateAttributeOption', 'Client\AttributeController@updateAttributeOption')->name('updateAttributeOption');
 
         // user registreation document
         Route::resource('userregistrationdocument', 'Client\UserRegistrationDocumentController');
@@ -250,6 +257,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('vendor/catalogs/{id}', 'Client\VendorController@vendorCatalog')->name('vendor.catalogs');
         Route::get('vendor/product/export/{id}', 'Client\VendorController@vendorProductExport')->name('vendor.product.export');
         Route::get('vendor/product/list/{id}', 'Client\VendorController@VendorProductFilter')->name('vendor.product');
+        Route::get('seller/product/list/{id}', 'Client\SellerController@SellerProductFilter')->name('seller.product');
         Route::get('global/product/list', 'Client\VendorController@VendorGlobalProductFilter')->name('vendor.global.product');
         Route::get('vendor/inventory-import/{id}', 'Client\VendorController@getInventoryImport')->name('get.inventory.import');
         Route::post('vendor/get-inventory-store-products', 'Client\VendorController@getInventoryStoreProducts')->name('get.inventory.store.products');
@@ -261,6 +269,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/saveConfig/{id}', 'Client\VendorController@updateConfig')->name('vendor.config.update');
         Route::post('vendor/saveConfig/profile/{id}', 'Client\VendorController@updateVendorConfigProfile')->name('vendor.config.update.profile');
         Route::post('vendor/social/media/urls', 'Client\VendorController@updateVendorSocialMediaUrls')->name('vendor.social.media.urls');
+        Route::post('vendor/social/media/delete', 'Client\VendorController@deleteVendorSocialMediaUrl')->name('vendor.social.media.delete');
         Route::post('vendor/saveLocation/{id}', 'Client\VendorController@updateLocation')->name('vendor.config.pickuplocation');
         Route::post('vendor/activeCategory/{id}', 'Client\VendorController@activeCategory')->name('vendor.category.update');
         Route::post('vendor/addCategory/{id}', 'Client\TableBookingController@storeCategory')->name('vendor.addCategory');
@@ -275,6 +284,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/table/delete/{id}', 'Client\TableBookingController@destroyTable')->name('vendor.table.delete');
         Route::post('vendor/parentStatus/{id}', 'Client\VendorController@checkParentStatus')->name('category.parent.status');
         Route::get('calender/data/{id}', 'Client\VendorSlotController@returnJson')->name('vendor.calender.data');
+
+        Route::get('seller/filterdata', 'Client\SellerController@getFilterData')->name('seller.filterdata');
+        Route::resource('seller', 'Client\SellerController');
+        Route::get('seller/catalogs/{id}', 'Client\SellerController@sellerCatalog')->name('seller.catalogs');
 
         Route::get('calender/pickup/data/{id}', 'Client\Laundry\PickupSlotController@returnJson')->name('vendor.calender.pickup'); // Added by Ovi
         Route::post('calender/pickup/slot/{id}', 'Client\Laundry\PickupSlotController@store')->name('vendor.pickup.saveSlot'); // Added by Ovi
@@ -507,6 +520,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('long_term_service/index/{vendor_id}',  'Client\LongTermServiceController@index')->name("long_term_service.index");
         Route::get('long_term_service/edit/{id}',          'Client\LongTermServiceController@edit')->name('long_term_service.edit');
         Route::get('long_term_service/delete/{id}',        'Client\LongTermServiceController@destroy')->name("long_term_service.destroy");
+        Route::post('long_term_service/updateBooking',     'Client\LongTermServiceController@updateBooking')->name("long_term_service.updateBooking");
     });
 });
 

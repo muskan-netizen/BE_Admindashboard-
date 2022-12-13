@@ -1,3 +1,8 @@
+article#page-container {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+}
 .al_body_template_one .container {
     max-width: 1400px;
 }
@@ -798,5 +803,20 @@ ul.header-dropdown.d-none.d-sm-inline li {
         left: auto;
         right: 10px;
     }
-
+    body.al_body_template_one section.home-slider-wrapper.py-sm-3 {
+        padding: 0 !important;
+    }
+    body.al_body_template_one .main-menu.al_template_one_menu {
+        display: none;
+    }
+    body.al_body_template_one #content-wrap .site-header .navbar-brand {
+        text-align: center;
+    }
+    body.al_body_template_one .al_offset-top-home {
+        margin-top: 154.625px !important;
+    }
+    body.al_body_template_one section.suppliers-section {
+        margin-top: 20px !important;
+    }
 }
+

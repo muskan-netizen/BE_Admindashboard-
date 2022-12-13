@@ -105,6 +105,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('mystore/product/delete', 'Api\v1\StoreController@deleteProduct');
         Route::post('mystore/product/deletevariant', 'Api\v1\StoreController@deleteProductVariant');
         Route::post('mystore/product/addProductImage', 'Api\v1\StoreController@productImages');
+        # Attribute related api
+        Route::post('mystore/product/addProductAttribute', 'Api\v1\StoreController@addProductAttribute');
+        Route::get('mystore/product/getProductAttribute', 'Api\v1\StoreController@getProductAttribute');
+        Route::get('mystore/product/availableListOfAttribute', 'Api\v1\StoreController@availableListOfAttribute');
+        
         Route::post('mystore/product/getProductImages', 'Api\v1\StoreController@getProductImages');
         Route::post('mystore/product/deleteimage', 'Api\v1\StoreController@deleteProductImage');
         Route::post('mystore/vendor/product/list', 'Api\v1\StoreController@getVendorProductList');
@@ -150,6 +155,18 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::get('get-return-products', 'Api\v1\ReturnOrderController@getReturnProducts');
             Route::post('update-product-return', 'Api\v1\ReturnOrderController@updateProductReturn');
             Route::post('vendor-order-for-cancel', 'Api\v1\ReturnOrderController@vendorOrderForCancel');
+        });
+
+        // Return order
+        Route::group(['prefix' => 'replace-order'], function () {
+            Route::get('get-replace-order-data-in-model', 'Api\v1\ReturnOrderController@getReplaceOrderDataInModel');
+            Route::get('get-replace-products', 'Api\v1\ReturnOrderController@getReplaceProducts');
+            Route::post('update-product-replace', 'Api\v1\ReturnOrderController@updateProductReplace');
+        });
+
+        // Cancel order
+        Route::group(['prefix' => 'cancel-order'], function () {
+            Route::get('get-cancel-order-reason', 'Api\v1\CancelOrderController@getCancelOrderReason');
         });
 
         // pickup & delivery 

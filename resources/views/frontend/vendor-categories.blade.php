@@ -90,7 +90,8 @@
                             </span>
                         </h5>
                         <div class="offer-slider al">
-                            @if(!empty($newProducts) && count($newProducts) > 0)
+                        @php $show_new_Products = 0; @endphp
+                            @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
                                     @foreach($newProds as $new)
                                     <div class="col-md-12 p-0">

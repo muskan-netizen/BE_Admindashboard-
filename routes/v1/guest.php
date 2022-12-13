@@ -32,7 +32,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('sendTestMail', 'Api\v1\BaseController@sendTestMail');
 
-        Route::get('user/registration/document', 'Api\v1\HomeController@UserRegistrationDocument');
+        Route::get('user/registration/document', 'Api\v1\HomeController2@UserRegistrationDocument');
 
         Route::post('cart/add', 'Api\v1\CartController@add');
         Route::post('checkProductAvailibility', 'Api\v1\RentalProductController@checkProductAvailibility');
@@ -42,11 +42,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('mfc/stk/push', 'Api\v1\CartController@stkPushRequest');
         Route::get('vendor/slots', 'Api\v1\CartController@checkScheduleSlots');
         Route::get('vendor/dropoffslots', 'Api\v1\CartController@checkScheduleDropoffSlots'); // Added By Ovi  // To Get Drop Off Slots
-        Route::post('homepage', 'Api\v1\HomeController@homepage');
-        Route::post('get/subcategory/vendor', 'Api\v1\HomeController@getSubcategoryVendor');
-        Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
-        Route::post('header', 'Api\v1\HomeController@headerContent');
+        Route::post('homepage', 'Api\v1\HomeController2@homepage');
+        Route::post('get/subcategory/vendor', 'Api\v1\HomeController2@getSubcategoryVendor');
+        Route::get('get/edited-orders', 'Api\v1\HomeController2@getEditedOrders');
+        Route::post('header', 'Api\v1\HomeController2@headerContent');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
+        Route::POST('checkProductAvailibility', 'Api\v1\ProductController@checkProductAvailibility');
         Route::get('getAllProductTags', 'Api\v1\ProductController@getAllProductTags');
         Route::post('get-products', 'Api\v1\ProductController@productList');
         Route::get('products_faq/{id}', 'Api\v1\ProductController@getProductFaq');
@@ -57,7 +58,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('category_kyc_document', 'Api\v1\CategoryController@getcategoryKycDocument');
         Route::post('submit_category_kyc', 'Api\v1\CartController@updateCartCategoryKyc');
 
-        Route::post('search/{type}/{id?}', 'Api\v1\HomeController@globalSearch');
+        Route::post('search/{type}/{id?}', 'Api\v1\HomeController2@globalSearch');
         Route::post('cms/page/detail', 'Api\v1\CMSPageController@getPageDetail');
         Route::post('brand/filters/{id?}', 'Api\v1\BrandController@brandFilters');
         Route::get('celebrity/{all?}', 'Api\v1\CelebrityController@celebrityList');
@@ -79,7 +80,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('driver/register', 'Api\v1\AuthController@driverSignup');
         Route::post('checkIsolateSingleVendor', 'Api\v1\CartController@checkIsolateSingleVendor');
         Route::post('productByVariant/{id}', 'Api\v1\ProductController@getVariantData')->name('productVariant');
-        Route::post('contact-us', 'Api\v1\HomeController@contactUs');
+        Route::post('contact-us', 'Api\v1\HomeController2@contactUs');
 
         Route::post('upload-image-pickup', 'Api\v1\PickupDeliveryController@uploadImagePickup');  ////// upload image while pickup delivery
 

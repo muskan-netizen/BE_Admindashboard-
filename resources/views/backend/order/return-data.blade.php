@@ -14,8 +14,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if(isset($orders[$status]) && count($orders[$status]))    
-                    @foreach ($orders[$status] as $order)
+                   
+                    @if(isset($orders) && count($orders))    
+                    @foreach ($orders as $order)
                     <tr data-id="{{ $order->id }}" class="show-return-product-modal"  data-status="{{$status}}">
                         <td>
                             #{{$order->order->order_number??''}}
@@ -37,7 +38,11 @@
                         <td class="">
                             <b class="text-black">{{$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                         </td>
-                        <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
+                        <td>
+                        @if(@$order->order->created_at)
+                        {{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}
+                        @endif
+                    </td>
                         <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
                     </tr>
                     @endforeach

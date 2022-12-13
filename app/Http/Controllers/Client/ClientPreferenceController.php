@@ -20,9 +20,6 @@ class ClientPreferenceController extends BaseController{
 
     // client_preference_fillable_key this variables define in ClientPreferenceManager
 
-
-
-
     public function index(){
         $client = Auth::user();
         $mapTypes = MapProvider::where('status', '1')->get();
@@ -155,6 +152,7 @@ class ClientPreferenceController extends BaseController{
         if(checkColumnExists('roles','is_enable_pricing')){
             $roles = Role::where('status',1)->get();
         }
+        // dd($preference);
         return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting','staticDropoff','laundry_teams','roles'));
     }
 
@@ -178,34 +176,14 @@ class ClientPreferenceController extends BaseController{
      */
 
     public function additionalupdate(Request $request){
-            // $rules = array(
-            //     'token_currency' => 'required_if:is_token_currency_enable,1'
-            // );
-
-            // $validation  = Validator::make($request->all(), $rules);
-            // if ($validation->fails()) {
-            //     return redirect()->back()->with('error', $validation->errors()->first());
-            // }
-
         try {
             $this->updatePreferenceAdditional($request);
 
             if($request->has('apply_free_del')){
                 $this->updateFreeDeliveryForRoles($request->apply_free_del);
             }
-
-            // $validated_keys = $request->only($this->client_preference_fillable_key);
-            // $client = Client::first();
-
-            // foreach($validated_keys as $key => $value){
-
-            //     ClientPreferenceAdditional::updateOrCreate(
-            //         ['key_name' => $key, 'client_code' => $client->code],
-            //         ['key_name' => $key, 'key_value' => $value,'client_code' => $client->code,'client_id'=> $client->id]);
-            //  }
             return redirect()->back()->with('success', 'Client settings updated successfully!');
         } catch (\Throwable $th) {
-           pr($th->getMessage());
             return redirect()->back()->with('error', 'Something went wrong!!');
         }
 
@@ -259,7 +237,6 @@ class ClientPreferenceController extends BaseController{
     }
     public function update(Request $request, $code){
 
-
         $cp = new ClientPreference();
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         if(!$preference){
@@ -268,7 +245,8 @@ class ClientPreferenceController extends BaseController{
         }
 
 
-        $keyShouldNot = array('last_mile_team','hide_order_address','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','need_inventory_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id', 'subscription_tab_taxi',"sos","sos_police_contact",'sos_ambulance_contact' ,'sos_enable','is_static_dropoff','is_vendor_tags', 'slotting_and_scheduling','appointment_submit_btn','need_appointment_service','appointment_service_key_url','appointment_service_key_code','appointment_service_key','is_long_term_service','is_long_term_service_switch','is_long_term_service','is_long_term_service_switch', 'is_phone_signup_switch', 'is_phone_signup','is_price_by_role_switch','is_price_by_role');
+        $keyShouldNot = array('last_mile_team','hide_order_address','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','need_inventory_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id', 'subscription_tab_taxi',"sos","sos_police_contact",'sos_ambulance_contact' ,'sos_enable','is_static_dropoff','is_vendor_tags', 'slotting_and_scheduling','appointment_submit_btn','need_appointment_service','appointment_service_key_url','appointment_service_key_code','appointment_service_key','is_long_term_service','is_long_term_service_switch','is_long_term_service','is_long_term_service_switch', 'is_phone_signup_switch', 'is_phone_signup','is_tax_price_inclusive','is_price_by_role_switch','is_price_by_role', 'is_gst_required_for_vendor_registration', 'is_gst_required_for_vendor_registration_switch', 'is_baking_details_required_for_vendor_registration_switch', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration_switch', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration_switch', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module_switch', 'is_seller_module', 'is_cab_pooling_switch', 'is_cab_pooling', 'is_attribute','seller_sold_title','saller_platform_logo');
+
 
         foreach ($request->all() as $key => $value) {
             if(!in_array($key, $keyShouldNot)){
@@ -377,6 +355,7 @@ class ClientPreferenceController extends BaseController{
                 'on_demand_check'=> 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,rental_check,laundry_check,appointment_check',
                 'laundry_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,rental_check,appointment_check',
                 'appointment_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check,rental_check',
+                'p2p_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check,rental_check,appointment_check',
 
             ];
             // atleast one is required
@@ -431,7 +410,6 @@ class ClientPreferenceController extends BaseController{
             $preference->stop_order_acceptance_for_users = ($request->has('stop_order_acceptance_for_users') && $request->stop_order_acceptance_for_users == 'on') ? 1 : 0;
             $preference->map_on_search_screen = ($request->has('map_on_search_screen') && $request->map_on_search_screen == 'on') ? 1 : 0;
 
-            $preference->is_cab_pooling = ($request->has('is_cab_pooling') && $request->is_cab_pooling == 'on') ? 1 : 0;
             $preference->slots_with_service_area = ($request->has('slots_with_service_area') && $request->slots_with_service_area == 'on') ? 1 : 0;
         }
 
@@ -444,6 +422,7 @@ class ClientPreferenceController extends BaseController{
             $preference->distance_unit_for_time = (($request->has('distance_unit_for_time')) && ($request->distance_unit_for_time != '')) ? $request->distance_unit_for_time : 'kilometer';
             $preference->distance_to_time_multiplier = (($request->has('distance_to_time_multiplier')) && ($request->distance_to_time_multiplier != '')) ? $request->distance_to_time_multiplier : 2;
         }
+
         if($request->has('primary_language')){
             $deactivate_language = ClientLanguage::where('client_code',Auth::user()->code)->where('is_primary', 1)->first();
             if($deactivate_language){
