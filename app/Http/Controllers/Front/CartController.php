@@ -327,7 +327,7 @@ class CartController extends FrontController
                 if( ( !in_array($productDetail->category->categoryDetail->type_id,[8,12])) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)){
                     if(!empty($already_added_product_in_cart)){
                         if($productDetail->variant[0]->quantity <= $already_added_product_in_cart->quantity){
-                            return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart s')]);
+                            return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your carts')]);
                         }
                         if($productDetail->variant[0]->quantity <= ($already_added_product_in_cart->quantity + $request->quantity)){
                             $request->quantity = $productDetail->variant[0]->quantity - $already_added_product_in_cart->quantity;
@@ -400,8 +400,8 @@ class CartController extends FrontController
             $service_start_date   = '';
             $start_date  = $request->has('start_date') ? $request->start_date : null;
             $isLongTermProduct =0;
-            if( $request->has('service_start_time')){
-                $isLongTermProduct  =1;
+            if( $request->has('service_start_time') && !empty($request->service_start_time)){
+                $isLongTermProduct  = 1;
                 $client_timezone = DB::table('clients')->first('timezone');
                 $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
                 $time = '2022-10-27 '.$request->service_start_time; /**only need time */

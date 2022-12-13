@@ -510,11 +510,11 @@
                                                 else
                                                 $product_quantity_in_cart = $product_in_cart->quantity??0;
 
+                                        @endphp
+                                        @if($is_available == 1)
+                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->has_inventory && $product->variant[0]->quantity <= $product_quantity_in_cart)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                        @endif
 
-                                                @endphp
-                                                @if($is_available == 1)
-                                                    <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
-                                                @endif
 
                                                     @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
                                                     <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
