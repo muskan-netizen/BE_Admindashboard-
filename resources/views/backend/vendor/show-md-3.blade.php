@@ -109,6 +109,9 @@
         </div>
     </div>
 </div> -->
+@php
+    $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
+@endphp
 @if( !p2p_module_status() )
 <div class="card-box">
     <div class="row text-left">
@@ -235,6 +238,7 @@
                             <input type="checkbox" data-plugin="switchery" name="hyper_local_delivery" class="form-control" data-color="#43bee1" @if($vendor->hyper_local_delivery == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     @endif
+                    
                     @if($getAdditionalPreference['is_same_day_delivery'] == '1' || $getAdditionalPreference['is_next_day_delivery'] == '1')
                         <div class="col-md-12" id="cutOff_timeInput">
                             <div class="form-group">

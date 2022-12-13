@@ -1318,18 +1318,16 @@ class VendorController extends BaseController
 
             }
 
-
-
         // Set order limit - By Ovi
-        if(checkColumnExists('vendors', 'next_day_delivery') && $request->has('same_day_delivery')){
+        if(checkColumnExists('vendors', 'next_day_delivery')){
             $vendor->same_day_delivery   = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
         }
 
-        if(checkColumnExists('vendors', 'next_day_delivery') && $request->has('next_day_delivery')){
+        if(checkColumnExists('vendors', 'next_day_delivery')){
             $vendor->next_day_delivery   = ($request->has('next_day_delivery') && $request->next_day_delivery == 'on') ? 1 : 0;
         }
 
-        if (checkColumnExists('vendors', 'hyper_local_delivery') && $request->has('hyper_local_delivery')) {
+        if (checkColumnExists('vendors', 'hyper_local_delivery')) {
             $vendor->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
         }
 

@@ -9,5 +9,9 @@ class Pincode extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['id', 'pincode'];
+    protected $fillable = ['id', 'pincode', 'vendor_id', 'is_disabled'];
+
+    public function deliveryOptions(){
+        return $this->hasMany('App\Models\PincodeDeliveryOption');
+    }
 }

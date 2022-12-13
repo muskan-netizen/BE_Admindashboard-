@@ -41,7 +41,6 @@
                             <div class="position-absolute mb-2">
                                 <button class="btn btn-info waves-effect waves-light text-sm-right importPincodeModal"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import CSV') }}</button>
                                 <button type="button" class="btn btn-info waves-effect waves-light text-sm-right addPincodeBtn" data-pincode=""><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Pincode') }}</button>
-                                </button>
                             </div>
                         </div>
                     </div>

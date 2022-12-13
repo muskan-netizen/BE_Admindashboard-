@@ -751,7 +751,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 <input type="checkbox" id="hyper_local_delivery" data-plugin="switchery" name="hyper_local_delivery" class="chk_box" data-color="#43bee1" @if($product->hyper_local_delivery == 1) checked @endif>
                             </div>
                         @endif
-                        @if($product->vendor->next_day_delivery == 1 && $product->vendor->same_day_delivery == 1)
+
+                        @if($product->vendor->next_day_delivery == 1 || $product->vendor->same_day_delivery == 1)
                             @php
                                 $pro_delivery_slot_ids = $product->syncProductDeliverySlot->pluck('id')->toArray();
                             @endphp
@@ -2168,6 +2169,14 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
         let product_faq_id = $(this).data('product_faq_id');
 
         editProductOrderForm(product_faq_id);
+    });
+
+    $(document).on("change", "#same_day_delivery", function() {
+        if(this.checked){
+            $('#next_day_delivery').prop("checked", true);
+        }else{
+            $('#next_day_delivery').prop("checked", false);
+        }
     });
 
     function editProductOrderForm(product_faq_id){

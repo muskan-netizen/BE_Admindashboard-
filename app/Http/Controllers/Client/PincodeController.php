@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\Pincode;
+use App\Models\{Pincode, PincodeDeliveryOption};
 use Illuminate\Http\Request;
 use DataTables;
 
@@ -16,8 +16,8 @@ class PincodeController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->search['value']??'';
-        $pincode = Pincode::where('is_disabled', '0');
+        $search = $request->search??'';
+        $pincode = Pincode::with('deliveryOptions')->where('vendor_id', $request->vendor_id);
         if(!empty($search)){
             $pincode = $pincode->where('pincode', 'like', '%' . $search . '%');
         }
@@ -29,10 +29,9 @@ class PincodeController extends Controller
                     $delete_url = route('pincode.destroy', $pincode->id);
                     $action = '<div class="form-ul" style="width: 60px;">
                     <div class="inner-div" style="float: left;">
-                        <a class="action-icon addPincodeBtn"
+                        <a class="action-icon editPincodeBtn"
                             href="javascript:void(0);"
-                            data-id="'.$pincode->id.'" data-pincode="'.$pincode->pincode.'"><i
-                                class="mdi mdi-square-edit-outline"></i></a>
+                            data-id="'.$pincode->id.'"><i class="mdi mdi-square-edit-outline"></i></a>
                     </div>
                     <div class="inner-div">
                         <form id="deleteproduct_'.$pincode->id.'" method="POST"
@@ -58,7 +57,11 @@ class PincodeController extends Controller
                     }
                     return $status;
                 })
-                ->rawColumns(['action', 'status'])
+
+                ->addColumn('type', function ($pincode) {
+                    return $pincode->deliveryOptions->pluck('delivery_option_type_text')->toArray();
+                })
+                ->rawColumns(['action', 'status', 'type'])
                 ->make(true);
         }
         return view('backend.pincode.index');
@@ -72,9 +75,20 @@ class PincodeController extends Controller
      */
     public function store(Request $request)
     {
-        $reason = Pincode::updateOrCreate([ 'id'   => $request->pincode_id, ],[
-            'pincode'     => $request->pincode
+        $pincode = Pincode::updateOrCreate([ 'id'   => $request->pincode_id, ],[
+            'pincode' => $request->pincode,
+            'vendor_id' => $request->vendor_id
         ]);
+        if($request->pincode_id != ''){
+            PincodeDeliveryOption::where('pincode_id', $request->pincode_id)->delete();
+        }
+        $delivery_option_ids = $request->delivery_option_ids;
+        foreach($delivery_option_ids as $delivery_option_id){
+            PincodeDeliveryOption::updateOrCreate([ 'id'   => $request->pincode_id, ],[
+                'pincode_id' => $pincode->id,
+                'delivery_option_type' => $delivery_option_id
+            ]); 
+        }
         if($request->pincode_id != ''){
             return redirect()->back()->with('success', 'Pincode updated successfully');
         }
@@ -92,5 +106,12 @@ class PincodeController extends Controller
         $returnReason = Pincode::find($id);
         $returnReason->delete();
         return redirect()->back()->with('success', 'Pincode deleted successfully');
+    }
+
+    public function pincodeData(Request $request){
+        if($request->ajax()){
+            $pincode = Pincode::with('deliveryOptions')->where('id', $request->id)->first();
+            return view('backend.pincode.edit-pincode-ajax')->with('pincode', $pincode); 
+        } 
     }
 }
