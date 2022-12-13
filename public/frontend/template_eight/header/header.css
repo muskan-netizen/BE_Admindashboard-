@@ -332,6 +332,7 @@ body.al_body_template_eight ul#header_cart_main_ul li .total {
     display: flex !important;
     align-items: center;
 }
+.al_body_template_eight .onhover-dropdown:before{display:none;}
 /*---------------mobile view media css----------*/
 @media(max-width:767px){
 .al_body_template_eight .menu-slider.slick-slider {
