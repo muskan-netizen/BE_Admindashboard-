@@ -11,7 +11,6 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductTranslation;
 use App\Models\ProductVariant;
-use Session;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\ToasterResponser;
 use App\Models\ProductAttribute;
@@ -21,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Session;
 
 class PostController extends FrontController
 {
