@@ -4236,9 +4236,9 @@ body.al_body_template_eight .product-right .product-buttons {
     margin-left:16px;
 }
 body.al_body_template_eight .product-right .product-buttons .btn-outline, .product-right .product-buttons .btn-solid {
-    padding: 12px 14px;
+    padding: 7px 7px;
     margin-right: 0 !important;
-    font-size:13px;
+    font-size: 12px;
 }
 body.al_body_template_eight .collection-wrapper .product-right.inner_spacing.pl-sm-3.p-0 h2 {
     padding: 0;
@@ -6288,7 +6288,8 @@ body.al_body_template_eight ul#header_cart_main_ul li {
     padding: 10px !important;
 }
 body.al_body_template_eight .qty-box .input-group .form-control{
-    width:50px !important;
+    width:40px !important;
+    height:40px;
 }
 body.al_body_template_eight section.buy_details .discriptions h3 {
     color: #222;
@@ -6298,4 +6299,11 @@ body.al_body_template_eight section.buy_details .discriptions h3 {
     margin: 0;
 }
 body.al_body_template_eight section.buy_details .product-right .product-title{margin-top:0;}
+body.al_body_template_eight div#addon-table .checkbox.checkbox-success {
+    width: 35%;
+    margin: 0;
+}
 
+body.al_body_template_eight div#addon-table .checkbox.checkbox-success label {
+    font-size: 12px;
+}
