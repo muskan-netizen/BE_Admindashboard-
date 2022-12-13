@@ -30,4 +30,9 @@ class Cart extends Model
     public function cartvendor(){
       return $this->hasMany('App\Models\CartProduct')->select('cart_id', 'vendor_id');
     }
+
+    public function editingOrder()
+    {
+        return $this->belongsTo('App\Models\Order', 'order_id', 'id');
+    }
 }

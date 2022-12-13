@@ -10,13 +10,15 @@ use App\Models\Client as CP;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-use App\Http\Traits\{ValidatorTrait};
+use App\Http\Traits\{ValidatorTrait, ApiResponser};
+use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 
-use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus,OrderLongTermServiceSchedule,UserDevice};
+
+use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus,OrderLongTermServiceSchedule,UserDevice, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon};
 
 trait OrderTrait{
-    use ValidatorTrait;
+    use ValidatorTrait, ApiResponser;
 
     public function ProductVariantStock($order_id)
     {
@@ -875,23 +877,107 @@ trait OrderTrait{
 
     public function editOrderInCart($orderid)
     {
-        $order = Order::where('id', $orderid)->with(['vendors.products.addon'])->first();
-        $user = Auth::user();
-        $cart = NULL;
-        if ($user):
-            $cart = Cart::where('user_id', $user->id)->first();
-        else:
-            $cart = Cart::where('unique_identifier', session()->get('_token'))->first();
-        endif;
+        try
+        {
+            DB::beginTransaction();
+            $user = Auth::user();
+            $langId = Session::get('customerLanguage')??'1';
+            $new_session_token = session()->get('_token');
+            $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
 
-        if(!empty($cart)):
-            CartProduct::where('cart_id', $cart->id)->delete();
-            Cart::where('id', $cart->id)->delete();
-        endif;
+            $orderdata = Order::where('id', $orderid)->with(['vendors.products.addon', 'vendors.products.LongTermService.addon'])->first();
+            //dd($orderdata);
+            $cart = NULL;
+            if ($user):
+                $cart = Cart::where('user_id', $user->id)->first();
+            else:
+                $cart = Cart::where('unique_identifier', session()->get('_token'))->first();
+            endif;
 
-        if(!empty($order)):
-        
-        endif;
+            if(!empty($cart)):
+                CartProduct::where('cart_id', $cart->id)->delete();
+                Cart::where('id', $cart->id)->delete();
+            endif;
+
+            if(!empty($orderdata)):
+                if(empty($orderdata->editInCart)):
+                    $cart_detail = [
+                        'is_gift' => $orderdata->is_gift,
+                        'status' => '0',
+                        'item_count' => 0,
+                        'currency_id' => $client_currency->currency_id,
+                        'unique_identifier' => !$user ? $new_session_token : '',
+                        'order_id' => $orderdata->id,
+                    ];
+
+                    if(Session::has('vendorType')):
+                        Session::forget('vendorType');
+                    endif;
+                    $luxury_option = LuxuryOption::where('id', $orderdata->luxury_option_id)->first();
+                    Session::put('vendorType', $luxury_option->title);
+                    //Orders-----------------
+                    //id, created_by, order_number, scheduled_date_time, payment_option_id, user_id, address_id, is_deleted, currency_id, loyalty_membership_id, luxury_option_id, loyalty_points_used, loyalty_amount_saved, loyalty_points_earned, paid_via_wallet, paid_via_loyalty, total_amount, wallet_amount_used, subscription_discount, total_discount, total_delivery_fee, taxable_amount, tip_amount, payable_amount, tax_category_id, created_at, updated_at, payment_method, payment_status, comment_for_pickup_driver, comment_for_dropoff_driver, comment_for_vendor, schedule_pickup, schedule_dropoff, specific_instructions, is_gift, total_service_fee, shipping_delivery_type, scheduled_slot, total_container_charges, viva_order_id, fixed_fee_amount, type, friend_name, friend_phone_number, total_other_taxes, dropoff_scheduled_slot, user_latitude, user_longitude, additional_price, total_toll_amount, is_postpay, is_long_term
+                    $cart_data = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
+
+                    if(!empty($orderdata->address_id)):
+                        UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
+                        UserAddress::where('id', $orderdata->address_id)->where('user_id', $user->id)->update(['is_primary' => 1]);
+                    endif;
+                    foreach($orderdata->vendors as $ordervendorproducts):
+                        //Order_vendors---------------
+                        //id, order_id, vendor_id, vendor_dinein_table_id, user_id, delivery_fee, status, coupon_id, coupon_code, taxable_amount, subtotal_amount, payable_amount, discount_amount, web_hook_code, admin_commission_percentage_amount, admin_commission_fixed_amount, coupon_paid_by, payment_option_id, dispatcher_status_option_id, order_status_option_id, created_at, updated_at, dispatch_traking_url, order_pre_time, user_to_vendor_time, reject_reason, service_fee_percentage_amount, cancelled_by, lalamove_tracking_url, shipping_delivery_type, courier_id, ship_order_id, ship_shipment_id, ship_awb_id, total_container_charges, accepted_by, driver_id, scheduled_date_time, schedule_slot, is_restricted, total_markup_price, fixed_fee, additional_price, fixed_service_charge_amount, toll_amount, return_reason_id, is_exchanged_or_returned, exchange_order_vendor_id
+                        foreach($ordervendorproducts->products as $orderproduct):
+                            //Order_vendor_products-------------
+                            //id, order_id, product_id, order_vendor_id, quantity, product_name, image, price, taxable_amount, vendor_id, created_by, variant_id, tax_category_id, created_at, updated_at, category_id, product_dispatcher_tag, schedule_type, scheduled_date_time, product_variant_sets, user_product_order_form, container_charges, markup_price, additional_increments_hrs_min, start_date_time, end_date_time, schedule_slot, dispatch_agent_id, incremental_price, total_booking_time, toll_price, product_delivery_fee, no_seats_for_pooling, is_cab_pooling, available_for_pooling
+                            $cart_product_detail = [
+                                'status'                        => '0',
+                                'is_tax_applied'                => '1',
+                                'created_by'                    => $user->id,
+                                'cart_id'                       => $cart_data->id,
+                                'quantity'                      => $orderproduct->quantity ?? 1,
+                                'vendor_id'                     => $ordervendorproducts->vendor_id,
+                                'product_id'                    => $orderproduct->product_id,
+                                'variant_id'                    => $orderproduct->variant_id,
+                                'user_product_order_form'       => $orderproduct->user_product_order_form,
+                                'currency_id'                   => $client_currency->currency_id,
+                                'luxury_option_id'              => ($orderdata->luxury_option_id) ? $orderdata->luxury_option_id : 0,
+                                'start_date_time'               => ($orderproduct->start_date_time) ? $orderproduct->start_date_time : NULL,
+                                'end_date_time'                 => ($orderproduct->end_date_time) ? $orderproduct->end_date_time : NULL,
+                                'additional_increments_hrs_min' => ($orderproduct->additional_increments_hrs_min) ? $orderproduct->additional_increments_hrs_min : NULL,
+                                'total_booking_time'            => $orderproduct->total_booking_time,
+                                'service_day'                   => (!empty($orderproduct->LongTermService)) ? $orderproduct->LongTermService->service_day : null,
+                                'service_date'                  => (!empty($orderproduct->LongTermService)) ? $orderproduct->LongTermService->service_date : null,
+                                'service_period'                => (!empty($orderproduct->LongTermService)) ? $orderproduct->LongTermService->service_period : null,
+                                'service_start_date'            => (!empty($orderproduct->LongTermService)) ? $orderproduct->LongTermService->service_start_date : null,
+                                'vendor_dinein_table_id'        => ($ordervendorproducts->vendor_dinein_table_id) ? $ordervendorproducts->vendor_dinein_table_id : NULL,
+                            ];
+
+                            $cartProduct = CartProduct::create($cart_product_detail);
+
+                            foreach($orderproduct->addon as $addon):
+                                $saveAddons = [
+                                    'option_id' => $addon->option_id,
+                                    'cart_id' => $cart_data->id,
+                                    'addon_id' => $addon->addon_id,
+                                    'cart_product_id' => $cartProduct->id,
+                                ];
+                                CartAddon::insert($saveAddons);
+                            endforeach;
+
+                        endforeach;
+                    endforeach;
+                    DB::commit();
+                    return $this->errorResponse(__('Order is already editing in Cart.'), 200);
+                else:
+                    return $this->errorResponse(__('Order is already editing in Cart.'), 203);
+                endif;
+            endif;
+        }
+        catch (\Exception $e) {
+            DB::rollback();
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
     }
 
 }

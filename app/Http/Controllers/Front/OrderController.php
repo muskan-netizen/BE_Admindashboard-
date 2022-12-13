@@ -3196,12 +3196,7 @@ class OrderController extends FrontController
         {
             $orderid = $request->orderid;
             $response = $this->editOrderInCart($orderid);
-            if($response){
-                return $this->successResponse($order, __('Order placed successfully.'), 200);
-            }else{
-                return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
-            }
-            
+            return $response;
         }
         catch (\Exception $e) {
             \Log::error($e->getMessage());
