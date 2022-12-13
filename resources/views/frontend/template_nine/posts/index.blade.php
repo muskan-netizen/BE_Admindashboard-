@@ -162,7 +162,7 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
                     <form action="{{route('posts.store')}}" enctype="multipart/form-data" method="post" class="product_form">
                         @csrf
                         <h6 class="pb-3">SELECTED CATEGORY</h6>
-                        <input type="hidden" name="category_id" id="category_id" />
+                        <input type="hidden" name="category_id" id="category_id" required />
                         <nav aria-label="breadcrumb" class="d-flex justify-content-between align-items-center mb-3">
                           <ol class="breadcrumb bg-transparent p-0 m-0">
                             <li class="breadcrumb-item selected-category"></li>
@@ -180,11 +180,11 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
                                     <h5 class="text-uppercase my-4">Include some details</h5>
                                     <div class="form-group">
                                         <label>Title *</label>
-                                        <input type="Year" class="form-control" name="product_name" id="" aria-describedby="">
+                                        <input type="Year" class="form-control" name="product_name" required id="" aria-describedby="">
                                     </div>
                                     <div class="form-group">
                                         <label>Description *</label>
-                                        <textarea class="form-control" id="" name="product_description" rows="3"></textarea>
+                                        <textarea class="form-control" id="" name="product_description" required rows="3"></textarea>
                                     </div>
                                 </div>
                                 <div class="alPostItemsData" id="productAttributes">
@@ -202,7 +202,7 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
                                             <div class="input-group-prepend">
                                               <div class="input-group-text">₹</div>
                                             </div>
-                                            <input type="text" class="form-control" name="price" id="" placeholder="">
+                                            <input type="text" class="form-control" required name="price" id="" placeholder="">
                                           </div>
                                     </div>
                                 </div>
@@ -213,7 +213,7 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
                                     <h5 class="text-uppercase py-3">Upload up to 20 photos</h5>
                                     <div class="form-group">
                                         {{-- <input type="file" accept="image/*"   data-plugins="dropify" name="images[]" class="dropify ss_form_submit" id="image" multiple /> --}}
-                                        <input type="file" class="form-control-file" name="file[]" id=" " multiple>
+                                        <input type="file" class="form-control-file" required name="file[]" id=" " multiple>
                                     </div>
                                 </div>
                             </div>
