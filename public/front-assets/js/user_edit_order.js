@@ -15,10 +15,11 @@ $(document).on("click", ".order_edit_button", function() {
                 data: { orderid: orderid},
                 success: function(response) {
                     if (response.status == "Success"){
-                        success_error_alert('success', response.message, ".order_edit_button");
+                        alert(response.message);
                     }else{
                         alert(response.message);
                     }
+                    window.location.href = showcart_redirect;
                 },
                 error: function(error) {
                     alert(response.message);

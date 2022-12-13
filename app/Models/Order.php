@@ -128,7 +128,7 @@ class Order extends Model implements Auditable
         return self::where('order_number',$order_number)->with('user','products','products.addon','products.addon.option','products.pvariant')->first();
     }
 
-    public function editInCart()
+    public function editingInCart()
     {
         return $this->hasOne('App\Models\Cart', 'order_id', 'id');
     }

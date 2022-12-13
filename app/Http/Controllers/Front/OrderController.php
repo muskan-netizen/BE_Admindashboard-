@@ -836,7 +836,12 @@ class OrderController extends FrontController
             }
             $currency_id = Session::get('customerCurrency');
             $language_id = Session::get('customerLanguage');
-            $cart = Cart::where('user_id', $user->id)->first();
+            if(checkColumnExists('carts','order_id'))
+            {//get if any order is being edit
+                $cart = Cart::where('user_id', $user->id)->with(['editingOrder'])->first();
+            }else{
+                $cart = Cart::where('user_id', $user->id)->first();
+            }
 
             /* Get Currencies of client and customer */
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
@@ -847,7 +852,13 @@ class OrderController extends FrontController
             $loyalty_points_used = $loyaltyCheck->loyalty_points_used??0;
             
             /* Generate order object */
-            $order = new Order;
+            if(!isset($cart->editingOrder) && !empty($cart->editingOrder))
+            {
+                $order = Order::where('id', $cart->editingOrder->id)->first();
+            }else{
+                $order = new Order;
+            }
+            //$order = new Order;
             $order->user_id = $user->id;
             $order->order_number = generateOrderNo();
 
@@ -3203,7 +3214,7 @@ class OrderController extends FrontController
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
-    
+
     public function TrackOrder(Request $request){
        $order_id = $request->order_id;
        $user_id  = $request->id;

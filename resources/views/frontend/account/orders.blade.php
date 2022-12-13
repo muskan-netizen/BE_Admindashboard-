@@ -281,7 +281,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                 }
                                                                                             @endphp
                                                                                             <span>
-                                                                                                @if(!empty($order->scheduled_date_time) && $clientPreference->is_postpay_edit_dropoff == 1 && $clientPreference->order_edit_before_hours > 0)
+                                                                                                @if(!empty($order->scheduled_date_time) && $clientPreference->is_postpay_edit_dropoff == 1 && $clientPreference->order_edit_before_hours > 0 && $order->luxury_option_id != 4)
                                                                                                     @if((strtotime($order->scheduled_date_time) - strtotime($clientPreference->editlimit_datetime)) > 0)
                                                                                                     <span class="badge ml-2" style="cursor:pointer;color:var(--theme-deafult);"><strong><a class="order_edit_button" data-order_id='{{$order->id}}'><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{__('Edit')}}</a></strong></span>
                                                                                                     @endif
@@ -2251,6 +2251,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
         var edit_order_by_user_url = "{{route('user.editorder')}}";
         var confirm_edit_order_title = "{{__('Are you sure?')}}";
         var confirm_edit_order_desc = "{{__('You want to edit this Order.')}}";
+        var showcart_redirect = "{{route('showCart')}}";
     </script>
 
     <script type="text/javascript">
