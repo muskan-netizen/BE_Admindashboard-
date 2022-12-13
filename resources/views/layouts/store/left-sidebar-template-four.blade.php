@@ -332,7 +332,7 @@ $pages = \App\Models\Page::with([
                                     <ul class="header-dropdown ml-auto d-lg-block d-none">
                                         @if($client_preference_detail->header_quick_link == 1)
                                         @if( p2p_module_status() )
-                                            <li><a href="{{route('vendor.index', ['fullPage'=>1])}}">{{ __('Add Post') }}</a></li>
+                                            <li><a href="{{route('posts.index', ['fullPage'=>1])}}">{{ __('Add Post') }}</a></li>
                                         @endif
                                         <li class="onhover-dropdown quick-links quick-links pr-2 mr-2">
 
