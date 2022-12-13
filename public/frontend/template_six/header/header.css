@@ -118,7 +118,7 @@ body .footer-contant ul li {
 .al_body_template_six .onhover-show-div li {
     text-align: center;
 }
-}
+/* } */
 
 .alProductViewPriceMin span {
     display: block;
@@ -1242,8 +1242,8 @@ body .royo_whatsapp_img {
     }
 }
 
-    .al_body_template_six .vendor_mods_section {
+    /* .al_body_template_six .vendor_mods_section {
         width: 100%;
     }
 
-}
+} */
