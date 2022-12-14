@@ -372,4 +372,22 @@ class P2PController extends BaseController
             return $arr;
         }
     }
+
+    public function getP2pCategories()
+    {
+
+        $celebrity_check = ClientPreference::first()->value('celebrity_check');
+        $categories = Category::with('translation_one','type')->where('id', '>', '1')
+        ->whereHas('type', function($q){
+            $q->where('service_type', 'p2p');
+        })
+        ->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
+
+        if ($celebrity_check == 0)
+            $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
+
+        $categories = $categories->get();
+
+        return $this->successResponse($categories);
+    }
 }

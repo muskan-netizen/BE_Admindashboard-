@@ -278,7 +278,7 @@ class PostController extends FrontController
         $product->title = empty($request->product_name) ? $request->sku : $request->product_name;
         $product->type_id = $request->type_id ?? 1;
         $product->category_id = $request->category_id;
-        $product->vendor_id = $user_vendor->vendor_id;
+        $product->vendor_id = $user_vendor->vendor_id ?? $user->id;
         $product->is_live = 1;
         $product->publish_at = date('Y-m-d H:i:s');
         $client_lang = ClientLanguage::where('is_primary', 1)->first();
