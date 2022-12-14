@@ -1285,9 +1285,10 @@ body.al_body_template_one section.buy_details #productPriceValue b {
     font-weight: 900;
     font-size: 18px;
 }
-body.al_body_template_two .royo_whatsapp_img {
+body.al_body_template_two .royo_whatsapp_img{
     position: fixed;
     z-index: 99999;
     bottom: 7%;
     left: 1%;
+    width: 70px;
 }
