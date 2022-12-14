@@ -936,11 +936,11 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                 @foreach ($vendor->products as $product)
                                                                                                     @php 
                                                                                                         
-                                                                                                        if(@$product->product->returnable && $product->product->returnable == 1){
+                                                                                                        if(@$product->product->returnable && $product->product->returnable == 1 && @$vendor->is_order_days_for_return){
                                                                                                             $returnable = 1;
                                                                                                         }
                                                                                                         
-                                                                                                        if(@$product->product->replaceable && $product->product->replaceable == 1){
+                                                                                                        if(@$product->product->replaceable && $product->product->replaceable == 1 && @$vendor->is_order_days_for_return){
                                                                                                             $replaceable = 1;
                                                                                                         }
                                                                                                     @endphp  

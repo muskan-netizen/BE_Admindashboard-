@@ -1,5 +1,27 @@
 
 <style>
+    .alInfoIocn .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+.alInfoIocn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+}
+.alInfoIocn:hover .tooltiptext {
+    visibility: visible;
+}
     .cross-sell .img-outer-box.position-relative img,
     .upsell-sell .img-outer-box.position-relative img {
         position: absolute;
@@ -232,7 +254,7 @@
                             @endif
                             @if($serviceType ==  'rental')
                             <div class="col-10 col-md-4 text-md-center order-md-3">
-                                <div class="number d-flex justify-content-md-center">
+                                <div class="number d-flex justify-content-md-center border-0">
                                     <div style="display: none !important;" class="counter-container d-flex align-items-center">
                                         <input placeholder="1"  type="number" min="0"  data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
                                         data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
@@ -243,8 +265,8 @@
                                             @php
                                                 $dura = getHoursMinutes($vendor_product->total_booking_time);
                                             @endphp
-                                            <p>{{$dura}}</p>
-
+                                            <p class="mb-0">{{$dura}}</p>
+                                           
                                         </div>
                                     </div>
 
@@ -565,6 +587,11 @@
 
 
         </div>
+        <div class="row m-0">
+            <div class="col-lg-12 left_box new_cart mt-4 p-3" id="left_address">
+                {!!$cart_details->left_section!!}
+            </div>
+        </div>
 
 
            
@@ -581,13 +608,9 @@
 
     {{-- Start Right Section --}}
     <div class="col-lg-4">
+        
         <div class="row m-0">
-            <div class="col-lg-12 cart-summary  p-2 pb-4 mr-3" id="left_address">
-                {!!$cart_details->left_section!!}
-            </div>
-        </div>
-        <div class="row m-0">
-         <div class="cart-summary mt-4 p-2 pb-4">
+         <div class="cart-summary p-2 pb-4">
             <div class="col-12 mb-2">
                 <h5 class="order_text">{{ __('Order Summary') }}</h5>
             </div>
@@ -839,8 +862,15 @@
                 <hr class="my-2">
             @endif
             <div class="row">
-                <div class="col-6">
-                    <p class="total_amt m-0">{{__('Amount Payable')}} @if($other_taxes)<small>({{__('incl. tax')}})</small>@endif </p>
+                <div class="col-6 d-flex">
+                    <p class="total_amt m-0">{{__('Amount Payable')}} 
+                        @if($other_taxes)<small>({{__('incl. tax')}})</small>@endif </p>
+                        @if($cart_details->conversion_rate>0 && $cart_details->currency_code=="MXN")
+                        <div class="ml-2 alInfoIocn position-relative">
+                            <i class="fa fa-info-circle"></i>
+                        <span class="tooltiptext">Equivalent to {{ (decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)) * $cart_details->conversion_rate}} USD</span>
+                        </div>
+                        @endif
                 </div>
 
 

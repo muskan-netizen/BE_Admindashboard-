@@ -6,6 +6,11 @@
 .al_body_template_one .menu-navigation.al {
     padding: 6px !important;
 }
+article#page-container {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+}
 a.common-product-box.text-center{position:relative}.menu-navigation.al{width:100%;z-index:0;background-color:#f5f5f5;padding:5px;border-top:1px solid #ddd;-webkit-transition:.5s;transition:.5s}.al_body_template_one .slick-slide{float:left;height:100%;min-height:1px}
 /*css here----*/
 .customCheckbox {

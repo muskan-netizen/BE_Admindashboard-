@@ -1725,8 +1725,8 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request', 'products.productReturn',
-        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail'
+        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
+        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request'
         ])
             ->whereHas('orderDetail', function ($q1) {
                 $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1,38]);
@@ -2366,7 +2366,7 @@ class OrderController extends BaseController
                                 if ($action == 'delivery' || $action == 'on_demand') {
                                     if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) {
                                         $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
-                                        Log::info($delivery_fee);
+                                        //Log::info($delivery_fee);
                                         if (!empty($delivery_fee) && $delivery_count == 0) {
                                             $delivery_count = 1;
                                             $vendor_cart_product->delivery_fee = decimal_format($delivery_fee);
@@ -2926,7 +2926,7 @@ class OrderController extends BaseController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData, $header_code='')
     {
-        Log::info('sendOrderPushNotificationVendors');
+       
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
         $vendorAppDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();

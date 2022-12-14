@@ -806,7 +806,7 @@
                                     <td>
                                         <div>
                                             <div class="inner-div">
-                                                <button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
+                                                <button type="button" class="btn btn-primary-outline action-icon delete_vendor_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
                                                     <i class="mdi mdi-delete"></i>
                                                 </button>
                                             </div>
@@ -983,21 +983,26 @@ $( document ).ready(function() {
             },
             success: (res) => {
                 if(res.status == 'Success'){
-                    var icon = "success";
-                    var addedIcon = 'social-media-' + res.message.icon;
+                    $.NotificationApp.send("Success", res.message, "top-right", "#5ba035", "success");
+                    $('#manageSocialMedia').modal('hide');
+                    setTimeout(function() {
+                        location.reload()
+                    }, 2000);
+                     var icon = "success";
+                    // var addedIcon = 'social-media-' + res.message.icon;
 
-                    console.log('addedIcon', addedIcon);
-                    if ( $('.'+addedIcon).length ) {
-                        var addedurl = 'social-media-url-'+ res.message.icon;
-                        $("."+addedurl).text(res.message.url);
-                        $("."+addedurl).attr('href', res.message.url);
-                    }else{
-                        $('#social-media-datatable tr:last').after('<tr><td><i class="fab fa-'+res.message.icon+'  social-media-'+res.message.icon+'" aria-hidden="true"></i></td>'+
-                                '<td><a href="'+res.message.url+'" class="social-media-url-'+res.message.icon+'" target="_blank">'+res.message.url+'</a></td>'+
-                                '<td><div><div class="inner-div"><button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="'+res.message.media+'"><i class="mdi mdi-delete"></i></button></div></div></td></tr>');
-                    }
+                    // console.log('addedIcon', addedIcon);
+                    // if ( $('.'+addedIcon).length ) {
+                    //     var addedurl = 'social-media-url-'+ res.message.icon;
+                    //     $("."+addedurl).text(res.message.url);
+                    //     $("."+addedurl).attr('href', res.message.url);
+                    // }else{
+                    //     $('#social-media-datatable tr:last').after('<tr><td><i class="fab fa-'+res.message.icon+'  social-media-'+res.message.icon+'" aria-hidden="true"></i></td>'+
+                    //             '<td><a href="'+res.message.url+'" class="social-media-url-'+res.message.icon+'" target="_blank">'+res.message.url+'</a></td>'+
+                    //             '<td><div><div class="inner-div"><button type="button" class="btn btn-primary-outline action-icon delete_vendor_social_media_option_btn" data-social_media_detail_id="'+res.message.media+'"><i class="mdi mdi-delete"></i></button></div></div></td></tr>');
+                    // }
 
-                    $('#social_url').val('');
+                    // $('#social_url').val('');
 
 
                 }else{
@@ -1018,6 +1023,37 @@ $( document ).ready(function() {
             }
         });
     });
+
+    $(document).on("click", ".delete_vendor_social_media_option_btn", function() {
+            var social_media_detail_id = $(this).data('social_media_detail_id');
+            Swal.fire({
+                title: "{{__('Are you Sure?')}}",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ok',
+            }).then((result) => {
+                if(result.value)
+                {
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: "{{ route('vendor.social.media.delete') }}",
+                        data: {
+                            social_media_detail_id: social_media_detail_id
+                        },
+                        success: function(response) {
+                            if (response.status == "Success") {
+                                $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                                $('#manageSocialMedia').modal('hide');
+                                setTimeout(function() {
+                                    location.reload()
+                                }, 2000);
+                            }
+                        }
+                    });
+                }
+            });
+        });
 
     // $(".addUrlSubmit").click(function(e) {
     //     e.preventDefault();

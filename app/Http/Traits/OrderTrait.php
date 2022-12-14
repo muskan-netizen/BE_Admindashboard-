@@ -864,8 +864,9 @@ trait OrderTrait{
             return false;
         }
         $date = Carbon::parse($order->created_at)->addDays($days);// enddate for return
+        $today = $dt = Carbon::now();
        
-        if($date >= $order->created_at){
+        if($date >= $today){
             return true;
         }
         return false;

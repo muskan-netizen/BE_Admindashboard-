@@ -13,7 +13,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices};
+use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -945,6 +945,8 @@ class OrderController extends BaseController
                 $orderData = Order::find($request->order_id);
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
                 $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
+                $customer = User::find($orderData->user_id);
+                $this->sendTrackingUrlSMS($customer,$orderData);
                 return response()->json([
                     'status' => 'success',
                     'created_date' => convertDateTimeInTimeZone($vendor_order_status->created_at, $timezone, 'l, F d, Y, H:i A'),
@@ -1801,10 +1803,10 @@ class OrderController extends BaseController
     public function returnOrderFilter(Request $request)
     {
         try {
-            $user = Auth::user();
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-            $timezone = Auth::user()->timezone;
-            $orders_list = OrderReturnRequest::with('product', 'order')->orderBy('updated_at', 'DESC');
+            $user = Auth::user();
+            $timezone = $user->timezone;
+            $orders_list = OrderReturnRequest::with('product')->orderBy('updated_at', 'DESC');
             if ($user->is_superadmin == 0) {
                 $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
@@ -1840,16 +1842,24 @@ class OrderController extends BaseController
 
                 $orders_list->whereBetween('created_at', [$from_date . " 00:00:00", $to_date . " 23:59:59"]);
             }
+            $Accepted = [];
+            $Pending = [];
+            $Rejected = [];
             $pending_orders = clone $orders_list;
             $accepted_orders = clone $orders_list;
             $rejected_orders = clone $orders_list;
 
-            $pending_orders = $pending_orders->where('status', 'Pending')->paginate(20);
-            $accepted_orders = $accepted_orders->where('status', 'Accepted')->paginate(20);
-            $rejected_orders = $rejected_orders->where('status', 'Rejected')->paginate(20);
-            $pending_html = view('backend.order.return-data')->with(['orders' => $pending_orders, 'status' => 'Pending', 'clientCurrency' => $clientCurrency,'timezone' => $timezone])->render();
-            $accepted_html = view('backend.order.return-data')->with(['orders' => $accepted_orders, 'status' => 'Accepted', 'clientCurrency' => $clientCurrency,'timezone' => $timezone])->render();
-            $rejected_html = view('backend.order.return-data')->with(['orders' => $rejected_orders, 'status' => 'Rejected', 'clientCurrency' => $clientCurrency,'timezone' => $timezone])->render();
+            $pending_orders = $pending_orders->where('status','Pending')->paginate(20);
+            $accepted_orders = $accepted_orders->where('status','Accepted')->paginate(20);
+            $rejected_orders = $rejected_orders->where('status','Rejected')->paginate(20);
+
+            $Pending['Pending'] = $pending_orders;
+            $Accepted['Accepted'] = $accepted_orders;
+            $Rejected['Rejected'] = $rejected_orders;
+            $pending_html = view('backend.order.return-data')->with(['orders'=>$Pending,'status'=>'Pending','clientCurrency'=>$clientCurrency,'timezone'=>$timezone])->render();
+            $accepted_html = view('backend.order.return-data')->with(['orders'=>$Accepted,'status'=>'Accepted','clientCurrency'=>$clientCurrency,'timezone'=>$timezone])->render();
+            $rejected_html = view('backend.order.return-data')->with(['orders'=>$Rejected,'status'=>'Rejected','clientCurrency'=>$clientCurrency,'timezone'=>$timezone])->render();
+
             return $this->successResponse(['pending_html' => $pending_html, 'accepted_html' => $accepted_html, 'rejected_html' => $rejected_html], '', 201);
         } catch (\Throwable $e) {
             return $this->errorResponse($e->getMessage(), 400);
@@ -2400,5 +2410,31 @@ class OrderController extends BaseController
         $order_vendor->order_status_option_id = rand();
         $order_vendor->save();
         dd($order_vendor);
+    }
+
+
+    public function sendTrackingUrlSMS($user, $order, $vendor_id = '')
+    {
+        $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','currency_id')->first();
+        if ($user['dial_code'] == "971") {
+            $to = '+' . $user['dial_code'] . "0" . $user['phone_number'];
+        } else {
+            $to = '+' . $user['dial_code'] . $user['phone_number'];
+        }
+        $provider = $prefer['sms_provider'];
+      
+
+        $tracking_url = url('/order/track/'.$user['id'].'/'.$order['order_number'].'');
+        $keyData = ['{user_name}'=>$user['name']??'','{order_number}'=>$order['order_number']??'','{track_url}'=>$tracking_url??''];
+        \Log::info($keyData);
+        
+        $body = sendSmsTemplate('order-tracking-url',$keyData);
+
+        if (!empty($prefer['sms_provider'])) {
+
+            $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+            //\Log::info($send);
+        }
+        
     }
 }
