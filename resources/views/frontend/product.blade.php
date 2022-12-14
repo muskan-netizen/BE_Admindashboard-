@@ -109,29 +109,6 @@
                         </div>--}}
                         <section class="buy_details">
                             <div class="row">
-                                <div class="col-md-1 pl-0">
-                                    <div class="exzoom_nav side_nav_img">
-                                                @if(!empty($product->media))
-                                                @foreach($product->media as $k => $image)
-                                                @php
-                                                                if(isset($image->pimage)){
-                                                                    $img = $image->pimage->image;
-                                                                }else{
-                                                                    $img = $image->image;
-                                                                }
-                                                            @endphp
-                                                    @if(!is_null($img))
-                                                    <span class="img_active">
-                                                        <img class="blur-up lazyloaded pro_imgs myimage1"
-                                                            data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}"
-                                                            width="60" height="60"
-                                                            src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
-                                                    </span>
-                                                    @endif
-                                                @endforeach
-                                                @endif
-                                            </div>
-                                </div>
                                 <div class="col-lg-5 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                     {{-- <div class="product__carousel">
                                         <div class="gallery-parent">
@@ -250,15 +227,21 @@
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
 
-                                <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-6'; } else { echo 'col-lg-6'; } @endphp rtl-text p-0">
+                                <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0">
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                         </h2>
                                         <span class="rating main-rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
-                                        <h6 class="sold-by">
-                                            <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
-                                        </h6>
+                                        @if($product->vendor->is_seller == 1)
+                                            <h6 class="sold-by">
+                                                <b> <img class="blur-up lazyload" data-src="{{$favicon}}" alt="{{$product->vendor->Name}}"></b> <b> Order by clickokart </b>
+                                            </h6>
+                                        @else
+                                            <h6 class="sold-by">
+                                                <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
+                                            </h6>
+                                        @endif
                                         @if($client_preference_detail)
                                             @if($client_preference_detail->rating_check == 1)
                                                 @if($product->averageRating > 0)
@@ -423,7 +406,7 @@
                                             else
                                                 $checkSlot = 0;
                                         @endphp
-                                        <div class="btn-wrapper d-flex align-items-center">
+                                        <div class="btn-wrapper">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
                                                 @if($product->inquiry_only == 0)
                                                 <div class="product-description border-product pb-0">
@@ -478,11 +461,11 @@
                                                 else
                                                 $product_quantity_in_cart = $product_in_cart->quantity??0;
 
+                                        @endphp
+                                        @if($is_available == 1)
+                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->has_inventory && $product->variant[0]->quantity <= $product_quantity_in_cart)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                        @endif
 
-                                                @endphp
-                                                @if($is_available == 1)
-                                                    <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
-                                                @endif
 
                                                     @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
                                                     <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
@@ -1200,6 +1183,7 @@
             infinite: true,
             slidesToShow: 4,
             slidesToScroll: 1,
+            centerMode: false,
             responsive: [
             { breakpoint: 1199, settings: { slidesToShow: 3, slidesToScroll: 1, infinite: true, dots: false, centerMode: true, } },
             { breakpoint: 991, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, } },

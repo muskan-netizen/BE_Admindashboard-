@@ -13,8 +13,6 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Traits\{ValidatorTrait};
 use Carbon\Carbon;
 
-
-
 use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus,OrderLongTermServiceSchedule,UserDevice};
 
 trait OrderTrait{
@@ -40,6 +38,26 @@ trait OrderTrait{
                         
                     }
                     
+                }
+            }
+        }
+        return 1;
+    }
+
+    public function ProductVariantStockIncrease($order_id)
+    {
+        $order = Order::with(['vendors.products.pvariant'])->find($order_id);
+        if( isset($order->vendors )){
+            foreach ($order->vendors as $vendor) {
+                foreach ($vendor->products as $product) {
+                    $ProductVariant = ProductVariant::find($product->variant_id);
+                    if ($ProductVariant) {
+                        $update_quantity  = $ProductVariant->quantity + $product->quantity;
+                        if($update_quantity < 0)
+                        $update_quantity  = 0;
+                        $ProductVariant->quantity  = $update_quantity;
+                        $ProductVariant->save();
+                    }
                 }
             }
         }
@@ -858,7 +876,7 @@ trait OrderTrait{
         $body = sendSmsTemplate('order-tracking-url',$keyData);
 
         if (!empty($prefer['sms_provider'])) {
-
+           
             $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
             //\Log::info($send);
         }
@@ -889,15 +907,29 @@ trait OrderTrait{
         \Log::info($keyData);
         
         $body = sendSmsTemplate('otp-sms-tracking-url',$keyData);
-        // $prefer->sms_key = 'ACded37dbfc183033ddc79efbfd498cd63';
-        // $prefer->sms_secret = 'e7ac71c0d92ebb392c651ffeed5f0eed';
-        // $prefer->sms_from = '+12346351110';
+        
         if (!empty($prefer['sms_provider'])) {
-
+           
             $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
             //\Log::info($send);
         }
+    }
         
+    /**
+     * check order days of return / replace
+     */
+    public function checkOrderDaysForReturn($order, $days){
+        if($days == 0){
+            return false;
+        }
+        $date = Carbon::parse($order->created_at)->addDays($days);// enddate for return
+        $today = $dt = Carbon::now();
+       
+        if($date >= $today){
+            return true;
+        }
+        return false;
+
     }
 
 }

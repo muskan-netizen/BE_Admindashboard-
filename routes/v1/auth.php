@@ -157,6 +157,18 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('vendor-order-for-cancel', 'Api\v1\ReturnOrderController@vendorOrderForCancel');
         });
 
+        // Return order
+        Route::group(['prefix' => 'replace-order'], function () {
+            Route::get('get-replace-order-data-in-model', 'Api\v1\ReturnOrderController@getReplaceOrderDataInModel');
+            Route::get('get-replace-products', 'Api\v1\ReturnOrderController@getReplaceProducts');
+            Route::post('update-product-replace', 'Api\v1\ReturnOrderController@updateProductReplace');
+        });
+
+        // Cancel order
+        Route::group(['prefix' => 'cancel-order'], function () {
+            Route::get('get-cancel-order-reason', 'Api\v1\CancelOrderController@getCancelOrderReason');
+        });
+
         // pickup & delivery 
         Route::group(['prefix' => 'pickup-delivery'], function () {
             Route::post('get-list-of-vehicles-old/{id}', 'Api\v1\PickupDeliveryController@getListOfVehicles');

@@ -203,6 +203,17 @@
                             <input type="checkbox" data-plugin="switchery" name="return_request" class="form-control" data-color="#43bee1" @if($vendor->return_request == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     @endif
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Cancel Order In Processing'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="cancel_order_in_processing" class="form-control" data-color="#43bee1" @if($vendor->cancel_order_in_processing == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Return Auto Approve'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="return_auto_approve" class="form-control" data-color="#43bee1" @if($vendor->return_auto_approve == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
                     <div class="col-md-12" id="auto_reject_timeInput" style="display:{{$vendor->auto_accept_order == 1 ? 'none' : 'block'}}">
                         <div class="form-group">
                             {!! Form::label('title', __('Auto Reject Time(In minutes, 0 for no rejection)'),['class' => 'control-label']) !!}
@@ -700,11 +711,10 @@
                     </p>
                     @if($users->user && $users->user->id != Auth::id())
                     <form class="delete-user position-absolute" method="POST" action="{{route('user.vendor.permission.destroy', $users->id)}}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-primary-outline" onclick="return confirm('Are you sure ?');"> <i class="mdi mdi-delete"></i></button>
-
-                            </form>
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-primary-outline" onclick="return confirm('Are you sure ?');"> <i class="mdi mdi-delete"></i></button>
+                    </form>
                     @endif
                 </div>
             @endif
@@ -1251,75 +1261,78 @@ $( document ).ready(function() {
     });
 });
 
-    $("input[name='auto_accept_order']").change(function() {
-        if($(this).prop('checked')){
-            $("#auto_reject_timeInput").css("display", "none");
-        } else {
-            $("#auto_reject_timeInput").css("display", "block");
-        }
-    })
+$("input[name='auto_accept_order']").change(function() {
+    if($(this).prop('checked')){
+        $("#auto_reject_timeInput").css("display", "none");
+    } else {
+        $("#auto_reject_timeInput").css("display", "block");
+    }
+});
 
-    $("input[name='show_slot']").change(function() {
-        if($(this).prop('checked')){
-            $("#sch_vendor_close").css("display", "none");
-        } else {
-            $("#sch_vendor_close").css("display", "block");
-        }
-    })
+$("input[name='show_slot']").change(function() {
+    if($(this).prop('checked')){
+        $("#sch_vendor_close").css("display", "none");
+    } else {
+        $("#sch_vendor_close").css("display", "block");
+    }
+})
 
-    $("input[name='fixed_fee']").change(function() {
-        if($(this).prop('checked')){
-            $("#fixed_fee_amount").css("display", "block");
-        } else {
-            $("#fixed_fee_amount").css("display", "none");
-        }
-    })
+$("input[name='fixed_fee']").change(function() {
+    if($(this).prop('checked')){
+        $("#fixed_fee_amount").css("display", "block");
+    } else {
+        $("#fixed_fee_amount").css("display", "none");
+    }
+})
 
-    $("input[name='delivery_charges_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#delivery_charges_tax_id").css("display", "block");
-        } else {
-            $("#delivery_charges_tax_id").css("display", "none");
-        }
-    })
-    $("input[name='service_charges_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#service_charges_tax_id").css("display", "block");
-        } else {
-            $("#service_charges_tax_id").css("display", "none");
-        }
-    })
-    $("input[name='container_charges_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#container_charges_tax_id").css("display", "block");
-        } else {
-            $("#container_charges_tax_id").css("display", "none");
-        }
-    })
-    $("input[name='fixed_fee_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#fixed_fee_tax_id").css("display", "block");
-        } else {
-            $("#fixed_fee_tax_id").css("display", "none");
-        }
-    })
+$("input[name='delivery_charges_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#delivery_charges_tax_id").css("display", "block");
+    } else {
+        $("#delivery_charges_tax_id").css("display", "none");
+    }
+})
 
-    $("input[name='markup_fee_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#markup_fee_tax_id").css("display", "block");
-        } else {
-            $("#markup_fee_tax_id").css("display", "none");
-        }
-    })
+$("input[name='service_charges_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#service_charges_tax_id").css("display", "block");
+    } else {
+        $("#service_charges_tax_id").css("display", "none");
+    }
+})
 
-    $("input[name='need_container_charges']").change(function() {
-        if($(this).prop('checked')){
-            $("#need_container_charges").css("display", "none");
-        } else {
-            $("#need_container_charges").css("display", "block");
-        }
-    })
 
+$("input[name='container_charges_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#container_charges_tax_id").css("display", "block");
+    } else {
+        $("#container_charges_tax_id").css("display", "none");
+    }
+})
+
+$("input[name='fixed_fee_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#fixed_fee_tax_id").css("display", "block");
+    } else {
+        $("#fixed_fee_tax_id").css("display", "none");
+    }
+})
+
+$("input[name='markup_fee_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#markup_fee_tax_id").css("display", "block");
+    } else {
+        $("#markup_fee_tax_id").css("display", "none");
+    }
+})
+
+$("input[name='need_container_charges']").change(function() {
+    if($(this).prop('checked')){
+        $("#need_container_charges").css("display", "none");
+    } else {
+        $("#need_container_charges").css("display", "block");
+    }
+})
     $("input[name='fixed_service_charge']").change(function() {
         if($(this).prop('checked')){
             $("#fixed_service_charge_div").css("display", "block");

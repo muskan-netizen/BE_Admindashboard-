@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -182,7 +182,14 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        $product = Product::with('brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles', 'ProductAttribute')->where('id', $id)->firstOrFail();
+        
+
+        $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
+        if( checkTableExists('product_attributes') ) {
+            $with_array[] = 'ProductAttribute';
+        }
+
+        $product = Product::with($with_array)->where('id', $id)->firstOrFail();
 
         $type = Type::all();
         $countries = Country::all();
@@ -207,12 +214,6 @@ class ProductController extends BaseController
             ->where('variants.status', '!=', 2)
             ->orderBy('position', 'asc')->get();
 
-        $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
-            ->select('attributes.*')
-            ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
-            ->where('attribute_categories.category_id', $product->category_id)
-            ->where('attributes.status', '!=', 2)
-            ->orderBy('position', 'asc')->get();
 
         $taxCate = TaxCategory::all();
 
@@ -244,14 +245,23 @@ class ProductController extends BaseController
                 $celeb_ids[] = $value->celebrity_id;
             }
         }
-
-        if( !empty($product->ProductAttribute) ) {
-            foreach($product->ProductAttribute as $key => $val) {
-                $attribute_value[] = $val->attribute_option_id;
-                $attribute_key_value[$val->attribute_option_id] = $val->key_value;
+        $productAttributes = [];
+        if( checkTableExists('attributes') ) {
+            $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
+                ->select('attributes.*')
+                ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
+                ->where('attribute_categories.category_id', $product->category_id)
+                ->where('attributes.status', '!=', 2)
+                ->orderBy('position', 'asc')->get();
+            
+            if( !empty($product->ProductAttribute) ) {
+                foreach($product->ProductAttribute as $key => $val) {
+                    $attribute_value[] = $val->attribute_option_id;
+                    $attribute_key_value[$val->attribute_option_id] = $val->key_value;
+                }
             }
         }
-        
+
         $otherProducts = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
         $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
         $celebrities = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
@@ -321,7 +331,6 @@ class ProductController extends BaseController
                 $selectedRoles[] = $querySelectedRole->role_id;
             }
         }
-        
 
         return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value]);
     }
@@ -373,49 +382,51 @@ class ProductController extends BaseController
 
             if( clientPrefrenceModuleStatus('p2p_check') ) {
                 if( !empty($request->attribute) ) {
-                    $insert_arr = [];
-                    $insert_count = 0;
+                    if( checkTableExists('product_attributes') ) {
+                        $insert_arr = [];
+                        $insert_count = 0;
 
-                    foreach($request->attribute as $key => $value) {
-                        if( !empty($value) && !empty($value['option'] && is_array($value) )) {
-                            
-                            if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
-                                $value_arr = @$value['value'];
+                        foreach($request->attribute as $key => $value) {
+                            if( !empty($value) && !empty($value['option'] && is_array($value) )) {
                                 
-                                foreach( $value['option'] as $key1 => $val1 ) {
-                                    if( @in_array($val1['option_id'], $value_arr) ) {
+                                if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
+                                    $value_arr = @$value['value'];
+                                    
+                                    foreach( $value['option'] as $key1 => $val1 ) {
+                                        if( @in_array($val1['option_id'], $value_arr) ) {
 
-                                        $insert_arr[$insert_count]['product_id'] = $id;
-                                        $insert_arr[$insert_count]['attribute_id'] = $value['id'];
-                                        $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
-                                        $insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
-                                        $insert_arr[$insert_count]['key_value'] = $val1['option_id'];
-                                        $insert_arr[$insert_count]['is_active'] = 1;
+                                            $insert_arr[$insert_count]['product_id'] = $id;
+                                            $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                            $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                            $insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
+                                            $insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+                                            $insert_arr[$insert_count]['is_active'] = 1;
+                                        }
+                                        $insert_count++;
                                     }
-                                    $insert_count++;
+                                }
+                                else {
+                                    foreach($value['option'] as $option_key => $option) {
+                                        if(@$option['value']){
+                                            $insert_arr[$insert_count]['product_id'] = $id;
+                                            $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                            $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                            $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+                                            $insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
+                                            $insert_arr[$insert_count]['is_active'] = 1;
+
+                                        }
+                                        $insert_count++;
+                                    }
                                 }
                             }
-                            else {
-                                foreach($value['option'] as $option_key => $option) {
-                                    if(@$option['value']){
-                                        $insert_arr[$insert_count]['product_id'] = $id;
-                                        $insert_arr[$insert_count]['attribute_id'] = $value['id'];
-                                        $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
-                                        $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
-                                        $insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
-                                        $insert_arr[$insert_count]['is_active'] = 1;
 
-                                    }
-                                    $insert_count++;
-                                }
-                            }
+                        
                         }
-
-                       
-                    }
-                    if( !empty($insert_arr) ) {
-                        ProductAttribute::where('product_id',$id)->delete();
-                        ProductAttribute::insert($insert_arr);
+                        if( !empty($insert_arr) ) {
+                            ProductAttribute::where('product_id',$id)->delete();
+                            ProductAttribute::insert($insert_arr);
+                        }
                     }
                 }
                 
@@ -433,6 +444,8 @@ class ProductController extends BaseController
             $product->is_physical               = ($request->has('is_physical') && $request->is_physical == 'on') ? 1 : 0;
             $product->pharmacy_check            = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
             $product->individual_delivery_fee   = ($request->has('individual_delivery_fee') && $request->individual_delivery_fee == 'on') ? 1 : 0;
+            $product->returnable        = ($request->has('returnable') && $request->returnable == 'on') ? 1 : 0;
+            $product->replaceable        = ($request->has('replaceable') && $request->replaceable == 'on') ? 1 : 0;
             $product->has_inventory             = ($request->has('has_inventory') && $request->has_inventory == 'on') ? 1 : 0;
             $product->sell_when_out_of_stock    = ($request->has('sell_stock_out') && $request->sell_stock_out == 'on') ? 1 : 0;
             $product->requires_shipping         = ($request->has('require_ship') && $request->require_ship == 'on') ? 1 : 0;
@@ -452,6 +465,7 @@ class ProductController extends BaseController
             $product->dropoff_delay_order_min        = $request->dropoff_delay_order_min??0;
             $product->minimum_order_count        = $request->minimum_order_count??0;
             $product->batch_count        = $request->batch_count??1;
+            $product->return_days        = $request->return_days??0;
 
 
 

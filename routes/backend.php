@@ -5,6 +5,7 @@ use App\Http\Controllers\Client\CMS\PageController;
 use App\Http\Controllers\Client\CMS\EmailController;
 use App\Http\Controllers\Client\CMS\NotificationController;
 use App\Http\Controllers\Client\CMS\SmsController;
+use App\Http\Controllers\Client\CMS\ReasonController;
 use App\Http\Controllers\Client\SocialMediaController;
 use App\Http\Controllers\Client\VendorPayoutController;
 use App\Http\Controllers\Client\DownloadFileController;
@@ -66,6 +67,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('cms/sms', [SmsController::class, 'index'])->name('cms.sms');
         Route::get('cms/sms/{id}', [SmsController::class, 'show'])->name('cms.sms.show');
         Route::post('cms/sms/update', [SmsController::class, 'update'])->name('cms.sms.update');
+
+        // Route::get('cms/reasons', [ReasonController::class, 'index'])->name('cms.reasons');
+        Route::resource('reason', 'Client\CMS\ReasonController');
 
         Route::get('account/orders', [OrderController::class, 'index'])->name('account.orders');
         Route::get('account/promo-code', [PromoCodeController::class, 'index'])->name('account.promo.code');
@@ -252,6 +256,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('vendor/catalogs/{id}', 'Client\VendorController@vendorCatalog')->name('vendor.catalogs');
         Route::get('vendor/product/export/{id}', 'Client\VendorController@vendorProductExport')->name('vendor.product.export');
         Route::get('vendor/product/list/{id}', 'Client\VendorController@VendorProductFilter')->name('vendor.product');
+        Route::get('seller/product/list/{id}', 'Client\SellerController@SellerProductFilter')->name('seller.product');
         Route::get('global/product/list', 'Client\VendorController@VendorGlobalProductFilter')->name('vendor.global.product');
         Route::get('vendor/inventory-import/{id}', 'Client\VendorController@getInventoryImport')->name('get.inventory.import');
         Route::post('vendor/get-inventory-store-products', 'Client\VendorController@getInventoryStoreProducts')->name('get.inventory.store.products');
@@ -278,6 +283,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/table/delete/{id}', 'Client\TableBookingController@destroyTable')->name('vendor.table.delete');
         Route::post('vendor/parentStatus/{id}', 'Client\VendorController@checkParentStatus')->name('category.parent.status');
         Route::get('calender/data/{id}', 'Client\VendorSlotController@returnJson')->name('vendor.calender.data');
+
+        Route::get('seller/filterdata', 'Client\SellerController@getFilterData')->name('seller.filterdata');
+        Route::resource('seller', 'Client\SellerController');
+        Route::get('seller/catalogs/{id}', 'Client\SellerController@sellerCatalog')->name('seller.catalogs');
 
         Route::get('calender/pickup/data/{id}', 'Client\Laundry\PickupSlotController@returnJson')->name('vendor.calender.pickup'); // Added by Ovi
         Route::post('calender/pickup/slot/{id}', 'Client\Laundry\PickupSlotController@store')->name('vendor.pickup.saveSlot'); // Added by Ovi

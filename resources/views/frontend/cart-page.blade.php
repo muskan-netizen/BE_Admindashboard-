@@ -167,7 +167,7 @@
                 @elseif( $product->is_vendor_closed == 1 && $product->closed_store_order_scheduled == 1 )
                     <div class="col-12">
                         <div class="text-danger">
-                            <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders right now. You can schedule this for ')}}{{$product->delaySlot}}
+                            <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders right now. You can schedule this for ')}}{{@$product->delaySlot}}
                         </div>
                     </div>
                @endif
@@ -587,6 +587,11 @@
 
 
         </div>
+        <div class="row m-0">
+            <div class="col-lg-12 left_box new_cart mt-4 p-3" id="left_address">
+                {!!$cart_details->left_section!!}
+            </div>
+        </div>
 
 
            
@@ -603,13 +608,9 @@
 
     {{-- Start Right Section --}}
     <div class="col-lg-4">
+        
         <div class="row m-0">
-            <div class="col-lg-12 cart-summary  p-2 pb-4 mr-3" id="left_address">
-                {!!$cart_details->left_section!!}
-            </div>
-        </div>
-        <div class="row m-0">
-         <div class="cart-summary mt-4 p-2 pb-4">
+         <div class="cart-summary p-2 pb-4">
             <div class="col-12 mb-2">
                 <h5 class="order_text">{{ __('Order Summary') }}</h5>
             </div>

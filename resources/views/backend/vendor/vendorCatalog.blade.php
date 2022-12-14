@@ -253,17 +253,16 @@ pr($products->toArray());
                                                 {{ $vendor->status == 1 ? '' : 'disabled' }}><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                                             </a>
-
+                                            @endif
+                                        @if(isset($vendor['need_sync_with_order']) && $vendor['need_sync_with_order'] != 1)
                                             <a class="btn btn-info waves-effect waves-light text-sm-right mx-1" dataid="0" href="{{ route('vendor.product.export', $vendor->id) }}"><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Export') }}
                                             </a>
-                                            @endif
-                                            @if(isset($vendor['need_sync_with_order']) && $vendor['need_sync_with_order'] != 1)
                                             <a class="btn btn-info waves-effect waves-light text-sm-right alAddProductBtn  @if($vendor->status == 1) addProductBtn @endif {{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Product') }}
                                             </a>
-                                            @endif
+                                        @endif
                                     </div>
                                     <div class="col-md-12">
                                         <div class="table-responsive">

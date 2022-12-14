@@ -1713,10 +1713,10 @@ class OrderController extends BaseController
         $orders = OrderVendor::where('user_id', $user->id)->orderBy('id', 'DESC');
         switch ($type) {
             case 'active':
-                $orders->whereNotIn('order_status_option_id', [6, 3]);
+                $orders->whereNotIn('order_status_option_id', [6, 3, 9]);
                 break;
             case 'past':
-                $orders->whereIn('order_status_option_id', [6, 3]);
+                $orders->whereIn('order_status_option_id', [6, 3, 9]);
                 break;
             case 'schedule':
                 $order_status_options = [10];
@@ -1725,7 +1725,9 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request'])
+        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
+        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request'
+        ])
             ->whereHas('orderDetail', function ($q1) {
                 $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1,38]);
                 $q1->orWhere(function ($q2) {
@@ -1749,19 +1751,53 @@ class OrderController extends BaseController
             if ($vendor_order_status) {
                 $order_sts = OrderStatusOption::where('id',$order->order_status_option_id)->first();
                // $order->order_status =  ['current_status' => ['id' => $vendor_order_status->OrderStatusOption->id, 'title' => __($vendor_order_status->OrderStatusOption->title)]];
-                $order->order_status =  ['current_status' => ['id' => $order_sts->id, 'title' => __($order_sts->title)]];
+               if(@$order->exchanged_to_order->order_status_option_id && $order->exchanged_to_order->order_status_option_id== 6){
+                $order->order_status =  ['current_status' => ['id' => 6, 'title' => __("Replaced")]];
+                // $order->order_status->current_status->title = "Replaced";
+                }else{
+                    $order->order_status =  ['current_status' => ['id' => $order_sts->id, 'title' => __($order_sts->title)]];
+                }
+               
             } else {
                 $order->current_status = null;
             }
+            $return_request_status = 0;
+            $returnable = 0;
+            $replaceable = 0;
+            
             foreach ($order->products as $product) {
+                if($this->checkOrderDaysForReturn($order, $product->product->return_days) && $order->is_exchanged_or_returned==0){
+
+                
+                    if(@$product->product->replaceable && $product->product->replaceable == 1){
+                        $replaceable = $product->product->replaceable;
+                    }
+
+                    if(@$product->product->returnable && $order->vendor->return_request == 1 && $product->product->returnable == 1){
+                        $returnable = $product->product->returnable;
+                    }
+                }
+                // dd($product->productReturn->status);
+                if(@$product->productReturn &&  $return_request_status== 0 && $order->is_exchanged_or_returned!=1){
+                    if($product->productReturn->status == 'Accepted'){
+                        $return_request_status = 1;
+                    }
+                    if($product->productReturn->status == 'Rejected'){
+                        $return_request_status = 2;
+                    }
+                    if($product->productReturn->status == 'Pending'){
+                        $return_request_status = 3;
+                    }
+                }
                 $order_item_count += $product->quantity;
+
                 $product_details[] = array(
                     'image_path' => $product->media->first() ? $product->media->first()->image->path : $product->image,
                     'price' => $product->price,
                     'qty' => $product->quantity,
                     'category_type' => $product->product->category->categoryDetail->type->title ?? '',
                     'product_id' => $product->product_id,
-                    'title' => $product->product_name,
+                    'title' => $product->product_name
                 );
             }
             if ($order->delivery_fee > 0) {
@@ -1795,6 +1831,14 @@ class OrderController extends BaseController
             $order->luxury_option_name = $luxury_option_name;
             $order->product_details = $product_details;
             $order->item_count = $order_item_count;
+            $order->return_request_status = $return_request_status;
+            
+
+            //product returnable and replaceble
+
+            $order->returnable = $returnable;
+            $order->replaceable = $replaceable;
+
             unset($order->user);
             unset($order->products);
             unset($order->paymentOption);
