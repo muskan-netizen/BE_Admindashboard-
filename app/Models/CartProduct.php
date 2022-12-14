@@ -9,7 +9,7 @@ class CartProduct extends Model{
 
     use HasFactory;
 
-    protected $fillable = ['cart_id','product_id', 'vendor_id', 'vendor_dinein_table_id', 'quantity', 'status', 'variant_id', 'is_tax_applied', 'tax_rate_id', 'currency_id', 'tax_category_id', 'luxury_option_id','schedule_type','scheduled_date_time','scheduled_slot','start_date_time','end_date_time','additional_increments_hrs_min','total_booking_time','service_day','service_date','service_period','service_start_date'];
+    protected $fillable = ['cart_id','product_id', 'vendor_id', 'vendor_dinein_table_id', 'quantity', 'status', 'variant_id', 'is_tax_applied', 'tax_rate_id', 'currency_id', 'tax_category_id', 'luxury_option_id','schedule_type','scheduled_date_time','scheduled_slot','start_date_time','end_date_time','additional_increments_hrs_min','total_booking_time','service_day','service_date','service_period','service_start_date','slot_id','delivery_date','slot_price'];
 
     protected $touches = ['cart'];
 
@@ -47,7 +47,9 @@ class CartProduct extends Model{
       return $this->hasOne('App\Models\Currency', 'vendor_id', 'vendor_id');
     }
 
-    
+    // public function deliverySlot(){
+    //   return $this->hasOne('App\Models\Currency', 'vendor_id', 'vendor_id');
+    // }
 
     public function vendorProducts(){
       return $this->hasMany(CartProduct::class, 'vendor_id', 'vendor_id')->leftjoin('client_currencies as cc', 'cc.currency_id', 'cart_products.currency_id')->select('cart_products.id', 'cart_products.cart_id', 'cart_products.product_id', 'cart_products.quantity', 'cart_products.variant_id', 'cart_products.is_tax_applied', 'cart_products.tax_category_id', 'cart_products.currency_id', 'cc.doller_compare', 'cart_products.vendor_id', 'cart_products.scheduled_date_time','cart_products.user_product_order_form','cart_products.start_date_time','cart_products.end_date_time','cart_products.additional_increments_hrs_min','cart_products.total_booking_time','cart_products.schedule_slot','cart_products.total_booking_time','cart_products.luxury_option_id','cart_products.service_day','cart_products.service_date','cart_products.service_period')->orderBy('cart_products.created_at', 'asc')->orderBy('cart_products.vendor_id', 'asc')->groupBy('cart_products.cart_id');

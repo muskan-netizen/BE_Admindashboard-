@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ asset('front-assets/css/main.css') }}" /> -->
 
     <link rel="stylesheet" href="{{asset('css/jquery.exzoom.css')}}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style type="text/css">
     /* .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.btn-disabled{opacity:.5;pointer-events:none}.fab{font:normal normal normal 14px/1 FontAwesome;font-size:inherit}
     #number{display:block}#exzoom{display:none}.exzoom .exzoom_btn a.exzoom_next_btn{right:-12px} .exzoom .exzoom_nav .exzoom_nav_inner{-webkit-transition:all .5s;-moz-transition:all .5s;transition:all .5s}
@@ -55,6 +56,17 @@
         display: none;
     }
 
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
     </style>
 
 @endsection
@@ -454,6 +466,28 @@
                                                     @endforeach
                                                 </tbody>
                                             </table>--}}
+                                        </div>
+                                        @endif
+
+                                        @if($product->same_day_delivery == 1 || $product->next_day_delivery == 1)
+                                        <div class="enterPincodeMsg desktop-pin-message">
+                                            <strong> Enter correct Pincode for hassle free timely delivery.</strong>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <input type="number" class="form-control" name="pincode" id="pincode" value="" placeholder="Enter Pincode" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength = "6" autocomplete="off" data-vendor-id="{{$product->vendor->id??''}}"/>
+                                                    <span class="pincode-err text-danger" style="font-size: 14px;"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <input class="flatpickr flatpickr-input form-control" type="text" placeholder="Select Date.." data-id="minDate" name="date_input" id="date_input" readonly="readonly" disabled>
+                                                    <input type="hidden" name="sele_slot_id" id="sele_slot_id" value="" />
+                                                    <input type="hidden" name="sele_slot_price" id="sele_slot_price" value="" />
+                                                    <div id="selected_slot"></div>
+                                                </div>
+                                            </div>
                                         </div>
                                         @endif
                                         @php
@@ -920,11 +954,28 @@
     </div>
 </div>
 
+<div class="modal fade" id="delivery_form" tabindex="-1" aria-labelledby="delivery_formLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="delivery_formLabel">{{__('Select Delivery Slot')}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="delivery_option">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 @section('js-script')
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 @endsection
 @section('script')
 <script>
@@ -964,6 +1015,125 @@
         });
     });
 
+    $("#pincode").blur(function(e){
+        e.preventDefault();
+        var vendor_id = $(this).data('vendor-id');
+        var pincode = $(this).val();
+        var url = "{{ route('pincode.checkVendorPincode') }}";
+        if(pincode != ''){
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                type: "post",
+                headers: {
+                    Accept: "application/json"
+                },
+                url: url,
+                data: {vendor_id:vendor_id,pincode:pincode},
+                dataType: "json",
+                success: function(response) {
+                    if(response.success == true){
+                        $('#date_input').prop("disabled", false);
+                        $('.pincode-err').text('');
+                    }else{
+                        $('#date_input').val("");
+                        $('#date_input').prop("disabled", true);
+                        $('.pincode-err').text('This product cannot be delivered here');
+                    }
+                },
+                error: function(response) {
+                    console.log(response);
+                },
+                complete: function() {}
+            });
+        }
+    });
+
+    // $('#date_input').change(function(){
+    //     var input_date = $(this).val();
+    //     $.ajax({
+    //         url: "{{route('pincode.getShippingMethod')}}",
+    //         type: "get",
+    //         datatype: "html",
+    //         data: {input_date:input_date},
+    //         success: function(data){
+    //             $('#delivery_form').modal('show');
+    //             $("#delivery_option").empty().html(data);
+    //         },
+    //         error: function() {
+    //             $("#delivery_option").empty().html('Something went wrong');
+    //         }
+    //     });
+    // });
+
+    $('#date_input').change(function(){
+        var input_date = $(this).val();
+        var product_id = "{{$product->id}}";
+        $.ajax({
+            url: "{{route('product.getShippingProductDeliverySlots')}}",
+            type: "get",
+            datatype: "html",
+            data: {input_date:input_date,product_id:product_id},
+            success: function(data){
+                $('#delivery_form').modal('show');
+                $("#delivery_option").empty().html(data);
+            },
+            error: function() {
+                $("#delivery_option").empty().html('Something went wrong');
+            }
+        });
+    });
+
+    // $(document).on('change', '#delivery_form .delivery_option', function(){
+    //     var shipping_method_id = $(this).val();
+    //     var product_id = "{{$product->id}}";
+    //     $.ajax({
+    //         url: "{{route('product.getShippingProductDeliverySlots')}}",
+    //         type: "get",
+    //         datatype: "html",
+    //         data: {shipping_method_id:shipping_method_id, product_id:product_id},
+    //         success: function(data){
+    //             $('#delivery_form .modal-title').text('Select Delivery Slots');
+    //             $("#delivery_option").empty().html(data);
+    //         },
+    //         error: function() {
+    //             $("#delivery_option").empty().html('Something went wrong');
+    //         }
+    //     });
+    // });
+
+    $(document).on('change', '#delivery_form .delivery_slot', function(){
+        var slot_price = $(this).data('price');
+        var slot_id = $(this).val();
+        var slot_text = $(this).data('slot-text');
+        $('#sele_slot_id').val(slot_id);
+        $('#sele_slot_price').val(slot_price);
+        $('#selected_slot').text(slot_text);
+        $('#delivery_form').modal('hide');
+    });
+
+    
+    $(document).ready(function(){
+        var cutOff_time = "{{$current_time_response}}";
+        var date_var;
+        
+        if( cutOff_time == 1) {
+            date_var = new Date();
+        } else {
+            date_var = new Date();
+            date_var.setDate(date_var.getDate()+1);
+        }
+        
+        $('.flatpickr').flatpickr({
+            enableTime: false,
+            startDate: date_var,
+            minDate: date_var,
+            dateFormat: "Y-m-d"
+        });
+    });
 
     var valueHover = 0;
 

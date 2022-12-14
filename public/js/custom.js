@@ -2796,7 +2796,6 @@ $(document).ready(function () {
 
 
     function addToCart() {
-
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
         var addLongTerm = 0;
@@ -2909,13 +2908,17 @@ $(document).ready(function () {
                     var incremental_hrs =  $('#incremental_hrs').val();
                     var total_booking_time =  $('#total_hrs').val();
 
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date);
+                    var sele_slot_id = $("#sele_slot_id").val();
+                    var sele_slot_price = $("#sele_slot_price").val();
+                    var delivery_date = $("#date_input").val();
+
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date,sele_slot_id,sele_slot_price,delivery_date);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='') {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='',sele_slot_id='',sele_slot_price='',delivery_date='') {
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -2936,7 +2939,10 @@ $(document).ready(function () {
                 "service_period":service_period,
                 "service_day":service_day,
                 "service_date":service_date,
-                "service_start_time":service_start_time
+                "service_start_time":service_start_time,
+                "sele_slot_id":sele_slot_id,
+                "delivery_date":delivery_date,
+                "sele_slot_price":sele_slot_price
             },
             success: function (response) {
                 if (response.status == 'success') {

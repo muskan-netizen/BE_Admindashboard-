@@ -872,7 +872,6 @@
                         @endif
                 </div>
 
-
                 <div class="col-6 text-right">
                     @if($client_preference_detail->auto_implement_5_percent_tip == 1)
                         @if(decimal_format($cart_details->wallet_amount_used) > 0)

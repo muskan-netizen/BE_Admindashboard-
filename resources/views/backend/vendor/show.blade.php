@@ -461,6 +461,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                         <div class="card-box">
                             <div class="row">
                                 <div class="col-md-12">
@@ -496,7 +497,6 @@
                                 </div>
                             </div>
                         </div>
-                        @endif
                         @if($vendor->show_slot == 0)
                         @if($client_preferences->scheduling_with_slots != 1)
                         @if($client_preference_detail->business_type != 'laundry')
