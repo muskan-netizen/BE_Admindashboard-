@@ -7582,8 +7582,8 @@ body .theme-card h5.title-border {
     margin-bottom: 20px;
     margin-top: 10px
 }
-/* 
-.dark .name_location h4 {
+
+/* .dark .name_location h4 {
     color: #000
 } */
 
@@ -10203,7 +10203,7 @@ ul.onhover-show-div.open {
 /*arbic banner template two css*/
 body[dir="rtl"].al_body_template_two .offset-top_al.al_offset-top-home {
     margin-top: 208px !important;
-
+}
 /*------------template_1 css----------*/
 body.al_body_template_one .vender-peragraph {
     top: 0;
