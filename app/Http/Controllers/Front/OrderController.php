@@ -1936,7 +1936,9 @@ class OrderController extends FrontController
                 $this->sendSuccessNotification($user->id, $request->vendor_id);
 
                 $customer = User::find($user->id);
-                $this->sendTrackingUrlSMS($customer,$orderData);
+                if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
+                    $this->sendTrackingUrlSMS($customer,$orderData);
+                }
             }
 
         }
@@ -3173,24 +3175,26 @@ class OrderController extends FrontController
         $language_id         = Session::get('customerLanguage');
         $navCategories       = $this->categoryNav($language_id);
 
-        if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
+        if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1 && getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 0){
             $showPage    = 'd-block';
             $verifyPage  = 'd-none';
+           
         }else{
-            
-            if (isset($_COOKIE['tracking_url']) || $request->verified == 1) {
-                if($_COOKIE['tracking_url'] == $request->ip()){
-                    $showPage    = 'd-block';
-                    $verifyPage  = 'd-none';
-                }
-            }else{
-                if(empty($user->track_order_phone_token) && empty($user->track_order_phone_token_valid_till)){
-                    $this->sendAccessTrackingUrlSMS($user,$order);
-                    $showPage    = 'd-none';
-                    $verifyPage  = 'd-block';
+            if(getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 1){
+                if (isset($_COOKIE['tracking_url']) || $request->verified == 1) {
+                    if($_COOKIE['tracking_url'] == $request->ip()){
+                        $showPage    = 'd-block';
+                        $verifyPage  = 'd-none';
+                    }
                 }else{
-                    $showPage    = 'd-none';
-                    $verifyPage  = 'd-block';
+                    if(empty($user->track_order_phone_token) && empty($user->track_order_phone_token_valid_till)){
+                        $this->sendAccessTrackingUrlSMS($user,$order);
+                        $showPage    = 'd-none';
+                        $verifyPage  = 'd-block';
+                    }else{
+                        $showPage    = 'd-none';
+                        $verifyPage  = 'd-block';
+                    }
                 }
             }
         }

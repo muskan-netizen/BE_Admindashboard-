@@ -946,7 +946,9 @@ class OrderController extends BaseController
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
                 $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
                 $customer = User::find($orderData->user_id);
-                $this->sendTrackingUrlSMS($customer,$orderData);
+                if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
+                     $this->sendTrackingUrlSMS($customer,$orderData);
+                }
                 return response()->json([
                     'status' => 'success',
                     'created_date' => convertDateTimeInTimeZone($vendor_order_status->created_at, $timezone, 'l, F d, Y, H:i A'),

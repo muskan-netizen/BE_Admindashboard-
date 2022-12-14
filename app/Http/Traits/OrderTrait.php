@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Traits\{ValidatorTrait};
 use Carbon\Carbon;
 
-use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus,OrderLongTermServiceSchedule,UserDevice};
+use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus,OrderLongTermServiceSchedule,UserDevice,SmsTemplate};
 
 trait OrderTrait{
     use ValidatorTrait;
@@ -873,12 +873,15 @@ trait OrderTrait{
         $keyData = ['{user_name}'=>$user['name']??'','{order_number}'=>$order['order_number']??'','{track_url}'=>$tracking_url??''];
         \Log::info($keyData);
         
-        $body = sendSmsTemplate('order-tracking-url',$keyData);
+        $checkSeeder = SmsTemplate::where('slug','order-tracking-url')->count();
+        if($checkSeeder > 0){
+            $body = sendSmsTemplate('order-tracking-url',$keyData);
 
-        if (!empty($prefer['sms_provider'])) {
-           
-            $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-            //\Log::info($send);
+            if (!empty($prefer['sms_provider'])) {
+                
+                $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                //\Log::info($send);
+            }
         }
         
     }
@@ -896,22 +899,27 @@ trait OrderTrait{
         $phoneCode = mt_rand(100000, 999999);
         $sendTime  = Carbon::now()->addMinutes(10)->toDateTimeString();
 
-        $user                                       = User::find($user['id']);
-        $user->track_order_phone_token              = $phoneCode;
-        $user->track_order_phone_token_valid_till   = $sendTime;
-        $user->save();
+        if(checkColumnExists('users','track_order_phone_token') && checkColumnExists('users','track_order_phone_token_valid_till')){
+            $user                                       = User::find($user['id']);
+            $user->track_order_phone_token              = $phoneCode;
+            $user->track_order_phone_token_valid_till   = $sendTime;
+            $user->save();
+        }
 
         
 
         $keyData = ['{otp_code}'=>$phoneCode??''];
         \Log::info($keyData);
         
-        $body = sendSmsTemplate('otp-sms-tracking-url',$keyData);
+        $checkSeeder = SmsTemplate::where('slug','otp-sms-tracking-url')->count();
+        if($checkSeeder > 0){
+            $body = sendSmsTemplate('otp-sms-tracking-url',$keyData);
+            
+            if (!empty($prefer['sms_provider'])) {
         
-        if (!empty($prefer['sms_provider'])) {
-           
-            $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-            //\Log::info($send);
+                $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                //\Log::info($send);
+            }
         }
     }
         
