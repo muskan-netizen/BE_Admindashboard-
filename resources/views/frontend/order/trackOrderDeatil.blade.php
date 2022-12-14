@@ -2,13 +2,28 @@
 @section('script')
 <script>
     $(function(){
-        $(window).on('load', function(e){
-        setInterval(()=>{
-            $("#tracking-frm").contents().find("body").css("display", "none");
-            console.log('jhfjk');
-        },5000);
-      });
-});
+        $('.digit-group').find('input').each(function() {
+        $(this).attr('maxlength', 1);
+        $(this).on('keyup', function(e) {
+            var parent = $($(this).parent());
+            if(e.keyCode === 8 || e.keyCode === 37) {
+                var prev = parent.find('input#' + $(this).data('previous'));
+                if(prev.length) {
+                    $(prev).select();
+                }
+            } else if((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 65 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105) || e.keyCode === 39) {
+                var next = parent.find('input#' + $(this).data('next'));
+                if( (next.length) && ($(this).val() != '') ) {
+                    $(next).select();
+                } else {
+                    if(parent.data('autosubmit')) {
+                        parent.submit();
+                    }
+                }
+            }
+        });
+    });
+    });
     </script>
     @endsection
 @section('css')
@@ -114,7 +129,7 @@ ul.timeline-3 li.last-active::before{top: -18px;}
 
 <section class="section-b-space light-layout">
     <div class="container">
-        <div class="row">
+        <div class="row {{ $showPage }}" id="track-section">
             <div class="col-md-12 mt-2 mb-3 track-ordr">
                 <div class="order-heading text-center">
                     <h4>Order Status</h4>
@@ -168,12 +183,6 @@ ul.timeline-3 li.last-active::before{top: -18px;}
                         </div>
                     </div>
                   @endif
-                <!-- <div class="success-text">
-                	<i class="fa fa-check-circle" aria-hidden="true"></i>
-                    <h2>{{__('Thank You')}}</h2>
-                    <p>{{__('Your order has been placed successfully')}}</p>
-                    <p><a href="{{ route('user.orders') }}">{{__('View Order')}}</a></p>
-                </div> -->
             </div>
             <div class="col-md-12">
                 @if(isset($order->ordervendor))
@@ -185,7 +194,113 @@ ul.timeline-3 li.last-active::before{top: -18px;}
             @endif
             </div>
         </div>
+      
+        <div class="row justify-content-center {{ $verifyPage }}" id="verify-phone-section">
+            <div class="verify-login-code">
+                <form id="verify-otp-form" class="px-lg-4" method="post" >
+                <h3 class="mb-2 text-center">{{ __('Verify OTP') }}</h3>
+                <div class="digit-group otp_inputs d-flex justify-content-between" data-group-name="digits" data-autosubmit="false" autocomplete="off">
+                    <input class="form-control" type="text" id="digit-1" name="digit-1" data-next="digit-2" max="9" Min="0" onkeypress="return isNumberKey(event)"/ required>
+                    <input class="form-control" type="text" id="digit-2" name="digit-2" data-next="digit-3" max="9" Min="0" data-previous="digit-1" required onkeypress="return isNumberKey(event)"/>
+                    <input class="form-control" type="text" id="digit-3" name="digit-3" data-next="digit-4" max="9" Min="0" data-previous="digit-2" required onkeypress="return isNumberKey(event)"/>
+                    <input class="form-control" type="text" id="digit-4" name="digit-4" data-next="digit-5" max="9" Min="0" data-previous="digit-3" required onkeypress="return isNumberKey(event)"/>
+                    <input class="form-control" type="text" id="digit-5" name="digit-5" data-next="digit-6" max="9" Min="0" data-previous="digit-4" required onkeypress="return isNumberKey(event)"/>
+                    <input class="form-control" type="text" id="digit-6" name="digit-6" data-next="digit-7" max="9" Min="0" data-previous="digit-5" required onkeypress="return isNumberKey(event)"/>
+                </div>
+                <span class="invalid_phone_otp_error invalid-feedback2 w-100 d-block text-center text-danger" id="invalid_phone_otp_error"></span>
+                <span id="phone_otp_success_msg" class="font-14 text-success text-center w-100 d-none"></span>
+                <div class="row text-center mt-2">
+                    <div class="col-12 resend_txt">
+                        <p class="mb-1">{{__('If you didn’t receive a code?')}}</p>
+                        <a class="verifyPhone resendOtp" id="resendOtp" href="javascript:void(0)"><u>{{__('RESEND')}}</u></a>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <button type="button" class="btn btn-solid" id="verify_phone_token">{{__('VERIFY')}}</button>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
     </div>
 </section>
+@php 
+ $url = url('order/track/'.$order->user_id.'/'.$order->order_number.'?verified=1');
+@endphp
 @endsection
+<script src="https://code.jquery.com/jquery-3.6.1.js"></script>
+<script>
+     function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+            return false;
+        }
+        return true;
+    }
 
+    $( document ).ready(function() {
+       
+        $("#verify_phone_token").click(function(event) {
+           
+            $("#invalid_phone_otp_error").empty();
+            if($("#digit-1").val() == '' || $("#digit-2").val() == '' || $("#digit-3").val() == '' || $("#digit-4").val() == '' || $("#digit-5").val() == '' || $("#digit-6").val() == ''){
+                $("#invalid_phone_otp_error").html('Please enter otp');
+            }else{
+                var verifyToken = '';
+                $('.digit-group').find('input').each(function() {
+                    if($(this).val()){
+                        verifyToken +=  $(this).val();
+                    }
+                });
+        
+               
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('track.order.token.verify') }}",
+                    data: {'verifyToken':verifyToken,data:'{{ $order->user_id }}'},
+                    success: function(response) {
+                        $("#phone_otp_success_msg").removeClass('d-none').addClass('d-block');
+                        $("#phone_otp_success_msg").html(response.success);
+                        $(".invalid_phone_otp_error").empty();
+                        var redirectUrl = "{{ $url }}";
+                        
+
+                       setTimeout(function(){window.location.href = redirectUrl }, 2000);
+                    },
+                    error: function(data) {
+                        $("#phone_otp_success_msg").empty();
+                        $("#phone_otp_success_msg").removeClass('d-block').addClass('d-none');
+                        $(".invalid_phone_otp_error").html(data.responseJSON.error);
+                    },
+                });
+            }
+        });
+
+
+        /*** Resend Otp***/
+        $("#resendOtp").click(function(event) {
+            event.preventDefault();
+            $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('track.order.otp.resend') }}",
+                    data: {'order_id':'{{ $order->order_number }}',data:'{{ $order->user_id }}'},
+                    success: function(response) {
+                        $("#phone_otp_success_msg").removeClass('d-none').addClass('d-block');
+                        $("#phone_otp_success_msg").html(response.success);
+                        $(".invalid_phone_otp_error").empty();
+                    },
+                    error: function(data) {
+                        $("#phone_otp_success_msg").empty();
+                        $("#phone_otp_success_msg").removeClass('d-block').addClass('d-none');
+                        $(".invalid_phone_otp_error").html(data.responseJSON.error);
+                    },
+                });
+
+        });
+        
+    });
+
+   
+    
+</script>

@@ -91,6 +91,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('order/after/payment', 'Front\PaytabController@after_app_payment');
         //Passbase Store 
         Route::post('passbase/store', 'Api\v1\PassbaseController@storeAuthkey');
+
+        Route::post('order-tracking', 'Api\v1\OrderController@OrderTracking');
     });
 
     Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger
