@@ -2101,6 +2101,7 @@ class StoreController extends BaseController{
 			$product->category_id = $request->category_id;
 			$product->type_id = 1;
 			$product->is_live = 1;
+			$product->publish_at = date('Y-m-d H:i:s');
 			$product->vendor_id = $user_vendor->vendor_id;
 			$client_lang = ClientLanguage::where('is_primary', 1)->first();
 			if (!$client_lang) {
@@ -2122,8 +2123,12 @@ class StoreController extends BaseController{
 				$product_category->category_id = $request->category_id;
 				$product_category->save();
 				$proVariant = new ProductVariant();
+				$proVariant->price = $request->price ?? 0;
 				$proVariant->sku = $slug;
-				$proVariant->product_id = $product->id;            
+				$proVariant->title =$slug . '-' .  empty($request->product_name) ?$slug : $request->product_name;
+				$proVariant->product_id = $product->id;
+				$proVariant->quantity = 1;            
+				$proVariant->status = 1;            
 				$proVariant->barcode = $this->generateBarcodeNumber();
 				$proVariant->save();
 				ProductTranslation::insert($datatrans);
