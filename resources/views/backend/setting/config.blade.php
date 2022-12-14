@@ -1704,14 +1704,37 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
          </div>
       </div>
 
-      <div class="col-md-4">
-         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-            <label for="is_cab_pooling_switch" class="mr-2 mb-0">{{__('Cab Pooling')}}<small class="d-block pr-5">{{__("Enable to allow customers to book Cab Pooling.")}}</small></label>
-            <span> <input type="checkbox" data-plugin="switchery" name="is_cab_pooling_switch" id="is_cab_pooling_switch" class="form-control checkbox_change" data-className="is_cab_pooling" data-color="#43bee1" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']==1) checked='checked' @endif>
-            </span>
-            <input type="hidden" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']==1) value="1" @else value="0" @endif name="is_cab_pooling" id="is_cab_pooling" />
-         </div>
-      </div>
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                     <label for="is_cab_pooling_switch" class="mr-2 mb-0">{{__('Cab Pooling')}}<small class="d-block pr-5">{{__("Enable to allow customers to book Cab Pooling.")}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="is_cab_pooling_switch" id="is_cab_pooling_switch" class="form-control checkbox_change" data-className="is_cab_pooling" data-color="#43bee1" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'] == 1) checked='checked'  @endif>
+                     </span>
+                     <input type="hidden"  @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'] == 1) value="1" @else value="0" @endif  name="is_cab_pooling"  id="is_cab_pooling"/>
+                  </div>
+               </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                     <label for="is_tracking_url_switch" class="mr-2 mb-0">{{__('Tracking Url')}}<small class="d-block pr-5">{{__("Enable to allow guest customers to tracking url.")}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="is_tracking_url_switch" id="is_tracking_url_switch" class="form-control checkbox_change" data-className="is_tracking_url" data-color="#43bee1" @if(@getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1) checked='checked'  @endif>
+                     </span>
+                     <input type="hidden"  @if(@getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1) value="1" @else value="0" @endif  name="is_tracking_url"  id="is_tracking_url"/>
+                  </div>
+               </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                     <label for="is_tracking_url_switch" class="mr-2 mb-0">{{__('Tracking Url Sms Enable')}}<small class="d-block pr-5">{{__("Enable to access guest customers to tracking url via sms otp.")}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="is_tracking_url_sms_switch" id="is_tracking_url_sms_switch" class="form-control checkbox_change" data-className="is_tracking_sms_url" data-color="#43bee1" @if(@getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 1) checked='checked'  @endif>
+                     </span>
+                     <input type="hidden"  @if(@getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 1) value="1" @else value="0" @endif  name="is_tracking_sms_url"  id="is_tracking_sms_url"/>
+                  </div>
+               </div>
+
+               </div>
+            </div>
+         </form>
+    
    </div>
 </div>
 </form>
