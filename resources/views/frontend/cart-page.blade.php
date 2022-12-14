@@ -935,30 +935,28 @@
                                @endif                        </ul>
                         <div class=" col-sm-10 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right mr-1" id="schedule_div" style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
                         
-                        @if(!empty($cart_details->editing_order) && !empty($cart_details->scheduled_date_time))
-
-                        @else
-                            @if($cart_details->slotsCnt == 0)
-                                @if($cart_details->delay_date != 0)
+                        
+                        @if($cart_details->slotsCnt == 0)
+                            @if($cart_details->delay_date != 0)
+                                <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
+                                min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
+                            @else
                                     <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
                                     min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
-                                @else
-                                        <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
-                                        min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
 
-                                @endif
-
-                            @else
-                                <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="{{(($cart_details->scheduled_date_time != '')?$cart_details->scheduled_date_time : $cart_details->delay_date ) }}"  min="{{$cart_details->delay_date}}" >
-                                <input type="hidden" id="checkSlot" value="1">
-                                <select name="slots" id="slot" onchange="checkSlotOrders();" class="form-control">
-                                    <option value="">{{__("Select Slot")}} </option>
-                                    @foreach($cart_details->slots as $slot)
-                                    <option value="{{$slot->value }}" {{$slot->value == $cart_details->scheduled->slot ? 'selected' : ''}} >{{$slot->name}}</option>
-                                    @endforeach
-                                </select>
                             @endif
+
+                        @else
+                            <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="{{(($cart_details->scheduled_date_time != '')?$cart_details->scheduled_date_time : $cart_details->delay_date ) }}"  min="{{$cart_details->delay_date}}" >
+                            <input type="hidden" id="checkSlot" value="1">
+                            <select name="slots" id="slot" onchange="checkSlotOrders();" class="form-control">
+                                <option value="">{{__("Select Slot")}} </option>
+                                @foreach($cart_details->slots as $slot)
+                                <option value="{{$slot->value }}" {{$slot->value == $cart_details->scheduled->slot ? 'selected' : ''}} >{{$slot->name}}</option>
+                                @endforeach
+                            </select>
                         @endif
+                    
 
                 </div>
                     </div>
@@ -971,6 +969,9 @@
                     <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
                         @if(isset($ageVerify->status) && $ageVerify->status == 1)
                             {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
+                        @endif
+                        @if(!empty($cart_details->editing_order) && !empty($cart_details->editing_order->scheduled_date_time) && !empty($edit_order_schedule_datetime))
+                        <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
                         @endif
                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
                     </div>

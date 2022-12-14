@@ -705,7 +705,10 @@ $(document).ready(function () {
     $(document).on("change", ".schedule_datetime", function () {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
-
+        if($("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val() != schedule_dt)){
+            success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
+            $(this).val($("#edit_order_schedule_datetime").val());
+        }
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -919,6 +922,11 @@ $(document).ready(function () {
     }
     $(document).on("click", "#order_placed_btn", async function () {
 
+        if($("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
+            success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
+            $("#schedule_datetime").val($("#edit_order_schedule_datetime").val());
+            return false;
+        }
         var delivery_type = 'D';
         var selected = document.querySelector(".delivery-fee.select");
         if (selected) {
@@ -2225,6 +2233,12 @@ $(document).ready(function () {
                                 }
                                 if(response.schedule_datetime!=null){
                                     $("#schedule_datetime").val(response.schedule_datetime);
+                                    if($("#edit_order_schedule_datetime").val()!=''){
+                                        document.getElementById("schedule_datetime").setAttribute("value", $("#schedule_datetime").val());
+                                        document.getElementById("schedule_datetime").setAttribute("max", $("#schedule_datetime").val());
+                                        document.getElementById("schedule_datetime").setAttribute("min", $("#schedule_datetime").val());
+                                        $("#edit_order_schedule_datetime").val($("#schedule_datetime").val());
+                                    }
                                     $("#taskschedule").click();
                                 }
 

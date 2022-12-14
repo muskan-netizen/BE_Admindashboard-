@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 
 
-use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus,OrderLongTermServiceSchedule,UserDevice, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon};
+use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus,OrderLongTermServiceSchedule,UserDevice, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon, OrderProductPrescription, CartProductPrescription};
 
 trait OrderTrait{
     use ValidatorTrait, ApiResponser;
@@ -910,6 +910,14 @@ trait OrderTrait{
                     'schedule_type' => (!empty($orderdata->scheduled_date_time)) ? "schedule" : '',
                     'scheduled_date_time' => (!empty($orderdata->scheduled_date_time)) ? $orderdata->scheduled_date_time : NULL,
                     'order_id' => $orderdata->id,
+                    'scheduled_slot' => (!empty($orderdata->scheduled_slot)) ? $orderdata->scheduled_slot : NULL,
+                    'address_id' => (!empty($orderdata->address_id)) ? $orderdata->address_id : NULL,
+                    'comment_for_pickup_driver' => (!empty($orderdata->comment_for_pickup_driver)) ? $orderdata->comment_for_pickup_driver : NULL,
+                    'comment_for_dropoff_driver' => (!empty($orderdata->comment_for_dropoff_driver)) ? $orderdata->comment_for_dropoff_driver : NULL,
+                    'comment_for_vendor' => (!empty($orderdata->comment_for_vendor)) ? $orderdata->comment_for_vendor : NULL,
+                    'schedule_pickup' => (!empty($orderdata->schedule_pickup)) ? $orderdata->schedule_pickup : NULL,
+                    'schedule_dropoff' => (!empty($orderdata->schedule_dropoff)) ? $orderdata->schedule_dropoff : NULL,
+                    'specific_instructions' => (!empty($orderdata->specific_instructions)) ? $orderdata->specific_instructions : NULL,
                 ];
 
                 if(Session::has('vendorType')):
@@ -920,6 +928,16 @@ trait OrderTrait{
                 //Orders-----------------
                 //id, created_by, order_number, scheduled_date_time, payment_option_id, user_id, address_id, is_deleted, currency_id, loyalty_membership_id, luxury_option_id, loyalty_points_used, loyalty_amount_saved, loyalty_points_earned, paid_via_wallet, paid_via_loyalty, total_amount, wallet_amount_used, subscription_discount, total_discount, total_delivery_fee, taxable_amount, tip_amount, payable_amount, tax_category_id, created_at, updated_at, payment_method, payment_status, comment_for_pickup_driver, comment_for_dropoff_driver, comment_for_vendor, schedule_pickup, schedule_dropoff, specific_instructions, is_gift, total_service_fee, shipping_delivery_type, scheduled_slot, total_container_charges, viva_order_id, fixed_fee_amount, type, friend_name, friend_phone_number, total_other_taxes, dropoff_scheduled_slot, user_latitude, user_longitude, additional_price, total_toll_amount, is_postpay, is_long_term
                 $cart_data = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
+
+                $OrderProductPrescription = OrderProductPrescription::where('order_id', $orderdata->id)->get();
+                foreach($OrderProductPrescription as $prescription):
+                    $CartProductPrescription = new CartProductPrescription();
+                    $CartProductPrescription->cart_id = $cart_data->id;
+                    $CartProductPrescription->vendor_id = $prescription->vendor_id;
+                    $CartProductPrescription->product_id = $prescription->product_id;
+                    $CartProductPrescription->prescription = $prescription->getRawOriginal('prescription');
+                    $CartProductPrescription->save();
+                endforeach;
 
                 if(!empty($orderdata->address_id)):
                     UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
@@ -952,6 +970,9 @@ trait OrderTrait{
                             'service_period'                => (!empty($orderproduct->LongTermService)) ? $orderproduct->LongTermService->service_period : null,
                             'service_start_date'            => (!empty($orderproduct->LongTermService)) ? $orderproduct->LongTermService->service_start_date : null,
                             'vendor_dinein_table_id'        => ($ordervendorproducts->vendor_dinein_table_id) ? $ordervendorproducts->vendor_dinein_table_id : NULL,
+                            'scheduled_date_time'           => ($orderproduct->scheduled_date_time) ? $orderproduct->scheduled_date_time : NULL,
+                            'schedule_slot'                 => ($orderproduct->schedule_slot) ? $orderproduct->schedule_slot : NULL,
+                            'schedule_type'                 => ($orderproduct->schedule_type) ? $orderproduct->schedule_type : NULL,
                         ];
 
                         $cartProduct = CartProduct::create($cart_product_detail);

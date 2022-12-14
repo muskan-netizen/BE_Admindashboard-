@@ -1322,8 +1322,14 @@ class OrderController extends BaseController
                 }
             }
             $dynamic = uniqid($order->id . $vendor);
-            $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
+            $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
+            if(!empty($orderVendorDetails->web_hook_code))
+            {
+                $dynamic = $orderVendorDetails->web_hook_code;
+            }
+            $call_back_url = route('dispatch-order-update', $dynamic);
+            
             $tasks = array();
             $meta_data = '';
 
@@ -1337,7 +1343,6 @@ class OrderController extends BaseController
                 $task_type = 'now';
             }
 
-            $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
             if (!empty($orderVendorDetails->scheduled_date_time) && $orderVendorDetails->scheduled_date_time > 0) {
                 $task_type = 'schedule';
                 $user = Auth::user();
@@ -1435,7 +1440,6 @@ class OrderController extends BaseController
             );
             
             $response = json_decode($res->getBody(), true);
-           \Log::info("dafsdffffffff". json_encode($response));
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])

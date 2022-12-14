@@ -1091,6 +1091,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var error_Slot_is_required = "{{__('Slot is required')}}";
     var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
     var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
+    var error_unchanged_schedule_date = "{{__('Schedule date can not be changed')}}";
     
     @if(!empty($client_preference_detail->is_postpay_edit_dropoff))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_edit_dropoff}}";

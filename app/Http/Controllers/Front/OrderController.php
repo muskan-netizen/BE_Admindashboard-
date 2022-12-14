@@ -806,6 +806,12 @@ class OrderController extends FrontController
             $fixed_fee_amount=$request->total_fixed_fee_amount??0.00;
             DB::beginTransaction();
             $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area','stop_order_acceptance_for_users','is_tax_price_inclusive')->first();
+            $editlimit_datetime = Carbon::now()->toDateTimeString();
+            $order_edit_before_hours = 0;
+            if(!empty($preferences)){
+                $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+                $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
+            }
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (!empty($request->user_id))) {
@@ -851,17 +857,27 @@ class OrderController extends FrontController
             $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
             $loyalty_points_used = $loyaltyCheck->loyalty_points_used??0;
             
-            /* Generate order object */
-            if(!isset($cart->editingOrder) && !empty($cart->editingOrder))
+            /* Generate order object  based on conditions is cart is created by editing any order or not */
+            
+            
+            if(isset($cart->editingOrder) && !empty($cart->editingOrder))
             {
                 $order = Order::where('id', $cart->editingOrder->id)->first();
+                if((strtotime($order->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
+                    return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date."), 400);
+                }
+                OrderProduct::where('order_id', $order->id)->delete();
+                OrderProductPrescription::where('order_id', $order->id)->delete();
+                OrderTax::where('order_id', $order->id)->delete();
+                VendorOrderStatus::where('order_id', $order->id)->delete();
+                $order->is_edited = 1;
             }else{
                 $order = new Order;
+                $order->order_number = generateOrderNo();
             }
             //$order = new Order;
             $order->user_id = $user->id;
-            $order->order_number = generateOrderNo();
-
+            
             /* Get Client Address */
             if (($request->has('address_id')) && ($request->address_id > 0)) {
                 $order->address_id = $request->address_id;
@@ -982,13 +998,21 @@ class OrderController extends FrontController
                 $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
 
                 /* Update details related to order vendor */
-                $OrderVendor = new OrderVendor();
+                if(isset($cart->editingOrder) && !empty($cart->editingOrder))
+                {
+                    $OrderVendor = OrderVendor::where('order_id', $cart->editingOrder->id)->where('vendor_id', $vendor_id)->first();
+                    $OrderVendor->web_hook_code = $OrderVendor->web_hook_code;
+                }else{
+                    $OrderVendor = new OrderVendor();
+                }
+                //$OrderVendor = new OrderVendor();
                 $OrderVendor->status = 0;
                 $OrderVendor->user_id = $user->id;
                 $OrderVendor->order_id = $order->id;
                 $OrderVendor->vendor_id = $vendor_id;
                 $OrderVendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                 $OrderVendor->save();
+
                 //
 
                 $vendorProductIds = array();
@@ -1617,10 +1641,18 @@ class OrderController extends FrontController
                     $this->sendSuccessEmail($request, $order, $vendor_id);
                 }
 
-                Cart::where('id', $cart->id)->update([
-                    'schedule_type' => null, 'scheduled_date_time' => null,
-                    'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
-                ]);
+                if(checkColumnExists('carts','order_id'))
+                {
+                    Cart::where('id', $cart->id)->update([
+                        'schedule_type' => null, 'scheduled_date_time' => null,
+                        'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null, 'order_id' => NULL
+                    ]);
+                }else{
+                    Cart::where('id', $cart->id)->update([
+                        'schedule_type' => null, 'scheduled_date_time' => null,
+                        'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
+                    ]);
+                }
                 CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                 CartAddon::where('cart_id', $cart->id)->delete();
                 CartCoupon::where('cart_id', $cart->id)->delete();
@@ -2153,6 +2185,10 @@ class OrderController extends FrontController
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name',  'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
             $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
+            if(!empty($order_vendor->web_hook_code))
+            {
+                $dynamic = $order_vendor->web_hook_code;
+            }
             $tasks = array();
             $meta_data = '';
 
