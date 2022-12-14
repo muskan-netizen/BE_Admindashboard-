@@ -1087,7 +1087,7 @@ if (!function_exists('getServiceTypesCategory')) {
             //     $service_types = ['products_service'];
             // }
             elseif ($vendorType == "p2p") {
-                $service_types = ['p2p'];
+                $service_types = ['p2p', 'on_demand_service', 'appointment_service', 'products_service'];
             }
 
             if ($client_preference->business_type == 'taxi') {
@@ -1104,10 +1104,11 @@ if (!function_exists('getServiceTypesCategory')) {
             //     $service_types = ['products_service'];
             // }
             if ($client_preference->business_type == 'p2p') {
-                $service_types = ['p2p'];
+                $service_types = ['p2p', 'on_demand_service', 'appointment_service', 'products_service'];
             }
             $types =  $types->whereIn('service_type', $service_types);
             $types_id = $types->pluck('id')->toArray();
+            
             return $types_id;
         } catch (\Throwable $th) {
             return [];
@@ -1336,6 +1337,15 @@ if( !function_exists('is_p2p_vendor') ) {
         }
         return false;
 
+    }
+}
+
+if( !function_exists('is_category_p2p') ) {
+    function is_category_p2p($category) {
+        if($category->categoryDetail->type_id == 13){
+            return true;
+        }
+        return false;
     }
 }
 

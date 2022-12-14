@@ -162,6 +162,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
    </div>
    <!-- End Cab Booking Header From Here -->
    @else
+   @if(!p2p_module_status())
    <div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif">
       <div class="container_fluid_al d-block" >
           <div class="row align-items-center justify-content-center position-initial">
@@ -273,6 +274,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
           </div>
       </div>
       </div>
+   @endif
    @endif
    @if(count($navCategories) && \Route::current()->getName() != 'userHome')
    <div class="menu-navigation alThreeMenu">

@@ -4,7 +4,7 @@ Route::group(['prefix' => 'v1/v2', 'middleware' => ['ApiLocalization']], functio
     Route::group(['middleware' => ['dbCheck', 'checkAuth']], function() {
 
         Route::get('category/{id?}', 'Api\v1\v2\CategoryController@categoryData');
-        Route::get('attribute/category/{id?}', 'Api\v1\v2\P2PController@categoryData');
+        Route::post('attribute/category/{id?}', 'Api\v1\v2\P2PController@categoryData');
         Route::post('category/filters/{id?}', 'Api\v1\v2\CategoryController@categoryFilters');
          
         Route::get('vendor/{id?}', 'Api\v1\v2\VendorController@productsByVendor');

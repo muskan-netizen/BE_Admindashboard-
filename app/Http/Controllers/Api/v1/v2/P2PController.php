@@ -16,6 +16,7 @@ class P2PController extends BaseController
     use ApiResponser;
     public function categoryData(Request $request, $cid = 0)
     {
+        
         \Log::info('controller called');
         \Log::info($request->all());
         try {
@@ -72,15 +73,15 @@ class P2PController extends BaseController
             $category->share_link = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/category/" . $category->slug;
             $response['category'] = $category;
             $response['filterData'] = $variantSets;
-            $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page);
+            $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page, $request);
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
 
-    public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1)
-    {
+    public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1, $request)
+    { 
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
 
         if ($type == 'vendor' && $product_list == 'false') {
@@ -266,7 +267,7 @@ class P2PController extends BaseController
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
                 
-            $products = Product::has('vendor')->with([
+            $products = Product::has('vendor')->with(['ProductAttribute',
                 'category.categoryDetail', 'media.image',
                 'translation' => function ($q) use ($langId) {
                     $q->select('id','product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
@@ -283,6 +284,21 @@ class P2PController extends BaseController
                 }
             ])->where('products.category_id', $category_id)
                 ->where('products.is_live', 1); 
+               
+            if( clientPrefrenceModuleStatus('p2p_check') && $request->has('attributes') && count($request['attributes']) > 0) {
+                $attributes = $request['attributes'];
+               
+                $products = $products->whereHas('ProductAttribute', function($q) use($attributes){
+                    
+                    foreach($attributes as $key=>$attribute){
+                        foreach($attribute['options'] as $option){
+                        $q->where('attribute_id', $attribute['attribute_id'])->where('attribute_option_id' , $option);
+                    }
+                }
+                   
+                });
+
+            }
 
 
             $products = $products->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', DB::raw("'$multipli' as variant_multiplier"))

@@ -2211,7 +2211,7 @@ class StoreController extends BaseController{
 										foreach( $value['option'] as $key1 => $val1 ) {
 											if( @in_array($val1['option_id'], $value_arr) ) {
 	
-												$insert_arr[$insert_count]['product_id'] = $request->product_id;
+												$insert_arr[$insert_count]['product_id'] = $product->id;
 												$insert_arr[$insert_count]['attribute_id'] = $value['id'];
 												$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
 												$insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
@@ -2227,7 +2227,7 @@ class StoreController extends BaseController{
 										// \Log::info($option['option_id']);
 										foreach($value['option'] as $option_key => $option) {
 											if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
-												$insert_arr[$insert_count]['product_id'] = $request->product_id;
+												$insert_arr[$insert_count]['product_id'] = $product->id;
 												$insert_arr[$insert_count]['attribute_id'] = $value['id'];
 												$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
 												$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];

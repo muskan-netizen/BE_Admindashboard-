@@ -319,7 +319,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         </div>
 
 
-                                        @if( p2p_module_status() )
+                                        @if( is_category_p2p($product->category) )
+                                        
                                             @if( !empty($attr_array) )
                                                 @foreach($attr_array as $attr_key => $attr_val)
                                                     <div class="container-badge">
@@ -337,18 +338,20 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             @endif
 
                                             {{-- Chat Button --}}
-                                            @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
-                                                <hr>
+                                            <hr>
                                                 <h6 class="sold-by">
+                                            @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
+                                            
+                                               
                                                     <span>Sold by : </span>
                                                     <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
                                                     <a class="start_p2p_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
-                                                </h6>
+                                                
                                             @endif
                                             @if(getAdditionalPreference(['call_button'])['call_button'])
                                                 <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
                                             @endif
-
+</h6>
                                     @endif
 
 
@@ -492,6 +495,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             else
                                                 $checkSlot = 0;
                                         @endphp
+                                        
+                                        @if( !is_category_p2p($product->category) )
                                         <div class="btn-wrapper d-flex align-items-center">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
                                                 @if($product->inquiry_only == 0)
@@ -531,7 +536,10 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 @endif
 
                                             </div>
+                                           
                                             <div class="product-buttons">
+
+                                                
                                                 @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                                 @if($is_inwishlist_btn && $is_available)
                                                 <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
@@ -563,7 +571,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 @endif
                                                 @endif
                                             </div>
+                                            
                                         </div>
+                                        @endif
                                         {{-- @dump($product) --}}
                                         <!-- <div class="border-product al_disc">
                                             <h6 class="product-title">{{__('Product Details')}}</h6>
@@ -588,6 +598,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                     </div>
 
                                 </div>
+                                @if( !is_category_p2p($product->category) )
                                 @if( !empty($coupon_list) )
                                 <div class="col-md-3">
                                     <div class="aside_bar">
@@ -620,6 +631,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         </form> -->
                                     </div>
                                 </div>
+                            @endif
                             @endif
                             </div>
                         </section>
