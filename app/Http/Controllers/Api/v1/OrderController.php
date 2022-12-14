@@ -1725,8 +1725,8 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request', 'products.productReturn',
-        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail'
+        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
+        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request'
         ])
             ->whereHas('orderDetail', function ($q1) {
                 $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1,38]);
@@ -3148,6 +3148,51 @@ class OrderController extends BaseController
         } else {
             return $this->errorResponse('Invalid User', 400);
         }
+    }
+
+    /**
+     * get tracking order detail
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function OrderTracking(Request $request){
+        try {
+           
+            $order      = Order::with('ordervendor','orderStatusVendor','address','orderLocation')->where('order_number',$request->order_number)->first();
+            $customer   = User::find($order->user_id);
+            if (isset($order->ordervendor->dispatch_traking_url) && !empty($order->ordervendor->dispatch_traking_url)) {
+                try {
+                    $response = Http::get($order->ordervendor->dispatch_traking_url);
+                } catch (\Exception $ex) {
+                    \Log::info('Error:');
+                    \Log::info(json_encode($ex->getMessage()));
+                }
+               
+                if (isset($response) && $response->status() == 200) {
+                    $response               = $response->json();
+                    $order['order_data']    = $response;
+                }
+
+                $order['dispatch_traking_url'] = str_replace("/order/","/order-details/",$order->ordervendor->dispatch_traking_url);
+                $response = Http::get($order['dispatch_traking_url']);
+                $tasks = array();
+                $agent_location = '';
+                if($response->status() == 200){
+                   $response = $response->json();
+                   $order['dispatch_order'] = $response;
+                   $tasks = $response['tasks'];
+                   $agent_location = $response['agent_location'];
+                   $order['agent_location']  = $agent_location;
+                }
+                
+            }
+
+            $order['user']  = $customer;
+            return $this->successResponse($order, null, 201);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+        
     }
 
 }

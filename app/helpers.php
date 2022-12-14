@@ -50,6 +50,12 @@ if (!function_exists('getAdditionalPreference')) {
         if (sizeof($key)) {
             $result = (checkColumnExists('client_preference_additional', 'key_name')) ? ClientPreferenceAdditional::select('key_name', 'key_value')->whereIn('key_name', $key)->where(['client_code' => $user->code])->get() : [];
             $return = array_column($result->toArray(), 'key_value', 'key_name');
+            // foreach($return as $k => $ret){
+            //     if (preg_match('/(\.jpg|\.png|\.bmp)$/i', $ret)) {
+            //         $cc = getAdditionalImageAttribute($ret);
+            //         pr($cc);
+            //     }
+            // }
             if (sizeof($result)) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
             }
@@ -60,6 +66,24 @@ if (!function_exists('getAdditionalPreference')) {
         return $return;
     }
 }
+
+// if (!function_exists('getAdditionalImageAttribute')) {
+//     function getAdditionalImageAttribute($value)
+//     {
+//         $values = array();
+//         $img = 'default/default_image.png';
+//         if(!empty($value)){
+//             $img = $value;
+//         }
+//         $ex = checkImageExtension($img);
+//         $values['proxy_url'] = \Config::get('app.IMG_URL1');
+//         $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+//         $values['image_fit'] = \Config::get('app.FIT_URl');
+
+//         //$values['small'] = url('showImage/small/' . $img);
+//         return $values;
+//     }
+// }
 
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date, $date_format)
@@ -1403,5 +1427,21 @@ function generateSlug($name)
         }
         return $slug.'-'.rand();
     }
+<<<<<<< HEAD
     return $slug.'-'.rand();
 }    
+=======
+    if( !function_exists('get_tiny_url') ) {
+        function get_tiny_url($url)  {  
+            $ch = curl_init();  
+            $timeout = 5;  
+            curl_setopt($ch,CURLOPT_URL,'https://tinyurl.com/api-create.php?url='.$url);  
+            curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);  
+            curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,$timeout);  
+            $data = curl_exec($ch);  
+            curl_close($ch);  
+            return $data;  
+        }
+    }
+}
+>>>>>>> pre_dev

@@ -1068,5 +1068,7 @@
    "ORDER NO":"N º de pedido",
    "ITEMS ORDERED": "artículos ordenados",
    "Taxes and fees":"Impuestos y honorarios",
-   "Customer Details":"Detalles del cliente"
+   "Customer Details":"Detalles del cliente",
+   "Tracking Url":"URL de seguimiento",
+   "Enable to allow guest customers to send otp.":"Habilite para permitir que los clientes invitados envíen otp."
 }

@@ -12,6 +12,7 @@
 		//throw new Exception('My first Sentry error!');
 	});
 	
+	
 Route::group(['middleware' => ['domain']], function () {
 	//easypay test
 	Route::get('test_notification', 'Front\FrontController@test_notification');
@@ -368,6 +369,9 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('page/driverSignup', 'Front\OrderController@driverSignup')->name('page.driverSignup');
 	Route::get('driver-documents', 'Front\UserhomeController@driverDocuments')->name('driver-documents');
 	Route::get('page/{slug}', 'Front\UserhomeController@getExtraPage')->name('extrapage');
+	Route::get('order/track/{id}/{order_id}', 'Front\OrderController@TrackOrder')->name('track.order');
+	Route::post('order/track/token', 'Front\OrderController@TrackOrderTokenVerify')->name('track.order.token.verify');
+	Route::post('order/track/otpresend', 'Front\OrderController@ResendOtpForTrackingUrl')->name('track.order.otp.resend');
 
 	Route::post('/homePageData', 'Front\UserhomeController@postHomePageData')->name('homePageData');
 	Route::post('/postHomePageDataSingle', 'Front\UserhomeController@postHomePageDataSingle')->name('postHomePageDataSingle');
@@ -470,6 +474,10 @@ Route::group(['middleware' => ['domain']], function () {
 	//chatNotification to all users from dispacther
 	Route::any('sendNotificationToUserByDispatcher', 'Front\ChatDispatcherNotificationController@sendNotificationToUserByDispatcher')->name('sendNotificationToUserByDispatcher'); // Order Status update Dispatch
 	Route::get('recentViewProduct/all', 'Front\RecentViewProductController@viewAll')->name('recent.view.product.all');
+	/**
+	 * booking routes
+	 */
+	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
 
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {

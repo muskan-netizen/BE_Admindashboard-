@@ -732,7 +732,15 @@ class HomeController extends BaseController{
                 'category' => $cat_name
             );
         }
-        $top_rated_products = $popular_products = $selected_products = $single_category_products = $single_category_products =  [];
+
+        $top_rated_products = $popular_products = $selected_products = $single_category_products = $spot_light_products =  [];
+
+         //get long term service 
+         $long_term_service_products =[];
+         if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
+             $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $language_id, $currency_id,'', $request->type,$p_dim);
+         }
+          
         if($this->checkTemplateForAction(8)){
             $recently_viewed = $this->productvendorProducts($vendor_ids, $language_id, $currency_id, '', $request->type,$p_dim);
             $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
@@ -831,6 +839,7 @@ class HomeController extends BaseController{
                 'featured_products' => $feature_products,
                 'on_sale' => $on_sale_products,
                 'cities' => $this->cities,
+                'long_term_service' => $long_term_service_products,
                 'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:[],
                 'best_sellers'     => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
                 'spotlight_deals'  => (!empty($spot_light_products) && count($spot_light_products) > 0)?$spot_light_products:[],

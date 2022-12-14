@@ -69,6 +69,7 @@ class HomeController extends BaseController
             $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
             $search_nomenclature = $this->getNomenclatureName('Search', $langId, false);
             $vendors_nomenclature = $this->getNomenclatureName('Vendors', $langId, false);
+            $sellers_nomenclature = $this->getNomenclatureName('sellers', $langId, false);
             $fixed_fee_nomenclature = $this->getNomenclatureName('fixed_fee', $langId, false);
             $referral_code = $this->getNomenclatureName('Referral Code', $langId, false);
             $want_to_tip = $this->getNomenclatureName('want_to_tip', $langId, false);
@@ -81,6 +82,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->takeaway_nomenclature = $takeaway_nomenclature;
             $homeData['profile']->preferences->search_nomenclature = $search_nomenclature;
             $homeData['profile']->preferences->vendors_nomenclature = $vendors_nomenclature;
+            $homeData['profile']->preferences->sellers_nomenclature = $sellers_nomenclature;
             $homeData['profile']->preferences->fixed_fee_nomenclature = $fixed_fee_nomenclature;
             $homeData['profile']->preferences->want_to_tip_nomenclature = $want_to_tip;
             $homeData['profile']->preferences->referral_code = $referral_code;

@@ -111,39 +111,41 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                         </div>--}}
                         <section class="buy_details">
                             <div class="row">
+                                @if((!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id == '8'))
                                 <div class="col-md-1 pl-0">
                                     <div class="exzoom_nav side_nav_img">
                                        
-                                                @if(!empty($product->media) && count($product->media) > 0)
-                                                
-                                                @foreach($product->media as $k => $image)
-                                                @php
-                                                                if(isset($image->pimage)){
-                                                                    $img = $image->pimage->image;
-                                                                }else{
-                                                                    $img = $image->image;
-                                                                }
-                                                            @endphp
-                                                    @if(!is_null($img))
-                                                    <span class="img_active">
-                                                        <img class="blur-up lazyloaded pro_imgs myimage1"
-                                                            data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}"
-                                                            width="60" height="60"
-                                                            src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
-                                                    </span>
-                                                    @endif
-                                                @endforeach
-                                                @else
-                                                <span class="img_active">
-                                                        <img class="blur-up lazyloaded pro_imgs myimage1"
-                                                            data-src="{{loadDefaultImage()}}"
-                                                            width="60" height="60"
-                                                            src="{{loadDefaultImage()}}">
-                                                    </span>
-                                                @endif
-                                            </div>
+                                        @if(!empty($product->media) && count($product->media) > 0)
+                                        
+                                        @foreach($product->media as $k => $image)
+                                        @php
+                                                        if(isset($image->pimage)){
+                                                            $img = $image->pimage->image;
+                                                        }else{
+                                                            $img = $image->image;
+                                                        }
+                                                    @endphp
+                                            @if(!is_null($img))
+                                            <span class="img_active">
+                                                <img class="blur-up lazyloaded pro_imgs myimage1"
+                                                    data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}"
+                                                    width="60" height="60"
+                                                    src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
+                                            </span>
+                                            @endif
+                                        @endforeach
+                                        @else
+                                        <span class="img_active">
+                                                <img class="blur-up lazyloaded pro_imgs myimage1"
+                                                    data-src="{{loadDefaultImage()}}"
+                                                    width="60" height="60"
+                                                    src="{{loadDefaultImage()}}">
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
-                                <div class="col-lg-4 p-0 @php if(count($product->media) == 0){  echo 'dd-none'; } @endphp ">
+                                @endif
+                                <div class="{{(!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id != '8') ? 'col-lg-5' : 'col-lg-4'}}  p-0 @php if(count($product->media) == 0){  echo 'dd-none'; } @endphp ">
                                     {{-- <div class="product__carousel">
                                         <div class="gallery-parent">
                                             @php
@@ -712,6 +714,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                     </div>
 
                     {{-- Related Products --}}
+                    @if(!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id == '8')
                     <div class="row">
                         <div class="col-md-12">
                             @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => 'Category Related Product'])
@@ -719,6 +722,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                             @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => 'Vendor Related Product'])
                         </div>
                     </div>
+                    @endif
                     {{-- End of Related Products --}}
 
                     

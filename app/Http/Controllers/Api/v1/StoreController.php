@@ -1681,7 +1681,7 @@ class StoreController extends BaseController{
 	private function preProductDetail($productid)
 	{		
 		$user = Auth::user();
-		$product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $productid)->firstOrFail();
+		$product = Product::with('brand', 'variant.set', 'vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $productid)->firstOrFail();
 		$productVariants = Variant::with('option', 'varcategory.cate.primary')
 		->select('variants.*')
 		->join('variant_categories', 'variant_categories.variant_id', 'variants.id')

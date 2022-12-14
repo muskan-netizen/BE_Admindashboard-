@@ -1030,7 +1030,8 @@ li.close-window i {
 
 @-webkit-keyframes pulse-animation {
     0% {
-        box-shadow: 0 0 0 0 rgba(0, 0, 0, .2)
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, .2);}
+    }
 .custom-checkbox .custom-control-input:checked~.custom-control-label::after{background-color:var(--theme-deafult)}.product-order span.ellips{width:160px;max-width:100%}#header_cart_main_ul_ondemand .close-circle{position:absolute;right:0;top:0}#header_cart_main_ul_ondemand li{display:block;position:relative;padding-right:25px}.number{border:1px solid var(--theme-deafult);border-radius:4px;width:fit-content}.number span{cursor:pointer}.minus,.plus{display:inline-block;height:30px;text-align:center;line-height:30px!important;padding:0 8px;cursor:pointer;color:var(--theme-deafult)}.number input{height:30px;min-width:30px;max-width:60px;width:100%;display:inline-block;text-align:center;border:0;border-left:1px solid var(--theme-deafult);border-right:1px solid var(--theme-deafult)}.radio{display:block;position:relative;padding-left:30px;cursor:pointer;font-size:20px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;color:#000;font-size:16px;font-weight:300;letter-spacing:0;line-height:24px}.checkround{position:absolute;top:4px;left:0;height:20px;width:20px;background-color:#fff;border-radius:50%;border:1px solid #979797}.radio input:checked~.checkround:after{display:block}.radio input[type=radio]{position:absolute;opacity:0}.radio .checkround:after{left:0;right:0;margin:auto;top:0;bottom:0;width:14px;height:14px;border-radius:50%;background:var(--theme-deafult)}.checkround:after{content:"";position:absolute;display:none}.step-indicator{margin-top:50px;display:flex;align-items:center;padding:0 15px;flex-wrap:nowrap;justify-content:space-between;flex-direction:row}.step{display:flex;align-items:center;flex-direction:column;position:relative;z-index:1}.step-indicator .step-icon{height:50px;width:50px;border-radius:50%;background:#c2c2c2;font-size:10px;text-align:center;color:#fff;position:relative;line-height:50px;font-size:20px}.step.active .step-icon{background:var(--theme-deafult)}.step p{text-align:center;position:absolute;bottom:-40px;font-size:14px;font-weight:400;width:100px;color:#c2c2c2}.step.active p{color:var(--theme-deafult)}.indicator-line{width:100%;height:2px;background:#c2c2c2;flex:1}.classes_wrapper .mb-1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.classes_wrapper .class_img img{width:100%}.al_body_template_one .btn-solid{padding:5px 10px!important;font-size:10px!important;letter-spacing:2px;font-weight:500;text-shadow:none;border-radius:4px;border-width:1px}
 .category-head{position:sticky;top:140px;border-bottom:1px solid #ddd;padding:20px 0;background:#fff;z-index:09;font-weight:400;font-size:22px;max-width:680px;width:100%}.cart-sub-total{background-color:#1b1b1b;padding:10px 15px;margin-bottom:20px;}.cart-sub-total span{font-size:18px;font-weight:700;color:#fff}.checkout-btn{background:var(--theme-deafult);color:#fff;font-size:18px;font-weight:700;padding:9px 0 11px;border:2px solid transparent}.action-icon{vertical-align:middle}#header_cart_main_ul_ondemand span.ellips{width:60%}.product-banner-img{height:350px;margin-top:15px}.product-bottom-bar{margin:0 0 0;padding:0 0 0;background-color:transparent}.product-banner-img img{height:100%;width:100%;object-fit:cover}.vendor-details-left{width:100%;margin:auto;background-color:transparent;box-shadow:0 16px 32px 0 rgb(0,0%,0 / 5%)!important;margin-top:0;padding:0!important}.al_white_bg_round ul li{background-color:transparent}
 .scrollspy-menu{position:sticky;top:140px;width:100%; overflow:hidden;left: 0;z-index: 999;}
@@ -3678,6 +3679,8 @@ body.dark.al_body_template_one table.table.wishlist-table.border {
 
     .margin-res .product-image img {
         padding: 20px;
+    }
+}
 @media (max-width: 767px){
     .col-md-3.alOrderStatus{display: flex;justify-content: space-between;align-items: center;}
     .al_body_template_one .common-banner{height:150px}
@@ -3701,7 +3704,6 @@ body.dark.al_body_template_one table.table.wishlist-table.border {
         padding-top: 0 !important;
     }
     .al_body_template_one .ac-royo-btn a{width: 26%;}
-
 }
 
 
