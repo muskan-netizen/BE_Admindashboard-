@@ -3,6 +3,8 @@
 <h2>{{ __($title ?? '') }}</h2>
 <div class="category-related-product suggested-product">
     @foreach($realted_produuct as $scp)
+    
+    @if( !empty($scp->vendor->slug) && !empty($scp->url_slug) )
         <div class="product-card-box position-relative al_box_third_template al " style="width: 100%; display: inline-block;">
             <a class="common-product-box text-center" href="{{route('productDetail', [$scp->vendor->slug,$scp->url_slug])}}" tabindex="-1">                                                        
                 <div class="img-outer-box position-relative"> 
@@ -74,6 +76,7 @@
                 </div>
             </a>
         </div>
+    @endif
     @endforeach
 </div>
 @endif

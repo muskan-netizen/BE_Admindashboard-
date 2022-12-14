@@ -337,7 +337,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             @endif
 
                                             {{-- Chat Button --}}
-                                            @if($clientData->socket_url !='' )
+                                            @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
                                                 <hr>
                                                 <h6 class="sold-by">
                                                     <span>Sold by : </span>
@@ -345,6 +345,10 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                     <a class="start_p2p_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
                                                 </h6>
                                             @endif
+                                            @if(getAdditionalPreference(['call_button'])['call_button'])
+                                                <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
+                                            @endif
+
                                     @endif
 
 
