@@ -72,8 +72,8 @@ body.dark.al_body_template_one.p2p-module .breadcrumb-section .breadcrumb {
     padding: 20px;
     border-radius: 10px;
 }
-.p2p-module .product-buttons {
-    margin: 24px 10px 0!important;
+body.al_body_template_nine.p2p-module .product-buttons {
+    margin: 0 0 10px !important;
 }
 .p2p-module .product-right .product-buttons button {
     padding: 8px !important;
@@ -457,7 +457,13 @@ body.dark.al_body_template_nine.p2p-module section.section-b-space.alSingleProdu
     background-color: #2b2b2b !important;
     border: 1px solid #ffffff !important;
 }
-
+body.al_body_template_nine.p2p-module form input.form-control {
+    width: 100%;
+    margin: 0;
+}
+.row.alPostItemsDataOuter.border-top .input-group.mb-2 input {
+    width: 90%;
+}
 /*----------media css--------------*/
 @media(max-width:767px){
     .p2p-module .col-md-8.text-left.vender-peragraph.mt-3.mt-5 {
