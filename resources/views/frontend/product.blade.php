@@ -277,7 +277,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
 
-                                <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
+                                <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-7'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0">
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
@@ -351,7 +351,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             @if(getAdditionalPreference(['call_button'])['call_button'])
                                                 <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
                                             @endif
-</h6>
+                                                </h6>
                                     @endif
 
 
@@ -497,7 +497,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         @endphp
                                         
                                         @if( !is_category_p2p($product->category) )
-                                        <div class="btn-wrapper d-flex align-items-center">
+                                        <div class="btn-wrapper">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
                                                 @if($product->inquiry_only == 0)
                                                 <div class="product-description border-product pb-0">
