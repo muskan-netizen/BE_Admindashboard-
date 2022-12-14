@@ -3,7 +3,9 @@
   --star-color: #FFEEA3;
   --star-background: #fc0;
 }
-
+body.al_body_template_four section.cab-banner-area.alTaxiBannerStart form.cab-booking-form input {
+  margin: 20px 0;
+}
 /* cab booking code css */
 .cab-booking {
   height: 100vh;

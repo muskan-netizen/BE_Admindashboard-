@@ -1290,5 +1290,10 @@ body.al_body_template_two .royo_whatsapp_img{
     z-index: 99999;
     bottom: 7%;
     left: 1%;
-    width: 70px;
+}
+body.al_body_template_two .royo_whatsapp_img img {
+    width: 50px;
+}
+body.al_body_template_four section.cab-banner-area.alTaxiBannerStart form.cab-booking-form input {
+    margin: 20px 0;
 }
