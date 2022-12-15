@@ -893,6 +893,10 @@ class BaseController extends Controller{
 
         if(checkColumnExists('users', 'is_panel_auth_user')){
             $user =  User::where('is_panel_auth_user', 1)->first();
+            if(!$user){
+                $user =  User::first();
+            }
+            
             $token1 = new Token;
             $token = $token1->make([
                 'key' => 'royoorders-jwt',
