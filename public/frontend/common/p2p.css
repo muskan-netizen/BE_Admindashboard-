@@ -494,6 +494,31 @@ body.al_body_template_nine .choose-category a {
 body.al_body_template_nine .choose-category a h3{
     margin-top:15px;
 }
+body.al_body_template_nine.p2p-module .ui-effects-wrapper{
+    position: absolute !important;
+    margin: 0 !important;
+    width:100% !important;
+    left:0 !important;
+    transform: none !important;
+    float:none !important;
+    top:0;
+}
+body.al_body_template_nine.p2p-module .ui-effects-wrapper li{
+    all: unset !important;
+}
+body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect{
+    all: unset !important;
+}
+body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
+    background: transparent!important;
+    border: none;
+    margin-right: 0 !important;
+    display: inline-block !important;
+    margin-left: 20px;
+}
+body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center span#cart_qty_span {
+    margin: 0 !important;
+}
 /*----------media css--------------*/
 @media(max-width:767px){
     .p2p-module .col-md-8.text-left.vender-peragraph.mt-3.mt-5 {
