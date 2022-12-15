@@ -1346,15 +1346,20 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
                <div class="col-12">
                   <div class="form-group mb-0 switchery-demo">
                      <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title text-uppercase mb-0">{{ __("Post Pay") }}</h4>
+                        <h4 class="header-title text-uppercase mb-0">{{ __("Post Pay & Edit Order") }}</h4>
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                      </div>
-                     <p class="sub-header">{{ __("Post Pay allows customers to pay after placing order and order edit facility till payment not done and timelimit does not exceeded.") }}</p>
-                     <label for="" class="mr-3">{{ __("Enable") }}</label>
-                     <input type="checkbox" data-plugin="switchery" name="is_postpay_edit_dropoff_switch" id="is_postpay_edit_dropoff_switch" class="form-control checkbox_change" data-className="is_postpay_edit_dropoff" data-color="#43bee1" @if(@getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'] == 1) checked='checked'  @endif>
-                     <input type="hidden"  @if(@getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'] == 1) value="1" @else value="0" @endif  name="is_postpay_edit_dropoff"  id="is_postpay_edit_dropoff"/>
+                     <p class="sub-header">{{ __("Post Pay allows customers to pay after placing order. Edit order facility allows customer to edit till timelimit does not exceeded and payment not done.") }}</p>
+                     <label for="" class="mr-3">{{ __("Post Pay Enable") }}</label>
+                     <input type="checkbox" data-plugin="switchery" name="is_postpay_enable_switch" id="is_postpay_enable_switch" class="form-control checkbox_change" data-className="is_postpay_enable" data-color="#43bee1" @if(@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) checked='checked'  @endif>
+                     <input type="hidden"  @if(@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) value="1" @else value="0" @endif  name="is_postpay_enable"  id="is_postpay_enable"/>
                   </div>
-                  <div class="row mt-2" id="edit_order_time_limit_div" style="display:@if(@getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'] == 1) @else none @endif;">
+                  <div class="form-group mt-2 switchery-demo">
+                     <label for="" class="mr-3">{{ __("Edit Order Enable") }}</label>
+                     <input type="checkbox" data-plugin="switchery" name="is_order_edit_enable_switch" id="is_order_edit_enable_switch" class="form-control checkbox_change" data-className="is_order_edit_enable" data-color="#43bee1" @if(@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) checked='checked'  @endif>
+                     <input type="hidden"  @if(@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) value="1" @else value="0" @endif  name="is_order_edit_enable"  id="is_order_edit_enable"/>
+                  </div>
+                  <div class="row mt-2" id="edit_order_time_limit_div" style="display:@if(@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) @else none @endif;">
                      <div class="col-8">
                         <label for="" class="mr-3">{{ __("Disable Order Edit before (Hours)") }}</label>
                      </div>
@@ -2634,10 +2639,10 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
       }
    }
 
-   var is_postpay_edit = $('#is_postpay_edit_dropoff_switch');
+   var is_postpay_edit = $('#is_order_edit_enable_switch');
 
    is_postpay_edit[0].onchange = function() {
-      if ($('#is_postpay_edit_dropoff_switch:checked').length != 1) {
+      if ($('#is_order_edit_enable_switch:checked').length != 1) {
          $('#edit_order_time_limit_div').hide();
          $('#order_edit_before_hours').val(0);
       } else {

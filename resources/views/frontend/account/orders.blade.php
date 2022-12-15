@@ -99,6 +99,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                             <div class="page-title">
                                 <h2>{{ __(getNomenclatureName($ordertitle, true)) }}</h2>
                             </div>
+                            <div class="order_response mt-3 mb-3 d-none">
+                                <div class="alert p-0" role="alert"></div>
+                            </div>
                             <div class="welcome-msg">
                                 <h5>{{ __('Here Are All Your Previous ' . getNomenclatureName($ordertitle, true)) }}</h5>
                             </div>
@@ -281,9 +284,17 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                 }
                                                                                             @endphp
                                                                                             <span>
-                                                                                                @if(!empty($order->scheduled_date_time) && $clientPreference->is_postpay_edit_dropoff == 1 && $clientPreference->order_edit_before_hours > 0 && $order->luxury_option_id != 4)
+                                                                                                @if(!empty($order->scheduled_date_time) && $clientPreference->is_order_edit_enable == 1 && $clientPreference->order_edit_before_hours > 0 && $order->luxury_option_id != 4 && ($order->payment_option_id==1 || $order->payment_status !=1))
                                                                                                     @if((strtotime($order->scheduled_date_time) - strtotime($clientPreference->editlimit_datetime)) > 0)
-                                                                                                    <span class="badge ml-2" style="cursor:pointer;color:var(--theme-deafult);"><strong><a class="order_edit_button" data-order_id='{{$order->id}}'><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{__('Edit')}}</a></strong></span>
+                                                                                                        @if(!empty($order->editingInCart))
+                                                                                                            <span class="badge ml-2" style="font-size:12px;">
+                                                                                                            {{ __("This Order is being edited") }} <a class="discard_editing_order" style="color:var(--theme-deafult);" href="javascript:void(0)" data-orderid="{{$order->id}}"><i class="fa fa-trash-o"></i> {{__('Discard')}}</a>
+                                                                                                            </span>
+                                                                                                        @else
+                                                                                                            <span class="badge ml-2" style="cursor:pointer;font-size:14px;">
+                                                                                                                <strong><a class="order_edit_button" data-order_id='{{$order->id}}'><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{__('Edit')}}</a></strong>
+                                                                                                            </span>
+                                                                                                        @endif
                                                                                                     @endif
                                                                                                 @endif
                                                                                             <span class="badge badge-info ml-2 my-1">{{ __($luxury_option_name) }} </span>
@@ -757,9 +768,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                     </span>
                                                                                 </li>
                                                                                 @if ($order->payment_option_id != 1 && $order->is_postpay == 1 && $order->payment_status == 0)
-                                                                                <li class="align-items-center justify-content-between w-100">
+                                                                                <!-- <li class="align-items-center justify-content-between w-100">
                                                                                     <button id="amount_pay_now" class="btn btn-solid w-100" type="button" data-paymentoptionid="{{$order->payment_option_id}}" data-orderid="{{$order->id}}" data-payableamount="{{decimal_format($order->payable_amount+$order->fixed_fee_amount)}}">Pay Now</button>
-                                                                                </li>
+                                                                                </li> -->
                                                                                 @endif
                                                                             </ul>
                                                                         </div>
@@ -2252,6 +2263,10 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
         var confirm_edit_order_title = "{{__('Are you sure?')}}";
         var confirm_edit_order_desc = "{{__('You want to edit this Order.')}}";
         var showcart_redirect = "{{route('showCart')}}";
+        var discard_order_editing_url = "{{route('user.discardeditorder')}}";
+        var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";
+        var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
+        var success_error_container = ".order_response";
     </script>
 
     <script type="text/javascript">

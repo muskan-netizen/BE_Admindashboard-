@@ -117,7 +117,7 @@ class CartController extends FrontController
         );
         $client_preference_detail = ClientPreference::first();
         if(!empty($client_preference_detail)){
-            $client_preference_detail->is_postpay_edit_dropoff = getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'];
+            $client_preference_detail->is_postpay_enable = getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
         }
         
         $client_detail = Client::first();

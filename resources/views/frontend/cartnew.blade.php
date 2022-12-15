@@ -1092,9 +1092,13 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
     var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
     var error_unchanged_schedule_date = "{{__('Schedule date can not be changed')}}";
+    var discard_order_editing_url = "{{route('user.discardeditorder')}}";
+    var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";
+    var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
+    var success_error_container = ".cart_response";
     
-    @if(!empty($client_preference_detail->is_postpay_edit_dropoff))
-        var post_pay_edit_order = "{{$client_preference_detail->is_postpay_edit_dropoff}}";
+    @if(!empty($client_preference_detail->is_postpay_enable))
+        var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
     @else
         var post_pay_edit_order = 0;
     @endif

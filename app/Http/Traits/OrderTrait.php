@@ -965,6 +965,7 @@ trait OrderTrait{
                 if(!empty($cart)):
                     CartProduct::where('cart_id', $cart->id)->delete();
                     Cart::where('id', $cart->id)->delete();
+                    CartProductPrescription::where('cart_id', $cart->id)->delete();
                 endif;
 
                 $cart_detail = [
@@ -1057,6 +1058,38 @@ trait OrderTrait{
                 endforeach;
                 DB::commit();
                 return $this->successResponse([], __('Items has been added to Cart.'), 200);
+            else:
+                return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+            endif;
+        }
+        catch (\Exception $e) {
+            DB::rollback();
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
+    }
+
+    public function discardEditOrder($orderid)
+    {
+        try
+        {
+            DB::beginTransaction();
+            $user = Auth::user();
+            $new_session_token = session()->get('_token');
+
+            $cart = NULL;
+            if ($user):
+                $cart = Cart::where('user_id', $user->id)->where('order_id', $orderid)->first();
+            else:
+                $cart = Cart::where('unique_identifier', session()->get('_token'))->where('order_id', $orderid)->first();
+            endif;
+            if(!empty($cart)):
+                Log::info($cart);
+                CartProduct::where('cart_id', $cart->id)->delete();
+                CartProductPrescription::where('cart_id', $cart->id)->delete();
+                Cart::where('id', $cart->id)->delete();
+                DB::commit();
+                return $this->successResponse([], __('Order editing discarded successfully.'), 200);
             else:
                 return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
             endif;

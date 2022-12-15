@@ -313,7 +313,8 @@ class OrderController extends FrontController
 
         $client_preferences = ClientPreference::select('*')->where('id', '>', 0)->first();
         if(!empty($client_preferences)){
-            $client_preferences->is_postpay_edit_dropoff = getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'];
+            $client_preferences->is_postpay_enable = getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
+            $client_preferences->is_order_edit_enable = getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'];
             $client_preferences->order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
             $client_preferences->editlimit_datetime = Carbon::now()->addHours($client_preferences->order_edit_before_hours)->toDateTimeString();
         }
@@ -334,7 +335,7 @@ class OrderController extends FrontController
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
 
-        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories,'cancellation_reason' => $cancellation_reason, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee,'longTermOrder'=>$longTermOrder, 'is_postpay_edit_dropoff' => getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff']]);
+        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories,'cancellation_reason' => $cancellation_reason, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee,'longTermOrder'=>$longTermOrder, 'is_postpay_enable' => getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable']]);
     }
 
     public function getOrderSuccessPage(Request $request)
@@ -865,6 +866,10 @@ class OrderController extends FrontController
                 $order = Order::where('id', $cart->editingOrder->id)->first();
                 if((strtotime($order->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
                     return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date."), 400);
+                }
+                $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->get();
+                if(!empty($VendorOrderStatus)){
+                    return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing."), 400);
                 }
                 OrderProduct::where('order_id', $order->id)->delete();
                 OrderProductPrescription::where('order_id', $order->id)->delete();
@@ -3328,5 +3333,19 @@ class OrderController extends FrontController
         }
         $this->sendAccessTrackingUrlSMS($user,$order);
         return response()->json(['success' => __('OTP send')], 202);
+    }
+
+    public function discardEditOrderByUser(Request $request)
+    {
+        try
+        {
+            $orderid = $request->orderid;
+            $response = $this->discardEditOrder($orderid);
+            return $response;
+        }
+        catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
     }
 }

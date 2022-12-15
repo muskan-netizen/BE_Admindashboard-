@@ -72,6 +72,11 @@
                     <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
                         {{__('Continue Shopping')}}</a>
                 </div>
+                <div class="col-md-6">
+                    @if(!empty($cart_details->editing_order))
+                        <span class="shoping">{{ __("Order") }} {{$cart_details->editing_order->order_number}} {{ __("being edited") }} <a class="btn shoping discard_editing_order" href="javascript:void(0)" data-orderid="{{$cart_details->editing_order->id}}"><i class="fa fa-trash-o"></i> {{__('Discard')}}</a></span>
+                    @endif
+                </div>
             </div>
                 <!-- <div class="page-title-box">
                     <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
@@ -94,7 +99,7 @@
             <div class="row border-bottom">
                         <div class="col-6">
                             <div class="single_cart_heading">
-                                    <h3>{{ __("Shopping Cart") }}</h3>
+                                    <h3>{{ __("Shopping Cart") }} </h3>
                             </div>
                         </div>
                         <div class="col-6">
@@ -932,7 +937,8 @@
                                 <li class="close-window">
                                     <i class="fa fa-times cross" style="display:none!important"  aria-hidden="true"></i>
                                 </li>
-                               @endif                        </ul>
+                               @endif                        
+                        </ul>
                         <div class=" col-sm-10 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right mr-1" id="schedule_div" style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
                         
                         

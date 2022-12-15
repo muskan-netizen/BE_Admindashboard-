@@ -15,19 +15,19 @@ $(document).on("click", ".order_edit_button", function() {
                 data: { orderid: orderid},
                 success: function(response) {
                     if (response.status == "Success"){
-                        alert(response.message);
+                        sweetAlert.success('Success', response.message);
                     }else{
-                        alert(response.message);
+                        sweetAlert.error('Oops...', response.message);
                     }
                     window.location.href = showcart_redirect;
                 },
                 error: function(error) {
-                    alert(response.message);
+                    sweetAlert.error('Oops...', response.message);
                 }
             });
         }else{
-            alert("Not edit");
             return false;
         }
     });
 });
+

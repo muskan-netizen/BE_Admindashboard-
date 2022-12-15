@@ -526,6 +526,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('order/return/success', 'Front\OrderController@getOrderSuccessReturnPage')->name('order.return.success');
 
 	Route::post('user/editorder', 'Front\OrderController@editOrderByUser')->name('user.editorder');
+	Route::post('user/discardeditorder', 'Front\OrderController@discardEditOrderByUser')->name('user.discardeditorder');
 
 	Route::post('promocode/list', 'Front\PromoCodeController@postPromoCodeList')->name('verify.promocode.list');
 	Route::post('promocode/validate_code', 'Front\PromoCodeController@validate_code')->name('verify.promocode.validate_code');

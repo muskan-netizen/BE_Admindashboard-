@@ -30,6 +30,37 @@ $(".mobile-account .fa").click(function(){
     $(".onhover-show-div").toggleClass("open");
 });
 
+$(document).on("click", '.discard_editing_order', function (e) {
+    Swal.fire({
+        title: confirm_discard_edit_order_title,
+        text: confirm_discard_edit_order_desc,
+        showCancelButton: true,
+        confirmButtonText: 'Ok',
+    }).then((result) => {
+        if(result.value)
+        {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: discard_order_editing_url,
+                data: {
+                    "_token": $('meta[name="_token"]').attr('content'),
+                    "orderid": $(this).data('orderid')
+                },
+                success: function (res) {
+                    if (res.status == "Success") {
+                        success_error_alert('success', res.message, success_error_container);
+                        location.reload();
+                    } else {
+                        success_error_alert('error', res.message, success_error_container);
+                    }
+                }
+            });
+        }else{
+            return false;
+        }
+    });
+});
 
 // Material Select Initialization
 $(document).ready(function () {
@@ -921,8 +952,7 @@ $(document).ready(function () {
 
     }
     $(document).on("click", "#order_placed_btn", async function () {
-
-        if($("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
+        if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
             $("#schedule_datetime").val($("#edit_order_schedule_datetime").val());
             return false;
@@ -2234,9 +2264,9 @@ $(document).ready(function () {
                                 if(response.schedule_datetime!=null){
                                     $("#schedule_datetime").val(response.schedule_datetime);
                                     if($("#edit_order_schedule_datetime").val()!=''){
-                                        document.getElementById("schedule_datetime").setAttribute("value", $("#schedule_datetime").val());
-                                        document.getElementById("schedule_datetime").setAttribute("max", $("#schedule_datetime").val());
-                                        document.getElementById("schedule_datetime").setAttribute("min", $("#schedule_datetime").val());
+                                        $("#schedule_datetime").attr("value", $("#schedule_datetime").val());
+                                        $("#schedule_datetime").attr("max", $("#schedule_datetime").val());
+                                        $("#schedule_datetime").attr("min", $("#schedule_datetime").val());
                                         $("#edit_order_schedule_datetime").val($("#schedule_datetime").val());
                                     }
                                     $("#taskschedule").click();

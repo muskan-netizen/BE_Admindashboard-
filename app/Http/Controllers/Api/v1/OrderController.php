@@ -148,6 +148,10 @@ class OrderController extends BaseController
                     $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
                 }
                 $client_preference = ClientPreference::first();
+
+                $editlimit_datetime = Carbon::now()->toDateTimeString();
+                $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+                $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
                 // if ($client_preference->verify_email == 1) {
                 //     if ($user->is_email_verified == 0) {
                 //         return response()->json(['error' => 'Your account is not verified.'], 404);
@@ -168,7 +172,12 @@ class OrderController extends BaseController
                     return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
                 }
                 $luxury_option = LuxuryOption::where('title', $action)->first();
-                $cart = Cart::where('user_id', $user->id)->first();
+                if(checkColumnExists('carts','order_id'))
+                {//get if any order is being edit
+                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder'])->first();
+                }else{
+                    $cart = Cart::where('user_id', $user->id)->first();
+                }
                 if ($cart) {
                     // $loyalty_points_used=0;
                     // $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
@@ -198,9 +207,27 @@ class OrderController extends BaseController
                     $loyalty_points_used =  $loyaltyCheck->loyalty_points_used;
                             
 
-                    $order = new Order;
+                    if(isset($cart->editingOrder) && !empty($cart->editingOrder))
+                    {
+                        $order = Order::where('id', $cart->editingOrder->id)->first();
+                        if((strtotime($order->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
+                            return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date."), 400);
+                        }
+                        $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->get();
+                        if(!empty($VendorOrderStatus)){
+                            return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing."), 400);
+                        }
+                        OrderProduct::where('order_id', $order->id)->delete();
+                        OrderProductPrescription::where('order_id', $order->id)->delete();
+                        OrderTax::where('order_id', $order->id)->delete();
+                        VendorOrderStatus::where('order_id', $order->id)->delete();
+                        $order->is_edited = 1;
+                    }else{
+                        $order = new Order;
+                        $order->order_number = generateOrderNo();
+                    }
+                    
                     $order->user_id = $user->id;
-                    $order->order_number = generateOrderNo();
                     $order->address_id = $request->address_id;
                     $order->total_other_taxes = $cart->total_other_taxes;
                     $order->payment_option_id = $request->payment_option_id;
@@ -226,6 +253,9 @@ class OrderController extends BaseController
                                     }
                                 }
                     $order->taxable_amount = $total_taxes;
+                    if(checkColumnExists('orders', 'is_postpay')){
+                        $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
+                    }
                     $order->save();
 
                     $is_long_term_order = 0;
@@ -264,7 +294,14 @@ class OrderController extends BaseController
                         $vendor_discount_amount = 0;
                         $is_restricted = 0;
                         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
-                        $order_vendor = new OrderVendor;
+                        if(isset($cart->editingOrder) && !empty($cart->editingOrder))
+                        {
+                            $OrderVendor = OrderVendor::where('order_id', $cart->editingOrder->id)->where('vendor_id', $vendor_id)->first();
+                            $OrderVendor->web_hook_code = $OrderVendor->web_hook_code;
+                        }else{
+                            $OrderVendor = new OrderVendor();
+                        }
+                        //$order_vendor = new OrderVendor;
                         $order_vendor->status = 0;
                         $order_vendor->user_id = $user->id;
                         $order_vendor->order_id = $order->id;
@@ -1725,7 +1762,7 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
+        $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
         'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request'
         ])
             ->whereHas('orderDetail', function ($q1) {
@@ -1741,7 +1778,8 @@ class OrderController extends BaseController
             })
             ->paginate($paginate);
 
-        $is_postpay_edit_dropoff = getAdditionalPreference(['is_postpay_edit_dropoff'])['is_postpay_edit_dropoff'];
+        $is_postpay_enable = getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
+        $is_order_edit_enable = getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'];
         $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
         $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
 
@@ -1757,8 +1795,8 @@ class OrderController extends BaseController
             $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
             $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
             $order->is_postpay  = $order->orderDetail->is_postpay;
-Log::info(json_encode($order->orderDetail));
-            if(!empty($order->orderDetail->scheduled_date_time) && $is_postpay_edit_dropoff == 1 && $order_edit_before_hours > 0){
+
+            if(!empty($order->orderDetail->scheduled_date_time) && $is_order_edit_enable == 1 && $order_edit_before_hours > 0 && ($order->orderDetail->payment_option_id==1 || $order->orderDetail->payment_status !=1)){
                 if((strtotime($order->orderDetail->scheduled_date_time) - strtotime($editlimit_datetime)) > 0){
                     $order->is_editable  = 1;
                 }else{
@@ -1766,6 +1804,10 @@ Log::info(json_encode($order->orderDetail));
                 }
             }else{
                 $order->is_editable  = 0;
+            }
+
+            if(!empty($order->orderDetail->editingInCart)){
+                $order->is_editable  = 2;
             }
 
             $product_details = [];
@@ -3215,6 +3257,34 @@ Log::info(json_encode($order->orderDetail));
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
         
+    }
+
+    public function editOrderByUser(Request $request)
+    {
+        try
+        {
+            $orderid = $request->orderid;
+            $response = $this->editOrderInCart($orderid);
+            return $response;
+        }
+        catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
+    }
+
+    public function discardEditOrderByUser(Request $request)
+    {
+        try
+        {
+            $orderid = $request->orderid;
+            $response = $this->discardEditOrder($orderid);
+            return $response;
+        }
+        catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
     }
 
 }
