@@ -137,7 +137,7 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
                             @if(@$categories)
                             @foreach($categories as $category)
                             @php  $icon = $category['icon']['proxy_url'] . '30/30' . $category['icon']['image_path'];  @endphp
-                            <li class="col-3 px-1">
+                            <li class="col-3 px-1 category-list" id="category_{{$category->id}}">
                                 <a class="cate-item text-center w-100 py-3 mb-4 rounded select-category" data-name="{{$category['translation_one']["name"]}}" data-id="{{$category['id']}}" href="#">
                                     <div class="alCategoryItems">
                                         <img class="w-25" src="{{$icon}}">
@@ -146,9 +146,18 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
                                 </a>
                             </li>
                             @endforeach
+                            <li class="col-3 px-1 choose-category" style="display:none;">
+                                <a class="cate-item text-center w-100 py-3 mb-4 rounded select-category"  href="#">
+                                    <div class="alCategoryItems">
+                                        
+                                        <h3>Choose Another Category</h3>
+                                    </div>
+                                </a>
+                            </li>
                             @endif
                        
                         </ul>
+                        
                         
                     </div>
                 </div>
@@ -271,6 +280,10 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
     <script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
 <script>
 
+
+$(document).on('click', '.category-list', function() {
+
+});
 
 $('.dropify').dropify();
 $(document).on('click', '.select-category', function() {
