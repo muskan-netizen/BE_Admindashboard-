@@ -1025,7 +1025,8 @@ class OrderController extends BaseController
             $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update([
                     'delivery_response' => json_encode($order_ship),
-                    'dispatch_traking_url'=>$order_ship->pickups[0]->result_tracking_link
+                    'dispatch_traking_url'=>$order_ship->pickups[0]->result_tracking_link,
+                    'web_hook_code' => $order_ship->unique_order_id
                 ]);
             return 1;
         }

@@ -870,11 +870,8 @@ class OrderController extends BaseController
                     $vendor_order_status->save();
 
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> pre_dev
                     if ($request->status_option_id == 3) {
                         if ($orderData->shipping_delivery_type == 'D' && !empty($currentOrderStatus->dispatch_traking_url)) {
                             $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
@@ -1051,7 +1048,8 @@ class OrderController extends BaseController
             $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update([
                     'delivery_response' => json_encode($order_ship),
-                    'dispatch_traking_url'=>$order_ship->pickups[0]->result_tracking_link
+                    'dispatch_traking_url'=>$order_ship->pickups[0]->result_tracking_link,
+                    'web_hook_code' => $order_ship->unique_order_id
                 ]);
             return 1;
         }
