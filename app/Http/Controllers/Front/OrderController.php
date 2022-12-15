@@ -40,6 +40,7 @@ use App\Models\NotificationTemplate;
 use App\Models\CartProductPrescription;
 use App\Models\OrderProductPrescription;
 use App\Models\SubscriptionInvoicesUser;
+use App\Models\OrderDeliveryStatusIcon;
 use App\Models\UserRegistrationDocuments;
 use App\Models\DriverRegistrationDocument;
 use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption, ReturnReason};
@@ -87,6 +88,7 @@ class OrderController extends FrontController
         $navCategories = $this->categoryNav($langId);
 
         $dispatcher_icons = OrderDeliveryStatusIcon::select('image','image_url')->get();
+        $iconsArray = [];
         foreach($dispatcher_icons as $icon)
         {
             $imgUrl = asset($icon->image);
