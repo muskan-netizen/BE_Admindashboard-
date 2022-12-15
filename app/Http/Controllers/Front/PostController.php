@@ -267,10 +267,10 @@ class PostController extends FrontController
             $sku_url =  ($client->sub_domain.env('SUBMAINDOMAIN'));
         }
 
-        $slug = generateSlug($request->product_name);
+        $slug = $this->generateSlug($request->product_name);
         $slug = str_replace(' ', '-',$slug);
         $generated_slug = $sku_url.'.'.$slug;
-        $user = Auth::user();		
+        $user = Auth::user();	
         $user_vendor = UserVendor::where('user_id', $user->id)->first();
         $product = new Product();
         $product->sku = $slug;
@@ -358,7 +358,21 @@ class PostController extends FrontController
             // dd($imageId);
            
             return $imageId;
+        }
+
     }
 
-}
+    public function generateSlug($name)
+    {
+        if (Product::whereSku($slug = $name)->exists()) {
+            $max = Product::whereSku($name)->latest('id')->value('sku');
+            if (isset($max[-1]) && is_numeric($max[-1])) {
+                return preg_replace_callback('/(\d+)$/', function($mathces) {
+                    return $mathces[1] + 1;
+                }, $max);
+            }
+            return $slug.'-'.rand();
+        }
+        return $slug;
+    }
 }

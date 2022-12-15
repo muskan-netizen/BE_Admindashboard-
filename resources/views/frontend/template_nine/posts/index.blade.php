@@ -131,13 +131,16 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
                     <div class="p-3">
                         <div class="d-flex mb-4 align-items-center justify-content-between alCategoryItemsHead">
                             <h6 class="m-0">CHOOSE A CATEGORY </h6>
-                            <a href="#">View All</a>
+                            @if(@$categories && count($categories)>4)
+                            <a href="javascript:;" id="view-all_cats">View All</a>
+                            @endif
                         </div>
                         <ul class="row p-0 m-0 no-gutters">
                             @if(@$categories)
-                            @foreach($categories as $category)
+                            @foreach($categories as $key=>$category)
                             @php  $icon = $category['icon']['proxy_url'] . '30/30' . $category['icon']['image_path'];  @endphp
-                            <li class="col-3 px-1">
+                            
+                            <li class="col-3 px-1 category-list @if($key>3) view-all_cats @endif" id="category_{{$category->id}}" @if($key>3) style="display:none;" @endif>
                                 <a class="cate-item text-center w-100 py-3 mb-4 rounded select-category" data-name="{{$category['translation_one']["name"]}}" data-id="{{$category['id']}}" href="#">
                                     <div class="alCategoryItems">
                                         <img class="w-25" src="{{$icon}}">
@@ -146,9 +149,18 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
                                 </a>
                             </li>
                             @endforeach
+                            <li class="col-3 px-1 choose-category" style="display:none;">
+                                <a class="cate-item text-center w-100 py-3 mb-4 rounded select-category"  href="#">
+                                    <div class="alCategoryItems">
+                                        
+                                        <h3>Choose Another Category</h3>
+                                    </div>
+                                </a>
+                            </li>
                             @endif
                        
                         </ul>
+                        
                         
                     </div>
                 </div>
@@ -271,6 +283,20 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
     <script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
 <script>
 
+$(document).on('click', '#view-all_cats', function() {
+    $('#view-all_cats').text();
+    $('.view-all_cats').show();
+
+});
+$(document).on('click', '.category-list', function() {
+    $('.category-list').hide();
+    $(this).show();
+    $('.choose-category').show();
+});
+$(document).on('click', '.choose-category', function() {
+    $('.category-list').show();
+    $('.choose-category').hide();
+});
 
 $('.dropify').dropify();
 $(document).on('click', '.select-category', function() {
