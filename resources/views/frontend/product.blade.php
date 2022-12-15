@@ -330,7 +330,12 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                         @if( !empty($attr_val) )
                                                             <div class="container-badge-value">
                                                                 @foreach($attr_val as $inn_key => $inn_val)
+
+                                                                @if($inn_val['type'] == 2) <!--- for color---->
+                                                                    <span style="background-color: {{$inn_val['hexacode']}}; width: 20px;height: 20px;margin-left: 5px;display: inline-block;border: 1px solid #ccc;"></span>
+                                                                @else
                                                                     <span>{{$inn_val['value']}}</span>
+                                                                @endif
                                                                 @endforeach
                                                             </div>
                                                         @endif

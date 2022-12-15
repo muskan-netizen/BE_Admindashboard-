@@ -63,6 +63,8 @@ class HomeController extends BaseController
             //pr($vendorMode);
             $homeData['profile']->preferences->vendorMode = $vendorMode;
             $homeData['profile']->preferences->is_cab_pooling = (int) getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
+            $homeData['profile']->preferences->chat_button = (int) getAdditionalPreference(['chat_button'])['chat_button'];
+            $homeData['profile']->preferences->call_button = (int) getAdditionalPreference(['call_button'])['call_button'];
             //dd($homeData['profile']);
             $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
             $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
