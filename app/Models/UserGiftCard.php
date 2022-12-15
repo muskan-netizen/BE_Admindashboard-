@@ -10,6 +10,6 @@ class UserGiftCard extends Model
     use HasFactory;
 
     public function giftCard(){
-        return $this->belongsTo('App\Models\GiftCard', 'gift_card_id', 'id');
+        return $this->hasOne('App\Models\GiftCard','id','gift_card_id');
     }
 }

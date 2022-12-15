@@ -19,7 +19,7 @@
         <hr class="m-0">
         <div class="code-outer p-2 text-uppercase d-flex align-items-center justify-content-between">
             <label class="m-0">{{ $active_giftcard->giftCard->name }}</label>
-            <a class="btn btn-solid apply_gifCard_code_btn"  data-giftCard_id="1"  style="cursor: pointer;">({{ $active_giftcard->giftCard->amount }})Apply</a>
+            <a class="btn btn-solid apply_gifCard_code_btn"  data-giftCard_id="{{ $active_giftcard->giftCard->id }}"  style="cursor: pointer;">({{ $active_giftcard->giftCard->amount }})Apply</a>
         </div>
         <hr class="m-0">
     </div>

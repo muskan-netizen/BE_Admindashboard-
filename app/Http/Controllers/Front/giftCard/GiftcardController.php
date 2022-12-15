@@ -116,9 +116,9 @@ class GiftcardController extends FrontController
         }
         $GiftCard       = GiftCard::where('id', $gift_card_id)->first();
         // $senderData = !empty($request->senderData) ? json_decode($request->senderData) : '';
-        // if(isset($senderData['send_card_to_email']) && !empty($senderData['send_card_to_email'])){
-        //     //send mail
-        // }
+        if(isset($senderData['send_card_to_email']) && !empty($senderData['send_card_to_email'])){
+            //pr($senderData['send_card_to_email']);
+        }
         if( $GiftCard ){
             $UserGiftCard               = new UserGiftCard();
             $UserGiftCard->user_id      = $user->id;
@@ -174,7 +174,7 @@ class GiftcardController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function postVerifyGiftCardCode(Request $request){
-       // try {
+        try {
             $user = Auth::user();
             $now = Carbon::now()->toDateTimeString();
             $now = convertDateTimeInClientTimeZone($now);
@@ -185,7 +185,8 @@ class GiftcardController extends FrontController
             }
             $giftcard = UserGiftCard::with('giftCard')->whereHas('giftCard',function ($query) use ($now){
                 return  $query->whereDate('expiry_date', '>=', $now);
-            })->where(['is_used'=>'0','user_id'=>$user->id,'id'=>$request->giftCard_id])->first();
+            })->where(['is_used'=>'0','user_id'=>$user->id,'gift_card_id'=>$request->giftCard_id])->first();
+          //  pr( $giftcard);
             if($giftcard){
                 if($cart_detail->gift_card_id ==  $giftcard->gift_card_id){
                     return $this->errorResponse('Gift Card already applied.', 422);
@@ -196,9 +197,9 @@ class GiftcardController extends FrontController
             }
             return $this->errorResponse('Invalid gift Card Id', 422);
            
-        // } catch (Exception $e) {
-        //     return $this->errorResponse($e->getMessage(), $e->getCode());
-        // }
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
     }
 
     public function RemoveGiftCardCode(Request $request){
