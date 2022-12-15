@@ -369,7 +369,9 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('page/driverSignup', 'Front\OrderController@driverSignup')->name('page.driverSignup');
 	Route::get('driver-documents', 'Front\UserhomeController@driverDocuments')->name('driver-documents');
 	Route::get('page/{slug}', 'Front\UserhomeController@getExtraPage')->name('extrapage');
-	Route::get('order/track/{id}/{order_id}', 'Front\OrderController@TrackOrder')->name('confirmation');
+	Route::get('order/track/{id}/{order_id}', 'Front\OrderController@TrackOrder')->name('track.order');
+	Route::post('order/track/token', 'Front\OrderController@TrackOrderTokenVerify')->name('track.order.token.verify');
+	Route::post('order/track/otpresend', 'Front\OrderController@ResendOtpForTrackingUrl')->name('track.order.otp.resend');
 
 	Route::post('/homePageData', 'Front\UserhomeController@postHomePageData')->name('homePageData');
 	Route::post('/postHomePageDataSingle', 'Front\UserhomeController@postHomePageDataSingle')->name('postHomePageDataSingle');

@@ -53,7 +53,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('chat/userAgentChatRoom', 'Api\v1\ChatController@userAgentChatRoom');
         Route::post('chat/sendNotificationToUser', 'Api\v1\ChatController@sendNotificationToUser');
         
-
+        Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
+        Route::post('get-order-panel-detail', 'Api\v1\BaseController@getPanelDetail')->middleware('ConnectDbFromDispatcher');
 
           
         Route::get('profile', 'Api\v1\ProfileController@profile');

@@ -109,7 +109,41 @@
                         </div>--}}
                         <section class="buy_details">
                             <div class="row">
-                                <div class="col-lg-5 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                                @if((!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id == '8'))
+                                <div class="col-md-1 pl-0">
+                                    <div class="exzoom_nav side_nav_img">
+                                       
+                                        @if(!empty($product->media) && count($product->media) > 0)
+                                        
+                                        @foreach($product->media as $k => $image)
+                                        @php
+                                                        if(isset($image->pimage)){
+                                                            $img = $image->pimage->image;
+                                                        }else{
+                                                            $img = $image->image;
+                                                        }
+                                                    @endphp
+                                            @if(!is_null($img))
+                                            <span class="img_active">
+                                                <img class="blur-up lazyloaded pro_imgs myimage1"
+                                                    data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}"
+                                                    width="60" height="60"
+                                                    src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
+                                            </span>
+                                            @endif
+                                        @endforeach
+                                        @else
+                                        <span class="img_active">
+                                                <img class="blur-up lazyloaded pro_imgs myimage1"
+                                                    data-src="{{loadDefaultImage()}}"
+                                                    width="60" height="60"
+                                                    src="{{loadDefaultImage()}}">
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endif
+                                <div class="{{(!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id != '8') ? 'col-lg-5' : 'col-lg-4'}}  p-0 @php if(count($product->media) == 0){  echo 'dd-none'; } @endphp ">
                                     {{-- <div class="product__carousel">
                                         <div class="gallery-parent">
                                             @php
@@ -133,7 +167,9 @@
 
                                             <div class="swiper-container gallery-top">
                                                 <div class="swiper-wrapper">
-                                                @if(!empty($product->media))
+                                               
+                                                @if(!empty($product->media) && count($product->media) > 0)
+                                                
                                                     @foreach($product->media as $k => $image)
                                                         @php
                                                             if(isset($image->pimage)){
@@ -148,6 +184,14 @@
                                                             </a>
                                                         </div>
                                                     @endforeach
+                                                @else
+                                                
+                                                    <div class="swiper-slide easyzoom easyzoom--overlay">
+                                                            <a href="{{loadDefaultImage()}}">
+                                                            <img class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
+                                                            </a>
+                                                        </div>
+
                                                 @endif
                                                 </div>
 
@@ -156,7 +200,7 @@
                                             </div>
                                             <div class="swiper-container gallery-thumbs">
                                                 <div class="swiper-wrapper">
-                                                    @if(!empty($product->media))
+                                                    @if(!empty($product->media) && count($product->media) > 0)
                                                         @foreach($product->media as $k => $image)
                                                         @php
                                                             if(isset($image->pimage)){
@@ -165,10 +209,12 @@
                                                                 $img = $image->image;
                                                             }
                                                         @endphp
-                                                        <div class="swiper-slide">
-                                                            <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" alt="">
-                                                        </div>
+                                                        
                                                         @endforeach
+                                                    @else
+                                                        <div class="swiper-slide">
+                                                            <img class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
+                                                        </div>
                                                     @endif
                                                 </div>
                                             </div>
@@ -178,7 +224,7 @@
                                     <div class="exzoom hidden w-100">
                                         <div class="exzoom_img_box mb-2">
                                             <ul class='exzoom_img_ul img-sidebar'>
-                                            @if(!empty($product->media))
+                                            @if(!empty($product->media) && count($product->media) > 0)
                                             
                                                 @foreach($product->media as $k => $image)
                                                         @php
@@ -192,6 +238,10 @@
                                                 @if(!is_null($img))
                                                 <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
                                                 @endif
+                                                @else
+                                                        
+                                                    <img id="main_image" class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
+                                                        
                                             @endif
                                             </ul>
                                         </div>
@@ -226,22 +276,26 @@
                                     </div>
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
+                                
+                                @php
+                                if((!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id == '8')) {
+                                    $css_class = 'col-lg-4'; 
+                                } elseif(!empty($product->media) && count($product->media) > 0){ 
+                                    $css_class = 'col-lg-7'; 
+                                } else { 
+                                    $css_class = 'col-lg-7'; 
+                                }
+                                @endphp
 
-                                <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text p-0">
+                                <div class="{{$css_class}} rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0">
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                         </h2>
                                         <span class="rating main-rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
-                                        @if($product->vendor->is_seller == 1)
-                                            <h6 class="sold-by">
-                                                <b> <img class="blur-up lazyload" data-src="{{$favicon}}" alt="{{$product->vendor->Name}}"></b> <b> Order by clickokart </b>
-                                            </h6>
-                                        @else
-                                            <h6 class="sold-by">
-                                                <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
-                                            </h6>
-                                        @endif
+                                        <h6 class="sold-by">
+                                            <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
+                                        </h6>
                                         @if($client_preference_detail)
                                             @if($client_preference_detail->rating_check == 1)
                                                 @if($product->averageRating > 0)
@@ -273,6 +327,13 @@
                                             {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                                 $product->translation[0]->body_html : ''!!}
                                         </div>
+                                        @if(((@$product->returnable && @$product->vendor->return_request) || $product->replaceable) && ($product->return_days > 0))
+                                            <div class="discriptions">
+                                                <h3>Return Policy</h3>
+                                                <p>  <span>{{ $product->return_days }} days return policy is applicable on this product </span> </p>
+                                            
+                                            </div>
+                                            @endif
                                         <div id="product_variant_options_wrapper">
                                             @if(!empty($product->variantSet))
                                                 @php
@@ -461,11 +522,11 @@
                                                 else
                                                 $product_quantity_in_cart = $product_in_cart->quantity??0;
 
-                                        @endphp
-                                        @if($is_available == 1)
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->has_inventory && $product->variant[0]->quantity <= $product_quantity_in_cart)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
-                                        @endif
 
+                                                @endphp
+                                                @if($is_available == 1)
+                                                    <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                                @endif
 
                                                     @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
                                                     <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
@@ -502,10 +563,44 @@
                                     </div>
 
                                 </div>
+                                
+                                @if( !empty($set_template) && !empty($set_template->template_id) && $set_template->template_id == '8' && !empty($coupon_list) )
+                                <div class="col-md-3">
+                                    <div class="aside_bar">
+                                        <h5>Available offers</h5>
+                                            <div class="discriptions">
+                                                @foreach($coupon_list as $m_key => $m_val)
+                                                <p> <small> Coupon Code :  </small><span>{{ $m_val['name'] ?? '' }} </span> </p>
+                                                   <p> <small> Description :</small> <span>{{ $m_val['short_desc'] ?? '' }} </span> </p>
+                                                   
+                                                   <p>  <small>Coupon Type :  </small><span>{{ $m_val['promo_type_title'] ?? '' }} </span> </p>
+                                                   <p> 
+                                                    <small>
+                                                    @if($m_val['promo_type_id'] == 1)
+                                                         Amount : 
+                                                    @else
+                                                        Percentage : 
+                                                    @endif
+                                                    </small>
+                                                    <span>{{decimal_format($m_val['amount'])}}</span>
+                                                    </p>
+                                                    <hr>
+                                                @endforeach
+                                            </div>
+                                        
+                                        <!-- <form>
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Promo Code">
+                                                <button type="submit" class="btn btn-primary">Apply</button>
+                                            </div>
+                                        </form> -->
+                                    </div>
+                                </div>
+                            @endif
                             </div>
                         </section>
                         <div class="row mt-1">
-                            <div class="col-md-8">
+                            <div class="col-md-12">
                                 @if($client_preference_detail && $client_preference_detail->rating_check == 1)
                                 <section class="tab-product custom-tabs">
                                     <div class="row">
@@ -574,49 +669,22 @@
                                 </section>
                                 @endif
                             </div>
-                            @if( !empty($coupon_list) )
-                                <div class="col-md-4">
-                                    <div class="aside_bar">
-                                        <h5>Available offers</h5>
-                                            <div class="discriptions">
-                                                @foreach($coupon_list as $m_key => $m_val)
-                                                   <p> <small> Description :</small> <span>{{ $m_val['short_desc'] ?? '' }} </span> </p>
-                                                   <p> <small> Coupon Code :  </small><span>{{ $m_val['name'] ?? '' }} </span> </p>
-                                                   <p>  <small>Coupon Type :  </small><span>{{ $m_val['promo_type_title'] ?? '' }} </span> </p>
-                                                   <p> 
-                                                    <small>
-                                                    @if($m_val['promo_type_id'] == 1)
-                                                         Amount : 
-                                                    @else
-                                                        Percentage : 
-                                                    @endif
-                                                    </small>
-                                                    <span>{{decimal_format($m_val['amount'])}}</span>
-                                                    </p>
-                                                    <hr>
-                                                @endforeach
-                                            </div>
-                                        
-                                        <!-- <form>
-                                            <div class="form-group">
-                                                <input type="text" class="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Promo Code">
-                                                <button type="submit" class="btn btn-primary">Apply</button>
-                                            </div>
-                                        </form> -->
-                                    </div>
-                                </div>
-                            @endif
+                            
+
+                       
                             </div>
                     </div>
 
                     {{-- Related Products --}}
+                    @if(!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id == '8')
                     <div class="row">
                         <div class="col-md-12">
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => 'Category Realted Product'])
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_brand_products, 'title' => 'Brand Realted Product'])
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => 'Vendor Realted Product'])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => 'Category Related Product'])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_brand_products, 'title' => 'Brand Related Product'])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => 'Vendor Related Product'])
                         </div>
                     </div>
+                    @endif
                     {{-- End of Related Products --}}
 
                     
@@ -1183,7 +1251,6 @@
             infinite: true,
             slidesToShow: 4,
             slidesToScroll: 1,
-            centerMode: false,
             responsive: [
             { breakpoint: 1199, settings: { slidesToShow: 3, slidesToScroll: 1, infinite: true, dots: false, centerMode: true, } },
             { breakpoint: 991, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, } },

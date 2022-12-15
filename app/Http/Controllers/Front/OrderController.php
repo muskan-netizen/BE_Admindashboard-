@@ -1978,6 +1978,11 @@ class OrderController extends FrontController
                 $this->ProductVariantStock($order_id);
                 DB::commit();
                 $this->sendSuccessNotification($user->id, $request->vendor_id);
+
+                $customer = User::find($user->id);
+                if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
+                    $this->sendTrackingUrlSMS($customer,$orderData);
+                }
             }
 
         }
@@ -3206,13 +3211,76 @@ class OrderController extends FrontController
     }
 
     public function TrackOrder(Request $request){
-       $order_id = $request->order_id;
-       $user_id  = $request->id;
-
+       
+        $order_id            = $request->order_id;
+        $user_id             = $request->id;
+        $user                = User::find($user_id);
         $order               = Order::where(['user_id'=>$user_id,'order_number'=>$order_id])->with('orderStatusVendor','ordervendor')->first();
         $language_id         = Session::get('customerLanguage');
-        $navCategories      = $this->categoryNav($language_id);
+        $navCategories       = $this->categoryNav($language_id);
+
+        if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1 && getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 0){
+            $showPage    = 'd-block';
+            $verifyPage  = 'd-none';
+           
+        }else{
+            if(getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 1){
+                if (isset($_COOKIE['tracking_url']) || $request->verified == 1) {
+                    if($_COOKIE['tracking_url'] == $request->ip()){
+                        $showPage    = 'd-block';
+                        $verifyPage  = 'd-none';
+                    }
+                }else{
+                    if(empty($user->track_order_phone_token) && empty($user->track_order_phone_token_valid_till)){
+                        $this->sendAccessTrackingUrlSMS($user,$order);
+                        $showPage    = 'd-none';
+                        $verifyPage  = 'd-block';
+                    }else{
+                        $showPage    = 'd-none';
+                        $verifyPage  = 'd-block';
+                    }
+                }
+            }
+        }
+      
+
         
-       return view('frontend.order.trackOrderDeatil')->with(['order' => $order,'navCategories'=>$navCategories]);
+       return view('frontend.order.trackOrderDeatil')->with(['order' => $order,'navCategories'=>$navCategories,'showPage'=>$showPage,'verifyPage'=>$verifyPage]);
+    }
+
+    public function TrackOrderTokenVerify(Request $request){
+        $user = User::where('id', $request->data)->first();
+        if(!$request->verifyToken){
+            return response()->json(['error' => __('OTP required!')], 404);
+        }
+        $currentTime = \Carbon\Carbon::now()->toDateTimeString();
+       
+        if ($user->track_order_phone_token != $request->verifyToken) {
+            return response()->json(['error' => __('OTP is not valid')], 404);
+        }
+        if ($currentTime > $user->track_order_phone_token_valid_till) {
+            return response()->json(['error' => __('OTP has been expired.')], 404);
+        }
+        $user->track_order_phone_token              = NULL;
+        $user->track_order_phone_token_valid_till   = NULL;
+        $user->save();
+        $ip                  = $request->ip();
+        setcookie('tracking_url', $ip, time() + (86400), "/"); // 86400 = 1 day
+        return response()->json(['success' => __('OTP verified')], 202);
+    }
+
+    public function ResendOtpForTrackingUrl(Request $request){
+        $order_id            = $request->order_id;
+        $user_id             = $request->data;
+        $user                = User::find($user_id);
+        $order               = Order::where(['user_id'=>$user_id,'order_number'=>$order_id])->with('orderStatusVendor','ordervendor')->first();
+        if(!$user){
+            return response()->json(['error' => __('User is not valid')], 404);
+        }
+        if(!$order){
+            return response()->json(['error' => __('Order is not valid')], 404);
+        }
+        $this->sendAccessTrackingUrlSMS($user,$order);
+        return response()->json(['success' => __('OTP send')], 202);
     }
 }
