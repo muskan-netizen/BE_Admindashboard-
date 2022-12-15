@@ -111,7 +111,7 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
     height: 20px;
 }
 .alPostBoxOuter.offset-md-2.col-md-8.mt-4.border.border-rounded.px-0 {
-    margin-bottom: 40px;
+    margin-bottom: 0px;
 }
 .select2-results__option{display: block;}
 </style>
@@ -127,7 +127,7 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
         </div>
         <div class="container">
             <div class=" row">
-                <div class="alPostBoxOuter offset-md-2 col-md-8 mt-4 border border-rounded px-0">
+                <div class="alPostBoxOuter offset-md-2 col-md-8 mt-2 border border-rounded px-0">
                     <div class="p-3">
                         <div class="d-flex mb-4 align-items-center justify-content-between alCategoryItemsHead">
                             <h6 class="m-0">CHOOSE A CATEGORY </h6>
@@ -157,11 +157,11 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
 
         <div class="container">
             <div class=" row">
-                <div class="alPostBoxOuter offset-md-2 col-md-8 mt-4 border border-rounded px-0">
+                <div class="alPostBoxOuter offset-md-2 col-md-8 mt-2 border border-rounded px-0 mb-4">
                     <div class="p-3">
                     <form action="{{route('posts.store')}}" enctype="multipart/form-data" method="post" class="product_form">
                         @csrf
-                        <h6 class="pb-3">SELECTED CATEGORY</h6>
+                        <h6 class="pb-0">SELECTED CATEGORY</h6>
                         <input type="hidden" name="category_id" id="category_id" required />
                         <nav aria-label="breadcrumb" class="d-flex justify-content-between align-items-center mb-3">
                           <ol class="breadcrumb bg-transparent p-0 m-0">
