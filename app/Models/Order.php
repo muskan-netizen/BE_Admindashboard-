@@ -127,4 +127,7 @@ class Order extends Model implements Auditable
     {
         return self::where('order_number',$order_number)->with('user','products','products.addon','products.addon.option','products.pvariant')->first();
     }
+    public function giftCard(){
+        return $this->hasOne('App\Models\GiftCard','id','gift_card_id');
+    }
 }

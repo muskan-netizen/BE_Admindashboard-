@@ -43,9 +43,18 @@
     .cross-sell .slick-slide>div {
         margin: 0 12px;
     }
+    .order-user-name p {
+    display: inline-block;
+}
+.order-user-name {
+    background: #eeeeee;
+    padding: 6px 6px;
+    border-radius: 4px;
+}
     </style>
 
-@php $serviceType =  Session::get('vendorType'); @endphp
+@php $serviceType =  Session::get('vendorType');
+ @endphp
 
 @if($cart_details->totalQuantity<=0)
     <div class="container" >
@@ -613,6 +622,9 @@
          <div class="cart-summary p-2 pb-4">
             <div class="col-12 mb-2">
                 <h5 class="order_text">{{ __('Order Summary') }}</h5>
+                @if(array_key_exists('gift_card_id', $cart_details) && empty($cart_details->gift_card) )
+                    <a id='open_gift_card' href="javascript:void(0)">{{ __("open gift Card") }}</a>
+                @endif
             </div>
         <input type="hidden" name="without_category_kyc" value="{{$cart_details->without_category_kyc}}">
         @if($client_preference_detail->category_kyc_documents ==1)
@@ -699,8 +711,17 @@
                     <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions?')}}" id="specific_instructions" value ="{{$cart_details->specific_instructions??''}}"  name="specific_instructions">
                 </div>
             </div>
-
-
+            @if((isset($cart_details->gift_card_id) )&& (isset($cart_details->gift_card) && !empty($cart_details->gift_card)))
+                <div class="row">
+                    <div class="col-12 alFourSpecificInstructions mt-2">
+                        <span class="pb-1"> {{__('Gift Card')}}</span>
+                       <div class="order-user-name">
+                            <p class="mb-0"><img class="blur-up lazyloaded" data-src="http://local.myorder.com/assets/images/discount_icon.svg" src="http://local.myorder.com/assets/images/discount_icon.svg"> {{ $cart_details->gift_card->name }}</p>
+                            <a href="javascript:void(0);" data-giftcard_id='{{ $cart_details->gift_card->id }}' class="float-right remove_giftCard"> <i class="fa fa-times" aria-hidden="true"></i></a>
+                       </div>
+                    </div>
+                </div>
+            @endif
 
             @endif  {{--//isset($cart) && !empty($cart) && $client_preference_detail->business_type == 'laundry' --}}
 
@@ -788,6 +809,14 @@
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
                     <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="total_subscription_discount">{{ decimal_format($cart_details->total_subscription_discount)}}<span></b></div>
+                </div>
+                <hr class="my-2">
+            @endif
+            @if((isset($cart_details->gift_card_id) )&& (isset($cart_details->gift_card) && !empty($cart_details->gift_card)))
+
+                <div class="row">
+                    <div class="col-6">{{__('Gift Card Used Amount')}}</div>
+                    <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="loyalty_amount">{{ decimal_format($cart_details->giftCardUsedAmount) }}</span></b></div>
                 </div>
                 <hr class="my-2">
             @endif
@@ -1101,3 +1130,7 @@
         });
     });
 </script>
+
+@section('script-bottom-js')
+<script defer type="text/javascript"  src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>
+@endsection

@@ -592,6 +592,9 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	// gift card
 	Route::get('user/giftCard', 'Front\giftCard\GiftcardController@getGiftCard')->name("giftCard.index");
 	Route::get('user/giftCard/payment/{id}', 'Front\giftCard\GiftcardController@selectGiftCardPayment')->name('giftCard.paymentList');
+	Route::get('user/giftCard/list', 'Front\giftCard\GiftcardController@postGiftCardLisTCart')->name('giftCard.cart.list');
+	Route::post('verify/giftCard', 'Front\giftCard\GiftcardController@postVerifyGiftCardCode')->name('verify.giftCard');
+	Route::post('remove/giftCard', 'Front\giftCard\GiftcardController@RemoveGiftCardCode')->name('remove.giftCard');
 	
 });
 Route::get('js/translations.js', function (Request $request) {

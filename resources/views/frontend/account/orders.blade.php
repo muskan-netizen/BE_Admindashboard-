@@ -636,6 +636,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+                                                                               
                                                                                 @if ($order->loyalty_amount_saved > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -732,6 +733,16 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         <label
                                                                                             class="m-0">{{ __('Delivery Fee') }}</label>
                                                                                         <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_delivery_fee
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
+                                                                                @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Gift Card Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
@@ -1196,6 +1207,16 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+                                                                                @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Gift Card Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
                                                                                 <li
                                                                                     class="grand_total d-flex align-items-center justify-content-between">
                                                                                     <label
@@ -1585,6 +1606,16 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                 $clientCurrency->doller_compare)}}</span>
                                                                                         </li>
                                                                                     @endif
+                                                                                    @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                                                                        <li
+                                                                                            class="d-flex align-items-center justify-content-between">
+                                                                                            <label
+                                                                                                class="m-0">{{ __('Gift Card Amount') }}</label>
+                                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
+                                                                                                *
+                                                                                                $clientCurrency->doller_compare)}}</span>
+                                                                                        </li>
+                                                                                    @endif
                                                                                     <li
                                                                                         class="grand_total d-flex align-items-center justify-content-between">
                                                                                         <label
@@ -1919,6 +1950,16 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         <label
                                                                                             class="m-0">{{ __('Delivery Fee') }}</label>
                                                                                         <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_delivery_fee
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
+                                                                                @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Gift Card Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>

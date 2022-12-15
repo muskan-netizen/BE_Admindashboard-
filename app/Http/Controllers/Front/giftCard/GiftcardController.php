@@ -7,16 +7,17 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Session,Auth,DB,Timezonelist;
+use App\Http\Traits\Giftcard\GiftCardTrait;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail; 
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{GiftCard,UserGiftCard,User, UserAddress, ClientPreference, Client, ClientCurrency , Payment, PaymentOption};
+use App\Models\{GiftCard,UserGiftCard,User, Cart, ClientPreference, Client, ClientCurrency , Payment, PaymentOption};
 
 class GiftcardController extends FrontController
 {
-    use ApiResponser;
+    use ApiResponser,GiftCardTrait;
 
     /**
      * Handle the incoming request.
@@ -46,10 +47,7 @@ class GiftcardController extends FrontController
         $currency_id = Session::get('customerCurrency');
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         $GiftCard       = GiftCard::orderBy('id', 'asc')->whereDate('expiry_date', '>=', $now)->get();
-   
-        $active_giftcard = UserGiftCard::select('*',DB::raw('count(*) as total'))->with('giftCard')->where(['is_used'=>'0','user_id'=>auth()->id()])->groupBy('gift_card_id')->get();
-      //pr($active_giftcard->toArray());
-       
+        $active_giftcard =$this->getUserActiveGiftCard();
         return view('frontend.account.giftcard')->with(['navCategories'=>$navCategories, 'GiftCard'=>$GiftCard, 'active_giftcards'=>$active_giftcard, 'clientCurrency'=>$clientCurrency]);
     }
     
@@ -104,7 +102,7 @@ class GiftcardController extends FrontController
     
 
     /**
-     * buy user subscription.
+     * buy user giftCard.
      *
      * @return \Illuminate\Http\Response
      */
@@ -149,6 +147,84 @@ class GiftcardController extends FrontController
         }
     }
 
+    /**
+     * buy user postGiftCardLisTCart.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function postGiftCardLisTCart(Request $request){
+         try {
+            $user = Auth::user();
+            $langId   = Session::has('customerLanguage') ? Session::get('customerLanguage') : 1;
+            $giftCard = new \Illuminate\Database\Eloquent\Collection;
+            $giftcardList = $this->getUserActiveGiftCard();
+            $currency_id = Session::get('customerCurrency');
+            $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+            $returnHTML = view('frontend.cart.giftCard')->with(['giftcardList'=>$giftcardList, 'clientCurrency'=>$clientCurrency])->render();
+            return response()->json(array('success' => true, 'html' => $returnHTML));
+           
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * buy user verify code.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function postVerifyGiftCardCode(Request $request){
+       // try {
+            $user = Auth::user();
+            $now = Carbon::now()->toDateTimeString();
+            $now = convertDateTimeInClientTimeZone($now);
+          // pr( $user);
+            $cart_detail = Cart::where('id', $request->cart_id)->first();
+            if(!$cart_detail){
+                return $this->errorResponse('Invalid Cart Id', 422);
+            }
+            $giftcard = UserGiftCard::with('giftCard')->whereHas('giftCard',function ($query) use ($now){
+                return  $query->whereDate('expiry_date', '>=', $now);
+            })->where(['is_used'=>'0','user_id'=>$user->id,'id'=>$request->giftCard_id])->first();
+            if($giftcard){
+                if($cart_detail->gift_card_id ==  $giftcard->gift_card_id){
+                    return $this->errorResponse('Gift Card already applied.', 422);
+                }
+                $cart_detail->gift_card_id = $giftcard->gift_card_id;
+                $cart_detail->save();
+                return $this->successResponse($giftcard, 'Gift Card Used Successfully.', 200);
+            }
+            return $this->errorResponse('Invalid gift Card Id', 422);
+           
+        // } catch (Exception $e) {
+        //     return $this->errorResponse($e->getMessage(), $e->getCode());
+        // }
+    }
+
+    public function RemoveGiftCardCode(Request $request){
+        // try {
+            //pr($request->all());
+             $user = Auth::user();
+             
+           // pr( $user);
+             $cart_detail = Cart::where('id', $request->cart_id)->first();
+             if(!$cart_detail){
+                 return $this->errorResponse('Invalid Cart Id', 422);
+             }
+          
+            if($cart_detail){
+            // pr($cart_detail);
+                $cart_detail->gift_card_id = null;
+                $cart_detail->save();
+            // pr($cart_detail);
+                return $this->successResponse($cart_detail, 'Gift Card Delete Successfully.', 200);
+            }
+             return $this->errorResponse('Invalid gift Card Id', 422);
+            
+         // } catch (Exception $e) {
+         //     return $this->errorResponse($e->getMessage(), $e->getCode());
+         // }
+     }
    
 }
 

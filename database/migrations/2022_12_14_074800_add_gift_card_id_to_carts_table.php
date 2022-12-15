@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddReferenceTableIdToPaymentsTable extends Migration
+class AddGiftCardIdToCartsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddReferenceTableIdToPaymentsTable extends Migration
      */
     public function up()
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->bigInteger('reference_table_id')->unsigned()->nullable();
+        Schema::table('carts', function (Blueprint $table) {
+            $table->bigInteger('gift_card_id')->unsigned()->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class AddReferenceTableIdToPaymentsTable extends Migration
      */
     public function down()
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->dropColumn('reference_table_id');
+        Schema::table('carts', function (Blueprint $table) {
+            $table->dropColumn('gift_card_id');
         });
     }
 }

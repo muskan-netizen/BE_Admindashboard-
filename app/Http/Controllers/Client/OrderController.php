@@ -164,6 +164,7 @@ class OrderController extends BaseController
         $user->timezone = $client_timezone->timezone ?? $user->timezone;
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
+        $HasGiftCard = 0;
         $orders = Order::with(['vendors.products' => function ($q) {
             $q->withoutAppends();
         }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
@@ -205,6 +206,10 @@ class OrderController extends BaseController
             $order_count->whereHas('vendors', function ($query)  use ($request) {
                 $query->where('vendor_id', $request->get('vendor_id'));
             });
+        }
+        if( checkColumnExists('orders', 'gift_card_id') ){
+            $HasGiftCard = 1;
+            $orders  = $orders->with(['giftCard']);
         }
         //Search by keyword
         if (!empty($request->search_keyword)) {
@@ -459,6 +464,17 @@ class OrderController extends BaseController
 
 
         foreach ($orders as $key => $order) {
+
+            $giftCardUsed = 0; 
+            $giftCardName = ''; 
+            if($HasGiftCard ==1 ){
+                if($order->gift_card_id!='' && !empty($order->giftCard)){
+                    $giftCardUsed =1;
+                    $giftCardName = $order->giftCard ? $order->giftCard->name : 'NA';
+                }
+            }
+            $order->giftCardUsed = $giftCardUsed; 
+            $order->giftCardName = $giftCardName; 
             // $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, h:i A');
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
             $scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
