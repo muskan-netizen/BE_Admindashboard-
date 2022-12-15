@@ -70,6 +70,7 @@ class UserController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function sendToken(Request $request, $domain = '', $uid = 0){
+        try{
         $notified = 0;
         $user = User::where('id', Auth::user()->id)->first();
         if (!$user) {
@@ -152,6 +153,12 @@ class UserController extends FrontController{
         } else {
             return redirect()->back()->with('err_user', __('Provider service is not configured. Please contact administration.'));
         }
+    }catch(\Execption $e)
+    {
+        Log::info('SMS logs');
+        Log::info($e->getMessage());
+        return response($e->getMessage(),400);
+    }
     }
 
     /**
