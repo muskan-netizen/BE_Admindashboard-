@@ -39,7 +39,7 @@ class ProductBookingController extends FrontController
           }else{
             $product_variant_id[]=$request->variant_id;
           }
-       
+        
           $ProductBooking  = ProductBooking::whereIn('variant_id',$product_variant_id)->where('product_id',$request->product_id)
                               ->where(function ($query) use ($start_time , $end_time ){
                                   $query->where('start_date_time', '<=', $end_time)

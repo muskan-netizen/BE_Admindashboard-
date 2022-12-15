@@ -1444,6 +1444,14 @@ class VendorController extends BaseController
         }
     }
 
+    public function deleteVendorSocialMediaUrl(Request $request){
+        try {
+            VendorSocialMediaUrls::where('id', $request->social_media_detail_id)->delete();
+            return $this->successResponse([], __('Social Media Link Deleted Successfully.'));
+        } catch (Exception $e) {
+            return $this->errorResponse([], $e->getMessage());
+        }
+    }
     /**
      * Update vendor cron job status.
      *
