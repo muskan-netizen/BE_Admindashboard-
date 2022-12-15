@@ -42,11 +42,7 @@ use App\Models\OrderProductPrescription;
 use App\Models\SubscriptionInvoicesUser;
 use App\Models\UserRegistrationDocuments;
 use App\Models\DriverRegistrationDocument;
-<<<<<<< HEAD
-use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption, OrderDeliveryStatusIcon};
-=======
 use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption, ReturnReason};
->>>>>>> pre_dev
 
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -89,10 +85,8 @@ class OrderController extends FrontController
 
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
-<<<<<<< HEAD
 
         $dispatcher_icons = OrderDeliveryStatusIcon::select('image','image_url')->get();
-        // dd($dispatcher_icons);
         foreach($dispatcher_icons as $icon)
         {
             $imgUrl = asset($icon->image);
@@ -103,9 +97,7 @@ class OrderController extends FrontController
            $iconsArray[] =  $imgUrl;
         }
         // dd($iconsArray);
-=======
         $checkLongTerm = checkColumnExists('orders','is_long_term');
->>>>>>> pre_dev
         $pastOrders = Order::with([
             'vendors' => function ($q) {
                 $q->whereIn('order_status_option_id', [6,9]);
@@ -839,7 +831,6 @@ class OrderController extends FrontController
             if(isset($preferences->stop_order_acceptance_for_users) && ($preferences->stop_order_acceptance_for_users == 1)){
                 return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
             }
-
             $loyalty_amount_saved = 0;
             $redeem_points_per_primary_currency = '';
             $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -1495,12 +1486,8 @@ class OrderController extends FrontController
 
             }//End cart product loop
             //echo "loop end";
-<<<<<<< HEAD
-            $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
-=======
             $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint('',$payable_amount);
 
->>>>>>> pre_dev
             // calculate subscription discount
             if ($user_subscription) {
                 foreach ($user_subscription->features as $feature) {
@@ -1960,6 +1947,11 @@ class OrderController extends FrontController
                 $this->ProductVariantStock($order_id);
                 DB::commit();
                 $this->sendSuccessNotification($user->id, $request->vendor_id);
+
+                $customer = User::find($user->id);
+                if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
+                    $this->sendTrackingUrlSMS($customer,$orderData);
+                }
             }
 
         }
@@ -3188,13 +3180,76 @@ class OrderController extends FrontController
     }
 
     public function TrackOrder(Request $request){
-       $order_id = $request->order_id;
-       $user_id  = $request->id;
-
+       
+        $order_id            = $request->order_id;
+        $user_id             = $request->id;
+        $user                = User::find($user_id);
         $order               = Order::where(['user_id'=>$user_id,'order_number'=>$order_id])->with('orderStatusVendor','ordervendor')->first();
         $language_id         = Session::get('customerLanguage');
-        $navCategories      = $this->categoryNav($language_id);
+        $navCategories       = $this->categoryNav($language_id);
+
+        if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1 && getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 0){
+            $showPage    = 'd-block';
+            $verifyPage  = 'd-none';
+           
+        }else{
+            if(getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 1){
+                if (isset($_COOKIE['tracking_url']) || $request->verified == 1) {
+                    if($_COOKIE['tracking_url'] == $request->ip()){
+                        $showPage    = 'd-block';
+                        $verifyPage  = 'd-none';
+                    }
+                }else{
+                    if(empty($user->track_order_phone_token) && empty($user->track_order_phone_token_valid_till)){
+                        $this->sendAccessTrackingUrlSMS($user,$order);
+                        $showPage    = 'd-none';
+                        $verifyPage  = 'd-block';
+                    }else{
+                        $showPage    = 'd-none';
+                        $verifyPage  = 'd-block';
+                    }
+                }
+            }
+        }
+      
+
         
-       return view('frontend.order.trackOrderDeatil')->with(['order' => $order,'navCategories'=>$navCategories]);
+       return view('frontend.order.trackOrderDeatil')->with(['order' => $order,'navCategories'=>$navCategories,'showPage'=>$showPage,'verifyPage'=>$verifyPage]);
+    }
+
+    public function TrackOrderTokenVerify(Request $request){
+        $user = User::where('id', $request->data)->first();
+        if(!$request->verifyToken){
+            return response()->json(['error' => __('OTP required!')], 404);
+        }
+        $currentTime = \Carbon\Carbon::now()->toDateTimeString();
+       
+        if ($user->track_order_phone_token != $request->verifyToken) {
+            return response()->json(['error' => __('OTP is not valid')], 404);
+        }
+        if ($currentTime > $user->track_order_phone_token_valid_till) {
+            return response()->json(['error' => __('OTP has been expired.')], 404);
+        }
+        $user->track_order_phone_token              = NULL;
+        $user->track_order_phone_token_valid_till   = NULL;
+        $user->save();
+        $ip                  = $request->ip();
+        setcookie('tracking_url', $ip, time() + (86400), "/"); // 86400 = 1 day
+        return response()->json(['success' => __('OTP verified')], 202);
+    }
+
+    public function ResendOtpForTrackingUrl(Request $request){
+        $order_id            = $request->order_id;
+        $user_id             = $request->data;
+        $user                = User::find($user_id);
+        $order               = Order::where(['user_id'=>$user_id,'order_number'=>$order_id])->with('orderStatusVendor','ordervendor')->first();
+        if(!$user){
+            return response()->json(['error' => __('User is not valid')], 404);
+        }
+        if(!$order){
+            return response()->json(['error' => __('Order is not valid')], 404);
+        }
+        $this->sendAccessTrackingUrlSMS($user,$order);
+        return response()->json(['success' => __('OTP send')], 202);
     }
 }
