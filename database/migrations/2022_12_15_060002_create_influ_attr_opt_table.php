@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInfluencerAttributesTable extends Migration
+class CreateInfluAttrOptTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,16 @@ class CreateInfluencerAttributesTable extends Migration
      */
     public function up()
     {
-        Schema::create('influencer_attributes', function (Blueprint $table) {
+        Schema::create('influ_attr_opt', function (Blueprint $table) {
             $table->id();
-            $table->string('title', 100)->nullable();
-            $table->tinyInteger('type')->default(1)->comment('1 for dropdown, 2 for color');
+            $table->string('title', 150)->nullable();
+            $table->bigInteger('attribute_id')->unsigned()->nullable();
+            $table->string('hexacode', 10)->nullable();
             $table->smallInteger('position')->default(1);
-            $table->tinyInteger('status')->default('1')->comment('0 - pending, 1 - active, 2 - blocked');
             $table->timestamps();
-            $table->index('type');
+
             $table->index('position');
-            $table->index('status');
+            $table->foreign('attribute_id')->references('id')->on('influ_attributes')->onDelete('cascade');
         });
     }
 
@@ -33,6 +33,6 @@ class CreateInfluencerAttributesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('influencer_attributes');
+        Schema::dropIfExists('influ_attr_opt');
     }
 }
