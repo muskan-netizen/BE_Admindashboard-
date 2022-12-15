@@ -794,15 +794,8 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
     overflow: hidden;
     padding: 0 0 10px 0;
     background-color: #fff;
-    box-shadow: 0 0 10px rgb(0 0 0 / 10%);
     border-radius: 15px;
 }
-
-.al_body_template_six .common-product-box:hover,
-.al_body_template_six .product-card-box:hover {
-    box-shadow: 0 0 10px rgb(0 0 0 / 10%);
-}
-
 .add-to-fav {
     display: none;
 }

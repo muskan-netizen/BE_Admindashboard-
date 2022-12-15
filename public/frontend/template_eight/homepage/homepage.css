@@ -8,9 +8,16 @@ padding-left: 0;
 .price_box_bottom li{margin:0;color:#6c757d}
 .dark .price_box_bottom li{color:#fff}
 article#page-container{position:relative;min-height:100vh;overflow:hidden}.slick-slide{float:left;height:100%;min-height:1px}.al_body_template_eight{background-color:#fff}
-.al_body_template_eight #myCarousel{border-radius:40px;overflow:hidden}
+.al_body_template_eight #myCarousel{border-radius:0px;overflow:hidden}
 .al_desktop_banner{display:block;min-height:fit-content;}
-.home-slider-wrapper .banner-img-outer img{max-width:1370px;border-radius:30px}article#page-container section .vendors section{padding:40px 0 20px;margin-bottom:0!important}
+.home-slider-wrapper .banner-img-outer img {
+    max-width: 100%;
+    border-radius: 0px;
+    height: 500px;
+    object-fit: cover;
+    width:100% !important;
+}
+article#page-container section .vendors section{padding:40px 0 20px;margin-bottom:0!important}
 .slick-slider{position:relative;display:block;-webkit-box-sizing:border-box;box-sizing:border-box;-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-ms-touch-action:pan-y;touch-action:pan-y;-webkit-tap-highlight-color:transparent}.slick-slider{overflow:inherit}.slick-slider .slick-list,.slick-slider .slick-track{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}.slick-track{position:relative;left:0;top:0;display:block;margin-left:auto;margin-right:auto}
 .al_body_template_eight .suppliers-box .suppliers-img-outer{border-radius:50%; text-align:center;border:none;background-color:#fff;padding-bottom:100%;position:relative;overflow:hidden;}
 .al_body_template_eight .al_custom_brand{text-align:center}
@@ -95,7 +102,7 @@ footer#footer{position: absolute;bottom: 0;width: 100%;}
 article#page-container{position:relative;min-height:100vh;overflow:hidden}
 .al_box_third_template:hover{border-color:#e8e8e8!important;box-shadow:rgb(28 28 28 / 3%) 0 .4rem 0.8rem!important;background-color:#fff!important;box-sizing:border-box!important;border:1px solid #e8e8e8!important}
 /* mobile or desktop banner css start */
-.al_desktop_banner{display: block;margin-bottom: 20px;}
+.al_desktop_banner{display: block;margin-bottom: 0px;}
 .al_mobile_banner{display: none;}
 /* mobile or desktop banner css end */
 .dark.al_body_template_eight  .sm-horizontal{
@@ -347,7 +354,7 @@ section.main-heading {
     text-align: center;
 }
 section#our_vendor_main_div {
-    padding: 40px 0 0!important;
+    padding: 0px 0 0!important;
 }
 section.main-product.single_category_products .supplier-rating a {
     color: #ff7521;
@@ -831,7 +838,7 @@ body.al_body_template_eight .product-m .slick-next:before, .product-m .slick-pre
         margin: 20px 0;
     }
     .home-slider-wrapper .banner-img-outer img {
-        border-radius: 20px;
+        border-radius: 0px;
         height: 200px !important;
         object-fit: cover;
     }

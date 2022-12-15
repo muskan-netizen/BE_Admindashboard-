@@ -257,9 +257,9 @@
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
-<section class="home-slider-wrapper pt-md-3 pb-0">
+<section class="home-slider-wrapper pt-md-0 pb-0">
 
-	<div class="container">
+	<div class="container-fluid p-0">
 		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 			<div class="carousel-inner">
 				@foreach($banners as $key => $banner)
