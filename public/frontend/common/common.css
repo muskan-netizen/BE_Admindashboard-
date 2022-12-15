@@ -1285,3 +1285,52 @@ body.al_body_template_one section.buy_details #productPriceValue b {
     font-weight: 900;
     font-size: 18px;
 }
+body.al_body_template_two .royo_whatsapp_img{
+    position: fixed;
+    z-index: 99999;
+    bottom: 7%;
+    left: 1%;
+}
+body.al_body_template_two .royo_whatsapp_img img {
+    width: 50px;
+}
+body.al_body_template_four section.cab-banner-area.alTaxiBannerStart form.cab-booking-form input {
+    margin: 20px 0;
+}
+body.al_body_template_two .theme-card.custom-inner-card button.btn.btn-link.btn-block.text-left.p-0 h5 {
+    padding: 10px !important;
+}
+body.al_body_template_two .theme-card.custom-inner-card button.btn.btn-link.btn-block.text-left.p-0 h5 span i{
+    display:none !important;
+}
+body.al_body_template_two .theme-card.custom-inner-card {
+    border-radius: 4px;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 12%);
+}
+body.al_body_template_two .theme-card.custom-inner-card .listing-categories ul li {
+    display: block;
+}
+body.al_body_template_two .theme-card.custom-inner-card .card-body {
+    padding: 0 10px 10px;
+}
+body.al_body_template_two .collection-content.col-lg-9.outter-fillter-data .product-wrapper-grid.card-product .col-md-3.col-6.col-grid-box a.product-box.scale-effect {
+    border-radius: 4px;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 12%);
+    text-align: center;
+}
+body.al_body_template_two .collection-content.col-lg-9.outter-fillter-data .product-wrapper-grid.card-product .col-md-3.col-6.col-grid-box a.product-box.scale-effect  h3.d-flex.align-items-center.justify-content-between {
+    display: block !important;
+    text-align: center;
+}
+body.al_body_template_two .col-12.custom_filtter {
+    text-align: right;
+}
+.al_body_template_three .col-12.custom_filtter {
+    text-align: right;
+}
+.al_body_template_one .col-12.custom_filtter {
+    text-align: right;
+}
+body.al_body_template_four .col-12.custom_filtter {
+    text-align: right;
+}
