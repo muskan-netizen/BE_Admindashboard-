@@ -2812,6 +2812,24 @@ $(document).ready(function () {
             return false;
 
         }
+
+        if($('#pincode').val() == ''){
+            Swal.fire({
+                text: _language.getLanString('Please enter pincode to continue'),
+                icon: "warning",
+                button: "OK",
+            });
+            return false;
+        }
+
+        if($('#date_input').val() == ''){
+            Swal.fire({
+                text: _language.getLanString('Please select delivery date to continue'),
+                icon: "warning",
+                button: "OK",
+            });
+            return false;
+        }
     
         if($('#is_long_term_service').length > 0){
             addLongTerm =1;
@@ -2823,7 +2841,6 @@ $(document).ready(function () {
                 });
                 return false;
             }
-         
 
             var service_start_time  =  $('#service_start_time').val();
             if(service_start_time == '' || service_start_time== undefined){

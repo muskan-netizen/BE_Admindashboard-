@@ -319,9 +319,10 @@ trait cartManager{
 
         /* Getting All Cart Data */
         $cartData = CartProduct::with([
-            'vendor','vendor.slots','vendor.slot.day', 'vendor.slotsForPickup', 'vendor.slotsForDropoff', 'vendor.slotDate', 'coupon' => function ($qry) use ($cart_id) {
+            'vendor','vendor.slots','vendor.slot.day', 'vendor.slotsForPickup', 'vendor.slotsForDropoff', 'vendor.slotDate',  'coupon' => function ($qry) use ($cart_id) {
                 $qry->where('cart_id', $cart_id);
             }, 'vendorProducts.pvariant.media.pimage.image', 'vendorProducts.product.media.image',
+            'vendorProducts.productDeliverySlot',
             'vendorProducts.pvariant.vset.variantDetail.trans' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
@@ -353,7 +354,7 @@ trait cartManager{
             }, 'vendorProducts.product.taxCategory.taxRate',
         ]);
         
-        $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','delivery_date','slot_price')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','delivery_date','slot_price','slot_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
  
        //Get All Taxes    
        $taxRates = $this->getTaxes();
@@ -503,7 +504,6 @@ trait cartManager{
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
-                   
                     $prod->product->ServicePeriods = [];
                     $prod->service_start_time = '';
                     $prod->is_long_term_service = 0;
@@ -870,6 +870,18 @@ trait cartManager{
                     if($cross_prods){
                         $crossSell_products->push($cross_prods);
                     }
+
+                    // Add Delivery Slot Price In total amount
+                    if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
+                        $payable_amount = $payable_amount + decimal_format($prod->slot_price);
+                    }
+
+                    // Add Delivery Slot Price In total amount
+                    $delivery_slot_amount = 0;
+                    if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
+                        $delivery_slot_amount =+ decimal_format($prod->slot_price);
+                    }
+
                 }
 
                 // $couponGetAmount = $payable_amount ;
@@ -971,6 +983,7 @@ trait cartManager{
                 $subtotal_amount = $payable_amount;
                 // if($PromoFreeDeliver != 1){
                 $payable_amount = $payable_amount + $deliveryCharges_real;
+
                 //}
                 //$payable_amount = $payable_amount + $deliver_charge;
                 //Start applying service fee on vendor products total
@@ -1269,6 +1282,7 @@ trait cartManager{
                 $cart->total_payable_amount = decimal_format($total_payable_amount - $total_taxable_amount - $other_taxes);
                 $cart->payy = decimal_format(($total_payable_amount - $total_taxable_amount - $other_taxes) + $cart->other_taxes);
             }
+            $cart->delivery_slot_amount = $delivery_slot_amount;
             // $cart->total_payable_amount = decimal_format($total_payable_amount);
             //$cart->delivery_charges = decimal_format($deliveryCharges);
             //$cart->total_payable_amount = decimal_format($total_payable_amount);

@@ -146,8 +146,8 @@
     $other_taxes=$cart_details->other_taxes;
     $other_taxes_string=$cart_details->other_taxes_string;
     @endphp
+    {{-- @dd($cart_details->products) --}}
     @foreach($cart_details->products as $product)
-
             {{-- @php
             dd($product->is_vendor_closed.' -- '.$product->closed_store_order_scheduled);
             @endphp --}}
@@ -203,6 +203,7 @@
         <div id="tbody_{{$product->vendor->id}}">
 
             @foreach($product->vendor_products as $vendor_product)
+            {{-- @dd($vendor_product) --}}
             {{-- @php
             pr($vendor_product);
             @endphp --}}
@@ -434,6 +435,10 @@
                         @endif
                         @if( $vendor_product->product->is_long_term_service ==  1)
                         @include('frontend.cart.longTermTimeSelection')
+                        @endif
+
+                        @if( $vendor_product->product->same_day_delivery ==  1 && $vendor_product->product->next_day_delivery ==  1)
+                            @include('frontend.cart.deliverySlotSelection')
                         @endif
                     
                     </div>
@@ -715,6 +720,15 @@
                 </div>
                 <hr class="my-2">
             @endif
+            
+            @if($product->slot_price != '' && $product->delivery_date != ''&& $product->slot_id != '')
+                <div class="row">
+                    <div class="col-6">{{__('Delivery Slot Fees')}}</div>
+                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->delivery_slot_amount)}}</b></div>
+                </div>
+                <hr class="my-2">
+            @endif
+        
         @if($cart_details->total_service_fee > 0 && $price_bifurcation!=1)
                 <div class="row">
                     <div class="col-6">{{__('Service Fee')}}</div>

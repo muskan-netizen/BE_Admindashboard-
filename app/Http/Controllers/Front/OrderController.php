@@ -906,8 +906,7 @@ class OrderController extends FrontController
             $cart_products = CartProduct::select('*')->with(['vendor', 'vendor.slot.geos.serviceArea', 'vendor.slotDate.geos.serviceArea',  'product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
                 $query->where('cart_id', $cart->id);
             }, 'coupon.promo', 'product.addon','LongTermProducts.addons'])->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
-           
-            
+
             /* Initialize empty data */
             $total_amount = 0;
             $total_discount = 0;
@@ -938,7 +937,7 @@ class OrderController extends FrontController
                 }
             }
 
-
+            $slot_based_price = 0;
             /* Loop through evey cart product to get desired data for order */
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
@@ -971,7 +970,10 @@ class OrderController extends FrontController
                 $vendorProductIds = array();
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
-                    //pr($vendor_cart_product->toArray());
+                    if( !empty($vendor_cart_product->slot_price) ) {
+                        $slot_based_price += $vendor_cart_product->slot_price;
+                    }
+                    // pr($vendor_cart_product->toArray());
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                         if (!empty($latitude) && !empty($longitude)) {
                             if(($preferences->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)){
@@ -1153,6 +1155,19 @@ class OrderController extends FrontController
                     if(checkColumnExists('order_vendor_products', 'dispatch_agent_id')){
                     $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id)? $vendor_cart_product->dispatch_agent_id : null;
                     }
+
+                    if(checkColumnExists('order_vendor_products', 'slot_id')){
+                        $order_product->slot_id = !empty($vendor_cart_product->slot_id) ? $vendor_cart_product->slot_id : null;
+                    }
+
+                    if(checkColumnExists('order_vendor_products', 'delivery_date')){
+                        $order_product->delivery_date = !empty($vendor_cart_product->delivery_date) ? $vendor_cart_product->delivery_date : null;
+                    }
+
+                    if(checkColumnExists('order_vendor_products', 'slot_price')){
+                        $order_product->slot_price = !empty($vendor_cart_product->slot_price) ? $vendor_cart_product->slot_price : null;
+                    }
+
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }
@@ -1571,6 +1586,9 @@ class OrderController extends FrontController
             }else{
                 $order->payable_amount = decimal_format($payable_amount - $total_other_taxes);
             }
+
+            // Slot based price added to payable amount column
+            $order->payable_amount = decimal_format($payable_amount + $slot_based_price);
 
             $order->fixed_fee_amount = $fixed_fee_amount;
             $order->additional_price = $totalAdditionalPrice;

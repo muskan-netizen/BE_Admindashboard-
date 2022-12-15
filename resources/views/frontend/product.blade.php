@@ -1093,7 +1093,7 @@
             datatype: "html",
             data: {input_date:input_date,product_id:product_id},
             success: function(data){
-                $('#delivery_form').modal('show');
+                $('#delivery_form').modal({backdrop: 'static', keyboard: false});
                 $("#delivery_option").empty().html(data);
             },
             error: function() {
@@ -1146,7 +1146,7 @@
             enableTime: false,
             startDate: date_var,
             minDate: date_var,
-            dateFormat: "Y-m-d"
+            dateFormat: "Y-m-d" //H:i
         });
     });
 
@@ -1436,9 +1436,6 @@
             { breakpoint: 576, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true, centerPadding: '0', } }
         ]
         });
-
-
-      
 
         $(document).ready(function() {
             $(".img_active").click(function(){
