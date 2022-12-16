@@ -175,8 +175,7 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                     @endif
                                     @if($order->total_discount > 0)
                                         <li>{{__('Total Discount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_discount * @$clientCurrency->doller_compare)}}</span></li>
-                                    @endif
-
+                                    @endif  
                                     @if($order->taxable_amount > 0 || $order->total_other_taxes_amount> 0 )
 
                                     <li>{{__('Total')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
@@ -185,6 +184,9 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                     @else
                                     <li>{{__('Total')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
+                                    @if($product->slot_id != '' && $product->delivery_date != '' && $product->slot_price != '')
+                                        <li>{{__('Slot Delivery Fees')}} <span>{{Session::get('currencySymbol')}} {{$order->slot_delivery_fees??'0'}}</span></li>
+                                    @endif  
                                     @if($order->subscription_discount > 0)
                                         <li>{{__('Subscription Discount')}} <span> - {{Session::get('currencySymbol')}}{{decimal_format($order->subscription_discount * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif

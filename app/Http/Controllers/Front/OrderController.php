@@ -375,7 +375,11 @@ class OrderController extends FrontController
             $total_other_taxes+=(float)$row;
         }
         $order->total_other_taxes_amount=$total_other_taxes;
-        //pr($order->toArray());
+        $slot_delivery_fees = 0;
+        foreach($order->products as $product){
+            $slot_delivery_fees += $product->slot_price;
+        }
+        $order->slot_delivery_fees = $slot_delivery_fees;
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         // dd($order);
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFeeNomenclatures'));
