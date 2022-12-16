@@ -488,6 +488,7 @@ body .alFullMapForm .scheduled-footer .btn {
                     <% } %>
                 </div>
             <% }); %>
+
             {{-- <div>
                 <label class="radio mt-2">
                     <span>{{__('Wallet/Card')}}</span>

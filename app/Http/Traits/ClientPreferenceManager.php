@@ -9,7 +9,9 @@ use Storage;
 
 trait ClientPreferenceManager{
 
-  public $client_preference_fillable_key = ['is_price_by_role','is_phone_signup', 'token_currency', 'is_token_currency_enable', 'hubspot_access_token', 'is_hubspot_enable', 'gtag_id', 'fpixel_id','is_long_term_service', 'is_free_delivery_by_roles', 'is_cab_pooling', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module','seller_sold_title','saller_platform_logo','is_tracking_url','is_tracking_sms_url', 'is_postpay_enable', 'is_order_edit_enable', 'order_edit_before_hours'];
+
+  public $client_preference_fillable_key = ['is_price_by_role','is_phone_signup', 'token_currency', 'is_token_currency_enable', 'hubspot_access_token', 'is_hubspot_enable', 'gtag_id', 'fpixel_id','is_long_term_service', 'is_free_delivery_by_roles', 'is_cab_pooling', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module','seller_sold_title','saller_platform_logo','is_tracking_url','is_tracking_sms_url','is_tax_price_inclusive', 'is_postpay_enable', 'is_order_edit_enable', 'order_edit_before_hours'];
+
   # get last mile teams
   public function getLastMileTeams(){
     try {
@@ -53,6 +55,7 @@ trait ClientPreferenceManager{
    */
   public function updatePreferenceAdditional($request=[]){
     $validated_keys = $request->only($this->client_preference_fillable_key);
+    // dd($validated_keys);
     $client = Client::first();
     foreach($validated_keys as $key => $value){
       if ($key == 'saller_platform_logo') {

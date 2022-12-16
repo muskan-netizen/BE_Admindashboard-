@@ -176,10 +176,7 @@ $timezone = Auth::user()->timezone;
                             @endif
                             @endif
 
-                            @if (isset($order->vendors) &&
-                            isset($order->vendors->first()->dispatch_traking_url) &&
-                            $order->vendors->first()->dispatch_traking_url != null &&
-                            $order->vendors->first()->dispatch_traking_url != 0)
+                            @if(isset($order->vendors) && isset($order->vendors->first()->dispatch_traking_url) && $order->vendors->first()->dispatch_traking_url !=null)
                             <div class="col-lg-6">
                                 <div class="mb-4">
                                     <h5 class="mt-0">{{ __('Tracking ID') }}:</h5>

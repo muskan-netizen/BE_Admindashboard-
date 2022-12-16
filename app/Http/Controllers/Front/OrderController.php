@@ -85,6 +85,18 @@ class OrderController extends FrontController
 
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
+
+        $dispatcher_icons = OrderDeliveryStatusIcon::select('image','image_url')->get();
+        foreach($dispatcher_icons as $icon)
+        {
+            $imgUrl = asset($icon->image);
+            if(!empty($icon->image_url['proxy_url']))
+            {
+                $imgUrl = $icon->image_url['proxy_url'].'40/40'.$icon->image_url['image_path'];
+            }
+           $iconsArray[] =  $imgUrl;
+        }
+        // dd($iconsArray);
         $checkLongTerm = checkColumnExists('orders','is_long_term');
         $pastOrders = Order::with([
             'vendors' => function ($q) {
@@ -184,7 +196,8 @@ class OrderController extends FrontController
 
                 $vendor->vendor_dispatcher_status = $vendor->vendor_dispatcher_status->get();
                 $vendor->vendor_dispatcher_status_count = 6;
-                $vendor->dispatcher_status_icons = [asset('assets/icons/driver_1_1.png'),asset('assets/icons/driver_2_1.png'),asset('assets/icons/driver_4_1.png'),asset('assets/icons/driver_3_1.png'),asset('assets/icons/driver_4_2.png'),asset('assets/icons/driver_5_1.png')];
+                $vendor->dispatcher_status_icons = $iconsArray;
+                // $vendor->dispatcher_status_icons = [asset('assets/icons/driver_1_1.png'),asset('assets/icons/driver_2_1.png'),asset('assets/icons/driver_4_1.png'),asset('assets/icons/driver_3_1.png'),asset('assets/icons/driver_4_2.png'),asset('assets/icons/driver_5_1.png')];
                 // $dispatcher_status_options =VendorOrderDispatcherStatus::where(['order_id'=> $order->id,'vendor_id'=>$vendor->vendor->id,'dispatcher_status_option_id'=>'2'])->first();
                 // $vendor->driver_chat =  $dispatcher_status_options ? 1 : 0 ;
             }
@@ -639,13 +652,13 @@ class OrderController extends FrontController
                     $prod->pvariant->quantity_price = number_format($quantity_price, 2);
                     $payable_amount = $payable_amount + $quantity_price;
                     $taxData = array();
-                    $is_tax_price_inclusive = ClientPreference::value('is_tax_price_inclusive');
+                    $is_tax_price_inclusive = (object)getAdditionalPreference(['is_tax_price_inclusive']);
                     if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                             $rate = round($tax_value->tax_rate);
                             $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                            if(!$is_tax_price_inclusive){
-                                $product_tax = $quantity_price * $rate / 100;
+                            if(!$is_tax_price_inclusive->is_tax_price_inclusive){
+                                $product_tax = $quantity_price * $rate / 100; 
                             }else{
                                 $product_tax = ($quantity_price * $rate) / (100 + $rate);
                             }
@@ -806,13 +819,14 @@ class OrderController extends FrontController
 
             $fixed_fee_amount=$request->total_fixed_fee_amount??0.00;
             DB::beginTransaction();
-            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area','stop_order_acceptance_for_users','is_tax_price_inclusive')->first();
+
+            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area','stop_order_acceptance_for_users')->first();
             $editlimit_datetime = Carbon::now()->toDateTimeString();
             $order_edit_before_hours = 0;
-            if(!empty($preferences)){
-                $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
-                $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-            }
+            $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+            $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
+            $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
+
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (!empty($request->user_id))) {
@@ -834,7 +848,6 @@ class OrderController extends FrontController
             if(isset($preferences->stop_order_acceptance_for_users) && ($preferences->stop_order_acceptance_for_users == 1)){
                 return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
             }
-
             $loyalty_amount_saved = 0;
             $redeem_points_per_primary_currency = '';
             $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -1475,8 +1488,8 @@ class OrderController extends FrontController
                 $OrderVendor->subtotal_amount = $actual_amount;
                 $OrderVendor->discount_amount = $vendor_discount_amount;
 
-                //check if is_tax_price_inclusive is on than no tax
-                if (!$preferences->is_tax_price_inclusive) {
+                //check if is_tax_price_inclusive is on than no tax 
+                if (!$additionalPreferences->is_tax_price_inclusive) {
                     $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
                 }else{
                     $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / (100+$rate), 2);
@@ -1618,7 +1631,7 @@ class OrderController extends FrontController
             $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
             $order->luxury_option_id = $luxury_option->id;
 
-            if(!$preferences->is_tax_price_inclusive) {
+            if(!$additionalPreferences->is_tax_price_inclusive) {
                 $order->payable_amount = decimal_format($payable_amount);
             }else{
                 $order->payable_amount = decimal_format($payable_amount - $total_other_taxes);

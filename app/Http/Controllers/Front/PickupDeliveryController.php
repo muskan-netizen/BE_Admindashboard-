@@ -216,7 +216,7 @@ class PickupDeliveryController extends FrontController{
         if ($loyalty_card) {
             $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
         }
-        $loyalty_points_used;
+        $loyalty_points_used = 0;
         $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
         if ($order_loyalty_points_earned_detail) {
             $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
@@ -347,7 +347,7 @@ class PickupDeliveryController extends FrontController{
             if ($loyalty_card) {
                 $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
             }
-            $loyalty_points_used;
+            $loyalty_points_used = 0;
             $order_loyalty_points_earned_detail = Order::where('user_id', $userid)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
             if ($order_loyalty_points_earned_detail) {
                 $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;

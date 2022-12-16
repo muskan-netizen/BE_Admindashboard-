@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\DunzoController;
 use App\Http\Controllers\Front\LalaMovesController;
+use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\Front\TempCartController;
 use App\Http\Controllers\ShiprocketController;
 use Illuminate\Support\Facades\Auth;
@@ -152,6 +153,7 @@ class OrderController extends BaseController
                 $editlimit_datetime = Carbon::now()->toDateTimeString();
                 $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
                 $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
+                $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
                 // if ($client_preference->verify_email == 1) {
                 //     if ($user->is_email_verified == 0) {
                 //         return response()->json(['error' => 'Your account is not verified.'], 404);
@@ -762,7 +764,7 @@ class OrderController extends BaseController
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
 
-                    if (!$client_preference->is_tax_price_inclusive) {
+                    if (!$additionalPreferences->is_tax_price_inclusive) {
                         $order->payable_amount = $payable_amount;
                     }else{
                         $order->payable_amount = $payable_amount - $order->taxable_amount;
@@ -1045,6 +1047,28 @@ class OrderController extends BaseController
                 ->update(['web_hook_code' => $order_lalamove->orderRef]);
             }
         return 1;
+    }
+
+    public function placeOrderRequestKwikApi($request)
+    {
+        $kwik = new QuickApiController();
+        //Create Shipping place order request for KwikApi
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+            $order_ship = $kwik->placeOrderToKwikApi($request->vendor_id, $request->order_id);
+        }
+        if ($order_ship) {
+            $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'delivery_response' => json_encode($order_ship),
+                    'dispatch_traking_url'=>$order_ship->pickups[0]->result_tracking_link,
+                    'web_hook_code' => $order_ship->unique_order_id
+                ]);
+            return 1;
+        }
+
+        return false;
     }
 
     public function checkIfanyProductLastMileon($request)
@@ -2334,7 +2358,7 @@ class OrderController extends BaseController
                     $luxury_option = LuxuryOption::where('title', $action)->first();
                     $cart = TempCart::where('status', '0')->where('id', $cart_id)->where('order_vendor_id', $order_vendor_id)->where('is_submitted', 1)->where('is_approved', 0)->first();
                     if ($cart) {
-                        $loyalty_points_used;
+                        $loyalty_points_used = 0;
                         $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
                         if ($order_loyalty_points_earned_detail) {
                             $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
@@ -2561,7 +2585,7 @@ class OrderController extends BaseController
                             $vendor_payable_amount += $vendor_taxable_amount;
 
                             $order_vendor->coupon_id = $coupon_id;
-                            $OrderVendor->coupon_paid_by = $coupon_paid_by??1;
+                            $order_vendor->coupon_paid_by = $coupon_paid_by??1;
                             $order_vendor->coupon_code = $coupon_name;
                             $order_vendor->order_status_option_id = 1;
                             $order_vendor->delivery_fee = $delivery_fee;
@@ -2865,6 +2889,10 @@ class OrderController extends BaseController
                     }elseif($orderData->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
                         //$orderPlaced = $this->placeOrderRequestlalamove($request);
+                    }elseif ($orderData->shipping_delivery_type == 'K') {
+                        //Create Shipping place order request for Kwik
+                        $orderPlaced = $this->placeOrderRequestKwikApi($request);
+
                     }elseif($orderData->shipping_delivery_type=='SR'){
                         //Create Shipping place order request for Shiprocket
                         $orderPlaced = $this->placeOrderRequestShiprocket($request);
@@ -2905,6 +2933,10 @@ class OrderController extends BaseController
                             //Cancel Shipping place order request for Lalamove
                             $lala = new LalaMovesController();
                             $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
+                        }elseif ($orderData->shipping_delivery_type == 'K') {
+                            //Cancel Shipping place order request for KwikApi
+                            $lala = new QuickApiController();
+                            $order_lalamove = $lala->cancelOrderRequestKwikApi($request->order_id,$request->vendor_id);
                         }elseif($orderData->shipping_delivery_type=='SR'){
                             //Cancel Shipping place order request for Shiprocket
                             $ship = new ShiprocketController();

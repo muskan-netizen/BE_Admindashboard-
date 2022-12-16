@@ -21,6 +21,7 @@ use App\Http\Controllers\AhoyController;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\PromoCodeController;
 use App\Http\Controllers\Front\LalaMovesController;
+use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\ShiprocketController;
 
 use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption, TaxRate,VendorMinAmount}; 
@@ -567,6 +568,7 @@ class CartController extends BaseController
         $total_markup_fee_tax = 0;
         $total_taxable_amount = 0;
         $preferences = ClientPreference::first();
+        $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         if (!$cart) {
             return false;
@@ -886,7 +888,7 @@ class CartController extends BaseController
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                                     $rate = round($tax_value->tax_rate);
                                     $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                                    if(!$preferences->is_tax_price_inclusive){
+                                    if(!$additionalPreferences->is_tax_price_inclusive){
                                         $product_tax = ($quantity_price+$total_addon_price) * $rate / 100; 
                                     }else{
                                         $product_tax = (($quantity_price+$total_addon_price)  * $rate) / (100 + $rate); 
@@ -1208,32 +1210,42 @@ class CartController extends BaseController
          if(!empty($taxRates)){
             $delivery_charges_tax_rate = 0;
             if($vendorData->vendor->delivery_charges_tax_id!=null){
+                if(isset($taxRates[$vendorData->vendor->delivery_charges_tax_id])){
                     $delivery_charges_tax_rate=$taxRates[$vendorData->vendor->delivery_charges_tax_id]['tax_rate'];
+                }
             }
 
             $fixed_fee_tax_rate = 0;
             if($vendorData->vendor->fixed_fee_tax_id!=null){
-                    $fixed_fee_tax_rate=$taxRates[$vendorData->vendor->fixed_fee_tax_id]['tax_rate'];
+                if(isset($taxRates[$vendorData->vendor->fixed_fee_tax_id])){
+                     $fixed_fee_tax_rate=$taxRates[$vendorData->vendor->fixed_fee_tax_id]['tax_rate'];
+                }
             }
 
 
             $service_charges_tax_rate = 0;
             if($vendorData->vendor->service_charges_tax_id!=null){
+                if(isset($taxRates[$vendorData->vendor->service_charges_tax_id])){
                     $service_charges_tax_rate=$taxRates[$vendorData->vendor->service_charges_tax_id]['tax_rate'];
+                }
             }
 
             $markup_price_tax_rate = 0;
             if($vendorData->vendor->markup_price_tax_id!=null){
+                if(isset($taxRates[$vendorData->vendor->markup_price_tax_id])){
                     $markup_price_tax_rate=$taxRates[$vendorData->vendor->markup_price_tax_id]['tax_rate'];
+                }
             }
 
             $container_charges_tax_rate = 0;
             if($vendorData->vendor->container_charges_tax_id!=null){
+                if(isset($taxRates[$vendorData->vendor->container_charges_tax_id])){
                     $container_charges_tax_rate=$taxRates[$vendorData->vendor->container_charges_tax_id]['tax_rate'];
+                }
             }
 
 
-            if(!$preferences->is_tax_price_inclusive)
+            if(!$additionalPreferences->is_tax_price_inclusive)
             {
                 if($vendorData->vendor->container_charges_tax)
                 $container_charges_tax =  $total_container_charges * $container_charges_tax_rate/100;
@@ -1818,6 +1830,28 @@ class CartController extends BaseController
             $option = array_merge($option,$optionLala);
         }
         //End Lalamove Delivery changes code
+
+        //Kwik Delivery changes code
+        $kwick = new QuickApiController();
+        $deliver_fee = $kwick->getDeliveryFeeKwikApi($vendorData->vendor_id);
+        if($deliver_fee>0)
+        {
+            $deliver_fee = decimal_format($deliver_fee);
+
+            $optionKwikApi[] = array(
+                'type'=>'K',
+                'courier_name'=>__('KwikApi'),
+                'rate' => $deliver_fee,
+                'courier_company_id' => 0,
+                'etd' => 0,
+                'etd_hours' => 0,
+                'duration' => 0,
+                'estimated_delivery_days' => 0,
+                'code' => 'K_0'
+            );
+            $option = array_merge($option,$optionKwikApi);
+        }
+        //End Kwik Delivery changes code
 
 
         if($vendorData->vendor->shiprocket_pickup_name){

@@ -593,7 +593,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                 @endif
 
                                                                                 </div>
-                                                                                @if(count($vendor['vendor_dispatcher_status']))
+                                                                                
                                                                                             <div class="step-indicator step-indicator-order">
 
                                                                                                     @foreach ($vendor->dispatcher_status_icons as $key => $icons)
@@ -624,7 +624,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     @endforeach
 
                                                                                             </div>
-                                                                                            @endif
+                                                                                           
 
 
                                                                             </div>
