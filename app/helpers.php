@@ -1089,9 +1089,14 @@ if (!function_exists('getServiceTypesCategory')) {
      */
     function getServiceTypesCategory($vendorType)
     {
-        //echo $vendorType; exit();
+        // echo $vendorType; exit();
         try {
-            $client_preference = ClientPreference::select('business_type')->first();
+            $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
+            if(@$client_preference->p2p_check){
+                $vendorType = 'p2p';
+                session()->put('vendorType', 'p2p');
+            }
+           
             $types =   Type::query();
             $service_types = [];
             if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
