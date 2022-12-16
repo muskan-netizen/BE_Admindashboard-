@@ -789,12 +789,14 @@ class OrderController extends BaseController
             if ($currentOrderStatus->order_status_option_id == 3) { //$request->status_option_id == 2){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
             }
+        \Log::info('13');
             
             if (!$vendor_order_status_check) {
                 if ($request->status_option_id == 2 || $request->status_option_id == 3) {
                     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
                 }
+        \Log::info('14');
                 
 
                 $orderData = OrderVendor::with('orderDetail')->where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
@@ -810,7 +812,13 @@ class OrderController extends BaseController
                     }
 
                 }
+        \Log::info('15');
+
                 if ($request->status_option_id == 2) {
+
+        \Log::info('16');
+        \Log::info('dtype--'.$orderData->shipping_delivery_type);
+
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type == 'D') {
                         //Create Shipping request for dispatcher
@@ -830,6 +838,8 @@ class OrderController extends BaseController
                         //$orderPlaced = $this->placeOrderRequestlalamove($request);
 
                     } elseif ($orderData->shipping_delivery_type == 'K') {
+        \Log::info('16');
+
                         //Create Shipping place order request for Kwik
                         $orderPlaced = $this->placeOrderRequestKwikApi($request);
 

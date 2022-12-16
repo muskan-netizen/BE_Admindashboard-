@@ -912,14 +912,14 @@
                           <div class="row">
                               <div class="col-sm-6">
                                   <div class="form-group mb-0">
-                                      <label for="kwikapi_email" class="mr-3">{{ __("Vebdor Email") }}</label>
+                                      <label for="kwikapi_email" class="mr-3">{{ __("Vendor Email") }}</label>
                                       <input type="text" name="kwikapi_email" id="kwikapi_email" class="form-control" value="{{$email}}" @if($kwikOption->status == 1) required @endif autofill="off">
                                   </div>
                               </div>
                       
                             <div class="col-sm-6">
                                 <div class="form-group mb-0">
-                                    <label for="kwikapi_pass" class="mr-3">{{ __("Vebdor Password") }}</label>
+                                    <label for="kwikapi_pass" class="mr-3">{{ __("Vendor Password") }}</label>
                                     <input type="text" name="kwikapi_pass" id="kwikapi_pass" class="form-control" value="{{$pass}}" @if($kwikOption->status == 1) required @endif autofill="off">
                                 </div>
                             </div>
