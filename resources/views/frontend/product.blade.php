@@ -234,7 +234,6 @@
                                             </div>
                                         </div>
                                     </div> --}}
-
                                     <div class="exzoom hidden w-100">
                                         <div class="exzoom_img_box mb-2">
                                             <ul class='exzoom_img_ul img-sidebar'>
@@ -1087,11 +1086,12 @@
     $('#date_input').change(function(){
         var input_date = $(this).val();
         var product_id = "{{$product->id}}";
+        var vendor_cutOff_time = "{{$product->vendor->cutOff_time??''}}"
         $.ajax({
             url: "{{route('product.getShippingProductDeliverySlots')}}",
             type: "get",
             datatype: "html",
-            data: {input_date:input_date,product_id:product_id},
+            data: {input_date:input_date,product_id:product_id,vendor_cutOff_time:vendor_cutOff_time},
             success: function(data){
                 $('#delivery_form').modal({backdrop: 'static', keyboard: false});
                 $("#delivery_option").empty().html(data);

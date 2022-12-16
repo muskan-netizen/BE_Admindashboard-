@@ -144,6 +144,17 @@ if (! function_exists('orderProductDetails')) {
 
 
 
+if (! function_exists('loadDefaultImage')) {
+    function loadDefaultImage()
+    {
+        $proxy_url = \Config::get('app.IMG_URL1');
+        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
+        $image_fit = \Config::get('app.FIT_URl');
+        $default_url = $image_fit .'300/300'. $image_path.'@webp';
+        return $default_url;
+    }
+}
+
 if (! function_exists('EasebuzzSubMerchent')) {
     function EasebuzzSubMerchent()
     {
