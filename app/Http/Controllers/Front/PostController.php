@@ -17,6 +17,7 @@ use App\Models\Client;
 use App\Models\ProductAttribute;
 use App\Models\ProductImage;
 use App\Models\UserVendor;
+use App\Models\Vendor;
 use App\Models\VendorMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -190,11 +191,19 @@ class PostController extends FrontController
                 }
                 
             }
-            
 
+            $vendor = Vendor::where('id', $product->vendor_id)->first();
+
+            if(@$vendor->slug && @ $product->url_slug){
+                return redirect()->route('productDetail', [
+                    'vendor' => $vendor->slug,
+                    'id' => $product->url_slug
+                ]);
+            }
+            
+            
            
             $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
-            // return redirect('client/vendor/catalogs/' . $product->vendor_id)->with('toaster', $toaster);
             return redirect()->back()->with('toaster', $toaster);
         // } catch (\Exception $e) {
         //    dd($e->getMessage());
