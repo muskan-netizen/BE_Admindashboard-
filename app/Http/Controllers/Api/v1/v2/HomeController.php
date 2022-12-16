@@ -364,12 +364,15 @@ class HomeController extends BaseController{
             $mobile_banners = $mobile_banners->orderBy('sorting', 'asc')->get();
 
 
-            $home_page_labels = CabBookingLayout::where('is_active', 1)->where('for_no_product_found_html',0)->orderBy('order_by');
+            $home_page_labels = CabBookingLayout::where('is_active', 1)->app()->where('for_no_product_found_html',0)->orderBy('order_by');
 
+            
+            
             if (isset($langId) && !empty($langId))
                 $home_page_labels = $home_page_labels->with(['translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }]);
+                
 
             $home_page_labels = $home_page_labels->get();
 
@@ -398,12 +401,15 @@ class HomeController extends BaseController{
             $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
             
 
-            $home_page_pickup_labels = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',0)->orderBy('order_by')->get();
+            $home_page_pickup_labels = CabBookingLayout::with('translations')->where('is_active', 1)->app()->where('for_no_product_found_html',0)->orderBy('order_by')->get();
 
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
 
-            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
-            $enable_layout = CabBookingLayout::where('is_active',1)->orderBy('order_by','asc')->pluck('slug')->toArray();
+            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->app()->where('for_no_product_found_html',1)->orderBy('order_by')->get();
+            $enable_layout = CabBookingLayout::where('is_active',1)->app();
+
+            $enable_layout = $enable_layout->orderBy('order_by','asc')->pluck('slug')->toArray();
+
             $categories = [];
             if(isset($set_template)  && $set_template->template_id == 8){
                 $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
@@ -490,7 +496,8 @@ class HomeController extends BaseController{
 
         $recent_orders_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','recent_orders');})->value('title');
 
-        $enable_layout = CabBookingLayout::where('is_active',1)->pluck('slug')->toArray();
+        $enable_layout = CabBookingLayout::where('is_active',1)->app();
+        $enable_layout = $enable_layout->pluck('slug')->toArray();
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
             $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
