@@ -43,7 +43,7 @@ use App\Models\SubscriptionInvoicesUser;
 use App\Models\OrderDeliveryStatusIcon;
 use App\Models\UserRegistrationDocuments;
 use App\Models\DriverRegistrationDocument;
-use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption, ReturnReason,OrderDeliveryStatusIcon};
+use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption, ReturnReason};
 
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -377,6 +377,7 @@ class OrderController extends FrontController
         $order->total_other_taxes_amount=$total_other_taxes;
         //pr($order->toArray());
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+        // dd($order);
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFeeNomenclatures'));
     }
 

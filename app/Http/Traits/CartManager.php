@@ -412,6 +412,7 @@ trait cartManager{
             $total_markup_charges = 0;
             $total_quantity = 0;
             $deliveryCharges_real = 0;
+            $delivery_slot_amount = 0;
 
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
@@ -885,13 +886,11 @@ trait cartManager{
                     }
 
                     // Add Delivery Slot Price In total amount
-                    $delivery_slot_amount = 0;
                     if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
-                        $delivery_slot_amount =+ decimal_format($prod->slot_price);
+                        $delivery_slot_amount += decimal_format($prod->slot_price);
                     }
 
                 }
-
                 // $couponGetAmount = $payable_amount ;
 
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {

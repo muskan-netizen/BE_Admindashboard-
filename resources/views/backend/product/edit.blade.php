@@ -30,7 +30,10 @@
         overflow: hidden;
         display: inline-block;
     }
-
+    .custom_select .selectize-input {
+    min-height: auto;
+    height: auto;
+}
 
 
     .upload-btn-wrapper input[type=file] {
@@ -756,7 +759,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             @php
                                 $pro_delivery_slot_ids = $product->syncProductDeliverySlot->pluck('id')->toArray();
                             @endphp
-                            <div class="col-sm-12">
+                            <div class="col-sm-12 custom_select">
                                 {!! Form::label('title', __('Choose Slots'),['class' => 'control-label']) !!}
                                 <select class="selectizeInput form-control" id="select_slot" name="slot_ids[]" multiple>
                                     <option value="">Choose Slots</option>
