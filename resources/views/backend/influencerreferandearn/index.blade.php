@@ -56,7 +56,7 @@
                             <tbody>
                                 @foreach($influencer_list as $value)
                                 <tr>
-                                    <td> first </td>
+                                    <td> {{ $value->name ?? '' }} </td>
                                     <td> 
                                         {{-- <a class="btn btn-sm btn-danger" onclick="return confirm('Are you sure? You want to delete the map provider.')" href="#"><i class="fa fa-trash"></i></a> --}}
                                         <a href="{{ route('influencer-refer-earn.edit', ['id' => $value->id]) }}"><i class="fas fa-edit"></i></a>
@@ -78,8 +78,6 @@
         <div class="col-6">
             <div class="">
                 <div class="influencer-form-list">
-                    <button> Add Attributes </button>
-
                     <div class="">
                         <div class="card-box h-100">
                             <div class="row mb-2">
@@ -104,7 +102,6 @@
                                         <table class="table table-centered table-nowrap table-striped" id="varient-datatable">
                                             <thead>
                                                 <tr>
-                                                    <th>#</th>
                                                     <th>{{ __('Name') }}</th>
                                                     <th>{{ __('Options') }}</th>
                                                     <th>{{ __('Action') }}</th>
@@ -115,8 +112,9 @@
                                                 @foreach($attributes as $key => $variant)
                                                     @if(!empty($variant->translation_one))
                                                         <tr class="variantList" data-row-id="{{$variant->id}}">
-                                                            <td><span class="dragula-handle"></span></td>
-                                                            <td><a class="editAttributeBtn" dataid="{{$variant->id}}" href="javascript:void(0);">{{$variant->title}}</a> <br> <b>{{isset($variant->varcategory->cate->primary->name) ? $variant->varcategory->cate->primary->name : ''}}</b></td>
+                                                            <td>
+                                                                <a class="editAttributeBtn" dataid="{{$variant->id}}" href="javascript:void(0);">{{$variant->title}}</a>
+                                                            </td>
                                                             <td>
                                                                 @foreach($variant->option as $key => $value)
                                                                 <label style="margin-bottom: 3px;">
@@ -134,7 +132,7 @@
                                                                 <a class="action-icon deleteAttribute" dataid="{{$variant->id}}" href="javascript:void(0);">
                                                                     <i class="mdi mdi-delete"></i>
                                                                 </a>
-                                                                <form action="{{route('attribute.destroy', $variant->id)}}" method="POST" style="display: none;" id="attrDeleteForm{{$variant->id}}">
+                                                                <form action="{{route('attribute-influencer-refer-earn.delete', $variant->id)}}" method="POST" style="display: none;" id="attrDeleteForm{{$variant->id}}">
                                                                     @csrf
                                                                     @method('DELETE')
                                                                     <button type="submit" class="action-icon btn btn-primary-outline" dataid="{{$variant->id}}" onclick="return confirm('Are you sure? You want to delete the attribute.')"> <i class="mdi mdi-delete"></i></button>
@@ -149,21 +147,65 @@
                                         </table>
                                     </div>
                                 </div>
-                                <div class="col-sm-12 text-right btn_bottom">
-                                    <button class="btn btn-info waves-effect waves-light text-sm-right saveVariantOrder">{{ __('Save Order') }}</button>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                {{-- <button class="btn btn-info waves-effect waves-light text-sm-right addInfluencerData" dataid="0">
-                    <i class="mdi mdi-plus-circle mr-1"></i> Add
-                </button> --}}
             </div>
         </div>
     </div>
 </div>
 
 
+{{-- Modal Section --}}
+<div id="addAttributemodal" class="modal al fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __("Add ".getNomenclatureName('Influencer Attribute')) }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <form id="addAttributeForm" method="post" enctype="multipart/form-data" action="{{route('attribute-influencer-refer-earn.store')}}">
+                @csrf
+                <div class="modal-body" id="AddAttributeBox">
 
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-info waves-effect waves-light addAttributeSubmit">{{ __("Submit") }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="editAttributemodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __("Edit ".getNomenclatureName('Attribute')) }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="outter-loader d-none"><div class="css-loader"></div></div>
+            <form id="editAttributeForm" method="post" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <div class="modal-body" id="editAttributeBox">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-info waves-effect waves-light editAttributeSubmit">{{ __("Submit") }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{{-- End of Modal Section --}}
+
+@endsection
+
+@section('script')
+@include('backend.influencerreferandearn.pagescript')
+<script type="text/javascript">
+    
+</script>
 @endsection

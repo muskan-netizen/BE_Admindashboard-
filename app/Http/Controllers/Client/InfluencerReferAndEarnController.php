@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{InfluencerCategory, Attribute};
+use App\Models\{InfluencerCategory, Attribute, InfluencerAttribute, ReferEarnDetail};
 use App\Http\Requests\InfluencerCategoryRequest;
 use Auth;
 
@@ -18,15 +18,20 @@ class InfluencerReferAndEarnController extends BaseController
      */
     public function index()
     {
-        $attributes = Attribute::with('option', 'varcategory.cate.primary','translation_one')->where('status', '!=', 2)->orderBy('position', 'asc');
-        if(Auth::user()->is_superadmin) {
-            $attributes = $attributes->get();
+        $attributes = [];
+        if( checkTableExists('influ_attributes') ) {
+            // , 'varcategory.cate.primary'
+            $attributes = InfluencerAttribute::with('option','translation_one')->where('status', '!=', 2)->orderBy('position', 'asc');
+            if(Auth::user()->is_superadmin) {
+                $attributes = $attributes->get();
+            }
+            else {
+                $attributes = $attributes->where('user_id', Auth::id())->get();
+            }
         }
-        else {
-            $attributes = $attributes->where('user_id', Auth::id())->get();
-        }
+        
         $influencer_list = InfluencerCategory::paginate(10);
-        return view('backend.influencerreferandearn.index')->with(['influencer_list' => $influencer_list]);
+        return view('backend.influencerreferandearn.index')->with(['influencer_list' => $influencer_list, 'attributes' => $attributes]);
     }
 
     function edit($domain ,$id) {
@@ -69,5 +74,10 @@ class InfluencerReferAndEarnController extends BaseController
         catch(\Exception $e) {
             return redirect()->route('influencer-refer-earn.index');
         }
+    }
+
+    function userList(Request $request) {
+        $refer_earn = ReferEarnDetail::with('user')->groupBy('user_id')->paginate(10);
+        return view('backend.influencerreferandearn.user-list')->with(['refer_earn' => $refer_earn]);
     }
 }

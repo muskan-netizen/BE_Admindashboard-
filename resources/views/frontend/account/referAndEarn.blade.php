@@ -57,6 +57,9 @@
         top:35px!important;
         left:0!important;
     }
+    .cursor-pointer{
+        cursor: pointer;
+    }
 </style>
 <section class="section-b-space">
     <div class="container">
@@ -99,6 +102,17 @@
                                 <h2>{{ __('Refer and earn') }}</h2>
                         </div>
                         <div class="box-account box-info order-address">
+                            @if( !empty($influencer_category) )
+                                <div class="row">
+                                    @foreach($influencer_category as $key => $val)
+                                        <div class="col-md-4">
+                                            <a class="alert alert-dark cursor-pointer d-block" role="alert" href="{{ route('refer-earn.form', $val->id) }}">
+                                                {{$val->name ?? ''}}
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -130,5 +144,9 @@
 
 @endsection
 @section('script')
-
+<script>
+$(document).ready(function(){
+    
+});
+</script>
 @endsection

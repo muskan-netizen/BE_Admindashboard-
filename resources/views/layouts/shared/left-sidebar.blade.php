@@ -306,6 +306,12 @@
                                     <span> {{ __('Influencer Refer & Earn') }} </span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{route('influencer-refer-earn.list')}}">
+                                    <span class="icon-profile"></span>
+                                    <span> {{ __('Influencer User') }} </span>
+                                </a>
+                            </li>
                             @endif
                         @endif
                         @if(in_array('customize',$allowed) || Auth::user()->is_superadmin == 1)

@@ -542,6 +542,8 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	// Refer and Earn Module
 	Route::name('refer-earn.')->group(function () {
 		Route::get('user/refer-earn', 'Front\InfluencerReferAndEarnController@index')->name('index');
+		Route::get('user/get-refer-earn-form/{id}', 'Front\InfluencerReferAndEarnController@getReferEarnForm')->name('form');
+		Route::post('user/save-refer-earn-form', 'Front\InfluencerReferAndEarnController@save')->name('save');
 	});
 	Route::post('user/save_fcm_token', 'Front\ProfileController@save_fcm')->name('user.save_fcm');
 	// Rating & review

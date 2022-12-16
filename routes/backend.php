@@ -515,6 +515,16 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
                 Route::get('edit/{id}', 'Client\InfluencerReferAndEarnController@edit')->name('edit');
                 Route::post('store', 'Client\InfluencerReferAndEarnController@store')->name('store');
                 Route::post('update', 'Client\InfluencerReferAndEarnController@update')->name('update');
+                Route::get('list', 'Client\InfluencerReferAndEarnController@userList')->name('list');
+            });
+            Route::prefix('attribute')->group(function () {
+                Route::name('attribute-influencer-refer-earn.')->group(function () {
+                    Route::get('create', 'Client\InfluencerAttributeController@create')->name('create');
+                    Route::get('edit/{id}', 'Client\InfluencerAttributeController@edit')->name('edit');
+                    Route::post('store', 'Client\InfluencerAttributeController@store')->name('store');
+                    Route::put('update/{id}', 'Client\InfluencerAttributeController@update')->name('update');
+                    Route::delete('delete/{id}', 'Client\InfluencerAttributeController@delete')->name('delete');
+                });
             });
         });
 
