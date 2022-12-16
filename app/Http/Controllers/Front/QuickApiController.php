@@ -71,6 +71,10 @@ class QuickApiController extends Controller
         //     $time = date('H:i:s',strtotime($schTime));
         //     $scheduledAt = $date.'T'.$time.'Z';
         // }
+        \Log::info('vendor_id --'.$vendor_id.'--');
+        \Log::info(json_encode($order->ordervendor->where('vendor_id',$vendor_id)->first()));
+        $amountPay = $order->ordervendor->where('vendor_id',$vendor_id)->value('payable_amount')??0;
+    
         $cus_address = UserAddress::find($order->address_id);
                 if ($cus_address){
                     $vendor_details = Vendor::find($vendor_id);
@@ -86,12 +90,14 @@ class QuickApiController extends Controller
                         "p_longitude"=> $vendor_details->longitude,
                         "p_phone"=> $vendor_details->phone_no,
                         "p_email"=> $vendor_details->email,
-                        "amount" => $order->ordervendor->where('id',$vendor_id)->first()->payable_amount,
+                        "amount" => $amountPay,
                   ];
                    
                 $quotation = $this->getPriceEstimation($data);
                 if($quotation->status=='200')
                 {
+                 \Log::info('vendor_id --'.$quotation->data->per_task_cost.'--');
+
                     $data->delivery_charge = $quotation->data->per_task_cost;
                     $response = $this->createKwikOrder($data);
                         if($response->status=='200'){
