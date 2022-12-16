@@ -1336,7 +1336,6 @@ class OrderController extends BaseController
     public function placeRequestToDispatch($order, $vendor, $dispatch_domain)
     {
         try {
-            \Log::info("asdf innerrrrrr");
             $order = Order::find($order);
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
@@ -1345,10 +1344,16 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if($order->is_postpay==1 && $order->payment_status == 0)
+                if(checkColumnExists('orders', 'is_postpay'))
                 {
-                    $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -1506,8 +1511,20 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
@@ -1630,8 +1647,20 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
 
 
@@ -2007,8 +2036,20 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);

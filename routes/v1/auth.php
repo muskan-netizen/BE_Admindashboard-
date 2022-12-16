@@ -185,7 +185,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('order-tracking-details', 'Api\v1\PickupDeliveryController@getOrderTrackingDetails');
             Route::match(['get','post'],'add-rider','Api\v1\PickupDeliveryController@getAllRiders');   
             
-            Route::post('edit-order/{orderid}', 'Api\v1\PickupDeliveryController@updatePickupDeliveryOrderByCustomer');
+            Route::post('edit-order', 'Api\v1\PickupDeliveryController@updatePickupDeliveryOrderByCustomer');
         });
 
         // user subscription 

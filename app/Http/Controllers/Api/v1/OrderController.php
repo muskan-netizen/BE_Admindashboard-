@@ -215,8 +215,8 @@ class OrderController extends BaseController
                         if((strtotime($order->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
                             return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date."), 400);
                         }
-                        $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->get();
-                        if(!empty($VendorOrderStatus)){
+                        $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->count();
+                        if($VendorOrderStatus > 0){
                             return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing."), 400);
                         }
                         OrderProduct::where('order_id', $order->id)->delete();
@@ -298,10 +298,10 @@ class OrderController extends BaseController
                         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
                         if(isset($cart->editingOrder) && !empty($cart->editingOrder))
                         {
-                            $OrderVendor = OrderVendor::where('order_id', $cart->editingOrder->id)->where('vendor_id', $vendor_id)->first();
-                            $OrderVendor->web_hook_code = $OrderVendor->web_hook_code;
+                            $order_vendor = OrderVendor::where('order_id', $cart->editingOrder->id)->where('vendor_id', $vendor_id)->first();
+                            $order_vendor->web_hook_code = $order_vendor->web_hook_code;
                         }else{
-                            $OrderVendor = new OrderVendor();
+                            $order_vendor = new OrderVendor();
                         }
                         //$order_vendor = new OrderVendor;
                         $order_vendor->status = 0;
@@ -797,7 +797,12 @@ class OrderController extends BaseController
                         
                         CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
 
-                        Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
+                        if(checkColumnExists('carts','order_id'))
+                        {
+                            Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL, 'order_id' => NULL]);
+                        }else{
+                            Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
+                        }
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
                         CartProductPrescription::where('cart_id', $cart->id)->delete();
@@ -1157,8 +1162,20 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
             $dynamic = uniqid($order->id . $vendor);
             $client = Client::orderBy('id', 'asc')->first();
@@ -1294,8 +1311,20 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
             $dynamic = uniqid($order->id . $vendor);
             $client = Client::orderBy('id', 'asc')->first();
@@ -1422,8 +1451,20 @@ class OrderController extends BaseController
                  $cash_to_be_collected = 'Yes';
                  $payable_amount = $order->payable_amount;
              } else {
-                 $cash_to_be_collected = 'No';
-                 $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
              }
  
  
@@ -1818,8 +1859,10 @@ class OrderController extends BaseController
             $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
             $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
             $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
-            $order->is_postpay  = $order->orderDetail->is_postpay;
-
+            if(checkColumnExists('orders', 'is_postpay')){
+                $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
+            }
+            $order->is_edited   = (isset($order->orderDetail->is_edited)) ? $order->orderDetail->is_edited : 0;
             if(!empty($order->orderDetail->scheduled_date_time) && $is_order_edit_enable == 1 && $order_edit_before_hours > 0 && ($order->orderDetail->payment_option_id==1 || $order->orderDetail->payment_status !=1)){
                 if((strtotime($order->orderDetail->scheduled_date_time) - strtotime($editlimit_datetime)) > 0){
                     $order->is_editable  = 1;

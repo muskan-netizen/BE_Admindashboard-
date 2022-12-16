@@ -880,8 +880,8 @@ class OrderController extends FrontController
                 if((strtotime($order->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
                     return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date."), 400);
                 }
-                $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->get();
-                if(!empty($VendorOrderStatus)){
+                $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->count();
+                if($VendorOrderStatus > 0){
                     return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing."), 400);
                 }
                 OrderProduct::where('order_id', $order->id)->delete();
@@ -2195,10 +2195,16 @@ class OrderController extends FrontController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if($order->is_postpay==1)
+                if(checkColumnExists('orders', 'is_postpay'))
                 {
-                    $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -2337,10 +2343,16 @@ class OrderController extends FrontController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(isset($request->is_postpay) && $request->is_postpay==1)
+                if(checkColumnExists('orders', 'is_postpay'))
                 {
-                    $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -2466,10 +2478,16 @@ class OrderController extends FrontController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(isset($request->is_postpay) && $request->is_postpay==1)
+                if(checkColumnExists('orders', 'is_postpay'))
                 {
-                    $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
