@@ -235,6 +235,7 @@ public function createKwikOrder($dataRec)
     }
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
+    \Log::info($result);
     return json_decode($result);
 }
 
