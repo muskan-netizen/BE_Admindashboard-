@@ -3,8 +3,8 @@
   --star-color: #FFEEA3;
   --star-background: #fc0;
 }
-body.al_body_template_four.p2p-module section.cab-banner-area.alTaxiBannerStart .form-group input{
-  margin-bottom: 15px !important;
+body.al_body_template_four section.cab-banner-area.alTaxiBannerStart form.cab-booking-form input {
+  margin: 20px 0;
 }
 /* cab booking code css */
 .cab-booking {
@@ -3927,7 +3927,7 @@ body[dir=rtl] .alFourThLogo {
   .tap-top.top-cls {
     z-index: 9999;
   }
-
+}
   @media(max-width:576px) {
     .al_body_template_four .cab-banner-area .card-box {
       padding: 16px;
@@ -4134,5 +4134,13 @@ body[dir=rtl] .alFourThLogo {
     border-radius: 0 !important;
     font-size: 16px
   }
-
+  body.al_body_template_four .inner_spacing.w-100 label.mb-0{font-size:16px;}
+  body.al_body_template_four div#category_products_filter span.rating {
+    background: green;
+    color: #fff;
+    padding: 6px 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 51px;
+}
   /* car bar css end */
