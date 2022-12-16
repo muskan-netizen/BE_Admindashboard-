@@ -775,7 +775,6 @@ class OrderController extends BaseController
         $orderPlaced = true;
         $orderPlacedNo = '';
         DB::beginTransaction();
-        \Log::info('11');
         $client_preferences = ClientPreference::first();
          try {
 
