@@ -357,6 +357,7 @@ class ProductController extends BaseController
      */
     public function update(Request $request, $domain = '', $id)
     {
+        // dd($request->all());
         DB::beginTransaction();
         try {
             $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);

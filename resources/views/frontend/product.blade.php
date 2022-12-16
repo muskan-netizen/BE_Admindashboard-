@@ -479,8 +479,8 @@
                                             </table>--}}
                                         </div>
                                         @endif
-
-                                        @if($product->same_day_delivery == 1 || $product->next_day_delivery == 1)
+                                        
+                                        @if($product->same_day_delivery == 1 && $product->next_day_delivery == 1 && $product->hyper_local_delivery == 1)
                                         <div class="enterPincodeMsg desktop-pin-message">
                                             <strong> Enter correct Pincode for hassle free timely delivery.</strong>
                                         </div>
