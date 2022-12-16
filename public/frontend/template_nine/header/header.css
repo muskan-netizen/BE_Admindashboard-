@@ -468,5 +468,13 @@ body.al_body_template_nine.p2p-module .al_custom_head_map_box {
         border-bottom: 1px solid#ededed;
         position: inherit;
     }
-    
+    .al_body_template_eight .al_custom_head .onhover-dropdown span:before, .al_custom_head.top-header .header-dropdown li a, .al_custom_head.top-header .header-dropdown li span {
+        font-size: 14px !important;
+        margin-right: 0;
+    }
+    body.al_body_template_nine .top-header .header-dropdown li.onhover-dropdown{border:none !important;}
+    body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center{display:flex !important;}
+    body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect {
+        position: absolute;
+    }
 }
