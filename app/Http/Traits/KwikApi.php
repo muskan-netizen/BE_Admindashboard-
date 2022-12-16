@@ -217,7 +217,7 @@ public function createKwikOrder($dataRec)
         // "delivery_images"=> "https://s3.ap-south-1.amazonaws.com/kwik-project/task_images/wPqj1603886372690-stripeconnect.png",
         //"vehicle_id"=> 4
         ];
-    \Log::info(json_encode($data));
+    // \Log::info(json_encode($data));
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $this->app_url.$end_url);
@@ -236,7 +236,7 @@ public function createKwikOrder($dataRec)
     }
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    \Log::info($result);
+    // \Log::info($result);
     return json_decode($result);
 }
 
