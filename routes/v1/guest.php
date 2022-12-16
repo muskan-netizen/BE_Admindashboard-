@@ -47,6 +47,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
         Route::post('header', 'Api\v1\HomeController@headerContent');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
+        Route::post('getShippingProductDeliverySlots', 'Api\v1\ProductController@getShippingProductDeliverySlots');
         Route::POST('checkProductAvailibility', 'Api\v1\ProductController@checkProductAvailibility');
         Route::get('getAllProductTags', 'Api\v1\ProductController@getAllProductTags');
         Route::post('get-products', 'Api\v1\ProductController@productList');
@@ -67,6 +68,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('celebrity/filters/{id?}', 'Api\v1\CelebrityController@celebrityFilters');
         Route::get('vendor/all', 'Api\v1\VendorController@viewAll');
         Route::get('vendor/{id?}', 'Api\v1\VendorController@productsByVendor');
+        Route::post('checkVendorPincode', 'Api\v1\VendorController@checkVendorPincode');
         Route::get('vendor-optimize/{id?}', 'Api\v1\VendorController@productsByVendorOptimize');
         Route::get('vendor-optimize-filters/{id?}', 'Api\v1\VendorController@productsByVendorOptimizeFilterList');
         Route::post('vendor/filters/{id?}', 'Api\v1\VendorController@vendorFilters');

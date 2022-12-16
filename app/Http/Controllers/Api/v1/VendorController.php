@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
+use App\Models\Pincode;
 use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, Permissions, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country, OrderReturnRequest, Order, VendorOrderStatus, LuxuryOption,OrderVendor, OrderStatusOption, VendorAdditionalInfo};
 use Log;
 class VendorController extends BaseController{
@@ -2766,12 +2767,43 @@ class VendorController extends BaseController{
 
     /******************    ---- vendor data sync with inventory -----   ******************/
     public function vendorSyncInventory(Request $request){
-
-        
         return response()->json([
         'status' => 200,
         'message' => 'Connected',
         'data' => $request->toArray()]);
+    }
+
+    public function checkVendorPincode(Request $request){
+        try {
+            $request->validate(
+                [
+                    'vendor_id' => 'required',
+                    'pincode' => 'required'
+                ], 
+                [
+                    'vendor_id.required' => 'Vendor id is required',
+                    'pincode.required' => 'Pincode is required'
+                ]
+            );
+            $checkVendorPincode = Pincode::with('deliveryOptions')->whereHas('deliveryOptions',function ($q) {
+                $q->where('delivery_option_type', '=', 3);
+            })->where(['pincode' => $request->pincode, 'vendor_id' => $request->vendor_id])->first();
+            if(!empty($checkVendorPincode)){
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'success',
+                    'data' => $checkVendorPincode
+                ]);
+            }else{
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'success',
+                    'data' => $checkVendorPincode
+                ]);
+            }
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
     }
 
 }
