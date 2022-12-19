@@ -524,9 +524,6 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
     max-width: 100%;
 }
 
-.al_body_template_six.homeHeader .container .col-12 {
-    padding: 0;
-}
 
 .al_body_template_six.homeHeader .product-bottom-bar {
     padding: 20px 0;
@@ -3442,3 +3439,10 @@ span.registerLink {
         overflow-x: hidden;
     }
    
+    .al_body_template_six.homeHeader .container .col-12.custom_filtter {
+        padding: 0;
+        text-align:right;
+    }
+    .al_body_template_six.homeHeader .container .col-12 .sortingFilter.p-1 {
+        margin: 10px;
+    }
