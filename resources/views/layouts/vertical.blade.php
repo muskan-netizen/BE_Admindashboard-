@@ -45,9 +45,9 @@
         <div id="wrapper">
             @include('layouts.shared/topbar')
             
-            @if( !is_p2p_vendor() )
-                @include('layouts.shared/left-sidebar')
-            @endif
+            
+            @include('layouts.shared/left-sidebar')
+            
 
         <!-- Start Page Content here -->
 

@@ -4,7 +4,9 @@
 'meta_keyword'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_keyword:'',
 'meta_description'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description:'',
 ])
-
+@php
+$clientData = \App\Models\Client::select('socket_url')->first();
+@endphp
 @section('css')
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
     <link rel="stylesheet" href="{{ asset('front-assets/css/swiper.min.css') }}" />
@@ -276,18 +278,8 @@
                                     </div>
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
-                                
-                                @php
-                                if((!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id == '8')) {
-                                    $css_class = 'col-lg-4'; 
-                                } elseif(!empty($product->media) && count($product->media) > 0){ 
-                                    $css_class = 'col-lg-7'; 
-                                } else { 
-                                    $css_class = 'col-lg-7'; 
-                                }
-                                @endphp
 
-                                <div class="{{$css_class}} rtl-text p-0">
+                                <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-7'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0">
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
@@ -327,6 +319,49 @@
                                             {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                                 $product->translation[0]->body_html : ''!!}
                                         </div>
+
+
+                                        @if( is_category_p2p($product->category) )
+                                        
+                                            @if( !empty($attr_array) )
+                                                @foreach($attr_array as $attr_key => $attr_val)
+                                                    <div class="container-badge">
+                                                        <div class="value-badge">{{ $attr_key }} : </div>
+                                                        @if( !empty($attr_val) )
+                                                            <div class="container-badge-value">
+                                                                @foreach($attr_val as $inn_key => $inn_val)
+
+                                                                @if($inn_val['type'] == 2) <!--- for color---->
+                                                                    <span style="background-color: {{$inn_val['hexacode']}}; width: 20px;height: 20px;margin-left: 5px;display: inline-block;border: 1px solid #ccc;"></span>
+                                                                @else
+                                                                    <span>{{$inn_val['value']}}</span>
+                                                                @endif
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                        
+                                                    </div>
+                                                @endforeach
+                                            @endif
+
+                                            {{-- Chat Button --}}
+                                            <hr>
+                                                <h6 class="sold-by">
+                                            @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
+                                            
+                                               
+                                                    <?php /*<span>Sold by : </span>
+                                                    <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
+                                                    <a class="start_p2p_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
+                                                
+                                            @endif
+                                            @if(getAdditionalPreference(['call_button'])['call_button'])
+                                                <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
+                                            @endif
+                                                </h6>
+                                    @endif
+
+
                                         @if(((@$product->returnable && @$product->vendor->return_request) || $product->replaceable) && ($product->return_days > 0))
                                             <div class="discriptions">
                                                 <h3>Return Policy</h3>
@@ -467,6 +502,8 @@
                                             else
                                                 $checkSlot = 0;
                                         @endphp
+                                        
+                                        @if( !is_category_p2p($product->category) )
                                         <div class="btn-wrapper">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
                                                 @if($product->inquiry_only == 0)
@@ -506,7 +543,10 @@
                                                 @endif
 
                                             </div>
+                                           
                                             <div class="product-buttons">
+
+                                                
                                                 @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                                 @if($is_inwishlist_btn && $is_available)
                                                 <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
@@ -538,7 +578,9 @@
                                                 @endif
                                                 @endif
                                             </div>
+                                            
                                         </div>
+                                        @endif
                                         {{-- @dump($product) --}}
                                         <!-- <div class="border-product al_disc">
                                             <h6 class="product-title">{{__('Product Details')}}</h6>
@@ -563,8 +605,8 @@
                                     </div>
 
                                 </div>
-                                
-                                @if( !empty($set_template) && !empty($set_template->template_id) && $set_template->template_id == '8' && !empty($coupon_list) )
+                                @if( !is_category_p2p($product->category) )
+                                @if( !empty($coupon_list) )
                                 <div class="col-md-3">
                                     <div class="aside_bar">
                                         <h5>Available offers</h5>
@@ -596,6 +638,7 @@
                                         </form> -->
                                     </div>
                                 </div>
+                            @endif
                             @endif
                             </div>
                         </section>
@@ -1271,5 +1314,5 @@
         });
             
         </script>
-
+<script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
 @endsection

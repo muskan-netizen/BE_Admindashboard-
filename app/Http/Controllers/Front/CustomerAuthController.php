@@ -362,7 +362,7 @@ class CustomerAuthController extends FrontController
                     $vendor->logo = 'default/default_logo.png';
                     $vendor->banner = 'default/default_image.png';
 
-                    $vendor->status = 0;
+                    $vendor->status = 1;
                     $vendor->name = $user->name;
                     $vendor->p2p = 1;
                     $vendor->email = $user->email ?? '';
@@ -379,10 +379,15 @@ class CustomerAuthController extends FrontController
                     }
                     $p2p_type = Type::where('service_type', 'p2p')->first();
                     if( !empty($p2p_type) ) {
-                        $category_id = Category::where('type_id', $p2p_type->id)->first();
+                        $category_id = Category::where('type_id', $p2p_type->id)->get();
+                        $categories_ids = [];
                         
-                        $data[0] = $category_id->id ?? '';
-                        $req->request->add(['selectedCategories'=> $data ?? '']);
+                        if( !empty($category_id) ) {
+                            foreach($category_id as $key => $val) {
+                                $categories_ids[] = $val->id;
+                            }
+                        }
+                        $req->request->add(['selectedCategories'=> $categories_ids]);
                         
                     }
                     

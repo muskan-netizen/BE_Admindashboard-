@@ -37,7 +37,7 @@ class WebStylingController extends BaseController{
             $home_page_labels = HomePageLabel::with('translations')->orderBy('order_by');
             $cab_booking_layouts = CabBookingLayout::with('translations');
         }
-
+            $cab_booking_layouts = $cab_booking_layouts->web();
 
         $all_pickup_category = Category::with('translation_one')->where('type_id',7)->get();
         if(count($all_pickup_category) == 0){
@@ -50,7 +50,7 @@ class WebStylingController extends BaseController{
             $home_page_labels = $home_page_labels->orderBy('order_by')->get();
 
         }
-
+// dd($home_page_labels);
 
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
                     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
@@ -374,6 +374,7 @@ class WebStylingController extends BaseController{
         $featured_products->title = $home_page->title??null;
         $featured_products->slug = $home_page->slug??null;
         $featured_products->is_active = 1;
+        $featured_products->type = 1;
         $featured_products->order_by = $order_no??1;
         $featured_products->save();
 
