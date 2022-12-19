@@ -1416,6 +1416,7 @@ function generateSlug($name)
         }
         return $slug.'-'.rand();
     }
+    return $slug;
 }
 
 if( !function_exists('get_tiny_url') ) {
