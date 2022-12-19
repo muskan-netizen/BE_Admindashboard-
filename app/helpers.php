@@ -1156,7 +1156,7 @@ if (!function_exists('getCategoryTypes')) {
                 break;
             case "super_app":
                 $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment' ];
-                if( clientPrefrenceModuleStatus('p2p_check') ) {
+                if( checkColumnExists('client_preferences', 'p2p_check') ) {
                     $typeArray[] = 'p2p';
                 }
                 break;
