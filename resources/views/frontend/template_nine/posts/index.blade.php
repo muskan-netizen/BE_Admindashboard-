@@ -114,6 +114,10 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
     margin-bottom: 0px;
 }
 .select2-results__option{display: block;}
+body.al_body_template_nine .alPostBoxOuter ul li a.active {
+background: linear-gradient(180deg, #E1DFDF 0%, #EFE7E7 100%);
+border: 1px solid #008D00;
+}
 </style>
 @endsection
 
@@ -290,6 +294,8 @@ $(document).on('click', '#view-all_cats', function() {
 });
 $(document).on('click', '.category-list', function() {
     $('.category-list').hide();
+    $('.category-list').find('.select-category').removeClass('active');
+    $(this).find('.select-category').addClass('active');
     $(this).show();
     $('.choose-category').show();
 });
