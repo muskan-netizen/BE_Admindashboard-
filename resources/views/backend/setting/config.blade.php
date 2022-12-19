@@ -1330,6 +1330,50 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
    {{-- end Free Delivery By Roles form --}}
 
 
+   <div class="col-xl-4 col-lg-4 mb-3">
+      <!-- Social Logins title start -->
+      <div class="page-title-box">
+         <h4 class="page-title text-uppercase">Post Pay</h4>
+      </div><!-- Social Logins title end -->
+
+      <form method="POST" action="{{route('additional.update')}}">
+         <input type="hidden" name="crm" id="crm" value="1">
+         <input type="hidden" name="send_to" id="send_to" value="configure">
+         @csrf
+         <!-- HubSpot card start -->
+         <div class="card-box h-100">
+            <div class="row">
+               <div class="col-12">
+                  <div class="form-group mb-0 switchery-demo">
+                     <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h4 class="header-title text-uppercase mb-0">{{ __("Post Pay & Edit Order") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                     </div>
+                     <p class="sub-header">{{ __("Post Pay allows customers to pay after placing order. Edit order facility allows customer to edit till timelimit does not exceeded and payment not done.") }}</p>
+                     <label for="" class="mr-3">{{ __("Post Pay Enable") }}</label>
+                     <input type="checkbox" data-plugin="switchery" name="is_postpay_enable_switch" id="is_postpay_enable_switch" class="form-control checkbox_change" data-className="is_postpay_enable" data-color="#43bee1" @if(@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) checked='checked'  @endif>
+                     <input type="hidden"  @if(@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) value="1" @else value="0" @endif  name="is_postpay_enable"  id="is_postpay_enable"/>
+                  </div>
+                  <div class="form-group mt-2 switchery-demo">
+                     <label for="" class="mr-3">{{ __("Edit Order Enable") }}</label>
+                     <input type="checkbox" data-plugin="switchery" name="is_order_edit_enable_switch" id="is_order_edit_enable_switch" class="form-control checkbox_change" data-className="is_order_edit_enable" data-color="#43bee1" @if(@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) checked='checked'  @endif>
+                     <input type="hidden"  @if(@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) value="1" @else value="0" @endif  name="is_order_edit_enable"  id="is_order_edit_enable"/>
+                  </div>
+                  <div class="row mt-2" id="edit_order_time_limit_div" style="display:@if(@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) @else none @endif;">
+                     <div class="col-8">
+                        <label for="" class="mr-3">{{ __("Disable Order Edit before (Hours)") }}</label>
+                     </div>
+                     <div class="col-4">
+                        <input type="number" name="order_edit_before_hours" id="order_edit_before_hours" placeholder="" class="form-control" value="{{ old('order_edit_before_hours', @getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'] ?? '')}}">
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div><!-- Post Pay Card end -->
+      </form>
+   </div>
+   {{-- end Post Pay form --}}
+
 </div>
 
 
@@ -2506,7 +2550,7 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
    var dispatcherDiv = $('#need_dispacher_ride');
    var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
    var laundry_service = $('#need_laundry_service');
-
+   var need_inventory_service = $('#need_inventory_service');
    var laundry_service = $('#need_laundry_service');
 
    var is_hubspot_enable = $('#is_hubspot_enable');
@@ -2616,6 +2660,17 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
          $('.sos_row').hide();
       } else {
          $('.sos_row').show();
+      }
+   }
+
+   var is_postpay_edit = $('#is_order_edit_enable_switch');
+
+   is_postpay_edit[0].onchange = function() {
+      if ($('#is_order_edit_enable_switch:checked').length != 1) {
+         $('#edit_order_time_limit_div').hide();
+         $('#order_edit_before_hours').val(0);
+      } else {
+         $('#edit_order_time_limit_div').show();
       }
    }
 

@@ -5,6 +5,9 @@
     background-color: #fff!important;
     box-sizing: border-box!important;
     border: 1px solid #e8e8e8!important;
+    display:block;
+    border-bottom: 1px solid #e8e8e8!important;
+    border-radius: 12px !important;
 }
 #main-menu.menu-slider li.active a {
     color: var(--theme-deafult);
@@ -402,7 +405,7 @@ body[dir=rtl] .slick-prev {
 }
 
 .al_body_template_two .render_full_brands a.barnd-img-outer img.blur-up.lazyloaded {
-    object-fit: cover;
+    object-fit: contain;
 }
 
 @media (max-width:576px) {
@@ -456,4 +459,13 @@ body[dir=rtl] .slick-prev {
 
 
 
+}
+.royo_whatsapp_img {
+    position: fixed;
+    z-index: 99999;
+    bottom: 7%;
+    left: 1%;
+}
+.royo_whatsapp_img img {
+    width: 50px;
 }

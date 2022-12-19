@@ -1506,3 +1506,43 @@ body.al_body_template_nine div#replace_order_model .table-responsive table tr th
     color: #000;
     border: 1px solid#ccc;
 }
+body.al_body_template_three .offer-slider.al .listing-categories ul li {
+    display: block !important;
+}
+body.al_body_template_three .theme-card.custom-inner-card {
+    border-radius: 4px;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 12%);
+}
+body.al_body_template_three .theme-card.custom-inner-card button.btn.btn-link.btn-block.text-left.p-0 h5 {
+    padding: 10px !important;
+}
+body.al_body_template_three .scale-effect {
+    box-shadow: rgb(28 28 28 / 12%) 0 .4rem 1.8rem;
+    box-sizing: border-box;
+    border: 1px solid #e8e8e8;
+    display:block;
+}
+.al_body_template_three .scale-effect .inner_spacing {
+    padding: 10px;
+}
+body.al_body_template_three.homeHeader .outter-fillter-data .product-wrapper-grid.card-product h3 label {
+    text-align: center;
+}
+body.al_body_template_four .product-description_list p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+body.al_body_template_one .product-image img.img-fluid.blur-up.lazyloaded {
+    object-fit: cover;
+    height: 150px;
+}
+body.al_body_template_two .royo_whatsapp_img {
+    position: fixed;
+    z-index: 99999;
+    bottom: 7%;
+    left: 1%;
+}
+body.al_body_template_two .royo_whatsapp_img img {
+    width: 50px;
+}
