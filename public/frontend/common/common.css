@@ -2,7 +2,7 @@
 .alPageSearchView .product-box .front a{position: relative;padding-bottom: 100%;border-radius: 12px;overflow: hidden;}
 .alPageSearchView .product-box .front a img{position: absolute;height: 100%;width: 100%;object-fit: cover;left: 0;top: 0;}
 ul.exzoom_img_ul {
-min-height: 550px;
+/* min-height: 550px; */
 position: relative;
 }
 ul.exzoom_img_ul img {
