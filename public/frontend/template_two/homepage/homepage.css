@@ -5,6 +5,9 @@
     background-color: #fff!important;
     box-sizing: border-box!important;
     border: 1px solid #e8e8e8!important;
+    display:block;
+    border-bottom: 1px solid #e8e8e8!important;
+    border-radius: 12px !important;
 }
 #main-menu.menu-slider li.active a {
     color: var(--theme-deafult);
