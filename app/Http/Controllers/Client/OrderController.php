@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
+use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
 use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency};
 use DB;
@@ -774,7 +775,6 @@ class OrderController extends BaseController
         $orderPlaced = true;
         $orderPlacedNo = '';
         DB::beginTransaction();
-        \Log::info('11');
         $client_preferences = ClientPreference::first();
          try {
 
@@ -828,6 +828,10 @@ class OrderController extends BaseController
                         //Create Shipping place order request for Lalamove
                         //$orderPlaced = $this->placeOrderRequestlalamove($request);
 
+                    } elseif ($orderData->shipping_delivery_type == 'K') {
+                        //Create Shipping place order request for Kwik
+                        $orderPlaced = $this->placeOrderRequestKwikApi($request);
+
                     } elseif ($orderData->shipping_delivery_type == 'SR') {
                         //Create Shipping place order request for Shiprocket
                         $orderPlaced = $this->placeOrderRequestShiprocket($request);
@@ -875,7 +879,11 @@ class OrderController extends BaseController
                             //Cancel Shipping place order request for Lalamove
                             $lala = new LalaMovesController();
                             $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
-                        } elseif ($orderData->shipping_delivery_type == 'SR') {
+                        }elseif ($orderData->shipping_delivery_type == 'K') {
+                            //Cancel Shipping place order request for KwikApi
+                            $lala = new QuickApiController();
+                            $order_lalamove = $lala->cancelOrderRequestKwikApi($request->order_id,$request->vendor_id);
+                        }elseif ($orderData->shipping_delivery_type == 'SR') {
                             //Cancel Shipping place order request for Shiprocket
                             $ship = new ShiprocketController();
                             $order_ship = $ship->cancelOrderRequestShiprocket($currentOrderStatus->ship_order_id);
@@ -1026,6 +1034,28 @@ class OrderController extends BaseController
         }
 
         return 2;
+    }
+
+    public function placeOrderRequestKwikApi($request)
+    {
+        $kwik = new QuickApiController();
+        //Create Shipping place order request for KwikApi
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+            $order_ship = $kwik->placeOrderToKwikApi($request->vendor_id, $request->order_id);
+        }
+        if ($order_ship) {
+            $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'delivery_response' => json_encode($order_ship),
+                    'dispatch_traking_url'=>$order_ship->pickups[0]->result_tracking_link,
+                    'web_hook_code' => $order_ship->unique_order_id
+                ]);
+            return 1;
+        }
+
+        return false;
     }
 
     public function placeOrderRequestShiprocket($request)

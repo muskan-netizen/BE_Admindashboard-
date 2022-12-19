@@ -230,47 +230,36 @@ class ChatController extends BaseController
             // dd(is_null($order_id));
             // check order_vendor_id and order_id is empty then it is called for p2p chat
             if( is_null($vendor_order_id) && is_null($order_id) && !empty($product_id) ) {
-                $p2p_chat = 'p2p-productId-'.$product_id.'-vendorId-'.$vendor_id.'-currentUser-'.Auth::id();
-                $response =   Http::withoutVerifying()->post($socket_url.'/api/room/createRoom', [
-                    'room_id' => $p2p_chat,
-                    'room_name' => $p2p_chat,
-                    'vendor_id'=>$vendor_id,
-                    'sub_domain' =>$server_name,
-                    'vendor_user_id' =>$data['user_id'],
-                    'type'=>$data['type'],
-                    'db_name'=>$this->client_data->database_name,
-                    'client_id'=>$this->client_data->id
-                ]);
+                $room_name = $room_id = 'p2p-productId-'.$product_id.'-vendorId-'.$vendor_id.'-currentUser-'.Auth::id();
+                $orderby_user_id = Auth::id();
+               
             }
             else {
 
                 $order = $this->OrderVendorDetail($request);
-                if($order){
-                    
+                if(@$order){
                     $room_id = $order->order_number;
                     $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
-                    $order_vendor_id = $vendor_order_id;
-                    $order_id = $order->id;
-                    $vendor_id = $vendor_id;
                     $orderby_user_id = $order->user_id;
-                    //$response = $client->request('Post', 'https://chat.royoorders.com/api/room', ['body' => [
-                    $response =   Http::withoutVerifying()->post($socket_url.'/api/room/createRoom', [
-                        'room_id' => $room_id,
-                        'room_name' => $room_name,
-                        'order_vendor_id'=>$order_vendor_id,
-                        'order_id'=>$order_id,
-                        'vendor_id'=>$vendor_id,
-                        'sub_domain' =>$server_name,
-                        'vendor_user_id' =>$data['user_id'],
-                        'order_user_id' =>$orderby_user_id,
-                        'type'=>$data['type'],
-                        'db_name'=>$this->client_data->database_name,
-                        'client_id'=>$this->client_data->id
-                    ]);
-                    
-        
+                   
+                } else {
+                    return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
                 }
             }
+
+            $response =   Http::post($socket_url.'/api/room/createRoom', [
+                'room_id' => $room_id,
+                'room_name' => $room_name,
+                'order_vendor_id'=> $vendor_order_id,
+                'order_id'=>$order_id,
+                'vendor_id'=>$vendor_id,
+                'sub_domain' =>$server_name,
+                'vendor_user_id' =>$data['user_id'],
+                'order_user_id' =>$orderby_user_id,
+                'type'=>$data['type'],
+                'db_name'=>$this->client_data->database_name,
+                'client_id'=>$this->client_data->id
+            ]);
 
             $statusCode = $response->getStatusCode();
             if($statusCode == 200) {

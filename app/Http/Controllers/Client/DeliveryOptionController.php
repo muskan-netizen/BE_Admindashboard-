@@ -22,6 +22,7 @@ class DeliveryOptionController extends Controller
         $dunzoOption = ShippingOption::where('code', 'dunzo')->first();
         $ahoyOption = ShippingOption::where('code', 'ahoy')->first();
         $shippoOption = ShippingOption::where('code', 'shippo')->first();
+        $kwikOption = ShippingOption::where('code', 'kwikapi')->first();
         $preference = ClientPreference::select('id','need_delivery_service','delivery_service_key_url','delivery_service_key_code','delivery_service_key')->first();
         # if last mile on
         $last_mile_teams = [];
@@ -29,7 +30,7 @@ class DeliveryOptionController extends Controller
             $last_mile_teams = $this->getLastMileTeams();
         }
 
-        return view('backend/deliveryoption/index')->with(['delOption' => $delOption,'opt'=>$shipingOption,'optDunzo'=>$dunzoOption,'optAhoy'=>$ahoyOption,'shippoOption'=>$shippoOption,'last_mile_teams'=>$last_mile_teams,'preference'=>$preference]);
+        return view('backend/deliveryoption/index')->with(['delOption' => $delOption,'opt'=>$shipingOption,'optDunzo'=>$dunzoOption,'optAhoy'=>$ahoyOption,'shippoOption'=>$shippoOption,'last_mile_teams'=>$last_mile_teams,'preference'=>$preference,'kwikOption'=>$kwikOption]);
     }
     
      //Set new dunzo configuration details function
@@ -149,6 +150,75 @@ class DeliveryOptionController extends Controller
                     }
                 }
               ShippingOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
+              $toaster = $this->successToaster(__('Success'), $msg);
+    
+            }catch(\Exception $e)
+            {
+                $toaster = $this->errorToaster(__('Error'), $e->getMessage());
+            }
+    
+            return redirect()->back()->with('toaster', $toaster);
+        
+    }
+
+    //Set new KwikApi configuration details function
+    public function updateKwikapi(Request $request)
+    {
+       
+        try{
+            $msg = 'Kwikapi delivery details have been saved successfully!';
+            $id = $request->method_id;
+            $method_name_arr = $request->method_name;
+            $active_arr = $request->active;
+            $base_active = $request->base_active;
+            $test_mode_arr = $request->sandbox;
+            
+            $saved_creds = ShippingOption::select('credentials')->where('id', $id)->first();
+            if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
+                    $json_creds = $saved_creds->credentials;
+                } else {
+                    $json_creds = NULL;
+            }
+    
+                $status = 0;
+                $test_mode = 0;
+                if ((isset($active_arr)) && ($active_arr == 'on')) {
+                    $status = 1;
+                    
+                    if ((isset($test_mode_arr)) && ($test_mode_arr == 'on')) {
+                        $test_mode = 1;
+                    }
+    
+                    if ((isset($method_name_arr)) && (strtolower($method_name_arr) == 'kwikapi')) {
+
+                        $validatedData = $request->validate([
+                            'kwikapi_pass'               => 'required',
+                            'domain_name'                => 'required',
+                            'kwikapi_email'              => 'required',
+                        ]);
+
+                        $json_creds = array(
+                            'api_pass'               => $request->kwikapi_pass,
+                            'api_email'              => $request->kwikapi_email,
+                            'domain_name'            => $request->domain_name
+                        );
+    
+                        if ((isset($base_active)) && ($base_active == 'on')) {
+                            $json_creds['base_price'] = $request->base_price??0;
+                            $json_creds['distance'] = $request->distance??0;
+                            $json_creds['amount_per_km'] = $request->amount_per_km??0;
+                        }else{
+                            $json_creds['base_price'] = '0';
+                            $json_creds['distance'] = '0';
+                            $json_creds['amount_per_km'] = '0';
+                        }
+
+                        $json_creds = json_encode($json_creds);
+                    }
+                }
+
+            ShippingOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
+
               $toaster = $this->successToaster(__('Success'), $msg);
     
             }catch(\Exception $e)

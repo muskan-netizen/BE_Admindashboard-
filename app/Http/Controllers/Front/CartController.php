@@ -15,13 +15,15 @@ use App\Models\EstimatedProductCart;
 use App\Models\EstimatedProductAddons;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Traits\{ApiResponser,CartManager};
+use App\Http\Traits\{ApiResponser,CartManager, KwikApi};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
+use Http\Message\Cookie;
+
 class CartController extends FrontController
 {
-    use ApiResponser,CartManager;
+    use ApiResponser,CartManager,KwikApi;
 
 
     private function randomString()
@@ -391,7 +393,7 @@ class CartController extends FrontController
 
 
             // total booking time as single service duration time as per service for get totel service time multiply by quantity
-            if(in_array($luxury_option->id,[6,8])){
+            if(@$luxury_option->id && in_array($luxury_option->id,[6,8])){
                 $total_booking_time = $productDetail->minimum_duration_min;
             }
             $oldquantity = $isnew = 0;
@@ -438,12 +440,12 @@ class CartController extends FrontController
                 $isLongTermService = $checkLongTermService->product->is_long_term_service ;
             }
            
-            if ($luxury_option) {
+            if (@$luxury_option && $luxury_option) {
                 $checkCartLuxuryOption = CartProduct::where('luxury_option_id', '!=', $luxury_option->id)->where('cart_id', $cart_detail->id)->first();
                 if ($checkCartLuxuryOption) {
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
-                if ($luxury_option->id == 2 || $luxury_option->id == 3) {
+                if (@$luxury_option->id && ($luxury_option->id == 2 || $luxury_option->id == 3)) {
                     if ($checkVendorId) {
                         CartProduct::where('cart_id', $cart_detail->id)->delete();
                     }else{
@@ -452,7 +454,7 @@ class CartController extends FrontController
                     }
                 }
             }
-            if ( ((isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1)) || ($luxury_option->id == 4) ) {
+            if ( ((isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1)) || (@$luxury_option->id && $luxury_option->id == 4) ) {
                 if ($checkVendorId) {
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
@@ -2117,6 +2119,29 @@ class CartController extends FrontController
                     }
 
 
+                //Kwik Delivery changes code
+                $kwick = new QuickApiController();
+                $deliver_fee = $kwick->getDeliveryFeeKwikApi($vendorData->vendor_id);
+                if($deliver_fee>0)
+                {
+                    $deliver_fee = decimal_format($deliver_fee);
+
+                    $optionKwikApi[] = array(
+                        'type'=>'K',
+                        'courier_name'=>__('KwikApi'),
+                        'rate' => $deliver_fee,
+                        'courier_company_id' => 0,
+                        'etd' => 0,
+                        'etd_hours' => 0,
+                        'duration' => 0,
+                        'estimated_delivery_days' => 0,
+                        'code' => 'K_0'
+                    );
+                    $option = array_merge($option,$optionKwikApi);
+                }
+                //End Kwik Delivery changes code
+
+
                 //Lalamove Delivery changes code
                 $lalamove = new LalaMovesController();
                 $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
@@ -2450,7 +2475,7 @@ class CartController extends FrontController
                 'comment_for_vendor' => $request->comment_for_vendor??null,
                 'schedule_pickup' => $request->schedule_pickup??null,
                 'schedule_dropoff' => $request->schedule_dropoff??null,
-                // 'scheduled_slot' => $request->schedule_time??null
+                'payable_amount' => $request->payable_amount??0
                 ]);
 
                 CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);

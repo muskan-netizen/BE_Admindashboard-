@@ -1,3 +1,18 @@
+@if(@$data['filter_type'] && $data['filter_type'] == 1)
+<div class="col-12 custom_filtter">
+    <ul>
+        <input type="hidden" name="order_type" id='order_type' class="sortingFilter" />
+        <li><span>{{__('Sort By:')}}</span></li>
+        <li><a href="javascript:void(0)" class="sortingFilterOther {{isset($data['order_type']) && $data['order_type'] == "featured" ? 'active' : ''}}" data-value="featured">{{__('Featured')}}</a></li>
+        <li><a href="javascript:void(0)" class="sortingFilterOther {{isset($data['order_type']) && $data['order_type'] == "a_to_z" ? 'active' : ''}}" data-value="a_to_z">{{__('A to Z')}}</a></li>
+        <li><a href="javascript:void(0)" class="sortingFilterOther {{isset($data['order_type']) && $data['order_type'] == "z_to_a" ? 'active' : ''}}" data-value="z_to_a">{{__('Z to A')}}</a></li>
+        <li><a href="javascript:void(0)" class="sortingFilterOther {{isset($data['order_type']) && $data['order_type'] == "low_to_high" ? 'active' : ''}}" data-value="low_to_high">{{__('Cost : Low to High')}}</a></li>
+        <li><a href="javascript:void(0)" class="sortingFilterOther {{isset($data['order_type']) && $data['order_type'] == "high_to_low" ? 'active' : ''}}" data-value="high_to_low">{{__('Cost : High to Low')}}</a></li>
+        <li><a href="javascript:void(0)" class="sortingFilterOther {{isset($data['order_type']) && $data['order_type'] == "rating" ? 'active' : ''}}" data-value="rating">{{__('Avg. Customer Review')}}</a></li>
+        <li><a href="javascript:void(0)" class="sortingFilterOther {{isset($data['order_type']) && $data['order_type'] == "newly_added" ? 'active' : ''}}" data-value="newly_added">{{__('Newest Arrivals')}}</a></li>
+    </ul>
+</div>
+@else
 <div class="col-12 text-right mt-2">
     <select name="order_type" id='order_type' class="sortingFilter p-1">
      <option value="">{{__('Sort By')}}</option>
@@ -10,6 +25,7 @@
         <option value="newly_added" {{isset($data['order_type']) && $data['order_type'] == "newly_added" ? 'selected' : ''}}>{{__('Newest Arrivals')}}</option>
     </select>
 </div>
+@endif
 <div class="product-wrapper-grid">
     <div class="row margin-res">
       @if($listData->isNotEmpty())
