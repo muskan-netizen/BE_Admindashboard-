@@ -275,6 +275,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
       </div>
       </div>
    @endif
+   @endif
    @if(!empty($navCategories) && count($navCategories) && \Route::current()->getName() != 'userHome')
    <div class="menu-navigation alThreeMenu">
       <div class="container-fluid">
