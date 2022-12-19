@@ -3,7 +3,7 @@
 use App\Models\CartProduct;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\{Currency, SmsTemplate, User, TempCartProduct, Vendor};
+use App\Models\{Currency, SmsTemplate, User, TempCartProduct, Vendor, WebStylingOption};
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ProductVariant;
