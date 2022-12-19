@@ -1593,6 +1593,7 @@ body.al_body_template_eight .outter-fillter-data .custom_filtter ul li a.active:
 }
 body.al_body_template_eight .outter-fillter-data .custom_filtter {
     border-bottom: 1px solid #D9D9D9;
+    margin-top:10px;
 }
 body.al_body_template_eight ul.exzoom_img_ul {
     min-height: auto;
