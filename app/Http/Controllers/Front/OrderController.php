@@ -49,7 +49,7 @@ use App\Models\LuxuryOption;
 use App\Models\PaymentOption;
 use App\Models\CartDeliveryFee;
 use App\Models\ClientPreference;
-use App\Http\Traits\{ApiResponser,CartManager};
+use App\Http\Traits\{ApiResponser,CartManager, WhatsappApi};
 use App\Models\AddonOption;
 use App\Models\{OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule};
 use App\Models\ProductVariantSet;
@@ -66,7 +66,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 
 class OrderController extends FrontController
 {
-    use ApiResponser,CartManager;
+    use ApiResponser,CartManager, WhatsappApi;
     use \App\Http\Traits\OrderTrait;
     /**
      * Display a listing of the resource.
@@ -1691,6 +1691,7 @@ class OrderController extends FrontController
             // }
 
             DB::commit();
+            $this->createOrder($order->id);
             $this->sendSuccessSMS($request, $order);
 
             return $this->successResponse($order);
