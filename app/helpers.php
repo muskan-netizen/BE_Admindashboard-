@@ -1075,10 +1075,13 @@ if (!function_exists('getServiceTypesCategory')) {
     function getServiceTypesCategory($vendorType) {
         //echo $vendorType; exit();
         try {
-            $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
-            if(@$client_preference->p2p_check){
-                $vendorType = 'p2p';
-                session()->put('vendorType', 'p2p');
+            $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+            if(isset($set_template)  && $set_template->template_id == 9){
+                $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
+                if(@$client_preference->p2p_check){
+                    $vendorType = 'p2p';
+                    session()->put('vendorType', 'p2p');
+                }
             }
            
             $types =   Type::query();
