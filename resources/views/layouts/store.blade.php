@@ -64,7 +64,7 @@ if(isset($set_template))
     
   }
   elseif($set_template->template_id == 8)
-    $body_class = "al_body_template_eight";
+    $body_class = "al_body_template_eight p2p-module"; //p2p-module class is required because in template 8 css fixed using this class
   elseif($set_template->template_id == 9)
     $body_class = "al_body_template_nine p2p-module";
 }
