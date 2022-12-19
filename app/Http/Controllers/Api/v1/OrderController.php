@@ -1862,7 +1862,9 @@ class OrderController extends BaseController
             if(checkColumnExists('orders', 'is_postpay')){
                 $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
             }
-            $order->is_edited   = (isset($order->orderDetail->is_edited)) ? $order->orderDetail->is_edited : 0;
+            if(checkColumnExists('orders', 'is_edited')){
+                $order->is_edited   = (isset($order->orderDetail->is_edited)) ? $order->orderDetail->is_edited : 0;
+            }
             if(!empty($order->orderDetail->scheduled_date_time) && $is_order_edit_enable == 1 && $order_edit_before_hours > 0 && ($order->orderDetail->payment_option_id==1 || $order->orderDetail->payment_status !=1)){
                 if((strtotime($order->orderDetail->scheduled_date_time) - strtotime($editlimit_datetime)) > 0){
                     $order->is_editable  = 1;
