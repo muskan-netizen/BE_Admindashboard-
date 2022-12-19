@@ -99,6 +99,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                             <div class="page-title">
                                 <h2>{{ __(getNomenclatureName($ordertitle, true)) }}</h2>
                             </div>
+                            <div class="order_response mt-3 mb-3 d-none">
+                                <div class="alert p-0" role="alert"></div>
+                            </div>
                             <div class="welcome-msg">
                                 <h5>{{ __('Here Are All Your Previous ' . getNomenclatureName($ordertitle, true)) }}</h5>
                             </div>
@@ -280,8 +283,22 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
 
                                                                                                 }
                                                                                             @endphp
-                                                                                            <span
-                                                                                                class="badge badge-info ml-2 my-1">{{ __($luxury_option_name) }}</span>
+                                                                                            <span>
+                                                                                                @if(!empty($order->scheduled_date_time) && $clientPreference->is_order_edit_enable == 1 && $clientPreference->order_edit_before_hours > 0 && $order->luxury_option_id != 4 && ($order->payment_option_id==1 || $order->payment_status !=1))
+                                                                                                    @if((strtotime($order->scheduled_date_time) - strtotime($clientPreference->editlimit_datetime)) > 0)
+                                                                                                        @if(!empty($order->editingInCart))
+                                                                                                            <span class="badge ml-2" style="font-size:12px;">
+                                                                                                            {{ __("This Order is being edited") }} <a class="discard_editing_order" style="color:var(--theme-deafult);" href="javascript:void(0)" data-orderid="{{$order->id}}"><i class="fa fa-trash-o"></i> {{__('Discard')}}</a>
+                                                                                                            </span>
+                                                                                                        @else
+                                                                                                            <span class="badge ml-2" style="cursor:pointer;font-size:14px;">
+                                                                                                                <strong><a class="order_edit_button" data-order_id='{{$order->id}}'><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{__('Edit')}}</a></strong>
+                                                                                                            </span>
+                                                                                                        @endif
+                                                                                                    @endif
+                                                                                                @endif
+                                                                                            <span class="badge badge-info ml-2 my-1">{{ __($luxury_option_name) }} </span>
+                                                                                            </span>
                                                                                         @endif
                                                                                         @if (!empty($order->scheduled_date_time))
                                                                                             <span
@@ -736,12 +753,25 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                <li
-                                                                                    class="grand_total d-flex align-items-center justify-content-between">
+                                                                                <li class="grand_total d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Total Payable') }}</label>
-                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount+$order->fixed_fee_amount)}}</span>
+                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount+$order->fixed_fee_amount)}}
+
+                                                                                    @if(!checkColumnExists('orders', 'is_postpay'))
+                                                                                        $order->is_postpay = 0;
+                                                                                    @endif
+                                                                                    
+                                                                                    @if ($order->payment_option_id != 1 && $order->is_postpay == 1 && $order->payment_status == 0)
+                                                                                        <br/><span style="color:var(--theme-deafult);">Unpaid</span>
+                                                                                    @endif
+                                                                                    </span>
                                                                                 </li>
+                                                                                @if ($order->payment_option_id != 1 && $order->is_postpay == 1 && $order->payment_status == 0)
+                                                                                <!-- <li class="align-items-center justify-content-between w-100">
+                                                                                    <button id="amount_pay_now" class="btn btn-solid w-100" type="button" data-paymentoptionid="{{$order->payment_option_id}}" data-orderid="{{$order->id}}" data-payableamount="{{decimal_format($order->payable_amount+$order->fixed_fee_amount)}}">Pay Now</button>
+                                                                                </li> -->
+                                                                                @endif
                                                                             </ul>
                                                                         </div>
                                                                     </div>
@@ -2229,6 +2259,14 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
         var payment_method_required_error_msg = "{{ __('Please select payment method.') }}";
         var check_pickup_schedule_slots = "{{route('cart.check_pickup_schedule_slots')}}";
         var check_dropoff_schedule_slots = "{{route('cart.check_dropoff_schedule_slots')}}";
+        var edit_order_by_user_url = "{{route('user.editorder')}}";
+        var confirm_edit_order_title = "{{__('Are you sure?')}}";
+        var confirm_edit_order_desc = "{{__('You want to edit this Order.')}}";
+        var showcart_redirect = "{{route('showCart')}}";
+        var discard_order_editing_url = "{{route('user.discardeditorder')}}";
+        var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";
+        var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
+        var success_error_container = ".order_response";
     </script>
 
     <script type="text/javascript">
@@ -2543,6 +2581,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
 <script src="{{asset('front-assets/js/reschedule_order.js')}}"></script>
+<script src="{{asset('front-assets/js/user_edit_order.js')}}"></script>
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
