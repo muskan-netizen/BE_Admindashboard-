@@ -356,6 +356,7 @@ body.al_body_template_six.login form#login-form-new input.form-control {
             min-width: 0;
             max-width: 100%;
             line-height: 50px;
+            margin-right:10px;
         }
         .al_body_template_six .outter-fillter-data .custom_filtter ul li span {
             font-weight: 500;
@@ -364,7 +365,7 @@ body.al_body_template_six.login form#login-form-new input.form-control {
             color: #0A0A0A;
             position: relative;
         }
-        .al_body_template_six .outter-fillter-data .custom_filtter ul li span:after {
+        /* .al_body_template_six .outter-fillter-data .custom_filtter ul li span:after {
             content: '';
             background: #D9D9D9;
             height: 1px;
@@ -372,7 +373,7 @@ body.al_body_template_six.login form#login-form-new input.form-control {
             left: -34px;
             width: 39px;
             bottom: -16px;
-        }
+        } */
         .al_body_template_six .outter-fillter-data .custom_filtter ul li a.active {
             color: #E9248D;
         }
@@ -389,7 +390,7 @@ body.al_body_template_six.login form#login-form-new input.form-control {
         .al_body_template_six .outter-fillter-data .custom_filtter ul li a {
             font-style: normal;
             font-weight: 400;
-            font-size: 18px;
+            font-size: 16px;
             line-height: 22px;
             color: #6F6F6F;
             position: relative;

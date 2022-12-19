@@ -10535,7 +10535,7 @@ body.al_body_template_one .vender-peragraph {
     padding: 10px !important;
 }
 .al_body_template_one .collection-product-wrapper select#order_type {
-    margin-top: 20px;
+    margin-bottom: 20px;
 }
 .al_body_template_one .product-right .product-buttons {
     margin: 0px 0 20px;

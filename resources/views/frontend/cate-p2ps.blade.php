@@ -86,7 +86,7 @@
     color: #0A0A0A;
     position: relative;
 }
-.custom_filtter ul li span:after {
+/* .custom_filtter ul li span:after {
     content: '';
     background: #D9D9D9;
     height: 1px;
@@ -94,7 +94,7 @@
     left: -49px;
     width: 37px;
     bottom: -13px;
-}
+} */
 .custom_filtter ul li {
     flex-grow: 1;
     min-width: 0;
