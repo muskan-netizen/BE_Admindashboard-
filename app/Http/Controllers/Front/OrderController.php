@@ -75,7 +75,7 @@ class OrderController extends FrontController
      */
     public function orders(Request $request, $domain = '')
     {
-
+        $iconsArray = [];
         $user = Auth::user();
         if(empty($user->timezone))
         {

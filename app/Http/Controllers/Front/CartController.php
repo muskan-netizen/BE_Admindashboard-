@@ -397,7 +397,7 @@ class CartController extends FrontController
 
 
             // total booking time as single service duration time as per service for get totel service time multiply by quantity
-            if(in_array($luxury_option->id,[6,8])){
+            if(@$luxury_option->id && in_array($luxury_option->id,[6,8])){
                 $total_booking_time = $productDetail->minimum_duration_min;
             }
             $oldquantity = $isnew = 0;
@@ -444,12 +444,12 @@ class CartController extends FrontController
                 $isLongTermService = $checkLongTermService->product->is_long_term_service ;
             }
            
-            if ($luxury_option) {
+            if (@$luxury_option && $luxury_option) {
                 $checkCartLuxuryOption = CartProduct::where('luxury_option_id', '!=', $luxury_option->id)->where('cart_id', $cart_detail->id)->first();
                 if ($checkCartLuxuryOption) {
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
-                if ($luxury_option->id == 2 || $luxury_option->id == 3) {
+                if (@$luxury_option->id && ($luxury_option->id == 2 || $luxury_option->id == 3)) {
                     if ($checkVendorId) {
                         CartProduct::where('cart_id', $cart_detail->id)->delete();
                     }else{
@@ -458,7 +458,7 @@ class CartController extends FrontController
                     }
                 }
             }
-            if ( ((isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1)) || ($luxury_option->id == 4) ) {
+            if ( ((isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1)) || (@$luxury_option->id && $luxury_option->id == 4) ) {
                 if ($checkVendorId) {
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }

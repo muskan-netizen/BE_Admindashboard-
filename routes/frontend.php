@@ -594,7 +594,14 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
 
 
+	/**
+	 * booking routes
+	 */
+	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
 	
+	Route::resource('posts', 'Front\PostController');
+	Route::get('get-attributes', 'Front\PostController@getCategoryAttributes')->name("category.attributes");
+
 });
 Route::get('js/translations.js', function (Request $request) {
     $lang = config('app.locale');

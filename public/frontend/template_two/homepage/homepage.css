@@ -1,3 +1,14 @@
+
+.al_body_template_two .scale-effect {
+    border-color: #e8e8e8!important;
+    box-shadow: rgb(28 28 28 / 3%) 0 .4rem 0.8rem!important;
+    background-color: #fff!important;
+    box-sizing: border-box!important;
+    border: 1px solid #e8e8e8!important;
+    display:block;
+    border-bottom: 1px solid #e8e8e8!important;
+    border-radius: 12px !important;
+}
 #main-menu.menu-slider li.active a {
     color: var(--theme-deafult);
     border-bottom: 1px solid var(--theme-deafult);

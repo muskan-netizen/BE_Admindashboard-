@@ -1033,6 +1033,7 @@ trait cartManager{
                         $vendorData->is_vendor_closed = 0;
                     }
                 }
+                //pr();   
                 if($vendorData->vendor->$action == 0){
                     $vendorData->vendot_type_not_active = 1;
                     $vendorData->is_vendor_closed = 1;
