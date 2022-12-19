@@ -12,7 +12,7 @@
 <section class="section-b-space ratio_asos outer-categories">
     <div class="collection-wrapper">
         <div class="container">
-            {{--<div class="row">
+            <div class="row">
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
                         @if(!empty($brand->image_banner))
@@ -23,7 +23,7 @@
                         </div>
                     </div>
                 </div>
-            </div>--}}
+            </div>
             <div class="row mb-5 homepageSix">
                 <div class="collection-filter col-lg-3 main-fillter">
                         <div class="collection-filter-block bg-transparent p-0">

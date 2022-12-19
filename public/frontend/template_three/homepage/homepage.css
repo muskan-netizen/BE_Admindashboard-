@@ -130,3 +130,37 @@ article#page-container section .vendors section{padding:20px 0 !important;margin
 }
 
 
+body.al_body_template_three .al_box_third_template {
+    border-color: #e8e8e8!important;
+    box-shadow: rgb(28 28 28 / 3%) 0 .4rem 0.8rem!important;
+    background-color: #fff!important;
+    box-sizing: border-box!important;
+    border: 1px solid #e8e8e8!important;
+}
+@media (max-width:991px){
+    body.al_body_template_three.p2p-module .cab-banner-area .card-box{
+        padding: 12px;
+    }    
+    .al_body_template_three #myCarousel {
+        height: 300px;
+    }
+    .al_body_template_three .home-slider-wrapper .banner-img-outer img {
+        height: 300px;
+    }
+}
+@media (max-width:767px){
+    .al_body_template_three .vendors .slick-slide {
+        padding: 0;
+        margin: 10px;
+    }
+    .al_body_template_three .al_mobile_banner{height:200px !important;}
+    .al_count_tabs_new_design.al_tab_mobile.position-fixed.d-block.d-sm-none {
+        display: none !important;
+    }
+    .al_body_template_three .cab-banner-area .cab-footer .btn {
+        font-size: 12px !important;
+    }
+    .al_body_template_three .cab-footer button{
+        width:auto !important;
+    }
+}
