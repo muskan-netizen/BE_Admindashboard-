@@ -10583,3 +10583,7 @@ body.dark.al_body_template_one .iti--separate-dial-code .iti__selected-flag {
     background-color: transparent;
     color: #fff !important;
 }
+body.al_body_template_one ul.exzoom_img_ul img {
+    height: 600px;
+    object-fit: cover;
+}
