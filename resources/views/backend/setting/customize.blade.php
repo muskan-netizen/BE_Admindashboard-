@@ -2056,8 +2056,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                             <div class="form-group mb-0 switchery-demo">
                                                 @if (isset($roles))
                                                     @foreach ($roles as $key => $_role)
-
-                                                        <input type="text" name="role[{{ $_role['id'] }}]" id="role{{ $_role['id'] }}" value="{{ $_role['role'] }}">
+                                                        <input type="text" name="role[{{ $_role['id'] }}]" class="form-control" id="role{{ $_role['id'] }}" value="{{ $_role['role'] }}">
                                                         <input type="hidden" name="role_id[{{ $_role['id'] }}]" value="{{ $_role['id'] }}">
 
                                                         <input type="checkbox"  name="is_enable_pricing[{{ $_role['id'] }}]" data-plugin="switchery" id="is_enable_pricing" class="form-control checkbox_change" data-className="is_enable_pricing_hidden" data-color="#43bee1"

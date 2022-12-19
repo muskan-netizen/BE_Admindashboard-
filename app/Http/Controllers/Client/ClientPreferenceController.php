@@ -150,9 +150,9 @@ class ClientPreferenceController extends BaseController{
                     ->orderBy('client_languages.is_primary', 'desc')->get();
         $roles = [];
         if(checkColumnExists('roles','is_enable_pricing')){
-            $roles = Role::where('status',1)->get();
+            $roles = Role::where('status',1)->where('id', '<>', 1)->get();
         }
-        // dd($preference);
+        // dd($roles);
         return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting','staticDropoff','laundry_teams','roles'));
     }
 

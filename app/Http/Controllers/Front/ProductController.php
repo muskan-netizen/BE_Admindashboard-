@@ -527,9 +527,14 @@ class ProductController extends FrontController{
             $current_time = $mytime->format('H:i');
             $vendor_cut_off_time = Carbon::parse($request->vendor_cutOff_time)->format('H:i');
             $product_delivery_slots = DeliverySlotProduct::with('deliverySlot')->where('product_id', $product_id);
+
             if($current_date == $input_date){
                 $product_delivery_slots = $product_delivery_slots->whereHas('deliverySlot' ,function ($q) use ($current_time, $vendor_cut_off_time) {
-                    $q->whereTime('start_time', '>', $current_time)->whereTime('end_time', '<', $vendor_cut_off_time);
+                    // $q->whereTime('start_time', '>=', $current_time)->whereTime('end_time', '<=', $vendor_cut_off_time);
+                    // $q->where('start_time', '<=', $current_time)
+                    // ->orwhere('end_time', '<=', $vendor_cut_off_time);
+                    $q->whereBetween('start_time', [$current_time, $vendor_cut_off_time])
+                    ->orWhereBetween('end_time', [$current_time, $vendor_cut_off_time]);
                 })->get();
             }else{
                 $product_delivery_slots = $product_delivery_slots->get();

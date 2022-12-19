@@ -2829,6 +2829,15 @@ $(document).ready(function () {
             });
             return false;
         }
+
+        if($('#sele_slot_id').val() == ''){
+            Swal.fire({
+                text: _language.getLanString('Please select delivery slot to continue'),
+                icon: "warning",
+                button: "OK",
+            });
+            return false;
+        }
     
         if($('#is_long_term_service').length > 0){
             addLongTerm =1;
