@@ -12,7 +12,7 @@ use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
-use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional, UserVendor, VendorCategory};
+use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional, UserVendor, VendorCategory, Product};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
@@ -1075,7 +1075,12 @@ if (!function_exists('getServiceTypesCategory')) {
     function getServiceTypesCategory($vendorType) {
         //echo $vendorType; exit();
         try {
-            $client_preference = ClientPreference::select('business_type')->first();
+            $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
+            if(@$client_preference->p2p_check){
+                $vendorType = 'p2p';
+                session()->put('vendorType', 'p2p');
+            }
+           
             $types =   Type::query();
             $service_types = [];
             if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
@@ -1095,7 +1100,7 @@ if (!function_exists('getServiceTypesCategory')) {
             //     $service_types = ['products_service'];
             // }
             elseif ($vendorType == "p2p") {
-                $service_types = ['p2p'];
+                $service_types = ['p2p', 'on_demand_service', 'appointment_service', 'products_service'];
             }
 
             if ($client_preference->business_type == 'taxi') {
@@ -1112,7 +1117,7 @@ if (!function_exists('getServiceTypesCategory')) {
             //     $service_types = ['products_service'];
             // }
             if ($client_preference->business_type == 'p2p') {
-                $service_types = ['p2p'];
+                $service_types = ['p2p', 'on_demand_service', 'appointment_service', 'products_service'];
             }
             $types =  $types->whereIn('service_type', $service_types);
             $types_id = $types->pluck('id')->toArray();
@@ -1151,7 +1156,7 @@ if (!function_exists('getCategoryTypes')) {
                 break;
             case "super_app":
                 $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment' ];
-                if( clientPrefrenceModuleStatus('p2p_check') ) {
+                if( checkColumnExists('client_preferences', 'p2p_check') ) {
                     $typeArray[] = 'p2p';
                 }
                 break;
@@ -1184,13 +1189,11 @@ if (!function_exists('getCategoryTypesServices')) {
                 $typeArray = ['rental_service'];
                 break;
             case "p2p":
-                $typeArray = ['products_service'];
+                $typeArray = ['products_service', 'on_demand_service', 'appointment_service', 'p2p' ];
                 break;
             case "super_app":
-                $typeArray = ['pick_drop_service', 'on_demand_service', 'appointment_service', 'rental_service', 'products_service'];
-                if( clientPrefrenceModuleStatus('p2p_check') ) {
-                    $typeArray[] = 'p2p';
-                }
+                $typeArray = ['pick_drop_service', 'on_demand_service', 'appointment_service', 'rental_service', 'products_service', 'p2p'];
+               
                 break;
             default:
             $typeArray =['products_service','pick_drop_service','on_demand_service','appointment_service'];
@@ -1329,55 +1332,102 @@ if( !function_exists('p2p_module_status') ) {
 }
 
 if( !function_exists('is_p2p_vendor') ) {
-    function is_p2p_vendor() {
-        
-        if( p2p_module_status() ) {
-            
-            if(auth()->user()) {
-
-                $auth_user = auth()->user();
-                $user_vendor = UserVendor::where('user_id', $auth_user->id)->first();
-                
-                
-                
-                if( !empty($user_vendor->vendor_id) ) {
-
-                    $vendor = Vendor::where('id', $user_vendor->vendor_id)->first();
-                    $client_preference = (object)session()->get('preferences');
-                    
-                    foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
-                        $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-                        $clientVendorTypes = $vendor_typ_key.'_check';
-                        $NomenclitureName =  $vendor_typ_key == "dinein" ? 'Dine-In' : $vendor_typ_value;
-                        if($client_preference->$clientVendorTypes == 1 && $vendor->$VendorTypesName){
-                            $offers[]=  $vendor->$VendorTypesName == 1 ? getNomenclatureName($NomenclitureName) : $NomenclitureName;
-                        }
-                    }
-                    
-                    if( count($offers) > 1 ) {
-                        return false;
-                    }
-                    elseif( count($offers) == 1 && ($vendor->p2p == 1) ) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                }
+    function is_p2p_vendor($vendor_id = '') {
+        $auth_user = auth()->user();
+        $user_vendor = UserVendor::where('user_id', $auth_user->id)->first();
+        if(auth()->user() && (auth()->user()->is_superadmin != 1)) {
+            if( !empty($user_vendor->vendor_id) ) {
+                $vendor_id = $user_vendor->vendor_id;
+            } else {
+                return false;
             }
+        }
+        
+        $vendor = Vendor::where('id', $vendor_id)->first();
+       
+        if(@$vendor->p2p && $vendor->p2p == 1) {
+            return true;
+        }
+        return false;
+
+    }
+}
+
+if( !function_exists('is_category_p2p') ) {
+    function is_category_p2p($category) {
+        if($category->categoryDetail->type_id == 13){
+            return true;
         }
         return false;
     }
-    if( !function_exists('get_tiny_url') ) {
-        function get_tiny_url($url)  {  
-            $ch = curl_init();  
-            $timeout = 5;  
-            curl_setopt($ch,CURLOPT_URL,'https://tinyurl.com/api-create.php?url='.$url);  
-            curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);  
-            curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,$timeout);  
-            $data = curl_exec($ch);  
-            curl_close($ch);  
-            return $data;  
+}
+
+// if( !function_exists('is_p2p_vendor') ) {
+//     function is_p2p_vendor() {
+        
+//         if( p2p_module_status() ) {
+            
+//             if(auth()->user() && (auth()->user()->is_superadmin != 1)) {
+
+//                 $auth_user = auth()->user();
+//                 $user_vendor = UserVendor::where('user_id', $auth_user->id)->first();
+                
+                
+                
+//                 if( !empty($user_vendor->vendor_id) ) {
+
+//                     $vendor = Vendor::where('id', $user_vendor->vendor_id)->first();
+//                     $client_preference = (object)session()->get('preferences');
+                    
+//                     foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+//                         $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+//                         $clientVendorTypes = $vendor_typ_key.'_check';
+//                         $NomenclitureName =  $vendor_typ_key == "dinein" ? 'Dine-In' : $vendor_typ_value;
+//                         if($client_preference->$clientVendorTypes == 1 && $vendor->$VendorTypesName){
+//                             $offers[]=  $vendor->$VendorTypesName == 1 ? getNomenclatureName($NomenclitureName) : $NomenclitureName;
+//                         }
+//                     }
+                    
+//                     if( count($offers) > 1 ) {
+//                         return false;
+//                     }
+//                     elseif( count($offers) == 1 && ($vendor->p2p == 1) ) {
+//                         return true;
+//                     }
+//                     else {
+//                         return false;
+//                     }
+//                 }
+//             }
+//         }
+//         return false;
+//     }
+// }
+
+
+function generateSlug($name)
+{
+    if (Product::whereSku($slug = $name)->exists()) {
+        $max = Product::whereSku($name)->latest('id')->value('sku');
+        if (isset($max[-1]) && is_numeric($max[-1])) {
+            return preg_replace_callback('/(\d+)$/', function($mathces) {
+                return $mathces[1] + 1;
+            }, $max);
         }
+        return $slug.'-'.rand();
     }
 }
+
+if( !function_exists('get_tiny_url') ) {
+    function get_tiny_url($url)  {  
+        $ch = curl_init();  
+        $timeout = 5;  
+        curl_setopt($ch,CURLOPT_URL,'https://tinyurl.com/api-create.php?url='.$url);  
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);  
+        curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,$timeout);  
+        $data = curl_exec($ch);  
+        curl_close($ch);  
+        return $data;  
+    }
+}
+
