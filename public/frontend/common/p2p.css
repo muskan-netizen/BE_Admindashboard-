@@ -542,6 +542,15 @@ body.al_body_template_nine.p2p-module .theme-card.custom-inner-card .accordion .
     }
 }
 @media(max-width:767px){
+    body.al_body_template_nine.p2p-module .sm .al_main_category a {
+        width: max-content;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    body.al_body_template_nine.p2p-module #al_new_design .pixelstrap a, #al_new_design .pixelstrap a:active, #al_new_design .pixelstrap a:hover, #al_new_design .pixelstrap li a {
+        width: 125px !important;
+    }
     body.al_body_template_nine.p2p-module #al_new_design .pixelstrap:hover ul.al_main_category_list {
         display: none;
     }
