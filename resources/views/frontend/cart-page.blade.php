@@ -72,6 +72,11 @@
                     <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
                         {{__('Continue Shopping')}}</a>
                 </div>
+                <div class="col-md-6">
+                    @if(!empty($cart_details->editing_order))
+                        <span class="shoping">{{ __("Order") }} {{$cart_details->editing_order->order_number}} {{ __("being edited") }} <a class="btn shoping discard_editing_order" href="javascript:void(0)" data-orderid="{{$cart_details->editing_order->id}}"><i class="fa fa-trash-o"></i> {{__('Discard')}}</a></span>
+                    @endif
+                </div>
             </div>
                 <!-- <div class="page-title-box">
                     <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
@@ -94,7 +99,7 @@
             <div class="row border-bottom">
                         <div class="col-6">
                             <div class="single_cart_heading">
-                                    <h3>{{ __("Shopping Cart") }}</h3>
+                                    <h3>{{ __("Shopping Cart") }} </h3>
                             </div>
                         </div>
                         <div class="col-6">
@@ -932,21 +937,22 @@
                                 <li class="close-window">
                                     <i class="fa fa-times cross" style="display:none!important"  aria-hidden="true"></i>
                                 </li>
-                               @endif                        </ul>
+                               @endif                        
+                        </ul>
                         <div class=" col-sm-10 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right mr-1" id="schedule_div" style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
+                        
+                        
                         @if($cart_details->slotsCnt == 0)
-                        @if($cart_details->delay_date != 0)
-                            <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
-                            min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
-                        @else
+                            @if($cart_details->delay_date != 0)
                                 <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
                                 min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
+                            @else
+                                    <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
+                                    min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
 
-                                @endif
+                            @endif
 
                         @else
-
-
                             <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="{{(($cart_details->scheduled_date_time != '')?$cart_details->scheduled_date_time : $cart_details->delay_date ) }}"  min="{{$cart_details->delay_date}}" >
                             <input type="hidden" id="checkSlot" value="1">
                             <select name="slots" id="slot" onchange="checkSlotOrders();" class="form-control">
@@ -955,7 +961,8 @@
                                 <option value="{{$slot->value }}" {{$slot->value == $cart_details->scheduled->slot ? 'selected' : ''}} >{{$slot->name}}</option>
                                 @endforeach
                             </select>
-                    @endif
+                        @endif
+                    
 
                 </div>
                     </div>
@@ -968,6 +975,9 @@
                     <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
                         @if(isset($ageVerify->status) && $ageVerify->status == 1)
                             {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
+                        @endif
+                        @if(!empty($cart_details->editing_order) && !empty($cart_details->editing_order->scheduled_date_time) && !empty($edit_order_schedule_datetime))
+                        <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
                         @endif
                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
                     </div>
