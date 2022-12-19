@@ -9781,6 +9781,12 @@ body.al_body_template_one .vender-peragraph {
     position: relative !important;
     margin-bottom: 0 !important;
 }
+body.al_body_template_one .sm .al_main_category a {
+    width: max-content;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 .al_new_wrapper_design .modal-content::before {right: 5px;top: 5px;}.homepage-address{width:calc(100% - 100px)}.brand-box{height:200px!important}.home-banner-slider,.home-banner-slider .slick-slide,.home-banner-slider .slick-slide .banner-img-outer,.home-slider-wrapper .loading{height:150px}.site-header .container{max-width:100%}.product-box .img-wrapper,.product-wrap .img-wrapper{height:auto}.product-image{height:auto}
 .common-product-box,.suppliers-box{padding:0;margin-top:0!important}.grid-row.grid-4-4{grid-template-columns:repeat(2,1fr)!important}.pixelstrap li>a{padding:10px 5px}.site-topbar .location-bar i,.site-topbar .location-bar span{font-size:16px}.site-topbar .location-bar span{font-size:14px}.site-topbar .map-icon .yl-text{padding-left:10px}.navigation-tab{margin:auto;margin-block-start:0;margin-block-end:0}.p-64{padding:24px 20px!important}.cab-banner-area .card-box{padding:24px}.main-menu .menu-right .icon-nav li{padding:0;vertical-align:middle}.inner_spacing h3{width:66%}.icon-nav .btn.btn-solid{min-width:auto;margin-right:10px;padding:10px;display:flex;align-items:center}.theme-form .input-group input.form-control{width:100%}.icon-nav .btn{font-size:11px}.radius-bar{width:51%}.dark-light{top:50%}.col-md-8.col-lg-6.border-left{border:0!important}.remove_product_via_cart{position:absolute;right:5px;top:-5px}.p-in{position:initial!important}
 .common-banner{height:150px}.loalty-title{font-size:30px}.footer-theme .footer-social{margin:0}.mobile-cart-button .number input{width:35px!important}
