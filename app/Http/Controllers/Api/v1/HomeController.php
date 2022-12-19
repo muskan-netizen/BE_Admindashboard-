@@ -233,6 +233,7 @@ class HomeController extends BaseController
                 $domain_link = "https://" . $homeData['profile']->sub_domain . env('SUBMAINDOMAIN');
             $homeData['domain_link'] = $domain_link;
             $homeData['profile']->preferences->is_postpay_enable = (int) @getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
+            $homeData['profile']->preferences->is_order_edit_enable = (int) @getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'];
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
