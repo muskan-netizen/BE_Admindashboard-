@@ -414,11 +414,9 @@
          
           $('#incremental_hrs_hidden').val(timeToHrMinConvertCal(t_min_hr_min));
           $('#total_hrs').val(parseInt(t_min_hr_min));
-<<<<<<< HEAD
+
            console.log(parseInt(t_min_hr_min)+parseInt(default_minutes));
-=======
-           //console.log(parseInt(t_min_hr_min)+parseInt(default_minutes));
->>>>>>> surendraPreProFix
+
         }
 
 
