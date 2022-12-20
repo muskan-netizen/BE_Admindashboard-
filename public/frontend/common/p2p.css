@@ -220,7 +220,7 @@ body.al_body_template_nine.p2p-module .product-buttons {
 }
 .p2p-module ul.exzoom_img_ul img {
     width: 100%;
-    min-height: 550px;
+    height: 550px;
     object-fit: cover;
 }
 section.cab-banner-area.alTaxiBannerStart{display: none;}
@@ -533,6 +533,7 @@ body.al_body_template_nine .outter-fillter-data div#category_products_filter a.p
 body.al_body_template_nine.p2p-module .theme-card.custom-inner-card .accordion .card-header button:after{
     display:none;
 }
+body.al_body_template_nine .common-product-box, .product-box, .product-card-box, .suppliers-box{display:block;}
 /*----------media css--------------*/
 @media(max-width:991px){
     body.al_body_template_nine section.p2p-categories .col-md-2 {
