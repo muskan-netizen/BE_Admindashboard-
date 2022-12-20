@@ -1167,7 +1167,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 </div>
 
 @php
-$getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable','is_price_by_role', 'is_free_delivery_by_roles','is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment']);
+$getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_hubspot_enable','is_price_by_role', 'is_free_delivery_by_roles','is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment','is_gift_card']);
 @endphp
 <div class="row">
    {{-- hubspot form --}}
@@ -1748,6 +1748,25 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
    </div>
 </div>
 
+<<<<<<< HEAD
+     
+      <div class="col-md-4">
+         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+            <label for="is_gift_card_switch" class="mr-2 mb-0">{{__('Gift Card')}}<small class="d-block pr-5">{{__("Enable to allow Gift Card.")}}</small></label>
+            <span> <input type="checkbox" data-plugin="switchery" name="is_gift_card_switch" id="is_gift_card_switch" class="form-control checkbox_change" data-className="is_gift_card" data-color="#43bee1" @if(@getAdditionalPreference(['is_gift_card'])['is_gift_card']==1) checked='checked' @endif>
+            </span>
+            <input type="hidden" @if(@getAdditionalPreference(['is_gift_card'])['is_gift_card']==1) value="1" @else value="0" @endif name="is_gift_card" id="is_gift_card" />
+         </div>
+      </div>
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                     <label for="is_cab_pooling_switch" class="mr-2 mb-0">{{__('Cab Pooling')}}<small class="d-block pr-5">{{__("Enable to allow customers to book Cab Pooling.")}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="is_cab_pooling_switch" id="is_cab_pooling_switch" class="form-control checkbox_change" data-className="is_cab_pooling" data-color="#43bee1" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'] == 1) checked='checked'  @endif>
+                     </span>
+                     <input type="hidden"  @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'] == 1) value="1" @else value="0" @endif  name="is_cab_pooling"  id="is_cab_pooling"/>
+                  </div>
+               </div>
+=======
 <div class="col-md-4">
    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
       <label for="is_cab_pooling_switch" class="mr-2 mb-0">{{__('Cab Pooling')}}<small class="d-block pr-5">{{__("Enable to allow customers to book Cab Pooling.")}}</small></label>
@@ -1756,6 +1775,7 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
       <input type="hidden" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']==1) value="1" @else value="0" @endif name="is_cab_pooling" id="is_cab_pooling" />
    </div>
 </div>
+>>>>>>> pre_dev
 
 <div class="col-md-4">
    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
