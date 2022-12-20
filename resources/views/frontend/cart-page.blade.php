@@ -978,6 +978,7 @@
                         @endif
                         @if(!empty($cart_details->editing_order) && !empty($cart_details->editing_order->scheduled_date_time) && !empty($edit_order_schedule_datetime))
                         <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
+                        <input type="hidden" id="edit_order_schedule_slot" value="{{$schedule_slots_edit}}">
                         @endif
                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
                     </div>
