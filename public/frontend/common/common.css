@@ -2,7 +2,7 @@
 .alPageSearchView .product-box .front a{position: relative;padding-bottom: 100%;border-radius: 12px;overflow: hidden;}
 .alPageSearchView .product-box .front a img{position: absolute;height: 100%;width: 100%;object-fit: cover;left: 0;top: 0;}
 ul.exzoom_img_ul {
-min-height: 550px;
+/* min-height: 550px; */
 position: relative;
 }
 ul.exzoom_img_ul img {
@@ -356,6 +356,7 @@ body.al_body_template_six.login form#login-form-new input.form-control {
             min-width: 0;
             max-width: 100%;
             line-height: 50px;
+            margin-right:10px;
         }
         .al_body_template_six .outter-fillter-data .custom_filtter ul li span {
             font-weight: 500;
@@ -364,7 +365,7 @@ body.al_body_template_six.login form#login-form-new input.form-control {
             color: #0A0A0A;
             position: relative;
         }
-        .al_body_template_six .outter-fillter-data .custom_filtter ul li span:after {
+        /* .al_body_template_six .outter-fillter-data .custom_filtter ul li span:after {
             content: '';
             background: #D9D9D9;
             height: 1px;
@@ -372,7 +373,7 @@ body.al_body_template_six.login form#login-form-new input.form-control {
             left: -34px;
             width: 39px;
             bottom: -16px;
-        }
+        } */
         .al_body_template_six .outter-fillter-data .custom_filtter ul li a.active {
             color: #E9248D;
         }
@@ -389,7 +390,7 @@ body.al_body_template_six.login form#login-form-new input.form-control {
         .al_body_template_six .outter-fillter-data .custom_filtter ul li a {
             font-style: normal;
             font-weight: 400;
-            font-size: 18px;
+            font-size: 16px;
             line-height: 22px;
             color: #6F6F6F;
             position: relative;
@@ -1482,4 +1483,66 @@ body.al_body_template_two .col-12.custom_filtter {
 }
 body.al_body_template_four .col-12.custom_filtter {
     text-align: right;
+}
+body.al_body_template_nine div#replace-order-form-modal h5.modal-title {
+    padding: 0 0 10px;
+}
+body.al_body_template_nine div#replace-order-form-modal  button.close {
+    padding: 0px 10px 0 4px !important;
+}
+body.al_body_template_nine div#replace_order_model .table-responsive table {
+    margin-top: 10px;
+}
+body.al_body_template_nine div#replace_order_model .table-responsive table tr th {
+    width: 50%;
+    color: #000;
+}
+body.al_body_template_nine div#replace_order_model .table-responsive table tr td {
+    border: 1px solid#cccc;
+    padding: 10px;
+}
+body.al_body_template_nine div#replace_order_model .table-responsive table tr th {
+    width: 50%;
+    color: #000;
+    border: 1px solid#ccc;
+}
+body.al_body_template_three .offer-slider.al .listing-categories ul li {
+    display: block !important;
+}
+body.al_body_template_three .theme-card.custom-inner-card {
+    border-radius: 4px;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 12%);
+}
+body.al_body_template_three .theme-card.custom-inner-card button.btn.btn-link.btn-block.text-left.p-0 h5 {
+    padding: 10px !important;
+}
+body.al_body_template_three .scale-effect {
+    box-shadow: rgb(28 28 28 / 12%) 0 .4rem 1.8rem;
+    box-sizing: border-box;
+    border: 1px solid #e8e8e8;
+    display:block;
+}
+.al_body_template_three .scale-effect .inner_spacing {
+    padding: 10px;
+}
+body.al_body_template_three.homeHeader .outter-fillter-data .product-wrapper-grid.card-product h3 label {
+    text-align: center;
+}
+body.al_body_template_four .product-description_list p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+body.al_body_template_one .product-image img.img-fluid.blur-up.lazyloaded {
+    object-fit: cover;
+    height: 150px;
+}
+body.al_body_template_two .royo_whatsapp_img {
+    position: fixed;
+    z-index: 99999;
+    bottom: 7%;
+    left: 1%;
+}
+body.al_body_template_two .royo_whatsapp_img img {
+    width: 50px;
 }

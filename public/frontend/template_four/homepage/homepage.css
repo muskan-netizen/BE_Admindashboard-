@@ -3696,7 +3696,7 @@ body.al_body_template_four.p2p-module .shoping_cart .vendor_products_tr h4 stron
   body .shimmer_effect .grid-row .card_image {
     height: 90px !important
   }
-
+  body.al_body_template_four .navigation_tab_al.nav-material.tab-icons{border:none !important;}
   .alFourTemplateCartButtons a.btn.btn-solid:before {
     font-size: 18px
   }
@@ -4243,7 +4243,7 @@ body.al_body_template_four.p2p-module .tab-product {
     border-radius: 0 !important;
     font-size: 16px
   }
-  body.al_body_template_four .inner_spacing.w-100 label.mb-0{font-size:16px;}
+  body.al_body_template_four .inner_spacing.w-100 label.mb-0{font-size:16px;width: 70%;}
   body.al_body_template_four div#category_products_filter span.rating {
     background: green;
     color: #fff;

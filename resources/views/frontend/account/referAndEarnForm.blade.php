@@ -139,6 +139,7 @@ body .select2-results__option[aria-selected] {
                                                     @endforeach
                                                 </select>
                                             @elseif( !empty($var->type) && $var->type == 4 )
+                                            @foreach($var->option as $key => $opt)
                                                 <div class="form-check-inline w-100 mb-2">
                                                     <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
                                                     <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
@@ -150,6 +151,7 @@ body .select2-results__option[aria-selected] {
                                                     value=""
                                                     >
                                                 </div>
+                                                @endforeach
                                             @elseif( !empty($var->type) && $var->type == 3 )
                                             
                                                 @foreach($var->option as $key => $opt)

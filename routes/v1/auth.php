@@ -141,6 +141,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('cart/schedule/update','Api\v1\CartController@updateSchedule');
         Route::post('repeatOrder', 'Api\v1\CartController@repeatOrder');
         Route::get('order/orderDetails_for_notification/{order_id}', 'Api\v1\OrderController@orderDetails_for_notification');
+
+        Route::post('user/editorder', 'Api\v1\OrderController@editOrderByUser');
+	    Route::post('user/discardeditorder', 'Api\v1\OrderController@discardEditOrderByUser');
         
         // Rating & review 
         Route::group(['prefix' => 'rating'], function () {
@@ -181,7 +184,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('promo-code/verify', 'Api\v1\PickupDeliveryController@postVerifyPromoCode');
             Route::post('promo-code/remove', 'Api\v1\PickupDeliveryController@postRemovePromoCode');
             Route::post('order-tracking-details', 'Api\v1\PickupDeliveryController@getOrderTrackingDetails');
-            Route::match(['get','post'],'add-rider','Api\v1\PickupDeliveryController@getAllRiders');            
+            Route::match(['get','post'],'add-rider','Api\v1\PickupDeliveryController@getAllRiders');   
+            
+            Route::post('edit-order', 'Api\v1\PickupDeliveryController@updatePickupDeliveryOrderByCustomer');
         });
 
         // user subscription 

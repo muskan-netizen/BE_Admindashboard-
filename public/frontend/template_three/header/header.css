@@ -118,3 +118,10 @@ body.al_body_template_three.p2p-module .menu-navigation.alThreeMenu li.al_main_c
         border: 1px solid #ccc !important;
     }
 }
+@media(max-width:767px){
+    #al_new_design .pixelstrap li a {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}

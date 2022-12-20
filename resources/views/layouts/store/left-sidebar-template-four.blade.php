@@ -453,7 +453,7 @@ $pages = \App\Models\Page::with([
 
 
                                 </div>
-                                @if(count($navCategories))
+                                @if(@$navCategories && count($navCategories))
                                     <div class="col-sm-12 p-0 d-flex align-items-center alOverflow">
                                         <div class="menu_navigation_al_four mt-lg-3">
                                             <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >

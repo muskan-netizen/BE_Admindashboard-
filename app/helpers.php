@@ -3,7 +3,7 @@
 use App\Models\CartProduct;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\{Currency, SmsTemplate, User, TempCartProduct, Vendor};
+use App\Models\{Currency, SmsTemplate, User, TempCartProduct, Vendor, WebStylingOption};
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ProductVariant;
@@ -1075,10 +1075,13 @@ if (!function_exists('getServiceTypesCategory')) {
     function getServiceTypesCategory($vendorType) {
         //echo $vendorType; exit();
         try {
-            $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
-            if(@$client_preference->p2p_check){
-                $vendorType = 'p2p';
-                session()->put('vendorType', 'p2p');
+            $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+            if(isset($set_template)  && $set_template->template_id == 9){
+                $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
+                if(@$client_preference->p2p_check){
+                    $vendorType = 'p2p';
+                    session()->put('vendorType', 'p2p');
+                }
             }
            
             $types =   Type::query();
@@ -1156,7 +1159,7 @@ if (!function_exists('getCategoryTypes')) {
                 break;
             case "super_app":
                 $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment' ];
-                if( clientPrefrenceModuleStatus('p2p_check') ) {
+                if( checkColumnExists('client_preferences', 'p2p_check') ) {
                     $typeArray[] = 'p2p';
                 }
                 break;
@@ -1416,6 +1419,7 @@ function generateSlug($name)
         }
         return $slug.'-'.rand();
     }
+    return $slug;
 }
 
 if( !function_exists('printOldOrDbValue') ) {

@@ -2191,6 +2191,59 @@ class StoreController extends BaseController{
 					}					
 				}
 
+
+				if ($request->has('file_360')) {
+					$imageId = '';
+					$files = $request->file('file_360');
+					if(is_array($files)) {
+						foreach ($files as $file) {
+							$img = new VendorMedia();
+							$img->media_type = 4;
+							$img->vendor_id = $product->vendor_id;
+							$img->path = Storage::disk('s3')->put($this->folderName, $file, 'public');
+							$img->save();
+							$path1 = $img->path['proxy_url'] . '40/40' . $img->path['image_path'];
+							if ($img->id > 0) {
+								$imageId = $img->id;
+								$image = new ProductImage();
+								$image->product_id = $product->id;
+								$image->is_default = 1;
+								$image->media_id = $imageId;
+								$image->save();
+								// if($image->id > 0 && $variant_id!="")
+								// {
+								// 	$varientimage = new ProductVariantImage();
+								// 	$varientimage->product_variant_id = $variant_id;
+								// 	$varientimage->product_image_id = $image->id;
+								// 	$varientimage->save();
+								// }							
+							}
+						}
+						//return response()->json(['htmlData' => $resp]);
+					} else {
+						$img = new VendorMedia();
+						$img->media_type = 4;
+						$img->vendor_id = $product->vendor_id;
+						$img->path = Storage::disk('s3')->put($this->folderName, $files, 'public');
+						$img->save();					
+						if ($img->id > 0) {
+							$imageId = $img->id;
+							$image = new ProductImage();
+							$image->product_id = $product->id;
+							$image->is_default = 1;
+							$image->media_id = $img->id;
+							$image->save();
+							// if($image->id > 0 && $variant_id!="")
+							// {
+							// 	$varientimage = new ProductVariantImage();
+							// 	$varientimage->product_variant_id = $variant_id;
+							// 	$varientimage->product_image_id = $image->id;
+							// 	$varientimage->save();
+							// }						
+						}
+					}					
+				}
+
 				// Add Attributes
 				if( checkTableExists('product_attributes') ) {
 					if( !empty($request->attribute) ) {
