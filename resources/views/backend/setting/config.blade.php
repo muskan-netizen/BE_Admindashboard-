@@ -1594,6 +1594,16 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                   </div>
                </div>
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                     <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Place Order To Dispatcher even if delivery fee is zero')}}<small class="d-block pr-5">{{__("Enable to place order To dispatcher even if delivery fee is zero.")}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="is_place_order_delivery_zero_switch" id="is_place_order_delivery_zero_switch" class="form-control checkbox_change" data-className="is_place_order_delivery_zero"  data-color="#43bee1" @if( @getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'] == '1') checked='checked' @endif>
+                     </span>
+                     <input type="hidden"  @if(@getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'] == 1) value="1" @else value="0" @endif  name="is_place_order_delivery_zero"  id="is_place_order_delivery_zero"/>
+
+
+                  </div>
+               </div>
                </div>
             </div>
          </form>
